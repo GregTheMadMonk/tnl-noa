@@ -45,7 +45,6 @@ int filter(const struct dirent *dire)
 
 inline tnlDicomSeries::tnlDicomSeries( const tnlString& filePath)
 {
-    fileList = new tnlList<tnlString *>();
 #ifdef HAVE_DCMTK_H
     dicomImage = 0;
     pixelData = 0;
@@ -62,9 +61,6 @@ inline tnlDicomSeries::tnlDicomSeries( const tnlString& filePath)
 
 inline tnlDicomSeries::~tnlDicomSeries()
 {
-    fileList->DeepEraseAll();
-    delete fileList;
-
     int length = dicomSeriesHeaders.getSize();
     for(int i = 0; i < length; i++)
     {
@@ -159,27 +155,23 @@ inline bool tnlDicomSeries::retrieveFileList( const tnlString& filePath)
       tnlString fileNamePrefix(fileName.getString(), 0, fileName.getLength() - separatorPosition);
 
       struct dirent **dirp;
-      tnlList<tnlString *> files;
+      tnlList<tnlString > files;
 
       //scan and sort directory
       int ndirs = scandir(directoryPath.getString(), &dirp, filter, alphasort);
       for(int i = 0 ; i < ndirs; ++i)
       {
-         files.Append(new tnlString((char *)dirp[i]->d_name));
+         files.Append( tnlString((char *)dirp[i]->d_name));
          delete dirp[i];
       }
 
       for (int i = 0; i < files.getSize(); i++)
       {
-         tnlString *file = new tnlString(files[i]->getString());
-
          //check if file prefix contained
-         if (strstr(file->getString(), fileNamePrefix.getString()))
+         if (strstr(files[ i ].getString(), fileNamePrefix.getString()))
          {
-            fileList->Append(new tnlString(directoryPath.operator +(*file)));
+            fileList.Append( directoryPath + files[ i ] );
          }
-         delete file;
-         delete files[i];
       }
    }
    return true;
@@ -336,12 +328,12 @@ inline bool tnlDicomSeries::loadDicomSeries( const tnlString& filePath )
    }
 
    //load images
-   int imagesCountToLoad = fileList->getSize();
+   int imagesCountToLoad = fileList.getSize();
    for( int i=0; i < imagesCountToLoad; i++ )
    {
-      if( !loadImage( ( ( *fileList )[ i ] )->getString(),i ) )
+      if( !loadImage( fileList[ i ].getString(),i ) )
       {
-         cerr << ( ( *fileList )[ i ] )->getString() << " skipped";
+         cerr << fileList[ i ] << " skipped";
       }
    }
    return true;

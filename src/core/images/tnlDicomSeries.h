@@ -109,7 +109,7 @@ class tnlDicomSeries : public tnlImage< int >
        
       bool loadImage( const tnlString& filePath, int number );
 
-      tnlList<tnlString *> *fileList;
+      tnlList< tnlString > fileList;
        
       tnlArray<tnlDicomHeader *,tnlHost,int> dicomSeriesHeaders;
 
