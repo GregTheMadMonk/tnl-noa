@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFastBuildConfig.h  -  description
+                          tnlFastBuildConfigTag.h  -  description
                              -------------------
     begin                : Jul 7, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLFASTBUILDCONFIG_H_
-#define TNLFASTBUILDCONFIG_H_
+#ifndef TNLFASTBUILDCONFIGTAG_H_
+#define TNLFASTBUILDCONFIGTAG_H_
 
 #include <solvers/tnlBuildConfigTags.h>
 
@@ -61,4 +61,4 @@ template<> struct tnlConfigTagTimeDiscretisation< tnlFastBuildConfig, tnlImplici
  */
 template<> struct tnlConfigTagExplicitSolver< tnlFastBuildConfig, tnlExplicitEulerSolverTag >{ enum { enabled = false }; };
 
-#endif /* TNLDEFAULTCONFIG_H_ */
+#endif /* TNLFASTBUILDCONFIGTAG_H_ */
