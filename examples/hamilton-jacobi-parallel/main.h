@@ -22,6 +22,7 @@
 #include <mesh/tnlGrid.h>
 #include <core/tnlDevice.h>
 #include <time.h>
+#include <ctime>
 
 typedef MainBuildConfig BuildConfig;
 
@@ -30,6 +31,7 @@ int main( int argc, char* argv[] )
 	time_t start;
 	time_t stop;
 	time(&start);
+	std::clock_t start2= std::clock();
    tnlParameterContainer parameters;
    tnlConfigDescription configDescription;
    parallelEikonalConfig< BuildConfig >::configSetup( configDescription );
@@ -84,7 +86,7 @@ int main( int argc, char* argv[] )
 
    time(&stop);
    cout << endl;
-   cout << "Running time was: " << difftime(stop,start) << endl;
+   cout << "Running time was: " << difftime(stop,start) << " .... " << (std::clock() - start2) / (double)(CLOCKS_PER_SEC) << endl;
    return EXIT_SUCCESS;
 }
 

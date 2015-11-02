@@ -83,6 +83,9 @@ bool parallelGodunovEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Rea
 	   hx = originalMesh.getHx();
 	   hy = originalMesh.getHy();
 	   hz = originalMesh.getHz();
+	   ihx = 1.0/hx;
+	   ihy = 1.0/hy;
+	   ihz = 1.0/hz;
 
 	   epsilon = parameters. getParameter< double >( "epsilon" );
 
@@ -125,72 +128,267 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition ) const
 {
-/*
-	RealType nabla, xb, xf, yb, yf, zb, zf, signui;
+	if ( ((coordinates.x() == 0 && (boundaryCondition & 4)) or
+		 (coordinates.x() == mesh.getDimensions().x() - 1 && (boundaryCondition & 2)) or
+		 (coordinates.y() == 0 && (boundaryCondition & 8)) or
+		 (coordinates.y() == mesh.getDimensions().y() - 1  && (boundaryCondition & 1)) or
+		 (coordinates.z() == 0 && (boundaryCondition & 32)) or
+		 (coordinates.z() == mesh.getDimensions().y() - 1  && (boundaryCondition & 16)))
 
-	signui = sign(u[cellIndex],epsilon);
+		)
+	{
+		return 0.0;
+	}
+
+
+	//-----------------------------------
+
+	RealType signui;
+	signui = sign(u[cellIndex],this->epsilon);
+
+
+
+
+	RealType xb = u[cellIndex];
+	RealType xf = -u[cellIndex];
+	RealType yb = u[cellIndex];
+	RealType yf = -u[cellIndex];
+	RealType zb = u[cellIndex];
+	RealType zf = -u[cellIndex];
+	RealType a,b,c,d;
+
+
+	   if(coordinates.x() == mesh.getDimensions().x() - 1)
+		   xf += u[mesh.template getCellNextToCell<-1,0,0>( cellIndex )];
+	   else
+		   xf += u[mesh.template getCellNextToCell<1,0,0>( cellIndex )];
+
+	   if(coordinates.x() == 0)
+		   xb -= u[mesh.template getCellNextToCell<1,0,0>( cellIndex )];
+	   else
+		   xb -= u[mesh.template getCellNextToCell<-1,0,0>( cellIndex )];
+
+	   if(coordinates.y() == mesh.getDimensions().y() - 1)
+		   yf += u[mesh.template getCellNextToCell<0,-1,0>( cellIndex )];
+	   else
+		   yf += u[mesh.template getCellNextToCell<0,1,0>( cellIndex )];
+
+	   if(coordinates.y() == 0)
+		   yb -= u[mesh.template getCellNextToCell<0,1,0>( cellIndex )];
+	   else
+		   yb -= u[mesh.template getCellNextToCell<0,-1,0>( cellIndex )];
+
+
+	   if(coordinates.z() == mesh.getDimensions().z() - 1)
+		   zf += u[mesh.template getCellNextToCell<0,0,-1>( cellIndex )];
+	   else
+		   zf += u[mesh.template getCellNextToCell<0,0,1>( cellIndex )];
+
+	   if(coordinates.z() == 0)
+		   zb -= u[mesh.template getCellNextToCell<0,0,1>( cellIndex )];
+	   else
+		   zb -= u[mesh.template getCellNextToCell<0,0,-1>( cellIndex )];
+
+
+	   //xb *= ihx;
+	   //xf *= ihx;
+	  // yb *= ihy;
+	   //yf *= ihy;
 
 	   if(signui > 0.0)
 	   {
-		   xf = negativePart((u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])/hx);
-		   xb = positivePart((u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])/hx);
-		   yf = negativePart((u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])/hy);
-		   yb = positivePart((u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])/hy);
-		   zf = negativePart((u[mesh.getCellZSuccessor( cellIndex )] - u[cellIndex])/hz);
-		   zb = positivePart((u[cellIndex] - u[mesh.getCellZPredecessor( cellIndex )])/hz);
+		   xf = negativePart(xf);
 
-		   if(xb + xf > 0.0)
-			   xf = 0.0;
-		   else
-			   xb = 0.0;
+		   xb = positivePart(xb);
 
-		   if(yb + yf > 0.0)
-			   yf = 0.0;
-		   else
-			   yb = 0.0;
+		   yf = negativePart(yf);
 
-		   if(zb + zf > 0.0)
-			   zf = 0.0;
-		   else
-			   zb = 0.0;
+		   yb = positivePart(yb);
 
-		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb );
+		   zf = negativePart(zf);
 
-		   return signui*(1.0 - nabla);
+		   zb = positivePart(zb);
+
 	   }
-	   else if (signui < 0.0)
+	   else if(signui < 0.0)
 	   {
-		   xf = positivePart((u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])/hx);
-		   xb = negativePart((u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])/hx);
-		   yf = positivePart((u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])/hy);
-		   yb = negativePart((u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])/hy);
-		   zf = positivePart((u[mesh.getCellZSuccessor( cellIndex )] - u[cellIndex])/hz);
-		   zb = negativePart((u[cellIndex] - u[mesh.getCellZPredecessor( cellIndex )])/hz);
 
-		   if(xb + xf > 0.0)
-			   xb = 0.0;
-		   else
-			   xf = 0.0;
+		   xb = negativePart(xb);
 
-		   if(yb + yf > 0.0)
-			   yb = 0.0;
-		   else
-			   yf = 0.0;
+		   xf = positivePart(xf);
 
-		   if(zb + zf > 0.0)
-			   zb = 0.0;
-		   else
-			   zf = 0.0;
+		   yb = negativePart(yb);
 
-		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb );
+		   zf = positivePart(yf);
 
-		   return signui*(1.0 - nabla);
+		   yb = negativePart(zb);
+
+		   zf = positivePart(zf);
 	   }
+
+
+	   if(xb - xf > 0.0)
+		   a = xb;
 	   else
-*/	   {
-		   return 0.0;
+		   a = xf;
+
+	   if(yb - yf > 0.0)
+		   b = yb;
+	   else
+		   b = yf;
+
+	   if(zb - zf > 0.0)
+		   c = zb;
+	   else
+		   c = zf;
+
+	   d =(1.0 - sqrt(a*a+b*b+c*c)*ihx );
+
+	   if(Sign(d) > 0.0 )
+		   return Sign(u[cellIndex])*d;
+	   else
+		   return signui*d;
+}
+
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+
+#ifdef HAVE_CUDA
+__device__
+#endif
+Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >:: getValueDev( const MeshType& mesh,
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType cellIndex,
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const CoordinatesType& coordinates,
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real* u,
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time,
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition) const
+{
+
+/*
+	if ( ((coordinates.x() == 0 && (boundaryCondition & 4)) or
+		 (coordinates.x() == mesh.getDimensions().x() - 1 && (boundaryCondition & 2)) or
+		 (coordinates.y() == 0 && (boundaryCondition & 8)) or
+		 (coordinates.y() == mesh.getDimensions().y() - 1  && (boundaryCondition & 1)))
+		)
+	{
+		return 0.0;
+	}
+
+*/
+	//RealType acc = hx*hy*hx*hy;
+
+	RealType signui;
+	signui = sign(u[cellIndex],this->epsilon);
+
+
+#ifdef HAVE_CUDA
+	//printf("%d   :    %d ;;;; %d   :   %d  , %f \n",threadIdx.x, mesh.getDimensions().x() , threadIdx.y,mesh.getDimensions().y(), epsilon );
+#endif
+
+	RealType xb = u[cellIndex];
+	RealType xf = -u[cellIndex];
+	RealType yb = u[cellIndex];
+	RealType yf = -u[cellIndex];
+	RealType zb = u[cellIndex];
+	RealType zf = -u[cellIndex];
+	RealType a,b,c,d;
+
+
+	   if(coordinates.x() == mesh.getDimensions().x() - 1)
+		   xf += u[mesh.template getCellNextToCell<-1,0,0>( cellIndex )];
+	   else
+		   xf += u[mesh.template getCellNextToCell<1,0,0>( cellIndex )];
+
+	   if(coordinates.x() == 0)
+		   xb -= u[mesh.template getCellNextToCell<1,0,0>( cellIndex )];
+	   else
+		   xb -= u[mesh.template getCellNextToCell<-1,0,0>( cellIndex )];
+
+	   if(coordinates.y() == mesh.getDimensions().y() - 1)
+		   yf += u[mesh.template getCellNextToCell<0,-1,0>( cellIndex )];
+	   else
+		   yf += u[mesh.template getCellNextToCell<0,1,0>( cellIndex )];
+
+	   if(coordinates.y() == 0)
+		   yb -= u[mesh.template getCellNextToCell<0,1,0>( cellIndex )];
+	   else
+		   yb -= u[mesh.template getCellNextToCell<0,-1,0>( cellIndex )];
+
+
+	   if(coordinates.z() == mesh.getDimensions().z() - 1)
+		   zf += u[mesh.template getCellNextToCell<0,0,-1>( cellIndex )];
+	   else
+		   zf += u[mesh.template getCellNextToCell<0,0,1>( cellIndex )];
+
+	   if(coordinates.z() == 0)
+		   zb -= u[mesh.template getCellNextToCell<0,0,1>( cellIndex )];
+	   else
+		   zb -= u[mesh.template getCellNextToCell<0,0,-1>( cellIndex )];
+
+
+	   //xb *= ihx;
+	   //xf *= ihx;
+	  // yb *= ihy;
+	   //yf *= ihy;
+
+	   if(signui > 0.0)
+	   {
+		   xf = negativePart(xf);
+
+		   xb = positivePart(xb);
+
+		   yf = negativePart(yf);
+
+		   yb = positivePart(yb);
+
+		   zf = negativePart(zf);
+
+		   zb = positivePart(zb);
+
+	   }
+	   else if(signui < 0.0)
+	   {
+
+		   xb = negativePart(xb);
+
+		   xf = positivePart(xf);
+
+		   yb = negativePart(yb);
+
+		   zf = positivePart(yf);
+
+		   yb = negativePart(zb);
+
+		   zf = positivePart(zf);
 	   }
 
+
+	   if(xb - xf > 0.0)
+		   a = xb;
+	   else
+		   a = xf;
+
+	   if(yb - yf > 0.0)
+		   b = yb;
+	   else
+		   b = yf;
+
+	   if(zb - zf > 0.0)
+		   c = zb;
+	   else
+		   c = zf;
+
+	   d =(1.0 - sqrt(a*a+b*b+c*c)*ihx );
+
+	   if(Sign(d) > 0.0 )
+		   return Sign(u[cellIndex])*d;
+	   else
+		   return signui*d;
 }
 
 

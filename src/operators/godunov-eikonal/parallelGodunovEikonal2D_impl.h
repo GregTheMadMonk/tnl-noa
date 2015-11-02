@@ -65,7 +65,7 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Rea
 	if (x < -eps)
 		return (-1.0);
 
-	if ( eps == 0.0)
+	if ( x == 0.0)
 		return 0.0;
 
 	return sin(/*(M_PI*x)/(2.0*eps)	*/(M_PI/2.0)*(x/eps));
@@ -87,7 +87,7 @@ bool parallelGodunovEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Rea
 {
 
 	   const tnlString& meshFile = parameters.getParameter< tnlString >( "mesh" );
-	   MeshType originalMesh;
+	   //MeshType originalMesh;
 	   if( ! originalMesh.load( meshFile ) )
 	   {
 		   //cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
@@ -102,9 +102,9 @@ bool parallelGodunovEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Rea
 	   hy = originalMesh.getHy();
 	   ihy = 1.0/hy;
 
-	   epsilon = parameters. getParameter< double >( "epsilon" );
+	   this->epsilon = parameters. getParameter< double >( "epsilon" );
 
-	   epsilon *=sqrt( hx*hx + hy*hy );
+	   this->epsilon *=sqrt( hx*hx + hy*hy );
 
 //	   dofVector. setSize( this->mesh.getDofs() );
 
@@ -123,7 +123,7 @@ template< typename MeshReal,
 #endif
 tnlString parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index > :: getType()
 {
-   return tnlString( "tnlLinearDiffusion< " ) +
+   return tnlString( "parallelGodunovEikonalScheme< " ) +
           MeshType::getType() + ", " +
           ::getType< Real >() + ", " +
           ::getType< Index >() + " >";
@@ -162,171 +162,12 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 		return 0.0;
 	}
 
-	RealType acc = hx*hy*hx*hy;
 
-	RealType nabla, xb, xf, yb, yf, signui;
-
-	signui = sign(u[cellIndex],epsilon);
-
-
-	if(fabs(u[cellIndex]) < acc) return 0.0;
-
-	   if(signui > 0.0)
-	   {
-	/**/ /*  if(boundaryCondition & 2)
-			   xf = (u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])/hx;
-		   else *//*if(boundaryCondition & 4)
-			   xf = 0.0;
-		   else /**/if(coordinates.x() == mesh.getDimensions().x() - 1)
-			   xf = negativePart((u[mesh.template getCellNextToCell<-1,0>( cellIndex )] - u[cellIndex])*ihx);
-		   else
-			   xf = negativePart((u[mesh.template getCellNextToCell<1,0>( cellIndex )] - u[cellIndex])*ihx);
-
-	/**/ /*  if(boundaryCondition & 4)
-			   xb = (u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])*ihx;
-		   else *//*if(boundaryCondition & 2)
-			   xb = 0.0;
-		   else /**/if(coordinates.x() == 0)
-			   xb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<+1,0>( cellIndex )])*ihx);
-		   else
-			   xb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<-1,0>( cellIndex )])*ihx);
-
-	/**/  /* if(boundaryCondition & 1)
-			   yf = (u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])*ihy;
-		   else *//*if(boundaryCondition & 8)
-			   yf = 0.0;
-		   else /**/if(coordinates.y() == mesh.getDimensions().y() - 1)
-			   yf = negativePart((u[mesh.template getCellNextToCell<0,-1>( cellIndex )] - u[cellIndex])*ihy);
-		   else
-			   yf = negativePart((u[mesh.template getCellNextToCell<0,1>( cellIndex )] - u[cellIndex])*ihy);
-
-	/**/  /* if(boundaryCondition & 8)
-			   yb = (u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])*ihy;
-		   else *//*if(boundaryCondition & 1)
-			   yb = 0.0;
-		   else /**/if(coordinates.y() == 0)
-			   yb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,1>( cellIndex )])*ihy);
-		   else
-			   yb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,-1>( cellIndex )])*ihy);
-
-		   if(xb - xf > 0.0)
-			   xf = 0.0;
-		   else
-			   xb = 0.0;
-
-		   if(yb - yf > 0.0)
-			   yf = 0.0;
-		   else
-			   yb = 0.0;
-
-		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
-		   if(fabs(1.0-nabla) < acc)
-			   return 0.0;
-		   return signui*(1.0 - nabla);
-	   }
-	   else if (signui < 0.0)
-	   {
-
-	/**/  /* if(boundaryCondition & 2)
-			   xf = (u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])*ihx;
-		   else*//* if(boundaryCondition & 4)
-			   xf = 0.0;
-		   else /**/if(coordinates.x() == mesh.getDimensions().x() - 1)
-			   xf = positivePart((u[mesh.template getCellNextToCell<-1,0>( cellIndex )] - u[cellIndex])*ihx);
-		   else
-			   xf = positivePart((u[mesh.template getCellNextToCell<1,0>( cellIndex )] - u[cellIndex])*ihx);
-
-	/**/  /* if(boundaryCondition & 4)
-			   xb = (u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])*ihx;
-		   else*//* if(boundaryCondition & 2)
-			   xb = 0.0;
-		   else /**/if(coordinates.x() == 0)
-			   xb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<1,0>( cellIndex )])*ihx);
-		   else
-			   xb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<-1,0>( cellIndex )])*ihx);
-
-	/**/ /*  if(boundaryCondition & 1)
-			   yf = (u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])*ihy;
-		   else *//*if(boundaryCondition & 8)
-			   yf = 0.0;
-		   else /**/if(coordinates.y() == mesh.getDimensions().y() - 1)
-			   yf = positivePart((u[mesh.template getCellNextToCell<0,-1>( cellIndex )] - u[cellIndex])*ihy);
-		   else
-			   yf = positivePart((u[mesh.template getCellNextToCell<0,1>( cellIndex )] - u[cellIndex])*ihy);
-
-	/**/  /* if(boundaryCondition & 8)
-			   yb = (u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])*ihy;
-		   else*//* if(boundaryCondition & 1)
-			   yb = 0.0;
-		   else /**/if(coordinates.y() == 0)
-			   yb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,1>( cellIndex )])*ihy);
-		   else
-			   yb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,-1>( cellIndex )])*ihy);
-
-
-		   if(xb - xf > 0.0)
-			   xf = 0.0;
-		   else
-			   xb = 0.0;
-
-		   if(yb - yf > 0.0)
-			   yf = 0.0;
-		   else
-			   yb = 0.0;
-
-		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
-
-		   if(fabs(1.0-nabla) < acc)
-			   return 0.0;
-		   return signui*(1.0 - nabla);
-	   }
-	   else
-	   {
-		   return 0.0;
-	   }
-
-}
-
-
-
-
-
-
-
-
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-
-#ifdef HAVE_CUDA
-__device__
-#endif
-Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >:: getValueDev( const MeshType& mesh,
-          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType cellIndex,
-          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const CoordinatesType& coordinates,
-          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real* u,
-          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time,
-          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition) const
-{
-
-/*
-	if ( ((coordinates.x() == 0 && (boundaryCondition & 4)) or
-		 (coordinates.x() == mesh.getDimensions().x() - 1 && (boundaryCondition & 2)) or
-		 (coordinates.y() == 0 && (boundaryCondition & 8)) or
-		 (coordinates.y() == mesh.getDimensions().y() - 1  && (boundaryCondition & 1)))
-		)
-	{
-		return 0.0;
-	}
-
-*/
-	//RealType acc = hx*hy*hx*hy;
+	//-----------------------------------
 
 	RealType signui;
-	signui = sign(u[cellIndex],epsilon);
+	signui = sign(u[cellIndex],this->epsilon);
+
 
 #ifdef HAVE_CUDA
 	//printf("%d   :    %d ;;;; %d   :   %d  , %f \n",threadIdx.x, mesh.getDimensions().x() , threadIdx.y,mesh.getDimensions().y(), epsilon );
@@ -336,7 +177,7 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 	RealType xf = -u[cellIndex];
 	RealType yb = u[cellIndex];
 	RealType yf = -u[cellIndex];
-	RealType a,b;
+	RealType a,b,c;
 
 
 	   if(coordinates.x() == mesh.getDimensions().x() - 1)
@@ -399,7 +240,238 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 	   else
 		   b = yf;
 
-	   return signui*(1.0 - sqrt(a*a+b*b)*ihx );
+	   c =(1.0 - sqrt(a*a+b*b)*ihx );
+
+	   if(Sign(c) > 0.0 )
+		   return Sign(u[cellIndex])*c;
+	   else
+		   return signui*c;
+
+	   //--------------------------------------------------
+
+//
+//
+//
+//	RealType acc = hx*hy*hx*hy;
+//
+//	RealType nabla, xb, xf, yb, yf, signui;
+//
+//	signui = sign(u[cellIndex],this->epsilon);
+//
+//
+//	//if(fabs(u[cellIndex]) < acc) return 0.0;
+//
+//	   if(signui > 0.0)
+//	   {
+//	/**/ /*  if(boundaryCondition & 2)
+//			   xf = (u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])/hx;
+//		   else *//*if(boundaryCondition & 4)
+//			   xf = 0.0;
+//		   else /**/if(coordinates.x() == mesh.getDimensions().x() - 1)
+//			   xf = negativePart((u[mesh.template getCellNextToCell<-1,0>( cellIndex )] - u[cellIndex])*ihx);
+//		   else
+//			   xf = negativePart((u[mesh.template getCellNextToCell<1,0>( cellIndex )] - u[cellIndex])*ihx);
+//
+//	/**/ /*  if(boundaryCondition & 4)
+//			   xb = (u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])*ihx;
+//		   else *//*if(boundaryCondition & 2)
+//			   xb = 0.0;
+//		   else /**/if(coordinates.x() == 0)
+//			   xb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<+1,0>( cellIndex )])*ihx);
+//		   else
+//			   xb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<-1,0>( cellIndex )])*ihx);
+//
+//	/**/  /* if(boundaryCondition & 1)
+//			   yf = (u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])*ihy;
+//		   else *//*if(boundaryCondition & 8)
+//			   yf = 0.0;
+//		   else /**/if(coordinates.y() == mesh.getDimensions().y() - 1)
+//			   yf = negativePart((u[mesh.template getCellNextToCell<0,-1>( cellIndex )] - u[cellIndex])*ihy);
+//		   else
+//			   yf = negativePart((u[mesh.template getCellNextToCell<0,1>( cellIndex )] - u[cellIndex])*ihy);
+//
+//	/**/  /* if(boundaryCondition & 8)
+//			   yb = (u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])*ihy;
+//		   else *//*if(boundaryCondition & 1)
+//			   yb = 0.0;
+//		   else /**/if(coordinates.y() == 0)
+//			   yb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,1>( cellIndex )])*ihy);
+//		   else
+//			   yb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,-1>( cellIndex )])*ihy);
+//
+//		   if(xb - xf > 0.0)
+//			   xf = 0.0;
+//		   else
+//			   xb = 0.0;
+//
+//		   if(yb - yf > 0.0)
+//			   yf = 0.0;
+//		   else
+//			   yb = 0.0;
+//
+//		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
+//		   if(fabs(1.0-nabla) < acc)
+//			   return 0.0;
+//		   return signui*(1.0 - nabla);
+//	   }
+//	   else if (signui < 0.0)
+//	   {
+//
+//	/**/  /* if(boundaryCondition & 2)
+//			   xf = (u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])*ihx;
+//		   else*//* if(boundaryCondition & 4)
+//			   xf = 0.0;
+//		   else /**/if(coordinates.x() == mesh.getDimensions().x() - 1)
+//			   xf = positivePart((u[mesh.template getCellNextToCell<-1,0>( cellIndex )] - u[cellIndex])*ihx);
+//		   else
+//			   xf = positivePart((u[mesh.template getCellNextToCell<1,0>( cellIndex )] - u[cellIndex])*ihx);
+//
+//	/**/  /* if(boundaryCondition & 4)
+//			   xb = (u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])*ihx;
+//		   else*//* if(boundaryCondition & 2)
+//			   xb = 0.0;
+//		   else /**/if(coordinates.x() == 0)
+//			   xb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<1,0>( cellIndex )])*ihx);
+//		   else
+//			   xb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<-1,0>( cellIndex )])*ihx);
+//
+//	/**/ /*  if(boundaryCondition & 1)
+//			   yf = (u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])*ihy;
+//		   else *//*if(boundaryCondition & 8)
+//			   yf = 0.0;
+//		   else /**/if(coordinates.y() == mesh.getDimensions().y() - 1)
+//			   yf = positivePart((u[mesh.template getCellNextToCell<0,-1>( cellIndex )] - u[cellIndex])*ihy);
+//		   else
+//			   yf = positivePart((u[mesh.template getCellNextToCell<0,1>( cellIndex )] - u[cellIndex])*ihy);
+//
+//	/**/  /* if(boundaryCondition & 8)
+//			   yb = (u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])*ihy;
+//		   else*//* if(boundaryCondition & 1)
+//			   yb = 0.0;
+//		   else /**/if(coordinates.y() == 0)
+//			   yb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,1>( cellIndex )])*ihy);
+//		   else
+//			   yb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,-1>( cellIndex )])*ihy);
+//
+//
+//		   if(xb - xf > 0.0)
+//			   xf = 0.0;
+//		   else
+//			   xb = 0.0;
+//
+//		   if(yb - yf > 0.0)
+//			   yf = 0.0;
+//		   else
+//			   yb = 0.0;
+//
+//		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
+//
+//		   if(fabs(1.0-nabla) < acc)
+//			   return 0.0;
+//		   return signui*(1.0 - nabla);
+//	   }
+//	   else
+//	   {
+//		   return 0.0;
+//	   }
+
+}
+
+
+
+
+
+
+
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+
+#ifdef HAVE_CUDA
+__device__
+#endif
+Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >:: getValueDev( const MeshType& mesh,
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType cellIndex,
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const CoordinatesType& coordinates,
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real* u,
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time,
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition) const
+{
+
+	RealType signui = sign(u[cellIndex],this->epsilon);
+
+	RealType xb = u[cellIndex];
+	RealType xf = -u[cellIndex];
+	RealType yb = u[cellIndex];
+	RealType yf = -u[cellIndex];
+	RealType a,b,c;
+
+
+	   if(coordinates.x() == mesh.getDimensions().x() - 1)
+		   xf += u[mesh.template getCellNextToCell<-1,0>( cellIndex )];
+	   else
+		   xf += u[mesh.template getCellNextToCell<1,0>( cellIndex )];
+
+	   if(coordinates.x() == 0)
+		   xb -= u[mesh.template getCellNextToCell<1,0>( cellIndex )];
+	   else
+		   xb -= u[mesh.template getCellNextToCell<-1,0>( cellIndex )];
+
+	   if(coordinates.y() == mesh.getDimensions().y() - 1)
+		   yf += u[mesh.template getCellNextToCell<0,-1>( cellIndex )];
+	   else
+		   yf += u[mesh.template getCellNextToCell<0,1>( cellIndex )];
+
+	   if(coordinates.y() == 0)
+		   yb -= u[mesh.template getCellNextToCell<0,1>( cellIndex )];
+	   else
+		   yb -= u[mesh.template getCellNextToCell<0,-1>( cellIndex )];
+
+
+	   if(signui > 0.0)
+	   {
+		   xf = negativePart(xf);
+
+		   xb = positivePart(xb);
+
+		   yf = negativePart(yf);
+
+		   yb = positivePart(yb);
+
+	   }
+	   else if(signui < 0.0)
+	   {
+
+		   xb = negativePart(xb);
+
+		   xf = positivePart(xf);
+
+		   yb = negativePart(yb);
+
+		   yf = positivePart(yf);
+	   }
+
+
+	   if(xb - xf > 0.0)
+		   a = xb;
+	   else
+		   a = xf;
+
+	   if(yb - yf > 0.0)
+		   b = yb;
+	   else
+		   b = yf;
+
+	   c =(1.0 - sqrt(a*a+b*b)*ihx );
+
+	   if(c > 0.0 )
+		   return Sign(u[cellIndex])*c;
+	   else
+		   return signui*c;
 }
 
 
