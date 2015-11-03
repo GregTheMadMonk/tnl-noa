@@ -16,7 +16,10 @@
 
 
 #include "MainBuildConfig.h"
-#include "tnlFastSweeping.h"
+	//for HOST versions:
+//#include "tnlFastSweeping.h"
+	//for DEVICE versions:
+#include "tnlFastSweeping_CUDA.h"
 #include "fastSweepingConfig.h"
 #include <solvers/tnlConfigTags.h>
 
@@ -46,6 +49,7 @@ int main( int argc, char* argv[] )
     	cerr << "Solver failed to initialize." << endl;
    		return EXIT_FAILURE;
    }
+    checkCudaDevice;
    cout << "-------------------------------------------------------------" << endl;
    cout << "Starting solver..." << endl;
    solver.run();

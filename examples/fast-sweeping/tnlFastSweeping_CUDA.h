@@ -24,9 +24,7 @@
 #include <limits.h>
 #include <core/tnlDevice.h>
 #include <ctime>
-#ifdef HAVE_OPENMP
-#include <omp.h>
-#endif
+
 
 
 
@@ -58,23 +56,26 @@ public:
 
 
 
-	static tnlString getType();
-	bool init( const tnlParameterContainer& parameters );
+	__host__ static tnlString getType();
+	__host__ bool init( const tnlParameterContainer& parameters );
+	__host__ bool run();
 
-	bool initGrid();
-	bool run();
+#ifdef HAVE_CUDA
+	__device__ bool initGrid();
+	__device__ void updateValue(const Index i, const Index j);
+	__device__ Real fabsMin(const Real x, const Real y);
 
-	//for single core version use this implementation:
-	//void updateValue(const Index i, const Index j);
-	//for parallel version use this one instead:
-	void updateValue(const Index i, const Index j, DofVectorType* grid);
+	tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >* cudaSolver;
+	double* cudaDofVector;
+	double* cudaDofVector2;
+	int counter;
+#endif
 
-	Real fabsMin(const Real x, const Real y);
-
+	MeshType Mesh;
 
 protected:
 
-	MeshType Mesh;
+
 
 	bool exactInput;
 
@@ -82,16 +83,22 @@ protected:
 
 	RealType h;
 
-#ifdef HAVE_OPENMP
-//	omp_lock_t* gridLock;
-#endif
-
 
 };
 
-	//for single core version use this implementation:
-//#include "tnlFastSweeping2D_impl.h"
-	//for parallel version use this one instead:
- #include "tnlFastSweeping2D_openMP_impl.h"
+
+
+#ifdef HAVE_CUDA
+template<int sweep_t>
+__global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int i);
+//__global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int i);
+
+__global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
+#endif
+
+/*various implementtions.... choose one*/
+//#include "tnlFastSweeping2D_CUDA_impl.h"
+//#include "tnlFastSweeping2D_CUDA_v2_impl.h"
+#include "tnlFastSweeping2D_CUDA_v3_impl.h"
 
 #endif /* TNLFASTSWEEPING_H_ */

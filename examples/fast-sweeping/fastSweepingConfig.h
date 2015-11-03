@@ -30,6 +30,7 @@ class fastSweepingConfig
          config.addEntry        < tnlString > ( "problem-name", "This defines particular problem.", "fast-sweeping" );
          config.addRequiredEntry        < tnlString > ( "initial-condition", "Initial condition for solver");
          config.addEntry       < tnlString > ( "mesh", "Name of mesh.", "mesh.tnl" );
+         config.addEntry       < tnlString > ( "exact-input", "Are the function values near the curve equal to the SDF? (yes/no)", "no" );
       }
 };
 

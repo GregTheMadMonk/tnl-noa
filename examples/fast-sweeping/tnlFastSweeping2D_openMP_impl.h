@@ -59,12 +59,20 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 	h = Mesh.getHx();
 
+
 	const tnlString& exact_input = parameters.getParameter< tnlString >( "exact-input" );
 
 	if(exact_input == "no")
 		exactInput=false;
 	else
 		exactInput=true;
+
+#ifdef HAVE_OPENMP
+//	gridLock = (omp_lock_t*) malloc(sizeof(omp_lock_t)*Mesh.getDimensions().x()*Mesh.getDimensions().y());
+//
+//	for(int i = 0; i < Mesh.getDimensions().x()*Mesh.getDimensions().y(); i++)
+//			omp_init_lock(&gridLock[i]);
+#endif
 
 	return initGrid();
 }
@@ -79,7 +87,6 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 {
 
 	Real tmp = 0.0;
-	Real ax=0.5/sqrt(2.0);
 
 	if(!exactInput)
 	{
@@ -93,6 +100,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 		for(Index j = 1; j < Mesh.getDimensions().y()-1; j++)
 		{
 			 tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+
 
 			if(tmp == 0.0)
 			{}
@@ -226,45 +234,91 @@ template< typename MeshReal,
 bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: run()
 {
 
+	DofVectorType d2,d3,d4;
+	d2.setLike(dofVector);
+	d2=dofVector;
+	d3.setLike(dofVector);
+	d3=dofVector;
+	d4.setLike(dofVector);
+	d4=dofVector;
+
+
+#ifdef HAVE_OPENMP
+#pragma omp parallel sections num_threads(4)
+	{
+	{
+#endif
+
 	for(Index i = 0; i < Mesh.getDimensions().x(); i++)
 	{
 		for(Index j = 0; j < Mesh.getDimensions().y(); j++)
 		{
-			updateValue(i,j);
+			updateValue(i,j,&dofVector);
 		}
 	}
 
 /*---------------------------------------------------------------------------------------------------------------------------*/
-
+#ifdef HAVE_OPENMP
+	}
+#pragma omp section
+	{
+#endif
 	for(Index i = Mesh.getDimensions().x() - 1; i > -1; i--)
 	{
 		for(Index j = 0; j < Mesh.getDimensions().y(); j++)
 		{
-			updateValue(i,j);
+			updateValue(i,j,&d2);
 		}
 	}
 
 /*---------------------------------------------------------------------------------------------------------------------------*/
-
+#ifdef HAVE_OPENMP
+	}
+#pragma omp section
+	{
+#endif
 	for(Index i = Mesh.getDimensions().x() - 1; i > -1; i--)
 	{
 		for(Index j = Mesh.getDimensions().y() - 1; j > -1; j--)
 		{
-			updateValue(i,j);
+			updateValue(i,j, &d3);
 		}
 	}
 
 /*---------------------------------------------------------------------------------------------------------------------------*/
+#ifdef HAVE_OPENMP
+	}
+#pragma omp section
+	{
+#endif
 	for(Index i = 0; i < Mesh.getDimensions().x(); i++)
 	{
 		for(Index j = Mesh.getDimensions().y() - 1; j > -1; j--)
 		{
-			updateValue(i,j);
+			updateValue(i,j, &d4);
 		}
 	}
 
 /*---------------------------------------------------------------------------------------------------------------------------*/
+#ifdef HAVE_OPENMP
+	}
+	}
+#endif
 
+
+#ifdef HAVE_OPENMP
+#pragma omp parallel for num_threads(4) schedule(dynamic)
+#endif
+	for(Index i = 0; i < Mesh.getDimensions().x(); i++)
+	{
+		for(Index j = Mesh.getDimensions().y() - 1; j > -1; j--)
+		{
+			int index = Mesh.getCellIndex(CoordinatesType(i,j));
+			dofVector[index] = fabsMin(dofVector[index], d2[index]);
+			dofVector[index] = fabsMin(dofVector[index], d3[index]);
+			dofVector[index] = fabsMin(dofVector[index], d4[index]);
+		}
+	}
 
 	dofVector.save("u-00001.tnl");
 
@@ -277,30 +331,30 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: updateValue( Index i, Index j)
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: updateValue( Index i, Index j, DofVectorType* grid)
 {
 	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	Real value = dofVector[index];
+	Real value = (*grid)[index];
 	Real a,b, tmp;
 
 	if( i == 0 )
-		a = dofVector[Mesh.template getCellNextToCell<1,0>(index)];
+		a = (*grid)[Mesh.template getCellNextToCell<1,0>(index)];
 	else if( i == Mesh.getDimensions().x() - 1 )
-		a = dofVector[Mesh.template getCellNextToCell<-1,0>(index)];
+		a = (*grid)[Mesh.template getCellNextToCell<-1,0>(index)];
 	else
 	{
-		a = fabsMin( dofVector[Mesh.template getCellNextToCell<-1,0>(index)],
-				 dofVector[Mesh.template getCellNextToCell<1,0>(index)] );
+		a = fabsMin( (*grid)[Mesh.template getCellNextToCell<-1,0>(index)],
+				 (*grid)[Mesh.template getCellNextToCell<1,0>(index)] );
 	}
 
 	if( j == 0 )
-		b = dofVector[Mesh.template getCellNextToCell<0,1>(index)];
+		b = (*grid)[Mesh.template getCellNextToCell<0,1>(index)];
 	else if( j == Mesh.getDimensions().y() - 1 )
-		b = dofVector[Mesh.template getCellNextToCell<0,-1>(index)];
+		b = (*grid)[Mesh.template getCellNextToCell<0,-1>(index)];
 	else
 	{
-		b = fabsMin( dofVector[Mesh.template getCellNextToCell<0,-1>(index)],
-				 dofVector[Mesh.template getCellNextToCell<0,1>(index)] );
+		b = fabsMin( (*grid)[Mesh.template getCellNextToCell<0,-1>(index)],
+				 (*grid)[Mesh.template getCellNextToCell<0,1>(index)] );
 	}
 
 
@@ -309,8 +363,13 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	else
 		tmp = 0.5 * (a + b + Sign(value)*sqrt(2.0 * h * h - (a - b) * (a - b) ) );
 
-
-	dofVector[index]  = fabsMin(value, tmp);
+#ifdef HAVE_OPENMP
+//	omp_set_lock(&gridLock[index]);
+#endif
+	(*grid)[index]  = fabsMin(value, tmp);
+#ifdef HAVE_OPENMP
+//	omp_unset_lock(&gridLock[index]);
+#endif
 }
 
 
