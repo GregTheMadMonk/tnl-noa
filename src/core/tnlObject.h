@@ -64,12 +64,12 @@ class tnlObject
    /****
     *  Name getter
     */
-    void setName( const tnlString& name );
+    //void setName( const tnlString& name );
 
    /****
     *  Name getter
     */
-   const tnlString& getName() const;
+   //const tnlString& getName() const;
 
    //! Method for saving the object to a file as a binary data
    virtual bool save( tnlFile& file ) const;
@@ -87,7 +87,7 @@ class tnlObject
    protected:
 
    //! Object name
-   tnlString name;
+   //tnlString name;
 };
 
 bool getObjectType( tnlFile& file, tnlString& type );

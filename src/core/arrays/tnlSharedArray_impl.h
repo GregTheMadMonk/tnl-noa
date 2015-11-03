@@ -104,11 +104,9 @@ void tnlSharedArray< Element, Device, Index > :: bind( Element* data,
 {
    tnlAssert( size >= 0,
               cerr << "You try to set size of tnlSharedArray to negative value."
-                   << "Name: " << this -> getName() << endl
                    << "New size: " << size << endl );
    tnlAssert( data != 0,
-              cerr << "You try to use null pointer to data for tnlSharedArray."
-                   << "Name: " << this -> getName() );
+              cerr << "You try to use null pointer to data for tnlSharedArray." );
 
    this -> size = size;
    this -> data = data;
@@ -184,8 +182,7 @@ template< typename Element,
 void tnlSharedArray< Element, Device, Index > :: setElement( const Index i, const Element& x )
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
-              cerr << "Wrong index for setElement method in tnlSharedArray with name "
-                   << this -> getName()
+              cerr << "Wrong index for setElement method in tnlSharedArray "
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    return tnlArrayOperations< Device >::setMemoryElement( & ( this -> data[ i ] ), x );
@@ -197,8 +194,7 @@ template< typename Element,
 Element tnlSharedArray< Element, Device, Index > :: getElement( Index i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
-              cerr << "Wrong index for getElement method in tnlSharedArray with name "
-                   << this -> getName()
+              cerr << "Wrong index for getElement method in tnlSharedArray "
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    return tnlArrayOperations< Device >::getMemoryElement( &( this -> data[ i ] ) );
@@ -211,8 +207,7 @@ __cuda_callable__
 Element& tnlSharedArray< Element, Device, Index > :: operator[] ( Index i )
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
-              cerr << "Wrong index for operator[] in tnlSharedArray with name "
-                   << this -> getName()
+              cerr << "Wrong index for operator[] in tnlSharedArray "
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    return this->data[ i ];
@@ -225,8 +220,7 @@ __cuda_callable__
 const Element& tnlSharedArray< Element, Device, Index > :: operator[] ( Index i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
-              cerr << "Wrong index for operator[] in tnlSharedArray with name "
-                   << this -> getName()
+              cerr << "Wrong index for operator[] in tnlSharedArray "
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    return this->data[ i ];
@@ -239,9 +233,7 @@ tnlSharedArray< Element, Device, Index >&
     tnlSharedArray< Element, Device, Index > :: operator = ( const tnlSharedArray< Element, Device, Index >& array )
 {
    tnlAssert( array. getSize() == this -> getSize(),
-           cerr << "Source name: " << array. getName() << endl
-                << "Source size: " << array. getSize() << endl
-                << "Target name: " << this -> getName() << endl
+           cerr << "Source size: " << array. getSize() << endl
                 << "Target size: " << this -> getSize() << endl );
    tnlArrayOperations< Device > ::
    template copyMemory< Element,
@@ -260,9 +252,7 @@ template< typename Element,
 tnlSharedArray< Element, Device, Index >& tnlSharedArray< Element, Device, Index > :: operator = ( const Array& array )
 {
    tnlAssert( array. getSize() == this -> getSize(),
-           cerr << "Source name: " << array. getName() << endl
-                << "Source size: " << array. getSize() << endl
-                << "Target name: " << this -> getName() << endl
+           cerr << "Source size: " << array. getSize() << endl
                 << "Target size: " << this -> getSize() << endl );
    tnlArrayOperations< typename Array :: DeviceType,
                        Device > ::
@@ -307,8 +297,7 @@ template< typename Element,
           typename Index >
 void tnlSharedArray< Element, Device, Index > :: setValue( const Element& e )
 {
-   tnlAssert( this -> size != 0,
-              cerr << "Array name is " << this -> getName() );
+   tnlAssert( this -> size != 0, );
    tnlArrayOperations< Device >::template setMemory< Element, Index >
                               ( this -> getData(), e, this -> getSize() );
 
@@ -354,7 +343,7 @@ template< typename Element,
 bool tnlSharedArray< Element, Device, Index > :: save( tnlFile& file ) const
 {
    tnlAssert( this -> size != 0,
-              cerr << "You try to save empty array. Its name is " << this -> getName() );
+              cerr << "You try to save empty array." << endl );
    if( ! tnlObject :: save( file ) )
       return false;
 #ifdef HAVE_NOT_CXX11
@@ -365,8 +354,7 @@ bool tnlSharedArray< Element, Device, Index > :: save( tnlFile& file ) const
       return false;
    if( ! file. write< Element, Device, Index >( this -> data, this -> size ) )
    {
-      cerr << "I was not able to WRITE tnlSharedArray " << this -> getName()
-           << " with size " << this -> getSize() << endl;
+      cerr << "I was not able to WRITE tnlSharedArray with size " << this -> getSize() << endl;
       return false;
    }
    return true;
@@ -398,16 +386,14 @@ bool tnlSharedArray< Element, Device, Index > :: load( tnlFile& file )
    if( _size != this->size )
    {
       cerr << "Error: The size " << _size << " of the data to be load is different from the " <<
-               "allocated array. This is not possible in the shared array ( in " << this->getName() <<
-               " )." << endl;
+               "allocated array. This is not possible in the shared array." << endl;
       return false;
    }
    if( _size )
    {
       if( ! file. read< Element, Device, Index >( this -> data, this -> size ) )
       {
-         cerr << "I was not able to READ tnlSharedArray " << this -> getName()
-              << " with size " << this -> getSize() << endl;
+         cerr << "I was not able to READ tnlSharedArray with size " << this -> getSize() << endl;
          return false;
       }
    }
