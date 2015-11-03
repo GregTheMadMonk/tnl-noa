@@ -92,7 +92,7 @@ template< typename Real,
           int SliceSize >
 Index tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRowLength( const IndexType row ) const
 {
-   const IndexType slice = roundUpDivision( row, SliceSize );
+   const IndexType slice = row / SliceSize;
    return this->sliceCompressedRowsLengths.getElement( slice );
 }
 
@@ -449,7 +449,7 @@ getRow( const IndexType rowIndex )
 {
    Index rowBegin, rowEnd, step;
    DeviceDependentCode::initRowTraverseFast( *this, rowIndex, rowBegin, rowEnd, step );
-   const IndexType slice = roundUpDivision( rowIndex, SliceSize );
+   const IndexType slice = rowIndex / SliceSize;
    return MatrixRow( &this->columnIndexes[ rowBegin ],
                      &this->values[ rowBegin ],
                      this->sliceCompressedRowsLengths[ slice ],
@@ -467,7 +467,7 @@ getRow( const IndexType rowIndex ) const
 {
    Index rowBegin, rowEnd, step;
    DeviceDependentCode::initRowTraverseFast( *this, rowIndex, rowBegin, rowEnd, step );
-   const IndexType slice = roundUpDivision( rowIndex, SliceSize );
+   const IndexType slice = rowIndex / SliceSize;
    return MatrixRow( &this->columnIndexes[ rowBegin ],
                      &this->values[ rowBegin ],
                      this->sliceCompressedRowsLengths[ slice ],
