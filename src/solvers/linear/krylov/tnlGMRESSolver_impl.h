@@ -21,16 +21,7 @@
 template< typename Matrix,
            typename Preconditioner >
 tnlGMRESSolver< Matrix, Preconditioner > :: tnlGMRESSolver()
-: tnlObject( "no-name" ),
-  _r( "tnlGMRESSolver::_r" ),
-  _w( "tnlGMRESSolver::_w" ),
-  _v( "tnlGMRESSolver::_v" ),
-  _M_tmp( "tnlGMRESSolver::_M_tmp" ),
-  _s( "tnlGMRESSolver::_s" ),
-  _cs( "tnlGMRESSolver::_cs" ),
-  _sn( "tnlGMRESSolver::_sn" ),
-  _H( "tnlGMRESSolver:_H" ),
-  size( 0 ),
+: size( 0 ),
   restarting( 10 ),
   matrix( 0 ),
   preconditioner( 0 )

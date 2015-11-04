@@ -155,8 +155,8 @@ bool tnlMultiVector< 2, Real, Device, Index > :: operator == ( const MultiVector
    // TODO: Static assert on dimensions
    tnlAssert( this -> getDimensions() == Vector. getDimensions(),
               cerr << "You are attempting to compare two Vectors with different dimensions." << endl
-                   << "First Vector dimensions are ( " << this -> getDimensions() << " )" << endl
-                   << "Second Vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
+                   << "First vector dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "Second vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
    return tnlVector< Real, Device, Index > :: operator == ( Vector );
 }
 
@@ -174,8 +174,8 @@ tnlMultiVector< 2, Real, Device, Index >&
    // TODO: Static assert on dimensions
    tnlAssert( this -> getDimensions() == Vector. getDimensions(),
               cerr << "You are attempting to assign two Vectors with different dimensions." << endl
-                   << "First Vector dimensions are ( " << this -> getDimensions() << " )" << endl
-                   << "Second Vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
+                   << "First vector dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "Second vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
    tnlVector< Real, Device, Index > :: operator = ( Vector );
    return ( *this );
 }
@@ -188,8 +188,8 @@ tnlMultiVector< 2, Real, Device, Index >&
    // TODO: Static assert on dimensions
    tnlAssert( this -> getDimensions() == Vector. getDimensions(),
               cerr << "You are attempting to assign two Vectors with different dimensions." << endl
-                   << "First Vector dimensions are ( " << this -> getDimensions() << " )" << endl
-                   << "Second Vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
+                   << "First vector dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "Second vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
    tnlVector< Real, Device, Index > :: operator = ( Vector );
    return ( *this );
 }
