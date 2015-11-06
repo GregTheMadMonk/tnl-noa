@@ -42,12 +42,6 @@ tnlChunkedEllpackMatrix< Real, Device, Index >::tnlChunkedEllpackMatrix()
   desiredChunkSize( 16 ),
   numberOfSlices( 0 )
 {
-   this->values.setName( "tnlChunkedEllpackMatrix::values" );
-   this->columnIndexes.setName( "tnlChunkedEllpackMatrix::columnIndexes" );
-   rowToChunkMapping.setName( "tnlChunkedEllpackMatrix::rowToChunkMapping" );
-   rowToSliceMapping.setName( "tnlChunkedEllpackMatrix::rowToSliceMapping" );
-   rowPointers.setName( "tnlChunkedEllpackMatrix::rowPointers" );
-   slices.setName( "tnlChunkedEllpackMatrix::slices" );
 };
 
 template< typename Real,

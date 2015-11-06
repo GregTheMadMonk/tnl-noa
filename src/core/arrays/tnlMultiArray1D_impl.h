@@ -155,10 +155,8 @@ bool tnlMultiArray< 1, Element, Device, Index > :: operator == ( const MultiArra
    // TODO: Static assert on dimensions
    tnlAssert( this -> getDimensions() == array. getDimensions(),
               cerr << "You are attempting to compare two arrays with different dimensions." << endl
-                   << "First array name is " << this -> getName()
-                   << " dimensions are ( " << this -> getDimensions() << " )" << endl
-                   << "Second array is " << array. getName()
-                   << " dimensions are ( " << array. getDimensions() << " )" << endl; );
+                   << "First array dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "Second array dimensions are ( " << array. getDimensions() << " )" << endl; );
    return tnlArray< Element, Device, Index > :: operator == ( array );
 }
 

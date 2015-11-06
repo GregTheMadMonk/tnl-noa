@@ -378,14 +378,10 @@ void tnlDenseMatrix< Real, Device, Index >::vectorProduct( const InVector& inVec
 {
    tnlAssert( this->getColumns() == inVector.getSize(),
             cerr << "Matrix columns: " << this->getColumns() << endl
-                 << "Matrix name: " << this->getName() << endl
-                 << "Vector size: " << inVector.getSize() << endl
-                 << "Vector name: " << inVector.getName() << endl );
+                 << "Vector size: " << inVector.getSize() << endl );
    tnlAssert( this->getRows() == outVector.getSize(),
                cerr << "Matrix rows: " << this->getRows() << endl
-                    << "Matrix name: " << this->getName() << endl
-                    << "Vector size: " << outVector.getSize() << endl
-                    << "Vector name: " << outVector.getName() << endl );
+                    << "Vector size: " << outVector.getSize() << endl );
 
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
@@ -402,10 +398,8 @@ void tnlDenseMatrix< Real, Device, Index >::addMatrix( const Matrix& matrix,
               this->getRows() == matrix.getRows(),
             cerr << "This matrix columns: " << this->getColumns() << endl
                  << "This matrix rows: " << this->getRows() << endl
-                 << "This matrix name: " << this->getName() << endl
                  << "That matrix columns: " << matrix.getColumns() << endl
-                 << "That matrix rows: " << matrix.getRows() << endl
-                 << "That matrix name: " << matrix.getName() << endl );
+                 << "That matrix rows: " << matrix.getRows() << endl );
 
    if( thisMatrixMultiplicator == 1.0 )
       this->values.addVector( matrix.values, matrixMultiplicator );

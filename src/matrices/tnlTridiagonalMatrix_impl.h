@@ -419,14 +419,10 @@ void tnlTridiagonalMatrix< Real, Device, Index >::vectorProduct( const InVector&
 {
    tnlAssert( this->getColumns() == inVector.getSize(),
             cerr << "Matrix columns: " << this->getColumns() << endl
-                 << "Matrix name: " << this->getName() << endl
-                 << "Vector size: " << inVector.getSize() << endl
-                 << "Vector name: " << inVector.getName() << endl );
+                 << "Vector size: " << inVector.getSize() << endl );
    tnlAssert( this->getRows() == outVector.getSize(),
                cerr << "Matrix rows: " << this->getRows() << endl
-                    << "Matrix name: " << this->getName() << endl
-                    << "Vector size: " << outVector.getSize() << endl
-                    << "Vector name: " << outVector.getName() << endl );
+                    << "Vector size: " << outVector.getSize() << endl );
 
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
@@ -441,8 +437,7 @@ void tnlTridiagonalMatrix< Real, Device, Index >::addMatrix( const tnlTridiagona
 {
    tnlAssert( this->getRows() == matrix.getRows(),
             cerr << "This matrix columns: " << this->getColumns() << endl
-                 << "This matrix rows: " << this->getRows() << endl
-                 << "This matrix name: " << this->getName() << endl );
+                 << "This matrix rows: " << this->getRows() << endl );
 
    if( thisMatrixMultiplicator == 1.0 )
       this->values.addVector( matrix.values, matrixMultiplicator );
@@ -551,7 +546,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::save( tnlFile& file ) const
    if( ! tnlMatrix< Real, Device, Index >::save( file ) ||
        ! this->values.save( file ) )
    {
-      cerr << "Unable to save the tridiagonal matrix " << this->getName() << "." << endl;
+      cerr << "Unable to save a tridiagonal matrix." << endl;
       return false;
    }
    return true;
@@ -565,7 +560,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::load( tnlFile& file )
    if( ! tnlMatrix< Real, Device, Index >::load( file ) ||
        ! this->values.load( file ) )
    {
-      cerr << "Unable to save the tridiagonal matrix " << this->getName() << "." << endl;
+      cerr << "Unable to save a tridiagonal matrix." << endl;
       return false;
    }
    return true;

@@ -512,14 +512,10 @@ void tnlMultidiagonalMatrix< Real, Device, Index >::vectorProduct( const InVecto
 {
    tnlAssert( this->getColumns() == inVector.getSize(),
             cerr << "Matrix columns: " << this->getColumns() << endl
-                 << "Matrix name: " << this->getName() << endl
-                 << "Vector size: " << inVector.getSize() << endl
-                 << "Vector name: " << inVector.getName() << endl );
+                 << "Vector size: " << inVector.getSize() << endl );
    tnlAssert( this->getRows() == outVector.getSize(),
                cerr << "Matrix rows: " << this->getRows() << endl
-                    << "Matrix name: " << this->getName() << endl
-                    << "Vector size: " << outVector.getSize() << endl
-                    << "Vector name: " << outVector.getName() << endl );
+                    << "Vector size: " << outVector.getSize() << endl );
 
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
@@ -572,8 +568,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: performSORIteration( const
 {
    tnlAssert( row >=0 && row < this->getRows(),
               cerr << "row = " << row
-                   << " this->getRows() = " << this->getRows()
-                   << " this->getName() = " << this->getName() << endl );
+                   << " this->getRows() = " << this->getRows() << endl );
 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
@@ -595,7 +590,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: performSORIteration( const
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-      cerr << "There is zero on the diagonal in " << row << "-th row of thge matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
+      cerr << "There is zero on the diagonal in " << row << "-th row of thge matrix. I cannot perform SOR iteration." << endl;
       return false;
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
@@ -668,12 +663,10 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::getElementIndex( const Index
 {
    tnlAssert( row >=0 && row < this->rows,
             cerr << "row = " << row
-                 << " this->rows = " << this->rows
-                 << " this->getName() = " << this->getName() << endl );
+                 << " this->rows = " << this->rows << endl );
    tnlAssert( column >=0 && column < this->columns,
             cerr << "column = " << column
-                 << " this->columns = " << this->columns
-                 << " this->getName() = " << this->getName() << endl );
+                 << " this->columns = " << this->columns << endl );
 
    typedef tnlMultidiagonalMatrixDeviceDependentCode< Device > DDCType;
    IndexType i( 0 );
