@@ -26,13 +26,6 @@ tnlMultiVector< 2, Real, Device, Index > :: tnlMultiVector()
 }
 
 template< typename Real, typename Device, typename Index >
-tnlMultiVector< 2, Real, Device, Index > :: tnlMultiVector( const tnlString& name )
-{
-   this -> setName( name );
-}
-
-
-template< typename Real, typename Device, typename Index >
 tnlString tnlMultiVector< 2, Real, Device, Index > :: getType()
 {
    return tnlString( "tnlMultiVector< ") +
@@ -155,10 +148,8 @@ bool tnlMultiVector< 2, Real, Device, Index > :: operator == ( const MultiVector
    // TODO: Static assert on dimensions
    tnlAssert( this -> getDimensions() == Vector. getDimensions(),
               cerr << "You are attempting to compare two Vectors with different dimensions." << endl
-                   << "First Vector name is " << this -> getName()
-                   << " dimensions are ( " << this -> getDimensions() << " )" << endl
-                   << "Second Vector is " << Vector. getName()
-                   << " dimensions are ( " << Vector. getDimensions() << " )" << endl; );
+                   << "First vector dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "Second vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
    return tnlVector< Real, Device, Index > :: operator == ( Vector );
 }
 
@@ -176,10 +167,8 @@ tnlMultiVector< 2, Real, Device, Index >&
    // TODO: Static assert on dimensions
    tnlAssert( this -> getDimensions() == Vector. getDimensions(),
               cerr << "You are attempting to assign two Vectors with different dimensions." << endl
-                   << "First Vector name is " << this -> getName()
-                   << " dimensions are ( " << this -> getDimensions() << " )" << endl
-                   << "Second Vector is " << Vector. getName()
-                   << " dimensions are ( " << Vector. getDimensions() << " )" << endl; );
+                   << "First vector dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "Second vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
    tnlVector< Real, Device, Index > :: operator = ( Vector );
    return ( *this );
 }
@@ -192,10 +181,8 @@ tnlMultiVector< 2, Real, Device, Index >&
    // TODO: Static assert on dimensions
    tnlAssert( this -> getDimensions() == Vector. getDimensions(),
               cerr << "You are attempting to assign two Vectors with different dimensions." << endl
-                   << "First Vector name is " << this -> getName()
-                   << " dimensions are ( " << this -> getDimensions() << " )" << endl
-                   << "Second Vector is " << Vector. getName()
-                   << " dimensions are ( " << Vector. getDimensions() << " )" << endl; );
+                   << "First vector dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "Second vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
    tnlVector< Real, Device, Index > :: operator = ( Vector );
    return ( *this );
 }
@@ -205,14 +192,12 @@ bool tnlMultiVector< 2, Real, Device, Index > :: save( tnlFile& file ) const
 {
    if( ! tnlVector< Real, Device, Index > :: save( file ) )
    {
-      cerr << "I was not able to write the tnlVector of tnlMultiVector "
-           << this -> getName() << endl;
+      cerr << "I was not able to write the tnlVector of tnlMultiVector."  << endl;
       return false;
    }
    if( ! dimensions. save( file ) )
    {
-      cerr << "I was not able to write the dimensions of tnlMultiVector "
-           << this -> getName() << endl;
+      cerr << "I was not able to write the dimensions of tnlMultiVector." << endl;
       return false;
    }
    return true;
@@ -223,14 +208,12 @@ bool tnlMultiVector< 2, Real, Device, Index > :: load( tnlFile& file )
 {
    if( ! tnlVector< Real, Device, Index > :: load( file ) )
    {
-      cerr << "I was not able to read the tnlVector of tnlMultiVector "
-           << this -> getName() << endl;
+      cerr << "I was not able to read the tnlVector of tnlMultiVector." << endl;
       return false;
    }
    if( ! dimensions. load( file ) )
    {
-      cerr << "I was not able to read the dimensions of tnlMultiVector "
-           << this -> getName() << endl;
+      cerr << "I was not able to read the dimensions of tnlMultiVector." << endl;
       return false;
    }
    return true;

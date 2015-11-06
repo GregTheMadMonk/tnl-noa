@@ -21,16 +21,7 @@
 template< typename Matrix,
            typename Preconditioner >
 tnlGMRESSolver< Matrix, Preconditioner > :: tnlGMRESSolver()
-: tnlObject( "no-name" ),
-  _r( "tnlGMRESSolver::_r" ),
-  _w( "tnlGMRESSolver::_w" ),
-  _v( "tnlGMRESSolver::_v" ),
-  _M_tmp( "tnlGMRESSolver::_M_tmp" ),
-  _s( "tnlGMRESSolver::_s" ),
-  _cs( "tnlGMRESSolver::_cs" ),
-  _sn( "tnlGMRESSolver::_sn" ),
-  _H( "tnlGMRESSolver:_H" ),
-  size( 0 ),
+: size( 0 ),
   restarting( 10 ),
   matrix( 0 ),
   preconditioner( 0 )
@@ -159,10 +150,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    this->resetIterations();
    this->setResidue( beta / normb );
 
-   tnlSharedVector< RealType, DeviceType, IndexType > vi;
-   //vi. setName( "tnlGMRESSolver::vi" );
-   tnlSharedVector< RealType, DeviceType, IndexType > vk;
-   //vk. setName( "tnlGMRESSolver::vk" );
+   tnlSharedVector< RealType, DeviceType, IndexType > vi, vk;
    while( this->nextIteration() )
    {
       const IndexType m = restarting;
@@ -321,15 +309,13 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
                                                          tnlVector< RealType, DeviceType, IndexType >& v,
                                                          Vector& x )
 {
-   //dbgFunctionName( "tnlGMRESSolver", "Update" );
-   tnlVector< RealType, tnlHost, IndexType > y( "tnlGMRESSolver::update:y" );
+   tnlVector< RealType, tnlHost, IndexType > y;
    y. setSize( m + 1 );
 
    IndexType i, j;
    for( i = 0; i <= m ; i ++ )
       y[ i ] = s[ i ];
 
-   //dbgCout_ARRAY( y, m + 1 );
    // Backsolve:
    for( i = k; i >= 0; i--)
    {
@@ -337,10 +323,8 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
       for( j = i - 1; j >= 0; j--)
          y[ j ] -= H[ j + i * ( m + 1 ) ] * y[ i ];
    }
-   //dbgCout_ARRAY( y, m + 1 );
 
    tnlSharedVector< RealType, DeviceType, IndexType > vi;
-   vi. setName( "tnlGMRESSolver::update:vi" );
    for( i = 0; i <= k; i++)
    {
       vi. bind( &( v. getData()[ i * this->size ] ), x. getSize() );

@@ -34,8 +34,6 @@ tnlPDESolver()
   ioCpuTimer( 0 ),
   computeCpuTimer( 0 )
 {
-   this->dofs.setName( "dofs" );
-   this->meshDependentData.setName( "meshDependentData" );
 }
 
 template< typename Problem,
@@ -321,13 +319,13 @@ tnlPDESolver< Problem, TimeStepper >::
 solve()
 {
    tnlAssert( timeStepper != 0,
-              cerr << "No time stepper was set in tnlPDESolver with name " << this -> getName() );
+              cerr << "No time stepper was set in tnlPDESolver." );
    tnlAssert( problem != 0,
-              cerr << "No problem was set in tnlPDESolver with name " << this -> getName() );
+              cerr << "No problem was set in tnlPDESolver." );
 
    if( snapshotPeriod == 0 )
    {
-      cerr << "No snapshot tau was set in tnlPDESolver " << this -> getName() << "." << endl;
+      cerr << "No snapshot tau was set in tnlPDESolver." << endl;
       return false;
    }
    RealType t( this->initialTime );

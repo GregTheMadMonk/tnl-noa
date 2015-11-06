@@ -486,8 +486,7 @@ bool tnlCSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
 {
    tnlAssert( row >=0 && row < this->getRows(),
               cerr << "row = " << row
-                   << " this->getRows() = " << this->getRows()
-                   << " this->getName() = " << this->getName() << endl );
+                   << " this->getRows() = " << this->getRows() << endl );
 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
@@ -505,7 +504,7 @@ bool tnlCSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-      cerr << "There is zero on the diagonal in " << row << "-th row of the matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
+      cerr << "There is zero on the diagonal in " << row << "-th row of the matrix. I cannot perform SOR iteration." << endl;
       return false;
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );

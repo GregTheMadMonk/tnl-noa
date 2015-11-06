@@ -137,9 +137,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::operator == ( con
               cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
                    << " this->getColumns() = " << this->getColumns()
-                   << " matrix.getColumns() = " << matrix.getColumns()
-                   << " this->getName() = " << this->getName()
-                   << " matrix.getName() = " << matrix.getName() );
+                   << " matrix.getColumns() = " << matrix.getColumns() );
    // TODO: implement this
    return false;
 }
@@ -549,8 +547,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::performSORIterati
 {
    tnlAssert( row >=0 && row < this->getRows(),
               cerr << "row = " << row
-                   << " this->getRows() = " << this->getRows()
-                   << " this->getName() = " << this->getName() << endl );
+                   << " this->getRows() = " << this->getRows() << endl );
 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
@@ -573,7 +570,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::performSORIterati
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-      cerr << "There is zero on the diagonal in " << row << "-th row of the matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
+      cerr << "There is zero on the diagonal in " << row << "-th row of a matrix. I cannot perform SOR iteration." << endl;
       return false;
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );

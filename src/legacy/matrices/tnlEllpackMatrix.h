@@ -308,10 +308,11 @@ void tnlEllpackMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVector<
 };
 
 template< typename Real, typename Index >
-void tnlEllpackMatrix< Real, tnlHost, Index > :: printOut( ostream& str ) const
+void tnlEllpackMatrix< Real, tnlHost, Index > :: printOut( ostream& str,
+                                                           const tnlString& name ) const
 {
    str << "Structure of tnlEllpackMatrix" << endl;
-   str << "Matrix name:" << this -> getName() << endl;
+   str << "Matrix name:" << name << endl;
    str << "Matrix size:" << this -> getSize() << endl;
    str << "Allocated elements:" << ellpack_nonzero_elements. getSize() << endl;
    str << "Matrix row length:" << row_length << endl;
@@ -327,7 +328,5 @@ void tnlEllpackMatrix< Real, tnlHost, Index > :: printOut( ostream& str ) const
       str << endl;
    }
 }
-
-
 
 #endif /* TNLELLPACKMATRIX_H_ */

@@ -375,7 +375,6 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       const int size( 10000 );
       tnlVector< Real, Device > v;
       v.setSize( size );
-      v.setName( "prefixSumTest::v" );
 
       setOnesSequence( v );
       v.computePrefixSum();
@@ -399,7 +398,6 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       const int size( 10000 );
       tnlVector< Real, Device > v;
       v.setSize( size );
-      v.setName( "exclusivePrefixSumTest::v" );
 
       setOnesSequence( v );
       v.computeExclusivePrefixSum();

@@ -25,21 +25,15 @@
 #include <cstring>
 #include <stdio.h>
 
-const char magic_number[] = "SIM33";
+const char magic_number[] = "TNLMN";
 
 tnlObject :: tnlObject()
-: name( "<no name>" )
 {
-   dbgFunctionName( "tnlObject", "tnlObject" );
-   dbgCout( "Initiating object " << getName() );
 }
 
 
 tnlObject :: tnlObject( const tnlString& _name )
-: name( _name )
 {
-   dbgFunctionName( "tnlObject", "tnlObject" );
-   dbgCout( "Initiating object " << getName() );
 }
 
 tnlString tnlObject :: getType()
@@ -62,16 +56,6 @@ tnlString tnlObject :: getSerializationTypeVirtual() const
    return this->getSerializationType();
 }
 
-void tnlObject :: setName( const tnlString& name)
-{
-   this -> name = name;
-}
-
-const tnlString& tnlObject :: getName() const
-{
-   return name;
-}
-
 bool tnlObject :: save( tnlFile& file ) const
 {
    dbgFunctionName( "tnlObject", "Save" );
@@ -82,9 +66,7 @@ bool tnlObject :: save( tnlFile& file ) const
    if( ! file. write( magic_number, strlen( magic_number ) ) )
 #endif      
       return false;
-   dbgCout( "Writing object name " << name );
-   if( ! this->getSerializationTypeVirtual().save( file ) ||
-       ! name. save( file ) ) return false;
+   if( ! this->getSerializationTypeVirtual().save( file ) ) return false;
    return true;
 }
 
@@ -100,8 +82,6 @@ bool tnlObject :: load( tnlFile& file )
       cerr << "Given file contains instance of " << objectType << " but " << getSerializationTypeVirtual() << " is expected." << endl;
       return false;
    }
-   dbgCout( "Reading object name " );
-   if( ! name. load( file ) ) return false;
    return true;
 }
 
@@ -144,7 +124,6 @@ bool tnlObject :: load( const tnlString& fileName )
 bool getObjectType( tnlFile& file, tnlString& type )
 {
    dbgFunctionName( "", "getObjectType" );
-   dbgCout( "Checking magic number." );
    char mn[ 10 ];
 #ifdef HAVE_NOT_CXX11
    if( ! file. read< char, tnlHost, int >( mn, strlen( magic_number ) ) )
@@ -155,7 +134,8 @@ bool getObjectType( tnlFile& file, tnlString& type )
       cerr << "Unable to read file " << file. getFileName() << " ... " << endl;
       return false;
    }
-   if( strncmp( mn, magic_number, 5 ) != 0 ) return false;
+   if( strncmp( mn, magic_number, 5 ) != 0 &&
+       strncmp( mn, "SIM33", 5 ) != 0 ) return false;
    if( ! type. load( file ) ) return false;
    return true;
 }

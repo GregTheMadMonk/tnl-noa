@@ -42,8 +42,6 @@ class tnlArray : public virtual tnlObject
 
    tnlArray();
 
-   tnlArray( const tnlString& name );
-
    static tnlString getType();
 
    tnlString getTypeVirtual() const;

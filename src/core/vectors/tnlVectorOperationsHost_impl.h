@@ -42,8 +42,7 @@ typename Vector::RealType tnlVectorOperations< tnlHost >::getVectorMax( const Ve
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
-   tnlAssert( v. getSize() > 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( v. getSize() > 0, );
    Real result = v. getElement( 0 );
    const Index n = v. getSize();
    for( Index i = 1; i < n; i ++ )
@@ -56,8 +55,7 @@ typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorMin( cons
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
-   tnlAssert( v. getSize() > 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( v. getSize() > 0, );
    Real result = v. getElement( 0 );
    const Index n = v. getSize();
    for( Index i = 1; i < n; i ++ )
@@ -70,8 +68,7 @@ typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorAbsMax( c
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
-   tnlAssert( v. getSize() > 0,
-                 cerr << "Vector name is " << v. getName() );
+   tnlAssert( v. getSize() > 0, );
    Real result = fabs( v. getElement( 0 ) );
    const Index n = v. getSize();
    for( Index i = 1; i < n; i ++ )
@@ -85,8 +82,7 @@ typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorAbsMin( c
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
-   tnlAssert( v. getSize() > 0,
-                 cerr << "Vector name is " << v. getName() );
+   tnlAssert( v. getSize() > 0, );
    Real result = fabs( v. getElement( 0 ) );
    const Index n = v. getSize();
    for( Index i = 1; i < n; i ++ )
@@ -101,8 +97,7 @@ typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorLpNorm( c
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
-   tnlAssert( v. getSize() > 0,
-                 cerr << "Vector name is " << v. getName() );
+   tnlAssert( v. getSize() > 0, );
    tnlAssert( p > 0.0,
               cerr << " p = " << p );
    if( p == 1.0 )
@@ -137,8 +132,7 @@ typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorSum( cons
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
-   tnlAssert( v. getSize() > 0,
-                 cerr << "Vector name is " << v. getName() );
+   tnlAssert( v. getSize() > 0, );
 
    Real result = v. getElement( 0 );
    const Index n = v. getSize();
@@ -153,10 +147,8 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
-   tnlAssert( v1. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
-   tnlAssert( v1. getSize() == v2. getSize(),
-              cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
    Real result = v1. getElement( 0 ) - v2. getElement( 0 );
    const Index n = v1. getSize();
    for( Index i = 1; i < n; i ++ )
@@ -171,10 +163,8 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( v1. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
-   tnlAssert( v1. getSize() == v2. getSize(),
-              cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
 
    Real result = v1. getElement( 0 ) - v2. getElement( 0 );
    const Index n = v1. getSize();
@@ -190,10 +180,8 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( v1. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
-   tnlAssert( v1. getSize() == v2. getSize(),
-              cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
 
    Real result = fabs( v1. getElement( 0 ) - v2. getElement( 0 ) );
    const Index n = v1. getSize();
@@ -209,10 +197,8 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( v1. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
-   tnlAssert( v1. getSize() == v2. getSize(),
-              cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
 
    Real result = fabs( v1. getElement( 0 ) - v2. getElement( 0 ) );
    const Index n = v1. getSize();
@@ -232,10 +218,8 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
 
    tnlAssert( p > 0.0,
               cerr << " p = " << p );
-   tnlAssert( v1. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
-   tnlAssert( v1. getSize() == v2. getSize(),
-              cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
 
    if( p == 1.0 )
    {
@@ -271,10 +255,8 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( v1. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
-   tnlAssert( v1. getSize() == v2. getSize(),
-              cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
 
    Real result = v1. getElement( 0 ) - v2. getElement( 0 );
    const Index n = v1. getSize();
@@ -291,8 +273,7 @@ void tnlVectorOperations< tnlHost > :: vectorScalarMultiplication( Vector& v,
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
 
-   tnlAssert( v. getSize() > 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( v. getSize() > 0, );
 
    const Index n = v. getSize();
    for( Index i = 0; i < n; i ++ )
@@ -307,10 +288,8 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getScalarProduct(
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( v1. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
-   tnlAssert( v1. getSize() == v2. getSize(),
-              cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
 
    Real result = 0;
    const Index n = v1. getSize();
@@ -331,10 +310,8 @@ void tnlVectorOperations< tnlHost > :: addVector( Vector1& y,
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( x. getSize() > 0,
-              cerr << "Vector name is " << x. getName() );
-   tnlAssert( x. getSize() == y. getSize(),
-              cerr << "Vector names are " << x. getName() << " and " << y. getName() );
+   tnlAssert( x. getSize() > 0, );
+   tnlAssert( x. getSize() == y. getSize(), );
 
    const Index n = y. getSize();
    if( thisMultiplicator == 1.0 )
@@ -360,13 +337,9 @@ addVectors( Vector1& v,
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( v.getSize() > 0,
-              cerr << "Vector name is " << v.getName() );
-   tnlAssert( v.getSize() == v1.getSize(),
-              cerr << "Vector names are " << v.getName() << " and " << v1.getName() );
-   tnlAssert( v.getSize() == v2.getSize(),
-              cerr << "Vector names are " << v.getName() << " and " << v2.getName() );
-
+   tnlAssert( v.getSize() > 0, );
+   tnlAssert( v.getSize() == v1.getSize(), );
+   tnlAssert( v.getSize() == v2.getSize(), );
    
    const Index n = v.getSize();
    if( thisMultiplicator == 1.0 )

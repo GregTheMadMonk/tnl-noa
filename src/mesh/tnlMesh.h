@@ -35,7 +35,7 @@ class tnlMesh : public tnlObject,
 
    /*~tnlMesh()
    {
-      cerr << "Destroying mesh " << this->getName() << endl;
+      cerr << "Destroying mesh." << endl;
    }*/
 
    static tnlString getType()

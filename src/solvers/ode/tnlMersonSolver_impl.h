@@ -89,13 +89,7 @@ __global__ void updateUMerson( const Index size,
 
 template< typename Problem >
 tnlMersonSolver< Problem > :: tnlMersonSolver()
-: k1( "tnlMersonSolver:k1" ),
-  k2( "tnlMersonSolver:k2" ),
-  k3( "tnlMersonSolver:k3" ),
-  k4( "tnlMersonSolver:k4" ),
-  k5( "tnlMersonSolver:k5" ),
-  kAux( "tnlMersonSolver:kAux" ),
-  adaptivity( 0.00001 )
+: adaptivity( 0.00001 )
 {
 };
 

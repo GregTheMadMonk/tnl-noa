@@ -39,15 +39,6 @@ tnlArray< Element, Device, Index > :: tnlArray()
 template< typename Element,
            typename Device,
            typename Index >
-tnlArray< Element, Device, Index > :: tnlArray( const tnlString& name )
-: size( 0 ), data( 0 )
-{
-   this -> setName( name );
-};
-
-template< typename Element,
-           typename Device,
-           typename Index >
 tnlString tnlArray< Element, Device, Index > :: getType()
 {
    return tnlString( "tnlArray< " ) +
@@ -88,7 +79,6 @@ bool tnlArray< Element, Device, Index > :: setSize( const Index size )
 {
    tnlAssert( size >= 0,
               cerr << "You try to set size of tnlArray to negative value."
-                   << "Name: " << this -> getName() << endl
                    << "New size: " << size << endl );
    if( this->size == size ) return true;
    if( this->data )
@@ -101,8 +91,7 @@ bool tnlArray< Element, Device, Index > :: setSize( const Index size )
    if( ! this->data )
    {
       cerr << "I am not able to allocate new array with size "
-           << ( double ) this->size * sizeof( ElementType ) / 1.0e9 << " GB for "
-           << this->getName() << "." << endl;
+           << ( double ) this->size * sizeof( ElementType ) / 1.0e9 << " GB." << endl;
       this -> size = 0;
       return false;
    }
@@ -117,8 +106,6 @@ bool tnlArray< Element, Device, Index > :: setLike( const Array& array )
 {
    tnlAssert( array. getSize() >= 0,
               cerr << "You try to set size of tnlArray to negative value."
-                   << "Name: " << this -> getName() << endl
-                   << "Array name:" << array. getName()
                    << "Array size: " << array. getSize() << endl );
    return setSize( array.getSize() );
 };
@@ -157,8 +144,7 @@ template< typename Element,
 void tnlArray< Element, Device, Index > :: setElement( const Index i, const Element& x )
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
-              cerr << "Wrong index for setElement method in tnlArray with name "
-                   << this -> getName()
+              cerr << "Wrong index for setElement method in tnlArray "
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    return tnlArrayOperations< Device > :: setMemoryElement( &( this -> data[ i ] ), x );
@@ -170,8 +156,7 @@ template< typename Element,
 Element tnlArray< Element, Device, Index > :: getElement( Index i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
-              cerr << "Wrong index for getElement method in tnlArray with name "
-                   << this -> getName()
+              cerr << "Wrong index for getElement method in tnlArray "
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    return tnlArrayOperations< Device > :: getMemoryElement( & ( this -> data[ i ] ) );
@@ -184,8 +169,7 @@ __cuda_callable__
 Element& tnlArray< Element, Device, Index > :: operator[] ( Index i )
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
-              cerr << "Wrong index for operator[] in tnlArray with name "
-                   << this -> getName()
+              cerr << "Wrong index for operator[] in tnlArray "
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    return this->data[ i ];
@@ -198,8 +182,7 @@ __cuda_callable__
 const Element& tnlArray< Element, Device, Index > :: operator[] ( Index i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
-              cerr << "Wrong index for operator[] in tnlArray with name "
-                   << this -> getName()
+              cerr << "Wrong index for operator[] in tnlArray "
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    return this->data[ i ];
@@ -212,9 +195,7 @@ tnlArray< Element, Device, Index >&
    tnlArray< Element, Device, Index > :: operator = ( const tnlArray< Element, Device, Index >& array )
 {
    tnlAssert( array. getSize() == this -> getSize(),
-           cerr << "Source name: " << array. getName() << endl
-                << "Source size: " << array. getSize() << endl
-                << "Target name: " << this -> getName() << endl
+           cerr << "Source size: " << array. getSize() << endl
                 << "Target size: " << this -> getSize() << endl );
    tnlArrayOperations< Device > :: 
    template copyMemory< Element,
@@ -234,9 +215,7 @@ tnlArray< Element, Device, Index >&
    tnlArray< Element, Device, Index > :: operator = ( const Array& array )
 {
    tnlAssert( array. getSize() == this -> getSize(),
-           cerr << "Source name: " << array. getName() << endl
-                << "Source size: " << array. getSize() << endl
-                << "Target name: " << this -> getName() << endl
+           cerr << "Source size: " << array. getSize() << endl
                 << "Target size: " << this -> getSize() << endl );
    tnlArrayOperations< Device,
                        typename Array :: DeviceType > ::
@@ -339,7 +318,6 @@ bool tnlArray< Element, Device, Index > :: save( tnlFile& file ) const
    if( this -> size != 0 && ! tnlArrayIO< Element, Device, Index >::save( file, this -> data, this -> size ) )
    {
       cerr << "I was not able to save " << this->getType()
-           << " " << this -> getName()
            << " with size " << this -> getSize() << endl;
       return false;
    }
@@ -372,7 +350,6 @@ bool tnlArray< Element, Device, Index > :: load( tnlFile& file )
       if( ! tnlArrayIO< Element, Device, Index >::load( file, this -> data, this -> size ) )
       {
          cerr << "I was not able to load " << this->getType()
-                    << " " << this -> getName()
                     << " with size " << this -> getSize() << endl;
          return false;
       }

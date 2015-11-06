@@ -36,7 +36,6 @@ tnlSpmvBenchmarkBase< Matrix >::tnlSpmvBenchmarkBase()
      benchmarkStatusColumnWidth( 12 ),
      infoColumnWidth( 20 )
 {
-   matrix.setName( "spmvBenchmark::matrix" );
 }
 
 template< typename  Matrix >

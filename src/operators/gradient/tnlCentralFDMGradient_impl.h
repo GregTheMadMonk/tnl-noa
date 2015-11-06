@@ -44,7 +44,6 @@ template< typename Real,
 void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index, GridGeometry > > :: setFunction( Vector& f )
 {
    this -> f. bind( f );
-   this -> f. setName( tnlString( "bind Of " ) + f. getName() );
 }
 
 template< typename Real,
@@ -115,7 +114,6 @@ template< typename Real, typename Device, typename Index >
 void tnlCentralFDMGradient< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > > :: setFunction( Vector& f )
 {
    this -> f. bind( f );
-   this -> f. setName( tnlString( "bind Of " ) + f. getName() );
 }
 
 template< typename Real, typename Device, typename Index >

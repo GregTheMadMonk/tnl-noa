@@ -73,8 +73,6 @@ class tnlMeshSubentityStorageLayer< ConfigTag,
    {
       this->subentitiesIndices.setValue( -1 );
       this->sharedSubentitiesIndices.bind( this->subentitiesIndices );
-      this->sharedSubentitiesIndices.setName( "sharedSubentitiesIndices" );
-      //this->subentitiesIndices.setName( "subentitiesIndices" );
    }
 
    /*~tnlMeshSubentityStorageLayer()

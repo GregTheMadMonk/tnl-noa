@@ -24,12 +24,6 @@ tnlMultiArray< 1, Element, Device, Index > :: tnlMultiArray()
 }
 
 template< typename Element, typename Device, typename Index >
-tnlMultiArray< 1, Element, Device, Index > :: tnlMultiArray( const tnlString& name )
-{
-   this -> setName( name );
-}
-
-template< typename Element, typename Device, typename Index >
 tnlString tnlMultiArray< 1, Element, Device, Index > :: getType()
 {
    return tnlString( "tnlMultiArray< ") +
@@ -155,10 +149,8 @@ bool tnlMultiArray< 1, Element, Device, Index > :: operator == ( const MultiArra
    // TODO: Static assert on dimensions
    tnlAssert( this -> getDimensions() == array. getDimensions(),
               cerr << "You are attempting to compare two arrays with different dimensions." << endl
-                   << "First array name is " << this -> getName()
-                   << " dimensions are ( " << this -> getDimensions() << " )" << endl
-                   << "Second array is " << array. getName()
-                   << " dimensions are ( " << array. getDimensions() << " )" << endl; );
+                   << "First array dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "Second array dimensions are ( " << array. getDimensions() << " )" << endl; );
    return tnlArray< Element, Device, Index > :: operator == ( array );
 }
 
@@ -176,10 +168,8 @@ tnlMultiArray< 1, Element, Device, Index >&
    // TODO: Static assert on dimensions
    tnlAssert( this -> getDimensions() == array. getDimensions(),
               cerr << "You are attempting to assign two arrays with different dimensions." << endl
-                   << "First array name is " << this -> getName()
-                   << " dimensions are ( " << this -> getDimensions() << " )" << endl
-                   << "Second array is " << array. getName()
-                   << " dimensions are ( " << array. getDimensions() << " )" << endl; );
+                   << "First array dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "Second array dimensions are ( " << array. getDimensions() << " )" << endl; );
    tnlArray< Element, Device, Index > :: operator = ( array );
    return ( *this );
 }
@@ -192,10 +182,8 @@ tnlMultiArray< 1, Element, Device, Index >&
    // TODO: Static assert on dimensions
    tnlAssert( this -> getDimensions() == array. getDimensions(),
               cerr << "You are attempting to assign two arrays with different dimensions." << endl
-                   << "First array name is " << this -> getName()
-                   << " dimensions are ( " << this -> getDimensions() << " )" << endl
-                   << "Second array is " << array. getName()
-                   << " dimensions are ( " << array. getDimensions() << " )" << endl; );
+                   << "First array dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "Second array dimensions are ( " << array. getDimensions() << " )" << endl; );
    tnlArray< Element, Device, Index > :: operator = ( array );
    return ( *this );
 }
@@ -205,14 +193,12 @@ bool tnlMultiArray< 1, Element, Device, Index > :: save( tnlFile& file ) const
 {
    if( ! tnlArray< Element, Device, Index > :: save( file ) )
    {
-      cerr << "I was not able to write the tnlArray of tnlMultiArray "
-           << this -> getName() << endl;
+      cerr << "I was not able to write the tnlArray of tnlMultiArray." << endl;
       return false;
    }
    if( ! dimensions. save( file ) )
    {
-      cerr << "I was not able to write the dimensions of tnlMultiArray "
-           << this -> getName() << endl;
+      cerr << "I was not able to write the dimensions of tnlMultiArray." << endl;
       return false;
    }
    return true;
@@ -223,14 +209,12 @@ bool tnlMultiArray< 1, Element, Device, Index > :: load( tnlFile& file )
 {
    if( ! tnlArray< Element, Device, Index > :: load( file ) )
    {
-      cerr << "I was not able to read the tnlArray of tnlMultiArray "
-           << this -> getName() << endl;
+      cerr << "I was not able to read the tnlArray of tnlMultiArray." << endl;
       return false;
    }
    if( ! dimensions. load( file ) )
    {
-      cerr << "I was not able to read the dimensions of tnlMultiArray "
-           << this -> getName() << endl;
+      cerr << "I was not able to read the dimensions of tnlMultiArray." << endl;
       return false;
    }
    return true;

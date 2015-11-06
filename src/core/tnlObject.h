@@ -61,16 +61,6 @@ class tnlObject
 
    virtual tnlString getSerializationTypeVirtual() const;
 
-   /****
-    *  Name getter
-    */
-    void setName( const tnlString& name );
-
-   /****
-    *  Name getter
-    */
-   const tnlString& getName() const;
-
    //! Method for saving the object to a file as a binary data
    virtual bool save( tnlFile& file ) const;
 
@@ -84,10 +74,6 @@ class tnlObject
    //! Destructor
    virtual ~tnlObject(){};
 
-   protected:
-
-   //! Object name
-   tnlString name;
 };
 
 bool getObjectType( tnlFile& file, tnlString& type );

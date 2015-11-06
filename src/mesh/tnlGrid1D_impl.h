@@ -165,8 +165,7 @@ Index tnlGrid< 1, Real, Device, Index > :: getCellIndex( const CoordinatesType& 
 {
    tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
               cerr << "cellCoordinates.x() = " << cellCoordinates.x()
-                   << " this->getDimensions().x() = " << this->getDimensions().x()
-                   << " this->getName() = " << this->getName(); );
+                   << " this->getDimensions().x() = " << this->getDimensions().x() );
    return cellCoordinates.x();
 }
 
@@ -179,8 +178,7 @@ tnlGrid< 1, Real, Device, Index > :: getCellCoordinates( const Index cellIndex )
 {
    tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells(),
               cerr << " cellIndex = " << cellIndex
-                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
-                   << " this->getName() " << this->getName(); );
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells() );
    return CoordinatesType( cellIndex );
 }
 
@@ -192,8 +190,7 @@ Index tnlGrid< 1, Real, Device, Index > :: getVertexIndex( const CoordinatesType
 {
    tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
               cerr << "vertexCoordinates.x() = " << vertexCoordinates.x()
-                   << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
-                   << " this->getName() = " << this->getName(); );
+                   << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1 );
    return vertexCoordinates.x();
 }
 
@@ -206,8 +203,7 @@ tnlGrid< 1, Real, Device, Index > :: getVertexCoordinates( const Index vertexInd
 {
    tnlAssert( vertexIndex >= 0 && vertexIndex < this->getNumberOfVertices(),
               cerr << " vertexIndex = " << vertexIndex
-                   << " this->getNumberOfVertices() = " << this->getNumberOfVertices()
-                   << " this->getName() " << this->getName(); );
+                   << " this->getNumberOfVertices() = " << this->getNumberOfVertices() );
    return CoordinatesType( vertexIndex );
 }
 
@@ -222,8 +218,7 @@ Index tnlGrid< 1, Real, Device, Index > :: getCellNextToCell( const IndexType& c
               cellIndex + dx < this->getNumberOfCells(),
               cerr << " cellIndex = " << cellIndex
                    << " dx = " << dx
-                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
-                   << " this->getName() " << this->getName(); );
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells() );
    return cellIndex + dx;
 }
 
@@ -281,8 +276,7 @@ Vertex tnlGrid< 1, Real, Device, Index >::getCellCenter( const CoordinatesType& 
 {
    tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
               cerr << "cellCoordinates.x() = " << cellCoordinates.x()
-                   << " this->getDimensions().x() = " << this->getDimensions().x()
-                   << " this->getName() = " << this->getName(); )
+                   << " this->getDimensions().x() = " << this->getDimensions().x() );
    return this->origin.x() + ( cellCoordinates.x() + 0.5 ) * this->cellProportions.x();
 }
 
@@ -295,8 +289,7 @@ Vertex tnlGrid< 1, Real, Device, Index >::getCellCenter( const IndexType& cellIn
 {
    tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells(),
               cerr << " cellIndex = " << cellIndex
-                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
-                   << " this->getName() " << this->getName(); );
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells() );
    return this->getCellCenter< VertexType >( this->getCellCoordinates( cellIndex ) );
 }
 
@@ -309,8 +302,7 @@ Vertex tnlGrid< 1, Real, Device, Index >::getVertex( const CoordinatesType& vert
 {
    tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
               cerr << "vertexCoordinates.x() = " << vertexCoordinates.x()
-                   << " this->getDimensions().x() = " << this->getDimensions().x()
-                   << " this->getName() = " << this->getName(); );
+                   << " this->getDimensions().x() = " << this->getDimensions().x() );
    return Vertex( this->origin.x() + vertexCoordinates.x() * this->cellProportions.x() );
 }
 
@@ -340,8 +332,7 @@ bool tnlGrid< 1, Real, Device, Index > :: isBoundaryCell( const CoordinatesType&
 {
    tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
               cerr << "cellCoordinates.x() = " << cellCoordinates.x()
-                   << " this->getDimensions().x() = " << this->getDimensions().x()
-                   << " this->getName() = " << this->getName(); );
+                   << " this->getDimensions().x() = " << this->getDimensions().x() );
    if( cellCoordinates.x() == 0 || cellCoordinates.x() == this->getDimensions().x() - 1 )
       return true;
    return false;
@@ -357,8 +348,7 @@ isBoundaryCell( const IndexType& cellIndex ) const
 {
    tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells(),
               cerr << " cellIndex = " << cellIndex
-                   << " this->getNumberOfCells() = " << this->getNumberOfCells()
-                   << " this->getName() " << this->getName(); );
+                   << " this->getNumberOfCells() = " << this->getNumberOfCells() );
    return this->isBoundaryCell( this->getCellCoordinates( cellIndex ) );
 }
 
@@ -370,8 +360,7 @@ bool tnlGrid< 1, Real, Device, Index > :: isBoundaryVertex( const CoordinatesTyp
 {
    tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
               cerr << "vertexCoordinates.x() = " << vertexCoordinates.x()
-                   << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1
-                   << " this->getName() = " << this->getName(); );
+                   << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1 );
    if( vertexCoordinates.x() == 0 || vertexCoordinates.x() == this->getDimensions().x() )
       return true;
    return false;
@@ -425,8 +414,7 @@ bool tnlGrid< 1, Real, Device, Index >::save( tnlFile& file ) const
        ! this->proportions.save( file ) ||
        ! this->dimensions.save( file ) )
    {
-      cerr << "I was not able to save the domain description of the tnlGrid "
-           << this -> getName() << endl;
+      cerr << "I was not able to save the domain description of a tnlGrid." << endl;
       return false;
    }
    return true;
@@ -444,8 +432,7 @@ bool tnlGrid< 1, Real, Device, Index > :: load( tnlFile& file )
        ! this->proportions.load( file ) ||
        ! dimensions.load( file ) )
    {
-      cerr << "I was not able to load the domain description of the tnlGrid "
-           << this -> getName() << endl;
+      cerr << "I was not able to load the domain description of a tnlGrid." << endl;
       return false;
    }
    this -> setDimensions( dimensions );
@@ -490,8 +477,9 @@ bool tnlGrid< 1, Real, Device, Index > :: write( const MeshFunction& function,
 {
    if( this->getNumberOfCells() != function. getSize() )
    {
-      cerr << "The size ( " << function. getSize() << " ) of the mesh function " << function. getName()
-           << " does not agree with the DOFs ( " << this -> getNumberOfCells() << " ) of the mesh " << this -> getName() << "." << endl;
+      cerr << "The size ( " << function. getSize()
+           << " ) of the mesh function does not agree with the DOFs ( " 
+           << this -> getNumberOfCells() << " ) of a mesh." << endl;
       return false;
    }
    fstream file;
