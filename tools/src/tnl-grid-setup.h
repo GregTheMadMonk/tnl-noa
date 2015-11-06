@@ -41,7 +41,6 @@ bool setupGrid( const tnlParameterContainer& parameters )
       typedef typename GridType::VertexType VertexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       GridType grid;
-      grid.setName( gridName );
       grid.setDomain( VertexType( originX ), VertexType( proportionsX ) );
       grid.setDimensions( CoordinatesType( sizeX ) );
       if( ! grid.save( outputFile ) )
@@ -65,7 +64,6 @@ bool setupGrid( const tnlParameterContainer& parameters )
       typedef typename GridType::VertexType VertexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       GridType grid;
-      grid.setName( gridName );
       grid.setDomain( VertexType( originX, originY ), VertexType( proportionsX, proportionsY ) );
       grid.setDimensions( CoordinatesType( sizeX, sizeY ) );
       if( ! grid.save( outputFile ) )
@@ -92,7 +90,6 @@ bool setupGrid( const tnlParameterContainer& parameters )
       typedef typename GridType::VertexType VertexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       GridType grid;
-      grid.setName( gridName );
       grid.setDomain( VertexType( originX, originY, originZ ), VertexType( proportionsX, proportionsY, proportionsZ ) );
       grid.setDimensions( CoordinatesType( sizeX, sizeY, sizeZ ) );
       if( ! grid.save( outputFile ) )

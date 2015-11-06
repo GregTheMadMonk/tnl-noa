@@ -74,10 +74,6 @@ class tnlObject
    //! Destructor
    virtual ~tnlObject(){};
 
-   protected:
-
-   //! Object name
-   //tnlString name;
 };
 
 bool getObjectType( tnlFile& file, tnlString& type );

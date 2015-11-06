@@ -237,7 +237,7 @@ template< typename Element,
 bool tnlConstSharedArray< Element, Device, Index > :: save( tnlFile& file ) const
 {
    tnlAssert( this -> size != 0,
-              cerr << "You try to save empty array. );
+              cerr << "You try to save empty array." );
    if( ! tnlObject :: save( file ) )
       return false;
 #ifdef HAVE_NOT_CXX11

@@ -247,8 +247,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setRowFast( const IndexType ro
 {
    tnlAssert( elements <= this->columns,
             cerr << " elements = " << elements
-                 << " this->columns = " << this->columns
-                 << " this->getName() = " << this->getName() );
+                 << " this->columns = " << this->columns );
    return this->addRowFast( row, columns, values, elements, 0.0 );
 }
 
@@ -262,8 +261,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setRow( const IndexType row,
 {
    tnlAssert( elements <= this->columns,
             cerr << " elements = " << elements
-                 << " this->columns = " << this->columns
-                 << " this->getName() = " << this->getName() );
+                 << " this->columns = " << this->columns );
    return this->addRow( row, columns, values, elements, 0.0 );
 }
 
@@ -279,8 +277,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addRowFast( const IndexType ro
 {
    tnlAssert( elements <= this->columns,
             cerr << " elements = " << elements
-                 << " this->columns = " << this->columns
-                 << " this->getName() = " << this->getName() );
+                 << " this->columns = " << this->columns );
    if( elements > 3 )
       return false;
    for( IndexType i = 0; i < elements; i++ )
@@ -304,8 +301,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addRow( const IndexType row,
 {
    tnlAssert( elements <= this->columns,
             cerr << " elements = " << elements
-                 << " this->columns = " << this->columns
-                 << " this->getName() = " << this->getName() );
+                 << " this->columns = " << this->columns );
    if( elements > 3 )
       return false;
    for( IndexType i = 0; i < elements; i++ )

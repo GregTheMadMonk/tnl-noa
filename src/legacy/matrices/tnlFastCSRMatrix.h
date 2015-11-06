@@ -474,10 +474,11 @@ bool tnlFastCSRMatrix< Real, tnlHost, Index > :: Load( istream& file )
 
 template< typename Real, typename Index >
 void tnlFastCSRMatrix< Real, tnlHost, Index > :: printOut( ostream& str,
-		                                            const Index lines ) const
+                                                           const tnlString& name,
+		                                                     const Index lines ) const
 {
    str << "Structure of tnlFastCSRMatrix" << endl;
-   str << "Matrix name:" << this -> getName() << endl;
+   str << "Matrix name:" << name << endl;
    str << "Matrix size:" << this -> getSize() << endl;
    str << "Allocated elements:" << nonzero_elements. getSize() << endl;
    str << "Matrix rows:" << endl;

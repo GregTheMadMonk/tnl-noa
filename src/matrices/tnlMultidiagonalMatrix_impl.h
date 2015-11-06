@@ -193,9 +193,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::operator == ( const tnlMulti
               cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
                    << " this->getColumns() = " << this->getColumns()
-                   << " matrix.getColumns() = " << matrix.getColumns()
-                   << " this->getName() = " << this->getName()
-                   << " matrix.getName() = " << matrix.getName() );
+                   << " matrix.getColumns() = " << matrix.getColumns() );
    return ( this->diagonals == matrix.diagonals &&
             this->values == matrix.values );
 }
@@ -692,12 +690,10 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::getElementIndexFast( const I
 {
    tnlAssert( row >=0 && row < this->rows,
             cerr << "row = " << row
-                 << " this->rows = " << this->rows
-                 << " this->getName() = " << this->getName() << endl );
+                 << " this->rows = " << this->rows << endl );
    tnlAssert( column >=0 && column < this->columns,
             cerr << "column = " << column
-                 << " this->columns = " << this->columns
-                 << " this->getName() = " << this->getName() << endl );
+                 << " this->columns = " << this->columns << endl );
 
    typedef tnlMultidiagonalMatrixDeviceDependentCode< Device > DDCType;
    IndexType i( 0 );

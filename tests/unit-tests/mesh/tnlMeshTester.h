@@ -156,7 +156,6 @@ class tnlMeshTester : public CppUnit :: TestCase
         */
 
        tnlMesh< TestTriangleMeshConfig > mesh, mesh2;
-       mesh.setName( "mesh" );
        mesh.setNumberOfVertices( 4 );
        mesh.setVertex( 0, PointType( 0.0, 0.0 ) );
        mesh.setVertex( 1, PointType( 1.0, 0.0 ) );

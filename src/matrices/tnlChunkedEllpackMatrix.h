@@ -229,7 +229,8 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    void print( ostream& str ) const;
 
-   void printStructure( ostream& str ) const;
+   void printStructure( ostream& str,
+                        const tnlString& = "" ) const;
 
    protected:
 

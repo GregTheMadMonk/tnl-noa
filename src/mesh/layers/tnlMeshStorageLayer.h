@@ -70,8 +70,6 @@ class tnlMeshStorageLayer< ConfigTag,
 
    tnlMeshStorageLayer()
    {
-      this->entities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::entities" );
-      this->sharedEntities.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedEntities" );
    }
 
    /*~tnlMeshStorageLayer()
@@ -198,8 +196,6 @@ class tnlMeshStorageLayer< ConfigTag,
 
    tnlMeshStorageLayer()
    {
-      this->vertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::vertices" );
-      this->sharedVertices.setName( tnlString( "tnlMeshStorageLayer < " ) + tnlString( DimensionsTraits::value ) + " >::sharedVertices" );
    }
 
    /*~tnlMeshStorageLayer()

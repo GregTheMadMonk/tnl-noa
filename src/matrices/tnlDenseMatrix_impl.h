@@ -217,8 +217,7 @@ bool tnlDenseMatrix< Real, Device, Index >::setRowFast( const IndexType row,
 {
    tnlAssert( elements <= this->getColumns(),
             cerr << " elements = " << elements
-                 << " this->columns = " << this->getColumns()
-                 << " this->getName() = " << this->getName() );
+                 << " this->columns = " << this->getColumns() );
    for( IndexType i = 0; i < elements; i++ )
       this->setElementFast( row, columns[ i ], values[ i ] );
    return true;
@@ -234,8 +233,7 @@ bool tnlDenseMatrix< Real, Device, Index >::setRow( const IndexType row,
 {
    tnlAssert( elements <= this->getColumns(),
             cerr << " elements = " << elements
-                 << " this->columns = " << this->getColumns()
-                 << " this->getName() = " << this->getName() );
+                 << " this->columns = " << this->getColumns() );
    for( IndexType i = 0; i < elements; i++ )
       this->setElement( row, columns[ i ], values[ i ] );
    return true;
@@ -253,8 +251,7 @@ bool tnlDenseMatrix< Real, Device, Index >::addRowFast( const IndexType row,
 {
    tnlAssert( elements <= this->columns,
             cerr << " elements = " << elements
-                 << " this->columns = " << this->columns
-                 << " this->getName() = " << this->getName() );
+                 << " this->columns = " << this->columns );
    for( IndexType i = 0; i < elements; i++ )
       this->setElementFast( row, columns[ i ],
                             thisRowMultiplicator * this->getElementFast( row, columns[ i ] ) + values[ i ] );
@@ -272,8 +269,7 @@ bool tnlDenseMatrix< Real, Device, Index >::addRow( const IndexType row,
 {
    tnlAssert( elements <= this->columns,
             cerr << " elements = " << elements
-                 << " this->columns = " << this->columns
-                 << " this->getName() = " << this->getName() );
+                 << " this->columns = " << this->columns );
    for( IndexType i = 0; i < elements; i++ )
       this->setElement( row, columns[ i ],
                         thisRowMultiplicator * this->getElement( row, columns[ i ] ) + values[ i ] );
@@ -520,13 +516,10 @@ void tnlDenseMatrix< Real, Device, Index >::getMatrixProduct( const Matrix1& mat
               this->getColumns() == matrix2.getColumns(),
             cerr << "This matrix columns: " << this->getColumns() << endl
                  << "This matrix rows: " << this->getRows() << endl
-                 << "This matrix name: " << this->getName() << endl
                  << "Matrix1 columns: " << matrix1.getColumns() << endl
                  << "Matrix1 rows: " << matrix1.getRows() << endl
-                 << "Matrix1 name: " << matrix1.getName() << endl
                  << "Matrix2 columns: " << matrix2.getColumns() << endl
-                 << "Matrix2 rows: " << matrix2.getRows() << endl
-                 << "Matrix2 name: " << matrix2.getName() << endl );
+                 << "Matrix2 rows: " << matrix2.getRows() << endl );
 
    if( Device::getDevice() == tnlHostDevice )
       for( IndexType i = 0; i < this->getRows(); i += tileDim )
@@ -757,11 +750,9 @@ void tnlDenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matr
    tnlAssert( this->getColumns() == matrix.getRows() &&
               this->getRows() == matrix.getColumns(),
                cerr << "This matrix columns: " << this->getColumns() << endl
-                    << "This matrix rows: " << this->getRows() << endl
-                    << "This matrix name: " << this->getName() << endl
+                    << "This matrix rows: " << this->getRows() << endl                    
                     << "That matrix columns: " << matrix.getColumns() << endl
-                    << "That matrix rows: " << matrix.getRows() << endl
-                    << "That matrix name: " << matrix.getName() << endl );
+                    << "That matrix rows: " << matrix.getRows() << endl );
    
    if( Device::getDevice() == tnlHostDevice )
    {

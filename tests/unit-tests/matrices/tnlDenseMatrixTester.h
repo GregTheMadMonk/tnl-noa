@@ -176,7 +176,6 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
          m.setElement( i, i, i );
 
       tnlVector< IndexType, tnlHost, IndexType > columns;
-      columns.setName( "tnlDenseMatrixTester:columns" );
       tnlVector< RealType, tnlHost, IndexType > values;
       columns.setSize( 10 );
       values.setSize( 10 );
@@ -209,7 +208,6 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
          m.setElement( i, i, i );
 
       tnlVector< IndexType, Device, IndexType > columns;
-      columns.setName( "tnlDenseMatrixTester:columns" );
       tnlVector< RealType, Device, IndexType > values;
       columns.setSize( 10 );
       values.setSize( 10 );
