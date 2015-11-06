@@ -150,10 +150,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    this->resetIterations();
    this->setResidue( beta / normb );
 
-   tnlSharedVector< RealType, DeviceType, IndexType > vi;
-   //vi. setName( "tnlGMRESSolver::vi" );
-   tnlSharedVector< RealType, DeviceType, IndexType > vk;
-   //vk. setName( "tnlGMRESSolver::vk" );
+   tnlSharedVector< RealType, DeviceType, IndexType > vi, vk;
    while( this->nextIteration() )
    {
       const IndexType m = restarting;

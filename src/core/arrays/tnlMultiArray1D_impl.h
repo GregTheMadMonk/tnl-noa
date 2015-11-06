@@ -23,12 +23,6 @@ tnlMultiArray< 1, Element, Device, Index > :: tnlMultiArray()
 {
 }
 
-/*template< typename Element, typename Device, typename Index >
-tnlMultiArray< 1, Element, Device, Index > :: tnlMultiArray( const tnlString& name )
-{
-   this -> setName( name );
-}*/
-
 template< typename Element, typename Device, typename Index >
 tnlString tnlMultiArray< 1, Element, Device, Index > :: getType()
 {

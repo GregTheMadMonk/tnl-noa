@@ -256,7 +256,6 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
    typedef tnlCSRMatrix< Real, tnlHost, Index > csrMatrixType;
    tnlString inputFile = parameters. getParameter< tnlString >( "input-file" );
    csrMatrixType csrMatrix;
-   csrMatrix.setName( "matrix-solvers-benchmark:csrMatrix" );
    if( ! csrMatrix. load( inputFile ) )
    {
       cerr << "Unable to load file " << inputFile << endl;

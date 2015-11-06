@@ -31,9 +31,6 @@ tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >,
   mesh( 0 ),
   pressureGradient( 0 )
 {
-   rho. setName( "Lax-Fridrichs:rho" );
-   rho_u1. setName( "Lax-Fridrichs:rho_u1" );
-   rho_u2. setName( "Lax-Fridrichs:rho_u2" );
 }
 
 template< typename Real,

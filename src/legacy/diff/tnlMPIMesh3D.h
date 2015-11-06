@@ -578,7 +578,6 @@ bool tnlMPIMesh< 3, Real, Device, Index > :: CreateMesh( const tnlGridOld< 3, Re
       hx = u. GetHx();
       hy = u. GetHy();
       hz = u. GetHz();
-      name. setString( u. getName(). getString() );  
    }
    :: MPIBcast< double >( ax, 1, root, original_comm );
    :: MPIBcast< double >( ay, 1, root, original_comm );
@@ -614,7 +613,6 @@ bool tnlMPIMesh< 3, Real, Device, Index > :: CreateMesh( const tnlGridOld< 3, Re
            << " rank " << MPIGetRank( original_comm ) << "." << endl;
       err = 1;
    }
-   sub_u. setName( name. getString() );
    dbgMPIBarrier;
    dbgCout( "Subdomain is as: Ax = " << sub_u. GetAx() << 
                             " Ay = " << sub_u. GetAy() << 

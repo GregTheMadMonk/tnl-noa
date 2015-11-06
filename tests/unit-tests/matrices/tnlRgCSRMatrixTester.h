@@ -94,8 +94,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    {
       const int size = 12;
       tnlCSRMatrix< T > csrMatrix;
-      csrMatrix.setName( "test-matrix:Empty" );
-      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:Empty" );
+      tnlRgCSRMatrix< T > argcsrMatrix;
       this -> setEmptyMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
@@ -111,8 +110,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    {
       const int size = 12;
       tnlCSRMatrix< T > csrMatrix;
-      csrMatrix.setName( "test-matrix:Diagonal" );
-      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:Diagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix;
       this -> setDiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
@@ -127,8 +125,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    void ifTriDiagonalMatrixIsStoredProperly()
    {
       tnlCSRMatrix< T > csrMatrix;
-      csrMatrix.setName( "test-matrix:Tridiagonal" );
-      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:Tridiagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix;
       int size = 12;
       this -> setTridiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
@@ -145,8 +142,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    void ifUpperTriangularMatrixIsStoredProperly()
    {
       tnlCSRMatrix< T > csrMatrix;
-      csrMatrix.setName( "test-matrix:upperTriangular" );
-      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:upperTriangular" );
+      tnlRgCSRMatrix< T > argcsrMatrix;
       const int size = 12;
       this -> setUpperTriangularMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
@@ -163,8 +159,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    void ifFullMatrixIsStoredProperly()
    {
       tnlCSRMatrix< T > csrMatrix;
-      csrMatrix.setName( "test-matrix:upperTriangular" );
-      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:upperTriangular" );
+      tnlRgCSRMatrix< T > argcsrMatrix;
       const int size = 12;
       this -> setUpperTriangularMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
@@ -181,8 +176,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    void ifBcsstk20MatrixIsStoredProperly()
    {
       tnlCSRMatrix< T > csrMatrix;
-      csrMatrix.setName( "test-matrix:upperTriangular" );
-      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:upperTriangular" );
+      tnlRgCSRMatrix< T > argcsrMatrix;
       const int size = 12;
       this -> setBcsstk20Matrix( csrMatrix );
       argcsrMatrix. copyFrom( csrMatrix );
@@ -200,12 +194,11 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    {
       const int size = 35;
       tnlCSRMatrix< T > csrMatrix;
-      csrMatrix.setName( "test-matrix:Diagonal" );
-      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:Diagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix;
       this -> setEmptyMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      tnlVector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -220,12 +213,11 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    {
       const int size = 35;
       tnlCSRMatrix< T > csrMatrix;
-      csrMatrix.setName( "test-matrix:Diagonal" );
-      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:Diagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix;
       this -> setDiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      tnlVector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -240,12 +232,11 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    {
       const int size = 12;
       tnlCSRMatrix< T > csrMatrix;
-      csrMatrix.setName( "test-matrix:TriDiagonal" );
-      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:TriDiagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix;
       this -> setTridiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      tnlVector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -260,12 +251,11 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    {
       const int size = 12;
       tnlCSRMatrix< T > csrMatrix;
-      csrMatrix.setName( "test-matrix:TriDiagonal" );
-      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:TriDiagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix;
       this -> setUpperTriangularMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      tnlVector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -280,12 +270,11 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    {
       const int size = 12;
       tnlCSRMatrix< T > csrMatrix;
-      csrMatrix.setName( "test-matrix:TriDiagonal" );
-      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:TriDiagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix;
       this -> setFullMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      tnlVector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -299,8 +288,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    void ifSpmvWithBcsstk20MatrixWorks()
    {
       tnlCSRMatrix< T > csrMatrix;
-      csrMatrix.setName( "test-matrix:TriDiagonal" );
-      tnlRgCSRMatrix< T > argcsrMatrix( "test-matrix:TriDiagonal" );
+      tnlRgCSRMatrix< T > argcsrMatrix;
       this -> setBcsstk20Matrix( csrMatrix );
       argcsrMatrix. copyFrom( csrMatrix );
       const int size = csrMatrix. getRows();

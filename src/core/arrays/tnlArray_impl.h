@@ -36,15 +36,6 @@ tnlArray< Element, Device, Index > :: tnlArray()
 {
 };
 
-/*template< typename Element,
-           typename Device,
-           typename Index >
-tnlArray< Element, Device, Index > :: tnlArray( const tnlString& name )
-: size( 0 ), data( 0 )
-{
-   this -> setName( name );
-};*/
-
 template< typename Element,
            typename Device,
            typename Index >

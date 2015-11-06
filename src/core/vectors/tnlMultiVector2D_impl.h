@@ -25,13 +25,6 @@ tnlMultiVector< 2, Real, Device, Index > :: tnlMultiVector()
 {
 }
 
-/*template< typename Real, typename Device, typename Index >
-tnlMultiVector< 2, Real, Device, Index > :: tnlMultiVector( const tnlString& name )
-{
-   this -> setName( name );
-}*/
-
-
 template< typename Real, typename Device, typename Index >
 tnlString tnlMultiVector< 2, Real, Device, Index > :: getType()
 {

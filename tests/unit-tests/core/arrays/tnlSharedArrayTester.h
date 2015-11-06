@@ -69,12 +69,7 @@ class tnlSharedArrayTester : public CppUnit :: TestCase
 
    void testComparisonOperator()
    {
-      tnlSharedArray< ElementType, Device, IndexType > u;
-      u. setName( "tnlSharedArrayTester :: u" );
-      tnlSharedArray< ElementType, Device, IndexType > v;
-      v. setName( "tnlSharedArrayTester :: v" );
-      tnlSharedArray< ElementType, Device, IndexType > w;
-      w. setName( "tnlSharedArrayTester :: w" );
+      tnlSharedArray< ElementType, Device, IndexType > u, v, w;
       ElementType uData[ 10 ], vData[ 10 ], wData[ 10 ];
       u. bind( uData, 10 );
       v. bind( vData, 10 );
@@ -93,10 +88,7 @@ class tnlSharedArrayTester : public CppUnit :: TestCase
 
    void testAssignmentOperator()
    {
-      tnlSharedArray< ElementType, Device, IndexType > u;
-      tnlSharedArray< ElementType, Device, IndexType > v;
-      u. setName( "tnlSharedArrayTester :: u" );
-      v. setName( "tnlSharedArrayTester :: v" );
+      tnlSharedArray< ElementType, Device, IndexType > u, v;
       ElementType uData[ 10 ], vData[ 10 ];
       u. bind( uData, 10 );
       v. bind( vData, 10 );

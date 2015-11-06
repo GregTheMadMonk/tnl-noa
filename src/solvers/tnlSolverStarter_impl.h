@@ -467,7 +467,6 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
                             typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
       double omega = parameters. getParameter< double >( "sor-omega" );
-      solver. setName( "sor-solver" );
       solver. setOmega( omega );
       //solver. setVerbose( this -> verbose );
       return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
@@ -478,7 +477,6 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
       typedef tnlCGSolver< typename Problem :: DiscreteSolverMatrixType,
                            typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
-      solver. setName( "cg-solver" );
       //solver. setVerbose( this -> verbose );
       return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
    }
@@ -488,7 +486,6 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
       typedef tnlBICGStabSolver< typename Problem :: DiscreteSolverMatrixType,
                                  typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
-      solver. setName( "bicg-solver" );
       //solver. setVerbose( this -> verbose );
       return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
    }
@@ -499,7 +496,6 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
                               typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
       int restarting = parameters. getParameter< int >( "gmres-restarting" );
-      solver. setName( "gmres-solver" );
       solver. setRestarting( restarting );
       //solver. setVerbose( this -> verbose );
       return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );

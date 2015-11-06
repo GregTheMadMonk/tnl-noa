@@ -34,8 +34,6 @@ tnlPDESolver()
   ioCpuTimer( 0 ),
   computeCpuTimer( 0 )
 {
-   this->dofs.setName( "dofs" );
-   this->meshDependentData.setName( "meshDependentData" );
 }
 
 template< typename Problem,

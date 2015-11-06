@@ -181,7 +181,6 @@ class tnlMeshTester : public CppUnit :: TestCase
        CPPUNIT_ASSERT( mesh2.load( "mesh.tnl" ) );
        CPPUNIT_ASSERT( mesh == mesh2 );
 
-       //mesh2.setName( "mesh2" );
        //mesh.print( cout );
        //mesh2.print( cout );
 
