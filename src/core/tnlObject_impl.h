@@ -15,6 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
+#ifndef tnlObject_H_IMPLEMENTATION
+#define tnlObject_H_IMPLEMENTATION
+
 #include <core/tnlObject.h>
 #include <debug/tnlDebug.h>
 #include <core/tnlAssert.h>
@@ -27,12 +30,8 @@
 
 const char magic_number[] = "TNLMN";
 
+__cuda_callable__
 tnlObject :: tnlObject()
-{
-}
-
-
-tnlObject :: tnlObject( const tnlString& _name )
 {
 }
 
@@ -207,4 +206,4 @@ bool parseObjectType( const tnlString& objectType,
    return true;
 }
 
-
+#endif /* tnlObject_H_IMPLEMENTATION */

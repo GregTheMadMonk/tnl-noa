@@ -38,13 +38,17 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    typedef tnlSharedVector< Real, tnlCuda, Index > CudaType;
 
 
+   __cuda_callable__
    tnlSharedVector();
 
+   __cuda_callable__
    tnlSharedVector( Real* data,
                     const Index size );
 
+   __cuda_callable__
    tnlSharedVector( tnlVector< Real, Device, Index >& vector );
 
+   __cuda_callable__
    tnlSharedVector( tnlSharedVector< Real, Device, Index >& vector );
 
    static tnlString getType();

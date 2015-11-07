@@ -31,6 +31,7 @@ using namespace std;
 template< typename Element,
           typename Device,
           typename Index >
+__cuda_callable__
 tnlSharedArray< Element, Device, Index >::tnlSharedArray()
 : size( 0 ), data( 0 )
 {
@@ -39,6 +40,7 @@ tnlSharedArray< Element, Device, Index >::tnlSharedArray()
 template< typename Element,
           typename Device,
           typename Index >
+__cuda_callable__
 tnlSharedArray< Element, Device, Index >::tnlSharedArray( Element* _data,
                                                           const Index _size )
 {
@@ -48,6 +50,7 @@ tnlSharedArray< Element, Device, Index >::tnlSharedArray( Element* _data,
 template< typename Element,
           typename Device,
           typename Index >
+__cuda_callable__
 tnlSharedArray< Element, Device, Index >::tnlSharedArray( tnlArray< Element, Device, Index >& array )
 {
    this->bind( array );
@@ -56,6 +59,7 @@ tnlSharedArray< Element, Device, Index >::tnlSharedArray( tnlArray< Element, Dev
 template< typename Element,
           typename Device,
           typename Index >
+__cuda_callable__
 tnlSharedArray< Element, Device, Index >::tnlSharedArray( tnlSharedArray< Element, Device, Index >& array )
 {
    this->bind( array );
@@ -99,6 +103,7 @@ tnlString tnlSharedArray< Element, Device, Index > :: getSerializationTypeVirtua
 template< typename Element,
           typename Device,
           typename Index >
+__cuda_callable__
 void tnlSharedArray< Element, Device, Index > :: bind( Element* data,
                                                        const Index size )
 {
@@ -116,6 +121,7 @@ template< typename Element,
           typename Device,
           typename Index >
    template< typename Array >
+__cuda_callable__
 void tnlSharedArray< Element, Device, Index > :: bind( Array& array,
                                                        IndexType index,
                                                        IndexType size )
@@ -134,6 +140,7 @@ template< typename Element,
           typename Device,
           typename Index >
    template< int Size >
+__cuda_callable__
 void tnlSharedArray< Element, Device, Index >::bind( tnlStaticArray< Size, Element >& array )
 {
    this->size = Size;
@@ -143,6 +150,7 @@ void tnlSharedArray< Element, Device, Index >::bind( tnlStaticArray< Size, Eleme
 template< typename Element,
           typename Device,
           typename Index >
+__cuda_callable__
 void tnlSharedArray< Element, Device, Index > :: bind( tnlSharedArray< Element, Device, Index >& array )
 {
    this -> size = array. getSize();

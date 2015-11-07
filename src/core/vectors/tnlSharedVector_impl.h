@@ -23,6 +23,7 @@
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 tnlSharedVector< Real, Device, Index >::tnlSharedVector()
 {
 }
@@ -30,6 +31,7 @@ tnlSharedVector< Real, Device, Index >::tnlSharedVector()
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 tnlSharedVector< Real, Device, Index >::tnlSharedVector( Real* data,
                                                          const Index size )
 : tnlSharedArray< Real, Device, Index >( data, size )
@@ -39,6 +41,7 @@ tnlSharedVector< Real, Device, Index >::tnlSharedVector( Real* data,
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 tnlSharedVector< Real, Device, Index >::tnlSharedVector( tnlVector< Real, Device, Index >& vector )
 : tnlSharedArray< Real, Device, Index >( vector )
 {
@@ -47,6 +50,7 @@ tnlSharedVector< Real, Device, Index >::tnlSharedVector( tnlVector< Real, Device
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 tnlSharedVector< Real, Device, Index >::tnlSharedVector( tnlSharedVector< Real, Device, Index >& vector )
 : tnlSharedArray< Real, Device, Index >( vector )
 {
