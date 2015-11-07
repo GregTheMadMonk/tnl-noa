@@ -18,7 +18,9 @@
 #include <ctype.h>
 #include <cstring>
 #include <stdio.h>
+
 #include "tnlParameterContainer.h"
+#include <core/tnlObject.h>
 
 bool matob( const char* value, bool& ret_val )
 {

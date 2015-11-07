@@ -41,7 +41,7 @@ class tnlObject
 
    //! Basic constructor
    __cuda_callable__
-   tnlObject();
+   tnlObject() {};
 
    /****
     * Type getter. This returns the type in C++ style - for example the returned value
@@ -84,7 +84,5 @@ bool getObjectType( const tnlString& file_name, tnlString& type );
 
 bool parseObjectType( const tnlString& objectType,
                       tnlList< tnlString >& parsedObjectType );
-
-#include <core/tnlObject_impl.h>
 
 #endif
