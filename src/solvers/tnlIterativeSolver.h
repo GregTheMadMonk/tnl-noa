@@ -67,7 +67,7 @@ class tnlIterativeSolver
 
    bool checkConvergence();
 
-   void refreshSolverMonitor();
+   void refreshSolverMonitor( bool force = false );
 
 
    protected:

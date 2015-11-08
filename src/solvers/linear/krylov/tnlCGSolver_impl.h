@@ -142,7 +142,7 @@ solve( const Vector& b, Vector& x )
          this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    }
    this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
-   this -> refreshSolverMonitor();
+   this -> refreshSolverMonitor( true );
    return this->checkConvergence();
 };
 

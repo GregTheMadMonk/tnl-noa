@@ -289,7 +289,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       //cout << "residue = " << beta / normb << endl;
 
    }
-   this->refreshSolverMonitor();
+   this->refreshSolverMonitor( true );
    return this->checkConvergence();
 };
 

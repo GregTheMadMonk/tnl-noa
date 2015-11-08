@@ -69,9 +69,9 @@ void tnlIterativeSolverMonitor< Real, Index > :: setRefreshRate( const Index& re
 }
 
 template< typename Real, typename Index>
-void tnlIterativeSolverMonitor< Real, Index > :: refresh()
+void tnlIterativeSolverMonitor< Real, Index > :: refresh( bool force )
 {
-   if( this->verbose > 0 && this->getIterations() % this->refreshRate == 0 )
+   if( this->verbose > 0 && ( force || this->getIterations() % this->refreshRate == 0 ) )
    {
       cout << " ITER:" << setw( 8 ) << this->getIterations()
            << " RES:" << setprecision( 5 ) << setw( 12 ) << this -> getResidue()

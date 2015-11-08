@@ -154,8 +154,9 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       this -> refreshSolverMonitor();
    }
    this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
-   this -> refreshSolverMonitor();
-      if( this -> getResidue() > this -> getConvergenceResidue() ) return false;
+   this -> refreshSolverMonitor( true );
+   if( this -> getResidue() > this -> getConvergenceResidue() )
+      return false;
    return true;
 };
 

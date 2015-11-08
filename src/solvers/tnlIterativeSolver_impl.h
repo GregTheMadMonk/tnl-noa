@@ -196,14 +196,14 @@ void tnlIterativeSolver< Real, Index> :: setSolverMonitor( tnlIterativeSolverMon
 }
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: refreshSolverMonitor()
+void tnlIterativeSolver< Real, Index> :: refreshSolverMonitor( bool force )
 {
    if( this -> solverMonitor )
    {
       this -> solverMonitor -> setIterations( this -> getIterations() );
       this -> solverMonitor -> setResidue( this -> getResidue() );
       this -> solverMonitor -> setRefreshRate( this-> refreshRate );
-      this -> solverMonitor -> refresh();
+      this -> solverMonitor -> refresh( force );
    }
 }
 
