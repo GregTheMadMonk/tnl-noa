@@ -145,6 +145,7 @@ solve( const RealType& time,
    {
       RealType currentTau = Min( this->timeStep, stopTime - t );
 
+      this->preIterateTimer.start();
       if( ! this->problem->preIterate( t,
                                        currentTau,
                                        mesh,
@@ -154,8 +155,11 @@ solve( const RealType& time,
          cerr << endl << "Preiteration failed." << endl;
          return false;
       }
+      this->preIterateTimer.stop();
+
       if( verbose )
          cout << "                                                                  Assembling the linear system ... \r" << flush;
+
       this->linearSystemAssemblerTimer.start();
       this->problem->assemblyLinearSystem( t,
                                            currentTau,
@@ -165,8 +169,10 @@ solve( const RealType& time,
                                            this->rightHandSide,
                                            meshDependentData );
       this->linearSystemAssemblerTimer.stop();
+
       if( verbose )
          cout << "                                                                  Solving the linear system for time " << t << "             \r" << flush;
+
       this->linearSystemSolverTimer.start();
       if( ! this->linearSystemSolver->template solve< DofVectorType, tnlLinearResidueGetter< MatrixType, DofVectorType > >( this->rightHandSide, dofVector ) )
       {
@@ -174,8 +180,11 @@ solve( const RealType& time,
          return false;
       }
       this->linearSystemSolverTimer.stop();
+
       //if( verbose )
       //   cout << endl;
+
+      this->postIterateTimer.start();
       if( ! this->problem->postIterate( t,
                                         currentTau,
                                         mesh,
@@ -185,6 +194,8 @@ solve( const RealType& time,
          cerr << endl << "Postiteration failed." << endl;
          return false;
       }
+      this->postIterateTimer.stop();
+
       t += currentTau;
    }
    return true;
@@ -196,8 +207,10 @@ bool
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 writeEpilog( tnlLogger& logger )
 {
+   logger.writeParameter< double >( "Pre-iterate time:", this->preIterateTimer.getTime() );
    logger.writeParameter< double >( "Linear system assembler time:", this->linearSystemAssemblerTimer.getTime() );
    logger.writeParameter< double >( "Linear system solver time:", this->linearSystemSolverTimer.getTime() );
+   logger.writeParameter< double >( "Post-iterate time:", this->postIterateTimer.getTime() );
    return true;
 }
 

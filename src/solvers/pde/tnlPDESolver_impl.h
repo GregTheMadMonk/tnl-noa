@@ -286,11 +286,8 @@ getTimeStepOrder() const
    return this->timeStepOrder;
 }
 
-template< typename Problem,
-         typename TimeStepper >
-void
-tnlPDESolver< Problem, TimeStepper >::
-setIoRtTimer( tnlTimerRT& ioRtTimer )
+template< typename Problem, typename TimeStepper >
+void tnlPDESolver< Problem, TimeStepper > :: setIoRtTimer( tnlTimerRT& ioRtTimer )
 {
    this->ioRtTimer = &ioRtTimer;
 }
@@ -332,11 +329,21 @@ solve()
    IndexType step( 0 );
    IndexType allSteps = ceil( ( this->finalTime - this->initialTime ) / this->snapshotPeriod );
 
+   this->ioRtTimer->start();
+   this->ioCpuTimer->start();
+   this->computeRtTimer->stop();
+   this->computeCpuTimer->stop();
+
    if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->meshDependentData ) )
    {
       cerr << "Making the snapshot failed." << endl;
       return false;
    }
+
+   this->ioRtTimer->stop();
+   this->ioCpuTimer->stop();
+   this->computeRtTimer->start();
+   this->computeCpuTimer->start();
 
    /****
     * Initialize the time stepper
@@ -364,10 +371,10 @@ solve()
          return false;
       }
 
-      this-> ioRtTimer->stop();
-      this-> ioCpuTimer->stop();
-      this-> computeRtTimer->start();
-      this-> computeCpuTimer->start();
+      this->ioRtTimer->stop();
+      this->ioCpuTimer->stop();
+      this->computeRtTimer->start();
+      this->computeCpuTimer->start();
    }
    return true;
 }
