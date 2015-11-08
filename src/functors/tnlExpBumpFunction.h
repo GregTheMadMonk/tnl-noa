@@ -20,13 +20,15 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functors/tnlFunctionType.h>
+#include <functors/tnlFunction.h>
 
 template< typename Real >
-class tnlExpBumpFunctionBase
+class tnlExpBumpFunctionBase : public tnlFunction
 {
    public:
 
+      static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; };
+      
       typedef Real RealType;
 
       bool setup( const tnlParameterContainer& parameters,
@@ -142,16 +144,6 @@ ostream& operator << ( ostream& str, const tnlExpBumpFunction< Dimensions, Real 
    str << "ExpBump. function: amplitude = " << f.getAmplitude() << " sigma = " << f.getSigma();
    return str;
 }
-
-template< int FunctionDimensions,
-          typename Real >
-class tnlFunctionType< tnlExpBumpFunction< FunctionDimensions, Real > >
-{
-   public:
-
-      enum { Type = tnlAnalyticFunction };
-};
-
 
 #include <functors/tnlExpBumpFunction_impl.h>
 

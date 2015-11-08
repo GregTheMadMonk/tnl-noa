@@ -18,7 +18,7 @@
 #ifndef TNLEXACTLINEARDIFFUSION_H_
 #define TNLEXACTLINEARDIFFUSION_H_
 
-#include <functors/tnlFunctionType.h>
+#include <functors/tnlFunction.h>
 
 template< int Dimensions >
 class tnlExactLinearDiffusion
@@ -30,6 +30,8 @@ class tnlExactLinearDiffusion< 1 >
    public:
 
       enum { Dimensions = 1 };
+      
+      static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }
 
       static tnlString getType();
    
@@ -51,6 +53,8 @@ class tnlExactLinearDiffusion< 2 >
 
       enum { Dimensions = 2 };
 
+      static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }
+      
       static tnlString getType();
 
 #ifdef HAVE_NOT_CXX11      
@@ -71,6 +75,8 @@ class tnlExactLinearDiffusion< 3 >
 
       enum { Dimensions = 3 };
 
+      static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }
+      
       static tnlString getType();
 
 #ifdef HAVE_NOT_CXX11      
@@ -82,13 +88,6 @@ class tnlExactLinearDiffusion< 3 >
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
-};
-
-template< int Dimensions >
-class tnlFunctionType< tnlExactLinearDiffusion< Dimensions > >
-{
-   public:
-      enum { Type = tnlAnalyticFunction };
 };
 
 #include <operators/diffusion/tnlExactLinearDiffusion_impl.h>

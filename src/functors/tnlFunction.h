@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlFunctionType.h  -  description
+                          tnlFunction.h  -  description
                              -------------------
-    begin                : Jan 10, 2015
+    begin                : Nov 8, 2015
     copyright            : (C) 2015 by oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,17 +15,20 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLFUNCTIONTYPE_H_
-#define TNLFUNCTIONTYPE_H_
 
-enum tnlFunctionTypeEnum { tnlGeneralFunction, tnlDiscreteFunction, tnlAnalyticFunction };
+#ifndef TNLFUNCTION_H
+#define	TNLFUNCTION_H
 
-template< typename Function >
-class tnlFunctionType
+enum tnlFunctionType { tnlGeneralFunction, 
+                       tnlDiscreteFunction,
+                       tnlAnalyticFunction };
+
+class tnlFunction
 {
    public:
-
-      enum { Type = tnlGeneralFunction };
+   
+      inline static constexpr tnlFunctionType getFunctionType() { return tnlGeneralFunction; }
 };
 
-#endif /* TNLFUNCTIONTYPE_H_ */
+#endif	/* TNLFUNCTION_H */
+

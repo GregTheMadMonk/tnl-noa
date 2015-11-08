@@ -20,7 +20,7 @@
 
 #include <core/arrays/tnlSharedArray.h>
 #include <core/vectors/tnlVector.h>
-#include <functors/tnlFunctionType.h>
+#include <functors/tnlFunction.h>
 
 class tnlHost;
 
@@ -37,6 +37,7 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    typedef tnlSharedVector< Real, tnlHost, Index > HostType;
    typedef tnlSharedVector< Real, tnlCuda, Index > CudaType;
 
+   static constexpr tnlFunctionType getFunctionType() { return tnlDiscreteFunction; }
 
    tnlSharedVector();
 
@@ -145,16 +146,6 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
    void computeExclusivePrefixSum( const IndexType begin, const IndexType end );
 
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-class tnlFunctionType< tnlSharedVector< Real, Device, Index > >
-{
-   public:
-
-      enum { Type = tnlDiscreteFunction };
 };
 
 #include <core/vectors/tnlSharedVector_impl.h>

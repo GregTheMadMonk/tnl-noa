@@ -20,13 +20,15 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functors/tnlFunctionType.h>
+#include <functors/tnlFunction.h>
 
 template< typename Real = double >
-class tnlSinWaveFunctionBase
+class tnlSinWaveFunctionBase : public tnlFunction
 {
    public:
 
+      static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }
+      
    tnlSinWaveFunctionBase();
 
    bool setup( const tnlParameterContainer& parameters,
@@ -140,15 +142,6 @@ ostream& operator << ( ostream& str, const tnlSinWaveFunction< Dimensions, Real 
        << " phase = " << f.getPhase();
    return str;
 }
-
-template< int FunctionDimensions,
-          typename Real >
-class tnlFunctionType< tnlSinWaveFunction< FunctionDimensions, Real > >
-{
-   public:
-
-      enum { Type = tnlAnalyticFunction };
-};
 
 #include <functors/tnlSinWaveFunction_impl.h>
 

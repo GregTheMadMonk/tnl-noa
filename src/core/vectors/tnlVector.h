@@ -19,7 +19,7 @@
 #define TNLVECTOR_H_
 
 #include <core/arrays/tnlArray.h>
-#include <functors/tnlFunctionType.h>
+#include <functors/tnlFunction.h>
 
 class tnlHost;
 
@@ -36,6 +36,7 @@ class tnlVector : public tnlArray< Real, Device, Index >
    typedef tnlVector< Real, tnlHost, Index > HostType;
    typedef tnlVector< Real, tnlCuda, Index > CudaType;
 
+   static constexpr tnlFunctionType getFunctionType() { return tnlDiscreteFunction; }
 
    tnlVector();
 
@@ -135,16 +136,6 @@ class tnlVector : public tnlArray< Real, Device, Index >
    void computeExclusivePrefixSum();
 
    void computeExclusivePrefixSum( const IndexType begin, const IndexType end );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-class tnlFunctionType< tnlVector< Real, Device, Index > >
-{
-   public:
-
-      enum { Type = tnlDiscreteFunction };
 };
 
 #include <core/vectors/tnlVector_impl.h>
