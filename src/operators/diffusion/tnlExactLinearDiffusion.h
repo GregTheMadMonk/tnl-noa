@@ -25,13 +25,11 @@ class tnlExactLinearDiffusion
 {};
 
 template<>
-class tnlExactLinearDiffusion< 1 >
+class tnlExactLinearDiffusion< 1 > : public tnlFunction< tnlAnalyticFunction >
 {
    public:
 
       enum { Dimensions = 1 };
-      
-      static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }
 
       static tnlString getType();
    
@@ -47,13 +45,11 @@ class tnlExactLinearDiffusion< 1 >
 };
 
 template<>
-class tnlExactLinearDiffusion< 2 >
+class tnlExactLinearDiffusion< 2 > : public tnlFunction< tnlAnalyticFunction >
 {
    public:
 
       enum { Dimensions = 2 };
-
-      static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }
       
       static tnlString getType();
 
@@ -69,13 +65,11 @@ class tnlExactLinearDiffusion< 2 >
 };
 
 template<>
-class tnlExactLinearDiffusion< 3 >
+class tnlExactLinearDiffusion< 3 > : public tnlFunction< tnlAnalyticFunction >
 {
    public:
 
       enum { Dimensions = 3 };
-
-      static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }
       
       static tnlString getType();
 

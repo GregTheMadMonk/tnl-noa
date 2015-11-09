@@ -23,11 +23,9 @@
 #include <functors/tnlFunction.h>
 
 template< typename Real >
-class tnlExpBumpFunctionBase : public tnlFunction
+class tnlExpBumpFunctionBase : public tnlFunction< tnlAnalyticFunction >
 {
    public:
-
-      static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; };
       
       typedef Real RealType;
 

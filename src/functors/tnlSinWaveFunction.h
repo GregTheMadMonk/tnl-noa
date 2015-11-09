@@ -23,11 +23,9 @@
 #include <functors/tnlFunction.h>
 
 template< typename Real = double >
-class tnlSinWaveFunctionBase : public tnlFunction
+class tnlSinWaveFunctionBase : public tnlFunction< tnlAnalyticFunction >
 {
    public:
-
-      static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }
       
    tnlSinWaveFunctionBase();
 

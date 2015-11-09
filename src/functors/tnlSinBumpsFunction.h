@@ -23,11 +23,9 @@
 #include <functors/tnlFunction.h>
 
 template< typename Vertex >
-class tnlSinBumpsFunctionBase : public tnlFunction
+class tnlSinBumpsFunctionBase : public tnlFunction< tnlAnalyticFunction >
 {
    public:
-
-      static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; } 
       
       typedef Vertex VertexType;
       typedef typename Vertex::RealType RealType;

@@ -23,11 +23,12 @@ enum tnlFunctionType { tnlGeneralFunction,
                        tnlDiscreteFunction,
                        tnlAnalyticFunction };
 
+template< tnlFunctionType FunctionType >
 class tnlFunction
 {
    public:
    
-      inline static constexpr tnlFunctionType getFunctionType() { return tnlGeneralFunction; }
+      static constexpr tnlFunctionType getFunctionType() { return FunctionType; }
 };
 
 #endif	/* TNLFUNCTION_H */

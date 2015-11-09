@@ -24,11 +24,9 @@
 
 template< int FunctionDimensions,
           typename Real = double >
-class tnlConstantFunction : public tnlFunction
+class tnlConstantFunction : public tnlFunction< tnlAnalyticFunction>
 {
    public:
-
-   static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }
 
    enum { Dimensions = FunctionDimensions };
    typedef Real RealType;
