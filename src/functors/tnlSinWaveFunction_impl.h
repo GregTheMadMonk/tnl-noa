@@ -81,12 +81,11 @@ Real tnlSinWaveFunctionBase< dimensions, Real >::getPhase() const
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
 tnlSinWaveFunction< 1, Real >::
-getValue( const Vertex& v,
+getValue( const VertexType& v,
           const Real& time ) const
 {
    const RealType& x = v.x();
@@ -114,12 +113,11 @@ getValue( const Vertex& v,
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
 tnlSinWaveFunction< 2, Real >::
-getValue( const Vertex& v,
+getValue( const VertexType& v,
           const Real& time ) const
 {
    const RealType& x = v.x();
@@ -144,12 +142,11 @@ getValue( const Vertex& v,
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
 tnlSinWaveFunction< 3, Real >::
-getValue( const Vertex& v,
+getValue( const VertexType& v,
           const Real& time ) const
 {
    const RealType& x = v.x();

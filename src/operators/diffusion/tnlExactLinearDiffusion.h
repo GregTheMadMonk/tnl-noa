@@ -25,63 +25,45 @@ class tnlExactLinearDiffusion
 {};
 
 template<>
-class tnlExactLinearDiffusion< 1 > : public tnlFunction< 1 >
+class tnlExactLinearDiffusion< 1 > : public tnlFunction< 1, tnlAnalyticFunction >
 {
    public:
-
-      enum { Dimensions = 1 };
 
       static tnlString getType();
    
-#ifdef HAVE_NOT_CXX11      
-      template< typename Function, typename Vertex, typename Real >
-#else   
-      template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
-#endif      
+      template< typename Function >
       __cuda_callable__
       static Real getValue( const Function& function,
-                            const Vertex& v,
-                            const Real& time = 0.0 );
+                            const typename Function::VertexType& v,
+                            const typename Function::RealType& time = 0.0 );
 };
 
 template<>
-class tnlExactLinearDiffusion< 2 > : public tnlFunction< 2 >
+class tnlExactLinearDiffusion< 2 > : public tnlFunction< 2, tnlAnalyticFunction >
 {
    public:
-
-      enum { Dimensions = 2 };
       
       static tnlString getType();
 
-#ifdef HAVE_NOT_CXX11      
-      template< typename Function, typename Vertex, typename Real >
-#else   
-      template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
-#endif
+      template< typename Function >
       __cuda_callable__
       static Real getValue( const Function& function,
-                            const Vertex& v,
-                            const Real& time = 0.0 );
+                            const typename Function::VertexType& v,
+                            const typename Function::RealType& time = 0.0 );
 };
 
 template<>
 class tnlExactLinearDiffusion< 3 > : public tnlFunction< 3 >
 {
    public:
-
-      enum { Dimensions = 3 };
       
       static tnlString getType();
 
-#ifdef HAVE_NOT_CXX11      
-      template< typename Function, typename Vertex, typename Real >
-#else   
-      template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
-#endif
+      template< typename Function >
       __cuda_callable__
       static Real getValue( const Function& function,
-                            const Vertex& v,
-                            const Real& time = 0.0 );
+                            const typename Function::VertexType& v,
+                            const typename Function::RealType& time = 0.0 );
 };
 
 #include <operators/diffusion/tnlExactLinearDiffusion_impl.h>

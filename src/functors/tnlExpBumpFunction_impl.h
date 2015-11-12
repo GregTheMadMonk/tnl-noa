@@ -74,11 +74,10 @@ tnlExpBumpFunction< 1, Real >::tnlExpBumpFunction()
 template< typename Real >
    template< int XDiffOrder, 
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
-tnlExpBumpFunction< 1, Real >::getValue( const Vertex& v,
+tnlExpBumpFunction< 1, Real >::getValue( const VertexType& v,
                                          const Real& time ) const
 {
    const RealType& x = v.x();
@@ -112,12 +111,11 @@ tnlExpBumpFunction< 2, Real >::tnlExpBumpFunction()
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
 tnlExpBumpFunction< 2, Real >::
-getValue( const Vertex& v,
+getValue( const VertexType& v,
           const Real& time ) const
 {
    const RealType& x = v.x();
@@ -156,12 +154,11 @@ tnlExpBumpFunction< 3, Real >::tnlExpBumpFunction()
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
 tnlExpBumpFunction< 3, Real >::
-getValue( const Vertex& v,
+getValue( const VertexType& v,
           const Real& time ) const
 {
    const RealType& x = v.x();

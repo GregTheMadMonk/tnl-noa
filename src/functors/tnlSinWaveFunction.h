@@ -73,7 +73,7 @@ class tnlSinWaveFunction< 1, Real > : public tnlSinWaveFunctionBase< 1, Real >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getValue( const Vertex& v,
+      RealType getValue( const VertexType& v,
                          const Real& time = 0.0 ) const;
 
 };
@@ -96,7 +96,7 @@ class tnlSinWaveFunction< 2, Real > : public tnlSinWaveFunctionBase< 2, Real >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getValue( const Vertex& v,
+      RealType getValue( const VertexType& v,
                          const Real& time = 0.0 ) const;
 };
 
@@ -120,7 +120,7 @@ class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< 3, Real >
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getValue( const Vertex& v,
+      RealType getValue( const VertexType& v,
                          const Real& time = 0.0 ) const;
 };
 

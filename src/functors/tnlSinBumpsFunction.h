@@ -79,7 +79,7 @@ class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStati
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getValue( const Vertex& v,
+      RealType getValue( const VertexType& v,
                          const Real& time = 0.0 ) const;
 };
 
