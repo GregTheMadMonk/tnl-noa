@@ -28,14 +28,15 @@
 
 template< typename ExactOperator,
           typename TestFunction >
-class tnlHeatEquationEocRhs
+class tnlHeatEquationEocRhs : public tnlFunction< TestFunction::Dimensions,
+                                                  tnlAnalyticFunction >
 {
    public:
 
       typedef ExactOperator ExactOperatorType;
       typedef TestFunction TestFunctionType;
-
-      static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }     
+      typedef typename TestFunction::RealType RealType;
+      typedef typename TestFunction::VertexType VertexType;
       
       bool setup( const tnlParameterContainer& parameters,
                   const tnlString& prefix = "" )
@@ -45,11 +46,10 @@ class tnlHeatEquationEocRhs
          return true;
       };
 
-      template< typename Vertex,
-                typename Real >
+      template< typename Vertex >
       __cuda_callable__
-      Real getValue( const Vertex& vertex,
-                     const Real& time ) const
+      RealType getValue( const Vertex& vertex,
+                         const RealType& time ) const
       {
          return testFunction.getTimeDerivative( vertex, time )
                 - exactOperator.getValue( testFunction, vertex, time );

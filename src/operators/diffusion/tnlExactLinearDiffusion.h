@@ -25,7 +25,7 @@ class tnlExactLinearDiffusion
 {};
 
 template<>
-class tnlExactLinearDiffusion< 1 > : public tnlFunction< tnlAnalyticFunction >
+class tnlExactLinearDiffusion< 1 > : public tnlFunction< 1 >
 {
    public:
 
@@ -45,7 +45,7 @@ class tnlExactLinearDiffusion< 1 > : public tnlFunction< tnlAnalyticFunction >
 };
 
 template<>
-class tnlExactLinearDiffusion< 2 > : public tnlFunction< tnlAnalyticFunction >
+class tnlExactLinearDiffusion< 2 > : public tnlFunction< 2 >
 {
    public:
 
@@ -65,7 +65,7 @@ class tnlExactLinearDiffusion< 2 > : public tnlFunction< tnlAnalyticFunction >
 };
 
 template<>
-class tnlExactLinearDiffusion< 3 > : public tnlFunction< tnlAnalyticFunction >
+class tnlExactLinearDiffusion< 3 > : public tnlFunction< 3 >
 {
    public:
 

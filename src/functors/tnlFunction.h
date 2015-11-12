@@ -19,17 +19,54 @@
 #ifndef TNLFUNCTION_H
 #define	TNLFUNCTION_H
 
+#include <core/vectors/tnlStaticVector.h>
+
 enum tnlFunctionType { tnlGeneralFunction, 
                        tnlDiscreteFunction,
                        tnlAnalyticFunction };
 
-template< tnlFunctionType FunctionType >
+template< int Dimensions,
+          tnlFunctionType FunctionType = tnlGeneralFunction >
 class tnlFunction
 {
    public:
-   
-      static constexpr tnlFunctionType getFunctionType() { return FunctionType; }
+      
+      static const int dimensions = Dimensions;
+      static const tnlFunctionType functionType = FunctionType;
+      
+      static constexpr int getDimensions() { return Dimensions; }
+      
+      static constexpr tnlFunctionType getFunctionType() { return functionType; }
 };
 
+
+/*
+ * Funkce jsou bud analyticke nebo sitove( diskretni )
+ *  - analyticke jsou dane vzorcem
+ *    - zavisi na prostorove promenne Vertex a casu 
+ *    - 
+ *  - sitove jsou dane hodnotama na sitovych entitach
+ *    - jejich hodnota zavisi pouze na indexu sitove entity
+ * 
+ * Dale jsou hybrydni funkce, ktere zavisi na vertexu, casu a indexu sitove entity.
+ *   - jejich typ se urci meotdou getFunctionType
+ *   - ta je def. v tnlFunction a vraci tnlHybridFunction / tnlGeneralFunction.
+ *   - jde o defaultni nastaveni, ktere neni superoptimalni, ale jednoduche pro uzivatele
+ * 
+ */
+
+/*
+muzeme rozlisovat tnlMeshFunction a tnl(Analytic)Function
+   -ta druha ma typ site void
+   - chtelo by to naimplementovat tnlMeshFunction, aby se videlo, co tim lze vyresit
+   - mesh-function bude mit ukazatel na mesh a dimenzi mesh entit, na nichz je definovana
+   - asi nebude zaviset na case
+   - mohl by pro ni byt definovany operator =, ktery by slouzil k projekci spojitych funkci na sit
+   - tim bysme se zbavili enumeratoru
+   - nad mesh function pak lze implementovat interpolanty - mozna vhodne i pro multigrid
+      =====>>>> IMPLEMENTOVAT tnlMeshFunction
+   - prozkoumat moznost lamda funkci pro mesh functions pro snazsi inicializaci sitove funkce
+   nejakou pocatecni podminkou ==> mozna by to mohlo nahradit i ty analyticke funkce ???
+ */
 #endif	/* TNLFUNCTION_H */
 

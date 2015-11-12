@@ -18,7 +18,7 @@
 #ifndef TNLEXPLICITUPDATER_H_
 #define TNLEXPLICITUPDATER_H_
 
-#include <functors/tnlFunctorAdapter.h>
+#include <functors/tnlFunctionAdapter.h>
 
 template< typename Real,
           typename DofVector,
@@ -119,7 +119,7 @@ class tnlExplicitUpdater
                                                                                     index,
                                                                                     *userData.u,
                                                                                     *userData.time );
-               typedef tnlFunctorAdapter< MeshType, RightHandSide > FunctionAdapter;
+               typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
                ( *userData.fu )[ index ] += FunctionAdapter::getValue( mesh,
                                                                        *userData.rightHandSide,
                                                                        index,
@@ -229,7 +229,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                                    *userData.u,
                                                                                    *userData.time );
 
-               typedef tnlFunctorAdapter< MeshType, RightHandSide > FunctionAdapter;
+               typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
                ( * userData.fu )[ index ] += FunctionAdapter::getValue( mesh,
                                                                         *userData.rightHandSide,
                                                                         index,
@@ -251,7 +251,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                                    *userData.u,
                                                                                    *userData.time );
 
-               typedef tnlFunctorAdapter< MeshType, RightHandSide > FunctionAdapter;
+               typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
                ( * userData.fu )[ index ] += FunctionAdapter::getValue( mesh,
                                                                         *userData.rightHandSide,
                                                                         index,

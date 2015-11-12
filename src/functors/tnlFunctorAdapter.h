@@ -23,7 +23,7 @@
 
 template< typename Mesh,
           typename Function,
-          int FunctionType = Function::getFunctionType() >
+          int FunctionType > //= Function::getFunctionType() >
 class tnlFunctorAdapter
 {
 };

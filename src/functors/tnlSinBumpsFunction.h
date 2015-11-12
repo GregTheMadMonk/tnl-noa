@@ -23,7 +23,7 @@
 #include <functors/tnlFunction.h>
 
 template< typename Vertex >
-class tnlSinBumpsFunctionBase : public tnlFunction< tnlAnalyticFunction >
+class tnlSinBumpsFunctionBase : public tnlFunction< Vertex::size, tnlAnalyticFunction >
 {
    public:
       
@@ -59,27 +59,24 @@ template< typename Real >
 class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStaticVector< 1, Real > >
 {
    public:
-
-      enum { Dimensions = 1 };
-      typedef tnlSinBumpsFunctionBase< tnlStaticVector< 1, Real > > BaseType;
-      typedef typename BaseType::VertexType VertexType;
+      
       typedef Real RealType;
+      typedef tnlStaticVector< 1, RealType > VertexType;      
+
 
       tnlSinBumpsFunction();
 
       bool setup( const tnlParameterContainer& parameters,
-                const tnlString& prefix = "" );
+                  const tnlString& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
       RealType getValue( const Vertex& v,
@@ -91,10 +88,9 @@ class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStatic
 {
    public:
 
-      enum { Dimensions = 2 };
-      typedef tnlSinBumpsFunctionBase< tnlStaticVector< 2, Real > > BaseType;
-      typedef typename BaseType::VertexType VertexType;
       typedef Real RealType;
+      typedef tnlStaticVector< 2, RealType > VertexType;      
+      
 
       tnlSinBumpsFunction();
 
@@ -104,16 +100,14 @@ class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStatic
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getValue( const Vertex& v,
+      RealType getValue( const VertexType& v,
                          const Real& time = 0.0 ) const;
 };
 
@@ -122,29 +116,25 @@ class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStatic
 {
    public:
 
-      enum { Dimensions = 3 };
-      typedef tnlSinBumpsFunctionBase< tnlStaticVector< 3, Real > > BaseType;
-      typedef typename BaseType::VertexType VertexType;
       typedef Real RealType;
+      typedef tnlStaticVector< 3, RealType > VertexType;
 
       tnlSinBumpsFunction();
 
       bool setup( const tnlParameterContainer& parameters,
-                 const tnlString& prefix = "" );
+                  const tnlString& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getValue( const Vertex& v,
+      RealType getValue( const VertexType& v,
                          const Real& time = 0.0 ) const;
 };
 

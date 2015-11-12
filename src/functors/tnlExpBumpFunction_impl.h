@@ -20,9 +20,9 @@
 
 #include <functors/tnlExpBumpFunction.h>
 
-template< typename Real >
+template< int dimensions, typename Real >
 bool
-tnlExpBumpFunctionBase< Real >::
+tnlExpBumpFunctionBase< dimensions, Real >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
@@ -31,26 +31,26 @@ setup( const tnlParameterContainer& parameters,
    return true;
 }
 
-template< typename Real >
-void tnlExpBumpFunctionBase< Real >::setAmplitude( const Real& amplitude )
+template< int dimensions, typename Real >
+void tnlExpBumpFunctionBase< dimensions, Real >::setAmplitude( const Real& amplitude )
 {
    this->amplitude = amplitude;
 }
 
-template< typename Real >
-const Real& tnlExpBumpFunctionBase< Real >::getAmplitude() const
+template< int dimensions, typename Real >
+const Real& tnlExpBumpFunctionBase< dimensions, Real >::getAmplitude() const
 {
    return this->amplitude;
 }
 
-template< typename Real >
-void tnlExpBumpFunctionBase< Real >::setSigma( const Real& sigma )
+template< int dimensions, typename Real >
+void tnlExpBumpFunctionBase< dimensions, Real >::setSigma( const Real& sigma )
 {
    this->sigma = sigma;
 }
 
-template< typename Real >
-const Real& tnlExpBumpFunctionBase< Real >::getSigma() const
+template< int dimensions, typename Real >
+const Real& tnlExpBumpFunctionBase< dimensions, Real >::getSigma() const
 {
    return this->sigma;
 }
