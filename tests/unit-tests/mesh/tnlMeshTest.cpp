@@ -28,7 +28,7 @@ int main( int argc, char* argv[] )
 {
 #ifndef HAVE_NOT_CXX11
 #ifdef HAVE_CPPUNIT
-   //tnlMeshTester< double, tnlHost, long int > t;
+   tnlMeshTester< double, tnlHost, long int > t;
    //t.regularMeshOfHexahedronsTest();
    if( ! tnlUnitTestStarter :: run< tnlMeshTester< double, tnlHost, long int > >()
        )

@@ -47,7 +47,7 @@ class tnlIndexedSet
    const Element& getElement( KeyType key ) const;
 
    Element& getElement( KeyType key );
-
+   
    void print( ostream& str ) const;
 
    protected:

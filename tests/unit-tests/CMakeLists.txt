@@ -15,6 +15,8 @@ ADD_TEST( core/vectors/tnlVectorOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_
 ADD_TEST( core/vectors/tnlVectorTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlVectorTest${mpiExt}${debugExt} )
 ADD_TEST( core/vectors/tnlStaticVectorTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlStaticVectorTest${mpiExt}${debugExt} )
 
+ADD_TEST( core/multimaps/tnlEllpackIndexMultimapTest{mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlEllpackIndexMultimapTest${mpiExt}${debugExt} )
+
 ADD_TEST( matrices/tnlDenseMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlDenseMatrixTest${mpiExt}${debugExt} )
 ADD_TEST( matrices/tnlTridiagonalMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlTridiagonalMatrixTest${mpiExt}${debugExt} )
 ADD_TEST( matrices/tnlMultidiagonalMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMultidiagonalMatrixTest${mpiExt}${debugExt} )
