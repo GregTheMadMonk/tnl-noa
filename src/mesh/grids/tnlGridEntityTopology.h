@@ -19,7 +19,7 @@
 #define	TNLGRIDTOPOLOGIES_H
 
 template< typename Grid,
-          int EntityCodimensions,
+          int EntityDimensions,
           typename EntityOrientation >
 class tnlGridEntityTopology
 {
@@ -30,10 +30,10 @@ template< int MeshDimensions,
           typename Real,
           typename Device,
           typename Index,
-          int EntityCodimensions,
+          int EntityDimensions,
           typename EntityOrientation_ >
 class tnlGridEntityTopology< tnlGrid< MeshDimensions, Real, Device, Index >,
-                             EntityCodimensions,
+                             EntityDimensions,
                              EntityOrientation_ >
 {
    static_assert( MeshDimensions == EntityOrientation_::size, "Entity orientation is not a proper static multiindex." );
@@ -43,7 +43,7 @@ class tnlGridEntityTopology< tnlGrid< MeshDimensions, Real, Device, Index >,
       
       static const int meshDimensions = MeshDimensions;
       
-      static const int entityCodimensions = EntityCodimensions;
+      static const int entityDimensions = EntityDimensions;
       
       typedef EntityOrientation_ EntityOrientation;
 };

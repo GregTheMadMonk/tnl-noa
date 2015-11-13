@@ -455,6 +455,40 @@ Real tnlGrid< 2, Real, Device, Index > :: getSmallestSpaceStep() const
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename EntityTopology,
+             typename Vertex >
+__cuda_callable__
+Vertex tnlGrid< 2, Real, Device, Index > :: getEntityCenter( const CoordinatesType& coordinates ) const
+{
+   static_assert( EntityTopology::entityDimensions <= 2 &&
+                  EntityTopology::entityDimensions >= 0 );
+   if( EntityTopology::entityDimensions == meshDimensions )
+      return this->getCellCenter( coordinates );
+   if( EntityTopology::entityDimensions == meshDimensions - 1 )
+      return this->template getFaceCenter< EntityTopology::i1, EntityTopology::i2 >( coordinates );
+   if( EntityTopology::entityDimensions == meshDimensions - 2 )
+      return this->template getVertex( coordinates );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename EntityTopology,
+             typename Vertex >
+__cuda_callable__
+Vertex tnlGrid< 2, Real, Device, Index > :: getEntityCenter( const IndexType& index ) const
+{
+   if( EntityTopology::entityDimensions == meshDimensions )
+      return this->getCellCenter( index );
+   if( EntityTopology::entityDimensions == meshDimensions - 1 )
+      return this->template getFaceCenter< EntityTopology::i1, EntityTopology::i2 >( index );
+   if( EntityTopology::entityDimensions == meshDimensions - 2 )
+      return this->template getVertex( index );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename Vertex >
 __cuda_callable__
 Vertex tnlGrid< 2, Real, Device, Index > :: getCellCenter( const CoordinatesType& cellCoordinates ) const

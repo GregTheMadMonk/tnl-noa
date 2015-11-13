@@ -18,6 +18,8 @@
 #ifndef SRC_MESH_TNLGRID3D_H_
 #define SRC_MESH_TNLGRID3D_H_
 
+#include <core/tnlStaticMultiIndex3D.h>
+
 template< typename Real,
           typename Device,
           typename Index >
@@ -33,6 +35,17 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    typedef tnlGrid< 3, Real, tnlHost, Index > HostType;
    typedef tnlGrid< 3, Real, tnlCuda, Index > CudaType;
 
+   typedef tnlGrid< 3, Real, Device, Index > ThisType;
+   template< int i1, int i2, int i3 > using EntityOrientation = tnlStaticMultiIndex3D< i1, i2, i3 >;
+   
+   typedef tnlGridEntityTopology< ThisType, 3, EntityOrientation< 0, 0, 0 > > Cell;
+   template< int n1, int n2, int n3 > using Face = 
+      typedef tnlGridEntityTopology< ThisType, 2, EntityOrientation< n1, n2, n3 > >;
+   template< int d1, int d2, int d3 > using Edge = 
+      typedef tnlGridEntityTopology< ThisType, 1, EntityOrientation< d1, d2, d3 > >;
+   typedef tnlGridEntityTopology< ThisType, 0, EntityOrientation< 0, 0, 0 > > Vertex;
+
+   
    enum { Dimensions = 3};
 
    tnlGrid();
@@ -161,6 +174,27 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    /****
     * The type Vertex can have different Real type.
     */
+#ifdef HAVE_NOT_CXX11
+   template< typename EntityTopology, 
+             typename Vertex >
+#else
+   template< typename EntityTopology,
+             typename Vertex = VertexType >
+#endif
+   __cuda_callable__
+   Vertex getEntityCenter( const CoordinatesType& cellCoordinates ) const;
+
+#ifdef HAVE_NOT_CXX11
+   template< typename EntityTopology, 
+             typename Vertex >
+#else
+   template< typename EntityTopology,
+             typename Vertex = VertexType >
+#endif
+   __cuda_callable__
+   Vertex getEntityCenter( const IndexType& cellIndex ) const;
+   
+   
 #ifdef HAVE_NOT_CXX11
    template< typename Vertex >
 #else

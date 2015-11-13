@@ -37,12 +37,10 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    typedef tnlGrid< 1, Real, tnlCuda, Index > CudaType;
    typedef tnlGrid< 1, Real, Device, Index > ThisType;
    
-   template< int i > using MultiIndex = tnlStaticMultiIndex1D< i >;
+   template< int i > using EntityOrientation = tnlStaticMultiIndex1D< i >;
    
-   typedef tnlGridEntityTopology< ThisType, 0, MultiIndex<  0 > > Cell;
-   typedef tnlGridEntityTopology< ThisType, 1, MultiIndex<  1 > > EastFace;
-   typedef tnlGridEntityTopology< ThisType, 1, MultiIndex< -1 > > WestFace;
-   typedef tnlGridEntityTopology< ThisType, 1, MultiIndex<  0 > > Vertex;
+   typedef tnlGridEntityTopology< ThisType, 1, EntityOrientation<  0 > > Cell;
+   typedef tnlGridEntityTopology< ThisType, 0, EntityOrientation<  0 > > Vertex;
    
    enum { Dimensions = 1};
 

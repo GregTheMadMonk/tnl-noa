@@ -727,6 +727,56 @@ Real tnlGrid< 3, Real, Device, Index > :: getSmallestSpaceStep() const
    return Min( this->hx, Min( this->hy, this->hz ) );
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename EntityTopology,
+             typename Vertex >
+__cuda_callable__
+Vertex tnlGrid< 3, Real, Device, Index > :: getEntityCenter( const CoordinatesType& coordinates ) const
+{
+   static_assert( EntityTopology::entityDimensions <= 3 &&
+                  EntityTopology::entityDimensions >= 0 );
+   if( EntityTopology::entityDimensions == meshDimensions )
+      return this->getCellCenter( coordinates );
+   if( EntityTopology::entityDimensions == meshDimensions - 1 )
+      return this->template getFaceCenter< EntityTopology::i1,
+                                           EntityTopology::i2,
+                                           EntityTopology::i3 >( coordinates );
+   if( EntityTopology::entityDimensions == meshDimensions - 2 )
+      return this->template getEdgeCenter< EntityTopology::i1,
+                                           EntityTopology::i2,
+                                           EntityTopology::i3 >( coordinates );
+   if( EntityTopology::entityDimensions == meshDimensions - 3 )
+      return this->template getVertex( coordinates );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename EntityTopology,
+             typename Vertex >
+__cuda_callable__
+Vertex tnlGrid< 3, Real, Device, Index > :: getEntityCenter( const IndexType& index ) const
+{
+   static_assert( EntityTopology::entityDimensions <= 3 &&
+                  EntityTopology::entityDimensions >= 0 );
+
+   static_assert( EntityTopology::entityDimensions <= 3 &&
+                  EntityTopology::entityDimensions >= 0 );
+   if( EntityTopology::entityDimensions == meshDimensions )
+      return this->getCellCenter( index );
+   if( EntityTopology::entityDimensions == meshDimensions - 1 )
+      return this->template getFaceCenter< EntityTopology::i1,
+                                           EntityTopology::i2,
+                                           EntityTopology::i3 >( index );
+   if( EntityTopology::entityDimensions == meshDimensions - 2 )
+      return this->template getEdgeCenter< EntityTopology::i1,
+                                           EntityTopology::i2,
+                                           EntityTopology::i3 >( index );
+   if( EntityTopology::entityDimensions == meshDimensions - 3 )
+      return this->template getVertex( index );
+}
 
 template< typename Real,
           typename Device,

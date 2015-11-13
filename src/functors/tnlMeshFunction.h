@@ -21,7 +21,7 @@
 #define TNLMESHFUNCTION_H
 
 template< typename Mesh,
-          typename Vector,
+          typename Real = typename Mesh::RealType,
           int MeshEntitiesDimensions_ = Mesh::Dimensions >
 class tnlMeshFunction : public tnlFunction< Mesh::Dimensions,
                                             tnlDiscreteFunction >
@@ -31,18 +31,20 @@ class tnlMeshFunction : public tnlFunction< Mesh::Dimensions,
    public:
       
       typedef Mesh MeshType;      
-      typedef Vector VectorType;
-      typedef typename VectorType::RealType RealType;
-      typedef typename VectorType::DeviceType DeviceType;
-      typedef typename VectorType::IndexType IndexType;
+      typedef typename MeshType::DeviceType DeviceType;
+      typedef typename MeshType::IndexType IndexType;
+      typedef Real RealType;
+      typedef tnlSharedVector< RealType, DeviceType, IndexType > VectorType;
       
       static constexpr int MeshEntitiesDimensions = MeshEntitiesDimensions_;
       
       tnlMeshFunction();
       
-      tnlMeshFunction( const MeshType* mesh );
+      tnlMeshFunction( const MeshType* mesh,
+                       RealType* data );
       
-      void setMesh( const MeshType* mesh );
+      void bind( const MeshType* mesh,
+                 RealType* data );
       
       const MeshType& getMesh() const;
       
@@ -61,7 +63,7 @@ class tnlMeshFunction : public tnlFunction< Mesh::Dimensions,
       
       const MeshType* mesh;
       
-      VectorType data;
+      tnlSharedVector<  > data;
       
 };
 
