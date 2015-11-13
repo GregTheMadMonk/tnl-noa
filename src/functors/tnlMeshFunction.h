@@ -24,8 +24,7 @@ template< typename Mesh,
           typename Vector,
           int MeshEntitiesDimensions_ = Mesh::Dimensions >
 class tnlMeshFunction : public tnlFunction< Mesh::Dimensions,
-                                            typename VectorType::RealType,
-                                            typename VectorType::IndexType >
+                                            tnlDiscreteFunction >
 {
    static_assert( Mesh::DeviceType::DeviceType == Vector::DeviceType::DeviceType,
                   "Both mesh and vector of a mesh function must reside on the same device.");
@@ -54,9 +53,9 @@ class tnlMeshFunction : public tnlFunction< Mesh::Dimensions,
       void setValue( const IndexType meshEntityIndex,
                      const RealType& value );
       
-      RealType& operator[]( const IndexType meshEntityIndex );
+      RealType& operator()( const IndexType meshEntityIndex );
       
-      const RealType& operator[]( const IndexType meshEntityIndex ) const;
+      const RealType& operator()( const IndexType meshEntityIndex ) const;
       
    protected:
       

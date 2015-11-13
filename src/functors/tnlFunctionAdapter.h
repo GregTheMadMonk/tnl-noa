@@ -49,7 +49,6 @@ class tnlFunctionAdapter< Mesh, Function, tnlAnalyticFunction >
       typedef typename MeshType::IndexType     IndexType;      
       typedef typename FunctionType::VertexType VertexType;
       
-      //template< typename MeshEntity >
       static RealType getValue( const MeshType& mesh,
                                 const FunctionType& function,
                                 const IndexType meshEntityIndex,
@@ -77,14 +76,13 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, 
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       
-      //template< typename MeshEntity >
       static RealType getValue( const MeshType& mesh,
                                 const FunctionType& function,
                                 const IndexType meshEntytiIndex,
                                 const CoordinatesType& coordinates,
                                 const RealType& time )
       {
-         return function.getValue( mesh.getCellCenter( coordinates ) );
+         return function.getValue( mesh.getCellCenter( coordinates ), time );
       }
 };
 

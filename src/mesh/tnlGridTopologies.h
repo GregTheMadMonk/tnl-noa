@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlGrid.h  -  description
+                          tnlGridTopologies.h  -  description
                              -------------------
-    begin                : Jan 16, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Nov 13, 2015
+    copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,25 +15,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLGRID_H_
-#define TNLGRID_H_
+#ifndef TNLGRIDTOPOLOGIES_H
+#define	TNLGRIDTOPOLOGIES_H
 
-#include <core/tnlObject.h>
-#include <core/tnlHost.h>
-#include <core/vectors/tnlStaticVector.h>
-#include <core/vectors/tnlVector.h>
-#include <core/tnlLogger.h>
+template< typename Grid,
+          int EntityDimenisons >
+class tnlGridEntityTopology
+{
+   static_assert( false );
+}
 
 template< int Dimensions,
-          typename Real = double,
-          typename Device = tnlHost,
-          typename Index = int >
-class tnlGrid : public tnlObject
+          typename Real,
+          typename Device,
+          typename Index >
+class tnlGridCell< tnlGrid< Dimensions, Real, Device, Index > >
 {
+   public:
+      static const int dimensions = Dimensions;
+      
+      static constexpr int getDimensions() { return dimensions; }
 };
 
-#include <mesh/tnlGrid1D.h>
-#include <mesh/tnlGrid2D.h>
-#include <mesh/tnlGrid3D.h>
+template< >
 
-#endif /* TNLGRID_H_ */
+
+#endif	/* TNLGRIDTOPOLOGIES_H */
+
