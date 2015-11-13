@@ -20,34 +20,34 @@
 
 #include <config/tnlParameterContainer.h>
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
-          typename ConfigTag,
-          bool ResolveMesh = tnlConfigTagMeshResolve< ConfigTag >::enabled >
+          typename MeshConfig,
+          bool ResolveMesh = tnlMeshConfigMeshResolve< MeshConfig >::enabled >
 class tnlMeshTypeResolver
 {
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
-          typename ConfigTag >
-class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >
+          typename MeshConfig >
+class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, false >
 {
    public:
 
    static bool run( const tnlParameterContainer& parameters );
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
-          typename ConfigTag  >
-class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
+          typename MeshConfig  >
+class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, true >
 {
    public:
 

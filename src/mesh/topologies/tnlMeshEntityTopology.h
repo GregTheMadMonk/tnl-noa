@@ -18,15 +18,35 @@
 #ifndef TNLMESHENTITYTOPOLOGY_H_
 #define TNLMESHENTITYTOPOLOGY_H_
 
-template< typename MeshEntityTag,
+template< typename MeshEntityTopology,
           int SubentityDimension >
-struct tnlSubentities;
+struct tnlMeshSubtopology
+{
+};
 
-
-template< typename MeshEntityTag,
-          typename SubentityTag,
+template< typename MeshEntityTopology,
+          typename SubentityTopology,
           int SubentityIndex,
           int SubentityVertexIndex >
 struct tnlSubentityVertex;
 
+
+template< typename MeshConfig,
+          int Dimensions >
+class tnlMeshEntityTopology
+{
+   public:
+
+   typedef typename tnlMeshSubtopology< typename MeshConfig::CellTopology,
+                                        Dimensions >::Topology Topology;
+};
+
+template< typename MeshConfig >
+class tnlMeshEntityTopology< MeshConfig,
+                             MeshConfig::CellTopology::dimensions >
+{
+   public:
+
+   typedef typename MeshConfig::CellTopology Topology;
+};
 #endif /* TNLMESHENTITYTOPOLOGY_H_ */
