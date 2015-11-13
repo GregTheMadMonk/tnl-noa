@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlGridTopologies.h  -  description
+                          tnlGridEntityTopology.h  -  description
                              -------------------
     begin                : Nov 13, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -19,25 +19,35 @@
 #define	TNLGRIDTOPOLOGIES_H
 
 template< typename Grid,
-          int EntityDimenisons >
+          int EntityCodimensions,
+          typename EntityOrientation >
 class tnlGridEntityTopology
 {
-   static_assert( false );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index >
-class tnlGridCell< tnlGrid< Dimensions, Real, Device, Index > >
-{
-   public:
-      static const int dimensions = Dimensions;
-      
-      static constexpr int getDimensions() { return dimensions; }
+   static_assert( false, "" );
 };
 
-template< >
+template< int MeshDimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          int EntityCodimensions,
+          typename EntityOrientation_ >
+class tnlGridEntityTopology< tnlGrid< MeshDimensions, Real, Device, Index >,
+                             EntityCodimensions,
+                             EntityOrientation_ >
+{
+   static_assert( MeshDimensions == EntityOrientation_::size, "Entity orientation is not a proper static multiindex." );
+   public:
+      
+      typedef tnlGrid< MeshDimensions, Real, Device, Index > Grid;
+      
+      static const int meshDimensions = MeshDimensions;
+      
+      static const int entityCodimensions = EntityCodimensions;
+      
+      typedef EntityOrientation_ EntityOrientation;
+};
+
 
 
 #endif	/* TNLGRIDTOPOLOGIES_H */
