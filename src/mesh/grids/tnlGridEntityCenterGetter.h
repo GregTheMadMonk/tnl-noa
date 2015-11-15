@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlGridEntityTopology.h  -  description
+                          tnlGridEntityCenterGetter.h  -  description
                              -------------------
-    begin                : Nov 13, 2015
+    begin                : Nov 15, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -15,28 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLGRIDTOPOLOGIES_H
-#define	TNLGRIDTOPOLOGIES_H
+#ifndef TNLGRIDENTITYCENTERGETTER_H
+#define	TNLGRIDENTITYCENTERGETTER_H
 
 template< typename Grid,
-          int EntityDimensions,
-          typename EntityOrientation_ >
-class tnlGridEntityTopology
+          typename EntityTopology >
+class tnlGridEntityCenterGetter
 {
-   public:
-      
-      typedef Grid GridType;
-      
-      static const int meshDimensions = GridType::Dimensions;
-      
-      static const int entityDimensions = EntityDimensions;
-      
-      typedef EntityOrientation_ EntityOrientation;
-      
-   static_assert( meshDimensions == EntityOrientation_::size, "Entity orientation is not a proper static multiindex." );
 };
 
-
-
-#endif	/* TNLGRIDTOPOLOGIES_H */
+#endif	/* TNLGRIDENTITYCENTERGETTER_H */
 

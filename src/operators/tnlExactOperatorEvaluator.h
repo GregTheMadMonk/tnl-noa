@@ -83,9 +83,7 @@ class tnlExactOperatorEvaluator
          public:
 
             template< int EntityDimension >
-#ifdef HAVE_CUDA
-            __host__ __device__
-#endif
+            __cuda_callable__
             static void processEntity( const MeshType& mesh,
                                        TraversalUserData& userData,
                                        const IndexType index )
@@ -104,16 +102,16 @@ class tnlExactOperatorEvaluator
          public:
 
             template< int EntityDimensions >
-#ifdef HAVE_CUDA
-            __host__ __device__
-#endif
+            __cuda_callable__
             static void processEntity( const MeshType& mesh,
                                        TraversalUserData& userData,
                                        const IndexType index )
             {
-               userData.fu[ index ] = userData.differentialOperator.getValue( userData.function,
-                                                                              mesh.template getEntityCenter< EntityDimensions >( index ),
-                                                                              userData.time );
+               userData.fu[ index ] = 
+                  userData.differentialOperator.template getValue
+                  ( userData.function,
+                    mesh.template getEntityCenter< EntityDimensions >( index ),
+                    userData.time );
             }
 
       };
@@ -154,9 +152,24 @@ class tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, Dof
       {
          public:
 
-#ifdef HAVE_CUDA
-            __host__ __device__
-#endif
+            template< typename EntityTopology >
+            __cuda_callable__
+            static void processEntity( const MeshType& mesh,
+                                       TraversalUserData& userData,
+                                       const IndexType index,
+                                       const CoordinatesType& c )
+            {
+               userData.boundaryConditions.template setBoundaryConditions
+                  ( userData.time,
+                    mesh,
+                    index,
+                    c,
+                    userData.fu,
+                    userData.fu );
+            }
+
+            
+            __cuda_callable__
             static void processCell( const MeshType& mesh,
                                      TraversalUserData& userData,
                                      const IndexType index,
@@ -175,10 +188,23 @@ class tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, Dof
       class TraversalInteriorEntitiesProcessor
       {
          public:
+            
+            template< typename EntityTopology >
+            __cuda_callable__
+            static void processEntity( const MeshType& mesh,
+                                       TraversalUserData& userData,
+                                       const IndexType index,
+                                       const CoordinatesType& c )
+            {
+               userData.fu[ index ] = 
+                  userData.differentialOperator.getValue//< EntityTopology >
+                     ( userData.function,
+                       mesh.template getEntityCenter< EntityTopology >( index ),                                                                           
+                       userData.time );
+            }
 
-#ifdef HAVE_CUDA
-            __host__ __device__
-#endif
+            
+            __cuda_callable__
             static void processCell( const MeshType& mesh,
                                      TraversalUserData& userData,
                                      const IndexType index,

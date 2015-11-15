@@ -462,12 +462,10 @@ Vertex tnlGrid< 2, Real, Device, Index > :: getEntityCenter( const CoordinatesTy
 {
    static_assert( EntityTopology::entityDimensions <= 2 &&
                   EntityTopology::entityDimensions >= 0, "Wrong grid entity dimensions." );
-   if( EntityTopology::entityDimensions == Dimensions )
-      return this->getCellCenter( coordinates );
-   if( EntityTopology::entityDimensions == Dimensions - 1 )
-      return this->template getFaceCenter< EntityTopology::i1, EntityTopology::i2 >( coordinates );
-   if( EntityTopology::entityDimensions == Dimensions - 2 )
-      return this->template getVertex( coordinates );
+      return tnlGridEntityCenterGetter< ThisType, EntityTopology >::
+      getCenter( coordinates, 
+                 this->getOrigin(),
+                 this->getCellProportions() );
 }
 
 template< typename Real,
@@ -478,10 +476,13 @@ template< typename Real,
 __cuda_callable__
 Vertex tnlGrid< 2, Real, Device, Index > :: getEntityCenter( const IndexType& index ) const
 {
+   static_assert( EntityTopology::entityDimensions <= 2 &&
+                  EntityTopology::entityDimensions >= 0, "Wrong grid entity dimensions." );
+
    if( EntityTopology::entityDimensions == Dimensions )
       return this->getCellCenter( index );
    if( EntityTopology::entityDimensions == Dimensions - 1 )
-      return this->template getFaceCenter< EntityTopology::i1, EntityTopology::i2 >( index );
+      return this->template getFaceCenter< EntityTopology::EntityOrientation::i1, EntityTopology::EntityOrientation::i2 >( index );
    if( EntityTopology::entityDimensions == Dimensions - 2 )
       return this->template getVertex( index );
 }
@@ -524,7 +525,7 @@ template< int nx, int ny, typename Vertex >
 __cuda_callable__
 Vertex tnlGrid< 2, Real, Device, Index > :: getFaceCenter( const CoordinatesType& faceCoordinates ) const
 {
-   tnlStaticAssert( nx >= 0 && ny >= 0 && nx + ny == 1, "Wrong template parameters nx or ny." );
+   static_assert( nx >= 0 && ny >= 0 && nx + ny == 1, "Wrong template parameters nx or ny." );
    if( nx )
    {
       tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x() + 1,

@@ -22,7 +22,6 @@
 #include <core/tnlHost.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <core/vectors/tnlVector.h>
-#include <core/tnlLogger.h>
 
 template< int Dimensions,
           typename Real = double,

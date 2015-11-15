@@ -30,7 +30,7 @@ processBoundaryEntities( const GridType& grid,
    /****
     * Boundary cells
     */
-   typedef typename Grid::Cell CellTopology;
+   typedef typename GridType::Cell CellTopology;
    CoordinatesType coordinates;
    const IndexType& xSize = grid.getDimensions().x();
    coordinates.x() = 0;
@@ -51,7 +51,7 @@ processInteriorEntities( const GridType& grid,
    /****
     * Interior cells
     */
-   typedef typename Grid::Cell CellTopology;
+   typedef typename GridType::Cell CellTopology;
    CoordinatesType coordinates;
    const IndexType& xSize = grid.getDimensions().x();
    for( coordinates.x() = 1; coordinates.x() < xSize-1; coordinates.x() ++ )
@@ -73,7 +73,7 @@ processBoundaryEntities( const GridType& grid,
    /****
     * Boundary vertices
     */
-   typedef typename Grid::Vertex VertexTopology;
+   typedef typename GridType::Vertex VertexTopology;
    CoordinatesType coordinates;
    const IndexType& xSize = grid.getDimensions().x();
    coordinates.x() = 0;
@@ -94,7 +94,7 @@ processInteriorEntities( const GridType& grid,
    /****
     * Interior vertices
     */
-   typedef typename Grid::Vertex VertexTopology;
+   typedef typename GridType::Vertex VertexTopology;
    CoordinatesType coordinates;
    const IndexType& xSize = grid.getDimensions().x();
    for( coordinates.x() = 1; coordinates.x() < xSize; coordinates.x() ++ )
@@ -119,11 +119,7 @@ __global__ void tnlTraverserGrid1DBoundaryCells( const tnlGrid< 1, Real, tnlCuda
                                                  UserData* userData,
                                                  Index gridXIdx )
 {
-   typedef Real RealType;
-   typedef Index IndexType;
-   typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename Grid::Cell CellTopology;
+   typedef typename GridType::Cell CellTopology;
 
    const IndexType& xSize = grid->getDimensions().x();
 
@@ -150,11 +146,7 @@ __global__ void tnlTraverserGrid1DInteriorCells( const tnlGrid< 1, Real, tnlCuda
                                                  UserData* userData,
                                                  const Index gridIdx )
 {
-   typedef Real RealType;
-   typedef Index IndexType;
-   typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename Grid::Cell CellTopology;
+   typedef typename GridType::Cell CellTopology;
 
    CoordinatesType cellCoordinates;
    cellCoordinates.x() = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
@@ -251,11 +243,7 @@ __global__ void tnlTraverserGrid1DBoundaryVertices( const tnlGrid< 1, Real, tnlC
                                                     UserData* userData,
                                                     Index gridXIdx )
 {
-   typedef Real RealType;
-   typedef Index IndexType;
-   typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename Grid::Vertex VertexTopology;
+   typedef typename GridType::Vertex VertexTopology;
 
    const IndexType& xSize = grid->getDimensions().x();
 
@@ -282,11 +270,7 @@ __global__ void tnlTraverserGrid1DInteriorVertices( const tnlGrid< 1, Real, tnlC
                                                     UserData* userData,
                                                     const Index gridIdx )
 {
-   typedef Real RealType;
-   typedef Index IndexType;
-   typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename Grid::Vertex VertexTopology;
+   typedef typename GridType::Vertex VertexTopology;
 
    CoordinatesType vertexCoordinates;
    vertexCoordinates.x() = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;

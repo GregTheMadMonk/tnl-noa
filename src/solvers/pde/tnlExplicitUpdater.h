@@ -87,9 +87,7 @@ class tnlExplicitUpdater
          public:
 
             template< int EntityDimension >
-#ifdef HAVE_CUDA
-            __host__ __device__
-#endif
+            __cuda_callable__
             static void processEntity( const MeshType& mesh,
                                        TraverserUserData& userData,
                                        const IndexType index )
@@ -108,9 +106,7 @@ class tnlExplicitUpdater
          public:
 
             template< int EntityDimensions >
-#ifdef HAVE_CUDA
-            __host__ __device__
-#endif
+            __cuda_callable__
             static void processEntity( const MeshType& mesh,
                                        TraverserUserData& userData,
                                        const IndexType index )
@@ -169,14 +165,25 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
       class TraverserBoundaryEntitiesProcessor
       {
          public:
+            
+            template< typename EntityTopology >
+            __cuda_callable__
+            static void processEntity( const MeshType& mesh,
+                                       TraverserUserData& userData,
+                                       const IndexType index,
+                                       const CoordinatesType& coordinates )
+            {
+               userData.boundaryConditions->setBoundaryConditions//< EntityTopology >
+               ( *userData.time,
+                 mesh,
+                 index,
+                 coordinates,
+                 *userData.u,
+                 *userData.fu );
+            }
 
-            /****
-             * TODO: This must be specialized for entities with different dimensions
-             * otherwise 'coordinates' would not make sense without knowing the orientation.
-             */
-#ifdef HAVE_CUDA
-            __host__ __device__
-#endif
+            
+            /*__cuda_callable__
             static void processCell( const MeshType& mesh,
                                      TraverserUserData& userData,
                                      const IndexType index,
@@ -190,9 +197,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                    *userData.fu );
             }
 
-#ifdef HAVE_CUDA
-            __host__ __device__
-#endif
+            __cuda_callable__
             static void processFace( const MeshType& mesh,
                                      TraverserUserData& userData,
                                      const IndexType index,
@@ -204,7 +209,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                    coordinates,
                                                                    *userData.u,
                                                                    *userData.fu );
-            }
+            }*/
 
 
       };
@@ -213,11 +218,35 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
       {
          public:
 
-         typedef typename MeshType::VertexType VertexType;
+            typedef typename MeshType::VertexType VertexType;
+         
+            template< typename EntityTopology >
+            __cuda_callable__
+            static void processEntity( const MeshType& mesh,
+                                       TraverserUserData& userData,
+                                       const IndexType index,
+                                       const CoordinatesType& coordinates )
+            {
+               ( *userData.fu)[ index ] = 
+                  userData.differentialOperator->getValue//< EntityTopology >
+                  ( mesh,
+                    index,
+                    coordinates,
+                    *userData.u,
+                    *userData.time );
 
-#ifdef HAVE_CUDA
-            __host__ __device__
-#endif
+               typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+               ( * userData.fu )[ index ] += 
+                  FunctionAdapter::template getValue< EntityTopology >
+                  ( mesh,
+                    *userData.rightHandSide,
+                    index,
+                    coordinates,
+                    *userData.time );
+            }
+
+
+            /*__cuda_callable__
             static void processCell( const MeshType& mesh,
                                      TraverserUserData& userData,
                                      const IndexType index,
@@ -237,9 +266,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                         *userData.time );
             }
 
-#ifdef HAVE_CUDA
-            __host__ __device__
-#endif
+            __cuda_callable__
             static void processFace( const MeshType& mesh,
                                      TraverserUserData& userData,
                                      const IndexType index,
@@ -257,7 +284,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                                         index,
                                                                         coordinates,
                                                                         *userData.time );
-            }
+            }*/
       };
 
 };

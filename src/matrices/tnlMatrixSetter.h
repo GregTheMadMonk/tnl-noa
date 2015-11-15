@@ -127,6 +127,19 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
    {
       public:
 
+         template< typename EntityTopology >
+         __cuda_callable__
+         static void processEntity( const MeshType& mesh,
+                                    TraversalUserData& userData,
+                                    const IndexType index,
+                                    const CoordinatesType& coordinates )
+         {
+            ( *userData.rowLengths )[ index ] =
+                     userData.boundaryConditions->getLinearSystemRowLength( mesh, index, coordinates );
+         }
+
+         
+         /*
          __cuda_callable__
          static void processCell( const MeshType& mesh,
                                   TraversalUserData& userData,
@@ -146,7 +159,7 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
              //printf("Matrix setter: Index = %d \n", index );
             ( *userData.rowLengths )[ index ] =
                      userData.boundaryConditions->getLinearSystemRowLength( mesh, index, coordinates );
-         }
+         }*/
          
 
    };
@@ -154,8 +167,20 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
    class TraversalInteriorEntitiesProcessor
    {
       public:
-
+         
+         template< typename EntityTopology >
          __cuda_callable__
+         static void processEntity( const MeshType& mesh,
+                                    TraversalUserData& userData,
+                                    const IndexType index,
+                                    const CoordinatesType& coordinates )
+         {
+            ( *userData.rowLengths )[ index ] =
+                     userData.differentialOperator->getLinearSystemRowLength( mesh, index, coordinates );
+         }
+
+
+         /*__cuda_callable__
          static void processCell( const MeshType& mesh,
                                   TraversalUserData& userData,
                                   const IndexType index,
@@ -174,7 +199,7 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
             // printf("Matrix setter: Index = %d \n", index );
             ( *userData.rowLengths )[ index ] =
                      userData.differentialOperator->getLinearSystemRowLength( mesh, index, coordinates );
-         }
+         }*/
          
 
    };

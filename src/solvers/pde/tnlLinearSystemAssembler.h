@@ -219,7 +219,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                     const CoordinatesType& coordinates )
          {
              ( *userData.b )[ index ] = 0.0;           
-            userData.boundaryConditions->template updateLinearSystem< EntityTopology >
+             userData.boundaryConditions->updateLinearSystem//< EntityTopology >
                ( *userData.time + *userData.tau,
                  mesh,
                  index,
@@ -242,7 +242,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                     const CoordinatesType& coordinates )
          {
             ( *userData.b )[ index ] = 0.0;            
-            userData.differentialOperator->template updateLinearSystem< EntityTopology >
+            userData.differentialOperator->updateLinearSystem//< EntityTopology >
                ( *userData.time,
                  *userData.tau,
                  mesh,

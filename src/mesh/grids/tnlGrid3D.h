@@ -19,6 +19,8 @@
 #define SRC_MESH_TNLGRID3D_H_
 
 #include <core/tnlStaticMultiIndex.h>
+#include <mesh/grids/tnlGridEntityTopology.h>
+#include <mesh/grids/tnlGridEntityCenterGetter.h>
 
 template< typename Real,
           typename Device,

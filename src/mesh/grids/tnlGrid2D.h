@@ -19,6 +19,7 @@
 #define SRC_MESH_TNLGRID2D_H_
 
 #include <core/tnlStaticMultiIndex.h>
+#include <mesh/grids/tnlGridEntityTopology.h>
 
 template< typename Real,
           typename Device,

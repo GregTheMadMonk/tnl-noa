@@ -130,7 +130,6 @@ class tnlMeshTester : public CppUnit :: TestCase
 
        typedef tnlMesh< TestTriangleMeshConfig > TriangleTestMesh;
        TriangleTestMesh mesh, mesh2;
-       mesh.setName( "mesh" );
        tnlMeshBuilder< TriangleTestMesh > meshBuilder;
        meshBuilder.setPointsCount( 4 );
        meshBuilder.setPoint( 0, PointType( 0.0, 0.0 ) );

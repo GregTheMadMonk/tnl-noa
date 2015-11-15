@@ -24,6 +24,8 @@ class tnlStaticMultiIndex1D
    public:
       
       static const int i1 = i1_;
+      
+      static const int size = 1;
 };
 
 template< int i1_,
@@ -35,6 +37,8 @@ class tnlStaticMultiIndex2D
       static const int i1 = i1_;
       
       static const int i2 = i2_;
+      
+      static const int size = 2;
 };
 
 template< int i1_,
@@ -49,6 +53,8 @@ class tnlStaticMultiIndex3D
       static const int i2 = i2_;
       
       static const int i3 = i3_;
+      
+      static const int size = 3;
 };
 
 

@@ -18,8 +18,9 @@
 #ifndef SRC_MESH_TNLGRID1D_H_
 #define SRC_MESH_TNLGRID1D_H_
 
-#include <mesh/grids/tnlGridEntityTopology.h>
 #include <core/tnlStaticMultiIndex.h>
+#include <mesh/grids/tnlGridEntityTopology.h>
+#include <mesh/grids/tnlGridEntityCenterGetter.h>
 
 template< typename Real,
           typename Device,
@@ -107,6 +108,26 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    /****
     * The type Vertex can have different Real type.
     */
+#ifdef HAVE_NOT_CXX11
+   template< typename EntityTopology, 
+             typename Vertex >
+#else
+   template< typename EntityTopology,
+             typename Vertex = VertexType >
+#endif
+   __cuda_callable__
+   Vertex getEntityCenter( const CoordinatesType& cellCoordinates ) const;
+
+#ifdef HAVE_NOT_CXX11
+   template< typename EntityTopology, 
+             typename Vertex >
+#else
+   template< typename EntityTopology,
+             typename Vertex = VertexType >
+#endif
+   __cuda_callable__
+   Vertex getEntityCenter( const IndexType& cellIndex ) const;
+   
 #ifdef HAVE_NOT_CXX11
    template< typename Vertex >
 #else

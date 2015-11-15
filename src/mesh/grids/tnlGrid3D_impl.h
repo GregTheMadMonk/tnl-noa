@@ -737,18 +737,10 @@ Vertex tnlGrid< 3, Real, Device, Index > :: getEntityCenter( const CoordinatesTy
 {
    static_assert( EntityTopology::entityDimensions <= 3 &&
                   EntityTopology::entityDimensions >= 0, "Wrong grid entity dimensions." );
-   if( EntityTopology::entityDimensions == Dimensions )
-      return this->getCellCenter( coordinates );
-   if( EntityTopology::entityDimensions == Dimensions - 1 )
-      return this->template getFaceCenter< EntityTopology::i1,
-                                           EntityTopology::i2,
-                                           EntityTopology::i3 >( coordinates );
-   if( EntityTopology::entityDimensions == Dimensions - 2 )
-      return this->template getEdgeCenter< EntityTopology::i1,
-                                           EntityTopology::i2,
-                                           EntityTopology::i3 >( coordinates );
-   if( EntityTopology::entityDimensions == Dimensions - 3 )
-      return this->template getVertex( coordinates );
+   return tnlGridEntityCenterGetter< ThisType, EntityTopology >::
+      getCenter( coordinates, 
+                 this->getOrigin(),
+                 this->getCellProportions() );
 }
 
 template< typename Real,
@@ -765,13 +757,13 @@ Vertex tnlGrid< 3, Real, Device, Index > :: getEntityCenter( const IndexType& in
    if( EntityTopology::entityDimensions == Dimensions )
       return this->getCellCenter( index );
    if( EntityTopology::entityDimensions == Dimensions - 1 )
-      return this->template getFaceCenter< EntityTopology::i1,
-                                           EntityTopology::i2,
-                                           EntityTopology::i3 >( index );
+      return this->template getFaceCenter< EntityTopology::EntityOrientation::i1,
+                                           EntityTopology::EntityOrientation::i2,
+                                           EntityTopology::EntityOrientation::i3 >( index );
    if( EntityTopology::entityDimensions == Dimensions - 2 )
-      return this->template getEdgeCenter< EntityTopology::i1,
-                                           EntityTopology::i2,
-                                           EntityTopology::i3 >( index );
+      return this->template getEdgeCenter< EntityTopology::EntityOrientation::i1,
+                                           EntityTopology::EntityOrientation::i2,
+                                           EntityTopology::EntityOrientation::i3 >( index );
    if( EntityTopology::entityDimensions == Dimensions - 3 )
       return this->template getVertex( index );
 }

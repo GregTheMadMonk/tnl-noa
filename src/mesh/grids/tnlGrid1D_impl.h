@@ -24,6 +24,8 @@
 #include <core/tnlAssert.h>
 #include <mesh/tnlGnuplotWriter.h>
 
+#include "tnlGrid1D.h"
+
 using namespace std;
 
 template< typename Real,
@@ -266,6 +268,40 @@ Real tnlGrid< 1, Real, Device, Index > :: getSmallestSpaceStep() const
 {
    return this->hx;
 }
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename EntityTopology,
+             typename Vertex >
+__cuda_callable__
+Vertex tnlGrid< 1, Real, Device, Index > :: getEntityCenter( const CoordinatesType& coordinates ) const
+{
+   static_assert( EntityTopology::entityDimensions <= 1 &&
+                  EntityTopology::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   return tnlGridEntityCenterGetter< ThisType, EntityTopology >::
+      getCenter( coordinates, 
+                 this->getOrigin(),
+                 this->getCellProportions() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename EntityTopology,
+             typename Vertex >
+__cuda_callable__
+Vertex tnlGrid< 1, Real, Device, Index > :: getEntityCenter( const IndexType& index ) const
+{
+   static_assert( EntityTopology::entityDimensions <= 1 &&
+                  EntityTopology::entityDimensions >= 0, "Wrong grid entity dimensions." );
+
+   if( EntityTopology::entityDimensions == Dimensions )
+      return this->getCellCenter( index );
+   if( EntityTopology::entityDimensions == Dimensions - 1 )
+      return this->template getVertex( index );
+}
+
 
 template< typename Real,
           typename Device,
