@@ -20,32 +20,20 @@
 
 template< typename Grid,
           int EntityDimensions,
-          typename EntityOrientation >
+          typename EntityOrientation_ >
 class tnlGridEntityTopology
 {
-   static_assert( false, "" );
-};
-
-template< int MeshDimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename EntityOrientation_ >
-class tnlGridEntityTopology< tnlGrid< MeshDimensions, Real, Device, Index >,
-                             EntityDimensions,
-                             EntityOrientation_ >
-{
-   static_assert( MeshDimensions == EntityOrientation_::size, "Entity orientation is not a proper static multiindex." );
    public:
       
-      typedef tnlGrid< MeshDimensions, Real, Device, Index > Grid;
+      typedef Grid GridType;
       
-      static const int meshDimensions = MeshDimensions;
+      static const int meshDimensions = GridType::MeshDimensions;
       
       static const int entityDimensions = EntityDimensions;
       
       typedef EntityOrientation_ EntityOrientation;
+      
+   static_assert( meshDimensions == EntityOrientation_::size, "Entity orientation is not a proper static multiindex." );
 };
 
 

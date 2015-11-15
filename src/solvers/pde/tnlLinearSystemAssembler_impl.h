@@ -127,7 +127,6 @@ assembly( const RealType& time,
    {
       TraverserUserData userData( time,
                                   tau,
-                                  this->timeDiscretisationCoefficient,
                                   differentialOperator,
                                   boundaryConditions,
                                   rightHandSide,
@@ -148,8 +147,6 @@ assembly( const RealType& time,
    {
       RealType* kernelTime = tnlCuda::passToDevice( time );
       RealType* kernelTau = tnlCuda::passToDevice( tau );
-      RealType timeDiscretisationCoefficient = this->timeDiscretisationCoefficient; // retyping between different floating point types, TODO check it
-      RealType* kernelTimeDiscretisationCoefficient = tnlCuda::passToDevice( timeDiscretisationCoefficient );
       DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
       BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
       RightHandSide* kernelRightHandSide = tnlCuda::passToDevice( rightHandSide );
@@ -158,7 +155,6 @@ assembly( const RealType& time,
       MatrixType* kernelMatrix = tnlCuda::passToDevice( matrix );
       TraverserUserData userData( *kernelTime,
                                   *kernelTau,
-                                  *kernelTimeDiscretisationCoefficient,
                                   *kernelDifferentialOperator,
                                   *kernelBoundaryConditions,
                                   *kernelRightHandSide,

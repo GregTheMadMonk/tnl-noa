@@ -102,7 +102,6 @@ update( const RealType& time,
         DofVector& u,
         DofVector& fu ) const
 {
-
    if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlHostDevice )
    {
       TraverserUserData userData( time, differentialOperator, boundaryConditions, rightHandSide, u, fu );

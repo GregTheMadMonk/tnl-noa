@@ -50,7 +50,6 @@ class tnlLinearSystemAssemblerTraverserUserData
 
       tnlLinearSystemAssemblerTraverserUserData( const Real& time,
                                                  const Real& tau,
-                                                 const Real& timeDiscretisationCoefficient,
                                                  const DifferentialOperator& differentialOperator,
                                                  const BoundaryConditions& boundaryConditions,
                                                  const RightHandSide& rightHandSide,
@@ -59,7 +58,6 @@ class tnlLinearSystemAssemblerTraverserUserData
                                                  DofVector& b )
       : time( &time ),
         tau( &tau ),
-        timeDiscretisationCoefficient( &timeDiscretisationCoefficient ),
         differentialOperator( &differentialOperator ),
         boundaryConditions( &boundaryConditions ),
         rightHandSide( &rightHandSide ),
@@ -111,13 +109,11 @@ class tnlLinearSystemAssembler
       public:
 
          template< int EntityDimension >
-#ifdef HAVE_CUDA
-         __host__ __device__
-#endif
+         __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraverserUserData& userData,
                                     const IndexType index )
-         {
+         {            
             userData.boundaryConditions->updateLinearSystem( *userData.time + *userData.tau,
                                                              mesh,
                                                              index,
@@ -133,9 +129,7 @@ class tnlLinearSystemAssembler
       public:
 
          template< int EntityDimensions >
-#ifdef HAVE_CUDA
-         __host__ __device__
-#endif
+         __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraverserUserData& userData,
                                     const IndexType index )
@@ -154,7 +148,7 @@ class tnlLinearSystemAssembler
                                                                *userData.u,
                                                                *userData.b,
                                                                *userData.matrix );
-            //userData.matrix->addElement( index, index, 1.0, 1.0 );
+
             const RealType& rhs = FunctionAdapter::getValue( mesh,
                                                              *userData.rightHandSide,
                                                              index,
@@ -202,9 +196,6 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                       RightHandSide,
                                                       MatrixType > TraverserUserData;
 
-   tnlLinearSystemAssembler()
-   : timeDiscretisationCoefficient( 1.0 ){}
-
    template< int EntityDimensions >
    void assembly( const RealType& time,
                   const RealType& tau,
@@ -216,165 +207,66 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                   MatrixType& matrix,
                   DofVector& b ) const;
 
-   /****
-    * TODO: Fix this. Somehow.
-    */
-   void setTimeDiscretisationCoefficient( const Real& c )
-   {
-      this->timeDiscretisationCoefficient = c;
-   }
-
    class TraverserBoundaryEntitiesProcessor
    {
       public:
-
-#ifdef HAVE_CUDA
-         __host__ __device__
-#endif
-         static void processCell( const MeshType& mesh,
-                                  TraverserUserData& userData,
-                                  const IndexType index,
-                                  const CoordinatesType& coordinates )
+         
+         template< typename EntityTopology >         
+         __cuda_callable__
+         static void processEntity( const MeshType& mesh,
+                                    TraverserUserData& userData,
+                                    const IndexType index,
+                                    const CoordinatesType& coordinates )
          {
-            //printf( "index = %d \n", index );
              ( *userData.b )[ index ] = 0.0;           
-            userData.boundaryConditions->updateLinearSystem( *userData.time + *userData.tau,
-                                                             mesh,
-                                                             index,
-                                                             coordinates,
-                                                             *userData.u,
-                                                             *userData.b,
-                                                             *userData.matrix );
+            userData.boundaryConditions->template updateLinearSystem< EntityTopology >
+               ( *userData.time + *userData.tau,
+                 mesh,
+                 index,
+                 coordinates,
+                 *userData.u,
+                 *userData.b,
+                 *userData.matrix );
          }
-
-#ifdef HAVE_CUDA
-         __host__ __device__
-#endif
-         static void processFace( const MeshType& mesh,
-                                  TraverserUserData& userData,
-                                  const IndexType index,
-                                  const CoordinatesType& coordinates )
-         {
-            //printf( "index = %d \n", index );
-            // printf("Matrix assembler: Index = %d \n", index );
-            ( *userData.b )[ index ] = 0.0;
-            userData.boundaryConditions->updateLinearSystem( *userData.time,
-                                                             mesh,
-                                                             index,
-                                                             coordinates,
-                                                             *userData.u,
-                                                             *userData.b,
-                                                             *userData.matrix );
-            //printf( "BC: index = %d, b = %f \n", index, ( *userData.b )[ index ] );
-         }
-
-
    };
 
    class TraverserInteriorEntitiesProcessor
    {
       public:
 
-      /****
-       *
-       * TODO: FIX THIS. The assembler is not designed properly for the stationary problems!!!
-       *
-       */
-#ifdef HAVE_CUDA
-         __host__ __device__
-#endif
-         static void processCell( const MeshType& mesh,
-                                  TraverserUserData& userData,
-                                  const IndexType index,
-                                  const CoordinatesType& coordinates )
+         template< typename EntityTopology >
+         __cuda_callable__
+         static void processEntity( const MeshType& mesh,
+                                    TraverserUserData& userData,
+                                    const IndexType index,
+                                    const CoordinatesType& coordinates )
          {
-            //printf( "index = %d \n", index );
+            ( *userData.b )[ index ] = 0.0;            
+            userData.differentialOperator->template updateLinearSystem< EntityTopology >
+               ( *userData.time,
+                 *userData.tau,
+                 mesh,
+                 index,
+                 coordinates,
+                 *userData.u,
+                 *userData.b,
+                 *userData.matrix );
+            
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            ( *userData.b )[ index ] = 0.0; /*( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
-                                  ( *userData.tau ) * FunctionAdapter::getValue( mesh,
-                                                             *userData.rightHandSide,
-                                                             index,
-                                                             coordinates,
-                                                             *userData.time );*/
-            
-            userData.differentialOperator->updateLinearSystem( *userData.time,
-                                                               *userData.tau,
-                                                               mesh,
-                                                               index,
-                                                               coordinates,
-                                                               *userData.u,
-                                                               *userData.b,
-                                                               *userData.matrix );
-            /*if( *userData.timeDiscretisationCoefficient != 0.0 )
-               userData.matrix->addElementFast( index,
-                                                index,
-                                                *userData.timeDiscretisationCoefficient,
-                                                1.0 );*/
-            
-            const RealType& rhs = FunctionAdapter::getValue( mesh,
-                                                             *userData.rightHandSide,
-                                                             index,
-                                                             coordinates,
-                                                             *userData.time );
+            const RealType& rhs = FunctionAdapter::template getValue< EntityTopology >
+               ( mesh,
+                 *userData.rightHandSide,
+                 index,
+                 coordinates,
+                 *userData.time );
             TimeDiscretisation::applyTimeDiscretisation( *userData.matrix,
                                                          ( *userData.b )[ index ],
                                                          index,
                                                          ( *userData.u )[ index ],
                                                          ( *userData.tau ),
                                                          rhs );
-            //printf( "IC: index = %d, b = %f \n", index, ( *userData.b )[ index ] );
-         }
-
-#ifdef HAVE_CUDA
-         __host__ __device__
-#endif
-         static void processFace( const MeshType& mesh,
-                                  TraverserUserData& userData,
-                                  const IndexType index,
-                                  const CoordinatesType& coordinates )
-         {
-            //printf( "index = %d \n", index );
-            // printf("Matrix assembler: Index = %d \n", index );
-            typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            ( *userData.b )[ index ] = 0.0; /*( *userData.timeDiscretisationCoefficient) * ( *userData.u )[ index ] +
-                                  ( *userData.tau ) * FunctionAdapter::getValue( mesh,
-                                                             *userData.rightHandSide,
-                                                             index,
-                                                             coordinates,
-                                                             *userData.time );*/
-
-            userData.differentialOperator->updateLinearSystem( *userData.time,
-                                                               *userData.tau,
-                                                               mesh,
-                                                               index,
-                                                               coordinates,
-                                                               *userData.u,
-                                                               *userData.b,
-                                                               *userData.matrix );
-            /*if( *userData.timeDiscretisationCoefficient != 0.0 )
-               userData.matrix->addElementFast( index,
-                                                index,
-                                                *userData.timeDiscretisationCoefficient,
-                                                1.0 );*/
-            
-            const RealType& rhs = FunctionAdapter::getValue( mesh,
-                                                             *userData.rightHandSide,
-                                                             index,
-                                                             coordinates,
-                                                             *userData.time );
-            TimeDiscretisation::applyTimeDiscretisation( *userData.matrix,
-                                                         ( *userData.b )[ index ],
-                                                         index,
-                                                         ( *userData.u )[ index ],
-                                                         ( *userData.tau ),
-                                                         rhs );
-
          }
    };
-
-   protected:
-
-   Real timeDiscretisationCoefficient;
 };
 
 #include <solvers/pde/tnlLinearSystemAssembler_impl.h>

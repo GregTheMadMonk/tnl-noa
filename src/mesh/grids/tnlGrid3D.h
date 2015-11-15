@@ -18,7 +18,7 @@
 #ifndef SRC_MESH_TNLGRID3D_H_
 #define SRC_MESH_TNLGRID3D_H_
 
-#include <core/tnlStaticMultiIndex3D.h>
+#include <core/tnlStaticMultiIndex.h>
 
 template< typename Real,
           typename Device,
@@ -39,10 +39,18 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    template< int i1, int i2, int i3 > using EntityOrientation = tnlStaticMultiIndex3D< i1, i2, i3 >;
    
    typedef tnlGridEntityTopology< ThisType, 3, EntityOrientation< 0, 0, 0 > > Cell;
-   template< int n1, int n2, int n3 > using Face = 
-      typedef tnlGridEntityTopology< ThisType, 2, EntityOrientation< n1, n2, n3 > >;
-   template< int d1, int d2, int d3 > using Edge = 
-      typedef tnlGridEntityTopology< ThisType, 1, EntityOrientation< d1, d2, d3 > >;
+   
+   /****
+    * ( n1, n2, n3 ) is a face outer normal. If all of them are zeros it means any face.
+    */
+   template< int n1 = 0, int n2 = 0, int n3 = 0 > using Face = 
+      tnlGridEntityTopology< ThisType, 2, EntityOrientation< n1, n2, n3 > >;
+   
+   /****
+    * ( d1, d2, d3 ) is an edge direction vector. If all of them are zeros it means any edge.
+    */   
+   template< int d1 = 0, int d2 = 0, int d3 = 0 > using Edge = 
+      tnlGridEntityTopology< ThisType, 1, EntityOrientation< d1, d2, d3 > >;
    typedef tnlGridEntityTopology< ThisType, 0, EntityOrientation< 0, 0, 0 > > Vertex;
 
    

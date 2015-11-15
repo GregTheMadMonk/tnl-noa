@@ -80,7 +80,7 @@ class tnlExplicitUpdater
                    BoundaryConditions& boundaryConditions,
                    RightHandSide& rightHandSide,
                    DofVector& u,
-                   DofVector& fu ) const;
+                   DofVector& fu ) const;      
 
       class TraverserBoundaryEntitiesProcessor
       {

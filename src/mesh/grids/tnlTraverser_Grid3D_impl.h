@@ -30,6 +30,7 @@ processBoundaryEntities( const GridType& grid,
    /****
     * Boundary conditions
     */
+   typedef typename Grid::Cell CellTopology;
    CoordinatesType coordinates;
    const IndexType& xSize = grid.getDimensions().x();
    const IndexType& ySize = grid.getDimensions().y();
@@ -39,27 +40,27 @@ processBoundaryEntities( const GridType& grid,
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
       {
          coordinates.z() = 0;
-         EntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         EntitiesProcessor::template processEntity< CellTopology >( grid, userData, grid.getCellIndex( coordinates ), coordinates );
          coordinates.z() = zSize - 1;
-         EntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         EntitiesProcessor::template processEntity< CellTopology >( grid, userData, grid.getCellIndex( coordinates ), coordinates );
       }
 
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
       {
          coordinates.y() = 0;
-         EntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         EntitiesProcessor::template processEntity< CellTopology >( grid, userData, grid.getCellIndex( coordinates ), coordinates );
          coordinates.y() = ySize - 1;
-         EntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         EntitiesProcessor::template processEntity< CellTopology >( grid, userData, grid.getCellIndex( coordinates ), coordinates );
       }
 
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
       {
          coordinates.x() = 0;
-         EntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         EntitiesProcessor::template processEntity< CellTopology >( grid, userData, grid.getCellIndex( coordinates ), coordinates );
          coordinates.x() = xSize - 1;
-         EntitiesProcessor::processCell( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         EntitiesProcessor::template processEntity< CellTopology >( grid, userData, grid.getCellIndex( coordinates ), coordinates );
       }
 }
 template< typename Real,
@@ -74,6 +75,7 @@ processInteriorEntities( const GridType& grid,
    /****
     * Interior cells
     */
+   typedef typename Grid::Cell CellTopology;
    CoordinatesType coordinates;
    const IndexType& xSize = grid.getDimensions().x();
    const IndexType& ySize = grid.getDimensions().y();
@@ -87,7 +89,7 @@ processInteriorEntities( const GridType& grid,
          for( coordinates.x() = 1; coordinates.x() < xSize - 1; coordinates.x() ++ )
          {
             const IndexType index = grid.getCellIndex( coordinates );
-            EntitiesProcessor::processCell( grid, userData, index, coordinates );
+            EntitiesProcessor::template processEntity< CellTopology >( grid, userData, index, coordinates );
          }
 }
 
@@ -103,6 +105,46 @@ processBoundaryEntities( const GridType& grid,
    /****
     * Traversing boundary faces
     */
+   CoordinatesType coordinates;
+   const IndexType& xSize = grid.getDimensions().x();
+   const IndexType& ySize = grid.getDimensions().y();
+   const IndexType& zSize = grid.getDimensions().z();
+
+   for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
+      for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )      
+      {
+         typedef typename Grid::Face< 0, 0, 1 > FaceTopology;
+         coordinates.z() = 0;
+         EntitiesProcessor::template processEntity< FaceTopology >( grid, userData, grid.template getFaceIndex< 0, 0, 1 >( coordinates ), coordinates );
+         //cout << "Boundary face coordinates = " << coordinates << " index = " << grid.template getFaceIndex< 0, 1 >( coordinates ) << endl;
+         coordinates.z() = zSize;
+         EntitiesProcessor::template processEntity< FaceTopology >( grid, userData, grid.template getFaceIndex< 0, 0, 1 >( coordinates ), coordinates );
+         //cout << "Boundary face coordinates = " << coordinates << " index = " << grid.template getFaceIndex< 0, 1 >( coordinates ) << endl;
+      }
+     
+   for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
+      for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
+      {
+         typedef typename Grid::Face< 0, 1, 0 > FaceTopology;
+         coordinates.y() = 0;
+         EntitiesProcessor::template processEntity< FaceTopology >( grid, userData, grid.template getFaceIndex< 0, 1, 0 >( coordinates ), coordinates );
+         //cout << "Boundary face coordinates = " << coordinates << " index = " << grid.template getFaceIndex< 0, 1 >( coordinates ) << endl;
+         coordinates.y() = ySize;
+         EntitiesProcessor::template processEntity< FaceTopology >( grid, userData, grid.template getFaceIndex< 0, 1, 0 >( coordinates ), coordinates );
+         //cout << "Boundary face coordinates = " << coordinates << " index = " << grid.template getFaceIndex< 0, 1 >( coordinates ) << endl;
+      }
+  
+   for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
+      for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
+      {
+         typedef typename Grid::Face< 1, 0, 0 > FaceTopology;
+         coordinates.x() = 0;
+         EntitiesProcessor::template processEntity< FaceTopology >( grid, userData, grid.template getFaceIndex< 1, 0, 0 >( coordinates ), coordinates );
+         //cout << "Boundary face coordinates = " << coordinates << " index = " << grid.template getFaceIndex< 1, 0 >( coordinates ) << endl;
+         coordinates.x() = xSize;
+         EntitiesProcessor::template processEntity< FaceTopology >( grid, userData, grid.template getFaceIndex< 1, 0, 0 >( coordinates ), coordinates );
+         //cout << "Boundary face coordinates = " << coordinates << " index = " << grid.template getFaceIndex< 1, 0 >( coordinates ) << endl;
+      }
 }
 
 template< typename Real,
@@ -117,6 +159,46 @@ processInteriorEntities( const GridType& grid,
    /****
     * Traversing interior faces
     */
+   CoordinatesType coordinates;
+   const IndexType& xSize = grid.getDimensions().x();
+   const IndexType& ySize = grid.getDimensions().y();
+
+#ifdef HAVE_OPENMP
+//#pragma omp parallel for
+#endif
+
+   //cout << "< 1, 0, 0 >" << endl;
+   for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
+      for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
+         for( coordinates.x() = 1; coordinates.x() < xSize; coordinates.x() ++ )
+         {
+            typedef typename Grid::Face< 1, 0, 0 > FaceTopology;
+            const IndexType index = grid.template getFaceIndex< 1, 0, 0 >( coordinates );
+            EntitiesProcessor::template processEntity< FaceTopology >( grid, userData, index, coordinates );
+            //cout << "Interior face coordinates = " << coordinates << " index = " << grid.template getFaceIndex< 1, 0 >( coordinates ) << endl;
+         }
+
+   //cout << "<  0, 1, 0 >" << endl;
+   for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
+      for( coordinates.y() = 1; coordinates.y() < ySize; coordinates.y() ++ )
+         for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
+         {
+            typedef typename Grid::Face< 0, 1, 0 > FaceTopology;
+            const IndexType index = grid.template getFaceIndex< 0, 1, 0 >( coordinates );
+            EntitiesProcessor::template processEntity< FaceTopology >( grid, userData, index, coordinates );
+            //cout << "Interior face coordinates = " << coordinates << " index = " << grid.template getFaceIndex< 0, 1 >( coordinates ) << endl;
+         }
+   
+   //cout << "<  0, 1, 0 >" << endl;
+   for( coordinates.z() = 1; coordinates.z() < zSize; coordinates.z() ++ )
+      for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
+         for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
+         {
+            typedef typename Grid::Face< 1, 0, 0 > FaceTopology;
+            const IndexType index = grid.template getFaceIndex< 1, 0, 0 >( coordinates );
+            EntitiesProcessor::template processEntity< FaceTopology >( grid, userData, index, coordinates );
+            //cout << "Interior face coordinates = " << coordinates << " index = " << grid.template getFaceIndex< 0, 1 >( coordinates ) << endl;
+         }   
 }
 
 
@@ -132,6 +214,68 @@ processBoundaryEntities( const GridType& grid,
    /****
     * Traversing boundary edges
     */
+   CoordinatesType coordinates;
+   const IndexType& xSize = grid.getDimensions().x();
+   const IndexType& ySize = grid.getDimensions().y();
+   const IndexType& zSize = grid.getDimensions().z();
+
+   for( coordinates.y() = 0; coordinates.y() <= ySize; coordinates.y() ++ )
+      for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )      
+      {
+         typedef typename Grid::Edge< 1, 0, 0 > FaceTopology;
+         coordinates.z() = 0;
+         EntitiesProcessor::template processEntity< FaceTopology >( grid, userData, grid.template getEdgeIndex< 1, 0, 0 >( coordinates ), coordinates );        
+         coordinates.z() = zSize;
+         EntitiesProcessor::template processEntity< FaceTopology >( grid, userData, grid.template getEdgeIndex< 1, 0, 0 >( coordinates ), coordinates );
+      }
+   for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
+      for( coordinates.x() = 0; coordinates.x() <= xSize; coordinates.x() ++ )      
+      {
+         typedef typename Grid::Edge< 0, 1, 0 > EdgeTopology;
+         coordinates.z() = 0;
+         EntitiesProcessor::template processEntity< EdgeTopology >( grid, userData, grid.template getEdgeIndex< 0, 1, 0 >( coordinates ), coordinates );
+         coordinates.z() = zSize;
+         EntitiesProcessor::template processEntity< EdgeTopology >( grid, userData, grid.template getEdgeIndex< 0, 1, 0 >( coordinates ), coordinates );
+      }
+     
+   for( coordinates.z() = 0; coordinates.z() <= zSize; coordinates.z() ++ )
+      for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
+      {
+         typedef typename Grid::Edge< 1, 0, 0 > EdgeTopology;
+         coordinates.y() = 0;
+         EntitiesProcessor::template processEntity< EdgeTopology >( grid, userData, grid.template getEdgeIndex< 1, 0, 0 >( coordinates ), coordinates );
+         coordinates.y() = ySize;
+         EntitiesProcessor::template processEntity< EdgeTopology >( grid, userData, grid.template getEdgeIndex< 1, 0, 0 >( coordinates ), coordinates );
+      }
+   for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
+      for( coordinates.x() = 0; coordinates.x() <= xSize; coordinates.x() ++ )
+      {
+         typedef typename Grid::Edge< 0, 0, 1 > EdgeTopology;
+         coordinates.y() = 0;
+         EntitiesProcessor::template processEntity< EdgeTopology >( grid, userData, grid.template getFaceIndex< 0, 0, 1 >( coordinates ), coordinates );
+         coordinates.y() = ySize;
+         EntitiesProcessor::template processEntity< EdgeTopology >( grid, userData, grid.template getFaceIndex< 0, 0, 1 >( coordinates ), coordinates );
+      }
+
+  
+   for( coordinates.z() = 0; coordinates.z() <= zSize; coordinates.z() ++ )
+      for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
+      {
+         typedef typename Grid::Edge< 0, 1, 0 > EdgeTopology;
+         coordinates.x() = 0;
+         EntitiesProcessor::template processEntity< EdgeTopology >( grid, userData, grid.template getEdgeIndex< 0, 1, 0 >( coordinates ), coordinates );
+         coordinates.x() = xSize;
+         EntitiesProcessor::template processEntity< EdgeTopology >( grid, userData, grid.template getEdgeIndex< 0, 1, 0 >( coordinates ), coordinates );
+      }
+   for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
+      for( coordinates.y() = 0; coordinates.y() <= ySize; coordinates.y() ++ )
+      {
+         typedef typename Grid::Edge< 0, 0, 1 > EdgeTopology;
+         coordinates.x() = 0;
+         EntitiesProcessor::template processEntity< EdgeTopology >( grid, userData, grid.template getEdgeIndex< 0, 0, 1 >( coordinates ), coordinates );
+         coordinates.x() = xSize;
+         EntitiesProcessor::template processEntity< EdgeTopology >( grid, userData, grid.template getEdgeIndex< 0, 0, 1 >( coordinates ), coordinates );
+      }
 }
 
 template< typename Real,

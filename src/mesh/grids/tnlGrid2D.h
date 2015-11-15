@@ -36,11 +36,16 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    typedef tnlGrid< 2, Real, tnlCuda, Index > CudaType;
    
    typedef tnlGrid< 2, Real, Device, Index > ThisType;
-   template< int i1, int i2 > using EntityOrientation = tnlStaticMultiIndex2D< i1, i2 >;
+   template< int i1, int i2 > using EntityOrientation = tnlStaticMultiIndex2D< i1, i2 >;   
    
    typedef tnlGridEntityTopology< ThisType, 2, EntityOrientation<  0,  0 > > Cell;
-   template< int n1, int n2 > using Face = 
-      typedef tnlGridEntityTopology< ThisType, 1, EntityOrientation<  n1,  n2 > >;
+   
+   /****
+    * ( n1, n2 ) is a face outer normal. If both are zeros it means any face.
+    */
+   template< int n1 = 0, int n2 = 0 > using Face = 
+      tnlGridEntityTopology< ThisType, 1, EntityOrientation<  n1,  n2 > >;
+   
    typedef tnlGridEntityTopology< ThisType, 0, EntityOrientation<  0,  0 > > Vertex;
 
    enum { Dimensions = 2};

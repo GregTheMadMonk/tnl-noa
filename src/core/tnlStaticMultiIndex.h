@@ -28,7 +28,7 @@ class tnlStaticMultiIndex1D
 
 template< int i1_,
           int i2_ >
-class tnlStaticMultiIndex1D
+class tnlStaticMultiIndex2D
 {
    public:
       
@@ -40,7 +40,7 @@ class tnlStaticMultiIndex1D
 template< int i1_,
           int i2_,
           int i3_ >
-class tnlStaticMultiIndex1D
+class tnlStaticMultiIndex3D
 {
    public:
       
