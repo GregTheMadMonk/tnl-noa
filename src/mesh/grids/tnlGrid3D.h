@@ -39,21 +39,36 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 
    typedef tnlGrid< 3, Real, Device, Index > ThisType;
    template< int i1, int i2, int i3 > using EntityOrientation = tnlStaticMultiIndex3D< i1, i2, i3 >;
+   template< int i1, int i2, int i3 > using EntityProportions = tnlStaticMultiIndex3D< i1, i2, i3 >;
    
-   typedef tnlGridEntityTopology< ThisType, 3, EntityOrientation< 0, 0, 0 > > Cell;
+   typedef tnlGridEntityTopology< ThisType,
+                                  3,
+                                  EntityOrientation< 0, 0, 0 >,
+                                  EntityProportions< 1, 1, 1 > > Cell;
    
    /****
     * ( n1, n2, n3 ) is a face outer normal. If all of them are zeros it means any face.
     */
    template< int n1 = 0, int n2 = 0, int n3 = 0 > using Face = 
-      tnlGridEntityTopology< ThisType, 2, EntityOrientation< n1, n2, n3 > >;
+      tnlGridEntityTopology< ThisType,
+                             2,
+                             EntityOrientation< n1, n2, n3 >,
+                             EntityProportions< 1 - tnlConstAbs( n1 ),
+                                                1 - tnlConstAbs( n2 ),
+                                                1 - tnlConstAbs( n3 ) > >;
    
    /****
     * ( d1, d2, d3 ) is an edge direction vector. If all of them are zeros it means any edge.
     */   
    template< int d1 = 0, int d2 = 0, int d3 = 0 > using Edge = 
-      tnlGridEntityTopology< ThisType, 1, EntityOrientation< d1, d2, d3 > >;
-   typedef tnlGridEntityTopology< ThisType, 0, EntityOrientation< 0, 0, 0 > > Vertex;
+      tnlGridEntityTopology< ThisType,
+                             1,
+                             EntityOrientation< d1, d2, d3 >,
+                             EntityProportions< d1, d2, d3 > >;
+   typedef tnlGridEntityTopology< ThisType,
+                                  0,
+                                  EntityOrientation< 0, 0, 0 >,
+                                  EntityProportions< 0, 0, 0 > > Vertex;
 
    
    enum { Dimensions = 3};

@@ -20,6 +20,8 @@
 
 #include <iomanip>
 #include <core/tnlAssert.h>
+#include <mesh/grids/tnlGridEntityCenterGetter_impl.h>
+#include <mesh/grids/tnlGrid3D.h>
 
 template< typename Real,
           typename Device,
@@ -737,6 +739,22 @@ Vertex tnlGrid< 3, Real, Device, Index > :: getEntityCenter( const CoordinatesTy
 {
    static_assert( EntityTopology::entityDimensions <= 3 &&
                   EntityTopology::entityDimensions >= 0, "Wrong grid entity dimensions." );
+   tnlAssert( coordinates.x() >= 0 &&
+              coordinates.x() <= this->getDimensions().x() - EntityTopology::EnityProportions::i1,
+                    cerr << "coordinates.x() = " << coordinates.x()
+                         << " this->getDimensions().x() = " << this->getDimensions().x()
+                         << " EntityTopology::EntityProportions::i1 = " << EntityTopology::EntityProportions::i1 );
+   tnlAssert( coordinates.y() >= 0 &&
+              coordinates.y() < this->getDimensions().y() - EntityTopology::EnityProportions::i2,
+                    cerr << "coordinates.y() = " << coordinates.y()
+                         << " this->getDimensions().y() = " << this->getDimensions().y()
+                         << " EntityTopology::EntityProportions::i2 = " << EntityTopology::EntityProportions::i2 );
+   tnlAssert( coordinates.z() >= 0 &&
+              coordinates.z() < this->getDimensions().z() - EntityTopology::EnityProportions::i3,
+                    cerr << "coordinates.z() = " << coordinates.z()
+                         << " this->getDimensions().z() = " << this->getDimensions().z()
+                         << " EntityTopology::EntityProportions::i3 = " << EntityTopology::EntityProportions::i3 );
+
    return tnlGridEntityCenterGetter< ThisType, EntityTopology >::
       getCenter( coordinates, 
                  this->getOrigin(),

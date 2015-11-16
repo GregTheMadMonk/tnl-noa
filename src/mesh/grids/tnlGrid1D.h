@@ -19,6 +19,7 @@
 #define SRC_MESH_TNLGRID1D_H_
 
 #include <core/tnlStaticMultiIndex.h>
+#include <core/tnlLogger.h>
 #include <mesh/grids/tnlGridEntityTopology.h>
 #include <mesh/grids/tnlGridEntityCenterGetter.h>
 
@@ -39,9 +40,16 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    typedef tnlGrid< 1, Real, Device, Index > ThisType;
    
    template< int i > using EntityOrientation = tnlStaticMultiIndex1D< i >;
+   template< int i > using EntityProportions = tnlStaticMultiIndex1D< i >;
    
-   typedef tnlGridEntityTopology< ThisType, 1, EntityOrientation<  0 > > Cell;
-   typedef tnlGridEntityTopology< ThisType, 0, EntityOrientation<  0 > > Vertex;
+   typedef tnlGridEntityTopology< ThisType,
+                                  1,
+                                  EntityOrientation< 0 >,
+                                  EntityProportions< 1 > > Cell;
+   typedef tnlGridEntityTopology< ThisType,
+                                  0,
+                                  EntityOrientation< 0 >,
+                                  EntityProportions< 0 > > Vertex;
    
    enum { Dimensions = 1};
 

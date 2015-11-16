@@ -78,6 +78,11 @@ inline double tnlAbs( const double& d )
    return fabs( d );
 };
 
+constexpr int tnlConstAbs( const int a )
+{
+   return a > 0 ? a : -a;
+}
+
 template< typename Real >
 __cuda_callable__
 bool isSmall( const Real& v,

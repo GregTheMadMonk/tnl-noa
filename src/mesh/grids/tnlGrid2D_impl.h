@@ -22,6 +22,7 @@
 #include <iomanip>
 #include <core/tnlAssert.h>
 #include <mesh/tnlGnuplotWriter.h>
+#include <mesh/grids/tnlGridEntityCenterGetter_impl.h>
 
 using namespace std;
 
@@ -462,7 +463,17 @@ Vertex tnlGrid< 2, Real, Device, Index > :: getEntityCenter( const CoordinatesTy
 {
    static_assert( EntityTopology::entityDimensions <= 2 &&
                   EntityTopology::entityDimensions >= 0, "Wrong grid entity dimensions." );
-      return tnlGridEntityCenterGetter< ThisType, EntityTopology >::
+   tnlAssert( coordinates.x() >= 0 &&
+              coordinates.x() <= this->getDimensions().x() - EntityTopology::EnityProportions::i1,
+                    cerr << "coordinates.x() = " << coordinates.x()
+                         << " this->getDimensions().x() = " << this->getDimensions().x()
+                         << " EntityTopology::EntityProportions::i1 = " << EntityTopology::EntityProportions::i1 );
+   tnlAssert( coordinates.y() >= 0 &&
+              coordinates.y() < this->getDimensions().y() - EntityTopology::EnityProportions::i2,
+                    cerr << "coordinates.y() = " << coordinates.y()
+                         << " this->getDimensions().y() = " << this->getDimensions().y()
+                         << " EntityTopology::EntityProportions::i2 = " << EntityTopology::EntityProportions::i2 );
+   return tnlGridEntityCenterGetter< ThisType, EntityTopology >::
       getCenter( coordinates, 
                  this->getOrigin(),
                  this->getCellProportions() );
