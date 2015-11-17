@@ -152,18 +152,18 @@ class tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, Dof
       {
          public:
 
-            template< typename EntityTopology >
+            template< typename EntityType >
             __cuda_callable__
             static void processEntity( const MeshType& mesh,
                                        TraversalUserData& userData,
                                        const IndexType index,
-                                       const CoordinatesType& c )
+                                       const EntityType& entity )
             {
-               userData.boundaryConditions.template setBoundaryConditions
+               userData.boundaryConditions.setBoundaryConditions
                   ( userData.time,
                     mesh,
                     index,
-                    c,
+                    entity,
                     userData.fu,
                     userData.fu );
             }
@@ -189,17 +189,17 @@ class tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, Dof
       {
          public:
             
-            template< typename EntityTopology >
+            template< typename EntityType >
             __cuda_callable__
             static void processEntity( const MeshType& mesh,
                                        TraversalUserData& userData,
                                        const IndexType index,
-                                       const CoordinatesType& c )
+                                       const EntityType& entity )
             {
                userData.fu[ index ] = 
-                  userData.differentialOperator.getValue//< EntityTopology >
+                  userData.differentialOperator.getValue
                      ( userData.function,
-                       mesh.template getEntityCenter< EntityTopology >( index ),                                                                           
+                       mesh.getEntityCenter( entity ),                                                                           
                        userData.time );
             }
 

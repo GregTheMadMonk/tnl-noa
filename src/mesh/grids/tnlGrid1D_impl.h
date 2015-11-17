@@ -23,7 +23,7 @@
 #include <core/tnlString.h>
 #include <core/tnlAssert.h>
 #include <mesh/tnlGnuplotWriter.h>
-#include <mesh/grids/tnlGridEntityCenterGetter_impl.h>
+#include <mesh/grids/tnlGridEntityGetter_impl.h>
 #include <mesh/grids/tnlGrid1D.h>
 
 using namespace std;
@@ -162,6 +162,60 @@ const typename tnlGrid< 1, Real, Device, Index > :: VertexType&
 template< typename Real,
           typename Device,
           typename Index >
+   template< int EntityDimensions >
+ __cuda_callable__
+typename tnlGrid< 1, Real, Device, Index >::template GridEntity< EntityDimensions >
+tnlGrid< 1, Real, Device, Index >::
+getEntity( const IndexType& entityIndex ) const
+{
+   static_assert( EntityDimensions <= 1 &&
+                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
+   
+   return tnlGridEntityGetter< ThisType, EntityDimensions >::getEntity( *this, entityIndex );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< int EntityDimensions >
+__cuda_callable__
+Index
+tnlGrid< 1, Real, Device, Index >::
+getEntityIndex( const GridEntity< EntityDimensions >& entity ) const
+{
+   static_assert( EntityDimensions <= 1 &&
+                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
+   
+   return tnlGridEntityGetter< ThisType, EntityDimensions >::getEntityIndex( *this, entity );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< int EntityDimensions,
+             typename Vertex >
+__cuda_callable__
+Vertex tnlGrid< 1, Real, Device, Index > :: getEntityCenter( const GridEntity< EntityDimensions >& entity ) const
+{
+   static_assert( EntityDimensions <= 1 &&
+                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
+   tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
+              entity.getCoordinates() <= this->getDimensions() - entity.getProportions(),
+                    cerr << "entity.getCoordinates() = " << entity.getCoordinates()
+                         << " this->getDimensions() = " << this->getDimensions()
+                         << " entity.getProportions() = " << entity.getProportions() );
+   return Vertex( this->origin.x() + ( entity.getCoordinates().x() + 0.5 * entity.getProportions().x ) * this->cellProportions.x() );
+}
+
+
+
+
+
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
 __cuda_callable__
 Index tnlGrid< 1, Real, Device, Index > :: getCellIndex( const CoordinatesType& cellCoordinates ) const
 {
@@ -284,10 +338,8 @@ Vertex tnlGrid< 1, Real, Device, Index > :: getEntityCenter( const CoordinatesTy
          cerr << "coordinates.x() = " << coordinates.x()
               << " this->getDimensions().x() = " << this->getDimensions().x()
               << " EntityTopology::EntityProportions::i1 = " << EntityTopology::EntityProportions::i1 );
-   return tnlGridEntityCenterGetter< ThisType, EntityTopology >::
-      getCenter( coordinates, 
-                 this->getOrigin(),
-                 this->getCellProportions() );
+   return this->origin.x() + 
+       ( coordinates.x() + 0.5 * EntityTopology::EntityProportions::i1 ) * this->cellProportions.x();
 }
 
 template< typename Real,
@@ -300,7 +352,9 @@ Vertex tnlGrid< 1, Real, Device, Index > :: getEntityCenter( const IndexType& in
 {
    static_assert( EntityTopology::entityDimensions <= 1 &&
                   EntityTopology::entityDimensions >= 0, "Wrong grid entity dimensions." );
-
+   
+   // TODO: add assertions
+   
    if( EntityTopology::entityDimensions == Dimensions )
       return this->getCellCenter( index );
    if( EntityTopology::entityDimensions == Dimensions - 1 )

@@ -20,7 +20,7 @@
 
 #include <core/tnlStaticMultiIndex.h>
 #include <mesh/grids/tnlGridEntityTopology.h>
-#include <mesh/grids/tnlGridEntityCenterGetter.h>
+#include <mesh/grids/tnlGridEntityGetter.h>
 
 template< typename Real,
           typename Device,
@@ -61,6 +61,9 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
                                   EntityOrientation< 0, 0 >,
                                   EntityProportions< 1, 1 > > Vertex;
 
+   template< int EntityDimensions > using GridEntity = 
+      tnlGridEntity< ThisType, EntityDimensions >;   
+
    enum { Dimensions = 2};
 
    tnlGrid();
@@ -90,6 +93,40 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 
    __cuda_callable__
    const VertexType& getCellProportions() const;
+   
+   template< int EntityDimensions >
+   IndexType getEntitiesCount() const;
+   
+   template< int EntityDimensions >
+   __cuda_callable__
+   GridEntity< EntityDimensions > getEntity( const IndexType& entityIndex ) const;
+   
+   template< int EntityDimensions >
+   __cuda_callable__
+   Index getEntityIndex( const GridEntity< EntityDimensions >& entity ) const;
+
+   /****
+    * The type Vertex can have different Real type.
+    */
+#ifdef HAVE_NOT_CXX11
+   template< int EntityDimensions, 
+             typename Vertex >
+#else
+   template< int EntityDimensions,
+             typename Vertex = VertexType >
+#endif
+   __cuda_callable__
+   Vertex getEntityCenter( const GridEntity< EntityDimensions >& entity ) const;
+   
+
+   
+   
+   
+   
+   
+   
+
+
 
    __cuda_callable__
    Index getCellIndex( const CoordinatesType& cellCoordinates ) const;
@@ -160,25 +197,6 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    /****
     * The type Vertex can have different Real type.
     */
-#ifdef HAVE_NOT_CXX11
-   template< typename EntityTopology, 
-             typename Vertex >
-#else
-   template< typename EntityTopology,
-             typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getEntityCenter( const CoordinatesType& cellCoordinates ) const;
-
-#ifdef HAVE_NOT_CXX11
-   template< typename EntityTopology, 
-             typename Vertex >
-#else
-   template< typename EntityTopology,
-             typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getEntityCenter( const IndexType& cellIndex ) const;
 
 #ifdef HAVE_NOT_CXX11
    template< typename Vertex >

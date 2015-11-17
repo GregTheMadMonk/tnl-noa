@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlGridEntityTopology.h  -  description
+                          tnlGridEntity.h  -  description
                              -------------------
     begin                : Nov 13, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -15,32 +15,46 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLGRIDTOPOLOGIES_H
-#define	TNLGRIDTOPOLOGIES_H
+#ifndef TNLGRIDENTITY_H
+#define	TNLGRIDENTITY_H
 
 template< typename Grid,
-          int EntityDimensions,
-          typename EntityOrientation_,
-          typename EntityProportions_ >
-class tnlGridEntityTopology
+          int EntityDimensions >
+class tnlGridEntity
 {
    public:
       
       typedef Grid GridType;
+      typedef typename GridType::IndexType IndexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
       
       static const int meshDimensions = GridType::Dimensions;
       
       static const int entityDimensions = EntityDimensions;
       
-      typedef EntityOrientation_ EntityOrientation;
-           
-      typedef EntityProportions_ EntityProportions;
+      typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
+      typedef tnlStaticVector< meshDimensions, IndexType > EntityProportionsType;
       
-   static_assert( meshDimensions == EntityOrientation_::size, 
-                  "Entity orientation is not a proper static multiindex." );
+      tnlGridEntity();
+      
+      tnlGridEntity( const CoordinatesType& coordinates,
+                     const EntityOrientationType& orientation,
+                     const EntityProportionsType& proportions );
+      
+      const CoordinatesType& getCoordinates() const;
+      
+      CoordinatesType& getCoordinates();
+      
+      const EntityOrientationType& getOrientation() const;
+
+   protected:
+      
+      CoordinatesType coordinates;
+      
+      EntityOrientationType orientation;
+      
+      EntityProportionsType proportions;
 };
 
-
-
-#endif	/* TNLGRIDTOPOLOGIES_H */
+#endif	/* TNLGRIDENTITY_H */
 

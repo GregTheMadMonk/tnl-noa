@@ -30,8 +30,10 @@ processBoundaryEntities( const GridType& grid,
    /****
     * Boundary conditions
     */
-   typedef typename GridType::Cell CellTopology;
-   CoordinatesType coordinates;
+   const int CellDimensions = GridType::Dimensions;
+   typename GridType::template GridEntity< CellDimensions > entity;
+   
+   CoordinatesType& coordinates = entity.getCoordinates();
    const IndexType& xSize = grid.getDimensions().x();
    const IndexType& ySize = grid.getDimensions().y();
    const IndexType& zSize = grid.getDimensions().z();
@@ -40,27 +42,27 @@ processBoundaryEntities( const GridType& grid,
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
       {
          coordinates.z() = 0;
-         EntitiesProcessor::template processEntity< CellTopology >( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
          coordinates.z() = zSize - 1;
-         EntitiesProcessor::template processEntity< CellTopology >( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
       }
 
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
       {
          coordinates.y() = 0;
-         EntitiesProcessor::template processEntity< CellTopology >( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
          coordinates.y() = ySize - 1;
-         EntitiesProcessor::template processEntity< CellTopology >( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
       }
 
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
       {
          coordinates.x() = 0;
-         EntitiesProcessor::template processEntity< CellTopology >( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
          coordinates.x() = xSize - 1;
-         EntitiesProcessor::template processEntity< CellTopology >( grid, userData, grid.getCellIndex( coordinates ), coordinates );
+         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
       }
 }
 template< typename Real,

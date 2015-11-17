@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlGridEntityCenterGetter.h  -  description
+                          tnlGridEntityGetter.h  -  description
                              -------------------
     begin                : Nov 15, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -15,20 +15,19 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLGRIDENTITYCENTERGETTER_H
-#define	TNLGRIDENTITYCENTERGETTER_H
+#ifndef TNLGRIDENTITYGETTER_H
+#define TNLGRIDENTITYGETTER_H
 
 template< typename Grid,
-          typename EntityTopology >
-class tnlGridEntityCenterGetter
+          int EntityDimensions >
+class tnlGridEntityGetter
 {
    //static_assert( false, "Wrong mesh type or entity topology." );
 };
 
 /***
- * The main code is in template specializations in tnlGridEntityCenterGetter.h 
+ * The main code is in template specializations in tnlGridEntityIndexer.h 
  */
 
-
-#endif	/* TNLGRIDENTITYCENTERGETTER_H */
+#endif	/* TNLGRIDENTITYGETTER_H */
 

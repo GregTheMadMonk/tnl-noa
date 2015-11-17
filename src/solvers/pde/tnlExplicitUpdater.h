@@ -166,18 +166,18 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
       {
          public:
             
-            template< typename EntityTopology >
+            template< typename GridEntity >
             __cuda_callable__
             static void processEntity( const MeshType& mesh,
                                        TraverserUserData& userData,
                                        const IndexType index,
-                                       const CoordinatesType& coordinates )
+                                       const GridEntity& entity )
             {
-               userData.boundaryConditions->setBoundaryConditions//< EntityTopology >
+               userData.boundaryConditions->setBoundaryConditions
                ( *userData.time,
                  mesh,
                  index,
-                 coordinates,
+                 entity,
                  *userData.u,
                  *userData.fu );
             }
@@ -220,28 +220,28 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
 
             typedef typename MeshType::VertexType VertexType;
          
-            template< typename EntityTopology >
+            template< typename EntityType >
             __cuda_callable__
             static void processEntity( const MeshType& mesh,
                                        TraverserUserData& userData,
                                        const IndexType index,
-                                       const CoordinatesType& coordinates )
+                                       const EntityType& entity )
             {
                ( *userData.fu)[ index ] = 
-                  userData.differentialOperator->getValue//< EntityTopology >
-                  ( mesh,
-                    index,
-                    coordinates,
-                    *userData.u,
-                    *userData.time );
+                  userData.differentialOperator->getValue(
+                     mesh,
+                     index,
+                     entity,
+                     *userData.u,
+                     *userData.time );
 
                typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
                ( * userData.fu )[ index ] += 
-                  FunctionAdapter::template getValue< EntityTopology >
-                  ( mesh,
-                    *userData.rightHandSide,
-                    index,
-                    coordinates,
+                  FunctionAdapter::getValue(
+                     mesh,
+                     *userData.rightHandSide,
+                     index,
+                     entity,
                     *userData.time );
             }
 
