@@ -72,19 +72,20 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
+   template< typename EntityType >
 __cuda_callable__
 void
 tnlAnalyticNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setBoundaryConditions( const RealType& time,
                        const MeshType& mesh,
                        const IndexType index,
-                       const CoordinatesType& coordinates,
+                       const EntityType& entity,
                        DofVectorType& u,
                        DofVectorType& fu ) const
 {
    fu[ index ] = 0;
-   const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
-   if( coordinates.x() == 0 )
+   const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
+   if( entity.getCoordinates().x() == 0 )
       u[ index ] = u[ mesh.template getCellNextToCell< 1 >( index ) ] - mesh.getHx() * functionValue;
    else
       u[ index ] = u[ mesh.template getCellNextToCell< -1 >( index ) ] + mesh.getHx() * functionValue;
@@ -96,12 +97,13 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
+   template< typename EntityType >
 __cuda_callable__
 Index
 tnlAnalyticNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
-                          const CoordinatesType& coordinates ) const
+                          const EntityType& entity ) const
 {
    return 2;
 }
@@ -112,21 +114,22 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-   template< typename Matrix >
+   template< typename Matrix,
+             typename EntityType >
 __cuda_callable__
 void
 tnlAnalyticNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
-                    const CoordinatesType& coordinates,
+                    const EntityType& entity,
                     DofVectorType& u,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
-   if( coordinates.x() == 0 )
+   const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
+   if( entity.getCoordinates().x() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
       matrixRow.setElement( 1, mesh.template getCellNextToCell< 1 >( index ), -1.0 );
@@ -150,34 +153,35 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
+   template< typename EntityType >          
 __cuda_callable__
 void
 tnlAnalyticNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setBoundaryConditions( const RealType& time,
                        const MeshType& mesh,
                        const IndexType index,
-                       const CoordinatesType& coordinates,
+                       const EntityType& entity,
                        DofVectorType& u,
                        DofVectorType& fu ) const
 {
    fu[ index ] = 0;
-   const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
-   if( coordinates.x() == 0 )
+   const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
+   if( entity.getCoordinates().x() == 0 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 1, 0 >( index ) ] - mesh.getHx() * functionValue;
       return;
    }
-   if( coordinates.x() == mesh.getDimensions().x() - 1 )
+   if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< -1, 0 >( index ) ] + mesh.getHx() * functionValue;
       return;
    }
-   if( coordinates.y() == 0 )
+   if( entity.getCoordinates().y() == 0 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 0, 1 >( index ) ] - mesh.getHy() * functionValue;
       return;
    }
-   if( coordinates.y() == mesh.getDimensions().y() - 1 )
+   if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 0, -1 >( index ) ] + mesh.getHy() * functionValue;
       return;
@@ -190,12 +194,13 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
+   template< typename EntityType >          
 __cuda_callable__
 Index
 tnlAnalyticNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
-                          const CoordinatesType& coordinates ) const
+                          const EntityType& entity ) const
 {
    return 2;
 }
@@ -206,39 +211,40 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-   template< typename Matrix >
+   template< typename Matrix,
+             typename EntityType >
 __cuda_callable__
 void
 tnlAnalyticNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
-                    const CoordinatesType& coordinates,
+                    const EntityType& entity,
                     DofVectorType& u,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
-   if( coordinates.x() == 0 )
+   const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
+   if( entity.getCoordinates().x() == 0 )
    {
       matrixRow.setElement( 0, index,                           1.0 );
       matrixRow.setElement( 1, mesh.template getCellNextToCell< 1, 0 >( index ), -1.0 );
       b[ index ] = - mesh.getHx() * functionValue;
    }
-   if( coordinates.x() == mesh.getDimensions().x() - 1 )
+   if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
       matrixRow.setElement( 0, mesh.template getCellNextToCell< -1, 0 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHx() * functionValue;
    }
-   if( coordinates.y() == 0 )
+   if( entity.getCoordinates().y() == 0 )
    {
       matrixRow.setElement( 0, index,                           1.0 );
       matrixRow.setElement( 1, mesh.template getCellNextToCell< 0, 1 >( index ), -1.0 );
       b[ index ] = - mesh.getHy() * functionValue;
    }
-   if( coordinates.y() == mesh.getDimensions().y() - 1 )
+   if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
       matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, -1 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
@@ -255,45 +261,46 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
+   template< typename EntityType >          
 __cuda_callable__
 void
 tnlAnalyticNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setBoundaryConditions( const RealType& time,
                        const MeshType& mesh,
                        const IndexType index,
-                       const CoordinatesType& coordinates,
+                       const EntityType& entity,
                        DofVectorType& u,
                        DofVectorType& fu ) const
 {
    fu[ index ] = 0;
    fu[ index ] = 0;
-   const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
-   if( coordinates.x() == 0 )
+   const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
+   if( entity.getCoordinates().x() == 0 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 1, 0, 0 >( index ) ] - mesh.getHx() * functionValue;
       return;
    }
-   if( coordinates.x() == mesh.getDimensions().x() - 1 )
+   if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< -1, 0, 0 >( index ) ] + mesh.getHx() * functionValue;
       return;
    }
-   if( coordinates.y() == 0 )
+   if( entity.getCoordinates().y() == 0 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 0, 1, 0 >( index ) ] - mesh.getHy() * functionValue;
       return;
    }
-   if( coordinates.y() == mesh.getDimensions().y() - 1 )
+   if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 0, -1, 0 >( index ) ] + mesh.getHy() * functionValue;
       return;
    }
-   if( coordinates.z() == 0 )
+   if( entity.getCoordinates().z() == 0 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 0, 0, 1 >( index ) ] - mesh.getHz() * functionValue;
       return;
    }
-   if( coordinates.z() == mesh.getDimensions().z() - 1 )
+   if( entity.getCoordinates().z() == mesh.getDimensions().z() - 1 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 0, 0, - 1 >( index ) ] + mesh.getHz() * functionValue;
       return;
@@ -306,12 +313,13 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
+   template< typename EntityType >          
 __cuda_callable__
 Index
 tnlAnalyticNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
-                          const CoordinatesType& coordinates ) const
+                          const EntityType& entity ) const
 {
    return 2;
 }
@@ -322,51 +330,52 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-   template< typename Matrix >
+   template< typename Matrix,
+             typename EntityType >
 __cuda_callable__
 void
 tnlAnalyticNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
-                    const CoordinatesType& coordinates,
+                    const EntityType& entity,
                     DofVectorType& u,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   const Real functionValue = this->function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
-   if( coordinates.x() == 0 )
+   const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
+   if( entity.getCoordinates().x() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
       matrixRow.setElement( 1, mesh.template getCellNextToCell< 1, 0, 0 >( index ), -1.0 );
       b[ index ] = - mesh.getHx() * functionValue;
    }
-   if( coordinates.x() == mesh.getDimensions().x() - 1 )
+   if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
       matrixRow.setElement( 0, mesh.template getCellNextToCell< -1, 0, 0 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHx() * functionValue;
    }
-   if( coordinates.y() == 0 )
+   if( entity.getCoordinates().y() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
       matrixRow.setElement( 1, mesh.template getCellNextToCell< 0, 1, 0 >( index ), -1.0 );
       b[ index ] = - mesh.getHy() * functionValue;
    }
-   if( coordinates.y() == mesh.getDimensions().y() - 1 )
+   if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
       matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, -1, 0 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHy() * functionValue;
    }
-   if( coordinates.z() == 0 )
+   if( entity.getCoordinates().z() == 0 )
    {
       matrixRow.setElement( 0, index,                           1.0 );
       matrixRow.setElement( 1, mesh.template getCellNextToCell< 0, 0, 1 >( index ), -1.0 );
       b[ index ] = - mesh.getHz() * functionValue;
    }
-   if( coordinates.z() == mesh.getDimensions().z() - 1 )
+   if( entity.getCoordinates().z() == mesh.getDimensions().z() - 1 )
    {
       matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, 0, -1 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );

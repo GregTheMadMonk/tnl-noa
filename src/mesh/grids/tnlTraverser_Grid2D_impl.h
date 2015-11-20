@@ -98,7 +98,7 @@ processBoundaryEntities( const GridType& grid,
     */   
    const int FaceDimensions = GridType::Dimensions - 1;
    typedef typename GridType::template GridEntity< FaceDimensions > EntityType;
-   typedef typename EntityType::EntityOrientationType EntityOrientation;
+   typedef typename EntityType::EntityOrientationType EntityOrientationType;
    EntityType entity;
 
    const IndexType& xSize = grid.getDimensions().x();
@@ -138,7 +138,7 @@ processInteriorEntities( const GridType& grid,
     */
    const int FaceDimensions = GridType::Dimensions - 1;
    typedef typename GridType::template GridEntity< FaceDimensions > EntityType;
-   typedef typename EntityType::EntityOrientationType EntityOrientation;
+   typedef typename EntityType::EntityOrientationType EntityOrientationType;
    EntityType entity;
 
    const IndexType& xSize = grid.getDimensions().x();
@@ -280,14 +280,14 @@ template< typename Real,
           typename Index,
           typename UserData,
           typename EntitiesProcessor,
-          int nx,
-          int ny,
           bool processAllEntities,
           bool processBoundaryEntities >
 __global__ void tnlTraverserGrid2DFaces( const tnlGrid< 2, Real, tnlCuda, Index >* grid,
                                          UserData* userData,
                                          const Index gridXIdx,
-                                         const Index gridYIdx )
+                                         const Index gridYIdx,
+                                         int nx,
+                                         int ny )
 {
    const int FaceDimensions = GridType::Dimensions - 1;
    typedef typename GridType::template GridEntity< CellDimensions > EntityType;
@@ -379,7 +379,7 @@ processBoundaryEntities( const GridType& grid,
    for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
       for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
       {
-         tnlTraverserGrid2DBoundaryCells< Real, Index, UserData, EntitiesProcessor >
+         tnlTraverserGrid2DCells< Real, Index, UserData, EntitiesProcessor, false, true >
                                         <<< cudaBlocks, cudaBlockSize >>>
                                        ( kernelGrid,
                                          kernelUserData,
@@ -417,7 +417,7 @@ processInteriorEntities( const GridType& grid,
    for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
       for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
       {
-         tnlTraverserGrid2DInteriorCells< Real, Index, UserData, EntitiesProcessor >
+         tnlTraverserGrid2DCells< Real, Index, UserData, EntitiesProcessor, false, false >
                                         <<< cudaBlocks, cudaBlockSize >>>
                                        ( kernelGrid,
                                          kernelUserData,
@@ -460,12 +460,13 @@ processBoundaryEntities( const GridType& grid,
    for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
       for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
       {
-         tnlTraverserGrid2DBoundaryFaces< Real, Index, UserData, EntitiesProcessor, 1, 0 >
-                                        <<< cudaBlocks, cudaBlockSize >>>
-                                       ( kernelGrid,
-                                         kernelUserData,
-                                         gridXIdx,
-                                         gridYIdx );
+         tnlTraverserGrid2DFaces< Real, Index, UserData, EntitiesProcessor, false, true >
+            <<< cudaBlocks, cudaBlockSize >>>
+            ( kernelGrid,
+              kernelUserData,
+              gridXIdx,
+              gridYIdx,
+              1, 0  );
          checkCudaDevice;
       }
    cudaThreadSynchronize();
@@ -481,12 +482,13 @@ processBoundaryEntities( const GridType& grid,
    for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
       for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
       {
-         tnlTraverserGrid2DBoundaryFaces< Real, Index, UserData, EntitiesProcessor, 0, 1 >
-                                        <<< cudaBlocks, cudaBlockSize >>>
-                                       ( kernelGrid,
-                                         kernelUserData,
-                                         gridXIdx,
-                                         gridYIdx );
+         tnlTraverserGrid2DFaces< Real, Index, UserData, EntitiesProcessor, false, true >
+            <<< cudaBlocks, cudaBlockSize >>>
+            ( kernelGrid,
+              kernelUserData,
+              gridXIdx,
+              gridYIdx,
+              0, 1 );
          checkCudaDevice;
       }
    cudaThreadSynchronize();
@@ -525,12 +527,13 @@ processInteriorEntities( const GridType& grid,
    for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
       for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
       {
-         tnlTraverserGrid2DInteriorFaces< Real, Index, UserData, EntitiesProcessor, 1, 0 >
-                                        <<< cudaBlocks, cudaBlockSize >>>
-                                       ( kernelGrid,
-                                         kernelUserData,
-                                         gridXIdx,
-                                         gridYIdx );
+         tnlTraverserGrid2DFaces< Real, Index, UserData, EntitiesProcessor, false, false >
+            <<< cudaBlocks, cudaBlockSize >>>
+            ( kernelGrid,
+              kernelUserData,
+              gridXIdx,
+              gridYIdx,
+              1, 0 );
          checkCudaDevice;
       }
    cudaThreadSynchronize();
@@ -546,12 +549,13 @@ processInteriorEntities( const GridType& grid,
    for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
       for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
       {
-         tnlTraverserGrid2DInteriorFaces< Real, Index, UserData, EntitiesProcessor, 0, 1 >
-                                        <<< cudaBlocks, cudaBlockSize >>>
-                                       ( kernelGrid,
-                                         kernelUserData,
-                                         gridXIdx,
-                                         gridYIdx );
+         tnlTraverserGrid2DInteriorFaces< Real, Index, UserData, EntitiesProcessor, false, false >
+            <<< cudaBlocks, cudaBlockSize >>>
+            ( kernelGrid,
+              kernelUserData,
+              gridXIdx,
+              gridYIdx,
+              0, 1 );
          checkCudaDevice;
       }
    cudaThreadSynchronize();
@@ -584,12 +588,12 @@ processBoundaryEntities( const GridType& grid,
    for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
       for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
       {
-         tnlTraverserGrid2DBoundaryVertices< Real, Index, UserData, EntitiesProcessor >
-                                           <<< cudaBlocks, cudaBlockSize >>>
-                                          ( kernelGrid,
-                                            kernelUserData,
-                                            gridXIdx,
-                                            gridYIdx );
+         tnlTraverserGrid2DVertices< Real, Index, UserData, EntitiesProcessor, false, true >
+            <<< cudaBlocks, cudaBlockSize >>>
+            ( kernelGrid,
+              kernelUserData,
+              gridXIdx,
+              gridYIdx );
          checkCudaDevice;
       }
    cudaThreadSynchronize();   
@@ -623,12 +627,12 @@ processInteriorEntities( const GridType& grid,
    for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
       for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
       {
-         tnlTraverserGrid2DInteriorVertices< Real, Index, UserData, EntitiesProcessor >
-                                           <<< cudaBlocks, cudaBlockSize >>>
-                                          ( kernelGrid,
-                                            kernelUserData,
-                                            gridXIdx,
-                                            gridYIdx );
+         tnlTraverserGrid2DVertices< Real, Index, UserData, EntitiesProcessor, false, false >
+            <<< cudaBlocks, cudaBlockSize >>>
+            ( kernelGrid,
+              kernelUserData,
+              gridXIdx,
+              gridYIdx );
          checkCudaDevice;
       }
    cudaThreadSynchronize();   

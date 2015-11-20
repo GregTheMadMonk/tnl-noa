@@ -245,13 +245,13 @@ Vertex tnlGrid< 3, Real, Device, Index > :: getEntityCenter( const GridEntity< E
    static_assert( EntityDimensions <= 3 &&
                   EntityDimensions >= 0, "Wrong grid entity dimensions." );
    tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-              entity.getCoordinates() <= this->getDimensions() - entity.getProportions(),
+              entity.getCoordinates() <= this->getDimensions() - entity.getBasis(),
                     cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                          << " this->getDimensions() = " << this->getDimensions()
-                         << " entity.getProportions() = " << entity.getProportions() );
-   return Vertex( this->origin.x() + ( entity.getCoordinates().x() + 0.5 * entity.getProportions().x ) * this->cellProportions.x(),
-                  this->origin.y() + ( entity.getCoordinates().y() + 0.5 * entity.getProportions().y ) * this->cellProportions.y(),
-                  this->origin.z() + ( entity.getCoordinates().z() + 0.5 * entity.getProportions().z ) * this->cellProportions.z() );
+                         << " entity.getBasis() = " << entity.getBasis() );
+   return Vertex( this->origin.x() + ( entity.getCoordinates().x() + 0.5 * entity.getBasis().x() ) * this->cellProportions.x(),
+                  this->origin.y() + ( entity.getCoordinates().y() + 0.5 * entity.getBasis().y() ) * this->cellProportions.y(),
+                  this->origin.z() + ( entity.getCoordinates().z() + 0.5 * entity.getBasis().z() ) * this->cellProportions.z() );
 }
 
 

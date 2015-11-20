@@ -200,11 +200,11 @@ Vertex tnlGrid< 1, Real, Device, Index > :: getEntityCenter( const GridEntity< E
    static_assert( EntityDimensions <= 1 &&
                   EntityDimensions >= 0, "Wrong grid entity dimensions." );
    tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
-              entity.getCoordinates() <= this->getDimensions() - entity.getProportions(),
+              entity.getCoordinates() <= this->getDimensions() - entity.getBasis(),
                     cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                          << " this->getDimensions() = " << this->getDimensions()
-                         << " entity.getProportions() = " << entity.getProportions() );
-   return Vertex( this->origin.x() + ( entity.getCoordinates().x() + 0.5 * entity.getProportions().x ) * this->cellProportions.x() );
+                         << " entity.getProportions() = " << entity.getBasis() );
+   return Vertex( this->origin.x() + ( entity.getCoordinates().x() + 0.5 * entity.getBasis().x() ) * this->cellProportions.x() );
 }
 
 

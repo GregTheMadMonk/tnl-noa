@@ -211,19 +211,19 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
    {
       public:
          
-         template< typename EntityTopology >         
+         template< typename EntityType >         
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraverserUserData& userData,
                                     const IndexType index,
-                                    const CoordinatesType& coordinates )
+                                    const EntityType& entity )
          {
              ( *userData.b )[ index ] = 0.0;           
-             userData.boundaryConditions->updateLinearSystem//< EntityTopology >
+             userData.boundaryConditions->updateLinearSystem
                ( *userData.time + *userData.tau,
                  mesh,
                  index,
-                 coordinates,
+                 entity,
                  *userData.u,
                  *userData.b,
                  *userData.matrix );
@@ -234,30 +234,30 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
    {
       public:
 
-         template< typename EntityTopology >
+         template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraverserUserData& userData,
                                     const IndexType index,
-                                    const CoordinatesType& coordinates )
+                                    const EntityType& entity )
          {
             ( *userData.b )[ index ] = 0.0;            
-            userData.differentialOperator->updateLinearSystem//< EntityTopology >
+            userData.differentialOperator->updateLinearSystem
                ( *userData.time,
                  *userData.tau,
                  mesh,
                  index,
-                 coordinates,
+                 entity,
                  *userData.u,
                  *userData.b,
                  *userData.matrix );
             
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            const RealType& rhs = FunctionAdapter::template getValue< EntityTopology >
+            const RealType& rhs = FunctionAdapter::getValue
                ( mesh,
                  *userData.rightHandSide,
                  index,
-                 coordinates,
+                 entity,
                  *userData.time );
             TimeDiscretisation::applyTimeDiscretisation( *userData.matrix,
                                                          ( *userData.b )[ index ],

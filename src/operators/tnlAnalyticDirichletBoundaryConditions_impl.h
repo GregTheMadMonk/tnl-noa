@@ -97,18 +97,19 @@ template< int Dimensions,
           typename Function,
           typename Real,
           typename Index >
+   template< typename EntityType >
 __cuda_callable__
 void
 tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setBoundaryConditions( const RealType& time,
                        const MeshType& mesh,
                        const IndexType index,
-                       const CoordinatesType& coordinates,
+                       const EntityType& entity,
                        DofVectorType& u,
                        DofVectorType& fu ) const
 {
    fu[ index ] = 0;
-   u[ index ] = function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
+   u[ index ] = function.getValue( mesh.getEntityCenter( entity ), time );
 }
 
 template< int Dimensions,
@@ -118,12 +119,13 @@ template< int Dimensions,
           typename Function,
           typename Real,
           typename Index >
+   template< typename EntityType >
 __cuda_callable__
 Index
 tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
-                          const CoordinatesType& coordinates ) const
+                          const EntityType& entity ) const
 {
    return 1;
 }
@@ -135,21 +137,22 @@ template< int Dimensions,
           typename Function,
           typename Real,
           typename Index >
-   template< typename Matrix >          
+   template< typename Matrix,
+             typename EntityType >          
 __cuda_callable__
 void
 tnlAnalyticDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
-                    const CoordinatesType& coordinates,
+                    const EntityType& entity,
                     DofVectorType& u,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    matrixRow.setElement( 0, index, 1.0 );
-   b[ index ] = function.getValue( mesh.template getCellCenter< VertexType >( coordinates ), time );
+   b[ index ] = function.getValue( mesh.getEntityCenter( entity ), time );
 }
 
 #endif	/* tnlAnalyticDirichletBoundaryConditions_IMPL_H */

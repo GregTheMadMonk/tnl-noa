@@ -117,7 +117,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 2 >
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
          
-         return coordinates.y() * grid.getDimensions.x() + coordinates.x();
+         return coordinates.y() * grid.getDimensions().x() + coordinates.x();
       }
 };
 

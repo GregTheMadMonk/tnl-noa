@@ -127,15 +127,15 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
    {
       public:
 
-         template< typename EntityTopology >
+         template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraversalUserData& userData,
                                     const IndexType index,
-                                    const CoordinatesType& coordinates )
+                                    const EntityType& entity )
          {
             ( *userData.rowLengths )[ index ] =
-                     userData.boundaryConditions->getLinearSystemRowLength( mesh, index, coordinates );
+                     userData.boundaryConditions->getLinearSystemRowLength( mesh, index, entity );
          }
 
          
@@ -168,15 +168,15 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
    {
       public:
          
-         template< typename EntityTopology >
+         template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraversalUserData& userData,
                                     const IndexType index,
-                                    const CoordinatesType& coordinates )
+                                    const EntityType& entity )
          {
             ( *userData.rowLengths )[ index ] =
-                     userData.differentialOperator->getLinearSystemRowLength( mesh, index, coordinates );
+                     userData.differentialOperator->getLinearSystemRowLength( mesh, index, entity );
          }
 
 

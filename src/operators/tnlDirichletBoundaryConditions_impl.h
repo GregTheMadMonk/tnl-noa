@@ -90,13 +90,14 @@ template< int Dimensions,
           typename Vector,
           typename Real,
           typename Index >
+   template< typename EntityType >
 __cuda_callable__
 void
 tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 setBoundaryConditions( const RealType& time,
                        const MeshType& mesh,
                        const IndexType index,
-                       const CoordinatesType& coordinates,
+                       const EntityType& entity,
                        DofVectorType& u,
                        DofVectorType& fu ) const
 {
@@ -111,12 +112,13 @@ template< int Dimensions,
           typename Vector,
           typename Real,
           typename Index >
+   template< typename EntityType >
 __cuda_callable__
 Index
 tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
-                          const CoordinatesType& coordinates ) const
+                          const EntityType& entity ) const
 {
    return 1;
 }
@@ -128,14 +130,15 @@ template< int Dimensions,
           typename Vector,
           typename Real,
           typename Index >
-   template< typename Matrix >
+   template< typename Matrix,
+             typename EntityType >
 __cuda_callable__
 void
 tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
-                    const CoordinatesType& coordinates,
+                    const EntityType& entity,
                     DofVectorType& u,
                     DofVectorType& b,
                     Matrix& matrix ) const

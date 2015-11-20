@@ -33,19 +33,27 @@ class tnlGridEntity
       static const int entityDimensions = EntityDimensions;
       
       typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
-      typedef tnlStaticVector< meshDimensions, IndexType > EntityProportionsType;
+      typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
       
       tnlGridEntity();
       
       tnlGridEntity( const CoordinatesType& coordinates,
                      const EntityOrientationType& orientation,
-                     const EntityProportionsType& proportions );
+                     const EntityBasisType& basis );
       
       const CoordinatesType& getCoordinates() const;
       
       CoordinatesType& getCoordinates();
       
       const EntityOrientationType& getOrientation() const;
+      
+      void setOrientation( const EntityOrientationType& orientation );
+      
+      const EntityBasisType& getBasis() const;
+      
+      EntityBasisType& getBasis();
+      
+      void setBasis( const EntityBasisType& basis );
 
    protected:
       
@@ -53,8 +61,10 @@ class tnlGridEntity
       
       EntityOrientationType orientation;
       
-      EntityProportionsType proportions;
+      EntityBasisType basis;
 };
+
+#include <mesh/grids/tnlGridEntity_impl.h>
 
 #endif	/* TNLGRIDENTITY_H */
 

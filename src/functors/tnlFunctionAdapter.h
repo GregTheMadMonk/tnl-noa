@@ -77,14 +77,14 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, 
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       
-      template< typename EntityTopology >
+      template< typename EntityType >
       static RealType getValue( const MeshType& mesh,
                                 const FunctionType& function,
                                 const IndexType meshEntytiIndex,
-                                const CoordinatesType& coordinates,
+                                const EntityType& entity,
                                 const RealType& time )
       {
-         return function.getValue( mesh.template getEntityCenter< EntityTopology >( coordinates ), time );
+         return function.getValue( mesh.getEntityCenter( entity ), time );
       }
 };
 
