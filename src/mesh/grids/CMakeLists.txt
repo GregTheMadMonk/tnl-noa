@@ -5,8 +5,10 @@ SET( headers tnlGrid1D.h
              tnlGrid3D.h
              tnlGrid3D_impl.h
              tnlGridEntityTopology.h
-             tnlGridEntityCenterGetter.h
-             tnlGridEntityCenterGetter_impl.h
+             tnlGridEntity.h
+             tnlGridEntity_impl.h
+             tnlGridEntityGetter.h
+             tnlGridEntityGetter_impl.h
              tnlTraverser_Grid1D.h
              tnlTraverser_Grid1D_impl.h 
              tnlTraverser_Grid2D.h

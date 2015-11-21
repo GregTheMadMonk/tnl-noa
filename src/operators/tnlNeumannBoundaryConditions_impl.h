@@ -50,18 +50,19 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
+   template< typename EntityType >          
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 setBoundaryConditions( const RealType& time,
                        const MeshType& mesh,
                        const IndexType index,
-                       const CoordinatesType& coordinates,
+                       const EntityType& entity,
                        DofVectorType& u,
                        DofVectorType& fu ) const
 {
    fu[ index ] = 0;
-   if( coordinates.x() == 0 )
+   if( entity.getCoordinates().x() == 0 )
       u[ index ] = u[ mesh.template getCellNextToCell< 1 >( index ) ] - mesh.getHx() * this->vector[ index ];
    else
       u[ index ] = u[ mesh.template getCellNextToCell< -1 >( index ) ] + mesh.getHx() * this->vector[ index ];
@@ -73,12 +74,13 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
+   template< typename EntityType >
 __cuda_callable__
 Index
 tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
-                          const CoordinatesType& coordinates ) const
+                          const EntityType& entity ) const
 {
    return 2;
 }
@@ -89,20 +91,21 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
-   template< typename Matrix >
+   template< typename Matrix,
+             typename EntityType >
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
-                    const CoordinatesType& coordinates,
+                    const EntityType& entity,
                     DofVectorType& u,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   if( coordinates.x() == 0 )
+   if( entity.getCoordinates().x() == 0 )
    {
       matrixRow.setElement( 0, index, 1.0 );
       matrixRow.setElement( 1, mesh.template getCellNextToCell< 1 >( index ), -1.0 );
@@ -125,33 +128,34 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
+   template< typename EntityType >          
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 setBoundaryConditions( const RealType& time,
                        const MeshType& mesh,
                        const IndexType index,
-                       const CoordinatesType& coordinates,
+                       const EntityType& entity,
                        DofVectorType& u,
                        DofVectorType& fu ) const
 {
    fu[ index ] = 0;
-   if( coordinates.x() == 0 )
+   if( entity.getCoordinates().x() == 0 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 1, 0 >( index ) ] - mesh.getHx() * this->vector[ index ];
       return;
    }
-   if( coordinates.x() == mesh.getDimensions().x() - 1 )
+   if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< -1, 0 >( index ) ] + mesh.getHx() * this->vector[ index ];
       return;
    }
-   if( coordinates.y() == 0 )
+   if( entity.getCoordinates().y() == 0 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 0, 1 >( index ) ] - mesh.getHy() * this->vector[ index ];
       return;
    }
-   if( coordinates.y() == mesh.getDimensions().y() - 1 )
+   if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 0, -1 >( index ) ] + mesh.getHy() * this->vector[ index ];
       return;
@@ -164,12 +168,13 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
+   template< typename EntityType >          
 __cuda_callable__
 Index
 tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
-                          const CoordinatesType& coordinates ) const
+                          const EntityType& entity ) const
 {
    return 2;
 }
@@ -180,38 +185,39 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
-   template< typename Matrix >
+   template< typename Matrix,
+             typename EntityType >
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
-                    const CoordinatesType& coordinates,
+                    const EntityType& entity,
                     DofVectorType& u,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   if( coordinates.x() == 0 )
+   if( entity.getCoordinates().x() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
       matrixRow.setElement( 1, mesh.template getCellNextToCell< 1, 0 >( index ), -1.0 );
       b[ index ] = - mesh.getHx() * this->vector[ index ];
    }
-   if( coordinates.x() == mesh.getDimensions().x() - 1 )
+   if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
       matrixRow.setElement( 0, mesh.template getCellNextToCell< -1, 0 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHx() * this->vector[ index ];
    }
-   if( coordinates.y() == 0 )
+   if( entity.getCoordinates().y() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
       matrixRow.setElement( 1, mesh.template getCellNextToCell< 0, 1 >( index ), -1.0 );
       b[ index ] = - mesh.getHy() * this->vector[ index ];
    }
-   if( coordinates.y() == mesh.getDimensions().y() - 1 )
+   if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
       matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, -1 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
@@ -228,43 +234,44 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
+   template< typename EntityType >          
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 setBoundaryConditions( const RealType& time,
                        const MeshType& mesh,
                        const IndexType index,
-                       const CoordinatesType& coordinates,
+                       const EntityType& entity,
                        DofVectorType& u,
                        DofVectorType& fu ) const
 {
    fu[ index ] = 0;
-   if( coordinates.x() == 0 )
+   if( entity.getCoordinates().x() == 0 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 1, 0, 0 >( index ) ] - mesh.getHx() * this->vector[ index ];
       return;
    }
-   if( coordinates.x() == mesh.getDimensions().x() - 1 )
+   if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< -1, 0, 0 >( index ) ] + mesh.getHx() * this->vector[ index ];
       return;
    }
-   if( coordinates.y() == 0 )
+   if( entity.getCoordinates().y() == 0 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 0, 1, 0 >( index ) ] - mesh.getHy() * this->vector[ index ];
       return;
    }
-   if( coordinates.y() == mesh.getDimensions().y() - 1 )
+   if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 0, -1, 0 >( index ) ] + mesh.getHy() * this->vector[ index ];
       return;
    }
-   if( coordinates.z() == 0 )
+   if( entity.getCoordinates().z() == 0 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 0, 0, 1 >( index ) ] - mesh.getHz() * this->vector[ index ];
       return;
    }
-   if( coordinates.z() == mesh.getDimensions().z() - 1 )
+   if( entity.getCoordinates().z() == mesh.getDimensions().z() - 1 )
    {
       u[ index ] = u[ mesh.template getCellNextToCell< 0, 0, -1 >( index ) ] + mesh.getHz() * this->vector[ index ];
       return;
@@ -277,12 +284,13 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
+   template< typename EntityType >          
 __cuda_callable__
 Index
 tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
-                          const CoordinatesType& coordinates ) const
+                          const EntityType& entity ) const
 {
    return 2;
 }
@@ -293,50 +301,51 @@ template< typename MeshReal,
           typename Vector,
           typename Real,
           typename Index >
-   template< typename Matrix >
+   template< typename Matrix,
+             typename EntityType >
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
-                    const CoordinatesType& coordinates,
+                    const EntityType& entity,                    
                     DofVectorType& u,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   if( coordinates.x() == 0 )
+   if( entity.getCoordinates().x() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
       matrixRow.setElement( 1, mesh.template getCellNextToCell< 1, 0, 0 >( index ), -1.0 );
       b[ index ] = - mesh.getHx() * this->vector[ index ];
    }
-   if( coordinates.x() == mesh.getDimensions().x() - 1 )
+   if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
       matrixRow.setElement( 0, mesh.template getCellNextToCell< -1, 0, 0 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHx() * this->vector[ index ];
    }
-   if( coordinates.y() == 0 )
+   if( entity.getCoordinates().y() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
       matrixRow.setElement( 1, mesh.template getCellNextToCell< 0, 1, 0 >( index ), -1.0 );
       b[ index ] = - mesh.getHy() * this->vector[ index ];
    }
-   if( coordinates.y() == mesh.getDimensions().y() - 1 )
+   if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
       matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, -1, 0 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHy() * this->vector[ index ];
    }
-   if( coordinates.z() == 0 )
+   if( entity.getCoordinates().z() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
       matrixRow.setElement( 1, mesh.template getCellNextToCell< 0, 0, 1 >( index ), -1.0 );
       b[ index ] = - mesh.getHz() * this->vector[ index ];
    }
-   if( coordinates.z() == mesh.getDimensions().z() - 1 )
+   if( entity.getCoordinates().z() == mesh.getDimensions().z() - 1 )
    {
       matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, 0, -1 >( index ), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );

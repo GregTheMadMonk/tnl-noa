@@ -59,25 +59,28 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, V
    typedef tnlStaticVector< 1, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
+   template< typename EntityType >
    __cuda_callable__
    void setBoundaryConditions( const RealType& time,
                                const MeshType& mesh,
                                const IndexType index,
-                               const CoordinatesType& coordinates,
+                               const EntityType& entity,
                                DofVectorType& u,
                                DofVectorType& fu ) const;
 
+   template< typename EntityType >
    __cuda_callable__
    Index getLinearSystemRowLength( const MeshType& mesh,
                                    const IndexType& index,
-                                   const CoordinatesType& coordinates ) const;
+                                   const EntityType& entity ) const;
 
-   template< typename MatrixRow >
+   template< typename MatrixRow,
+             typename EntityType >
    __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,
-                               const CoordinatesType& coordinates,
+                               const EntityType& entity,
                                DofVectorType& u,
                                DofVectorType& b,
                                MatrixRow& matrixRow ) const;
@@ -108,25 +111,28 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, V
    typedef tnlStaticVector< 2, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
+   template< typename EntityType >
    __cuda_callable__
    void setBoundaryConditions( const RealType& time,
                                const MeshType& mesh,
                                const IndexType index,
-                               const CoordinatesType& coordinates,
+                               const EntityType& entity,
                                DofVectorType& u,
                                DofVectorType& fu ) const;
-
+   
+   template< typename EntityType >
    __cuda_callable__
    Index getLinearSystemRowLength( const MeshType& mesh,
                                    const IndexType& index,
-                                   const CoordinatesType& coordinates ) const;
+                                   const EntityType& entity ) const;
 
-   template< typename MatrixRow >
+   template< typename MatrixRow,
+             typename EntityType >
    __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,
-                               const CoordinatesType& coordinates,
+                               const EntityType& entity,
                                DofVectorType& u,
                                DofVectorType& b,
                                MatrixRow& matrixRow ) const;
@@ -157,25 +163,28 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, V
    typedef tnlStaticVector< 3, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
+   template< typename EntityType >
    __cuda_callable__
    void setBoundaryConditions( const RealType& time,
                                const MeshType& mesh,
                                const IndexType index,
-                               const CoordinatesType& coordinates,
+                               const EntityType& entity,
                                DofVectorType& u,
                                DofVectorType& fu ) const;
 
+   template< typename EntityType >
    __cuda_callable__
    Index getLinearSystemRowLength( const MeshType& mesh,
                                    const IndexType& index,
-                                   const CoordinatesType& coordinates ) const;
+                                   const EntityType& entity ) const;
 
-   template< typename MatrixRow >
+   template< typename MatrixRow,
+             typename EntityType >
    __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,
-                               const CoordinatesType& coordinates,
+                               const EntityType& entity,
                                DofVectorType& u,
                                DofVectorType& b,
                                MatrixRow& matrixRow ) const;
