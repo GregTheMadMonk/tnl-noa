@@ -203,7 +203,7 @@ Vertex tnlGrid< 1, Real, Device, Index > :: getEntityCenter( const GridEntity< E
               entity.getCoordinates() <= this->getDimensions() - entity.getBasis(),
                     cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                          << " this->getDimensions() = " << this->getDimensions()
-                         << " entity.getProportions() = " << entity.getBasis() );
+                         << " entity.getBasis() = " << entity.getBasis() );
    return Vertex( this->origin.x() + ( entity.getCoordinates().x() + 0.5 * entity.getBasis().x() ) * this->cellProportions.x() );
 }
 

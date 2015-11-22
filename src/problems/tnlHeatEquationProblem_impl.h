@@ -209,11 +209,11 @@ getExplicitRHS( const RealType& time,
                                                         this->rightHandSide,
                                                         u,
                                                         fu );
-   //cout << "u = " << u << endl;
-   //cout << "fu = " << fu << endl;
-   //_u.save( "u.tnl" );
-   //_fu.save( "fu.tnl" );
-   //getchar();
+   /*cout << "u = " << u << endl;
+   cout << "fu = " << fu << endl;
+   u.save( "u.tnl" );
+   fu.save( "fu.tnl" );
+   getchar();*/
 }
 
 template< typename Mesh,

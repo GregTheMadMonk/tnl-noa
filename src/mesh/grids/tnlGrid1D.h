@@ -55,8 +55,10 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    template< int EntityDimensions > using GridEntity = 
       tnlGridEntity< ThisType, EntityDimensions >;
    
-   enum { Dimensions = 1};
+   enum { Dimensions = 1 };
 
+   static constexpr int getDimensionsCount() { return Dimensions; };
+   
    tnlGrid();
 
    static tnlString getType();

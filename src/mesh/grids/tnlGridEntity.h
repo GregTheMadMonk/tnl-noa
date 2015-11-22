@@ -64,6 +64,94 @@ class tnlGridEntity
       EntityBasisType basis;
 };
 
+/****
+ * Specializations for cells
+ */
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index >
+class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
+{
+   public:
+      
+      typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
+      typedef typename GridType::IndexType IndexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      
+      static const int meshDimensions = GridType::Dimensions;
+      
+      static const int entityDimensions = meshDimensions;
+      
+      typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
+      typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
+
+      tnlGridEntity();
+      
+      tnlGridEntity( const CoordinatesType& coordinates );
+      
+      const CoordinatesType& getCoordinates() const;      
+      
+      CoordinatesType& getCoordinates();      
+      
+      const EntityOrientationType& getOrientation() const;     
+      
+      const EntityBasisType& getBasis() const;
+            
+   protected:
+      
+      CoordinatesType coordinates;
+      
+      EntityOrientationType orientation;
+      EntityBasisType basis;
+};
+
+/****
+ * Specialization for vertices
+ */
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index >
+class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
+{
+   public:
+      
+      typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
+      typedef typename GridType::IndexType IndexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      
+      static const int meshDimensions = GridType::Dimensions;
+      
+      static const int entityDimensions = 0;
+      
+      typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
+      typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
+
+      tnlGridEntity();
+      
+      tnlGridEntity( const CoordinatesType& coordinates );
+      
+      const CoordinatesType& getCoordinates() const;
+      
+      CoordinatesType& getCoordinates();
+      
+      const EntityOrientationType& getOrientation() const;     
+      
+      const EntityBasisType& getBasis() const;
+            
+   protected:
+      
+      CoordinatesType coordinates;
+      
+      EntityOrientationType orientation;
+      
+      EntityBasisType basis;
+
+};
+
+
 #include <mesh/grids/tnlGridEntity_impl.h>
 
 #endif	/* TNLGRIDENTITY_H */
