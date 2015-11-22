@@ -120,7 +120,9 @@ template< int Dimensions,
           typename Device,
           typename Index >
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
-tnlGridEntity( const CoordinatesType& coordinates )
+tnlGridEntity( const CoordinatesType& coordinates,
+               const EntityOrientationType& orientation,
+               const EntityBasisType& basis )
 : coordinates( coordinates )
 {  
 }
@@ -189,7 +191,9 @@ template< int Dimensions,
           typename Device,
           typename Index >
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
-tnlGridEntity( const CoordinatesType& coordinates )
+tnlGridEntity( const CoordinatesType& coordinates,
+               const EntityOrientationType& orientation,
+               const EntityBasisType& basis )
 : coordinates( coordinates )
 {  
 }

@@ -163,6 +163,26 @@ template< typename Real,
           typename Device,
           typename Index >
    template< int EntityDimensions >
+Index
+tnlGrid< 1, Real, Device, Index >:: 
+getEntitiesCount() const
+{
+   static_assert( EntityDimensions <= 1 &&
+                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
+   
+   switch( EntityDimensions )
+   {
+      case 1:
+         return this->numberOfCells;
+      case 0:
+         return this->numberOfVertices;
+   }            
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< int EntityDimensions >
  __cuda_callable__
 typename tnlGrid< 1, Real, Device, Index >::template GridEntity< EntityDimensions >
 tnlGrid< 1, Real, Device, Index >::
@@ -323,7 +343,7 @@ Real tnlGrid< 1, Real, Device, Index > :: getSmallestSpaceStep() const
    return this->hx;
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
    template< typename EntityTopology,
@@ -400,7 +420,7 @@ Vertex tnlGrid< 1, Real, Device, Index >::getVertex( const CoordinatesType& vert
                    << " this->getDimensions().x() = " << this->getDimensions().x() );
    return Vertex( this->origin.x() + vertexCoordinates.x() * this->cellProportions.x() );
 }
-
+*/
 template< typename Real,
           typename Device,
           typename Index >
@@ -588,11 +608,15 @@ bool tnlGrid< 1, Real, Device, Index > :: write( const MeshFunction& function,
    const RealType hx = getCellProportions(). x();
    if( format == "gnuplot" )
    {
-      for( IndexType i = 0; i < getDimensions(). x(); i++ )
+      typename ThisType::template GridEntity< Dimensions > entity;
+      CoordinatesType coordinates = entity.getCoordinates();
+      for( coordinates.x() = 0;
+           coordinates.x() < getDimensions(). x();
+           coordinates.x() ++ )
       {
-         VertexType v = this->getCellCenter< VertexType >( CoordinatesType( i ) );
+         VertexType v = this->getEntityCenter( entity );
          tnlGnuplotWriter::write( file,  v );
-         tnlGnuplotWriter::write( file,  function[ this->getCellIndex( i ) ] );
+         tnlGnuplotWriter::write( file,  function[ this->getEntityIndex( entity ) ] );
          file << endl;
       }
    }

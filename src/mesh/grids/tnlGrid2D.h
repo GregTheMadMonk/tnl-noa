@@ -38,28 +38,6 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    typedef tnlGrid< 2, Real, tnlCuda, Index > CudaType;
    
    typedef tnlGrid< 2, Real, Device, Index > ThisType;
-   template< int i1, int i2 > using EntityOrientation = tnlStaticMultiIndex2D< i1, i2 >;
-   template< int i1, int i2 > using EntityProportions = tnlStaticMultiIndex2D< i1, i2 >;   
-   
-   typedef tnlGridEntityTopology< ThisType,
-                                  2,
-                                  EntityOrientation< 0, 0 >,
-                                  EntityProportions< 1, 1 > > Cell;
-   
-   /****
-    * ( n1, n2 ) is a face outer normal. If both are zeros it means any face.
-    */
-   template< int n1 = 0, int n2 = 0 > using Face = 
-      tnlGridEntityTopology< ThisType,
-                             1,
-                             EntityOrientation<  n1,  n2 >,
-                             EntityProportions< 1 - tnlConstAbs( n1 ),
-                                                1 - tnlConstAbs( n2 ) > >;
-   
-   typedef tnlGridEntityTopology< ThisType,
-                                  0,
-                                  EntityOrientation< 0, 0 >,
-                                  EntityProportions< 1, 1 > > Vertex;
 
    template< int EntityDimensions > using GridEntity = 
       tnlGridEntity< ThisType, EntityDimensions >;   
@@ -193,60 +171,8 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    __cuda_callable__
    RealType getSmallestSpaceStep() const;
 
-
-   /****
-    * The type Vertex can have different Real type.
-    */
-
-#ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-#else
-   template< typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
-
-#ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-#else
-   template< typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getCellCenter( const IndexType& cellIndex ) const;
-
-
-#ifdef HAVE_NOT_CXX11
-   template< int nx, int ny, typename Vertex >
-#else
-   template< int nx, int ny, typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getFaceCenter( const CoordinatesType& faceCoordinates ) const;
-
-#ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-#else
-   template< typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getVertex( const CoordinatesType& vertexCoordinates ) const;
-
-   __cuda_callable__
-   Index getNumberOfCells() const;
-
-#ifdef HAVE_NOT_CXX11
-   template< int nx,
-             int ny >
-#else
-   template< int nx = 1,
-             int ny = 1 >
-#endif
-   __cuda_callable__
-   Index getNumberOfFaces() const;
-
-   __cuda_callable__
-   Index getNumberOfVertices() const;
-
+   
+   
    __cuda_callable__
    bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
 

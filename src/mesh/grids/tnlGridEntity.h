@@ -88,7 +88,9 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
 
       tnlGridEntity();
       
-      tnlGridEntity( const CoordinatesType& coordinates );
+      tnlGridEntity( const CoordinatesType& coordinates,
+                     const EntityOrientationType& orientation,
+                     const EntityBasisType& basis );
       
       const CoordinatesType& getCoordinates() const;      
       
@@ -131,7 +133,9 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
 
       tnlGridEntity();
       
-      tnlGridEntity( const CoordinatesType& coordinates );
+      tnlGridEntity( const CoordinatesType& coordinates,
+                     const EntityOrientationType& orientation,
+                     const EntityBasisType& basis );
       
       const CoordinatesType& getCoordinates() const;
       

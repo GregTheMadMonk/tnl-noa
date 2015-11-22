@@ -53,8 +53,8 @@ class tnlGridEntityGetter< tnlGrid< 1, Real, Device, Index >,
                    << " entityDimensions = " << entityDimensions );
          return GridEntity
             ( CoordinatesType( index ),
-              typename GridType::EntityOrientation( 0 ),
-              typename GridType::EntityProportions( entityDimensions ) );
+              typename GridEntity::EntityOrientationType( 0 ),
+              typename GridEntity::EntityBasisType( EntityDimensions ) );
       }
       
       __cuda_callable__
@@ -101,8 +101,8 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 2 >
          return GridEntity
             ( CoordinatesType( index % dimensions.x(),
                                index / dimensions.x() ),
-              typename GridType::EntityOrientation( 0, 0 ),
-              typename GridType::EntityProportions( 1, 1 ) );
+              typename GridEntity::EntityOrientationType( 0, 0 ),
+              typename GridEntity::EntityBasisType( 1, 1 ) );
       }
       
       __cuda_callable__
@@ -151,15 +151,15 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 1 >
             const IndexType aux = dimensions.x() + 1;
             return GridEntity
                ( CoordinatesType( index % aux, index / aux ),
-                 typename GridType::EntityOrientation( 1, 0 ),
-                 typename GridType::EntityProportions( 0, 1 ) );
+                 typename GridEntity::EntityOrientationType( 1, 0 ),
+                 typename GridEntity::EntityBasisType( 0, 1 ) );
          }
          const IndexType i = index - grid.numberOfNxFaces;
          const IndexType& aux = dimensions.x();
          return GridEntity
             ( CoordinatesType( i % aux, i / aux ),
-              typename GridType::EntityOrientation( 0, 1 ),
-              typename GridType::EntityProportions( 1, 0 ) );
+              typename GridEntity::EntityOrientationType( 0, 1 ),
+              typename GridEntity::EntityBasisType( 1, 0 ) );
       }
       
       __cuda_callable__
@@ -210,8 +210,8 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 0 >
          return GridEntity
             ( CoordinatesType( index % aux, 
                                index / aux ),
-              typename GridType::EntityOrientation( 0, 0 ),
-              typename GridType::EntityProportions( 0, 0 ) );
+              typename GridEntity::EntityOrientationType( 0, 0 ),
+              typename GridEntity::EntityBasisType( 0, 0 ) );
       }
       
       __cuda_callable__
@@ -261,8 +261,8 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 3 >
             ( CoordinatesType( index % dimensions.x(),
                                ( index / dimensions.x() ) % dimensions.y(),
                                index / ( dimensions.x() * dimensions.y() ) ),
-              typename GridType::EntityOrientation( 0, 0, 0 ),
-              typename GridType::EntityProportions( 1, 1, 1 ) );
+              typename GridEntity::EntityOrientationType( 0, 0, 0 ),
+              typename GridEntity::EntityBasisType( 1, 1, 1 ) );
       }
       
       __cuda_callable__
@@ -314,8 +314,8 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 2 >
                ( CoordinatesType( index % aux,
                                   ( index / aux ) % dimensions.y(),
                                   index / ( aux * dimensions.y() ) ),
-                 typename GridType::EntityOrientation( 1, 0, 0 ),
-                 typename GridType::EntityProportions( 0, 1, 1 ) );
+                 typename GridEntity::EntityOrientationType( 1, 0, 0 ),
+                 typename GridEntity::EntityBasisType( 0, 1, 1 ) );
          }
          if( index < grid.numberOfNxAndNyFaces )
          {
@@ -325,16 +325,16 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 2 >
                ( CoordinatesType( i % dimensions.x(),
                                   ( i / dimensions.x() ) % aux,
                                   i / ( aux * dimensions.x() ) ),
-                 typename GridType::EntityOrientation( 0, 1, 0 ),
-                 typename GridType::EntityProportions( 1, 0, 1 ) );
+                 typename GridEntity::EntityOrientationType( 0, 1, 0 ),
+                 typename GridEntity::EntityBasisType( 1, 0, 1 ) );
          }
          const IndexType i = index - grid.numberOfNxAndNyFaces;
          return GridEntity
             ( CoordinatesType( i % dimensions.x(),
                                ( i / dimensions.x() ) % dimensions.y(),
                                i / ( dimensions.x() * dimensions.y() ) ),
-              typename GridType::EntityOrientation( 0, 0, 1 ),
-              typename GridType::EntityProportions( 1, 1, 0 ) );
+              typename GridEntity::EntityOrientationType( 0, 0, 1 ),
+              typename GridEntity::EntityBasisType( 1, 1, 0 ) );
       }
       
       __cuda_callable__
@@ -400,8 +400,8 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 1 >
                ( CoordinatesType( index % dimensions.x(),
                                   ( index / dimensions.x() ) % aux,
                                   index / ( dimensions.x() * aux ) ),
-                 typename GridType::EntityOrientation( 0, 0, 0 ),
-                 typename GridType::EntityProportions( 1, 0, 0 ) );
+                 typename GridEntity::EntityOrientationType( 0, 0, 0 ),
+                 typename GridEntity::EntityBasisType( 1, 0, 0 ) );
 
          }
          if( index < grid.numberOfDxAndDyEdges )
@@ -412,8 +412,8 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 1 >
                ( CoordinatesType( i % aux,
                                   ( i / aux ) % dimensions.y(),
                                   i / ( aux * dimensions.y() ) ),
-                 typename GridType::EntityOrientation( 0, 0, 0 ),
-                 typename GridType::EntityProportions( 0, 1, 0 ) );
+                 typename GridEntity::EntityOrientationType( 0, 0, 0 ),
+                 typename GridEntity::EntityBasisType( 0, 1, 0 ) );
          }
          const IndexType i = index - grid.numberOfDxAndDyEdges;
          const IndexType aux1 = dimensions.x() + 1;
@@ -423,8 +423,8 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 1 >
             ( CoordinatesType( i % aux1,
                                ( i / aux1 ) % aux2,
                                i / ( aux1 * aux2 ) ),
-              typename GridType::EntityOrientation( 0, 0, 0 ),
-              typename GridType::EntityProportions( 0, 0, 1 ) );
+              typename GridEntity::EntityOrientationType( 0, 0, 0 ),
+              typename GridEntity::EntityBasisType( 0, 0, 1 ) );
       }
       
       __cuda_callable__
@@ -486,8 +486,8 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 0 >
             ( CoordinatesType( index % auxX,
                                ( index / auxX ) % auxY,
                                index / ( auxX * auxY ) ),
-              typename GridType::EntityOrientation( 0, 0, 0 ),
-              typename GridType::EntityProportions( 0, 0, 0 ) );
+              typename GridEntity::EntityOrientationType( 0, 0, 0 ),
+              typename GridEntity::EntityBasisType( 0, 0, 0 ) );
       }
       
       __cuda_callable__

@@ -208,6 +208,30 @@ template< typename Real,
           typename Device,
           typename Index >
    template< int EntityDimensions >
+Index
+tnlGrid< 3, Real, Device, Index >:: 
+getEntitiesCount() const
+{
+   static_assert( EntityDimensions <= 3 &&
+                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
+   
+   switch( EntityDimensions )
+   {
+      case 3:
+         return this->numberOfCells;
+      case 2:
+         return this->numberOfFaces;         
+      case 1:
+         return this->numberOfEdges;                  
+      case 0:
+         return this->numberOfVertices;
+   }            
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< int EntityDimensions >
  __cuda_callable__
 typename tnlGrid< 3, Real, Device, Index >::template GridEntity< EntityDimensions >
 tnlGrid< 3, Real, Device, Index >::

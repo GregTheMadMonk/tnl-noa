@@ -40,18 +40,6 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    typedef tnlGrid< 1, Real, tnlCuda, Index > CudaType;
    typedef tnlGrid< 1, Real, Device, Index > ThisType;
    
-   template< int i > using EntityOrientation = tnlStaticMultiIndex1D< i >;
-   template< int i > using EntityProportions = tnlStaticMultiIndex1D< i >;
-   
-   typedef tnlGridEntityTopology< ThisType,
-                                  1,
-                                  EntityOrientation< 0 >,
-                                  EntityProportions< 1 > > Cell;
-   typedef tnlGridEntityTopology< ThisType,
-                                  0,
-                                  EntityOrientation< 0 >,
-                                  EntityProportions< 0 > > Vertex;
-   
    template< int EntityDimensions > using GridEntity = 
       tnlGridEntity< ThisType, EntityDimensions >;
    
@@ -89,6 +77,7 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    const VertexType& getCellProportions() const;
    
    template< int EntityDimensions >
+   __cuda_callable__
    IndexType getEntitiesCount() const;
    
    template< int EntityDimensions >
@@ -103,7 +92,8 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
     * The type Vertex can have different Real type.
     */
 #ifdef HAVE_NOT_CXX11
-   template< int EntityDimensions, 
+   template< int EntityDimensions
+   , 
              typename Vertex >
 #else
    template< int EntityDimensions,
@@ -149,53 +139,7 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    __cuda_callable__
    RealType getSmallestSpaceStep() const;
 
-   /****
-    * The type Vertex can have different Real type.
-    */
-#ifdef HAVE_NOT_CXX11
-   template< typename EntityTopology, 
-             typename Vertex >
-#else
-   template< typename EntityTopology,
-             typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getEntityCenter( const CoordinatesType& cellCoordinates ) const;
-
-#ifdef HAVE_NOT_CXX11
-   template< typename EntityTopology, 
-             typename Vertex >
-#else
-   template< typename EntityTopology,
-             typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getEntityCenter( const IndexType& cellIndex ) const;
    
-#ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-#else
-   template< typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
-
-#ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-#else
-   template< typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getCellCenter( const IndexType& cellIndex ) const;
-
-#ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-#else
-   template< typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getVertex( const CoordinatesType& vertexCoordinates ) const;
-
    __cuda_callable__
    Index getNumberOfCells() const;
 
