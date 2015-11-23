@@ -18,21 +18,29 @@
 
 #include "tnlFastSweeping.h"
 
+__device__
+double fabsMin( double x, double y)
+{
+	double fx = abs(x);
 
+	if(Min(fx,abs(y)) == fx)
+		return x;
+	else
+		return y;
+}
 
-
-__device__ double atomicSet(double* address, double val)
+__device__
+double atomicFabsMin(double* address, double val)
 {
 	unsigned long long int* address_as_ull =
 						  (unsigned long long int*)address;
 	unsigned long long int old = *address_as_ull, assumed;
 	do {
 		assumed = old;
-			old = atomicCAS(address_as_ull, assumed,__double_as_longlong(val ));
+			old = atomicCAS(address_as_ull, assumed,__double_as_longlong( fabsMin(assumed,val) ));
 	} while (assumed != old);
 	return __longlong_as_double(old);
 }
-
 
 template< typename MeshReal,
           typename Device,
@@ -164,76 +172,13 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 //	dofVector.save("u-00001.tnl");
 
 	int n = Mesh.getDimensions().x();
-	dim3 threadsPerBlock(16, 16);
-	dim3 numBlocks(n/16 +1 ,n/16 +1);
-	int m =n/16 +1;
-
-	for(int i = 0; i < 2*m -1; i++)
-	{
-		runCUDA<15><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,1,i);
-		//cudaDeviceSynchronize();
-	}
-//	cudaDeviceSynchronize();
-//	checkCudaDevice;
-//	for(int i = 0; i < 2*m -1; i++)
-//	{
-//		runCUDA<2><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,2,i);
-//		cudaDeviceSynchronize();
-//	}
-//	cudaDeviceSynchronize();
-//	checkCudaDevice;
-//	for(int i = 0; i < 2*m -1; i++)
-//	{
-//		runCUDA<4><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,4,i);
-//		cudaDeviceSynchronize();
-//	}
-//	cudaDeviceSynchronize();
-//	checkCudaDevice;
-//	for(int i = 0; i < 2*m -1; i++)
-//	{
-//		runCUDA<8><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,8,i);
-//		cudaDeviceSynchronize();
-//	}
+	dim3 threadsPerBlock(1, 1024);
+	dim3 numBlocks(4,1);
 
 
+	runCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver,0,0);
 
-
-//	for(int i = 0; i < (2*m -1)/4 -1; i++)
-//	{
-//		runCUDA<15><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,15,i);//all
-//		cudaDeviceSynchronize();
-//	}
-//	for(int i = (2*m -1)/4 -1; i < (2*m -1)/2 -1; i++)
-//	{
-//		runCUDA<5><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,5,i); //two
-//		cudaDeviceSynchronize();
-//		runCUDA<10><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,10,i); //two
-//		cudaDeviceSynchronize();
-//	}
-//	for(int i = (2*m -1)/2 -1; i < (2*m -1)/2 +1; i++)
-//	{
-//		runCUDA<1><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,1,i); //separate
-//		cudaDeviceSynchronize();
-//		runCUDA<2><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,2,i); //separate
-//		cudaDeviceSynchronize();
-//		runCUDA<4><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,4,i); //separate
-//		cudaDeviceSynchronize();
-//		runCUDA<8><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,8,i); //separate
-//		cudaDeviceSynchronize();
-//	}
-//	for(int i = (2*m -1)/2 +1; i < (2*m -1/4)*3 +1; i++)
-//	{
-//		runCUDA<5><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,5,i); //two
-//		cudaDeviceSynchronize();
-//		runCUDA<10><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,10,i); //two
-//		cudaDeviceSynchronize();
-//	}
-//	for(int i = (2*m -1/4)*3 +1; i < 2*m -1; i++)
-//	{
-//		runCUDA<15><<<numBlocks,threadsPerBlock>>>(this->cudaSolver,15,i);//all
-//		cudaDeviceSynchronize();
-//	}
-cudaDeviceSynchronize();
+	cudaDeviceSynchronize();
 	checkCudaDevice;
 
 	cudaMemcpy(this->dofVector.getData(), cudaDofVector, this->dofVector.getSize()*sizeof(double), cudaMemcpyDeviceToHost);
@@ -290,7 +235,7 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	else
 		tmp = 0.5 * (a + b + Sign(value)*sqrt(2.0 * h * h - (a - b) * (a - b) ) );
 
-	atomicSet(&cudaDofVector[index],fabsMin(value, tmp));
+	cudaDofVector[index]  = fabsMin(value, tmp);
 
 }
 
@@ -478,11 +423,12 @@ template< typename MeshReal,
 __device__
 Real tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: fabsMin( Real x, Real y)
 {
-//	Real fx = abs(x);
-//
-//	Real tmpMin = Min(fx,abs(y));
+	Real fx = abs(x);
+	//Real fy = abs(y);
 
-	if(abs(y) > abs(x))
+	//Real tmpMin = Min(fx,abs(y));
+
+	if(Min(fx,abs(y)) == fx)
 		return x;
 	else
 		return y;
@@ -491,319 +437,112 @@ Real tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 }
 
 
-template<>
-__global__ void runCUDA<1>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
+
+__global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int i)
 {
 
-	if(blockIdx.x+blockIdx.y == k)
+	int gx = 0;
+	int gy = threadIdx.y;
+	//if(solver->Mesh.getDimensions().x() <= gx || solver->Mesh.getDimensions().y() <= gy)
+	//	return;
+	int n = solver->Mesh.getDimensions().x();
+	int blockCount = n/blockDim.y +1;
+	//int gid = solver->Mesh.getDimensions().x() * gy + gx;
+	//int max = solver->Mesh.getDimensions().x()*solver->Mesh.getDimensions().x();
+
+	//int id1 = gx+gy;
+	//int id2 = (solver->Mesh.getDimensions().x() - gx - 1) + gy;
+
+
+	if(blockIdx.x==0)
 	{
-		int gx = threadIdx.x + blockDim.x*blockIdx.x;
-		int gy = threadIdx.y + blockDim.y*blockIdx.y;
+		for(int k = 0; k < n*blockCount + blockDim.y; k++)
+		{
+			if(threadIdx.y  < k+1 && gy < n)
+			{
+				solver->updateValue(gx,gy);
+				gx++;
+				if(gx==n)
+				{
+					gx=0;
+					gy+=blockDim.y;
+				}
+			}
 
-		int id1 = threadIdx.x+threadIdx.y;
 
-						for(int l = 0; l < 2*blockDim.x - 1; l++)
-						{
-							if(id1 == l)
-							{
-								if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-								solver->updateValue(gx,gy);
-							}
-							__syncthreads();
-						}
-
+			__syncthreads();
+		}
 	}
-			/*---------------------------------------------------------------------------------------------------------------------------*/
+	else if(blockIdx.x==1)
+	{
+		gx=n-1;
+		gy=threadIdx.y;
+
+		for(int k = 0; k < n*blockCount + blockDim.y; k++)
+		{
+			if(threadIdx.y  < k+1 && gy < n)
+			{
+				solver->updateValue(gx,gy);
+				gx--;
+				if(gx==-1)
+				{
+					gx=n-1;
+					gy+=blockDim.y;
+				}
+			}
+
+
+			__syncthreads();
+		}
+	}
+	else if(blockIdx.x==2)
+	{
+		gx=0;
+		gy=n-threadIdx.y;
+		for(int k = 0; k < n*blockCount + blockDim.y; k++)
+		{
+			if(threadIdx.y  < k+1 && gy > -1)
+			{
+				solver->updateValue(gx,gy);
+				gx++;
+				if(gx==n)
+				{
+					gx=0;
+					gy-=blockDim.y;
+				}
+			}
+
+
+			__syncthreads();
+		}
+	}
+	else if(blockIdx.x==3)
+	{
+		gx=n-1;
+		gy=n-threadIdx.y;
+
+		for(int k = 0; k < n*blockCount + blockDim.y; k++)
+		{
+			if(threadIdx.y  < k+1 && gy > -1)
+			{
+				solver->updateValue(gx,gy);
+				gx--;
+				if(gx==-1)
+				{
+					gx=n-1;
+					gy-=blockDim.y;
+				}
+			}
+
+
+			__syncthreads();
+		}
+	}
+
+
+
+
 }
-	template<>
-	__global__ void runCUDA<2>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
-	{
-	if((gridDim.x - blockIdx.x - 1)+blockIdx.y == k)
-	{
-		int gx = threadIdx.x + blockDim.x*blockIdx.x;
-		int gy = threadIdx.y + blockDim.y*blockIdx.y;
-
-		int id2 = (blockDim.x - threadIdx.x - 1) + threadIdx.y;
-
-				for(int l = 0; l < 2*blockDim.x - 1; l++)
-				{
-					if(id2 == l)
-					{
-						if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-						solver->updateValue(gx,gy);
-					}
-					__syncthreads();
-				}
-
-	}
-	}			/*---------------------------------------------------------------------------------------------------------------------------*/
-	template<>
-	__global__ void runCUDA<4>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
-	{
-	if(blockIdx.x+blockIdx.y == gridDim.x+gridDim.y-k-2)
-		{
-		int gx = threadIdx.x + blockDim.x*blockIdx.x;
-		int gy = threadIdx.y + blockDim.y*blockIdx.y;
-
-		int id1 = threadIdx.x+threadIdx.y;
-
-				for(int l = 2*blockDim.x - 2; l > -1; l--)
-				{
-					if(id1 == l)
-					{
-						if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-						solver->updateValue(gx,gy);
-						return;
-					}
-					__syncthreads();
-				}
-
-		}
-			/*---------------------------------------------------------------------------------------------------------------------------*/
-
-	}
-
-	template<>
-	__global__ void runCUDA<8>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
-	{
-	if((gridDim.x - blockIdx.x - 1)+blockIdx.y == gridDim.x+gridDim.y-k-2)
-		{
-		int gx = threadIdx.x + blockDim.x*blockIdx.x;
-		int gy = threadIdx.y + blockDim.y*blockIdx.y;
-
-		int id2 = (blockDim.x - threadIdx.x - 1) + threadIdx.y;
-
-				for(int l = 2*blockDim.x - 2; l > -1; l--)
-				{
-					if(id2 == l)
-					{
-						if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-						solver->updateValue(gx,gy);
-						return;
-					}
-					__syncthreads();
-				}
-
-		}
-			/*---------------------------------------------------------------------------------------------------------------------------*/
-
-
-
-
-
-}
-
-
-	template<>
-		__global__ void runCUDA<5>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
-		{
-
-			if(blockIdx.x+blockIdx.y == k)
-			{
-				int gx = threadIdx.x + blockDim.x*blockIdx.x;
-				int gy = threadIdx.y + blockDim.y*blockIdx.y;
-
-				int id1 = threadIdx.x+threadIdx.y;
-
-								for(int l = 0; l < 2*blockDim.x - 1; l++)
-								{
-									if(id1 == l)
-									{
-										if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-										solver->updateValue(gx,gy);
-										return;
-									}
-									__syncthreads();
-								}
-
-			}
-			else if(blockIdx.x+blockIdx.y == gridDim.x+gridDim.y-k-2)
-				{
-				int gx = threadIdx.x + blockDim.x*blockIdx.x;
-				int gy = threadIdx.y + blockDim.y*blockIdx.y;
-
-				int id1 = threadIdx.x+threadIdx.y;
-
-						for(int l = 2*blockDim.x - 2; l > -1; l--)
-						{
-							if(id1 == l)
-							{
-								if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-								solver->updateValue(gx,gy);
-								return;
-							}
-							__syncthreads();
-						}
-
-				}
-		}
-
-
-	template<>
-		__global__ void runCUDA<10>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
-		{
-			if((gridDim.x - blockIdx.x - 1)+blockIdx.y == k)
-			{
-				int gx = threadIdx.x + blockDim.x*blockIdx.x;
-				int gy = threadIdx.y + blockDim.y*blockIdx.y;
-
-				int id2 = (blockDim.x - threadIdx.x - 1) + threadIdx.y;
-
-						for(int l = 0; l < 2*blockDim.x - 1; l++)
-						{
-							if(id2 == l)
-							{
-								if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-								solver->updateValue(gx,gy);
-								return;
-							}
-							__syncthreads();
-						}
-
-			}
-
-			else if((gridDim.x - blockIdx.x - 1)+blockIdx.y == gridDim.x+gridDim.y-k-2)
-				{
-				int gx = threadIdx.x + blockDim.x*blockIdx.x;
-				int gy = threadIdx.y + blockDim.y*blockIdx.y;
-
-				int id2 = (blockDim.x - threadIdx.x - 1) + threadIdx.y;
-
-						for(int l = 2*blockDim.x - 2; l > -1; l--)
-						{
-							if(id2 == l)
-							{
-								if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-								solver->updateValue(gx,gy);
-								return;
-							}
-							__syncthreads();
-						}
-
-				}
-
-		}
-
-
-
-	template<>
-	__global__ void runCUDA<15>(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
-	{
-
-		if(blockIdx.x+blockIdx.y == k)
-		{
-			int gx = threadIdx.x + blockDim.x*blockIdx.x;
-			int gy = threadIdx.y + blockDim.y*blockIdx.y;
-
-			int id1 = threadIdx.x+threadIdx.y;
-
-							for(int l = 0; l < 2*blockDim.x - 1; l++)
-							{
-								if(id1 == l)
-								{
-									if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-									solver->updateValue(gx,gy);
-									return;
-								}
-								__syncthreads();
-							}
-
-		}
-				/*---------------------------------------------------------------------------------------------------------------------------*/
-
-		if((gridDim.x - blockIdx.x - 1)+blockIdx.y == k)
-		{
-			int gx = threadIdx.x + blockDim.x*blockIdx.x;
-			int gy = threadIdx.y + blockDim.y*blockIdx.y;
-
-			int id2 = (blockDim.x - threadIdx.x - 1) + threadIdx.y;
-
-					for(int l = 0; l < 2*blockDim.x - 1; l++)
-					{
-						if(id2 == l)
-						{
-							if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-							solver->updateValue(gx,gy);
-							return;
-						}
-						__syncthreads();
-					}
-
-		}
-				/*---------------------------------------------------------------------------------------------------------------------------*/
-
-		if(blockIdx.x+blockIdx.y == gridDim.x+gridDim.y-k-2)
-			{
-			int gx = threadIdx.x + blockDim.x*blockIdx.x;
-			int gy = threadIdx.y + blockDim.y*blockIdx.y;
-
-			int id1 = threadIdx.x+threadIdx.y;
-
-					for(int l = 2*blockDim.x - 2; l > -1; l--)
-					{
-						if(id1 == l)
-						{
-							if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-							solver->updateValue(gx,gy);
-							return;
-						}
-						__syncthreads();
-					}
-
-			}
-				/*---------------------------------------------------------------------------------------------------------------------------*/
-
-		if((gridDim.x - blockIdx.x - 1)+blockIdx.y == gridDim.x+gridDim.y-k-2)
-			{
-			int gx = threadIdx.x + blockDim.x*blockIdx.x;
-			int gy = threadIdx.y + blockDim.y*blockIdx.y;
-
-			int id2 = (blockDim.x - threadIdx.x - 1) + threadIdx.y;
-
-					for(int l = 2*blockDim.x - 2; l > -1; l--)
-					{
-						if(id2 == l)
-						{
-							if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-							solver->updateValue(gx,gy);
-							return;
-						}
-						__syncthreads();
-					}
-
-			}
-				/*---------------------------------------------------------------------------------------------------------------------------*/
-
-
-
-
-
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 __global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
@@ -821,100 +560,6 @@ __global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, dou
 #endif
 
 
-
-
-
-
-//__global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int k)
-//{
-//
-//	if(sweep==1 && blockIdx.x+blockIdx.y == k)
-//	{
-//		int gx = threadIdx.x + blockDim.x*blockIdx.x;
-//		int gy = threadIdx.y + blockDim.y*blockIdx.y;
-//
-//		int id1 = threadIdx.x+threadIdx.y;
-//
-//						for(int l = 0; l < 2*blockDim.x - 1; l++)
-//						{
-//							if(id1 == l)
-//							{
-//								if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-//								solver->updateValue(gx,gy);
-//							}
-//							__syncthreads();
-//						}
-//
-//	}
-//			/*---------------------------------------------------------------------------------------------------------------------------*/
-//
-//	else if(sweep==2 && (gridDim.x - blockIdx.x - 1)+blockIdx.y == k)
-//	{
-//		int gx = threadIdx.x + blockDim.x*blockIdx.x;
-//		int gy = threadIdx.y + blockDim.y*blockIdx.y;
-//
-//		int id2 = (blockDim.x - threadIdx.x - 1) + threadIdx.y;
-//
-//				for(int l = 0; l < 2*blockDim.x - 1; l++)
-//				{
-//					if(id2 == l)
-//					{
-//						if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-//						solver->updateValue(gx,gy);
-//					}
-//					__syncthreads();
-//				}
-//
-//	}
-//			/*---------------------------------------------------------------------------------------------------------------------------*/
-//
-//	else if(sweep==4 && blockIdx.x+blockIdx.y == gridDim.x+gridDim.y-k-2)
-//		{
-//		int gx = threadIdx.x + blockDim.x*blockIdx.x;
-//		int gy = threadIdx.y + blockDim.y*blockIdx.y;
-//
-//		int id1 = threadIdx.x+threadIdx.y;
-//
-//				for(int l = 2*blockDim.x - 2; l > -1; l--)
-//				{
-//					if(id1 == l)
-//					{
-//						if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-//						solver->updateValue(gx,gy);
-//						return;
-//					}
-//					__syncthreads();
-//				}
-//
-//		}
-//			/*---------------------------------------------------------------------------------------------------------------------------*/
-//
-//	else if(sweep==8 && (gridDim.x - blockIdx.x - 1)+blockIdx.y == gridDim.x+gridDim.y-k-2)
-//		{
-//		int gx = threadIdx.x + blockDim.x*blockIdx.x;
-//		int gy = threadIdx.y + blockDim.y*blockIdx.y;
-//
-//		int id2 = (blockDim.x - threadIdx.x - 1) + threadIdx.y;
-//
-//				for(int l = 2*blockDim.x - 2; l > -1; l--)
-//				{
-//					if(id2 == l)
-//					{
-//						if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy /*&& gy > -1&& gx > -1*/)
-//						solver->updateValue(gx,gy);
-//						return;
-//					}
-//					__syncthreads();
-//				}
-//
-//		}
-//			/*---------------------------------------------------------------------------------------------------------------------------*/
-//
-//
-//
-//
-//
-//}
 
 
 #endif /* TNLFASTSWEEPING_IMPL_H_ */

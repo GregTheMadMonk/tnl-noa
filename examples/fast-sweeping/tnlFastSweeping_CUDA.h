@@ -63,6 +63,7 @@ public:
 #ifdef HAVE_CUDA
 	__device__ bool initGrid();
 	__device__ void updateValue(const Index i, const Index j);
+	__device__ void updateValue(const Index i, const Index j, double** sharedMem, const int k3);
 	__device__ Real fabsMin(const Real x, const Real y);
 
 	tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >* cudaSolver;
@@ -89,7 +90,7 @@ protected:
 
 
 #ifdef HAVE_CUDA
-template<int sweep_t>
+//template<int sweep_t>
 __global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int i);
 //__global__ void runCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, int sweep, int i);
 
@@ -99,6 +100,8 @@ __global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, dou
 /*various implementtions.... choose one*/
 //#include "tnlFastSweeping2D_CUDA_impl.h"
 //#include "tnlFastSweeping2D_CUDA_v2_impl.h"
-#include "tnlFastSweeping2D_CUDA_v3_impl.h"
+//#include "tnlFastSweeping2D_CUDA_v3_impl.h"
+#include "tnlFastSweeping2D_CUDA_v4_impl.h"
+//#include "tnlFastSweeping2D_CUDA_v5_impl.h"
 
 #endif /* TNLFASTSWEEPING_H_ */
