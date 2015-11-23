@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFastSweeping_impl.h  -  description
+                          tnlFastSweeping2D_CUDA_v2_impl.h  -  description
                              -------------------
     begin                : Oct 15 , 2015
     copyright            : (C) 2015 by Tomas Sobotik

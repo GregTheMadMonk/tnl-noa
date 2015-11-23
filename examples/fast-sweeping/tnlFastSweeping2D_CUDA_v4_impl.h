@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFastSweeping_impl.h  -  description
+                          tnlFastSweeping2D_CUDA_v4_impl.h  -  description
                              -------------------
     begin                : Oct 15 , 2015
     copyright            : (C) 2015 by Tomas Sobotik
@@ -248,170 +248,253 @@ template< typename MeshReal,
 __device__
 bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: initGrid()
 {
-	int gx = threadIdx.x + blockDim.x*blockIdx.x;
-	int gy = blockDim.y*blockIdx.y + threadIdx.y;
-	int gid = Mesh.getCellIndex(CoordinatesType(gx,gy));
+	int i = threadIdx.x + blockDim.x*blockIdx.x;
+	int j = blockDim.y*blockIdx.y + threadIdx.y;
+	int gid = Mesh.getCellIndex(CoordinatesType(i,j));
 
-	int total = blockDim.x*gridDim.x;
-
-
-
-	Real tmp = 0.0;
-	int flag = 0;
-	counter = 0;
-	tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
+	cudaDofVector2[gid] = INT_MAX*Sign(cudaDofVector[gid]);
 
 
-	if(!exactInput)
+	if(i+1 < Mesh.getDimensions().x() && j+1 < Mesh.getDimensions().y() )
 	{
-		cudaDofVector[gid]=cudaDofVector[gid]=0.5*h*Sign(cudaDofVector[gid]);
-	}
-	__threadfence();
-//	printf("-----------------------------------------------------------------------------------\n");
-
-	__threadfence();
-
-	if(gx > 0 && gx < Mesh.getDimensions().x()-1)
-	{
-		if(gy > 0 && gy < Mesh.getDimensions().y()-1)
+		if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))] > 0)
 		{
-
-			Index j = gy;
-			Index i = gx;
-//			 tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-
-			if(tmp == 0.0)
-			{}
-			else if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
-					cudaDofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
-					cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 ||
-					cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
-			{}
+			if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))] > 0)
+			{
+				if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))] > 0)
+				{
+					if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+						setupSquare1111(i,j);
+					else
+						setupSquare1110(i,j);
+				}
+				else
+				{
+					if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+						setupSquare1101(i,j);
+					else
+						setupSquare1100(i,j);
+				}
+			}
 			else
-				flag=1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
+			{
+				if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))] > 0)
+				{
+					if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+						setupSquare1011(i,j);
+					else
+						setupSquare1010(i,j);
+				}
+				else
+				{
+					if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+						setupSquare1001(i,j);
+					else
+						setupSquare1000(i,j);
+				}
+			}
 		}
-	}
-
-//	printf("gx: %d, gy: %d, gid: %d \n", gx, gy,gid);
-//	printf("****************************************************************\n");
-//	printf("gx: %d, gy: %d, gid: %d \n", gx, gy,gid);
-	if(gx > 0 && gx < Mesh.getDimensions().x()-1 && gy == 0)
-	{
-//		printf("gx: %d, gy: %d, gid: %d \n", gx, gy,gid);
-		Index j = 0;
-		Index i = gx;
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-
-
-		if(tmp == 0.0)
-		{}
-		else if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
-				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
-				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 )
-		{}
 		else
-			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
+		{
+			if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))] > 0)
+			{
+				if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))] > 0)
+				{
+					if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+						setupSquare0111(i,j);
+					else
+						setupSquare0110(i,j);
+				}
+				else
+				{
+					if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+						setupSquare0101(i,j);
+					else
+						setupSquare0100(i,j);
+				}
+			}
+			else
+			{
+				if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))] > 0)
+				{
+					if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+						setupSquare0011(i,j);
+					else
+						setupSquare0010(i,j);
+				}
+				else
+				{
+					if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+						setupSquare0001(i,j);
+					else
+						setupSquare0000(i,j);
+				}
+			}
+		}
+
 	}
 
-//	printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
-	if(gx > 0 && gx < Mesh.getDimensions().x()-1 && gy == Mesh.getDimensions().y() - 1)
-	{
-		Index i = gx;
-		Index j = Mesh.getDimensions().y() - 1;
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-
-
-		if(tmp == 0.0)
-		{}
-		else if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
-				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
-				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
-		{}
-		else
-			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-	}
-
-//	printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-	if(gy > 0 && gy < Mesh.getDimensions().y()-1 && gx == 0)
-	{
-		Index j = gy;
-		Index i = 0;
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-
-
-		if(tmp == 0.0)
-		{}
-		else if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
-				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 ||
-				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
-		{}
-		else
-			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-	}
-//	printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-	if(gy > 0 && gy < Mesh.getDimensions().y()-1  && gx == Mesh.getDimensions().x() - 1)
-	{
-		Index j = gy;
-		Index i = Mesh.getDimensions().x() - 1;
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-
-
-		if(tmp == 0.0)
-		{}
-		else if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
-				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 ||
-				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
-		{}
-		else
-			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-	}
-
-//	printf("##################################################################################################\n");
-	if(gx == Mesh.getDimensions().x() - 1 &&
-	   gy == Mesh.getDimensions().y() - 1)
-	{
-
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
-		if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx-1,gy))]*tmp > 0.0 &&
-				cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy-1))]*tmp > 0.0)
-
-			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))] = tmp*INT_MAX;
-	}
-	if(gx == Mesh.getDimensions().x() - 1 &&
-	   gy == 0)
-	{
-
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
-		if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx-1,gy))]*tmp > 0.0 &&
-				cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy+1))]*tmp > 0.0)
-
-			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))] = tmp*INT_MAX;
-	}
-//	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
-	if(gx == 0 &&
-	   gy == Mesh.getDimensions().y() - 1)
-	{
-
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
-		if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx+1,gy))]*tmp > 0.0 &&
-				cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy-1))]*tmp > 0.0)
-
-			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))] = tmp*INT_MAX;
-	}
-	if(gx == 0 &&
-	   gy == 0)
-	{
-//		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
-		if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx+1,gy))]*tmp > 0.0 &&
-				cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy+1))]*tmp > 0.0)
-
-			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))] = tmp*INT_MAX;
-	}
-
-	__threadfence();
-
-	if(flag==1)
-		cudaDofVector[gid] =  tmp*3;
+//
+//	int total = blockDim.x*gridDim.x;
+//
+//
+//
+//	Real tmp = 0.0;
+//	int flag = 0;
+//	counter = 0;
+//	tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
+//
+//
+//	if(!exactInput)
+//	{
+//		cudaDofVector[gid]=cudaDofVector[gid]=0.5*h*Sign(cudaDofVector[gid]);
+//	}
+//	__threadfence();
+////	printf("-----------------------------------------------------------------------------------\n");
+//
+//	__threadfence();
+//
+//	if(gx > 0 && gx < Mesh.getDimensions().x()-1)
+//	{
+//		if(gy > 0 && gy < Mesh.getDimensions().y()-1)
+//		{
+//
+//			Index j = gy;
+//			Index i = gx;
+////			 tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+//
+//			if(tmp == 0.0)
+//			{}
+//			else if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
+//					cudaDofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
+//					cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 ||
+//					cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
+//			{}
+//			else
+//				flag=1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
+//		}
+//	}
+//
+////	printf("gx: %d, gy: %d, gid: %d \n", gx, gy,gid);
+////	printf("****************************************************************\n");
+////	printf("gx: %d, gy: %d, gid: %d \n", gx, gy,gid);
+//	if(gx > 0 && gx < Mesh.getDimensions().x()-1 && gy == 0)
+//	{
+////		printf("gx: %d, gy: %d, gid: %d \n", gx, gy,gid);
+//		Index j = 0;
+//		Index i = gx;
+////		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+//
+//
+//		if(tmp == 0.0)
+//		{}
+//		else if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
+//				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
+//				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 )
+//		{}
+//		else
+//			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
+//	}
+//
+////	printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+//	if(gx > 0 && gx < Mesh.getDimensions().x()-1 && gy == Mesh.getDimensions().y() - 1)
+//	{
+//		Index i = gx;
+//		Index j = Mesh.getDimensions().y() - 1;
+////		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+//
+//
+//		if(tmp == 0.0)
+//		{}
+//		else if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
+//				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
+//				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
+//		{}
+//		else
+//			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
+//	}
+//
+////	printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+//	if(gy > 0 && gy < Mesh.getDimensions().y()-1 && gx == 0)
+//	{
+//		Index j = gy;
+//		Index i = 0;
+////		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+//
+//
+//		if(tmp == 0.0)
+//		{}
+//		else if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
+//				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 ||
+//				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
+//		{}
+//		else
+//			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
+//	}
+////	printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+//	if(gy > 0 && gy < Mesh.getDimensions().y()-1  && gx == Mesh.getDimensions().x() - 1)
+//	{
+//		Index j = gy;
+//		Index i = Mesh.getDimensions().x() - 1;
+////		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
+//
+//
+//		if(tmp == 0.0)
+//		{}
+//		else if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
+//				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 ||
+//				cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
+//		{}
+//		else
+//			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
+//	}
+//
+////	printf("##################################################################################################\n");
+//	if(gx == Mesh.getDimensions().x() - 1 &&
+//	   gy == Mesh.getDimensions().y() - 1)
+//	{
+//
+////		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
+//		if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx-1,gy))]*tmp > 0.0 &&
+//				cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy-1))]*tmp > 0.0)
+//
+//			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))] = tmp*INT_MAX;
+//	}
+//	if(gx == Mesh.getDimensions().x() - 1 &&
+//	   gy == 0)
+//	{
+//
+////		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
+//		if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx-1,gy))]*tmp > 0.0 &&
+//				cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy+1))]*tmp > 0.0)
+//
+//			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))] = tmp*INT_MAX;
+//	}
+////	printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n");
+//	if(gx == 0 &&
+//	   gy == Mesh.getDimensions().y() - 1)
+//	{
+//
+////		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
+//		if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx+1,gy))]*tmp > 0.0 &&
+//				cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy-1))]*tmp > 0.0)
+//
+//			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))] = tmp*INT_MAX;
+//	}
+//	if(gx == 0 &&
+//	   gy == 0)
+//	{
+////		tmp = Sign(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))]);
+//		if(cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx+1,gy))]*tmp > 0.0 &&
+//				cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy+1))]*tmp > 0.0)
+//
+//			flag = 1;//cudaDofVector[Mesh.getCellIndex(CoordinatesType(gx,gy))] = tmp*INT_MAX;
+//	}
+//
+//	__threadfence();
+//
+//	if(flag==1)
+//		cudaDofVector[gid] =  tmp*3;
 }
 
 
@@ -556,6 +639,490 @@ __global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, dou
 	}
 
 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1111( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	cudaDofVector2[index]=fabsMin(INT_MAX,cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(INT_MAX,cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(INT_MAX,cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(INT_MAX,cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0000( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	cudaDofVector2[index]=fabsMin(-INT_MAX,cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-INT_MAX,cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-INT_MAX,cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-INT_MAX,cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1110( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	Real al,be, a,b,c,s;
+	al=abs(cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<1,0>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]));
+
+	be=abs(cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]));
+
+	a = be/al;
+	b=1.0;
+	c=-be;
+	s= 1.0/sqrt(a*a+b*b);
+
+
+	cudaDofVector2[index]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1101( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	Real al,be, a,b,c,s;
+	al=abs(cudaDofVector[Mesh.template getCellNextToCell<1,0>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<1,0>(index)]));
+
+	be=abs(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<1,0>(index)]));
+
+	a = be/al;
+	b=1.0;
+	c=-be;
+	s= 1.0/sqrt(a*a+b*b);
+
+
+	cudaDofVector2[index]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1011( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	Real al,be, a,b,c,s;
+	al=abs(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]));
+
+	be=abs(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]));
+
+	a = be/al;
+	b=1.0;
+	c=-be;
+	s= 1.0/sqrt(a*a+b*b);
+
+
+	cudaDofVector2[index]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0111( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	Real al,be, a,b,c,s;
+	al=abs(cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+
+	be=abs(cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<1,0>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+
+	a = be/al;
+	b=1.0;
+	c=-be;
+	s= 1.0/sqrt(a*a+b*b);
+
+
+	cudaDofVector2[index]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0001( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	Real al,be, a,b,c,s;
+	al=abs(cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<1,0>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]));
+
+	be=abs(cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]));
+
+	a = be/al;
+	b=1.0;
+	c=-be;
+	s= 1.0/sqrt(a*a+b*b);
+
+
+	cudaDofVector2[index]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0010( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	Real al,be, a,b,c,s;
+	al=abs(cudaDofVector[Mesh.template getCellNextToCell<1,0>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<1,0>(index)]));
+
+	be=abs(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<1,0>(index)]));
+
+	a = be/al;
+	b=1.0;
+	c=-be;
+	s= 1.0/sqrt(a*a+b*b);
+
+
+	cudaDofVector2[index]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0100( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	Real al,be, a,b,c,s;
+	al=abs(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]));
+
+	be=abs(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]));
+
+	a = be/al;
+	b=1.0;
+	c=-be;
+	s= 1.0/sqrt(a*a+b*b);
+
+
+	cudaDofVector2[index]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1000( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	Real al,be, a,b,c,s;
+	al=abs(cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+
+	be=abs(cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<1,0>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+
+	a = be/al;
+	b=1.0;
+	c=-be;
+	s= 1.0/sqrt(a*a+b*b);
+
+
+	cudaDofVector2[index]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+
+
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1100( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	Real al,be, a,b,c,s;
+	al=abs(cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+
+	be=abs(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]));
+
+	a = al-be;
+	b=1.0;
+	c=-al;
+	s= 1.0/sqrt(a*a+b*b);
+
+
+	cudaDofVector2[index]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1010( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	Real al,be, a,b,c,s;
+	al=abs(cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<1,0>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+
+	be=abs(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]));
+
+	a = al-be;
+	b=1.0;
+	c=-be;
+	s= 1.0/sqrt(a*a+b*b);
+
+
+	cudaDofVector2[index]=fabsMin(abs(a*0+b*0+c)*s,cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*1+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*1+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*0+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1001( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	cudaDofVector2[index]=fabsMin(cudaDofVector[index],cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)],cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)],cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(cudaDofVector[Mesh.template getCellNextToCell<1,0>(index)],cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+
+
+
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0011( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	Real al,be, a,b,c,s;
+	al=abs(cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+
+	be=abs(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]));
+
+	a = al-be;
+	b=1.0;
+	c=-al;
+	s= 1.0/sqrt(a*a+b*b);
+
+
+	cudaDofVector2[index]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0101( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	Real al,be, a,b,c,s;
+	al=abs(cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<1,0>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+
+	be=abs(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]/
+			(cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)]-
+			 cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)]));
+
+	a = al-be;
+	b=1.0;
+	c=-be;
+	s= 1.0/sqrt(a*a+b*b);
+
+
+	cudaDofVector2[index]=fabsMin(-abs(a*0+b*0+c)*s,cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*1+b*0+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*1+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*0+b*1+c)*s,cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+
+}
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+__device__
+void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0110( Index i, Index j)
+{
+	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	cudaDofVector2[index]=fabsMin(cudaDofVector[index],cudaDofVector2[(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(cudaDofVector[Mesh.template getCellNextToCell<0,1>(index)],cudaDofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(cudaDofVector[Mesh.template getCellNextToCell<1,1>(index)],cudaDofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
+	cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(cudaDofVector[Mesh.template getCellNextToCell<1,0>(index)],cudaDofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
 }
 #endif
 

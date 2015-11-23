@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFastSweeping.h  -  description
+                          tnlFastSweeping_CUDA.h  -  description
                              -------------------
     begin                : Oct 15 , 2015
     copyright            : (C) 2015 by Tomas Sobotik
@@ -70,6 +70,22 @@ public:
 	double* cudaDofVector;
 	double* cudaDofVector2;
 	int counter;
+	__device__ void setupSquare1000(Index i, Index j);
+	__device__ void setupSquare1100(Index i, Index j);
+	__device__ void setupSquare1010(Index i, Index j);
+	__device__ void setupSquare1001(Index i, Index j);
+	__device__ void setupSquare1110(Index i, Index j);
+	__device__ void setupSquare1101(Index i, Index j);
+	__device__ void setupSquare1011(Index i, Index j);
+	__device__ void setupSquare1111(Index i, Index j);
+	__device__ void setupSquare0000(Index i, Index j);
+	__device__ void setupSquare0100(Index i, Index j);
+	__device__ void setupSquare0010(Index i, Index j);
+	__device__ void setupSquare0001(Index i, Index j);
+	__device__ void setupSquare0110(Index i, Index j);
+	__device__ void setupSquare0101(Index i, Index j);
+	__device__ void setupSquare0011(Index i, Index j);
+	__device__ void setupSquare0111(Index i, Index j);
 #endif
 
 	MeshType Mesh;
