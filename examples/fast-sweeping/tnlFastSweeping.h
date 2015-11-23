@@ -65,9 +65,27 @@ public:
 	bool run();
 
 	//for single core version use this implementation:
-	//void updateValue(const Index i, const Index j);
+	void updateValue(const Index i, const Index j);
 	//for parallel version use this one instead:
-	void updateValue(const Index i, const Index j, DofVectorType* grid);
+//	void updateValue(const Index i, const Index j, DofVectorType* grid);
+
+
+	void setupSquare1000(Index i, Index j);
+	void setupSquare1100(Index i, Index j);
+	void setupSquare1010(Index i, Index j);
+	void setupSquare1001(Index i, Index j);
+	void setupSquare1110(Index i, Index j);
+	void setupSquare1101(Index i, Index j);
+	void setupSquare1011(Index i, Index j);
+	void setupSquare1111(Index i, Index j);
+	void setupSquare0000(Index i, Index j);
+	void setupSquare0100(Index i, Index j);
+	void setupSquare0010(Index i, Index j);
+	void setupSquare0001(Index i, Index j);
+	void setupSquare0110(Index i, Index j);
+	void setupSquare0101(Index i, Index j);
+	void setupSquare0011(Index i, Index j);
+	void setupSquare0111(Index i, Index j);
 
 	Real fabsMin(const Real x, const Real y);
 
@@ -78,7 +96,7 @@ protected:
 
 	bool exactInput;
 
-	DofVectorType dofVector;
+	DofVectorType dofVector, dofVector2;
 
 	RealType h;
 
@@ -90,8 +108,8 @@ protected:
 };
 
 	//for single core version use this implementation:
-//#include "tnlFastSweeping2D_impl.h"
+#include "tnlFastSweeping2D_impl.h"
 	//for parallel version use this one instead:
- #include "tnlFastSweeping2D_openMP_impl.h"
+// #include "tnlFastSweeping2D_openMP_impl.h"
 
 #endif /* TNLFASTSWEEPING_H_ */
