@@ -90,7 +90,7 @@ getDofs( const MeshType& mesh ) const
    /****
     * Set-up DOFs and supporting grid functions
     */
-   return mesh.getNumberOfCells();
+   return mesh.template getEntitiesCount< MeshType::Cells >();
 }
 
 template< typename Mesh,
@@ -102,7 +102,7 @@ tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOper
 bindDofs( const MeshType& mesh,
           DofVectorType& dofVector )
 {
-   const IndexType dofs = mesh.getNumberOfCells();
+   const IndexType dofs = mesh.template getEntitiesCount< MeshType::Cells >();
    this->solution.bind( dofVector.getData(), dofs );
 }
 

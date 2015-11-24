@@ -21,6 +21,7 @@
 #include <core/tnlStaticMultiIndex.h>
 #include <mesh/grids/tnlGridEntityTopology.h>
 #include <mesh/grids/tnlGridEntityGetter.h>
+#include <mesh/grids/tnlNeighbourGridEntityGetter.h>
 
 template< typename Real,
           typename Device,
@@ -42,7 +43,11 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    template< int EntityDimensions > using GridEntity = 
       tnlGridEntity< ThisType, EntityDimensions >;   
 
-   enum { Dimensions = 2};
+   enum { Dimensions = 2 };
+   enum { Cells = 2 };
+   enum { Faces = 1 };
+   enum { Vertices = 0 };
+
 
    tnlGrid();
 
@@ -237,7 +242,9 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
             hy, hySquare, hyInverse, hySquareInverse,
             hxhy, hxhyInverse;
 
-
+   friend class tnlGridEntityGetter< ThisType, 2 >;
+   friend class tnlGridEntityGetter< ThisType, 1 >;
+   friend class tnlGridEntityGetter< ThisType, 0 >;
 };
 
 #include <mesh/grids/tnlGrid2D_impl.h>

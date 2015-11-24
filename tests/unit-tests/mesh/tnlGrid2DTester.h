@@ -66,14 +66,18 @@ class tnlGridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCas
       const IndexType ySize( 17 );
       GridType grid;
       grid.setDimensions( xSize, ySize );
-      for( IndexType j = 0; j < ySize; j++ )
-         for( IndexType i = 0; i < xSize; i++ )
+      typename GridType::template GridEntity< GridType::Dimensions > cell;
+      for( cell.getCoordinates().y() = 0;
+           cell.getCoordinates().y() < ySize;
+           cell.getCoordinates().y()++ )
+         for( cell.getCoordinates().x() = 0;
+              cell.getCoordinates().x() < xSize;
+              cell.getCoordinates().x()++ )
          {
-            CoordinatesType cellCoordinates( i, j );
-            const IndexType cellIndex = grid.getCellIndex( cellCoordinates );
+            const IndexType cellIndex = grid.getEntityIndex( cell );
             CPPUNIT_ASSERT( cellIndex >= 0 );
-            CPPUNIT_ASSERT( cellIndex < grid.getNumberOfCells() );
-            CPPUNIT_ASSERT( grid.getCellCoordinates( cellIndex ) == cellCoordinates );
+            CPPUNIT_ASSERT( cellIndex < grid.template getEntitiesCount< GridType::Dimensions >() );
+            CPPUNIT_ASSERT( grid.template getEntity< GridType::Dimensions >( cellIndex ).getCoordinates() == cell.getCoordinates() );
          }
    }
 
@@ -81,32 +85,46 @@ class tnlGridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCas
    {
       const IndexType xSize( 13 );
       const IndexType ySize( 17 );
-      GridType grid;
+      GridType grid;      
       grid.setDimensions( xSize, ySize );
 
-      int nx, ny;
-      for( IndexType j = 0; j < ySize; j++ )
-         for( IndexType i = 0; i < xSize + 1; i++ )
+      typedef typename GridType::template GridEntity< 1 > FaceType;
+      typedef typename FaceType::EntityOrientationType OrientationType;
+      typedef typename FaceType::EntityBasisType BasisType;
+      FaceType face;
+      
+      face.setOrientation( OrientationType( 1, 0 ) );
+      for( face.getCoordinates().y() = 0;
+           face.getCoordinates().y() < ySize;
+           face.getCoordinates().y()++ )
+         for( face.getCoordinates().x() = 0;
+              face.getCoordinates().x() < xSize + 1;
+              face.getCoordinates().x()++ )
          {
-            CoordinatesType faceCoordinates( i, j );
-            const IndexType faceIndex = grid.template getFaceIndex< 1, 0 >( faceCoordinates );
+            const IndexType faceIndex = grid.template getEntityIndex( face );
             CPPUNIT_ASSERT( faceIndex >= 0 );
-            CPPUNIT_ASSERT( faceIndex < grid.getNumberOfFaces() );
-            CPPUNIT_ASSERT( grid.getFaceCoordinates( faceIndex, nx, ny ) == faceCoordinates );
-            CPPUNIT_ASSERT( nx == 1 );
-            CPPUNIT_ASSERT( ny == 0 );
+            CPPUNIT_ASSERT( faceIndex < grid.template getEntitiesCount< GridType::Dimensions - 1 >() );
+            CPPUNIT_ASSERT( grid.template getEntity< 1 >( faceIndex ).getCoordinates() == face.getCoordinates() );
+            CPPUNIT_ASSERT( grid.template getEntity< 1 >( faceIndex ).getOrientation() == OrientationType( 1, 0 ) );
+            // TODO: fix this - gives undefined reference - I do not know why
+            //CPPUNIT_ASSERT( grid.template getEntity< 1 >( faceIndex ).getBasis() == BasisType( 0, 1 ) );
          }
 
-      for( IndexType j = 0; j < ySize + 1; j++ )
-         for( IndexType i = 0; i < xSize; i++ )
+      face.setOrientation( OrientationType( 0, 1 ) );
+      for( face.getCoordinates().y() = 0;
+           face.getCoordinates().y() < ySize + 1;
+           face.getCoordinates().y()++ )
+         for( face.getCoordinates().x() = 0;
+              face.getCoordinates().x() < xSize;
+              face.getCoordinates().x()++ )
          {
-            CoordinatesType faceCoordinates( i, j );
-            const IndexType faceIndex = grid.template getFaceIndex< 0, 1 >( faceCoordinates );
+            const IndexType faceIndex = grid.template getEntityIndex( face );
             CPPUNIT_ASSERT( faceIndex >= 0 );
-            CPPUNIT_ASSERT( faceIndex < grid.getNumberOfFaces() );
-            CPPUNIT_ASSERT( grid.getFaceCoordinates( faceIndex, nx, ny ) == faceCoordinates );
-            CPPUNIT_ASSERT( nx == 0 );
-            CPPUNIT_ASSERT( ny == 1 );
+            CPPUNIT_ASSERT( faceIndex < grid.template getEntitiesCount< GridType::Dimensions - 1 >() );
+            CPPUNIT_ASSERT( grid.template getEntity< 1 >( faceIndex ).getCoordinates() == face.getCoordinates() );
+            CPPUNIT_ASSERT( grid.template getEntity< 1 >( faceIndex ).getOrientation() == OrientationType( 0, 1 ) );
+            // TODO: fix this - gives undefined reference - I do not know why
+            //CPPUNIT_ASSERT( grid.template getEntity< 1 >( faceIndex ).getBasis() == BasisType( 1, 0 ) );
          }
 
    }
@@ -116,15 +134,24 @@ class tnlGridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCas
       const IndexType xSize( 13 );
       const IndexType ySize( 17 );
       GridType grid;
+      
+      typedef typename GridType::template GridEntity< 0 > VertexType;
+      typedef typename VertexType::EntityBasisType BasisType;
+      VertexType vertex;
+      
+      CoordinatesType& vertexCoordinates = vertex.getCoordinates();      
       grid.setDimensions( xSize, ySize );
-      for( IndexType j = 0; j < ySize + 1; j++ )
-         for( IndexType i = 0; i < xSize + 1; i++ )
+      for( vertex.getCoordinates().y() = 0;
+           vertex.getCoordinates().y() < ySize + 1;
+           vertex.getCoordinates().y()++ )
+         for( vertex.getCoordinates().x() = 0;
+              vertex.getCoordinates().x() < xSize + 1;
+              vertex.getCoordinates().x()++ )
          {
-            CoordinatesType vertexCoordinates( i, j );
-            const IndexType vertexIndex = grid.getVertexIndex( vertexCoordinates );
+            const IndexType vertexIndex = grid.template getEntityIndex< 0 >( vertex );
             CPPUNIT_ASSERT( vertexIndex >= 0 );
-            CPPUNIT_ASSERT( vertexIndex < grid.getNumberOfVertices() );
-            CPPUNIT_ASSERT( grid.getVertexCoordinates( vertexIndex ) == vertexCoordinates );
+            CPPUNIT_ASSERT( vertexIndex < grid.template getEntitiesCount< 0 >() );
+            CPPUNIT_ASSERT( grid.template getEntity< 0 >( vertexIndex ).getCoordinates() == vertex.getCoordinates() );
          }
    }
 

@@ -24,6 +24,7 @@
 #include <core/tnlAssert.h>
 #include <mesh/tnlGnuplotWriter.h>
 #include <mesh/grids/tnlGridEntityGetter_impl.h>
+#include <mesh/grids/tnlNeighbourGridEntityGetter1D_impl.h>
 #include <mesh/grids/tnlGrid1D.h>
 
 using namespace std;
@@ -252,9 +253,9 @@ __cuda_callable__
 typename tnlGrid< 1, Real, Device, Index > :: CoordinatesType
 tnlGrid< 1, Real, Device, Index > :: getCellCoordinates( const Index cellIndex ) const
 {
-   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells(),
+   tnlAssert( cellIndex >= 0 && cellIndex < this->template getEntitiesCount< Cells >(),
               cerr << " cellIndex = " << cellIndex
-                   << " this->getNumberOfCells() = " << this->getNumberOfCells() );
+                   << " this->template getEntitiesCount< Cells >() = " << this->template getEntitiesCount< Cells >() );
    return CoordinatesType( cellIndex );
 }
 
@@ -291,10 +292,10 @@ __cuda_callable__
 Index tnlGrid< 1, Real, Device, Index > :: getCellNextToCell( const IndexType& cellIndex ) const
 {
    tnlAssert( cellIndex + dx >= 0 &&
-              cellIndex + dx < this->getNumberOfCells(),
+              cellIndex + dx < this->template getEntitiesCount< Cells >(),
               cerr << " cellIndex = " << cellIndex
                    << " dx = " << dx
-                   << " this->getNumberOfCells() = " << this->getNumberOfCells() );
+                   << " this->template getEntitiesCount< Cells >() = " << this->template getEntitiesCount< Cells >() );
    return cellIndex + dx;
 }
 
@@ -402,9 +403,9 @@ template< typename Real,
 __cuda_callable__
 Vertex tnlGrid< 1, Real, Device, Index >::getCellCenter( const IndexType& cellIndex ) const
 {
-   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells(),
+   tnlAssert( cellIndex >= 0 && cellIndex < this->template getEntitiesCount< Cells >(),
               cerr << " cellIndex = " << cellIndex
-                   << " this->getNumberOfCells() = " << this->getNumberOfCells() );
+                   << " this->template getEntitiesCount< Cells >() = " << this->template getEntitiesCount< Cells >() );
    return this->getCellCenter< VertexType >( this->getCellCoordinates( cellIndex ) );
 }
 
@@ -421,14 +422,6 @@ Vertex tnlGrid< 1, Real, Device, Index >::getVertex( const CoordinatesType& vert
    return Vertex( this->origin.x() + vertexCoordinates.x() * this->cellProportions.x() );
 }
 */
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__
-Index tnlGrid< 1, Real, Device, Index > :: getNumberOfCells() const
-{
-   return this->numberOfCells;
-};
 
 template< typename Real,
           typename Device,
@@ -461,9 +454,9 @@ bool
 tnlGrid< 1, Real, Device, Index >::
 isBoundaryCell( const IndexType& cellIndex ) const
 {
-   tnlAssert( cellIndex >= 0 && cellIndex < this->getNumberOfCells(),
+   tnlAssert( cellIndex >= 0 && cellIndex < this->template getEntitiesCount< Cells >(),
               cerr << " cellIndex = " << cellIndex
-                   << " this->getNumberOfCells() = " << this->getNumberOfCells() );
+                   << " this->template getEntitiesCount< Cells >() = " << this->template getEntitiesCount< Cells >() );
    return this->isBoundaryCell( this->getCellCoordinates( cellIndex ) );
 }
 
@@ -590,11 +583,11 @@ bool tnlGrid< 1, Real, Device, Index > :: write( const MeshFunction& function,
                                                  const tnlString& fileName,
                                                  const tnlString& format ) const
 {
-   if( this->getNumberOfCells() != function. getSize() )
+   if( this->template getEntitiesCount< Cells >() != function. getSize() )
    {
       cerr << "The size ( " << function. getSize()
            << " ) of the mesh function does not agree with the DOFs ( " 
-           << this -> getNumberOfCells() << " ) of a mesh." << endl;
+           << this -> template getEntitiesCount< Cells >() << " ) of a mesh." << endl;
       return false;
    }
    fstream file;

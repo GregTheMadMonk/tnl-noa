@@ -27,10 +27,10 @@ void tnlFunctionDiscretizer< Mesh, Function, Vector >::discretize( const Mesh& m
 {
    //tnlAssert( Mesh::Dimensions == Function::Dimensions, ); // TODO: change this to tnlStaticAssert
    IndexType i = 0;
-   discreteFunction.setSize( mesh.getNumberOfCells() );
+   discreteFunction.setSize( mesh.template getEntitiesCount< Mesh::Cells >() );
    if( DeviceType::DeviceType == ( int ) tnlHostDevice )
    {
-      while( i < mesh.getNumberOfCells() )
+      while( i < mesh.template getEntitiesCount< Mesh::Cells >() )
       {
          VertexType v;
          v = mesh.template getEntityCenter< Mesh::Dimensions, VertexType >( mesh.template getEntity< Mesh::Dimensions >( i ) );

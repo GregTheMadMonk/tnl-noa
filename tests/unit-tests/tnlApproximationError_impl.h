@@ -43,7 +43,7 @@ getError( const Mesh& mesh,
 {
    typedef tnlVector< RealType, DeviceType, IndexType > Vector;
    Vector functionData, exactData, approximateData, aux;
-   const IndexType entities = mesh.getNumberOfCells();
+   const IndexType entities = mesh.template getEntitiesCount< Mesh::Cells >();
    BoundaryConditionsType boundaryConditions;
    boundaryConditions.setFunction( function );
    ConstantFunctionType zeroFunction;
@@ -104,7 +104,7 @@ getError( const Mesh& mesh,
    boundaryConditions.setFunction( function );
    ConstantFunctionType zeroFunction;
 
-   const IndexType entities = mesh.getNumberOfCells();
+   const IndexType entities = mesh.template getEntitiesCount< Mesh::Cells >();
 
    if( ! functionData.setSize( entities ) ||
        ! exactData.setSize( entities ) ||

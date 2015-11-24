@@ -22,9 +22,12 @@
 #include "tnlGridEntity.h"
 
 
-template< typename Grid,
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
           int EntityDimensions >
-tnlGridEntity< Grid, EntityDimensions >::
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 tnlGridEntity()
 : coordinates( 0 ),
   orientation( 0 ),
@@ -32,9 +35,12 @@ tnlGridEntity()
 {
 }
 
-template< typename Grid,
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
           int EntityDimensions >
-tnlGridEntity< Grid, EntityDimensions >::
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 tnlGridEntity( const CoordinatesType& coordinates,
                const EntityOrientationType& orientation,
                const EntityBasisType& basis )
@@ -44,60 +50,90 @@ tnlGridEntity( const CoordinatesType& coordinates,
 {  
 }
 
-template< typename Grid,
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
           int EntityDimensions >
-const typename tnlGridEntity< Grid, EntityDimensions >::CoordinatesType& 
-tnlGridEntity< Grid, EntityDimensions >::
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::CoordinatesType& 
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 getCoordinates() const
 {
    return this->coordinates;
 }
 
-template< typename Grid,
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
           int EntityDimensions >
-typename tnlGridEntity< Grid, EntityDimensions >::CoordinatesType& 
-tnlGridEntity< Grid, EntityDimensions >::
+typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::CoordinatesType& 
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 getCoordinates()
 {
    return this->coordinates;
 }
 
-template< typename Grid,
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
           int EntityDimensions >
-const typename tnlGridEntity< Grid, EntityDimensions >::EntityOrientationType& 
-tnlGridEntity< Grid, EntityDimensions >::
+void
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
+setCoordinates( const CoordinatesType& coordinates )
+{
+   this->coordinates = coordinates;
+}
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          int EntityDimensions >
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::EntityOrientationType& 
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 getOrientation() const
 {
    return this->orientation;
 }
 
-template< typename Grid,
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
           int EntityDimensions >
 void 
-tnlGridEntity< Grid, EntityDimensions >::
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 setOrientation( const EntityOrientationType& orientation )
 {
    this->orientation = orientation;
    this->basis = EntityBasisType( 1 ) - tnlAbs( orientation );
 }
 
-template< typename Grid,
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
           int EntityDimensions >
-const typename tnlGridEntity< Grid, EntityDimensions >::EntityBasisType& 
-tnlGridEntity< Grid, EntityDimensions >::
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::EntityBasisType& 
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 getBasis() const
 {
    return this->basis;
-   this->orientation = EntityOrientationType( 1 ) - tnlAbs( basis );
 }
 
-template< typename Grid,
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
           int EntityDimensions >
 void 
-tnlGridEntity< Grid, EntityDimensions >::
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 setBasis( const EntityBasisType& basis )
 {
    this->basis = basis;
+   this->orientation = EntityOrientationType( 1 ) - tnlAbs( basis );
 }
 
 /****
@@ -109,10 +145,10 @@ template< int Dimensions,
           typename Index >
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
 tnlGridEntity()
- : coordinates( 0 ),
-   orientation( 0 ),
-   basis( 1 )
 {
+   this->coordinates = CoordinatesType( ( Index ) 0 );
+   this->orientation = EntityOrientationType( ( Index ) 0 );
+   this->basis = EntityBasisType( ( Index ) 1 );
 }
 
 template< int Dimensions,
@@ -124,7 +160,9 @@ tnlGridEntity( const CoordinatesType& coordinates,
                const EntityOrientationType& orientation,
                const EntityBasisType& basis )
 : coordinates( coordinates )
-{  
+{
+   this->orientation = EntityOrientationType( ( Index ) 0 );
+   this->basis = EntityBasisType( ( Index ) 1 );
 }
 
 template< int Dimensions,
@@ -153,22 +191,33 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::EntityOrientationType& 
+void
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
-getOrientation() const
+setCoordinates( const CoordinatesType& coordinates )
 {
-   return this->orientation;
+   this->coordinates = coordinates;
 }
 
 template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::EntityBasisType& 
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::EntityOrientationType 
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
+getOrientation() const
+{
+   return EntityOrientationType( ( IndexType ) 0 );
+}
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index >
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::EntityBasisType 
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
 getBasis() const
 {
-   return this->basis;
+   return EntityBasisType( ( IndexType ) 1 );
 }
 
 /****
@@ -224,22 +273,33 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::EntityOrientationType& 
+void
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
-getOrientation() const
+setCoordinates( const CoordinatesType& coordinates )
 {
-   return this->orientation;
+   this->coordinates = coordinates;
 }
 
 template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::EntityBasisType& 
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::EntityOrientationType
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
+getOrientation() const
+{
+   return EntityOrientationType( ( IndexType ) 0 );
+}
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index >
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::EntityBasisType
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
 getBasis() const
 {
-   return this->basis;
+   return EntityBasisType( ( IndexType ) 0 );
 }
 
 

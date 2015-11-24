@@ -22,9 +22,18 @@ template< typename Grid,
           int EntityDimensions >
 class tnlGridEntity
 {
+};
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          int EntityDimensions >
+class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >
+{
    public:
       
-      typedef Grid GridType;
+      typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       
@@ -44,6 +53,8 @@ class tnlGridEntity
       const CoordinatesType& getCoordinates() const;
       
       CoordinatesType& getCoordinates();
+      
+      void setCoordinates( const CoordinatesType& coordinates );
       
       const EntityOrientationType& getOrientation() const;
       
@@ -89,16 +100,18 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
       tnlGridEntity();
       
       tnlGridEntity( const CoordinatesType& coordinates,
-                     const EntityOrientationType& orientation,
-                     const EntityBasisType& basis );
+                     const EntityOrientationType& orientation = EntityOrientationType( 0 ),
+                     const EntityBasisType& basis = EntityBasisType( 1 ) );
       
       const CoordinatesType& getCoordinates() const;      
       
-      CoordinatesType& getCoordinates();      
+      CoordinatesType& getCoordinates();  
       
-      const EntityOrientationType& getOrientation() const;     
+      void setCoordinates( const CoordinatesType& coordinates );
       
-      const EntityBasisType& getBasis() const;
+      const EntityOrientationType getOrientation() const;     
+      
+      const EntityBasisType getBasis() const;
             
    protected:
       
@@ -141,9 +154,11 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       
       CoordinatesType& getCoordinates();
       
-      const EntityOrientationType& getOrientation() const;     
+      void setCoordinates( const CoordinatesType& coordinates );
       
-      const EntityBasisType& getBasis() const;
+      const EntityOrientationType getOrientation() const;     
+      
+      const EntityBasisType getBasis() const;
             
    protected:
       
@@ -154,7 +169,6 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       EntityBasisType basis;
 
 };
-
 
 #include <mesh/grids/tnlGridEntity_impl.h>
 

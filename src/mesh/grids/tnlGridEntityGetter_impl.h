@@ -119,6 +119,8 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 2 >
          
          return coordinates.y() * grid.getDimensions().x() + coordinates.x();
       }
+      
+      
 };
 
 template< typename Real,
@@ -168,7 +170,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 1 >
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
                     entity.getCoordinates() < grid.getDimensions() + tnlAbs( entity.getOrientation() ),
-                 cerr << "entity.getCoordinates() = " << entity.getCoordinates
+                 cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                       << " dimensions.x() = " << grid.getDimensions()
                       << " tnlAbs( entity.getOrientation() ) = " << tnlAbs( entity.getOrientation() ) );
                   
@@ -341,9 +343,9 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 2 >
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
+         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
                     entity.getCoordinates() < grid.getDimensions() + tnlAbs( entity.getOrientation() ),
-                 cerr << "entity.getCoordinates() = " << entity.getCoordinates
+                 cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                       << " dimensions.x() = " << grid.getDimensions()
                       << " tnlAbs( entity.getOrientation() ) = " << tnlAbs( entity.getOrientation() ) );
          
@@ -353,7 +355,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 2 >
          
          if( entity.getOrientation().x() )
          {
-            return ( coordinates.z() * dimensions.y() + coordinates().y() ) * 
+            return ( coordinates.z() * dimensions.y() + coordinates.y() ) * 
                ( dimensions.x() + 1 ) + coordinates.x();
          }
          if( entity.getOrientation().y() )
@@ -363,7 +365,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 2 >
                dimensions.x() + coordinates.x();
          }
          return grid.numberOfNxAndNyFaces + 
-            ( coordinates.z() * dimensions().y() + coordinates.y() ) *
+            ( coordinates.z() * dimensions.y() + coordinates.y() ) *
             dimensions.x() + coordinates.x();
       }
 };
@@ -418,7 +420,6 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 1 >
          const IndexType i = index - grid.numberOfDxAndDyEdges;
          const IndexType aux1 = dimensions.x() + 1;
          const IndexType aux2 = dimensions.y() + 1;
-         return CoordinatesType(  );
          return GridEntity
             ( CoordinatesType( i % aux1,
                                ( i / aux1 ) % aux2,
@@ -431,25 +432,25 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 1 >
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
+         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
                     entity.getCoordinates() < grid.getDimensions() + 
-                       CoordinatesType( 1, 1, 1 ) - entity.getProportions(),
-            cerr << "entity.getCoordinates() = " << entity.getCoordinates
+                       CoordinatesType( 1, 1, 1 ) - entity.getBasis(),
+            cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                  << " dimensions.x() = " << grid.getDimensions()
-                 << " CoordinatesType( 1, 1, 1 ) - entity.getProportions() = " << CoordinatesType( 1, 1, 1 ) - entity.getProportions() );
+                 << " CoordinatesType( 1, 1, 1 ) - entity.getBasis() = " << CoordinatesType( 1, 1, 1 ) - entity.getBasis() );
          
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
          
-         if( entity.getProportions().x() )
+         if( entity.getBasis().x() )
             return ( coordinates.z() * ( dimensions.y() + 1 ) + 
                      coordinates.y() ) * dimensions.x() + coordinates.x();   
-         if( entity.getProportions().y() )
+         if( entity.getBasis().y() )
             return grid.numberOfDxEdges + 
                ( coordinates.z() * dimensions.y() + coordinates.y() ) * ( dimensions.x() + 1 ) +
                coordinates.x();
          return grid.numberOfDxAndDyEdges + 
-            ( coordinates.z() * ( dimensions.y() + 1 ) + coordinates.y() ) * ( dimensions().x() + 1 ) +
+            ( coordinates.z() * ( dimensions.y() + 1 ) + coordinates.y() ) * ( dimensions.x() + 1 ) +
             coordinates.x();
 
       }
@@ -464,7 +465,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 0 >
       
       static const int entityDimensions = 0;
       
-      typedef tnlGrid< 2, Real, Device, Index > GridType;
+      typedef tnlGrid< 3, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::template GridEntity< entityDimensions > GridEntity;

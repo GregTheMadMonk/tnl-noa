@@ -62,7 +62,7 @@ class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCas
       {
          CoordinatesType cellCoordinates( i );
          CPPUNIT_ASSERT( grid.getCellIndex( cellCoordinates ) >= 0 );
-         CPPUNIT_ASSERT( grid.getCellIndex( cellCoordinates ) < grid.getNumberOfCells() );
+         CPPUNIT_ASSERT( grid.getCellIndex( cellCoordinates ) < grid.template getEntitiesCount< GridType::Cells >() );
          CPPUNIT_ASSERT( grid.getCellCoordinates( grid.getCellIndex( cellCoordinates ) ) == cellCoordinates );
       }
    }

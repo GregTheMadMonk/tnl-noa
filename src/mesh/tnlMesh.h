@@ -56,6 +56,7 @@ class tnlMesh : public tnlObject/*,
       
       GlobalIndexType getNumberOfCells() const;
 
+      // TODO: rename to getEntitiesCount
       template< int Dimensions >
       GlobalIndexType getNumberOfEntities() const;
 

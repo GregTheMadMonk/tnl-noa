@@ -25,93 +25,66 @@ class tnlStaticVector : public tnlStaticArray< Size, Real >
 {
    public:
    typedef Real RealType;
+   typedef tnlStaticVector< Size, Real > ThisType;
    enum { size = Size };
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector( const Real v[ Size ] );
 
    //! This sets all vector components to v
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector( const Real& v );
 
    //! Copy constructor
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector( const tnlStaticVector< Size, Real >& v );
 
    static tnlString getType();
 
    //! Adding operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector& operator += ( const tnlStaticVector& v );
 
    //! Subtracting operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector& operator -= ( const tnlStaticVector& v );
 
    //! Multiplication with number
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector& operator *= ( const Real& c );
 
-   //! Adding operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   //! Addition operator
+   __cuda_callable__
    tnlStaticVector operator + ( const tnlStaticVector& u ) const;
 
-   //! Subtracting operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   //! Subtraction operator
+   __cuda_callable__
    tnlStaticVector operator - ( const tnlStaticVector& u ) const;
 
    //! Multiplication with number
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector operator * ( const Real& c ) const;
 
    //! Scalar product
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Real operator * ( const tnlStaticVector& u ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator < ( const tnlStaticVector& v ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator <= ( const tnlStaticVector& v ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator > ( const tnlStaticVector& v ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator >= ( const tnlStaticVector& v ) const;
+   
+   ThisType abs() const;
 };
 
 template< typename Real >
@@ -119,88 +92,63 @@ class tnlStaticVector< 1, Real > : public tnlStaticArray< 1, Real >
 {
    public:
    typedef Real RealType;
+   typedef tnlStaticVector< 1, Real > ThisType;
    enum { size = 1 };
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector();
 
    //! This sets all vector components to v
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector( const Real& v );
 
    //! Copy constructor
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector( const tnlStaticVector< 1, Real >& v );
 
    static tnlString getType();
 
-   //! Adding operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   //! Addition operator
+   __cuda_callable__
    tnlStaticVector& operator += ( const tnlStaticVector& v );
 
-   //! Subtracting operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   //! Subtraction operator
+   __cuda_callable__
    tnlStaticVector& operator -= ( const tnlStaticVector& v );
 
    //! Multiplication with number
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector& operator *= ( const Real& c );
 
-   //! Adding operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   //! Addition operator
+   __cuda_callable__
    tnlStaticVector operator + ( const tnlStaticVector& u ) const;
 
-   //! Subtracting operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   //! Subtraction operator
+   __cuda_callable__
    tnlStaticVector operator - ( const tnlStaticVector& u ) const;
 
    //! Multiplication with number
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector operator * ( const Real& c ) const;
 
    //! Scalar product
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Real operator * ( const tnlStaticVector& u ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator < ( const tnlStaticVector& v ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator <= ( const tnlStaticVector& v ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator > ( const tnlStaticVector& v ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator >= ( const tnlStaticVector& v ) const;
+   
+   ThisType abs() const;
 };
 
 template< typename Real >
@@ -208,98 +156,69 @@ class tnlStaticVector< 2, Real > : public tnlStaticArray< 2, Real >
 {
    public:
    typedef Real RealType;
+   typedef tnlStaticVector< 2, Real > ThisType;
    enum { size = 2 };
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector( const Real v[ 2 ] );
 
    //! This sets all vector components to v
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector( const Real& v );
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector( const Real& v1, const Real& v2 );
 
    //! Copy constructor
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector( const tnlStaticVector< 2, Real >& v );
 
    static tnlString getType();
 
    //! Adding operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector& operator += ( const tnlStaticVector& v );
 
    //! Subtracting operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector& operator -= ( const tnlStaticVector& v );
 
    //! Multiplication with number
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector& operator *= ( const Real& c );
 
    //! Adding operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector operator + ( const tnlStaticVector& u ) const;
 
    //! Subtracting operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector operator - ( const tnlStaticVector& u ) const;
 
    //! Multiplication with number
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector operator * ( const Real& c ) const;
 
    //! Scalar product
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Real operator * ( const tnlStaticVector& u ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator < ( const tnlStaticVector& v ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator <= ( const tnlStaticVector& v ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator > ( const tnlStaticVector& v ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator >= ( const tnlStaticVector& v ) const;
+   
+   ThisType abs() const;
 };
 
 template< typename Real >
@@ -307,102 +226,76 @@ class tnlStaticVector< 3, Real > : public tnlStaticArray< 3, Real >
 {
    public:
    typedef Real RealType;
+   typedef tnlStaticVector< 3, Real > ThisType;
    enum { size = 3 };
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector( const Real v[ 3 ] );
 
    //! This sets all vector components to v
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector( const Real& v );
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector( const Real& v1, const Real& v2, const Real& v3 );
 
    //! Copy constructor
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector( const tnlStaticVector< 3, Real >& v );
 
    static tnlString getType();
 
-   //! Adding operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   //! Addition operator
+   __cuda_callable__
    tnlStaticVector& operator += ( const tnlStaticVector& v );
 
-   //! Subtracting operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   //! Subtraction operator
+   __cuda_callable__
    tnlStaticVector& operator -= ( const tnlStaticVector& v );
 
    //! Multiplication with number
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector& operator *= ( const Real& c );
 
-   //! Adding operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   //! Addition operator
+   __cuda_callable__
    tnlStaticVector operator + ( const tnlStaticVector& u ) const;
 
-   //! Subtracting operator
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   //! Subtraction operator
+   __cuda_callable__
    tnlStaticVector operator - ( const tnlStaticVector& u ) const;
 
    //! Multiplication with number
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    tnlStaticVector operator * ( const Real& c ) const;
 
    //! Scalar product
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    Real operator * ( const tnlStaticVector& u ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator < ( const tnlStaticVector& v ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator <= ( const tnlStaticVector& v ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator > ( const tnlStaticVector& v ) const;
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
+   __cuda_callable__
    bool operator >= ( const tnlStaticVector& v ) const;
+   
+   ThisType abs() const;
 };
 
 template< int Size, typename Real >
 tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector< Size, Real >& u );
+
+template< int Size, typename Real >
+tnlStaticVector< Size, Real > tnlAbs( const tnlStaticVector< Size, Real >& u ) { return u.abs(); };
 
 #include <core/vectors/tnlStaticVector_impl.h>
 #include <core/vectors/tnlStaticVector1D_impl.h>

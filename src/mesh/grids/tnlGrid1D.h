@@ -22,6 +22,7 @@
 #include <core/tnlLogger.h>
 #include <mesh/grids/tnlGridEntityTopology.h>
 #include <mesh/grids/tnlGridEntityGetter.h>
+#include <mesh/grids/tnlNeighbourGridEntityGetter.h>
 #include <mesh/grids/tnlGridEntity.h>
 
 template< typename Real,
@@ -43,7 +44,9 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    template< int EntityDimensions > using GridEntity = 
       tnlGridEntity< ThisType, EntityDimensions >;
    
-   enum { Dimensions = 1 };
+   enum { Dimensions = 1 };   
+   enum { Cells = 1 };
+   enum { Vertices = 0 };
 
    static constexpr int getDimensionsCount() { return Dimensions; };
    
@@ -140,9 +143,6 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    RealType getSmallestSpaceStep() const;
 
    
-   __cuda_callable__
-   Index getNumberOfCells() const;
-
    __cuda_callable__
    Index getNumberOfVertices() const;
 

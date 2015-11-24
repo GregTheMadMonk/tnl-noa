@@ -242,7 +242,7 @@ class tnlMeshInitializerLayer< MeshConfig,
          typedef typename tnlMeshEntity< MeshConfig, EntityTopology >::template SubentitiesTraits< 0 >::LocalIndexType LocalIndexType;
          const GlobalIndexType numberOfVertices( this->getMesh().getNumberOfVertices() );
          for( GlobalIndexType cell = 0;
-              cell < this->getMesh().getNumberOfCells();
+              cell < this->getMesh().template getEntitiesCount< MeshType::Cells >();
               cell++ )
             for( LocalIndexType i = 0;
                  i < this->getMesh().getCell( cell ).getNumberOfVertices();

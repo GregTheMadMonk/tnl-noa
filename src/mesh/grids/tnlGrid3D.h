@@ -21,6 +21,7 @@
 #include <core/tnlStaticMultiIndex.h>
 #include <mesh/grids/tnlGridEntityTopology.h>
 #include <mesh/grids/tnlGridEntityGetter.h>
+#include <mesh/grids/tnlNeighbourGridEntityGetter.h>
 
 template< typename Real,
           typename Device,
@@ -38,42 +39,15 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    typedef tnlGrid< 3, Real, tnlCuda, Index > CudaType;
 
    typedef tnlGrid< 3, Real, Device, Index > ThisType;
-   template< int i1, int i2, int i3 > using EntityOrientation = tnlStaticMultiIndex3D< i1, i2, i3 >;
-   template< int i1, int i2, int i3 > using EntityProportions = tnlStaticMultiIndex3D< i1, i2, i3 >;
-   
-   typedef tnlGridEntityTopology< ThisType,
-                                  3,
-                                  EntityOrientation< 0, 0, 0 >,
-                                  EntityProportions< 1, 1, 1 > > Cell;
-   
-   /****
-    * ( n1, n2, n3 ) is a face outer normal. If all of them are zeros it means any face.
-    */
-   template< int n1 = 0, int n2 = 0, int n3 = 0 > using Face = 
-      tnlGridEntityTopology< ThisType,
-                             2,
-                             EntityOrientation< n1, n2, n3 >,
-                             EntityProportions< 1 - tnlConstAbs( n1 ),
-                                                1 - tnlConstAbs( n2 ),
-                                                1 - tnlConstAbs( n3 ) > >;
-   
-   /****
-    * ( d1, d2, d3 ) is an edge direction vector. If all of them are zeros it means any edge.
-    */   
-   template< int d1 = 0, int d2 = 0, int d3 = 0 > using Edge = 
-      tnlGridEntityTopology< ThisType,
-                             1,
-                             EntityOrientation< d1, d2, d3 >,
-                             EntityProportions< d1, d2, d3 > >;
-   typedef tnlGridEntityTopology< ThisType,
-                                  0,
-                                  EntityOrientation< 0, 0, 0 >,
-                                  EntityProportions< 0, 0, 0 > > Vertex;
 
    template< int EntityDimensions > using GridEntity = 
       tnlGridEntity< ThisType, EntityDimensions >;   
    
-   enum { Dimensions = 3};
+   enum { Dimensions = 3 };
+   enum { Cells = 3 };
+   enum { Faces = 2 };
+   enum { Edges = 1 };
+   enum { Vertices = 0 };
 
    tnlGrid();
 
@@ -129,33 +103,6 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    
    
    
-
-   __cuda_callable__
-   Index getCellIndex( const CoordinatesType& cellCoordinates ) const;
-
-   __cuda_callable__
-   CoordinatesType getCellCoordinates( const IndexType cellIndex ) const;
-
-   template< int nx, int ny, int nz >
-   __cuda_callable__
-   Index getFaceIndex( const CoordinatesType& faceCoordinates ) const;
-
-   __cuda_callable__
-   CoordinatesType getFaceCoordinates( const Index faceIndex, int& nx, int& ny, int& nz ) const;
-
-   template< int dx, int dy, int dz >
-   __cuda_callable__
-   Index getEdgeIndex( const CoordinatesType& edgeCoordinates ) const;
-
-   __cuda_callable__
-   CoordinatesType getEdgeCoordinates( const Index edgeIndex, int& dx, int& dy, int& dz ) const;
-
-   __cuda_callable__
-   Index getVertexIndex( const CoordinatesType& vertexCoordinates ) const;
-
-   __cuda_callable__
-   CoordinatesType getVertexCoordinates( const Index vertexIndex ) const;
-
    template< int dx, int dy, int dz >
    __cuda_callable__
    IndexType getCellNextToCell( const IndexType& cellIndex ) const;
@@ -224,73 +171,6 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 
    __cuda_callable__
    RealType getSmallestSpaceStep() const;
-
-   /****
-    * The type Vertex can have different Real type.
-    */
-#ifdef HAVE_NOT_CXX11
-   template< typename EntityTopology, 
-             typename Vertex >
-#else
-   template< typename EntityTopology,
-             typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getEntityCenter( const CoordinatesType& cellCoordinates ) const;
-
-#ifdef HAVE_NOT_CXX11
-   template< typename EntityTopology, 
-             typename Vertex >
-#else
-   template< typename EntityTopology,
-             typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getEntityCenter( const IndexType& cellIndex ) const;
-   
-   
-#ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-#else
-   template< typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
-
-#ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-#else
-   template< typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getCellCenter( const IndexType& cellIndex ) const;
-
-#ifdef HAVE_NOT_CXX11
-   template< int nx, int ny, int nz, typename Vertex >
-#else
-   template< int nx, int ny, int nz, typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getFaceCenter( const CoordinatesType& faceCoordinates ) const;
-
-#ifdef HAVE_NOT_CXX11
-   template< int dx, int dy, int dz, typename Vertex >
-#else
-   template< int dx, int dy, int dz, typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getEdgeCenter( const CoordinatesType& edgeCoordinates ) const;
-
-#ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-#else
-   template< typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getVertex( const CoordinatesType& vertexCoordinates ) const;
-
-   __cuda_callable__
-   Index getNumberOfCells() const;
 
 #ifdef HAVE_NOT_CXX11
    template< int nx,
@@ -392,8 +272,10 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
             hxhy, hxhz, hyhz,
             hxhyInverse, hxhzInverse, hyhzInverse;
 
-
-
+   friend class tnlGridEntityGetter< ThisType, 3 >;
+   friend class tnlGridEntityGetter< ThisType, 2 >;
+   friend class tnlGridEntityGetter< ThisType, 1 >;
+   friend class tnlGridEntityGetter< ThisType, 0 >;
 };
 
 #include <mesh/grids/tnlGrid3D_impl.h>
