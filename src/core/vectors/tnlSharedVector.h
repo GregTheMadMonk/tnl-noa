@@ -37,7 +37,8 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    typedef tnlSharedVector< Real, tnlHost, Index > HostType;
    typedef tnlSharedVector< Real, tnlCuda, Index > CudaType;
 
-   static constexpr tnlFunctionType getFunctionType() { return tnlDiscreteFunction; }
+   //static constexpr tnlFunctionType getFunctionType() { return tnlDiscreteFunction; }
+   enum { functionType = tnlDiscreteFunction };
 
    tnlSharedVector();
 

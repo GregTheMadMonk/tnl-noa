@@ -28,7 +28,8 @@ class tnlFunction
 {
    public:
    
-      static constexpr tnlFunctionType getFunctionType() { return FunctionType; }
+      //static constexpr tnlFunctionType getFunctionType() { return FunctionType; }
+      enum { functionType = FunctionType };
 };
 
 #endif	/* TNLFUNCTION_H */

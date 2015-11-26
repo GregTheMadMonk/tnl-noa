@@ -35,7 +35,8 @@ class tnlHeatEquationEocRhs
       typedef ExactOperator ExactOperatorType;
       typedef TestFunction TestFunctionType;
 
-      static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }     
+      //static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }     
+      enum { functionType = tnlAnalyticFunction };
       
       bool setup( const tnlParameterContainer& parameters,
                   const tnlString& prefix = "" )

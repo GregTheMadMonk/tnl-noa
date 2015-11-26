@@ -36,7 +36,8 @@ class tnlVector : public tnlArray< Real, Device, Index >
    typedef tnlVector< Real, tnlHost, Index > HostType;
    typedef tnlVector< Real, tnlCuda, Index > CudaType;
 
-   static constexpr tnlFunctionType getFunctionType() { return tnlDiscreteFunction; }
+   //static constexpr tnlFunctionType getFunctionType() { return tnlDiscreteFunction; }
+   enum { functionType = tnlDiscreteFunction };
 
    tnlVector();
 
