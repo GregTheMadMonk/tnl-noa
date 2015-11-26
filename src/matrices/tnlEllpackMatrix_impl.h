@@ -39,6 +39,8 @@ tnlString tnlEllpackMatrix< Real, Device, Index > :: getType()
           tnlString( ::getType< Real >() ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
+          tnlString( ", " ) +
+          tnlString( ::getType< Index >() ) +          
           tnlString( " >" );
 }
 

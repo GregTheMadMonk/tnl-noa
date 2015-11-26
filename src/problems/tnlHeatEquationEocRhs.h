@@ -24,7 +24,7 @@
 #ifndef TNLHEATEQUATIONEOCRHS_H_
 #define TNLHEATEQUATIONEOCRHS_H_
 
-#include <functors/tnlFunctionType.h>
+#include <functors/tnlFunction.h>
 
 template< typename ExactOperator,
           typename TestFunction >
@@ -35,6 +35,9 @@ class tnlHeatEquationEocRhs
       typedef ExactOperator ExactOperatorType;
       typedef TestFunction TestFunctionType;
 
+      //static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }     
+      enum { functionType = tnlAnalyticFunction };
+      
       bool setup( const tnlParameterContainer& parameters,
                   const tnlString& prefix = "" )
       {
@@ -59,6 +62,7 @@ class tnlHeatEquationEocRhs
       TestFunction testFunction;
 };
 
+/*
 template< typename ExactOperator,
           typename TestFunction >
 class tnlFunctionType< tnlHeatEquationEocRhs< ExactOperator, TestFunction > >
@@ -67,5 +71,6 @@ class tnlFunctionType< tnlHeatEquationEocRhs< ExactOperator, TestFunction > >
 
       enum { Type = tnlAnalyticFunction };
 };
+*/
 
 #endif /* TNLHEATEQUATIONEOCRHS_H_ */

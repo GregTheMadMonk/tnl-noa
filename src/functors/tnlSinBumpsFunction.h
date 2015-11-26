@@ -20,13 +20,13 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functors/tnlFunctionType.h>
+#include <functors/tnlFunction.h>
 
 template< typename Vertex >
-class tnlSinBumpsFunctionBase
+class tnlSinBumpsFunctionBase : public tnlFunction< tnlAnalyticFunction >
 {
    public:
-
+      
       typedef Vertex VertexType;
       typedef typename Vertex::RealType RealType;
       enum { Dimensions = VertexType::size };
@@ -157,15 +157,6 @@ ostream& operator << ( ostream& str, const tnlSinBumpsFunction< Dimensions, Real
        << " phase = " << f.getPhase();
    return str;
 }
-
-template< int FunctionDimensions,
-          typename Real >
-class tnlFunctionType< tnlSinBumpsFunction< FunctionDimensions, Real > >
-{
-   public:
-
-      enum { Type = tnlAnalyticFunction };
-};
 
 #include <functors/tnlSinBumpsFunction_impl.h>
 

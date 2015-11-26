@@ -19,11 +19,11 @@
 #define tnlFunctorAdapter_H_
 
 #include <functors/tnlConstantFunction.h>
-#include <functors/tnlFunctionType.h>
+#include <functors/tnlFunction.h>
 
 template< typename Mesh,
           typename Function,
-          int FunctionType = tnlFunctionType< Function >::Type >
+          int FunctionType = Function::functionType >
 class tnlFunctorAdapter
 {
 };

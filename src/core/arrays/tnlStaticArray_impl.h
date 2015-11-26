@@ -189,15 +189,25 @@ void tnlStaticArray< Size, Element >::sort()
             Swap( data[ i ], data[ i+1 ] );
 }
 
+template< int Size, typename Element >
+ostream& tnlStaticArray< Size, Element >::write( ostream& str, const char* separator ) const
+{
+   for( int i = 0; i < Size - 1; i++ )
+      str << data[ i ] << separator;
+   str << data[ Size - 1 ];
+   return str;
+}
+
 
 template< int Size, typename Element >
 ostream& operator << ( ostream& str, const tnlStaticArray< Size, Element >& a )
 {
-   for( int i = 0; i < Size - 1; i ++ )
+   a.write( str, "," );
+   /*for( int i = 0; i < Size - 1; i ++ )
    {
       str << a[ i ] << ", ";
    }
-   str << a[ Size - 1 ];
+   str << a[ Size - 1 ];*/
    return str;
 };
 

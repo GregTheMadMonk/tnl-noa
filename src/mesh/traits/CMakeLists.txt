@@ -1,10 +1,7 @@
-SET( headers tnlDimensionsTraits.h
-             tnlMeshTraits.h
-             tnlStorageTraits.h
-             tnlMeshEntitiesTraits.h
-             tnlMeshEntitiesTag.h
-             tnlMeshSubentitiesTraits.h
-             tnlMeshSuperentitiesTraits.h
+SET( headers tnlMeshTraits.h
+             tnlMeshEntityTraits.h
+             tnlMeshSubentityTraits.h
+             tnlMeshSuperentityTraits.h
                )
 
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/mesh/traits )

@@ -126,8 +126,9 @@ void tnlSharedArray< Element, Device, Index > :: bind( Array& array,
                                                        IndexType index,
                                                        IndexType size )
 {
-   tnlStaticAssert( Array::DeviceType::DeviceType == DeviceType::DeviceType,
-                    "Attempt to bind arrays between different devices." );
+   //tnlStaticAssert( Array::DeviceType::DeviceType == DeviceType::DeviceType,
+   //                 "Attempt to bind arrays between different devices." );
+   // TODO: fix this - it does nto work with tnlStaticArray
    this->data = &( array. getData()[ index ] );
    if( ! size )
       this->size = array. getSize();

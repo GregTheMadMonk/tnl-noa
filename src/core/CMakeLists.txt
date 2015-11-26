@@ -2,6 +2,7 @@ ADD_SUBDIRECTORY( arrays )
 ADD_SUBDIRECTORY( containers )
 ADD_SUBDIRECTORY( cuda )
 ADD_SUBDIRECTORY( vectors )
+ADD_SUBDIRECTORY( multimaps )
 
 set (headers tnlAssert.h               
              tnlConstants.h

@@ -26,25 +26,47 @@
 #include <cppunit/Message.h>
 #include <mesh/tnlMeshEntity.h>
 #include <mesh/config/tnlMeshConfigBase.h>
-#include <mesh/topologies/tnlMeshVertexTag.h>
-#include <mesh/topologies/tnlMeshEdgeTag.h>
-#include <mesh/topologies/tnlMeshTriangleTag.h>
-#include <mesh/topologies/tnlMeshTetrahedronTag.h>
+#include <mesh/topologies/tnlMeshVertexTopology.h>
+#include <mesh/topologies/tnlMeshEdgeTopology.h>
+#include <mesh/topologies/tnlMeshTriangleTopology.h>
+#include <mesh/topologies/tnlMeshTetrahedronTopology.h>
     
-typedef tnlMeshConfigBase< tnlMeshTriangleTag, 2, double, int, int, void > TestTriangleEntityTag;
-typedef tnlMeshConfigBase< tnlMeshEdgeTag, 2, double, int, int, void > TestEdgeEntityTag;
-typedef tnlMeshConfigBase< tnlMeshVertexTag, 2, double, int, int, void > TestVertexEntityTag;
+//typedef tnlMeshConfigBase< tnlMeshTriangleTopology, 2, double, int, int, void > TestTriangleEntityTopology;
+typedef tnlMeshConfigBase< tnlMeshEdgeTopology, 2, double, int, int, void > TestEdgeEntityTopology;
+typedef tnlMeshConfigBase< tnlMeshVertexTopology, 2, double, int, int, void > TestVertexEntityTopology;
 
-template< int Dimensions >
-struct tnlMeshSuperentityStorage< TestTriangleEntityTag, tnlMeshVertexTag, Dimensions >
+class TestTriangleMeshConfig : public tnlMeshConfigBase< tnlMeshTriangleTopology >
 {
-   enum { enabled = true };
+   public:
+      
+      template< typename MeshEntity >
+      static constexpr bool subentityStorage( MeshEntity entity, int subentityDimensions )
+      {
+         return true;
+      }  
+      
+      template< typename MeshEntity >
+      static constexpr bool superentityStorage( MeshEntity entity, int superentityDimensions )
+      {
+         return true;
+      }  
 };
 
-template< int Dimensions >
-struct tnlMeshSuperentityStorage< TestTriangleEntityTag, tnlMeshEdgeTag, Dimensions >
+class TestTetrahedronMeshConfig : public tnlMeshConfigBase< tnlMeshTetrahedronTopology >
 {
-   enum { enabled = true };
+   public:
+      
+      template< typename MeshEntity >
+      static constexpr bool subentityStorage( MeshEntity entity, int subentityDimensions )
+      {
+         return true;
+      }  
+      
+      template< typename MeshEntity >
+      static constexpr bool superentityStorage( MeshEntity entity, int superentityDimensions )
+      {
+         return true;
+      }  
 };
 
 template< typename RealType, typename Device, typename IndexType >
@@ -76,8 +98,8 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
 
    void vertexMeshEntityTest()
    {
-      typedef tnlMeshConfigBase< tnlMeshEdgeTag, 2, RealType, IndexType, IndexType, void > TestEntityTag;
-      typedef tnlMeshEntity< TestEntityTag, tnlMeshVertexTag > VertexMeshEntityType;
+      typedef tnlMeshConfigBase< tnlMeshEdgeTopology, 2, RealType, IndexType, IndexType, void > TestEntityTopology;
+      typedef tnlMeshEntity< TestEntityTopology, tnlMeshVertexTopology > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
 
       CPPUNIT_ASSERT( PointType::getType() == ( tnlStaticVector< 2, RealType >::getType() ) );
@@ -92,8 +114,8 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
 
    void edgeMeshEntityTest()
    {
-      typedef tnlMeshEntity< TestEdgeEntityTag, tnlMeshEdgeTag > EdgeMeshEntityType;
-      typedef tnlMeshEntity< TestEdgeEntityTag, tnlMeshVertexTag > VertexMeshEntityType;
+      typedef tnlMeshEntity< TestEdgeEntityTopology, tnlMeshEdgeTopology > EdgeMeshEntityType;
+      typedef tnlMeshEntity< TestEdgeEntityTopology, tnlMeshVertexTopology > VertexMeshEntityType;
       
       typedef typename VertexMeshEntityType::PointType PointType;
       CPPUNIT_ASSERT( PointType::getType() == ( tnlStaticVector< 2, RealType >::getType() ) );
@@ -155,9 +177,12 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
 
    void triangleMeshEntityTest()
    {
-      typedef tnlMeshEntity< TestTriangleEntityTag, tnlMeshTriangleTag > TriangleMeshEntityType;
-      typedef tnlMeshEntity< TestEdgeEntityTag, tnlMeshEdgeTag > EdgeMeshEntityType;
-      typedef tnlMeshEntity< TestVertexEntityTag, tnlMeshVertexTag > VertexMeshEntityType;
+      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshTriangleTopology > TriangleMeshEntityType;
+
+      static_assert( TriangleMeshEntityType::SubentityTraits< 1 >::storageEnabled, "Testing triangular mesh does not store edges as required." );
+      static_assert( TriangleMeshEntityType::SubentityTraits< 0 >::storageEnabled, "" );
+      typedef tnlMeshEntity< TestEdgeEntityTopology, tnlMeshEdgeTopology > EdgeMeshEntityType;
+      typedef tnlMeshEntity< TestVertexEntityTopology, tnlMeshVertexTopology > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
       CPPUNIT_ASSERT( PointType::getType() == ( tnlStaticVector< 2, RealType >::getType() ) );
 
@@ -178,19 +203,19 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( vertexEntities[ 2 ].getPoint() == point2 );
 
       tnlStaticArray< 3, EdgeMeshEntityType > edgeEntities;
-      edgeEntities[ 0 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTriangleTag, tnlMeshEdgeTag, 0, 0 >::index );
-      edgeEntities[ 0 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTriangleTag, tnlMeshEdgeTag, 0, 1 >::index );
-      edgeEntities[ 1 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTriangleTag, tnlMeshEdgeTag, 1, 0 >::index );
-      edgeEntities[ 1 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTriangleTag, tnlMeshEdgeTag, 1, 1 >::index );
-      edgeEntities[ 2 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTriangleTag, tnlMeshEdgeTag, 2, 0 >::index );
-      edgeEntities[ 2 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTriangleTag, tnlMeshEdgeTag, 2, 1 >::index );
+      edgeEntities[ 0 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 0, 0 >::index );
+      edgeEntities[ 0 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 0, 1 >::index );
+      edgeEntities[ 1 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 1, 0 >::index );
+      edgeEntities[ 1 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 1, 1 >::index );
+      edgeEntities[ 2 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 2, 0 >::index );
+      edgeEntities[ 2 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 2, 1 >::index );
 
-      CPPUNIT_ASSERT( edgeEntities[ 0 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTriangleTag, tnlMeshEdgeTag, 0, 0 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 0 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTriangleTag, tnlMeshEdgeTag, 0, 1 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 1 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTriangleTag, tnlMeshEdgeTag, 1, 0 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 1 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTriangleTag, tnlMeshEdgeTag, 1, 1 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 2 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTriangleTag, tnlMeshEdgeTag, 2, 0 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 2 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTriangleTag, tnlMeshEdgeTag, 2, 1 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 0 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 0, 0 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 0 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 0, 1 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 1 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 1, 0 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 1 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 1, 1 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 2 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 2, 0 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 2 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 2, 1 >::index ) );
 
       TriangleMeshEntityType triangleEntity;
 
@@ -213,15 +238,15 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
 
    void tetrahedronMeshEntityTest()
    {
-      typedef tnlMeshConfigBase< tnlMeshTetrahedronTag, 3, RealType, IndexType, IndexType, void > TestTetrahedronEntityTag;
-      typedef tnlMeshConfigBase< tnlMeshTriangleTag, 3, RealType, IndexType, IndexType, void > TestTriangleEntityTag;
-      typedef tnlMeshConfigBase< tnlMeshEdgeTag, 3, RealType, IndexType, IndexType, void > TestEdgeEntityTag;
-      typedef tnlMeshConfigBase< tnlMeshVertexTag, 3, RealType, IndexType, IndexType, void > TestVertexEntityTag;
+      //typedef tnlMeshConfigBase< tnlMeshTetrahedronTopology, 3, RealType, IndexType, IndexType, void > TestTetrahedronEntityTopology;
+      typedef tnlMeshConfigBase< tnlMeshTriangleTopology, 3, RealType, IndexType, IndexType, void > TestTriangleEntityTopology;
+      typedef tnlMeshConfigBase< tnlMeshEdgeTopology, 3, RealType, IndexType, IndexType, void > TestEdgeEntityTopology;
+      typedef tnlMeshConfigBase< tnlMeshVertexTopology, 3, RealType, IndexType, IndexType, void > TestVertexEntityTopology;
 
-      typedef tnlMeshEntity< TestTetrahedronEntityTag, tnlMeshTetrahedronTag > TetrahedronMeshEntityType;
-      typedef tnlMeshEntity< TestTriangleEntityTag, tnlMeshTriangleTag > TriangleMeshEntityType;
-      typedef tnlMeshEntity< TestEdgeEntityTag, tnlMeshEdgeTag > EdgeMeshEntityType;
-      typedef tnlMeshEntity< TestVertexEntityTag, tnlMeshVertexTag > VertexMeshEntityType;
+      typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshTetrahedronTopology > TetrahedronMeshEntityType;
+      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshTriangleTopology > TriangleMeshEntityType;
+      typedef tnlMeshEntity< TestEdgeEntityTopology, tnlMeshEdgeTopology > EdgeMeshEntityType;
+      typedef tnlMeshEntity< TestVertexEntityTopology, tnlMeshVertexTopology > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
       CPPUNIT_ASSERT( PointType::getType() == ( tnlStaticVector< 3, RealType >::getType() ) );
 
@@ -234,7 +259,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
                 point2( 0.0, 1.0, 0.0 ),
                 point3( 0.0, 0.0, 1.0 );
       
-      tnlStaticArray< tnlSubentities< tnlMeshTetrahedronTag, 0 >::count,
+      tnlStaticArray< tnlMeshSubtopology< tnlMeshTetrahedronTopology, 0 >::count,
                       VertexMeshEntityType > vertexEntities;
 
       vertexEntities[ 0 ].setPoint( point0 );
@@ -247,58 +272,58 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( vertexEntities[ 2 ].getPoint() == point2 );
       CPPUNIT_ASSERT( vertexEntities[ 3 ].getPoint() == point3 );
 
-      tnlStaticArray< tnlSubentities< tnlMeshTetrahedronTag, 1 >::count,
+      tnlStaticArray< tnlMeshSubtopology< tnlMeshTetrahedronTopology, 1 >::count,
                       EdgeMeshEntityType > edgeEntities;
-      edgeEntities[ 0 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 0, 0 >::index );
-      edgeEntities[ 0 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 0, 1 >::index );
-      edgeEntities[ 1 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 1, 0 >::index );
-      edgeEntities[ 1 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 1, 1 >::index );
-      edgeEntities[ 2 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 2, 0 >::index );
-      edgeEntities[ 2 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 2, 1 >::index );
-      edgeEntities[ 3 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 3, 0 >::index );
-      edgeEntities[ 3 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 3, 1 >::index );
-      edgeEntities[ 4 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 4, 0 >::index );
-      edgeEntities[ 4 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 4, 1 >::index );
-      edgeEntities[ 5 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 5, 0 >::index );
-      edgeEntities[ 5 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 5, 1 >::index );
+      edgeEntities[ 0 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 0, 0 >::index );
+      edgeEntities[ 0 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 0, 1 >::index );
+      edgeEntities[ 1 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 1, 0 >::index );
+      edgeEntities[ 1 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 1, 1 >::index );
+      edgeEntities[ 2 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 2, 0 >::index );
+      edgeEntities[ 2 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 2, 1 >::index );
+      edgeEntities[ 3 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 3, 0 >::index );
+      edgeEntities[ 3 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 3, 1 >::index );
+      edgeEntities[ 4 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 4, 0 >::index );
+      edgeEntities[ 4 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 4, 1 >::index );
+      edgeEntities[ 5 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 5, 0 >::index );
+      edgeEntities[ 5 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 5, 1 >::index );
 
-      CPPUNIT_ASSERT( edgeEntities[ 0 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 0, 0 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 0 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 0, 1 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 1 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 1, 0 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 1 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 1, 1 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 2 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 2, 0 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 2 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 2, 1 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 3 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 3, 0 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 3 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 3, 1 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 4 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 4, 0 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 4 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 4, 1 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 5 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 5, 0 >::index ) );
-      CPPUNIT_ASSERT( edgeEntities[ 5 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshEdgeTag, 5, 1 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 0 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 0, 0 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 0 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 0, 1 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 1 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 1, 0 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 1 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 1, 1 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 2 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 2, 0 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 2 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 2, 1 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 3 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 3, 0 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 3 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 3, 1 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 4 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 4, 0 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 4 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 4, 1 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 5 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 5, 0 >::index ) );
+      CPPUNIT_ASSERT( edgeEntities[ 5 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 5, 1 >::index ) );
 
-      tnlStaticArray< tnlSubentities< tnlMeshTetrahedronTag, 2 >::count,
+      tnlStaticArray< tnlMeshSubtopology< tnlMeshTetrahedronTopology, 2 >::count,
                       TriangleMeshEntityType > triangleEntities;
-      triangleEntities[ 0 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 0, 0 >::index );
-      triangleEntities[ 0 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 0, 1 >::index );
-      triangleEntities[ 0 ].setVertexIndex( 2, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 0, 2 >::index );
-      triangleEntities[ 1 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 1, 0 >::index );
-      triangleEntities[ 1 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 1, 1 >::index );
-      triangleEntities[ 1 ].setVertexIndex( 2, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 1, 2 >::index );
-      triangleEntities[ 2 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 2, 0 >::index );
-      triangleEntities[ 2 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 2, 1 >::index );
-      triangleEntities[ 2 ].setVertexIndex( 2, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 2, 2 >::index );
-      triangleEntities[ 3 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 3, 0 >::index );
-      triangleEntities[ 3 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 3, 1 >::index );
-      triangleEntities[ 3 ].setVertexIndex( 2, tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 3, 2 >::index );
+      triangleEntities[ 0 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 0, 0 >::index );
+      triangleEntities[ 0 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 0, 1 >::index );
+      triangleEntities[ 0 ].setVertexIndex( 2, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 0, 2 >::index );
+      triangleEntities[ 1 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 1, 0 >::index );
+      triangleEntities[ 1 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 1, 1 >::index );
+      triangleEntities[ 1 ].setVertexIndex( 2, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 1, 2 >::index );
+      triangleEntities[ 2 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 2, 0 >::index );
+      triangleEntities[ 2 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 2, 1 >::index );
+      triangleEntities[ 2 ].setVertexIndex( 2, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 2, 2 >::index );
+      triangleEntities[ 3 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 3, 0 >::index );
+      triangleEntities[ 3 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 3, 1 >::index );
+      triangleEntities[ 3 ].setVertexIndex( 2, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 3, 2 >::index );
 
-      CPPUNIT_ASSERT( triangleEntities[ 0 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 0, 0 >::index ) );
-      CPPUNIT_ASSERT( triangleEntities[ 0 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 0, 1 >::index ) );
-      CPPUNIT_ASSERT( triangleEntities[ 0 ].getVertexIndex( 2 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 0, 2 >::index ) );
-      CPPUNIT_ASSERT( triangleEntities[ 1 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 1, 0 >::index ) );
-      CPPUNIT_ASSERT( triangleEntities[ 1 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 1, 1 >::index ) );
-      CPPUNIT_ASSERT( triangleEntities[ 1 ].getVertexIndex( 2 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 1, 2 >::index ) );
-      CPPUNIT_ASSERT( triangleEntities[ 2 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 2, 0 >::index ) );
-      CPPUNIT_ASSERT( triangleEntities[ 2 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 2, 1 >::index ) );
-      CPPUNIT_ASSERT( triangleEntities[ 2 ].getVertexIndex( 2 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTag, tnlMeshTriangleTag, 2, 2 >::index ) );
+      CPPUNIT_ASSERT( triangleEntities[ 0 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 0, 0 >::index ) );
+      CPPUNIT_ASSERT( triangleEntities[ 0 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 0, 1 >::index ) );
+      CPPUNIT_ASSERT( triangleEntities[ 0 ].getVertexIndex( 2 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 0, 2 >::index ) );
+      CPPUNIT_ASSERT( triangleEntities[ 1 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 1, 0 >::index ) );
+      CPPUNIT_ASSERT( triangleEntities[ 1 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 1, 1 >::index ) );
+      CPPUNIT_ASSERT( triangleEntities[ 1 ].getVertexIndex( 2 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 1, 2 >::index ) );
+      CPPUNIT_ASSERT( triangleEntities[ 2 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 2, 0 >::index ) );
+      CPPUNIT_ASSERT( triangleEntities[ 2 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 2, 1 >::index ) );
+      CPPUNIT_ASSERT( triangleEntities[ 2 ].getVertexIndex( 2 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 2, 2 >::index ) );
 
       TetrahedronMeshEntityType tetrahedronEntity;
       tetrahedronEntity.setVertexIndex( 0, 0 );
@@ -339,9 +364,9 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
    void twoTrianglesTest()
    {
 
-       typedef tnlMeshEntity< TestTriangleEntityTag, tnlMeshTriangleTag > TriangleMeshEntityType;
-       typedef tnlMeshEntity< TestTriangleEntityTag, tnlMeshEdgeTag > EdgeMeshEntityType;
-       typedef tnlMeshEntity< TestTriangleEntityTag, tnlMeshVertexTag > VertexMeshEntityType;
+       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshTriangleTopology > TriangleMeshEntityType;
+       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshEdgeTopology > EdgeMeshEntityType;
+       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshVertexTopology > VertexMeshEntityType;
        typedef typename VertexMeshEntityType::PointType PointType;
        CPPUNIT_ASSERT( PointType::getType() == ( tnlStaticVector< 2, RealType >::getType() ) );
 
@@ -431,7 +456,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
        CPPUNIT_ASSERT( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 1 ) == 3 );
        CPPUNIT_ASSERT( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 2 ) == 4 );
          
-       vertexEntities[ 0 ].template setNumberOfSuperentities< 1 >( 2 );
+       /*vertexEntities[ 0 ].template setNumberOfSuperentities< 1 >( 2 );
        vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 0, 2 );
        vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 1, 1 );
 
@@ -442,7 +467,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
 
        vertexEntities[ 1 ].template setNumberOfSuperentities< 2 >( 2 );
        vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 0, 0 );
-       vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 1, 1 );
+       vertexEntities[ 1 ].template setSuperentityIndex< 2 >( 1, 1 );*/
 
        CPPUNIT_ASSERT( vertexEntities[ 0 ].template getNumberOfSuperentities< 1 >() == 2 );
        CPPUNIT_ASSERT( vertexEntities[ 0 ].template getSuperentityIndex< 1 >( 0 ) == 2 );
@@ -457,12 +482,12 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
        CPPUNIT_ASSERT( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 0 ) == 0 );
        CPPUNIT_ASSERT( vertexEntities[ 1 ].template getSuperentityIndex< 2 >( 1 ) == 1 );
 
-       edgeEntities[ 0 ].template setNumberOfSuperentities< 2 >( 2 );
+       /*edgeEntities[ 0 ].template setNumberOfSuperentities< 2 >( 2 );
        edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 0, 0 );
-       edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 1, 1 );
+       edgeEntities[ 0 ].template setSuperentityIndex< 2 >( 1, 1 );*/
 
-       CPPUNIT_ASSERT( edgeEntities[ 0 ].template getNumberOfSuperentities< 2 >() == 2  );
-       CPPUNIT_ASSERT( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 0 ) == 0 );
+       /*CPPUNIT_ASSERT( edgeEntities[ 0 ].template getNumberOfSuperentities< 2 >() == 2  );
+       CPPUNIT_ASSERT( edgeEntities[ 0 ].template getSuperentityIndex< 2 >( 0 ) == 0 );*/
     };
 
 };

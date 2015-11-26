@@ -24,10 +24,10 @@
 template< typename MeshType >
 class tnlMeshIntegrityChecker
 : public tnlMeshIntegrityCheckerLayer< MeshType,
-                                       tnlDimensionsTraits< MeshType::Config::CellTag::dimensions > >
+                                       tnlDimensionsTag< MeshType::Config::CellType::dimensions > >
 {
-      typedef tnlDimensionsTraits< MeshType::Config::CellTag::dimensions > DimensionsTraits;
-      typedef tnlMeshIntegrityCheckerLayer< MeshType, DimensionsTraits > BaseType;
+      typedef tnlDimensionsTag< MeshType::Config::CellType::dimensions > DimensionsTag;
+      typedef tnlMeshIntegrityCheckerLayer< MeshType, DimensionsTag > BaseType;
 
    public:
       static bool checkMesh( const MeshType& mesh )
