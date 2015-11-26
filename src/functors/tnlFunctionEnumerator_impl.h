@@ -18,9 +18,9 @@
 #define SRC_FUNCTIONS_TNLFUNCTIONENUMERATOR_IMPL_H_
 
 #include <functors/tnlFunctionEnumerator.h>
-#include <mesh/tnlTraverser_Grid1D.h>
-#include <mesh/tnlTraverser_Grid2D.h>
-#include <mesh/tnlTraverser_Grid3D.h>
+#include <mesh/grids/tnlTraverser_Grid1D.h>
+#include <mesh/grids/tnlTraverser_Grid2D.h>
+#include <mesh/grids/tnlTraverser_Grid3D.h>
 
 template< typename Mesh,
           typename Function,
