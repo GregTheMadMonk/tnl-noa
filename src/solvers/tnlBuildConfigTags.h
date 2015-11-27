@@ -92,6 +92,7 @@ class  tnlSemiImplicitSORSolverTag{};
 class  tnlSemiImplicitCGSolverTag{};
 class  tnlSemiImplicitBICGStabSolverTag{};
 class  tnlSemiImplicitGMRESSolverTag{};
+class  tnlSemiImplicitTFQMRSolverTag{};
 
 template< typename MeshConfig, typename SemiImplicitSolver > struct tnlMeshConfigSemiImplicitSolver{ enum { enabled = true }; };
 

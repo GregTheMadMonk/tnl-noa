@@ -114,6 +114,8 @@ bool tnlSolverConfig< MeshConfig, ProblemConfig >::configSetup( tnlConfigDescrip
          config.addEntryEnum( "bicgstab" );
       if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitGMRESSolverTag >::enabled )
          config.addEntryEnum( "gmres" );
+      if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitTFQMRSolverTag >::enabled )
+         config.addEntryEnum( "tfqmr" );
       if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitSORSolverTag >::enabled )
          config.addEntryEnum( "sor" );
    }
@@ -143,6 +145,8 @@ bool tnlSolverConfig< MeshConfig, ProblemConfig >::configSetup( tnlConfigDescrip
          tnlBICGStabSolver< MatrixType >::configSetup( config );
       if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitGMRESSolverTag >::enabled )
          tnlGMRESSolver< MatrixType >::configSetup( config );
+      if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitTFQMRSolverTag >::enabled )
+         tnlTFQMRSolver< MatrixType >::configSetup( config );
       if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitSORSolverTag >::enabled )
          tnlSORSolver< MatrixType >::configSetup( config );
    }
