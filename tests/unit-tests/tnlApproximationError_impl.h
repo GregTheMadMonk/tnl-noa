@@ -68,7 +68,7 @@ getError( const Mesh& mesh,
    operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
 
    for( IndexType i = 0; i < entities; i++ )
-      if( mesh.isBoundaryCell( i ) )
+      if( mesh.template isBoundaryCell( mesh.template getEntity< Mesh::Cells >( i ).getCoordinates() ) )
          approximateData.setElement( i, exactData.getElement( i ) );
 
    l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );

@@ -31,7 +31,7 @@ processBoundaryEntities( const GridType& grid,
     * Boundary conditions
     */
    const int CellDimensions = GridType::Dimensions;
-   typename GridType::template GridEntity< CellDimensions > entity;
+   typename GridType::template GridEntity< CellDimensions > entity( grid );
    
    CoordinatesType& coordinates = entity.getCoordinates();
    const IndexType& xSize = grid.getDimensions().x();
@@ -78,7 +78,7 @@ processInteriorEntities( const GridType& grid,
     * Interior cells
     */
    const int CellDimensions = GridType::Dimensions;
-   typename GridType::template GridEntity< CellDimensions > entity;
+   typename GridType::template GridEntity< CellDimensions > entity( grid );
 
    CoordinatesType& coordinates = entity.getCoordinates();
 

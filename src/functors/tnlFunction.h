@@ -32,11 +32,10 @@ class tnlFunction
    public:
       
       static const int dimensions = Dimensions;
-      static const tnlFunctionType functionType = FunctionType;
-      
       static constexpr int getDimensions() { return Dimensions; }
       
-      static constexpr tnlFunctionType getFunctionType() { return functionType; }
+      //static constexpr tnlFunctionType getFunctionType() { return FunctionType; }
+      enum { functionType = FunctionType };
 };
 
 

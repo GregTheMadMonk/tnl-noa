@@ -105,23 +105,14 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    __cuda_callable__
    Vertex getEntityCenter( const GridEntity< EntityDimensions >& entity ) const;
 
+   template< typename GridEntity,
+             int NeighbourEntityDimensions = GridEntity::entityDimensions >
+   __cuda_callable__
+   tnlNeighbourGridEntityGetter< GridEntity, NeighbourEntityDimensions > 
+      getNeighbourEntities( const GridEntity& entity ) const;
    
    
-
    
-   
-
-   __cuda_callable__
-   Index getCellIndex( const CoordinatesType& cellCoordinates ) const;
-
-   __cuda_callable__
-   CoordinatesType getCellCoordinates( const Index cellIndex ) const;
-
-   __cuda_callable__
-   Index getVertexIndex( const CoordinatesType& vertexCoordinates ) const;
-
-   __cuda_callable__
-   CoordinatesType getVertexCoordinates( const Index vertexCoordinates ) const;
 
    template< int dx >
    __cuda_callable__

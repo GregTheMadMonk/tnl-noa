@@ -18,6 +18,10 @@
 #ifndef TNLGRIDENTITY_H
 #define	TNLGRIDENTITY_H
 
+template< typename GridEntity,
+          int NeighbourEntityDimensions >
+class tnlNeighbourGridEntityGetter;
+
 template< typename Grid,
           int EntityDimensions >
 class tnlGridEntity
@@ -43,10 +47,12 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       
       typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
+      typedef tnlGridEntity< GridType, entityDimensions > ThisType;
       
-      tnlGridEntity();
+      tnlGridEntity( const GridType& grid );
       
-      tnlGridEntity( const CoordinatesType& coordinates,
+      tnlGridEntity( const GridType& grid,
+                     const CoordinatesType& coordinates,
                      const EntityOrientationType& orientation,
                      const EntityBasisType& basis );
       
@@ -65,14 +71,25 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       EntityBasisType& getBasis();
       
       void setBasis( const EntityBasisType& basis );
+      
+      template< int NeighbourEntityDimensions = entityDimensions >
+      tnlNeighbourGridEntityGetter<
+         tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
+                        EntityDimensions >,
+         NeighbourEntityDimensions >
+      getNeighbourEntities() const;
 
    protected:
+      
+      const GridType& grid;
       
       CoordinatesType coordinates;
       
       EntityOrientationType orientation;
       
       EntityBasisType basis;
+      
+      tnlGridEntity();
 };
 
 /****
@@ -96,10 +113,12 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
       
       typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
+      typedef tnlGridEntity< GridType, entityDimensions > ThisType;
 
-      tnlGridEntity();
+      tnlGridEntity( const GridType& grid );
       
-      tnlGridEntity( const CoordinatesType& coordinates,
+      tnlGridEntity( const GridType& grid,
+                     const CoordinatesType& coordinates,
                      const EntityOrientationType& orientation = EntityOrientationType( 0 ),
                      const EntityBasisType& basis = EntityBasisType( 1 ) );
       
@@ -112,13 +131,25 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
       const EntityOrientationType getOrientation() const;     
       
       const EntityBasisType getBasis() const;
+      
+      template< int NeighbourEntityDimensions = Dimensions >
+      tnlNeighbourGridEntityGetter<
+         tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >,
+         NeighbourEntityDimensions >
+      getNeighbourEntities() const;
+
             
    protected:
+      
+      const GridType& grid;
       
       CoordinatesType coordinates;
       
       EntityOrientationType orientation;
+      
       EntityBasisType basis;
+      
+      tnlGridEntity();
 };
 
 /****
@@ -133,7 +164,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
 {
    public:
       
-      typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
+      typedef tnlGrid< Dimensions, Real, Device, Index > GridType;      
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       
@@ -143,10 +174,12 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       
       typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
+      typedef tnlGridEntity< GridType, entityDimensions > ThisType;
 
-      tnlGridEntity();
+      tnlGridEntity( const GridType& grid );
       
-      tnlGridEntity( const CoordinatesType& coordinates,
+      tnlGridEntity( const GridType& grid,
+                     const CoordinatesType& coordinates,
                      const EntityOrientationType& orientation,
                      const EntityBasisType& basis );
       
@@ -159,14 +192,21 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       const EntityOrientationType getOrientation() const;     
       
       const EntityBasisType getBasis() const;
+      
+      template< int NeighbourEntityDimensions = entityDimensions >
+      tnlNeighbourGridEntityGetter< ThisType, NeighbourEntityDimensions > getNeighbourEntities() const;
             
    protected:
+      
+      const GridType& grid;
       
       CoordinatesType coordinates;
       
       EntityOrientationType orientation;
       
       EntityBasisType basis;
+      
+      tnlGridEntity();
 
 };
 

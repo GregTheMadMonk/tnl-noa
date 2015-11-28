@@ -25,13 +25,13 @@ template< typename Real,
 void
 tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, 1 >::
 processBoundaryEntities( const GridType& grid,
-                 UserData& userData ) const
+                         UserData& userData ) const
 {
    /****
     * Boundary cells
     */
    const int CellDimensions = GridType::Dimensions;
-   typename GridType::template GridEntity< CellDimensions > entity;
+   typename GridType::template GridEntity< CellDimensions > entity( grid );
 
    CoordinatesType& coordinates = entity.getCoordinates();
    const IndexType& xSize = grid.getDimensions().x();
@@ -54,14 +54,14 @@ processInteriorEntities( const GridType& grid,
     * Interior cells
     */
    const int CellDimensions = GridType::Dimensions;
-   typename GridType::template GridEntity< CellDimensions > entity;
+   typename GridType::template GridEntity< CellDimensions > cell( grid );
 
-   CoordinatesType& coordinates = entity.getCoordinates();
    const IndexType& xSize = grid.getDimensions().x();
-   for( coordinates.x() = 1; coordinates.x() < xSize-1; coordinates.x() ++ )
+   for( cell.getCoordinates().x() = 1;
+        cell.getCoordinates().x() < xSize - 1;
+        cell.getCoordinates().x()++ )
    {
-      const IndexType index = grid.getCellIndex( coordinates );
-      EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+      EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( cell ), cell );
    }
 }
 
@@ -78,7 +78,7 @@ processBoundaryEntities( const GridType& grid,
     * Boundary vertices
     */
    const int VerticesDimensions = 0;
-   typename GridType::template GridEntity< VerticesDimensions > entity;
+   typename GridType::template GridEntity< VerticesDimensions > entity( grid );
    
    CoordinatesType& coordinates = entity.getCoordinates();
    const IndexType& xSize = grid.getDimensions().x();
@@ -101,7 +101,7 @@ processInteriorEntities( const GridType& grid,
     * Interior vertices
     */
    const int VerticesDimensions = 0;
-   typename GridType::template GridEntity< VerticesDimensions > entity;
+   typename GridType::template GridEntity< VerticesDimensions > entity( grid );
    
    CoordinatesType& coordinates = entity.getCoordinates();
    const IndexType& xSize = grid.getDimensions().x();
@@ -129,7 +129,7 @@ __global__ void tnlTraverserGrid1DCells( const tnlGrid< 1, Real, tnlCuda, Index 
                                          Index gridXIdx )
 {
    const int CellDimensions = GridType::Dimensions;
-   typename GridType::template GridEntity< CellDimensions > entity;
+   typename GridType::template GridEntity< CellDimensions > entity( grid );
    CoordinatesType& coordinates = entity.getCoordinates();
 
 

@@ -228,61 +228,21 @@ Vertex tnlGrid< 1, Real, Device, Index > :: getEntityCenter( const GridEntity< E
    return Vertex( this->origin.x() + ( entity.getCoordinates().x() + 0.5 * entity.getBasis().x() ) * this->cellProportions.x() );
 }
 
-
-
-
-
-
-
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
-Index tnlGrid< 1, Real, Device, Index > :: getCellIndex( const CoordinatesType& cellCoordinates ) const
+   template< typename GridEntityType,
+             int NeighbourEntityDimensions >
+ __cuda_callable__
+ tnlNeighbourGridEntityGetter< GridEntityType, NeighbourEntityDimensions > 
+tnlGrid< 1, Real, Device, Index >::
+getNeighbourEntities( const GridEntityType& entity ) const
 {
-   tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
-              cerr << "cellCoordinates.x() = " << cellCoordinates.x()
-                   << " this->getDimensions().x() = " << this->getDimensions().x() );
-   return cellCoordinates.x();
+   return tnlNeighbourGridEntityGetter< GridEntityType, NeighbourEntityDimensions >( *this, entity );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__
-typename tnlGrid< 1, Real, Device, Index > :: CoordinatesType
-tnlGrid< 1, Real, Device, Index > :: getCellCoordinates( const Index cellIndex ) const
-{
-   tnlAssert( cellIndex >= 0 && cellIndex < this->template getEntitiesCount< Cells >(),
-              cerr << " cellIndex = " << cellIndex
-                   << " this->template getEntitiesCount< Cells >() = " << this->template getEntitiesCount< Cells >() );
-   return CoordinatesType( cellIndex );
-}
 
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__
-Index tnlGrid< 1, Real, Device, Index > :: getVertexIndex( const CoordinatesType& vertexCoordinates ) const
-{
-   tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
-              cerr << "vertexCoordinates.x() = " << vertexCoordinates.x()
-                   << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1 );
-   return vertexCoordinates.x();
-}
 
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__
-typename tnlGrid< 1, Real, Device, Index > :: CoordinatesType
-tnlGrid< 1, Real, Device, Index > :: getVertexCoordinates( const Index vertexIndex ) const
-{
-   tnlAssert( vertexIndex >= 0 && vertexIndex < this->getNumberOfVertices(),
-              cerr << " vertexIndex = " << vertexIndex
-                   << " this->getNumberOfVertices() = " << this->getNumberOfVertices() );
-   return CoordinatesType( vertexIndex );
-}
 
 template< typename Real,
           typename Device,
@@ -457,7 +417,7 @@ isBoundaryCell( const IndexType& cellIndex ) const
    tnlAssert( cellIndex >= 0 && cellIndex < this->template getEntitiesCount< Cells >(),
               cerr << " cellIndex = " << cellIndex
                    << " this->template getEntitiesCount< Cells >() = " << this->template getEntitiesCount< Cells >() );
-   return this->isBoundaryCell( this->getCellCoordinates( cellIndex ) );
+   return this->isBoundaryCell( this->template getEntity< Cells >( cellIndex ).getCoordinates() );
 }
 
 template< typename Real,
@@ -483,9 +443,13 @@ tnlGrid< 1, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
                                                         const GridFunction& f2 ) const
 {
    typename GridFunction::RealType maxDiff( -1.0 );
-   for( IndexType i = 0; i < getDimensions().x(); i++ )
+   
+   GridEntity< Cells > cell( *this );
+   for( cell.getCoordinates().x() = 0;
+        cell.getCoordinates().x() < getDimensions().x();
+        cell.getCoordinates().x()++ )
    {
-      IndexType c = this -> getCellIndex( i );
+      IndexType c = this -> getEntityIndex( cell );
       maxDiff = Max( maxDiff, tnlAbs( f1[ c ] - f2[ c ] ) );
    }
    return maxDiff;
@@ -502,9 +466,13 @@ tnlGrid< 1, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
 {
    typedef typename GridFunction::RealType FunctionRealType;
    FunctionRealType lpNorm( 0.0 ), cellVolume( this->cellProportions.x() );
-   for( IndexType i = 0; i < getDimensions(). x(); i++ )
+
+   GridEntity< Cells > cell( *this );
+   for( cell.getCoordinates().x() = 0;
+        cell.getCoordinates().x() < getDimensions().x();
+        cell.getCoordinates().x()++ )
    {
-      IndexType c = this->getCellIndex( i );
+      IndexType c = this->getEntityIndex( cell );
       lpNorm += pow( tnlAbs( f1[ c ] - f2[ c ] ), p );
    }
    lpNorm *= cellVolume;
@@ -601,7 +569,7 @@ bool tnlGrid< 1, Real, Device, Index > :: write( const MeshFunction& function,
    const RealType hx = getCellProportions(). x();
    if( format == "gnuplot" )
    {
-      typename ThisType::template GridEntity< Dimensions > entity;
+      typename ThisType::template GridEntity< Dimensions > entity( *this );
       CoordinatesType coordinates = entity.getCoordinates();
       for( coordinates.x() = 0;
            coordinates.x() < getDimensions(). x();

@@ -41,7 +41,7 @@ class tnlUserDefinedTimeDiscretisationSetter;
 template< typename Problem,
           typename TimeDiscretisation,
           typename MeshConfig,
-          bool enabled = tnlMeshConfigTimeDiscretisation< MeshConfig, TimeDiscretisation >::enabled >
+          bool enabled = tnlConfigTagTimeDiscretisation< MeshConfig, TimeDiscretisation >::enabled >
 class tnlSolverStarterTimeDiscretisationSetter{};
 
 template< typename Problem,

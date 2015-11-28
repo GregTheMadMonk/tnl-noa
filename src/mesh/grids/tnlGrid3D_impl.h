@@ -800,7 +800,7 @@ template< typename Real,
                                                                            const GridFunction& f2 ) const
 {
    typename GridFunction::RealType maxDiff( -1.0 );
-   GridEntity< Dimensions > cell;
+   GridEntity< Dimensions > cell( *this );
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -827,7 +827,7 @@ template< typename Real,
                                                                            const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   GridEntity< Dimensions > cell;
+   GridEntity< Dimensions > cell( *this );
 
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
@@ -932,7 +932,7 @@ bool tnlGrid< 3, Real, Device, Index > :: write( const MeshFunction& function,
    file << setprecision( 12 );
    if( format == "gnuplot" )
    {
-      GridEntity< Cells > cell;
+      GridEntity< Cells > cell( *this );
       for( cell.getCoordinates().z() = 0;
            cell.getCoordinates().z() < getDimensions().z();
            cell.getCoordinates().z()++ )

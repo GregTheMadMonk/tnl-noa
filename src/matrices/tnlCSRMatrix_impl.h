@@ -206,7 +206,6 @@ bool tnlCSRMatrix< Real, Device, Index >::addElementFast( const IndexType row,
          this->values[ elementPtr ] = value;
          return true;
       }
-   return false;
 }
 
 template< typename Real,

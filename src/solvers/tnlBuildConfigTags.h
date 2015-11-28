@@ -74,7 +74,7 @@ class tnlExplicitTimeDiscretisationTag{};
 class tnlSemiImplicitTimeDiscretisationTag{};
 class tnlImplicitTimeDiscretisationTag{};
 
-template< typename MeshConfig, typename TimeDiscretisation > struct tnlMeshConfigTimeDiscretisation{ enum { enabled = true }; };
+template< typename MeshConfig, typename TimeDiscretisation > struct tnlConfigTagTimeDiscretisation{ enum { enabled = true }; };
 
 /****
  * All explicit solvers are enabled by default

@@ -52,7 +52,8 @@ class tnlGridEntityGetter< tnlGrid< 1, Real, Device, Index >,
                    << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< entityDimensions >()
                    << " entityDimensions = " << entityDimensions );
          return GridEntity
-            ( CoordinatesType( index ),
+            ( grid,
+              CoordinatesType( index ),
               typename GridEntity::EntityOrientationType( 0 ),
               typename GridEntity::EntityBasisType( EntityDimensions ) );
       }
@@ -99,7 +100,8 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 2 >
          const CoordinatesType dimensions = grid.getDimensions();         
 
          return GridEntity
-            ( CoordinatesType( index % dimensions.x(),
+            ( grid,
+              CoordinatesType( index % dimensions.x(),
                                index / dimensions.x() ),
               typename GridEntity::EntityOrientationType( 0, 0 ),
               typename GridEntity::EntityBasisType( 1, 1 ) );
@@ -152,14 +154,16 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 1 >
          {
             const IndexType aux = dimensions.x() + 1;
             return GridEntity
-               ( CoordinatesType( index % aux, index / aux ),
+               ( grid,
+                 CoordinatesType( index % aux, index / aux ),
                  typename GridEntity::EntityOrientationType( 1, 0 ),
                  typename GridEntity::EntityBasisType( 0, 1 ) );
          }
          const IndexType i = index - grid.numberOfNxFaces;
          const IndexType& aux = dimensions.x();
          return GridEntity
-            ( CoordinatesType( i % aux, i / aux ),
+            ( grid,
+              CoordinatesType( i % aux, i / aux ),
               typename GridEntity::EntityOrientationType( 0, 1 ),
               typename GridEntity::EntityBasisType( 1, 0 ) );
       }
@@ -210,7 +214,8 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 0 >
 
          const IndexType aux = dimensions.x() + 1;
          return GridEntity
-            ( CoordinatesType( index % aux, 
+            ( grid,
+              CoordinatesType( index % aux, 
                                index / aux ),
               typename GridEntity::EntityOrientationType( 0, 0 ),
               typename GridEntity::EntityBasisType( 0, 0 ) );
@@ -260,7 +265,8 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 3 >
          const CoordinatesType dimensions = grid.getDimensions();
 
          return GridEntity
-            ( CoordinatesType( index % dimensions.x(),
+            ( grid,
+              CoordinatesType( index % dimensions.x(),
                                ( index / dimensions.x() ) % dimensions.y(),
                                index / ( dimensions.x() * dimensions.y() ) ),
               typename GridEntity::EntityOrientationType( 0, 0, 0 ),
@@ -313,7 +319,8 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 2 >
          {
             const IndexType aux = dimensions.x() + 1;
             return GridEntity
-               ( CoordinatesType( index % aux,
+               ( grid,
+                 CoordinatesType( index % aux,
                                   ( index / aux ) % dimensions.y(),
                                   index / ( aux * dimensions.y() ) ),
                  typename GridEntity::EntityOrientationType( 1, 0, 0 ),
@@ -324,7 +331,8 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 2 >
             const IndexType i = index - grid.numberOfNxFaces;
             const IndexType aux = dimensions.y() + 1;
             return GridEntity
-               ( CoordinatesType( i % dimensions.x(),
+               ( grid,
+                 CoordinatesType( i % dimensions.x(),
                                   ( i / dimensions.x() ) % aux,
                                   i / ( aux * dimensions.x() ) ),
                  typename GridEntity::EntityOrientationType( 0, 1, 0 ),
@@ -332,7 +340,8 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 2 >
          }
          const IndexType i = index - grid.numberOfNxAndNyFaces;
          return GridEntity
-            ( CoordinatesType( i % dimensions.x(),
+            ( grid,
+              CoordinatesType( i % dimensions.x(),
                                ( i / dimensions.x() ) % dimensions.y(),
                                i / ( dimensions.x() * dimensions.y() ) ),
               typename GridEntity::EntityOrientationType( 0, 0, 1 ),
@@ -399,7 +408,8 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 1 >
          {
             const IndexType aux = dimensions.y() + 1;
             return GridEntity
-               ( CoordinatesType( index % dimensions.x(),
+               ( grid,
+                 CoordinatesType( index % dimensions.x(),
                                   ( index / dimensions.x() ) % aux,
                                   index / ( dimensions.x() * aux ) ),
                  typename GridEntity::EntityOrientationType( 0, 0, 0 ),
@@ -411,7 +421,8 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 1 >
             const IndexType i = index - grid.numberOfDxEdges;
             const IndexType aux = dimensions.x() + 1;
             return GridEntity
-               ( CoordinatesType( i % aux,
+               ( grid,
+                 CoordinatesType( i % aux,
                                   ( i / aux ) % dimensions.y(),
                                   i / ( aux * dimensions.y() ) ),
                  typename GridEntity::EntityOrientationType( 0, 0, 0 ),
@@ -421,7 +432,8 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 1 >
          const IndexType aux1 = dimensions.x() + 1;
          const IndexType aux2 = dimensions.y() + 1;
          return GridEntity
-            ( CoordinatesType( i % aux1,
+            ( grid,
+              CoordinatesType( i % aux1,
                                ( i / aux1 ) % aux2,
                                i / ( aux1 * aux2 ) ),
               typename GridEntity::EntityOrientationType( 0, 0, 0 ),
@@ -484,7 +496,8 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 0 >
          const IndexType auxX = dimensions.x() + 1;
          const IndexType auxY = dimensions.y() + 1;
          return GridEntity
-            ( CoordinatesType( index % auxX,
+            ( grid,
+              CoordinatesType( index % auxX,
                                ( index / auxX ) % auxY,
                                index / ( auxX * auxY ) ),
               typename GridEntity::EntityOrientationType( 0, 0, 0 ),

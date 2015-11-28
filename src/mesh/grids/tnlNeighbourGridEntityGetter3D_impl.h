@@ -46,11 +46,16 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
+
+      tnlNeighbourGridEntityGetter( const GridType& grid,
+                                    const GridEntityType& entity )
+      : grid( grid ),
+        entity( entity )
+      {}
       
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__
-      static NeighbourGridEntityType getNeighbourEntity( const GridType& grid,
-                                                         const GridEntityType& entity )
+      NeighbourGridEntityType getEntity()
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
                     entity.getCoordinates() < grid.getDimensions(),
@@ -69,9 +74,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       
       template< int step >
       __cuda_callable__
-      static IndexType getNeighbourEntityIndex( const GridType& grid,
-                                                const GridEntityType& entity,
-                                                const IndexType entityIndex )
+      IndexType getEntityIndex( const IndexType entityIndex )
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
                     entity.getCoordinates() < grid.getDimensions(),
@@ -91,6 +94,15 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
                          << tnlGridEntityGetter< GridType, EntityDimensions >::getEntityIndex( grid, entity ) );
          return enityIndex + ( stepZ * grid.getDimensions().y() + stepY ) * grid.getDimensions().x() + stepX;
       }
+
+   protected:
+
+      const GridType& grid;
+
+      const GridEntityType& entity;
+      
+      tnlNeighbourGridEntityGetter(){};      
+      
 };
 
 /****
@@ -117,11 +129,16 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
       typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
+
+      tnlNeighbourGridEntityGetter( const GridType& grid,
+                                    const GridEntityType& entity )
+      : grid( grid ),
+        entity( entity )
+      {}
       
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__
-      static NeighbourGridEntityType getNeighbourEntity( const GridType& grid,
-                                                         const GridEntityType& entity )
+      NeighbourGridEntityType getEntity()
       {
          tnlAssert( ! stepX + ! stepY + ! stepZ == 2,
                     cerr << "Only one of the steps can be non-zero: stepX = " << stepX 
@@ -156,9 +173,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__
-      static IndexType getNeighbourEntityIndex( const GridType& grid,
-                                                const GridEntityType& entity,
-                                                const IndexType entityIndex )
+      IndexType getEntityIndex( const IndexType entityIndex )
       {
          tnlAssert( entityIndex == 
                     tnlGridEntityGetter< GridType, EntityDimensions >::getEntityIndex( grid, entity ),
@@ -166,8 +181,16 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
                          << " tnlGridEntityGetter< GridType, EntityDimensions >::getEntityIndex( grid, entity ) = " << 
                               tnlGridEntityGetter< GridType, EntityDimensions >::getEntityIndex( grid, entity ) );
          return GridEntityGetter::getEntityIndex( grid,
-            getNeighbourEntity< stepX, stepY, stepZ >( grid, entity ) );
+            getEntity< stepX, stepY, stepZ >( grid, entity ) );
       }
+      
+   protected:
+
+      const GridType& grid;
+
+      const GridEntityType& entity;
+      
+      tnlNeighbourGridEntityGetter(){};            
 };
 
 /****
@@ -194,11 +217,16 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
       typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
+
+      tnlNeighbourGridEntityGetter( const GridType& grid,
+                                    const GridEntityType& entity )
+      : grid( grid ),
+        entity( entity )
+      {}
       
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__
-      static NeighbourGridEntityType getNeighbourEntity( const GridType& grid,
-                                                         const GridEntityType& entity )
+      NeighbourGridEntityType getEntity()
       {
          tnlAssert( ! stepX + ! stepY + ! stepZ == 1,
                     cerr << "Exactly two of the steps must be non-zero: stepX = " << stepX 
@@ -232,9 +260,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__
-      static IndexType getNeighbourEntityIndex( const GridType& grid,
-                                                const GridEntityType& entity,
-                                                const IndexType entityIndex )
+      IndexType getEntityIndex( const IndexType entityIndex )
       {
          tnlAssert( entityIndex == 
                     tnlGridEntityGetter< GridType, EntityDimensions >::getEntityIndex( grid, entity ),
@@ -242,8 +268,16 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
                          << " tnlGridEntityGetter< GridType, EntityDimensions >::getEntityIndex( grid, entity ) = " << 
                               tnlGridEntityGetter< GridType, EntityDimensions >::getEntityIndex( grid, entity ) );
          return GridEntityGetter::getEntityIndex( grid,
-            getNeighbourEntity< stepX, stepY, stepZ >( grid, entity ) );
+            getEntity< stepX, stepY, stepZ >( grid, entity ) );
       }
+      
+   protected:
+
+      const GridType& grid;
+
+      const GridEntityType& entity;
+      
+      tnlNeighbourGridEntityGetter(){};            
 };
 
 
@@ -271,11 +305,16 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
       typedef typename GridEntityType::EntityOrientationType EntityOrientationType;      
+
+      tnlNeighbourGridEntityGetter( const GridType& grid,
+                                    const GridEntityType& entity )
+      : grid( grid ),
+        entity( entity )
+      {}
       
       template< int stepX, int stepY >
       __cuda_callable__
-      static NeighbourGridEntityType getNeighbourEntity( const GridType& grid,
-                                                         const GridEntityType& entity )
+      NeighbourGridEntityType getEntity()
       {
          tnlAssert( stepX != 0 && stepY != 0 && stepZ != 0,
                     cerr << " stepX = " << stepX 
@@ -308,9 +347,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__
-      static IndexType getNeighbourEntityIndex( const GridType& grid,
-                                                const GridEntityType& entity,
-                                                const IndexType entityIndex )
+      IndexType getEntityIndex( const IndexType entityIndex )
       {
          tnlAssert( entityIndex == 
                     tnlGridEntityGetter< GridType, EntityDimensions >::getEntityIndex( grid, entity ),
@@ -318,8 +355,16 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
                          << " tnlGridEntityGetter< GridType, EntityDimensions >::getEntityIndex( grid, entity ) = " << 
                               tnlGridEntityGetter< GridType, EntityDimensions >::getEntityIndex( grid, entity ) );
          return GridEntityGetter::getEntityIndex( grid,
-            getNeighbourEntity< stepX, stepY, stepZ >( grid, entity ) );
+            getEntity< stepX, stepY, stepZ >( grid, entity ) );
       }
+
+   protected:
+
+      const GridType& grid;
+
+      const GridEntityType& entity;
+      
+      tnlNeighbourGridEntityGetter(){};            
 };
 
 /****
@@ -346,11 +391,16 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
       typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
+
+      tnlNeighbourGridEntityGetter( const GridType& grid,
+                                    const GridEntityType& entity )
+      : grid( grid ),
+        entity( entity )
+      {}
       
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__
-      static NeighbourGridEntityType getNeighbourEntity( const GridType& grid,
-                                                         const GridEntityType& entity )
+      NeighbourGridEntityType getEntity()
       {
          tnlAssert( ( ( !! stepX ) == ( !! entity.getOrientation().x() ) ) &&
                     ( ( !! stepY ) == ( !! entity.getOrientation().y() ) ) &&
@@ -382,9 +432,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__
-      static IndexType getNeighbourEntityIndex( const GridType& grid,
-                                                const GridEntityType& entity,
-                                                const IndexType entityIndex )
+      IndexType getEntityIndex( const IndexType entityIndex )
       {
          tnlAssert( entityIndex == 
                     tnlGridEntityGetter< GridType, EntityDimensions >::getEntityIndex( grid, entity ),
@@ -392,8 +440,16 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
                          << " tnlGridEntityGetter< GridType, EntityDimensions >::getEntityIndex( grid, entity ) = " << 
                               tnlGridEntityGetter< GridType, EntityDimensions >::getEntityIndex( grid, entity ) );
          return GridEntityGetter::getEntityIndex( grid,
-            getNeighbourEntity< stepX, stepY, stepZ >( grid, entity ) );
+            getEntity< stepX, stepY, stepZ >( grid, entity ) );
       }
+
+   protected:
+
+      const GridType& grid;
+
+      const GridEntityType& entity;
+      
+      tnlNeighbourGridEntityGetter(){};            
 };
 
 /****
@@ -419,11 +475,16 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
+
+      tnlNeighbourGridEntityGetter( const GridType& grid,
+                                    const GridEntityType& entity )
+      : grid( grid ),
+        entity( entity )
+      {}
       
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__
-      static NeighbourGridEntityType getNeighbourEntity( const GridType& grid,
-                                                         const GridEntityType& entity )
+      NeighbourGridEntityType getEntity()
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
                     entity.getCoordinates() <= grid.getDimensions(),
@@ -443,9 +504,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       
       template< int stepZ, stepY, stepZ >
       __cuda_callable__
-      static IndexType getNeighbourEntityIndex( const GridType& grid,
-                                                const GridEntityType& entity,
-                                                const IndexType entityIndex )
+      IndexType getEntityIndex( const IndexType entityIndex )
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
                     entity.getCoordinates() <= grid.getDimensions(),
@@ -465,6 +524,15 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
                               tnlGridEntityGetter< GridType, EntityDimensions >::getEntityIndex( grid, entity ) );
          return entityIndex + stepZ * ( grid.getDimensions().y() + 1 + stepY ) * ( grid.getDimensions().x() + 1 ) + stepX;
       }
+
+   protected:
+
+      const GridType& grid;
+
+      const GridEntityType& entity;
+      
+      tnlNeighbourGridEntityGetter(){};      
+      
 };
 
 

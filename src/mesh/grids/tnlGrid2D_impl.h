@@ -778,7 +778,7 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
            << this -> getProportions(). x() << "cm , "
            << this -> getProportions(). y() << "cm );"
            << endl << endl;
-      GridEntity< 0 > vertex;
+      GridEntity< 0 > vertex( *this );
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();
       VertexType v;
       for( Index j = 0; j < this -> dimensions. y(); j ++ )
@@ -816,7 +816,7 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
       }
       file << endl;
 
-      GridEntity< 2 > cell;
+      GridEntity< 2 > cell( *this );
       CoordinatesType& cellCoordinates = cell.getCoordinates();
       const RealType cellMeasure = this->cellProportions.x() * this->cellProportions.y();
       for( Index i = 0; i < this -> dimensions. x(); i ++ )
@@ -909,7 +909,7 @@ bool tnlGrid< 2, Real, Device, Index > :: write( const MeshFunction& function,
    file << setprecision( 12 );
    if( format == "gnuplot" )
    {
-      GridEntity< 2 > cell;
+      GridEntity< 2 > cell( *this );
       CoordinatesType& cellCoordinates = cell.getCoordinates();
       for( cellCoordinates.y() = 0; cellCoordinates.y() < getDimensions(). y(); cellCoordinates.y() ++ )
       {

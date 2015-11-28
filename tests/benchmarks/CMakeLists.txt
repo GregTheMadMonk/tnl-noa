@@ -17,12 +17,18 @@ IF( BUILD_CUDA )
     TARGET_LINK_LIBRARIES( tnl-benchmark-linear-solvers${debugExt} tnl${debugExt}-${tnlVersion} ${CUSPARSE_LIBRARY} )                        
 ELSE()
     ADD_EXECUTABLE( tnl-benchmark-spmv${debugExt} tnl-benchmark-spmv.cpp )
-    ADD_EXECUTABLE( tnl-benchmark-linear-solvers${debugExt} tnl-benchmark-linear-solvers.cpp )
     SET_TARGET_PROPERTIES( tnl-benchmark-spmv${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
-    SET_TARGET_PROPERTIES( tnl-benchmark-linear-solvers${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
     TARGET_LINK_LIBRARIES( tnl-benchmark-spmv${debugExt} tnl${debugExt}-${tnlVersion} )
+
+    ADD_EXECUTABLE( tnl-benchmark-linear-solvers${debugExt} tnl-benchmark-linear-solvers.cpp )    
+    SET_TARGET_PROPERTIES( tnl-benchmark-linear-solvers${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )    
     TARGET_LINK_LIBRARIES( tnl-benchmark-linear-solvers${debugExt} tnl${debugExt}-${tnlVersion} )
 ENDIF()
+
+ADD_EXECUTABLE( tnl-benchmark-simple-heat-equation${debugExt} tnl-benchmark-simple-heat-equation.cpp )    
+SET_TARGET_PROPERTIES( tnl-benchmark-simple-heat-equation${debugExt} PROPERTIES COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )    
+TARGET_LINK_LIBRARIES( tnl-benchmark-simple-heat-equation${debugExt} tnl${debugExt}-${tnlVersion} )
+
 
 if( BUILD_CUDA )                                                              
    INSTALL( TARGETS tnl-cuda-benchmarks${debugExt}
@@ -31,6 +37,7 @@ endif()
 
 INSTALL( TARGETS tnl-benchmark-spmv${debugExt}
                  tnl-benchmark-linear-solvers${debugExt}
+                 tnl-benchmark-simple-heat-equation${debugExt}
          RUNTIME DESTINATION bin )
 
 

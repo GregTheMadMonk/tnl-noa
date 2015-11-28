@@ -66,7 +66,7 @@ class tnlGridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCas
       const IndexType ySize( 17 );
       GridType grid;
       grid.setDimensions( xSize, ySize );
-      typename GridType::template GridEntity< GridType::Dimensions > cell;
+      typename GridType::template GridEntity< GridType::Dimensions > cell( grid );
       for( cell.getCoordinates().y() = 0;
            cell.getCoordinates().y() < ySize;
            cell.getCoordinates().y()++ )
@@ -91,7 +91,7 @@ class tnlGridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCas
       typedef typename GridType::template GridEntity< 1 > FaceType;
       typedef typename FaceType::EntityOrientationType OrientationType;
       typedef typename FaceType::EntityBasisType BasisType;
-      FaceType face;
+      FaceType face( grid );
       
       face.setOrientation( OrientationType( 1, 0 ) );
       for( face.getCoordinates().y() = 0;
@@ -137,7 +137,7 @@ class tnlGridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCas
       
       typedef typename GridType::template GridEntity< 0 > VertexType;
       typedef typename VertexType::EntityBasisType BasisType;
-      VertexType vertex;
+      VertexType vertex( grid );
       
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();      
       grid.setDimensions( xSize, ySize );

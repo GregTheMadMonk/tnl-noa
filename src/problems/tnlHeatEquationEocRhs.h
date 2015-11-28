@@ -37,6 +37,9 @@ class tnlHeatEquationEocRhs : public tnlFunction< TestFunction::Dimensions,
       typedef TestFunction TestFunctionType;
       typedef typename TestFunction::RealType RealType;
       typedef typename TestFunction::VertexType VertexType;
+
+      //static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }     
+      enum { functionType = tnlAnalyticFunction };
       
       bool setup( const tnlParameterContainer& parameters,
                   const tnlString& prefix = "" )

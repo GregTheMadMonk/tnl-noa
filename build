@@ -39,8 +39,7 @@ do
                                          INSTANTIATE_INT="yes"
                                          INSTANTIATE_LONG_DOUBLE="no"
                                          INSTANTIATE_DOUBLE="yes"
-                                         INSTANTIATE_FLOAT="no"
-                                         WITH_CUDA_ARCH="auto" ;;
+                                         INSTANTIATE_FLOAT="no";;
         --with-cmake=*                 ) CMAKE="${option#*=}" ;;
         --build-jobs=*                 ) BUILD_JOBS="${option#*=}" ;;
         --cmake-only=*                 ) CMAKE_ONLY="${option#*=}" ;;
