@@ -43,7 +43,7 @@ class tnlGridEntityGetter< tnlGrid< 1, Real, Device, Index >,
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {         
@@ -58,7 +58,7 @@ class tnlGridEntityGetter< tnlGrid< 1, Real, Device, Index >,
               typename GridEntity::EntityBasisType( EntityDimensions ) );
       }
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
@@ -88,7 +88,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 2 >
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
@@ -107,7 +107,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 2 >
               typename GridEntity::EntityBasisType( 1, 1 ) );
       }
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
@@ -116,10 +116,10 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 2 >
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " grid.getDimensions() = " << grid.getDimensions() );
 
-         const CoordinatesType coordinates = entity.getCoordinates();
-         const CoordinatesType dimensions = grid.getDimensions();
+         //const CoordinatesType coordinates = entity.getCoordinates();
+         //const CoordinatesType dimensions = grid.getDimensions();
          
-         return coordinates.y() * grid.getDimensions().x() + coordinates.x();
+         return entity.getCoordinates().y() * grid.getDimensions().x() + entity.getCoordinates().x();
       }
       
       
@@ -139,7 +139,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 1 >
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
@@ -168,7 +168,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 1 >
               typename GridEntity::EntityBasisType( 1, 0 ) );
       }
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
@@ -201,7 +201,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 0 >
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
@@ -221,7 +221,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 0 >
               typename GridEntity::EntityBasisType( 0, 0 ) );
       }
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
@@ -253,7 +253,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 3 >
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
@@ -273,7 +273,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 3 >
               typename GridEntity::EntityBasisType( 1, 1, 1 ) );
       }
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
@@ -304,7 +304,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 2 >
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
@@ -348,7 +348,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 2 >
               typename GridEntity::EntityBasisType( 1, 1, 0 ) );
       }
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
@@ -393,7 +393,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 1 >
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
@@ -440,7 +440,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 1 >
               typename GridEntity::EntityBasisType( 0, 0, 1 ) );
       }
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
@@ -482,7 +482,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 0 >
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
@@ -504,7 +504,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 0 >
               typename GridEntity::EntityBasisType( 0, 0, 0 ) );
       }
       
-      __cuda_callable__
+      __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {

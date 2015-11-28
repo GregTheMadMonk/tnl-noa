@@ -51,6 +51,7 @@ class tnlFunctionAdapter< Mesh, Function, tnlAnalyticFunction >
       typedef typename FunctionType::VertexType VertexType;
       
       template< int EntityDimensions >
+      __cuda_callable__ inline
       static RealType getValue( const MeshType& mesh,
                                 const FunctionType& function,
                                 const IndexType meshEntityIndex,
@@ -79,6 +80,7 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, 
       typedef typename MeshType::CoordinatesType CoordinatesType;
       
       template< typename EntityType >
+      __cuda_callable__ inline
       static RealType getValue( const MeshType& mesh,
                                 const FunctionType& function,
                                 const IndexType meshEntytiIndex,
@@ -86,8 +88,40 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, 
                                 const RealType& time )
       {
          return function.getValue( mesh.getEntityCenter( entity ), time );
+         //return 0.0;
       }
 };
+
+/***
+ * Specialization for constant functions and grids.
+ */
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename Function >
+class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, tnlAnalyticConstantFunction >
+{
+   public:
+     
+      typedef Function FunctionType; 
+      typedef tnlGrid< Dimensions, Real, Device, Index > MeshType;
+      typedef typename FunctionType::RealType RealType;
+      typedef typename MeshType::IndexType IndexType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
+      
+      template< typename EntityType >
+      __cuda_callable__ inline
+      static RealType getValue( const MeshType& mesh,
+                                const FunctionType& function,
+                                const IndexType meshEntytiIndex,
+                                const EntityType& entity,
+                                const RealType& time )
+      {
+         return function.getValue( time );
+      }
+};
+
 
 #endif	/* TNLFUNCTIONADAPTER_H */
 

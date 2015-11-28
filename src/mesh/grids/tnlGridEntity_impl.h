@@ -27,6 +27,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           int EntityDimensions >
+__cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 tnlGridEntity()
 {
@@ -37,6 +38,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           int EntityDimensions >
+__cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 tnlGridEntity( const tnlGrid< Dimensions, Real, Device, Index >& grid )
 : grid( grid ),
@@ -51,6 +53,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           int EntityDimensions >
+__cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 tnlGridEntity( const tnlGrid< Dimensions, Real, Device, Index >& grid,
                const CoordinatesType& coordinates,
@@ -68,6 +71,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           int EntityDimensions >
+__cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::CoordinatesType& 
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 getCoordinates() const
@@ -80,6 +84,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           int EntityDimensions >
+__cuda_callable__ inline
 typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::CoordinatesType& 
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 getCoordinates()
@@ -92,6 +97,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           int EntityDimensions >
+__cuda_callable__ inline
 void
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 setCoordinates( const CoordinatesType& coordinates )
@@ -104,6 +110,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           int EntityDimensions >
+__cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::EntityOrientationType& 
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 getOrientation() const
@@ -116,6 +123,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           int EntityDimensions >
+__cuda_callable__ inline
 void 
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 setOrientation( const EntityOrientationType& orientation )
@@ -129,6 +137,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           int EntityDimensions >
+__cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::EntityBasisType& 
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 getBasis() const
@@ -141,6 +150,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           int EntityDimensions >
+__cuda_callable__ inline
 void 
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 setBasis( const EntityBasisType& basis )
@@ -155,6 +165,7 @@ template< int Dimensions,
           typename Index,
           int EntityDimensions >
    template< int NeighbourEntityDimensions >
+__cuda_callable__ inline
 tnlNeighbourGridEntityGetter< 
    tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >, 
    NeighbourEntityDimensions >
@@ -173,6 +184,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
 tnlGridEntity()
 {
@@ -182,6 +194,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
 tnlGridEntity( const GridType& grid )
 : grid( grid )
@@ -195,6 +208,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
 tnlGridEntity( const GridType& grid,
                const CoordinatesType& coordinates,
@@ -211,6 +225,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::CoordinatesType& 
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
 getCoordinates() const
@@ -222,6 +237,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::CoordinatesType& 
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
 getCoordinates()
@@ -233,6 +249,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 void
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
 setCoordinates( const CoordinatesType& coordinates )
@@ -244,6 +261,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::EntityOrientationType 
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
 getOrientation() const
@@ -255,6 +273,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::EntityBasisType 
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
 getBasis() const
@@ -267,6 +286,7 @@ template< int Dimensions,
           typename Device,
           typename Index >
    template< int NeighbourEntityDimensions >
+__cuda_callable__ inline
 tnlNeighbourGridEntityGetter< 
    tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >, 
    NeighbourEntityDimensions >
@@ -283,6 +303,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
 tnlGridEntity()
 {
@@ -292,6 +313,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
 tnlGridEntity( const GridType& grid )
  : grid( grid ),
@@ -305,6 +327,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
 tnlGridEntity( const GridType& grid,
                const CoordinatesType& coordinates,
@@ -319,6 +342,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::CoordinatesType& 
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
 getCoordinates() const
@@ -330,6 +354,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::CoordinatesType& 
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
 getCoordinates()
@@ -341,6 +366,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 void
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
 setCoordinates( const CoordinatesType& coordinates )
@@ -352,6 +378,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::EntityOrientationType
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
 getOrientation() const
@@ -363,6 +390,7 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
+__cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::EntityBasisType
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
 getBasis() const
@@ -375,6 +403,7 @@ template< int Dimensions,
           typename Device,
           typename Index >
    template< int NeighbourEntityDimensions >
+__cuda_callable__ inline
 tnlNeighbourGridEntityGetter< 
    tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >, 
    NeighbourEntityDimensions >
@@ -383,7 +412,6 @@ getNeighbourEntities() const
 {
    return tnlNeighbourGridEntityGetter< ThisType, Dimensions >( this->grid, *this );
 }
-
 
 #endif	/* TNLGRIDENTITY_IMPL_H */
 

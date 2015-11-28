@@ -112,7 +112,7 @@ void tnlGrid< 1, Real, Device, Index > :: setDimensions( const CoordinatesType& 
 template< typename Real,
           typename Device,
           typename Index  >
-__cuda_callable__
+__cuda_callable__ inline
 const typename tnlGrid< 1, Real, Device, Index >::CoordinatesType&
    tnlGrid< 1, Real, Device, Index > :: getDimensions() const
 {
@@ -133,7 +133,7 @@ void tnlGrid< 1, Real, Device, Index > :: setDomain( const VertexType& origin,
 template< typename Real,
           typename Device,
           typename Index  >
-__cuda_callable__
+__cuda_callable__ inline
 const typename tnlGrid< 1, Real, Device, Index > :: VertexType& 
   tnlGrid< 1, Real, Device, Index > :: getOrigin() const
 {
@@ -143,7 +143,7 @@ const typename tnlGrid< 1, Real, Device, Index > :: VertexType&
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
+__cuda_callable__ inline
 const typename tnlGrid< 1, Real, Device, Index > :: VertexType& 
    tnlGrid< 1, Real, Device, Index > :: getProportions() const
 {
@@ -153,7 +153,7 @@ const typename tnlGrid< 1, Real, Device, Index > :: VertexType&
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
+__cuda_callable__ inline
 const typename tnlGrid< 1, Real, Device, Index > :: VertexType& 
    tnlGrid< 1, Real, Device, Index > :: getCellProportions() const
 {
@@ -164,6 +164,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< int EntityDimensions >
+__cuda_callable__  inline
 Index
 tnlGrid< 1, Real, Device, Index >:: 
 getEntitiesCount() const
@@ -184,7 +185,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< int EntityDimensions >
- __cuda_callable__
+ __cuda_callable__ inline
 typename tnlGrid< 1, Real, Device, Index >::template GridEntity< EntityDimensions >
 tnlGrid< 1, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
@@ -199,7 +200,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< int EntityDimensions >
-__cuda_callable__
+__cuda_callable__ inline
 Index
 tnlGrid< 1, Real, Device, Index >::
 getEntityIndex( const GridEntity< EntityDimensions >& entity ) const
@@ -215,7 +216,7 @@ template< typename Real,
           typename Index >
    template< int EntityDimensions,
              typename Vertex >
-__cuda_callable__
+__cuda_callable__ inline
 Vertex tnlGrid< 1, Real, Device, Index > :: getEntityCenter( const GridEntity< EntityDimensions >& entity ) const
 {
    static_assert( EntityDimensions <= 1 &&
@@ -233,7 +234,7 @@ template< typename Real,
           typename Index >
    template< typename GridEntityType,
              int NeighbourEntityDimensions >
- __cuda_callable__
+ __cuda_callable__ inline
  tnlNeighbourGridEntityGetter< GridEntityType, NeighbourEntityDimensions > 
 tnlGrid< 1, Real, Device, Index >::
 getNeighbourEntities( const GridEntityType& entity ) const
@@ -248,7 +249,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< int dx >
-__cuda_callable__
+__cuda_callable__ inline
 Index tnlGrid< 1, Real, Device, Index > :: getCellNextToCell( const IndexType& cellIndex ) const
 {
    tnlAssert( cellIndex + dx >= 0 &&
@@ -262,7 +263,7 @@ Index tnlGrid< 1, Real, Device, Index > :: getCellNextToCell( const IndexType& c
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
+__cuda_callable__ inline
 const Real& tnlGrid< 1, Real, Device, Index > :: getHx() const
 {
    return this->hx;
@@ -271,7 +272,7 @@ const Real& tnlGrid< 1, Real, Device, Index > :: getHx() const
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
+__cuda_callable__ inline
 const Real& tnlGrid< 1, Real, Device, Index > :: getHxSquare() const
 {
    return this->hxSquare;
@@ -280,7 +281,7 @@ const Real& tnlGrid< 1, Real, Device, Index > :: getHxSquare() const
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
+__cuda_callable__ inline
 const Real& tnlGrid< 1, Real, Device, Index > :: getHxInverse() const
 {
    return this->hxInverse;
@@ -289,7 +290,7 @@ const Real& tnlGrid< 1, Real, Device, Index > :: getHxInverse() const
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
+__cuda_callable__ inline
 const Real& tnlGrid< 1, Real, Device, Index > :: getHxSquareInverse() const
 {
    return this->hxSquareInverse;
@@ -298,7 +299,7 @@ const Real& tnlGrid< 1, Real, Device, Index > :: getHxSquareInverse() const
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
+__cuda_callable__ inline
 Real tnlGrid< 1, Real, Device, Index > :: getSmallestSpaceStep() const
 {
    return this->hx;
@@ -386,7 +387,7 @@ Vertex tnlGrid< 1, Real, Device, Index >::getVertex( const CoordinatesType& vert
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
+__cuda_callable__ inline
 Index tnlGrid< 1, Real, Device, Index > :: getNumberOfVertices() const
 {
    return this->numberOfVertices;
@@ -395,7 +396,7 @@ Index tnlGrid< 1, Real, Device, Index > :: getNumberOfVertices() const
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
+__cuda_callable__ inline
 bool tnlGrid< 1, Real, Device, Index > :: isBoundaryCell( const CoordinatesType& cellCoordinates ) const
 {
    tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
@@ -409,7 +410,7 @@ bool tnlGrid< 1, Real, Device, Index > :: isBoundaryCell( const CoordinatesType&
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
+__cuda_callable__ inline
 bool
 tnlGrid< 1, Real, Device, Index >::
 isBoundaryCell( const IndexType& cellIndex ) const
@@ -423,7 +424,7 @@ isBoundaryCell( const IndexType& cellIndex ) const
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
+__cuda_callable__ inline
 bool tnlGrid< 1, Real, Device, Index > :: isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const
 {
    tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,

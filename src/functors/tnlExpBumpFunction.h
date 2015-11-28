@@ -98,8 +98,9 @@ class tnlExpBumpFunction< 2, Real > : public tnlExpBumpFunctionBase< 2, Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
 #endif
-   __cuda_callable__ RealType getValue( const VertexType& v,
-                                        const Real& time = 0.0 ) const;
+   __cuda_callable__ inline
+   RealType getValue( const VertexType& v,
+                      const Real& time = 0.0 ) const;
 };
 
 template< typename Real >

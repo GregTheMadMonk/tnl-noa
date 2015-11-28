@@ -54,7 +54,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       {}
       
       template< int stepX, int stepY, int stepZ >
-      __cuda_callable__
+      __cuda_callable__ inline
       NeighbourGridEntityType getEntity()
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
@@ -73,7 +73,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       }
       
       template< int step >
-      __cuda_callable__
+      __cuda_callable__ inline
       IndexType getEntityIndex( const IndexType entityIndex )
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
@@ -137,7 +137,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       {}
       
       template< int stepX, int stepY, int stepZ >
-      __cuda_callable__
+      __cuda_callable__ inline
       NeighbourGridEntityType getEntity()
       {
          tnlAssert( ! stepX + ! stepY + ! stepZ == 2,
@@ -172,7 +172,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       }
       
       template< int stepX, int stepY, int stepZ >
-      __cuda_callable__
+      __cuda_callable__ inline
       IndexType getEntityIndex( const IndexType entityIndex )
       {
          tnlAssert( entityIndex == 
@@ -225,7 +225,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       {}
       
       template< int stepX, int stepY, int stepZ >
-      __cuda_callable__
+      __cuda_callable__ inline
       NeighbourGridEntityType getEntity()
       {
          tnlAssert( ! stepX + ! stepY + ! stepZ == 1,
@@ -259,7 +259,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       }
       
       template< int stepX, int stepY, int stepZ >
-      __cuda_callable__
+      __cuda_callable__ inline
       IndexType getEntityIndex( const IndexType entityIndex )
       {
          tnlAssert( entityIndex == 
@@ -313,7 +313,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       {}
       
       template< int stepX, int stepY >
-      __cuda_callable__
+      __cuda_callable__ inline
       NeighbourGridEntityType getEntity()
       {
          tnlAssert( stepX != 0 && stepY != 0 && stepZ != 0,
@@ -346,7 +346,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       }
       
       template< int stepX, int stepY, int stepZ >
-      __cuda_callable__
+      __cuda_callable__ inline
       IndexType getEntityIndex( const IndexType entityIndex )
       {
          tnlAssert( entityIndex == 
@@ -399,7 +399,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       {}
       
       template< int stepX, int stepY, int stepZ >
-      __cuda_callable__
+      __cuda_callable__ inline
       NeighbourGridEntityType getEntity()
       {
          tnlAssert( ( ( !! stepX ) == ( !! entity.getOrientation().x() ) ) &&
@@ -431,7 +431,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       }
       
       template< int stepX, int stepY, int stepZ >
-      __cuda_callable__
+      __cuda_callable__ inline
       IndexType getEntityIndex( const IndexType entityIndex )
       {
          tnlAssert( entityIndex == 
@@ -483,7 +483,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       {}
       
       template< int stepX, int stepY, int stepZ >
-      __cuda_callable__
+      __cuda_callable__ inline
       NeighbourGridEntityType getEntity()
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
@@ -503,7 +503,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       }
       
       template< int stepZ, stepY, stepZ >
-      __cuda_callable__
+      __cuda_callable__ inline
       IndexType getEntityIndex( const IndexType entityIndex )
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&

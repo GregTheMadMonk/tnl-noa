@@ -42,7 +42,7 @@ else()
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
     #OptimizeForArchitecture()
-    AddCompilerFlag( "-O3 -march=native -DNDEBUG" )
+    AddCompilerFlag( "-O3 -march=native -DNDEBUG -g" )
 endif()
 
 #####
@@ -157,7 +157,7 @@ endif( WITH_CUDA STREQUAL "yes" )
 find_package( OpenMP ) 
 if( OPENMP_FOUND )
    message( "Compiler supports OpenMP." )
-   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp")
+   #set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp")
 endif()
 
 ####

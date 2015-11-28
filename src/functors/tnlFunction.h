@@ -23,7 +23,8 @@
 
 enum tnlFunctionType { tnlGeneralFunction, 
                        tnlDiscreteFunction,
-                       tnlAnalyticFunction };
+                       tnlAnalyticFunction,
+                       tnlAnalyticConstantFunction };
 
 template< int Dimensions,
           tnlFunctionType FunctionType = tnlGeneralFunction >

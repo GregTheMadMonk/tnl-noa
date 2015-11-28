@@ -24,7 +24,7 @@
 
 template< int dimensions,
           typename Real = double >
-class tnlConstantFunction : public tnlFunction< dimensions, tnlAnalyticFunction >
+class tnlConstantFunction : public tnlFunction< dimensions, tnlAnalyticConstantFunction >
 {
    public:
       
@@ -54,16 +54,22 @@ class tnlConstantFunction : public tnlFunction< dimensions, tnlAnalyticFunction 
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
    #endif
-   __cuda_callable__
+      __cuda_callable__ inline
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const;
 
       template< typename Vertex >
-   __cuda_callable__
+      __cuda_callable__ inline
       RealType getValue( const Vertex& v,
                          const Real& time = 0.0 ) const
       {
          return getValue< 0, 0, 0, Vertex >( v, time );
+      }
+      
+       __cuda_callable__ inline
+      RealType getValue( const Real& time = 0.0 ) const
+      {
+          return constant;
       }
 
    protected:

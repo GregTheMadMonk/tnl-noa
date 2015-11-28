@@ -64,29 +64,30 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    void setDimensions( const CoordinatesType& );
 
    __cuda_callable__
-   const CoordinatesType& getDimensions() const;
+   inline const CoordinatesType& getDimensions() const;
 
    void setDomain( const VertexType& origin,
                    const VertexType& proportions );
    __cuda_callable__
-   const VertexType& getOrigin() const;
+   inline const VertexType& getOrigin() const;
 
    __cuda_callable__
-   const VertexType& getProportions() const;
+   inline const VertexType& getProportions() const;
 
    __cuda_callable__
-   const VertexType& getCellProportions() const;
-   
-   template< int EntityDimensions >
-   IndexType getEntitiesCount() const;
+   inline const VertexType& getCellProportions() const;
    
    template< int EntityDimensions >
    __cuda_callable__
-   GridEntity< EntityDimensions > getEntity( const IndexType& entityIndex ) const;
+   inline IndexType getEntitiesCount() const;
    
    template< int EntityDimensions >
    __cuda_callable__
-   Index getEntityIndex( const GridEntity< EntityDimensions >& entity ) const;
+   inline GridEntity< EntityDimensions > getEntity( const IndexType& entityIndex ) const;
+   
+   template< int EntityDimensions >
+   __cuda_callable__
+   inline Index getEntityIndex( const GridEntity< EntityDimensions >& entity ) const;
 
    /****
     * The type Vertex can have different Real type.
@@ -99,78 +100,78 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
              typename Vertex = VertexType >
 #endif
    __cuda_callable__
-   Vertex getEntityCenter( const GridEntity< EntityDimensions >& entity ) const;
+   inline Vertex getEntityCenter( const GridEntity< EntityDimensions >& entity ) const;
    
    
    
    template< int dx, int dy, int dz >
    __cuda_callable__
-   IndexType getCellNextToCell( const IndexType& cellIndex ) const;
+   inline IndexType getCellNextToCell( const IndexType& cellIndex ) const;
 
    template< int nx, int ny, int nz >
    __cuda_callable__
-   IndexType getFaceNextToCell( const IndexType& cellIndex ) const;
+   inline IndexType getFaceNextToCell( const IndexType& cellIndex ) const;
 
    template< int nx, int ny, int nz >
    __cuda_callable__
-   IndexType getCellNextToFace( const IndexType& cellIndex ) const;
+   inline IndexType getCellNextToFace( const IndexType& cellIndex ) const;
 
    __cuda_callable__
-   const RealType& getHx() const;
+   inline const RealType& getHx() const;
 
    __cuda_callable__
-   const RealType& getHxSquare() const;
+   inline const RealType& getHxSquare() const;
 
    __cuda_callable__
-   const RealType& getHxInverse() const;
+   inline const RealType& getHxInverse() const;
 
    __cuda_callable__
-   const RealType& getHxSquareInverse() const;
+   inline const RealType& getHxSquareInverse() const;
 
    __cuda_callable__
-   const RealType& getHy() const;
+   inline const RealType& getHy() const;
 
    __cuda_callable__
-   const RealType& getHySquare() const;
+   inline const RealType& getHySquare() const;
 
    __cuda_callable__
-   const RealType& getHyInverse() const;
+   inline const RealType& getHyInverse() const;
 
    __cuda_callable__
-   const RealType& getHySquareInverse() const;
+   inline const RealType& getHySquareInverse() const;
 
    __cuda_callable__
-   const RealType& getHz() const;
+   inline const RealType& getHz() const;
 
    __cuda_callable__
-   const RealType& getHzSquare() const;
+   inline const RealType& getHzSquare() const;
 
    __cuda_callable__
-   const RealType& getHzInverse() const;
+   inline const RealType& getHzInverse() const;
 
    __cuda_callable__
-   const RealType& getHzSquareInverse() const;
+   inline const RealType& getHzSquareInverse() const;
 
    __cuda_callable__
-   const RealType& getHxHy() const;
+   inline const RealType& getHxHy() const;
 
    __cuda_callable__
-   const RealType& getHxHz() const;
+   inline const RealType& getHxHz() const;
 
    __cuda_callable__
-   const RealType& getHyHz() const;
+   inline const RealType& getHyHz() const;
 
    __cuda_callable__
-   const RealType& getHxHyInverse() const;
+   inline const RealType& getHxHyInverse() const;
 
    __cuda_callable__
-   const RealType& getHxHzInverse() const;
+   inline const RealType& getHxHzInverse() const;
 
    __cuda_callable__
-   const RealType& getHyHzInverse() const;
+   inline const RealType& getHyHzInverse() const;
 
    __cuda_callable__
-   RealType getSmallestSpaceStep() const;
+   inline RealType getSmallestSpaceStep() const;
 
 #ifdef HAVE_NOT_CXX11
    template< int nx,
@@ -182,7 +183,7 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
              int nz = 1 >
 #endif
    __cuda_callable__
-   Index getNumberOfFaces() const;
+   inline Index getNumberOfFaces() const;
 
 #ifdef HAVE_NOT_CXX11
    template< int dx,
@@ -194,27 +195,27 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
              int dz = 1 >
 #endif
    __cuda_callable__
-   Index getNumberOfEdges() const;
+   inline Index getNumberOfEdges() const;
 
    __cuda_callable__
-   Index getNumberOfVertices() const;
+   inline Index getNumberOfVertices() const;
 
    __cuda_callable__
-   bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
+   inline bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
 
    __cuda_callable__
-   bool isBoundaryCell( const IndexType& cellIndex ) const;
+   inline bool isBoundaryCell( const IndexType& cellIndex ) const;
 
    template< int nx, int ny, int nz >
    __cuda_callable__
-   bool isBoundaryFace( const CoordinatesType& faceCoordinates ) const;
+   inline bool isBoundaryFace( const CoordinatesType& faceCoordinates ) const;
 
    template< int dx, int dy, int dz >
    __cuda_callable__
-   bool isBoundaryEdge( const CoordinatesType& edgeCoordinates ) const;
+   inline bool isBoundaryEdge( const CoordinatesType& edgeCoordinates ) const;
 
    __cuda_callable__
-   bool isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const;
+   inline bool isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const;
 
    template< typename GridFunction >
    typename GridFunction::RealType getAbsMax( const GridFunction& f ) const;

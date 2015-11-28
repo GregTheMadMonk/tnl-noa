@@ -112,7 +112,7 @@ template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder >
-__cuda_callable__
+__cuda_callable__ inline
 Real
 tnlExpBumpFunction< 2, Real >::
 getValue( const VertexType& v,

@@ -64,32 +64,32 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 
    void setDimensions( const CoordinatesType& dimensions );
 
-   __cuda_callable__
+   __cuda_callable__ inline
    const CoordinatesType& getDimensions() const;
 
    void setDomain( const VertexType& origin,
                    const VertexType& proportions );
 
    __cuda_callable__
-   const VertexType& getOrigin() const;
+   inline const VertexType& getOrigin() const;
 
    __cuda_callable__
-   const VertexType& getProportions() const;
+   inline const VertexType& getProportions() const;
 
    __cuda_callable__
-   const VertexType& getCellProportions() const;
+   inline const VertexType& getCellProportions() const;
    
    template< int EntityDimensions >
    __cuda_callable__
-   IndexType getEntitiesCount() const;
+   inline IndexType getEntitiesCount() const;
    
    template< int EntityDimensions >
    __cuda_callable__
-   GridEntity< EntityDimensions > getEntity( const IndexType& entityIndex ) const;
+   inline GridEntity< EntityDimensions > getEntity( const IndexType& entityIndex ) const;
    
    template< int EntityDimensions >
    __cuda_callable__
-   Index getEntityIndex( const GridEntity< EntityDimensions >& entity ) const;
+   inline Index getEntityIndex( const GridEntity< EntityDimensions >& entity ) const;
    
    /****
     * The type Vertex can have different Real type.
@@ -103,12 +103,12 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
              typename Vertex = VertexType >
 #endif
    __cuda_callable__
-   Vertex getEntityCenter( const GridEntity< EntityDimensions >& entity ) const;
+   inline Vertex getEntityCenter( const GridEntity< EntityDimensions >& entity ) const;
 
    template< typename GridEntity,
              int NeighbourEntityDimensions = GridEntity::entityDimensions >
    __cuda_callable__
-   tnlNeighbourGridEntityGetter< GridEntity, NeighbourEntityDimensions > 
+   inline tnlNeighbourGridEntityGetter< GridEntity, NeighbourEntityDimensions > 
       getNeighbourEntities( const GridEntity& entity ) const;
    
    
@@ -116,35 +116,35 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 
    template< int dx >
    __cuda_callable__
-   IndexType getCellNextToCell( const IndexType& cellIndex ) const;
+   inline IndexType getCellNextToCell( const IndexType& cellIndex ) const;
 
    __cuda_callable__
-   const RealType& getHx() const;
+   inline const RealType& getHx() const;
 
    __cuda_callable__
-   const RealType& getHxSquare() const;
+   inline const RealType& getHxSquare() const;
 
    __cuda_callable__
-   const RealType& getHxInverse() const;
+   inline const RealType& getHxInverse() const;
 
    __cuda_callable__
-   const RealType& getHxSquareInverse() const;
+   inline const RealType& getHxSquareInverse() const;
 
    __cuda_callable__
-   RealType getSmallestSpaceStep() const;
+   inline RealType getSmallestSpaceStep() const;
 
    
    __cuda_callable__
-   Index getNumberOfVertices() const;
+   inline Index getNumberOfVertices() const;
 
    __cuda_callable__
-   bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
+   inline bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
 
    __cuda_callable__
-   bool isBoundaryCell( const IndexType& cellIndex ) const;
+   inline bool isBoundaryCell( const IndexType& cellIndex ) const;
 
    __cuda_callable__
-   bool isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const;
+   inline bool isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const;
 
    template< typename GridFunction >
    typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,

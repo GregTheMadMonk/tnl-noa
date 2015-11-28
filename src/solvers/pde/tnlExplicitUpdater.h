@@ -88,9 +88,9 @@ class tnlExplicitUpdater
 
             template< int EntityDimension >
             __cuda_callable__
-            static void processEntity( const MeshType& mesh,
-                                       TraverserUserData& userData,
-                                       const IndexType index )
+            static inline void processEntity( const MeshType& mesh,
+                                              TraverserUserData& userData,
+                                              const IndexType index )
             {
                userData.boundaryConditions->setBoundaryConditions( *userData.time,
                                                                    mesh,
@@ -107,9 +107,9 @@ class tnlExplicitUpdater
 
             template< int EntityDimensions >
             __cuda_callable__
-            static void processEntity( const MeshType& mesh,
-                                       TraverserUserData& userData,
-                                       const IndexType index )
+            static inline void processEntity( const MeshType& mesh,
+                                              TraverserUserData& userData,
+                                              const IndexType index )
             {
                (* userData.fu )[ index ] = userData.differentialOperator->getValue( mesh,
                                                                                     index,
@@ -168,10 +168,10 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
             
             template< typename GridEntity >
             __cuda_callable__
-            static void processEntity( const MeshType& mesh,
-                                       TraverserUserData& userData,
-                                       const IndexType index,
-                                       const GridEntity& entity )
+            static inline void processEntity( const MeshType& mesh,
+                                              TraverserUserData& userData,
+                                              const IndexType index,
+                                              const GridEntity& entity )
             {
                userData.boundaryConditions->setBoundaryConditions
                ( *userData.time,
@@ -181,36 +181,6 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                  *userData.u,
                  *userData.fu );
             }
-
-            
-            /*__cuda_callable__
-            static void processCell( const MeshType& mesh,
-                                     TraverserUserData& userData,
-                                     const IndexType index,
-                                     const CoordinatesType& coordinates )
-            {
-               userData.boundaryConditions->setBoundaryConditions( *userData.time,
-                                                                   mesh,
-                                                                   index,
-                                                                   coordinates,
-                                                                   *userData.u,
-                                                                   *userData.fu );
-            }
-
-            __cuda_callable__
-            static void processFace( const MeshType& mesh,
-                                     TraverserUserData& userData,
-                                     const IndexType index,
-                                     const CoordinatesType& coordinates )
-            {
-               userData.boundaryConditions->setBoundaryConditions( *userData.time,
-                                                                   mesh,
-                                                                   index,
-                                                                   coordinates,
-                                                                   *userData.u,
-                                                                   *userData.fu );
-            }*/
-
 
       };
 
@@ -222,10 +192,10 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
          
             template< typename EntityType >
             __cuda_callable__
-            static void processEntity( const MeshType& mesh,
-                                       TraverserUserData& userData,
-                                       const IndexType index,
-                                       const EntityType& entity )
+            static inline void processEntity( const MeshType& mesh,
+                                              TraverserUserData& userData,
+                                              const IndexType index,
+                                              const EntityType& entity )
             {
                ( *userData.fu)[ index ] = 
                   userData.differentialOperator->getValue(
@@ -244,49 +214,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                      entity,
                     *userData.time );
             }
-
-
-            /*__cuda_callable__
-            static void processCell( const MeshType& mesh,
-                                     TraverserUserData& userData,
-                                     const IndexType index,
-                                     const CoordinatesType& coordinates )
-            {
-               ( *userData.fu)[ index ] = userData.differentialOperator->getValue( mesh,
-                                                                                   index,
-                                                                                   coordinates,
-                                                                                   *userData.u,
-                                                                                   *userData.time );
-
-               typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               ( * userData.fu )[ index ] += FunctionAdapter::getValue( mesh,
-                                                                        *userData.rightHandSide,
-                                                                        index,
-                                                                        coordinates,
-                                                                        *userData.time );
-            }
-
-            __cuda_callable__
-            static void processFace( const MeshType& mesh,
-                                     TraverserUserData& userData,
-                                     const IndexType index,
-                                     const CoordinatesType& coordinates )
-            {
-               ( *userData.fu)[ index ] = userData.differentialOperator->getValue( mesh,
-                                                                                   index,
-                                                                                   coordinates,
-                                                                                   *userData.u,
-                                                                                   *userData.time );
-
-               typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               ( * userData.fu )[ index ] += FunctionAdapter::getValue( mesh,
-                                                                        *userData.rightHandSide,
-                                                                        index,
-                                                                        coordinates,
-                                                                        *userData.time );
-            }*/
       };
-
 };
 
 #include <solvers/pde/tnlExplicitUpdater_impl.h>

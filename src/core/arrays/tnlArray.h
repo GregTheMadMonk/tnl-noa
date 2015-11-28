@@ -65,9 +65,9 @@ class tnlArray : public virtual tnlObject
 
    Element getElement( Index i ) const;
 
-   __cuda_callable__ Element& operator[] ( Index i );
+   __cuda_callable__ inline Element& operator[] ( Index i );
 
-   __cuda_callable__ const Element& operator[] ( Index i ) const;
+   __cuda_callable__ inline const Element& operator[] ( Index i ) const;
 
    tnlArray< Element, Device, Index >& operator = ( const tnlArray< Element, Device, Index >& array );
 

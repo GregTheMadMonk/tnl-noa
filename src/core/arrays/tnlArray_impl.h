@@ -166,7 +166,7 @@ template< typename Element,
           typename Device,
           typename Index >
 __cuda_callable__
-Element& tnlArray< Element, Device, Index > :: operator[] ( Index i )
+inline Element& tnlArray< Element, Device, Index > :: operator[] ( Index i )
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for operator[] in tnlArray "
@@ -179,7 +179,7 @@ template< typename Element,
            typename Device,
            typename Index >
 __cuda_callable__
-const Element& tnlArray< Element, Device, Index > :: operator[] ( Index i ) const
+inline const Element& tnlArray< Element, Device, Index > :: operator[] ( Index i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for operator[] in tnlArray "
