@@ -66,6 +66,12 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       
       __cuda_callable__ inline
       void setCoordinates( const CoordinatesType& coordinates );
+
+      __cuda_callable__ inline
+      void setIndex( IndexType entityIndex );
+
+      __cuda_callable__ inline
+      Index getIndex() const;
       
       __cuda_callable__ inline
       const EntityOrientationType& getOrientation() const;
@@ -93,6 +99,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
    protected:
       
       const GridType& grid;
+      
+      IndexType entityIndex;
       
       CoordinatesType coordinates;
       
@@ -143,7 +151,13 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
       
       __cuda_callable__ inline
       void setCoordinates( const CoordinatesType& coordinates );
-      
+
+      __cuda_callable__ inline
+      void setIndex( IndexType entityIndex );
+
+      __cuda_callable__ inline
+      Index getIndex() const;
+            
       __cuda_callable__ inline
       const EntityOrientationType getOrientation() const;     
       
@@ -161,6 +175,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
    protected:
       
       const GridType& grid;
+      
+      IndexType entityIndex;      
       
       CoordinatesType coordinates;
       
@@ -214,6 +230,12 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       void setCoordinates( const CoordinatesType& coordinates );
       
       __cuda_callable__ inline
+      void setIndex( IndexType entityIndex ) const;
+
+      __cuda_callable__ inline
+      Index getIndex() const;
+            
+      __cuda_callable__ inline
       const EntityOrientationType getOrientation() const;     
       
       __cuda_callable__ inline
@@ -226,6 +248,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
    protected:
       
       const GridType& grid;
+      
+      IndexType entityIndex;      
       
       CoordinatesType coordinates;
       

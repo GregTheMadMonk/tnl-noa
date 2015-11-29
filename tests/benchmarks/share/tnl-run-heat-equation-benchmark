@@ -1,0 +1,42 @@
+#!/bin/bash
+
+dofSize=100
+dimension=2;
+proportions=2
+finalTime=0.5
+timeStep=1.0e-5
+
+analyticFunction="exp-bump"
+sigma=1.0
+
+tnl-grid-setup --dimensions ${dimension} \
+               --proportions-x ${proportions} \
+               --proportions-y ${proportions} \
+               --proportions-z ${proportions} \
+               --origin-x -1 \
+               --origin-y -1 \
+               --origin-z -1 \
+               --size-x ${dofSize} \
+               --size-y ${dofSize} \
+               --size-z ${dofSize} \
+               
+tnl-init --mesh mesh.tnl \
+         --test-function ${analyticFunction} \
+         --output-file initial.tnl \
+         --sigma ${sigma}
+
+tnl-heat-equation --time-discretisation explicit \
+                  --boundary-conditions-type neumann \
+                  --boundary-conditions-constant 0 \
+                  --discrete-solver euler \
+                  --snapshot-period ${finalTime} \
+                  --final-time ${finalTime} \
+                  --time-step ${timeStep}
+              
+tnl-benchmark-simple-heat-equation --domain-x-size 2 \
+                                   --domain-y-size 2 \
+                                   --grid-x-size ${dofSize} \
+                                   --grid-y-size ${dofSize} \
+                                   --sigma ${sigma} \
+                                   --time-step ${timeStep} \
+                                   --final-time ${finalTime}             

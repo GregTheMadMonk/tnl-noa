@@ -152,12 +152,12 @@ getValue( const MeshType& mesh,
           const Real& time ) const
 {
    auto neighbourEntities = entity.getNeighbourEntities();
-   return ( u[ neighbourEntities.template getEntityIndex< -1, 0 >( cellIndex ) ]
+   return ( u[ neighbourEntities.template getEntityIndex< -1, 0 >() ]
             - 2.0 * u[ cellIndex ]
-            + u[ neighbourEntities.template getEntityIndex< 1, 0 >( cellIndex ) ] ) * mesh.getHxSquareInverse() +
-           ( u[ neighbourEntities.template getEntityIndex< 0, -1 >( cellIndex ) ]
+            + u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] ) * mesh.getHxSquareInverse() +
+           ( u[ neighbourEntities.template getEntityIndex< 0, -1 >() ]
              - 2.0 * u[ cellIndex ]
-             + u[ neighbourEntities.template getEntityIndex< 0, 1 >( cellIndex ) ] ) * mesh.getHySquareInverse();
+             + u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] ) * mesh.getHySquareInverse();
 }
 
 template< typename MeshReal,
@@ -184,11 +184,12 @@ updateLinearSystem( const RealType& time,
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * mesh.getHxSquareInverse();
    const RealType lambdaY = tau * mesh.getHySquareInverse();
-   matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, -1 >( index ), -lambdaY );
-   matrixRow.setElement( 1, mesh.template getCellNextToCell< -1, 0 >( index ), -lambdaX );
-   matrixRow.setElement( 2, index,                                             2.0 * ( lambdaX + lambdaY ) );
-   matrixRow.setElement( 3, mesh.template getCellNextToCell< 1, 0 >( index ),   -lambdaX );
-   matrixRow.setElement( 4, mesh.template getCellNextToCell< 0, 1 >( index ),   -lambdaY );
+   auto neighbourEntities = entity.getNeighbourEntities();
+   matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, -1 >(), -lambdaY );
+   matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< -1, 0 >(), -lambdaX );
+   matrixRow.setElement( 2, index,                                                        2.0 * ( lambdaX + lambdaY ) );
+   matrixRow.setElement( 3, neighbourEntities.template getEntityIndex< 1, 0 >(),   -lambdaX );
+   matrixRow.setElement( 4, neighbourEntities.template getEntityIndex< 0, 1 >(),   -lambdaY );
 }
 
 

@@ -26,7 +26,7 @@ getType()
 }
 
 template< typename Function >
-__cuda_callable__
+__cuda_callable__ inline
 typename Function::RealType
 tnlExactLinearDiffusion< 1 >::
 getValue( const Function& function,
@@ -44,7 +44,7 @@ getType()
 }
 
 template< typename Function >
-__cuda_callable__
+__cuda_callable__ inline
 typename Function::RealType
 tnlExactLinearDiffusion< 2 >::
 getValue( const Function& function,
@@ -63,7 +63,7 @@ getType()
 }
 
 template< typename Function >
-__cuda_callable__
+__cuda_callable__ inline
 typename Function::RealType
 tnlExactLinearDiffusion< 3 >::
 getValue( const Function& function,

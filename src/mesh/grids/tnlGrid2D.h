@@ -107,43 +107,6 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    
    
    
-   
-   
-
-
-
-   __cuda_callable__
-   inline Index getCellIndex( const CoordinatesType& cellCoordinates ) const;
-
-   __cuda_callable__
-   inline CoordinatesType getCellCoordinates( const IndexType cellIndex ) const;
-
-   template< int nx, int ny >
-   __cuda_callable__
-   inline Index getFaceIndex( const CoordinatesType& faceCoordinates ) const;
-
-   __cuda_callable__
-   inline CoordinatesType getFaceCoordinates( const Index faceIndex, int& nx, int& ny ) const;
-
-
-   __cuda_callable__
-   inline Index getVertexIndex( const CoordinatesType& vertexCoordinates ) const;
-
-   __cuda_callable__
-   inline CoordinatesType getVertexCoordinates( const Index vertexIndex ) const;
-
-   template< int dx, int dy >
-   __cuda_callable__
-   inline IndexType getCellNextToCell( const IndexType& cellIndex ) const;
-
-   template< int nx, int ny >
-   __cuda_callable__
-   inline IndexType getFaceNextToCell( const IndexType& cellIndex ) const;
-
-   template< int nx, int ny >
-   __cuda_callable__
-   inline IndexType getCellNextToFace( const IndexType& cellIndex ) const;
-
    __cuda_callable__
    inline const RealType& getHx() const;
 

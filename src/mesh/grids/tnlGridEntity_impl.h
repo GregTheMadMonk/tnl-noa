@@ -42,6 +42,7 @@ __cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 tnlGridEntity( const tnlGrid< Dimensions, Real, Device, Index >& grid )
 : grid( grid ),
+  entityIndex( -1 ),
   coordinates( 0 ),
   orientation( 0 ),
   basis( 0 ) 
@@ -60,6 +61,7 @@ tnlGridEntity( const tnlGrid< Dimensions, Real, Device, Index >& grid,
                const EntityOrientationType& orientation,
                const EntityBasisType& basis )
 : grid( grid ),
+  entityIndex( -1 ),
   coordinates( coordinates ),
   orientation( orientation ),
   basis( basis )
@@ -103,6 +105,43 @@ tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 setCoordinates( const CoordinatesType& coordinates )
 {
    this->coordinates = coordinates;
+}
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          int EntityDimensions >
+__cuda_callable__ inline
+void
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
+setIndex( IndexType entityIndex )
+{
+   tnlAssert( entityIndex >= 0 &&
+              entityIndex < grid.template getEntitiesCount< EntityDimensions >(),
+              cerr << "entityIndex = " << entityIndex
+                   << " grid.template getEntitiesCount< EntityDimensions >() = " << grid.template getEntitiesCount< EntityDimensions >() );
+   this->entityIndex = entityIndex;                   
+}
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          int EntityDimensions >
+__cuda_callable__ inline
+Index
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
+getIndex() const
+{
+   tnlAssert( this->entityIndex >= 0 &&
+              this-> entityIndex < grid.template getEntitiesCount< EntityDimensions >(),
+              cerr << "this->entityIndex = " << this->entityIndex
+                   << " grid.template getEntitiesCount< EntityDimensions >() = " << grid.template getEntitiesCount< EntityDimensions >() );
+   tnlAssert( this->entityIndex == grid.getEntityIndex( *this ),
+              cerr << "this->entityIndex = " << this->entityIndex
+                   << " grid.getEntityIndex( *this ) = " << grid.getEntityIndex( *this ) );
+   return this->entityIndex;
 }
 
 template< int Dimensions,
@@ -172,14 +211,13 @@ tnlNeighbourGridEntityGetter<
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 getNeighbourEntities() const
 {
-   return tnlNeighbourGridEntityGetter< ThisType, EntityDimensions >( this->grid, *this );
+   return tnlNeighbourGridEntityGetter< ThisType, NeighbourEntityDimensions >( this->grid, *this );
 }
 
 
 /****
  * Specialization for cells
  */
-
 template< int Dimensions,
           typename Real,
           typename Device,
@@ -197,7 +235,8 @@ template< int Dimensions,
 __cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
 tnlGridEntity( const GridType& grid )
-: grid( grid )
+: grid( grid ),
+  entityIndex( -1 )
 {
    this->coordinates = CoordinatesType( ( Index ) 0 );
    this->orientation = EntityOrientationType( ( Index ) 0 );
@@ -215,6 +254,7 @@ tnlGridEntity( const GridType& grid,
                const EntityOrientationType& orientation,
                const EntityBasisType& basis )
 : grid( grid ),
+  entityIndex( -1 ),
   coordinates( coordinates )
 {
    this->orientation = EntityOrientationType( ( Index ) 0 );
@@ -262,6 +302,41 @@ template< int Dimensions,
           typename Device,
           typename Index >
 __cuda_callable__ inline
+void
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
+setIndex( IndexType entityIndex )
+{
+   tnlAssert( entityIndex >= 0 &&
+              entityIndex < grid.template getEntitiesCount< Dimensions >(),
+              cerr << "entityIndex = " << entityIndex
+                   << " grid.template getEntitiesCount< Dimensions >() = " << grid.template getEntitiesCount< Dimensions >() );
+   this->entityIndex = entityIndex;                   
+}
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__ inline
+Index
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
+getIndex() const
+{
+   tnlAssert( this->entityIndex >= 0 &&
+              this-> entityIndex < grid.template getEntitiesCount< Dimensions >(),
+              cerr << "this->entityIndex = " << this->entityIndex
+                   << " grid.template getEntitiesCount< Dimensions >() = " << grid.template getEntitiesCount< Dimensions >() );
+   tnlAssert( this->entityIndex == grid.getEntityIndex( *this ),
+              cerr << "this->index = " << this->entityIndex
+                   << " grid.getEntityIndex( *this ) = " << grid.getEntityIndex( *this ) );
+   return this->entityIndex;
+}
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::EntityOrientationType 
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
 getOrientation() const
@@ -293,7 +368,7 @@ tnlNeighbourGridEntityGetter<
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
 getNeighbourEntities() const
 {
-   return tnlNeighbourGridEntityGetter< ThisType, Dimensions >( this->grid, *this );
+   return tnlNeighbourGridEntityGetter< ThisType, NeighbourEntityDimensions >( this->grid, *this );
 }
 
 /****
@@ -317,6 +392,7 @@ __cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
 tnlGridEntity( const GridType& grid )
  : grid( grid ),
+   entityIndex( -1 ),
    coordinates( 0 ),
    orientation( 1 ),
    basis( 0 )
@@ -334,6 +410,7 @@ tnlGridEntity( const GridType& grid,
                const EntityOrientationType& orientation,
                const EntityBasisType& basis )
 : grid( grid ),
+  entityIndex( -1 ),
   coordinates( coordinates )
 {  
 }
@@ -379,6 +456,41 @@ template< int Dimensions,
           typename Device,
           typename Index >
 __cuda_callable__ inline
+void
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
+setIndex( IndexType entityIndex ) const
+{
+   tnlAssert( entityIndex >= 0 &&
+              entityIndex < grid.template getEntitiesCount< 0 >(),
+              cerr << "entityIndex = " << entityIndex
+                   << " grid.template getEntitiesCount< 0 >() = " << grid.template getEntitiesCount< 0 >() );
+   this->entityIndex = entityIndex;                   
+}
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__ inline
+Index
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
+getIndex() const
+{
+   tnlAssert( this->entityIndex >= 0 &&
+              this-> entityIndex < grid.template getEntitiesCount< 0 >(),
+              cerr << "this->entityIndex = " << this->entityIndex
+                   << " grid.template getEntitiesCount< 0 >() = " << grid.template getEntitiesCount< 0 >() );
+   tnlAssert( this->entityIndex == grid.getEntityIndex( *this ),
+              cerr << "this->entityIndex = " << this->entityIndex
+                   << " grid.getEntityIndex( *this ) = " << grid.getEntityIndex( *this ) );
+   return this->entityIndex;
+}
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::EntityOrientationType
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
 getOrientation() const
@@ -410,7 +522,7 @@ tnlNeighbourGridEntityGetter<
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
 getNeighbourEntities() const
 {
-   return tnlNeighbourGridEntityGetter< ThisType, Dimensions >( this->grid, *this );
+   return tnlNeighbourGridEntityGetter< ThisType, NeighbourEntityDimensions >( this->grid, *this );
 }
 
 #endif	/* TNLGRIDENTITY_IMPL_H */

@@ -42,27 +42,33 @@ processBoundaryEntities( const GridType& grid,
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
       {
          coordinates.z() = 0;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
          coordinates.z() = zSize - 1;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
       }
 
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
       {
          coordinates.y() = 0;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
          coordinates.y() = ySize - 1;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
       }
 
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
       {
          coordinates.x() = 0;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
          coordinates.x() = xSize - 1;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
       }
 }
 template< typename Real,
@@ -93,7 +99,8 @@ processInteriorEntities( const GridType& grid,
       for( coordinates.y() = 1; coordinates.y() < ySize - 1; coordinates.y() ++ )
          for( coordinates.x() = 1; coordinates.x() < xSize - 1; coordinates.x() ++ )
          {
-            EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+            entity.setIndex( grid.getEntityIndex( entity ) );
+            EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
          }
 }
 
@@ -124,9 +131,11 @@ processBoundaryEntities( const GridType& grid,
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
       {
          coordinates.x() = 0;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
          coordinates.x() = xSize;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
       }
 
    entity.setOrientation( typename EntityType::EntityOrientationType( 0, 1, 0 ) );
@@ -134,9 +143,11 @@ processBoundaryEntities( const GridType& grid,
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
       {
          coordinates.y() = 0;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
          coordinates.y() = ySize;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
       }
   
    entity.setOrientation( typename EntityType::EntityOrientationType( 0, 0, 1 ) );
@@ -144,9 +155,11 @@ processBoundaryEntities( const GridType& grid,
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )      
       {         
          coordinates.z() = 0;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
          coordinates.z() = zSize;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
       }     
 }
 
@@ -180,19 +193,29 @@ processInteriorEntities( const GridType& grid,
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
          for( coordinates.x() = 1; coordinates.x() < xSize; coordinates.x() ++ )
-            EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         {
+            entity.setIndex( grid.getEntityIndex( entity ) );         
+            EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
+         }
 
    entity.setOrientation( typename EntityType::EntityOrientationType( 0, 1, 0 ) );
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 1; coordinates.y() < ySize; coordinates.y() ++ )
          for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
-            EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         {
+            entity.setIndex( grid.getEntityIndex( entity ) );
+            EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
+         }
+            
    
    entity.setOrientation( typename EntityType::EntityOrientationType( 0, 0, 1 ) );
    for( coordinates.z() = 1; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
          for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
-            EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         {
+            entity.setIndex( grid.getEntityIndex( entity ) );
+            EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
+         }
 }
 
 
@@ -223,9 +246,11 @@ processBoundaryEntities( const GridType& grid,
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )      
       {
          coordinates.z() = 0;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );        
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );        
          coordinates.z() = zSize;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
       }
    
    entity.setBasis( typename EntityType::EntityBasisType( 0, 1, 0 ) );
@@ -233,9 +258,11 @@ processBoundaryEntities( const GridType& grid,
       for( coordinates.x() = 0; coordinates.x() <= xSize; coordinates.x() ++ )      
       {
          coordinates.z() = 0;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
          coordinates.z() = zSize;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
       }
    
    entity.setBasis( typename EntityType::EntityBasisType( 1, 0, 0 ) );
@@ -243,9 +270,11 @@ processBoundaryEntities( const GridType& grid,
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
       {
          coordinates.y() = 0;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
          coordinates.y() = ySize;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
       }
    
    entity.setBasis( typename EntityType::EntityBasisType( 0, 0, 1 ) );
@@ -253,9 +282,11 @@ processBoundaryEntities( const GridType& grid,
       for( coordinates.x() = 0; coordinates.x() <= xSize; coordinates.x() ++ )
       {
          coordinates.y() = 0;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
          coordinates.y() = ySize;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
       }
 
    entity.setBasis( typename EntityType::EntityBasisType( 0, 1, 0 ) );
@@ -263,9 +294,11 @@ processBoundaryEntities( const GridType& grid,
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
       {
          coordinates.x() = 0;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
          coordinates.x() = xSize;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
       }
    
    entity.setBasis( typename EntityType::EntityBasisType( 0, 0, 1 ) );
@@ -273,8 +306,10 @@ processBoundaryEntities( const GridType& grid,
       for( coordinates.y() = 0; coordinates.y() <= ySize; coordinates.y() ++ )
       {
          coordinates.x() = 0;
+         entity.setIndex( grid.getEntityIndex( entity ) );
          EntitiesProcessor::processEntity( grid, userData, grid.getEdgeIndex( entity ), entity );
          coordinates.x() = xSize;
+         entity.setIndex( grid.getEntityIndex( entity ) );
          EntitiesProcessor::processEntity( grid, userData, grid.getEdgeIndex( entity ), entity );
       }
 }
@@ -309,19 +344,28 @@ processInteriorEntities( const GridType& grid,
    for( coordinates.z() = 1; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 1; coordinates.y() < ySize; coordinates.y() ++ )
          for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
-            EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         {
+            entity.setIndex( grid.getEntityIndex( entity ) );
+            EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
+         }
 
    entity.setBasis( typename EntityType::EntityBasisType( 0, 1, 0 ) );
    for( coordinates.z() = 1; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
          for( coordinates.x() = 1; coordinates.x() < xSize; coordinates.x() ++ )
-            EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         {
+            entity.setIndex( grid.getEntityIndex( entity ) );
+            EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
+         }
    
    entity.setBasis( typename EntityType::EntityBasisType( 1, 0, 0 ) );
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 1; coordinates.y() < ySize; coordinates.y() ++ )
          for( coordinates.x() = 1; coordinates.x() < xSize; coordinates.x() ++ )
-            EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         {
+            entity.setIndex( grid.getEntityIndex( entity ) );
+            EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
+         }
 }
 
 
@@ -352,27 +396,33 @@ processBoundaryEntities( const GridType& grid,
       for( coordinates.x() = 0; coordinates.x() <= xSize; coordinates.x() ++ )
       {
          coordinates.z() = 0;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
          coordinates.z() = zSize;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
       }
 
    for( coordinates.z() = 0; coordinates.z() <= zSize; coordinates.z() ++ )
       for( coordinates.x() = 0; coordinates.x() <= xSize; coordinates.x() ++ )
       {
          coordinates.y() = 0;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
          coordinates.y() = ySize;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
       }
 
    for( coordinates.z() = 0; coordinates.z() <= zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() <= ySize; coordinates.y() ++ )
       {
          coordinates.x() = 0;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
          coordinates.x() = xSize;
-         EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         entity.setIndex( grid.getEntityIndex( entity ) );
+         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
       }
 }
 
@@ -404,7 +454,10 @@ processInteriorEntities( const GridType& grid,
    for( coordinates.z() = 1; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 1; coordinates.y() < ySize; coordinates.y() ++ )
          for( coordinates.x() = 1; coordinates.x() < xSize; coordinates.x() ++ )
-            EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+         {
+            entity.setIndex( grid.getEntityIndex( entity ) );
+            EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
+         }
 }
 
 
@@ -444,6 +497,7 @@ __global__ void tnlTraverserGrid3DCells( const tnlGrid< 3, Real, tnlCuda, Index 
    {
       if( processAllEntities || grid->isBoundaryEntity( entity ) == processBoundaryEntities )
       {
+         entity.setIndex( grid.getEntityIndex( entity ) );
          //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
          EntitiesProcessor::template processEntity
             ( *grid,
@@ -487,6 +541,7 @@ __global__ void tnlTraverserGrid3DFaces( const tnlGrid< 3, Real, tnlCuda, Index 
    {
       if( processAllEntities || grid->isBoundaryEntity( entity ) == processBoundaryEntities )
       {
+         entity.setIndex( grid.getEntityIndex( entity ) );
          //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
          EntitiesProcessor::processEntity
             ( *grid,
@@ -531,6 +586,7 @@ __global__ void tnlTraverserGrid3DEdges( const tnlGrid< 3, Real, tnlCuda, Index 
    {
       if( processAllEntities || grid->isBoundaryEntity( entity ) == processBoundaryEntity )
       {
+         entity.setIndex( grid.getEntityIndex( entity ) );
          //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
          EntitiesProcessor::processEntity
             ( *grid,
@@ -571,6 +627,7 @@ __global__ void tnlTraverserGrid3DVertices( const tnlGrid< 3, Real, tnlCuda, Ind
    {
       if( processAllEntities || grid->isBoundaryVertex( vertexCoordinates ) == processBoundaryEntities )
       {
+         entity.setIndex( grid.getEntityIndex( entity ) );
          EntitiesProcessor::template processEntity
          ( *grid,
            *userData,

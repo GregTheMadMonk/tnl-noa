@@ -79,17 +79,17 @@ Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index > >::getDifference( c
    if( XDifferenceOrder == 1 )
    {
       if( XDifferenceDirection == 0 )
-         return ( function[ neighbourEntities.template getEntityIndex< 1 >( cellIndex ) ] -
-                  function[ neighbourEntities.template getEntityIndex< -1 >( cellIndex ) ] ) / ( 2.0 * hx );
+         return ( function[ neighbourEntities.template getEntityIndex< 1 >() ] -
+                  function[ neighbourEntities.template getEntityIndex< -1 >() ] ) / ( 2.0 * hx );
       else
-         return ( function[ neighbourEntities.template getEntityIndex< XDifferenceDirection >( cellIndex ) ] -
+         return ( function[ neighbourEntities.template getEntityIndex< XDifferenceDirection >() ] -
                   function[ cellIndex ] ) / ( XDifferenceDirection * hx );
    }
    if( XDifferenceOrder == 2 )
    {
-      return ( function[ neighbourEntities.template getEntityIndex< 1 >( cellIndex ) ] -
+      return ( function[ neighbourEntities.template getEntityIndex< 1 >() ] -
                2.0 * function[ cellIndex ] +
-               function[ neighbourEntities.template getEntityIndex< -1 >( cellIndex ) ] ) / (  hx * hx );
+               function[ neighbourEntities.template getEntityIndex< -1 >() ] ) / (  hx * hx );
    }
 }
 

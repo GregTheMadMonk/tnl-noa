@@ -34,11 +34,13 @@ processBoundaryEntities( const GridType& grid,
    typename GridType::template GridEntity< CellDimensions > entity( grid );
 
    CoordinatesType& coordinates = entity.getCoordinates();
-   const IndexType& xSize = grid.getDimensions().x();
+   const IndexType& xSize = grid.getDimensions().x();   
    coordinates.x() = 0;
-   EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+   entity.setIndex( grid.getEntityIndex( entity ) );
+   EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
    coordinates.x() = xSize - 1;
-   EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+   entity.setIndex( grid.getEntityIndex( entity ) );
+   EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
 }
 
 template< typename Real,
@@ -61,6 +63,7 @@ processInteriorEntities( const GridType& grid,
         cell.getCoordinates().x() < xSize - 1;
         cell.getCoordinates().x()++ )
    {
+      cell.setIndex( grid.getEntityIndex( cell ) );
       EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( cell ), cell );
    }
 }
@@ -83,9 +86,11 @@ processBoundaryEntities( const GridType& grid,
    CoordinatesType& coordinates = entity.getCoordinates();
    const IndexType& xSize = grid.getDimensions().x();
    coordinates.x() = 0;
-   EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+   entity.setIndex( grid.getEntityIndex( entity ) );
+   EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
    coordinates.x() = xSize;
-   EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+   entity.setIndex( grid.getEntityIndex( entity ) );
+   EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
 }
 
 template< typename Real,
@@ -107,7 +112,8 @@ processInteriorEntities( const GridType& grid,
    const IndexType& xSize = grid.getDimensions().x();
    for( coordinates.x() = 1; coordinates.x() < xSize; coordinates.x() ++ )
    {
-      EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( entity ), entity );
+      entity.setIndex( grid.getEntityIndex( entity ) );
+      EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
    }
 }
 
@@ -132,8 +138,9 @@ __global__ void tnlTraverserGrid1DCells( const tnlGrid< 1, Real, tnlCuda, Index 
    typename GridType::template GridEntity< CellDimensions > entity( grid );
    CoordinatesType& coordinates = entity.getCoordinates();
 
-
-   coordinates.x() = ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const Index index = ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   coordinates.x() = Index;
+   entity.setIndex( index )
 
    if( coordinates.x() < grid->getDimensions().x() )
    {
@@ -231,13 +238,15 @@ __global__ void tnlTraverserGrid1DVertices( const tnlGrid< 1, Real, tnlCuda, Ind
                                             UserData* userData,
                                             Index gridXIdx )
 {
-   typedef typename GridType::Vertex VertexTopology;
+   typename template GridEntity< GridfType::Vertices > vertex;
 
    const IndexType& xSize = grid->getDimensions().x();
 
-   CoordinatesType vertexCoordinates( ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x );
+   const Index index = ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   vertex.getCoordinates().x() = index;
+   vertex.setIndex( index );
 
-   if( vertexCoordinates.x() <= grid->getDimensions().x() )
+   if( vertex.getCoordinates().x() <= grid->getDimensions().x() )
    {
       if( processAllEntities || grid->isBoundaryVertex( vertexCoordinates ) == processBoundaryEntities )
       {
