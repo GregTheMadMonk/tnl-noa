@@ -245,7 +245,7 @@ getNeighbourEntities( const GridEntityType& entity ) const
 
 
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
    template< int dx >
@@ -258,7 +258,7 @@ Index tnlGrid< 1, Real, Device, Index > :: getCellNextToCell( const IndexType& c
                    << " dx = " << dx
                    << " this->template getEntitiesCount< Cells >() = " << this->template getEntitiesCount< Cells >() );
    return cellIndex + dx;
-}
+}*/
 
 template< typename Real,
           typename Device,

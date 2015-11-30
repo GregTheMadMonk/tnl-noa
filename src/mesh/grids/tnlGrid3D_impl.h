@@ -21,6 +21,7 @@
 #include <iomanip>
 #include <core/tnlAssert.h>
 #include <mesh/grids/tnlGridEntityGetter_impl.h>
+#include <mesh/grids/tnlNeighbourGridEntityGetter3D_impl.h>
 #include <mesh/grids/tnlGrid3D.h>
 
 template< typename Real,
@@ -280,7 +281,7 @@ Vertex tnlGrid< 3, Real, Device, Index > :: getEntityCenter( const GridEntity< E
 }
 
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
    template< int dx, int dy, int dz >
@@ -343,7 +344,7 @@ Index tnlGrid< 3, Real, Device, Index >::getCellNextToFace( const IndexType& fac
 #ifndef NDEBUG
    int _nx, _ny, _nz;
 #endif
-   /*tnlAssert( ( nx + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).x() >= 0 &&
+   tnlAssert( ( nx + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).x() >= 0 &&
                 nx + this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).x() <= this->getDimensions().x() ),
               cerr << " nx = " << nx
                    << " this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).x() = " << this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).x()
@@ -358,7 +359,7 @@ Index tnlGrid< 3, Real, Device, Index >::getCellNextToFace( const IndexType& fac
               cerr << " nz = " << nz
                    << " this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).z() = " << this->getFaceCoordinates( faceIndex, _nx, _ny, _nz ).z()
                    << " this->getDimensions().z()  = " << this->getDimensions().z() );
-   */
+   
 
    IndexType result;
    if( nx )
@@ -378,7 +379,7 @@ Index tnlGrid< 3, Real, Device, Index >::getCellNextToFace( const IndexType& fac
                    << " nz = " << nz
                    << " this->template getEntitiesCount< Cells >() = " << this->template getEntitiesCount< Cells >() );
    return result;
-}
+}*/
 
 template< typename Real,
           typename Device,

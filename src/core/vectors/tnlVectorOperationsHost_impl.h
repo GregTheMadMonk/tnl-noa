@@ -291,13 +291,31 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getScalarProduct(
    tnlAssert( v1. getSize() > 0, );
    tnlAssert( v1. getSize() == v2. getSize(), );
 
-   Real result = 0;
+   Real result( 0.0 );
    const Index n = v1. getSize();
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:result) if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+  #pragma omp parallel for reduction(+:result) if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif     
-   for( Index i = 0; i < n; i ++ )
+   for( Index i = 0; i < n; i++ )
       result += v1[ i ] * v2[ i ];
+   /*Real result1( 0.0 ), result2( 0.0 ), result3( 0.0 ), result4( 0.0 ),
+        result5( 0.0 ), result6( 0.0 ), result7( 0.0 ), result8( 0.0 );
+   Index i( 0 );
+   while( i + 8 < n )
+   {
+      result1 += v1[ i ] * v2[ i ];
+      result2 += v1[ i + 1 ] * v2[ i + 1 ];
+      result3 += v1[ i + 2 ] * v2[ i + 2 ];
+      result4 += v1[ i + 3 ] * v2[ i + 3 ];
+      result5 += v1[ i + 4 ] * v2[ i + 4 ];
+      result6 += v1[ i + 5 ] * v2[ i + 5 ];
+      result7 += v1[ i + 6 ] * v2[ i + 6 ];
+      result8 += v1[ i + 7 ] * v2[ i + 7 ];
+      i += 8;
+   }
+   Real result = result1 + result2 + result3 + result4 + result5 +result6 +result7 +result8;
+   while( i < n )
+      result += v1[ i ] * v2[ i++ ];*/
    return result;
 }
 

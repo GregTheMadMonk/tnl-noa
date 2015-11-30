@@ -52,9 +52,10 @@ getValue( const MeshType& mesh,
           const Vector& u,
           const Real& time ) const
 {
-   return ( u[ mesh.template getCellNextToCell< -1 >( cellIndex ) ]
+   auto neighbourEntities = cell.getNeighbourEntities();
+   return ( u[ neighbourEntities.template getEntityIndex< -1 >() ]
             - 2.0 * u[ cellIndex ]
-            + u[ mesh.template getCellNextToCell< 1 >( cellIndex ) ] ) * mesh.getHxSquareInverse();
+            + u[ neighbourEntities.template getEntityIndex< 1 >() ] ) * mesh.getHxSquareInverse();
 }
 
 template< typename MeshReal,
@@ -92,13 +93,12 @@ updateLinearSystem( const RealType& time,
                     Vector& b,
                     Matrix& matrix ) const
 {
+   auto neighbourEntities = cell.getNeighbourEntities();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * mesh.getHxSquareInverse();
-   //printf( "tau = %f lambda = %f dx_sqr = %f dx = %f, \n", tau, lambdaX, mesh.getHxSquareInverse(), mesh.getHx() );
-   matrixRow.setElement( 0, mesh.template getCellNextToCell< -1 >( index ),     - lambdaX );
-   matrixRow.setElement( 1, index,                             2.0 * lambdaX );
-   matrixRow.setElement( 2, mesh.template getCellNextToCell< 1 >( index ),       - lambdaX );
-   //printf( "Linear diffusion index %d columns %d %d %d \n", index, columns[ 0 ], columns[ 1 ], columns[ 2 ] );
+   matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1 >(),      - lambdaX );
+   matrixRow.setElement( 1, index,                                              2.0 * lambdaX );
+   matrixRow.setElement( 2, neighbourEntities.template getEntityIndex< 1 >(),       - lambdaX );   
 }
 
 template< typename MeshReal,

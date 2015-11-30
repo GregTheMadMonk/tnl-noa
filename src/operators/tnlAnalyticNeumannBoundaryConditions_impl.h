@@ -83,12 +83,13 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& u,
                        DofVectorType& fu ) const
 {
+   auto neighbourEntities = entity.getNeighbourEntities();
    fu[ index ] = 0;
    const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
    if( entity.getCoordinates().x() == 0 )
-      u[ index ] = u[ mesh.template getCellNextToCell< 1 >( index ) ] - mesh.getHx() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1 >() ] - mesh.getHx() * functionValue;
    else
-      u[ index ] = u[ mesh.template getCellNextToCell< -1 >( index ) ] + mesh.getHx() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1 >() ] + mesh.getHx() * functionValue;
 }
 
 template< typename MeshReal,
@@ -127,17 +128,18 @@ updateLinearSystem( const RealType& time,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {
+   auto neighbourEntities = entity.getNeighbourEntities();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
    if( entity.getCoordinates().x() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
-      matrixRow.setElement( 1, mesh.template getCellNextToCell< 1 >( index ), -1.0 );
+      matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 1 >(), -1.0 );
       b[ index ] = - mesh.getHx() * functionValue;
    }
    else
    {
-      matrixRow.setElement( 0, mesh.template getCellNextToCell< -1 >( index ), -1.0 );
+      matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1 >(), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
       b[ index ] = mesh.getHx() * functionValue;
    }
@@ -274,37 +276,38 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& u,
                        DofVectorType& fu ) const
 {
+   auto neighbourEntities = entity.getNeighbourEntities();
    fu[ index ] = 0;
    fu[ index ] = 0;
    const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
    if( entity.getCoordinates().x() == 0 )
    {
-      u[ index ] = u[ mesh.template getCellNextToCell< 1, 0, 0 >( index ) ] - mesh.getHx() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] - mesh.getHx() * functionValue;
       return;
    }
    if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
-      u[ index ] = u[ mesh.template getCellNextToCell< -1, 0, 0 >( index ) ] + mesh.getHx() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1, 0, 0 >() ] + mesh.getHx() * functionValue;
       return;
    }
    if( entity.getCoordinates().y() == 0 )
    {
-      u[ index ] = u[ mesh.template getCellNextToCell< 0, 1, 0 >( index ) ] - mesh.getHy() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] - mesh.getHy() * functionValue;
       return;
    }
    if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
-      u[ index ] = u[ mesh.template getCellNextToCell< 0, -1, 0 >( index ) ] + mesh.getHy() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, -1, 0 >() ] + mesh.getHy() * functionValue;
       return;
    }
    if( entity.getCoordinates().z() == 0 )
    {
-      u[ index ] = u[ mesh.template getCellNextToCell< 0, 0, 1 >( index ) ] - mesh.getHz() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] - mesh.getHz() * functionValue;
       return;
    }
    if( entity.getCoordinates().z() == mesh.getDimensions().z() - 1 )
    {
-      u[ index ] = u[ mesh.template getCellNextToCell< 0, 0, - 1 >( index ) ] + mesh.getHz() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 0, - 1 >() ] + mesh.getHz() * functionValue;
       return;
    }
 }
@@ -345,42 +348,43 @@ updateLinearSystem( const RealType& time,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {
+   auto neighbourEntities = entity.getNeighbourEntities();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
    if( entity.getCoordinates().x() == 0 )
    {
-      matrixRow.setElement( 0, index,                            1.0 );
-      matrixRow.setElement( 1, mesh.template getCellNextToCell< 1, 0, 0 >( index ), -1.0 );
+      matrixRow.setElement( 0, index,                                                   1.0 );
+      matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 1, 0, 0 >(), -1.0 );
       b[ index ] = - mesh.getHx() * functionValue;
    }
    if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
-      matrixRow.setElement( 0, mesh.template getCellNextToCell< -1, 0, 0 >( index ), -1.0 );
-      matrixRow.setElement( 1, index,                              1.0 );
+      matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1, 0, 0 >(), -1.0 );
+      matrixRow.setElement( 1, index,                                                    1.0 );
       b[ index ] = mesh.getHx() * functionValue;
    }
    if( entity.getCoordinates().y() == 0 )
    {
-      matrixRow.setElement( 0, index,                            1.0 );
-      matrixRow.setElement( 1, mesh.template getCellNextToCell< 0, 1, 0 >( index ), -1.0 );
+      matrixRow.setElement( 0, index,                                                   1.0 );
+      matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, 1, 0 >(), -1.0 );
       b[ index ] = - mesh.getHy() * functionValue;
    }
    if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
-      matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, -1, 0 >( index ), -1.0 );
-      matrixRow.setElement( 1, index,                              1.0 );
+      matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, -1, 0 >(), -1.0 );
+      matrixRow.setElement( 1, index,                                                    1.0 );
       b[ index ] = mesh.getHy() * functionValue;
    }
    if( entity.getCoordinates().z() == 0 )
    {
-      matrixRow.setElement( 0, index,                           1.0 );
-      matrixRow.setElement( 1, mesh.template getCellNextToCell< 0, 0, 1 >( index ), -1.0 );
+      matrixRow.setElement( 0, index,                                                   1.0 );
+      matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, 0, 1 >(), -1.0 );
       b[ index ] = - mesh.getHz() * functionValue;
    }
    if( entity.getCoordinates().z() == mesh.getDimensions().z() - 1 )
    {
-      matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, 0, -1 >( index ), -1.0 );
-      matrixRow.setElement( 1, index,                              1.0 );
+      matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, 0, -1 >(), -1.0 );
+      matrixRow.setElement( 1, index,                                                    1.0 );
       b[ index ] = mesh.getHz() * functionValue;
    }
 }

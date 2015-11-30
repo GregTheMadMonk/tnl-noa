@@ -104,7 +104,7 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    
    
    
-   template< int dx, int dy, int dz >
+   /*template< int dx, int dy, int dz >
    __cuda_callable__
    inline IndexType getCellNextToCell( const IndexType& cellIndex ) const;
 
@@ -114,7 +114,7 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 
    template< int nx, int ny, int nz >
    __cuda_callable__
-   inline IndexType getCellNextToFace( const IndexType& cellIndex ) const;
+   inline IndexType getCellNextToFace( const IndexType& cellIndex ) const;*/
 
    __cuda_callable__
    inline const RealType& getHx() const;
