@@ -171,7 +171,7 @@ solve( const RealType& time,
       this->linearSystemAssemblerTimer.stop();
 
       if( verbose )
-         cout << "                                                                  Solving the linear system for time " << t << "             \r" << flush;
+         cout << "                                                                  Solving the linear system for time " << t + currentTau << "             \r" << flush;
 
       this->linearSystemSolverTimer.start();
       if( ! this->linearSystemSolver->template solve< DofVectorType, tnlLinearResidueGetter< MatrixType, DofVectorType > >( this->rightHandSide, dofVector ) )
