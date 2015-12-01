@@ -251,13 +251,13 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
                              sn[ i ] );
 
          this->setResidue( fabs( s[ i + 1 ] ) / normb );
-         if( this->nextIteration() ) {
-            this->refreshSolverMonitor();
-         }
-         else {
+         if( this->getIterations() > this->getMinIterations() && this->getResidue() < this->getConvergenceResidue() ) {
             update( i, m, _H, _s, _v, x );
             this->refreshSolverMonitor( true );
             return this->checkConvergence();
+         }
+         else {
+            this->refreshSolverMonitor();
          }
       }
       update( m - 1, m, _H, _s, _v, x );
