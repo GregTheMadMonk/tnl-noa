@@ -280,7 +280,7 @@ __global__ void tnlTraverserGrid2DCells( const tnlGrid< 2, Real, tnlCuda, Index 
    if( coordinates.x() < grid->getDimensions().x() &&
        coordinates.y() < grid->getDimensions().y() )
    {
-      if( processAllEntities || grid->isBoundaryEntity( entity ) == processBoundaryEntities )
+      if( processAllEntities || entity.isBoundaryEntity() == processBoundaryEntities )
       {
          entity.setIndex( grid.getEntityIndex( entity ) );
          //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
@@ -321,7 +321,7 @@ __global__ void tnlTraverserGrid2DFaces( const tnlGrid< 2, Real, tnlCuda, Index 
    if( coordinates.x() < grid->getDimensions().x() + nx &&
        coordinates.y() < grid->getDimensions().y() + ny )
    {
-      if( processAllEntities || grid->isBoundaryEntity( entity ) == processBoundaryEntities )
+      if( processAllEntities || entity.isBoundaryEntity() == processBoundaryEntities )
       {
          entity.setIndex( grid.getEntityIndex( entity ) );
          EntitiesProcessor::processEntity
@@ -358,7 +358,7 @@ __global__ void tnlTraverserGrid2DVertices( const tnlGrid< 2, Real, tnlCuda, Ind
    if( coordinates.x() <= grid->getDimensions().x() &&
        coordinates.y() <= grid->getDimensions().y() )
    {
-      if( processAllEntities || grid->isBoundaryEntity( entity ) == processBoundaryEntity )
+      if( processAllEntities || entity.isBoundaryEntity() == processBoundaryEntity )
       {
          entity.setIndex( grid.getEntityIndex( entity ) );
          EntitiesProcessor::processEntity

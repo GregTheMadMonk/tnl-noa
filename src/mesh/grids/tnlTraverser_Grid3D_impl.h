@@ -495,7 +495,7 @@ __global__ void tnlTraverserGrid3DCells( const tnlGrid< 3, Real, tnlCuda, Index 
        coordinates.y() < grid->getDimensions().y() &&
        coordinates.z() < grid->getDimensions().z() )
    {
-      if( processAllEntities || grid->isBoundaryEntity( entity ) == processBoundaryEntities )
+      if( processAllEntities || entity.isBoundaryEntity() == processBoundaryEntities )
       {
          entity.setIndex( grid.getEntityIndex( entity ) );
          //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
@@ -539,7 +539,7 @@ __global__ void tnlTraverserGrid3DFaces( const tnlGrid< 3, Real, tnlCuda, Index 
        coordinates.y() < grid->getDimensions().y() + ny &&
        coordinates.z() < grid->getDimensions().z() + nz )
    {
-      if( processAllEntities || grid->isBoundaryEntity( entity ) == processBoundaryEntities )
+      if( processAllEntities || entity.isBoundaryEntity() == processBoundaryEntities )
       {
          entity.setIndex( grid.getEntityIndex( entity ) );
          //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
@@ -584,7 +584,7 @@ __global__ void tnlTraverserGrid3DEdges( const tnlGrid< 3, Real, tnlCuda, Index 
        coordinates.y() < grid->getDimensions().y() + !ny &&
        coordinates.z() < grid->getDimensions().z() + !nz )
    {
-      if( processAllEntities || grid->isBoundaryEntity( entity ) == processBoundaryEntity )
+      if( processAllEntities || entity.isBoundaryEntity() == processBoundaryEntity )
       {
          entity.setIndex( grid.getEntityIndex( entity ) );
          //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );

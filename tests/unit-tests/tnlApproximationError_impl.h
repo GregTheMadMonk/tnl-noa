@@ -67,9 +67,15 @@ getError( const Mesh& mesh,
    tnlExactOperatorEvaluator< Mesh, Vector, ExactOperator, Function, BoundaryConditionsType > operatorEvaluator;
    operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
 
-   for( IndexType i = 0; i < entities; i++ )
-      if( mesh.template isBoundaryCell( mesh.template getEntity< Mesh::Cells >( i ).getCoordinates() ) )
-         approximateData.setElement( i, exactData.getElement( i ) );
+   typename Mesh::template GridEntity< Mesh::Cells > cell( mesh );
+   for( cell.getCoordinates().x() = 0;
+        cell.getCoordinates().x() < entities;
+        cell.getCoordinates().x()++ )
+   {
+      cell.setIndex( mesh.getEntityIndex( cell ) );
+      if( cell.isBoundaryEntity() )
+         approximateData.setElement( cell.getIndex(), exactData.getElement( cell.getIndex() ) );
+   }
 
    l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
    l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );
@@ -138,18 +144,29 @@ getError( const Mesh& mesh,
    tnlExactOperatorEvaluator< Mesh, Vector, ExactOperator, Function, BoundaryConditionsType > operatorEvaluator;
    operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
 
-   for( IndexType i = 0; i < entities; i++ )
-      if( ! mesh.isBoundaryCell( i ) )
+   typename Mesh::template GridEntity< Mesh::Cells > cell( mesh );
+   for( cell.getCoordinates().x() = 0;
+        cell.getCoordinates().x() < entities;
+        cell.getCoordinates().x()++ )
+   {
+      IndexType i = mesh.getEntityIndex( cell );
+      if( ! cell.isBoundaryEntity() )
          matrix.setElement( i, i, matrix.getElement( i, i ) - 1.0 );
+   }
    matrix.vectorProduct( functionData, approximateData );
 
    // TODO: replace this when matrix.vectorProduct has multiplicator parameter
    for( IndexType i = 0; i < entities; i++ )
       approximateData.setElement( i, -1.0 * approximateData.getElement( i ) );
 
-   for( IndexType i = 0; i < entities; i++ )
-      if( mesh.isBoundaryCell( i ) )
+   for( cell.getCoordinates().x() = 0;
+        cell.getCoordinates().x() < entities;
+        cell.getCoordinates().x()++ )
+   {
+      IndexType i = mesh.getEntityIndex( cell );
+      if( cell.isBoundaryEntity() )
          approximateData.setElement( i, exactData.getElement( i ) );
+   }
 
    l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
    l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );

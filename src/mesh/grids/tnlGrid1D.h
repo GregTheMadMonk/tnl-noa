@@ -91,33 +91,10 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    __cuda_callable__
    inline Index getEntityIndex( const GridEntity< EntityDimensions >& entity ) const;
    
-   /****
-    * The type Vertex can have different Real type.
-    */
-#ifdef HAVE_NOT_CXX11
-   template< int EntityDimensions
-   , 
-             typename Vertex >
-#else
-   template< int EntityDimensions,
-             typename Vertex = VertexType >
-#endif
    __cuda_callable__
-   inline Vertex getEntityCenter( const GridEntity< EntityDimensions >& entity ) const;
-
-   template< typename GridEntity,
-             int NeighbourEntityDimensions = GridEntity::entityDimensions >
-   __cuda_callable__
-   inline tnlNeighbourGridEntityGetter< GridEntity, NeighbourEntityDimensions > 
-      getNeighbourEntities( const GridEntity& entity ) const;
+   inline VertexType getSpaceSteps() const;
    
    
-   
-
-   /*template< int dx >
-   __cuda_callable__
-   inline IndexType getCellNextToCell( const IndexType& cellIndex ) const;
-    */
 
    __cuda_callable__
    inline const RealType& getHx() const;
@@ -134,18 +111,6 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
 
-   
-   __cuda_callable__
-   inline Index getNumberOfVertices() const;
-
-   __cuda_callable__
-   inline bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
-
-   __cuda_callable__
-   inline bool isBoundaryCell( const IndexType& cellIndex ) const;
-
-   __cuda_callable__
-   inline bool isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const;
 
    template< typename GridFunction >
    typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
@@ -189,8 +154,10 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    VertexType origin, proportions, cellProportions;
 
    IndexType numberOfCells, numberOfVertices;
+   
+   VertexType spaceSteps, spaceStepsSquare, spaceStepsInverse, spaceStepsSquareInverse;
 
-   RealType hx, hxSquare, hxInverse, hxSquareInverse;
+   //RealType hx, hxSquare, hxInverse, hxSquareInverse;
 
 };
 

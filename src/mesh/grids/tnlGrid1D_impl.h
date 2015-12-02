@@ -211,6 +211,7 @@ getEntityIndex( const GridEntity< EntityDimensions >& entity ) const
    return tnlGridEntityGetter< ThisType, EntityDimensions >::getEntityIndex( *this, entity );
 }
 
+/*
 template< typename Real,
           typename Device,
           typename Index >
@@ -241,24 +242,8 @@ getNeighbourEntities( const GridEntityType& entity ) const
 {
    return tnlNeighbourGridEntityGetter< GridEntityType, NeighbourEntityDimensions >( *this, entity );
 }
+*/
 
-
-
-
-/*template< typename Real,
-          typename Device,
-          typename Index >
-   template< int dx >
-__cuda_callable__ inline
-Index tnlGrid< 1, Real, Device, Index > :: getCellNextToCell( const IndexType& cellIndex ) const
-{
-   tnlAssert( cellIndex + dx >= 0 &&
-              cellIndex + dx < this->template getEntitiesCount< Cells >(),
-              cerr << " cellIndex = " << cellIndex
-                   << " dx = " << dx
-                   << " this->template getEntitiesCount< Cells >() = " << this->template getEntitiesCount< Cells >() );
-   return cellIndex + dx;
-}*/
 
 template< typename Real,
           typename Device,
@@ -303,136 +288,6 @@ __cuda_callable__ inline
 Real tnlGrid< 1, Real, Device, Index > :: getSmallestSpaceStep() const
 {
    return this->hx;
-}
-
-/*template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename EntityTopology,
-             typename Vertex >
-__cuda_callable__
-Vertex tnlGrid< 1, Real, Device, Index > :: getEntityCenter( const CoordinatesType& coordinates ) const
-{
-   static_assert( EntityTopology::entityDimensions <= 1 &&
-                  EntityTopology::entityDimensions >= 0, "Wrong grid entity dimensions." );
-   tnlAssert( coordinates.x() >= 0 && 
-              coordinates.x() <= this->getDimensions().x() - EntityTopology::EntityProportions::i1,
-         cerr << "coordinates.x() = " << coordinates.x()
-              << " this->getDimensions().x() = " << this->getDimensions().x()
-              << " EntityTopology::EntityProportions::i1 = " << EntityTopology::EntityProportions::i1 );
-   return this->origin.x() + 
-       ( coordinates.x() + 0.5 * EntityTopology::EntityProportions::i1 ) * this->cellProportions.x();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename EntityTopology,
-             typename Vertex >
-__cuda_callable__
-Vertex tnlGrid< 1, Real, Device, Index > :: getEntityCenter( const IndexType& index ) const
-{
-   static_assert( EntityTopology::entityDimensions <= 1 &&
-                  EntityTopology::entityDimensions >= 0, "Wrong grid entity dimensions." );
-   
-   // TODO: add assertions
-   
-   if( EntityTopology::entityDimensions == Dimensions )
-      return this->getCellCenter( index );
-   if( EntityTopology::entityDimensions == Dimensions - 1 )
-      return this->template getVertex( index );
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Vertex >
-__cuda_callable__
-Vertex tnlGrid< 1, Real, Device, Index >::getCellCenter( const CoordinatesType& cellCoordinates ) const
-{
-   tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
-              cerr << "cellCoordinates.x() = " << cellCoordinates.x()
-                   << " this->getDimensions().x() = " << this->getDimensions().x() );
-   return this->origin.x() + ( cellCoordinates.x() + 0.5 ) * this->cellProportions.x();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Vertex >
-__cuda_callable__
-Vertex tnlGrid< 1, Real, Device, Index >::getCellCenter( const IndexType& cellIndex ) const
-{
-   tnlAssert( cellIndex >= 0 && cellIndex < this->template getEntitiesCount< Cells >(),
-              cerr << " cellIndex = " << cellIndex
-                   << " this->template getEntitiesCount< Cells >() = " << this->template getEntitiesCount< Cells >() );
-   return this->getCellCenter< VertexType >( this->getCellCoordinates( cellIndex ) );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Vertex >
-__cuda_callable__
-Vertex tnlGrid< 1, Real, Device, Index >::getVertex( const CoordinatesType& vertexCoordinates ) const
-{
-   tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
-              cerr << "vertexCoordinates.x() = " << vertexCoordinates.x()
-                   << " this->getDimensions().x() = " << this->getDimensions().x() );
-   return Vertex( this->origin.x() + vertexCoordinates.x() * this->cellProportions.x() );
-}
-*/
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-Index tnlGrid< 1, Real, Device, Index > :: getNumberOfVertices() const
-{
-   return this->numberOfVertices;
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-bool tnlGrid< 1, Real, Device, Index > :: isBoundaryCell( const CoordinatesType& cellCoordinates ) const
-{
-   tnlAssert( cellCoordinates.x() >= 0 && cellCoordinates.x() < this->getDimensions().x(),
-              cerr << "cellCoordinates.x() = " << cellCoordinates.x()
-                   << " this->getDimensions().x() = " << this->getDimensions().x() );
-   if( cellCoordinates.x() == 0 || cellCoordinates.x() == this->getDimensions().x() - 1 )
-      return true;
-   return false;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-bool
-tnlGrid< 1, Real, Device, Index >::
-isBoundaryCell( const IndexType& cellIndex ) const
-{
-   tnlAssert( cellIndex >= 0 && cellIndex < this->template getEntitiesCount< Cells >(),
-              cerr << " cellIndex = " << cellIndex
-                   << " this->template getEntitiesCount< Cells >() = " << this->template getEntitiesCount< Cells >() );
-   return this->isBoundaryCell( this->template getEntity< Cells >( cellIndex ).getCoordinates() );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-bool tnlGrid< 1, Real, Device, Index > :: isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const
-{
-   tnlAssert( vertexCoordinates.x() >= 0 && vertexCoordinates.x() < this->getDimensions().x() + 1,
-              cerr << "vertexCoordinates.x() = " << vertexCoordinates.x()
-                   << " this->getDimensions().x() + 1 = " << this->getDimensions().x() + 1 );
-   if( vertexCoordinates.x() == 0 || vertexCoordinates.x() == this->getDimensions().x() )
-      return true;
-   return false;
 }
 
 template< typename Real,

@@ -198,6 +198,7 @@ bool setElementType( const Mesh& mesh,
 {
    tnlString elementType;
 
+   // TODO: Fix this even for arrays
    if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
       elementType = parsedObjectType[ 2 ];

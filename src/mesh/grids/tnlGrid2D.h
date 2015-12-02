@@ -142,19 +142,6 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 
    
    
-   __cuda_callable__
-   inline bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
-
-   __cuda_callable__
-   inline bool isBoundaryCell( const IndexType& cellIndex ) const;
-
-   template< int nx, int ny >
-   __cuda_callable__
-   inline bool isBoundaryFace( const CoordinatesType& faceCoordinates ) const;
-
-   __cuda_callable__
-   inline bool isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const;
-
    template< typename GridFunction >
    typename GridFunction::RealType getAbsMax( const GridFunction& f ) const;
 

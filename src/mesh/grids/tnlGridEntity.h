@@ -22,11 +22,19 @@ template< typename GridEntity,
           int NeighbourEntityDimensions >
 class tnlNeighbourGridEntityGetter;
 
+template< typename GridEntityType >
+class tnlBoundaryGridEntityChecker;
+
+template< typename GridEntityType >
+class tnlGridEntityCenterGetter;
+
+
 template< typename Grid,
           int EntityDimensions >
 class tnlGridEntity
 {
 };
+
 
 template< int Dimensions,
           typename Real,
@@ -48,6 +56,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
       typedef tnlGridEntity< GridType, entityDimensions > ThisType;
+      typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline
       tnlGridEntity( const GridType& grid );
@@ -95,6 +104,12 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
                         EntityDimensions >,
          NeighbourEntityDimensions >
       getNeighbourEntities() const;
+      
+      __cuda_callable__ inline
+      bool isBoundaryEntity() const;
+      
+      __cuda_callable__ inline
+      VertexType getCenter() const;
 
    protected:
       
@@ -109,6 +124,10 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       EntityBasisType basis;
       
       tnlGridEntity();
+      
+      friend class tnlBoundaryGridEntityChecker< ThisType >;
+      
+      friend class tnlGridEntityCenterGetter< ThisType >;
 };
 
 /****
@@ -125,6 +144,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
       typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
+      typedef typename GridType::VertexType VertexType;
       
       static const int meshDimensions = GridType::Dimensions;
       
@@ -170,8 +190,13 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
          tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >,
          NeighbourEntityDimensions >
       getNeighbourEntities() const;
+      
+      __cuda_callable__ inline
+      bool isBoundaryEntity() const;
+      
+      __cuda_callable__ inline
+      VertexType getCenter() const;
 
-            
    protected:
       
       const GridType& grid;
@@ -185,6 +210,10 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
       EntityBasisType basis;
       
       tnlGridEntity();
+      
+      friend class tnlBoundaryGridEntityChecker< ThisType >;
+      
+      friend class tnlGridEntityCenterGetter< ThisType >;
 };
 
 /****
@@ -202,6 +231,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       typedef tnlGrid< Dimensions, Real, Device, Index > GridType;      
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
+      typedef typename GridType::VertexType VertexType;
       
       static const int meshDimensions = GridType::Dimensions;
       
@@ -244,7 +274,13 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       template< int NeighbourEntityDimensions = entityDimensions >
       __cuda_callable__ inline
       tnlNeighbourGridEntityGetter< ThisType, NeighbourEntityDimensions > getNeighbourEntities() const;
-            
+      
+      __cuda_callable__ inline
+      bool isBoundaryEntity() const;
+      
+      __cuda_callable__ inline
+      VertexType getCenter() const;
+
    protected:
       
       const GridType& grid;
@@ -258,7 +294,10 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       EntityBasisType basis;
       
       tnlGridEntity();
-
+      
+      friend class tnlBoundaryGridEntityChecker< ThisType >;
+      
+      friend class tnlGridEntityCenterGetter< ThisType >;
 };
 
 #include <mesh/grids/tnlGridEntity_impl.h>

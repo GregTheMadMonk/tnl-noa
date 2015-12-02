@@ -144,7 +144,7 @@ __global__ void tnlTraverserGrid1DCells( const tnlGrid< 1, Real, tnlCuda, Index 
 
    if( coordinates.x() < grid->getDimensions().x() )
    {
-      if( processAllEntties || grid->isBoundaryEntity( entity ) == processBoundaryEntities )
+      if( processAllEntties || entity.isBoundaryEntity() == processBoundaryEntities )
       {
          EntitiesProcessor::processEntity( *grid, *userData, grid->getEntityIndex( entity ), entity );
       }
@@ -248,7 +248,7 @@ __global__ void tnlTraverserGrid1DVertices( const tnlGrid< 1, Real, tnlCuda, Ind
 
    if( vertex.getCoordinates().x() <= grid->getDimensions().x() )
    {
-      if( processAllEntities || grid->isBoundaryVertex( vertexCoordinates ) == processBoundaryEntities )
+      if( processAllEntities || vertex.isBoundaryEntity() == processBoundaryEntities )
       {
          EntitiesProcessor::template processEntity< VertexTopology >
             ( *grid,

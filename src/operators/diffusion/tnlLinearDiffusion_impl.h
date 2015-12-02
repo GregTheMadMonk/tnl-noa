@@ -225,15 +225,16 @@ getValue( const MeshType& mesh,
           const Vector& u,
           const Real& time ) const
 {
-   return ( u[ mesh.template getCellNextToCell< -1, 0, 0 >( cellIndex ) ]
+   auto neighbourEntities = entity.getNeighbourEntities();
+   return (   u[ neighbourEntities.template getEntityIndex< -1, 0, 0 >() ]
             - 2.0 * u[ cellIndex ]
-            + u[ mesh.template getCellNextToCell< 1, 0, 0 >( cellIndex ) ] ) * mesh.getHxSquareInverse() +
-          ( u[ mesh.template getCellNextToCell< 0, -1, 0 >( cellIndex ) ]
+            + u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] ) * mesh.getHxSquareInverse() +
+          (   u[ neighbourEntities.template getEntityIndex< 0, -1, 0 >() ]
             - 2.0 * u[ cellIndex ]
-            + u[ mesh.template getCellNextToCell< 0, 1, 0 >( cellIndex ) ] ) * mesh.getHySquareInverse() +
-          ( u[ mesh.template getCellNextToCell< 0, 0, -1 >( cellIndex ) ]
+            + u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] ) * mesh.getHySquareInverse() +
+          (   u[ neighbourEntities.template getEntityIndex< 0, 0, -1 >() ]
             - 2.0 * u[ cellIndex ]
-            + u[ mesh.template getCellNextToCell< 0, 0, 1 >( cellIndex ) ] ) * mesh.getHzSquareInverse();
+            + u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] ) * mesh.getHzSquareInverse();
 }
 
 template< typename MeshReal,
@@ -274,17 +275,18 @@ updateLinearSystem( const RealType& time,
                     Vector& b,
                     Matrix& matrix ) const
 {
+   auto neighbourEntities = entity.getNeighbourEntities();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * mesh.getHxSquareInverse();
    const RealType lambdaY = tau * mesh.getHySquareInverse();
    const RealType lambdaZ = tau * mesh.getHzSquareInverse();
-   matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, 0, -1 >( index ), -lambdaZ );
-   matrixRow.setElement( 1, mesh.template getCellNextToCell< 0, -1, 0 >( index ), -lambdaY );
-   matrixRow.setElement( 2, mesh.template getCellNextToCell< -1, 0, 0 >( index ), -lambdaX );
+   matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, 0, -1 >(), -lambdaZ );
+   matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, -1, 0 >(), -lambdaY );
+   matrixRow.setElement( 2, neighbourEntities.template getEntityIndex< -1, 0, 0 >(), -lambdaX );
    matrixRow.setElement( 3, index,                             2.0 * ( lambdaX + lambdaY + lambdaZ ) );
-   matrixRow.setElement( 4, mesh.template getCellNextToCell< 1, 0, 0 >( index ),   -lambdaX );
-   matrixRow.setElement( 5, mesh.template getCellNextToCell< 0, 1, 0 >( index ),   -lambdaY );
-   matrixRow.setElement( 6, mesh.template getCellNextToCell< 0, 0, 1 >( index ),   -lambdaZ );
+   matrixRow.setElement( 4, neighbourEntities.template getEntityIndex< 1, 0, 0 >(),   -lambdaX );
+   matrixRow.setElement( 5, neighbourEntities.template getEntityIndex< 0, 1, 0 >(),   -lambdaY );
+   matrixRow.setElement( 6, neighbourEntities.template getEntityIndex< 0, 0, 1 >(),   -lambdaZ );
 }
 
 #endif	/* TNLLINEARDIFFUSION_IMP_H */

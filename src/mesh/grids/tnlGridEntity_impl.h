@@ -19,7 +19,9 @@
 #ifndef TNLGRIDENTITY_IMPL_H
 #define TNLGRIDENTITY_IMPL_H
 
-#include "tnlGridEntity.h"
+#include <mesh/grids/tnlBoundaryGridEntityChecker.h>
+#include <mesh/grids/tnlGridEntityCenterGetter.h>
+#include <mesh/grids/tnlGridEntity.h>
 
 
 template< int Dimensions,
@@ -214,6 +216,32 @@ getNeighbourEntities() const
    return tnlNeighbourGridEntityGetter< ThisType, NeighbourEntityDimensions >( this->grid, *this );
 }
 
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          int EntityDimensions >
+__cuda_callable__ inline
+bool
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
+isBoundaryEntity() const
+{
+   return tnlBoundaryGridEntityChecker< ThisType >::isBoundaryEntity( *this );
+}
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          int EntityDimensions >
+__cuda_callable__ inline
+typename tnlGrid< Dimensions, Real, Device, Index >::VertexType
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
+getCenter() const
+{
+   return tnlGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
+}
+
 
 /****
  * Specialization for cells
@@ -371,6 +399,31 @@ getNeighbourEntities() const
    return tnlNeighbourGridEntityGetter< ThisType, NeighbourEntityDimensions >( this->grid, *this );
 }
 
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__ inline
+bool
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
+isBoundaryEntity() const
+{
+   return tnlBoundaryGridEntityChecker< ThisType >::isBoundaryEntity( *this );
+}
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__ inline
+typename tnlGrid< Dimensions, Real, Device, Index >::VertexType
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
+getCenter() const
+{
+   return tnlGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
+}
+
+
 /****
  * Specialization for vertices
  */
@@ -524,6 +577,31 @@ getNeighbourEntities() const
 {
    return tnlNeighbourGridEntityGetter< ThisType, NeighbourEntityDimensions >( this->grid, *this );
 }
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__ inline
+bool
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
+isBoundaryEntity() const
+{
+   return tnlBoundaryGridEntityChecker< ThisType >::isBoundaryEntity( *this );
+}
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__ inline
+typename tnlGrid< Dimensions, Real, Device, Index >::VertexType
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
+getCenter() const
+{
+   return tnlGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
+}
+
 
 #endif	/* TNLGRIDENTITY_IMPL_H */
 
