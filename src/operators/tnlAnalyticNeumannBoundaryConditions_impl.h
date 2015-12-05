@@ -85,11 +85,11 @@ setBoundaryConditions( const RealType& time,
 {
    auto neighbourEntities = entity.getNeighbourEntities();
    fu[ index ] = 0;
-   const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
+   const Real functionValue = this->function.getValue( entity.getCenter(), time );
    if( entity.getCoordinates().x() == 0 )
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1 >() ] - mesh.getHx() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1 >() ] - mesh.getSpaceSteps().x() * functionValue;
    else
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1 >() ] + mesh.getHx() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1 >() ] + mesh.getSpaceSteps().x() * functionValue;
 }
 
 template< typename MeshReal,
@@ -130,18 +130,18 @@ updateLinearSystem( const RealType& time,
 {
    auto neighbourEntities = entity.getNeighbourEntities();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
+   const Real functionValue = this->function.getValue( entity.getCenter(), time );
    if( entity.getCoordinates().x() == 0 )
    {
       matrixRow.setElement( 0, index,                            1.0 );
       matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 1 >(), -1.0 );
-      b[ index ] = - mesh.getHx() * functionValue;
+      b[ index ] = - mesh.getSpaceSteps().x() * functionValue;
    }
    else
    {
       matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1 >(), -1.0 );
       matrixRow.setElement( 1, index,                              1.0 );
-      b[ index ] = mesh.getHx() * functionValue;
+      b[ index ] = mesh.getSpaceSteps().x() * functionValue;
    }
 }
 
@@ -168,25 +168,25 @@ setBoundaryConditions( const RealType& time,
 {
    auto neighbourEntities = entity.getNeighbourEntities();
    fu[ index ] = 0;
-   const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
+   const Real functionValue = this->function.getValue( entity.getCenter(), time );
    if( entity.getCoordinates().x() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] - mesh.getHx() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] - mesh.getSpaceSteps().x() * functionValue;
       return;
    }
    if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] + mesh.getHx() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] + mesh.getSpaceSteps().x() * functionValue;
       return;
    }
    if( entity.getCoordinates().y() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - mesh.getHy() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - mesh.getSpaceSteps().y() * functionValue;
       return;
    }
    if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] + mesh.getHy() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] + mesh.getSpaceSteps().y() * functionValue;
       return;
    }
 }
@@ -228,31 +228,31 @@ updateLinearSystem( const RealType& time,
                     Matrix& matrix ) const
 {
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
+   const Real functionValue = this->function.getValue( entity.getCenter(), time );
    auto neighbourEntities = entity.getNeighbourEntities();
    if( entity.getCoordinates().x() == 0 )
    {
       matrixRow.setElement( 0, index,                                                1.0 );
       matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 1, 0 >(), -1.0 );
-      b[ index ] = - mesh.getHx() * functionValue;
+      b[ index ] = - mesh.getSpaceSteps().x() * functionValue;
    }
    if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
       matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1, 0 >(), -1.0 );
       matrixRow.setElement( 1, index,                                                 1.0 );
-      b[ index ] = mesh.getHx() * functionValue;
+      b[ index ] = mesh.getSpaceSteps().x() * functionValue;
    }
    if( entity.getCoordinates().y() == 0 )
    {
       matrixRow.setElement( 0, index,                                                1.0 );
       matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, 1 >(), -1.0 );
-      b[ index ] = - mesh.getHy() * functionValue;
+      b[ index ] = - mesh.getSpaceSteps().y() * functionValue;
    }
    if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
       matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, -1 >(), -1.0 );
       matrixRow.setElement( 1, index,                                                 1.0 );
-      b[ index ] = mesh.getHy() * functionValue;
+      b[ index ] = mesh.getSpaceSteps().y() * functionValue;
    }
 }
 
@@ -279,35 +279,35 @@ setBoundaryConditions( const RealType& time,
    auto neighbourEntities = entity.getNeighbourEntities();
    fu[ index ] = 0;
    fu[ index ] = 0;
-   const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
+   const Real functionValue = this->function.getValue( entity.getCenter(), time );
    if( entity.getCoordinates().x() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] - mesh.getHx() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] - mesh.getSpaceSteps().x() * functionValue;
       return;
    }
    if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1, 0, 0 >() ] + mesh.getHx() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1, 0, 0 >() ] + mesh.getSpaceSteps().x() * functionValue;
       return;
    }
    if( entity.getCoordinates().y() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] - mesh.getHy() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] - mesh.getSpaceSteps().y() * functionValue;
       return;
    }
    if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, -1, 0 >() ] + mesh.getHy() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, -1, 0 >() ] + mesh.getSpaceSteps().y() * functionValue;
       return;
    }
    if( entity.getCoordinates().z() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] - mesh.getHz() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] - mesh.getSpaceSteps().z() * functionValue;
       return;
    }
    if( entity.getCoordinates().z() == mesh.getDimensions().z() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 0, - 1 >() ] + mesh.getHz() * functionValue;
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 0, - 1 >() ] + mesh.getSpaceSteps().z() * functionValue;
       return;
    }
 }
@@ -350,42 +350,42 @@ updateLinearSystem( const RealType& time,
 {
    auto neighbourEntities = entity.getNeighbourEntities();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   const Real functionValue = this->function.getValue( mesh.getEntityCenter( entity ), time );
+   const Real functionValue = this->function.getValue( entity.getCenter(), time );
    if( entity.getCoordinates().x() == 0 )
    {
       matrixRow.setElement( 0, index,                                                   1.0 );
       matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 1, 0, 0 >(), -1.0 );
-      b[ index ] = - mesh.getHx() * functionValue;
+      b[ index ] = - mesh.getSpaceSteps().x() * functionValue;
    }
    if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
       matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1, 0, 0 >(), -1.0 );
       matrixRow.setElement( 1, index,                                                    1.0 );
-      b[ index ] = mesh.getHx() * functionValue;
+      b[ index ] = mesh.getSpaceSteps().x() * functionValue;
    }
    if( entity.getCoordinates().y() == 0 )
    {
       matrixRow.setElement( 0, index,                                                   1.0 );
       matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, 1, 0 >(), -1.0 );
-      b[ index ] = - mesh.getHy() * functionValue;
+      b[ index ] = - mesh.getSpaceSteps().y() * functionValue;
    }
    if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
       matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, -1, 0 >(), -1.0 );
       matrixRow.setElement( 1, index,                                                    1.0 );
-      b[ index ] = mesh.getHy() * functionValue;
+      b[ index ] = mesh.getSpaceSteps().y() * functionValue;
    }
    if( entity.getCoordinates().z() == 0 )
    {
       matrixRow.setElement( 0, index,                                                   1.0 );
       matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, 0, 1 >(), -1.0 );
-      b[ index ] = - mesh.getHz() * functionValue;
+      b[ index ] = - mesh.getSpaceSteps().z() * functionValue;
    }
    if( entity.getCoordinates().z() == mesh.getDimensions().z() - 1 )
    {
       matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, 0, -1 >(), -1.0 );
       matrixRow.setElement( 1, index,                                                    1.0 );
-      b[ index ] = mesh.getHz() * functionValue;
+      b[ index ] = mesh.getSpaceSteps().z() * functionValue;
    }
 }
 

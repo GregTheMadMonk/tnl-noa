@@ -242,7 +242,6 @@ getCenter() const
    return tnlGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
 }
 
-
 /****
  * Specialization for cells
  */
@@ -423,6 +422,18 @@ getCenter() const
    return tnlGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
 }
 
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__ inline
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::VertexType&
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
+getEntityProportions() const
+{
+   return grid.getSpaceSteps();
+}
+
 
 /****
  * Specialization for vertices
@@ -601,6 +612,19 @@ getCenter() const
 {
    return tnlGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
 }
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__ inline
+typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::VertexType
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
+getEntityProportions() const
+{
+   return VertexType( 0.0 );
+}
+
 
 
 #endif	/* TNLGRIDENTITY_IMPL_H */

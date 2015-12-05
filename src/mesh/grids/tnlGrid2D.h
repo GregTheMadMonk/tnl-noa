@@ -74,9 +74,6 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    __cuda_callable__
    inline const VertexType& getProportions() const;
 
-   __cuda_callable__
-   inline const VertexType& getCellProportions() const;
-   
    template< int EntityDimensions >
    __cuda_callable__
    inline IndexType getEntitiesCount() const;
@@ -88,55 +85,14 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    template< int EntityDimensions >
    __cuda_callable__
    inline Index getEntityIndex( const GridEntity< EntityDimensions >& entity ) const;
-
-   /****
-    * The type Vertex can have different Real type.
-    */
-#ifdef HAVE_NOT_CXX11
-   template< int EntityDimensions, 
-             typename Vertex >
-#else
-   template< int EntityDimensions,
-             typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   inline Vertex getEntityCenter( const GridEntity< EntityDimensions >& entity ) const;
-   
-
-   
-   
-   
    
    __cuda_callable__
-   inline const RealType& getHx() const;
+   inline VertexType getSpaceSteps() const;
 
+   template< int xPow, int yPow >
    __cuda_callable__
-   inline const RealType& getHxSquare() const;
-
-   __cuda_callable__
-   inline const RealType& getHxInverse() const;
-
-   __cuda_callable__
-   inline const RealType& getHxSquareInverse() const;
-
-   __cuda_callable__
-   inline const RealType& getHy() const;
-
-   __cuda_callable__
-   inline const RealType& getHySquare() const;
-
-   __cuda_callable__
-   inline const RealType& getHyInverse() const;
-
-   __cuda_callable__
-   inline const RealType& getHySquareInverse() const;
-
-   __cuda_callable__
-   inline const RealType& getHxHy() const;
-
-   __cuda_callable__
-   inline const RealType& getHxHyInverse() const;
-
+   inline const RealType& getSpaceStepsProducts() const;
+   
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
 
@@ -184,15 +140,15 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    void computeSpaceSteps();
 
    CoordinatesType dimensions;
-
-   VertexType origin, proportions, cellProportions;
-
+   
    IndexType numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfFaces, numberOfVertices;
 
-   RealType hx, hxSquare, hxInverse, hxSquareInverse,
-            hy, hySquare, hyInverse, hySquareInverse,
-            hxhy, hxhyInverse;
-
+   VertexType origin, proportions;
+   
+   VertexType spaceSteps;
+   
+   RealType spaceStepsProducts[ 5 ][ 5 ];
+   
    friend class tnlGridEntityGetter< ThisType, 2 >;
    friend class tnlGridEntityGetter< ThisType, 1 >;
    friend class tnlGridEntityGetter< ThisType, 0 >;

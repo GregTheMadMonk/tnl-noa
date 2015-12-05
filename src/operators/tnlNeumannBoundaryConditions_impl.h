@@ -64,9 +64,9 @@ setBoundaryConditions( const RealType& time,
    auto neighbourEntities = entity.getNeighbourEntities();
    fu[ index ] = 0;
    if( entity.getCoordinates().x() == 0 )
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1 >() ] - mesh.getHx() * this->vector[ index ];
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1 >() ] - mesh.getSpaceSteps().x() * this->vector[ index ];
    else
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1 >() ] + mesh.getHx() * this->vector[ index ];
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1 >() ] + mesh.getSpaceSteps().x() * this->vector[ index ];
 }
 
 template< typename MeshReal,
@@ -111,13 +111,13 @@ updateLinearSystem( const RealType& time,
    {
       matrixRow.setElement( 0, index, 1.0 );
       matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 1 >(), -1.0 );
-      b[ index ] = - mesh.getHx() * this->vector[ index];
+      b[ index ] = - mesh.getSpaceSteps().x() * this->vector[ index];
    }
    else
    {
       matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1 >(), -1.0 );
       matrixRow.setElement( 1, index, 1.0 );
-      b[ index ] = mesh.getHx() * this->vector[ index ];
+      b[ index ] = mesh.getSpaceSteps().x() * this->vector[ index ];
    }
 }
 
@@ -145,22 +145,22 @@ setBoundaryConditions( const RealType& time,
    fu[ index ] = 0;
    if( entity.getCoordinates().x() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] - mesh.getHx() * this->vector[ index ];
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] - mesh.getSpaceSteps().x() * this->vector[ index ];
       return;
    }
    if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] + mesh.getHx() * this->vector[ index ];
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] + mesh.getSpaceSteps().x() * this->vector[ index ];
       return;
    }
    if( entity.getCoordinates().y() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - mesh.getHy() * this->vector[ index ];
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - mesh.getSpaceSteps().y() * this->vector[ index ];
       return;
    }
    if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] + mesh.getHy() * this->vector[ index ];
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] + mesh.getSpaceSteps().y() * this->vector[ index ];
       return;
    }
 }
@@ -207,25 +207,25 @@ updateLinearSystem( const RealType& time,
    {
       matrixRow.setElement( 0, index,                                                1.0 );
       matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 1, 0 >(), -1.0 );
-      b[ index ] = - mesh.getHx() * this->vector[ index ];
+      b[ index ] = - mesh.getSpaceSteps().x() * this->vector[ index ];
    }
    if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
       matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1, 0 >(), -1.0 );
       matrixRow.setElement( 1, index,                                                 1.0 );
-      b[ index ] = mesh.getHx() * this->vector[ index ];
+      b[ index ] = mesh.getSpaceSteps().x() * this->vector[ index ];
    }
    if( entity.getCoordinates().y() == 0 )
    {
       matrixRow.setElement( 0, index,                                                1.0 );
       matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, 1 >(), -1.0 );
-      b[ index ] = - mesh.getHy() * this->vector[ index ];
+      b[ index ] = - mesh.getSpaceSteps().y() * this->vector[ index ];
    }
    if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
       matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, -1 >(), -1.0 );
       matrixRow.setElement( 1, index,                                                 1.0 );
-      b[ index ] = mesh.getHy() * this->vector[ index ];
+      b[ index ] = mesh.getSpaceSteps().y() * this->vector[ index ];
    }
 }
 
@@ -253,32 +253,32 @@ setBoundaryConditions( const RealType& time,
    fu[ index ] = 0;
    if( entity.getCoordinates().x() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] - mesh.getHx() * this->vector[ index ];
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] - mesh.getSpaceSteps().x() * this->vector[ index ];
       return;
    }
    if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1, 0, 0 >() ] + mesh.getHx() * this->vector[ index ];
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1, 0, 0 >() ] + mesh.getSpaceSteps().x() * this->vector[ index ];
       return;
    }
    if( entity.getCoordinates().y() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] - mesh.getHy() * this->vector[ index ];
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] - mesh.getSpaceSteps().y() * this->vector[ index ];
       return;
    }
    if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, -1, 0 >() ] + mesh.getHy() * this->vector[ index ];
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, -1, 0 >() ] + mesh.getSpaceSteps().y() * this->vector[ index ];
       return;
    }
    if( entity.getCoordinates().z() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] - mesh.getHz() * this->vector[ index ];
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] - mesh.getSpaceSteps().z() * this->vector[ index ];
       return;
    }
    if( entity.getCoordinates().z() == mesh.getDimensions().z() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 0, -1 >() ] + mesh.getHz() * this->vector[ index ];
+      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 0, -1 >() ] + mesh.getSpaceSteps().z() * this->vector[ index ];
       return;
    }
 }
@@ -325,37 +325,37 @@ updateLinearSystem( const RealType& time,
    {
       matrixRow.setElement( 0, index,                                                   1.0 );
       matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 1, 0, 0 >(), -1.0 );
-      b[ index ] = - mesh.getHx() * this->vector[ index ];
+      b[ index ] = - mesh.getSpaceSteps().x() * this->vector[ index ];
    }
    if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
       matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1, 0, 0 >(), -1.0 );
       matrixRow.setElement( 1, index,                                                    1.0 );
-      b[ index ] = mesh.getHx() * this->vector[ index ];
+      b[ index ] = mesh.getSpaceSteps().x() * this->vector[ index ];
    }
    if( entity.getCoordinates().y() == 0 )
    {
       matrixRow.setElement( 0, index,                                                   1.0 );
       matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, 1, 0 >(), -1.0 );
-      b[ index ] = - mesh.getHy() * this->vector[ index ];
+      b[ index ] = - mesh.getSpaceSteps().y() * this->vector[ index ];
    }
    if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
       matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, -1, 0 >(), -1.0 );
       matrixRow.setElement( 1, index,                                                    1.0 );
-      b[ index ] = mesh.getHy() * this->vector[ index ];
+      b[ index ] = mesh.getSpaceSteps().y() * this->vector[ index ];
    }
    if( entity.getCoordinates().z() == 0 )
    {
       matrixRow.setElement( 0, index,                                                   1.0 );
       matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, 0, 1 >(), -1.0 );
-      b[ index ] = - mesh.getHz() * this->vector[ index ];
+      b[ index ] = - mesh.getSpaceSteps().z() * this->vector[ index ];
    }
    if( entity.getCoordinates().z() == mesh.getDimensions().z() - 1 )
    {
       matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, 0, -1 >(), -1.0 );
       matrixRow.setElement( 1, index,                                                    1.0 );
-      b[ index ] = mesh.getHz() * this->vector[ index ];
+      b[ index ] = mesh.getSpaceSteps().z() * this->vector[ index ];
    }
 }
 

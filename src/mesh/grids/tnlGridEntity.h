@@ -110,7 +110,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       
       __cuda_callable__ inline
       VertexType getCenter() const;
-
+      
    protected:
       
       const GridType& grid;
@@ -123,6 +123,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       
       EntityBasisType basis;
       
+      __cuda_callable__ inline
       tnlGridEntity();
       
       friend class tnlBoundaryGridEntityChecker< ThisType >;
@@ -196,6 +197,9 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
       
       __cuda_callable__ inline
       VertexType getCenter() const;
+      
+      __cuda_callable__ inline
+      const VertexType& getEntityProportions() const;      
 
    protected:
       
@@ -209,6 +213,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
       
       EntityBasisType basis;
       
+      __cuda_callable__ inline
       tnlGridEntity();
       
       friend class tnlBoundaryGridEntityChecker< ThisType >;
@@ -280,7 +285,10 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       
       __cuda_callable__ inline
       VertexType getCenter() const;
-
+      
+      __cuda_callable__ inline
+      VertexType getEntityProportions() const;
+      
    protected:
       
       const GridType& grid;
@@ -293,6 +301,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       
       EntityBasisType basis;
       
+      __cuda_callable__ inline
       tnlGridEntity();
       
       friend class tnlBoundaryGridEntityChecker< ThisType >;

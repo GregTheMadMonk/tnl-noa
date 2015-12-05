@@ -83,18 +83,55 @@ void tnlGrid< 2, Real, Device, Index > :: computeSpaceSteps()
 {
    if( this->getDimensions().x() > 0 && this->getDimensions().y() > 0 )
    {
-      this->cellProportions.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
-      this->cellProportions.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
-      this->hx = this->proportions.x() / ( Real ) this->getDimensions().x();
-      this->hxSquare = this->hx * this->hx;
-      this->hxInverse = 1.0 / this->hx;
-      this->hxSquareInverse = this->hxInverse * this->hxInverse;
-      this->hy = this->proportions.y() / ( Real ) this->getDimensions().y();
-      this->hySquare = this->hy * this->hy;
-      this->hyInverse = 1.0 / this->hy;
-      this->hySquareInverse = this->hyInverse * this->hyInverse;
-      this->hxhy = this->hx * this->hy;
-      this->hxhyInverse = 1.0 / this->hxhy;
+      this->spaceSteps.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
+      this->spaceSteps.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
+      const RealType& hx = this->spaceSteps.x(); 
+      const RealType& hy = this->spaceSteps.y();
+      
+      Real auxX, auxY;
+      for( int i = 0; i < 5; i++ )
+      {
+         switch( i )
+         {
+            case 0:
+               auxX = 1.0 / ( hx * hx );
+               break;
+            case 1:
+               auxX = 1.0 / hx;
+               break;
+            case 2:
+               auxX = 1.0;
+               break;
+            case 3:
+               auxX = hx;
+               break;
+            case 4:
+               auxX = hx * hx;
+               break;
+         }
+         for( int j = 0; j < 5; j++ )
+         {
+            switch( j )
+            {
+               case 0:
+                  auxY = 1.0 / ( hy * hy );
+                  break;
+               case 1:
+                  auxY = 1.0 / hy;
+                  break;
+               case 2:
+                  auxY = 1.0;
+                  break;
+               case 3:
+                  auxY = hy;
+                  break;
+               case 4:
+                  auxY = hy * hy;
+                  break;
+            }
+            this->spaceStepsProducts[ i ][ j ] = auxX * auxY;         
+         }
+      }
    }
 }
 
@@ -168,16 +205,6 @@ const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__ inline 
-const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
-tnlGrid< 2, Real, Device, Index > :: getCellProportions() const
-{
-   return this->cellProportions;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< int EntityDimensions >
 __cuda_callable__ inline 
 Index
@@ -231,115 +258,29 @@ getEntityIndex( const GridEntity< EntityDimensions >& entity ) const
 template< typename Real,
           typename Device,
           typename Index >
-   template< int EntityDimensions,
-             typename Vertex >
 __cuda_callable__ inline
-Vertex tnlGrid< 2, Real, Device, Index > :: getEntityCenter( const GridEntity< EntityDimensions >& entity ) const
+typename tnlGrid< 2, Real, Device, Index >::VertexType
+tnlGrid< 2, Real, Device, Index >::
+getSpaceSteps() const
 {
-   static_assert( EntityDimensions <= 2 &&
-                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
-   tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-              entity.getCoordinates() <= this->getDimensions() - entity.getBasis(),
-                    cerr << "entity.getCoordinates(). = " << entity.getCoordinates()
-                         << " this->getDimensions() = " << this->getDimensions()
-                         << " entity.getBasis() = " << entity.getBasis() );
-   return Vertex( this->origin.x() + ( entity.getCoordinates().x() + 0.5 * entity.getBasis().x() ) * this->cellProportions.x(),
-                  this->origin.y() + ( entity.getCoordinates().y() + 0.5 * entity.getBasis().y() ) * this->cellProportions.y() );
-}
-
-
-
-
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const Real& tnlGrid< 2, Real, Device, Index > :: getHx() const
-{
-   return this->hx;
+   return this->spaceSteps;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__ inline
-const Real& tnlGrid< 2, Real, Device, Index > :: getHxSquare() const
+   template< int xPow, int yPow  >
+__cuda_callable__ inline 
+const Real& 
+tnlGrid< 2, Real, Device, Index >::
+getSpaceStepsProducts() const
 {
-   return this->hxSquare;
-}
+   tnlAssert( xPow >= -2 && xPow <= 2, 
+              cerr << " xPow = " << xPow );
+   tnlAssert( yPow >= -2 && yPow <= 2, 
+              cerr << " yPow = " << yPow );
 
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const Real& tnlGrid< 2, Real, Device, Index > :: getHxInverse() const
-{
-   return this->hxInverse;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const Real& tnlGrid< 2, Real, Device, Index > :: getHxSquareInverse() const
-{
-   return this->hxSquareInverse;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const Real& tnlGrid< 2, Real, Device, Index > :: getHy() const
-{
-   return this->hy;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const Real& tnlGrid< 2, Real, Device, Index > :: getHySquare() const
-{
-   return this->hySquare;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const Real& tnlGrid< 2, Real, Device, Index > :: getHyInverse() const
-{
-   return this->hyInverse;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const Real& tnlGrid< 2, Real, Device, Index > :: getHySquareInverse() const
-{
-   return this->hySquareInverse;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const Real& tnlGrid< 2, Real, Device, Index > :: getHxHy() const
-{
-   return this->hxhy;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const Real& tnlGrid< 2, Real, Device, Index > :: getHxHyInverse() const
-{
-   return this->hxhyInverse;
+   return this->spaceStepsProducts[ yPow + 2 ][ xPow + 2 ];
 }
 
 template< typename Real,
@@ -348,7 +289,7 @@ template< typename Real,
 __cuda_callable__ inline
 Real tnlGrid< 2, Real, Device, Index > :: getSmallestSpaceStep() const
 {
-   return Min( this->hx, this->hy );
+   return Min( this->spaceSteps.x(), this->spaceSteps.y() );
 }
  
 template< typename Real,
@@ -381,7 +322,7 @@ template< typename Real,
          IndexType c = this->getEntityIndex( cell );
          lpNorm += pow( tnlAbs( f1[ c ] ), p );
       }
-   lpNorm *= this->cellProportions.x() * this->cellProportions.y();
+   lpNorm *= this->getSpaceSteps().x() * this->getSpaceSteps().y();
    return pow( lpNorm, 1.0/p );
 }
 
@@ -417,7 +358,7 @@ template< typename Real,
          IndexType c = this->getEntityIndex( cell );
          lpNorm += pow( tnlAbs( f1[ c ] - f2[ c ] ), p );
       }
-   lpNorm *= this->cellProportions.x() * this->cellProportions.y();
+   lpNorm *= this->getSpaceSteps().x() * this->getSpaceSteps().y();
    return pow( lpNorm, 1.0 / p );
 }
 
@@ -500,13 +441,13 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
          file << "draw( ";
          vertexCoordinates.x() = 0;
          vertexCoordinates.y() = j;
-         v = this->template getEntityCenter< 0, VertexType >( vertex );
+         v = vertex.getCenter();
          file << "( " << v. x() << ", " << v. y() << " )";
          for( Index i = 0; i < this -> dimensions. x(); i ++ )
          {
             vertexCoordinates.x() = i + 1;
             vertexCoordinates.y() = j;
-            v = this -> getEntityCenter< 0, VertexType >( vertex );
+            v = vertex.getCenter();
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
          file << " );" << endl;
@@ -517,13 +458,13 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
          file << "draw( ";
          vertexCoordinates.x() = i;
          vertexCoordinates.y() = 0;
-         v = this -> getEntityCenter< 0, VertexType >( vertex );
+         v = vertex.getCenter();
          file << "( " << v. x() << ", " << v. y() << " )";
          for( Index j = 0; j < this -> dimensions. y(); j ++ )
          {
             vertexCoordinates.x() = i;
             vertexCoordinates.y() = j + 1;
-            v = this->template getEntityCenter< 0, VertexType >( vertex );
+            v = vertex.getCenter();
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
          file << " );" << endl;
@@ -532,13 +473,13 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
 
       GridEntity< 2 > cell( *this );
       CoordinatesType& cellCoordinates = cell.getCoordinates();
-      const RealType cellMeasure = this->cellProportions.x() * this->cellProportions.y();
+      const RealType cellMeasure = this->getSpaceSteps().x() * this->getSpaceSteps().y();
       for( Index i = 0; i < this -> dimensions. x(); i ++ )
          for( Index j = 0; j < this -> dimensions. y(); j ++ )
          {
             cellCoordinates.x() = i;
             cellCoordinates.y() = j;
-            v = this->template getEntityCenter< 2, VertexType >( cell );
+            v = vertex.getCenter();
             file << "label( scale(0.33) * Label( \"$" << setprecision( 3 ) << cellMeasure << setprecision( 8 )
                  << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" << endl;
          }
@@ -629,7 +570,7 @@ bool tnlGrid< 2, Real, Device, Index > :: write( const MeshFunction& function,
       {
          for( cellCoordinates.x() = 0; cellCoordinates.x() < getDimensions(). x(); cellCoordinates.x() ++ )
          {
-            VertexType v = this->template getEntityCenter< 2, VertexType >( cell );
+            VertexType v = cell.getCenter();
             tnlGnuplotWriter::write( file,  v );
             tnlGnuplotWriter::write( file,  function[ this->getEntityIndex( cell ) ] );
             file << endl;
@@ -652,7 +593,7 @@ writeProlog( tnlLogger& logger )
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );
-   logger.writeParameter( "Cell proportions:", this->cellProportions );
+   logger.writeParameter( "Space steps:", this->getSpaceSteps() );
 }
 
 

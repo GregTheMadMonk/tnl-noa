@@ -74,9 +74,6 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    __cuda_callable__
    inline const VertexType& getProportions() const;
 
-   __cuda_callable__
-   inline const VertexType& getCellProportions() const;
-   
    template< int EntityDimensions >
    __cuda_callable__
    inline IndexType getEntitiesCount() const;
@@ -89,75 +86,14 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    __cuda_callable__
    inline Index getEntityIndex( const GridEntity< EntityDimensions >& entity ) const;
 
-   /****
-    * The type Vertex can have different Real type.
-    */
-#ifdef HAVE_NOT_CXX11
-   template< int EntityDimensions, 
-             typename Vertex >
-#else
-   template< int EntityDimensions,
-             typename Vertex = VertexType >
-#endif
    __cuda_callable__
-   inline Vertex getEntityCenter( const GridEntity< EntityDimensions >& entity ) const;
+   inline VertexType getSpaceSteps() const;
    
+   template< int xPow, int yPow, int zPow >
+   __cuda_callable__
+   inline const RealType& getSpaceStepsProducts() const;
+
    
-
-   __cuda_callable__
-   inline const RealType& getHx() const;
-
-   __cuda_callable__
-   inline const RealType& getHxSquare() const;
-
-   __cuda_callable__
-   inline const RealType& getHxInverse() const;
-
-   __cuda_callable__
-   inline const RealType& getHxSquareInverse() const;
-
-   __cuda_callable__
-   inline const RealType& getHy() const;
-
-   __cuda_callable__
-   inline const RealType& getHySquare() const;
-
-   __cuda_callable__
-   inline const RealType& getHyInverse() const;
-
-   __cuda_callable__
-   inline const RealType& getHySquareInverse() const;
-
-   __cuda_callable__
-   inline const RealType& getHz() const;
-
-   __cuda_callable__
-   inline const RealType& getHzSquare() const;
-
-   __cuda_callable__
-   inline const RealType& getHzInverse() const;
-
-   __cuda_callable__
-   inline const RealType& getHzSquareInverse() const;
-
-   __cuda_callable__
-   inline const RealType& getHxHy() const;
-
-   __cuda_callable__
-   inline const RealType& getHxHz() const;
-
-   __cuda_callable__
-   inline const RealType& getHyHz() const;
-
-   __cuda_callable__
-   inline const RealType& getHxHyInverse() const;
-
-   __cuda_callable__
-   inline const RealType& getHxHzInverse() const;
-
-   __cuda_callable__
-   inline const RealType& getHyHzInverse() const;
-
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
  
@@ -203,20 +139,19 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    void computeSpaceSteps();
 
    CoordinatesType dimensions;
-
-   VertexType origin, proportions, cellProportions;
-
+   
    IndexType numberOfCells,
-             numberOfNxFaces, numberOfNyFaces, numberOfNzFaces, numberOfNxAndNyFaces, numberOfFaces,
-             numberOfDxEdges, numberOfDyEdges, numberOfDzEdges, numberOfDxAndDyEdges, numberOfEdges,
-             numberOfVertices;
-   IndexType cellZNeighboursStep;
+          numberOfNxFaces, numberOfNyFaces, numberOfNzFaces, numberOfNxAndNyFaces, numberOfFaces,
+          numberOfDxEdges, numberOfDyEdges, numberOfDzEdges, numberOfDxAndDyEdges, numberOfEdges,
+          numberOfVertices;
 
-   RealType hx, hxSquare, hxInverse, hxSquareInverse,
-            hy, hySquare, hyInverse, hySquareInverse,
-            hz, hzSquare, hzInverse, hzSquareInverse,
-            hxhy, hxhz, hyhz,
-            hxhyInverse, hxhzInverse, hyhzInverse;
+   VertexType origin, proportions;
+
+   //IndexType cellZNeighboursStep;
+   
+   VertexType spaceSteps;
+   
+   RealType spaceStepsProducts[ 5 ][ 5 ][ 5 ];
 
    friend class tnlGridEntityGetter< ThisType, 3 >;
    friend class tnlGridEntityGetter< ThisType, 2 >;

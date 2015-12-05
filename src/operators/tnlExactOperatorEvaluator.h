@@ -199,7 +199,7 @@ class tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, Dof
                userData.fu[ index ] = 
                   userData.differentialOperator.getValue
                      ( userData.function,
-                       mesh.getEntityCenter( entity ),                                                                           
+                       entity.getCenter(),                                                                           
                        userData.time );
             }
 

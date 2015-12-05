@@ -56,8 +56,8 @@ class tnlGridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCas
       grid.setDomain( VertexType( 0.0, 0.0 ), VertexType( 1.0, 1.0 ) );
       grid.setDimensions( 10, 20 );
 
-      CPPUNIT_ASSERT( grid.getCellProportions().x() == 0.1 );
-      CPPUNIT_ASSERT( grid.getCellProportions().y() == 0.05 );
+      CPPUNIT_ASSERT( grid.getSpaceSteps().x() == 0.1 );
+      CPPUNIT_ASSERT( grid.getSpaceSteps().y() == 0.05 );
    }
 
    void cellIndexingTest()

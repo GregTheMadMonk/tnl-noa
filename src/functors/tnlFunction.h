@@ -33,7 +33,8 @@ class tnlFunction
    public:
       
       static const int dimensions = Dimensions;
-      static constexpr int getDimensions() { return Dimensions; }
+      // TODO: restore constexpr when CUDA allows it
+      //static constexpr int getDimensions() { return Dimensions; }
       
       //static constexpr tnlFunctionType getFunctionType() { return FunctionType; }
       enum { functionType = FunctionType };

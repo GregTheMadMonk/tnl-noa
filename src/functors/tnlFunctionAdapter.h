@@ -87,7 +87,7 @@ class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, 
                                 const EntityType& entity,
                                 const RealType& time )
       {
-         return function.getValue( mesh.getEntityCenter( entity ), time );
+         return function.getValue( entity.getCenter(), time );
          //return 0.0;
       }
 };

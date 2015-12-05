@@ -35,7 +35,7 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Index 
    public:
       
       typedef tnlGrid< 1, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType,1 > GridEntityType;
+      typedef tnlGridEntity< GridType, 1 > GridEntityType;
       typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline
@@ -43,7 +43,7 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Index 
       {
          const GridType& grid = entity.grid;
          return VertexType(
-            grid.getOrigin().x() + ( entity.getCoordinates().x() + 0.5 ) * grid.getSpaceStep().x() );
+            grid.getOrigin().x() + ( entity.getCoordinates().x() + 0.5 ) * grid.getSpaceSteps().x() );
       }
 };
 
@@ -55,7 +55,7 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Index 
    public:
       
       typedef tnlGrid< 1, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType,1 > GridEntityType;
+      typedef tnlGridEntity< GridType, 0 > GridEntityType;
       typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline
@@ -63,7 +63,7 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Index 
       {
          const GridType& grid = entity.grid;
          return VertexType(
-            grid.getOrigin().x() + ( entity.getCoordinates().x() ) * grid.getSpaceStep().x() );
+            grid.getOrigin().x() + ( entity.getCoordinates().x() ) * grid.getSpaceSteps().x() );
       }
 };
 
@@ -86,8 +86,8 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Index 
       {
          const GridType& grid = entity.grid;
          return VertexType(
-            grid.getOrigin().x() + ( entity.getCoordinates().x() + 0.5 ) * grid.getSpaceStep().x(),
-            grid.getOrigin().y() + ( entity.getCoordinates().y() + 0.5 ) * grid.getSpaceStep().y() );
+            grid.getOrigin().x() + ( entity.getCoordinates().x() + 0.5 ) * grid.getSpaceSteps().x(),
+            grid.getOrigin().y() + ( entity.getCoordinates().y() + 0.5 ) * grid.getSpaceSteps().y() );
       }
 };
 
@@ -99,7 +99,7 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Index 
    public:
       
       typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType,2 > GridEntityType;
+      typedef tnlGridEntity< GridType, 1 > GridEntityType;
       typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline
@@ -108,9 +108,9 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Index 
          const GridType& grid = entity.grid;
          return VertexType(
             grid.getOrigin().x() + 
-               ( entity.getCoordinates().x() + 0.5 * entity.getBasis().x() ) * grid.getSpaceStep().x(),
+               ( entity.getCoordinates().x() + 0.5 * entity.getBasis().x() ) * grid.getSpaceSteps().x(),
             grid.getOrigin().y() + 
-               ( entity.getCoordinates().y() + 0.5 * entity.getBasis().y() ) * grid.getSpaceStep().y() );
+               ( entity.getCoordinates().y() + 0.5 * entity.getBasis().y() ) * grid.getSpaceSteps().y() );
       }
 };
 
@@ -123,7 +123,7 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Index 
    public:
       
       typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType,2 > GridEntityType;
+      typedef tnlGridEntity< GridType, 0 > GridEntityType;
       typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline
@@ -131,8 +131,8 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Index 
       {
          const GridType& grid = entity.grid;
          return VertexType(
-            grid.getOrigin().x() + entity.getCoordinates().x() * grid.getSpaceStep().x(),
-            grid.getOrigin().y() + entity.getCoordinates().y() * grid.getSpaceStep().y() );
+            grid.getOrigin().x() + entity.getCoordinates().x() * grid.getSpaceSteps().x(),
+            grid.getOrigin().y() + entity.getCoordinates().y() * grid.getSpaceSteps().y() );
       }
 };
 
@@ -149,7 +149,7 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Index 
    public:
       
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, 3 > GridEntityType;
+      typedef tnlGridEntity< GridType, EntityDimensions > GridEntityType;
       typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline
@@ -158,11 +158,11 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Index 
          const GridType& grid = entity.grid;
          return VertexType(
             grid.getOrigin().x() + 
-               ( entity.getCoordinates().x() + 0.5 * entity.getBasis().x() ) * grid.getSpaceStep().x(),
+               ( entity.getCoordinates().x() + 0.5 * entity.getBasis().x() ) * grid.getSpaceSteps().x(),
             grid.getOrigin().y() + 
-               ( entity.getCoordinates().y() + 0.5 * entity.getBasis().y() ) * grid.getSpaceStep().y(),
+               ( entity.getCoordinates().y() + 0.5 * entity.getBasis().y() ) * grid.getSpaceSteps().y(),
             grid.getOrigin().z() + 
-               ( entity.getCoordinates().z() + 0.5 * entity.getBasis().z() ) * grid.getSpaceStep().z() );
+               ( entity.getCoordinates().z() + 0.5 * entity.getBasis().z() ) * grid.getSpaceSteps().z() );
       }
 };
 
@@ -182,9 +182,9 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Index 
       {
          const GridType& grid = entity.grid;
          return VertexType(
-            grid.getOrigin().x() + ( entity.getCoordinates().x() + 0.5 ) * grid.getSpaceStep().x(),
-            grid.getOrigin().y() + ( entity.getCoordinates().y() + 0.5 ) * grid.getSpaceStep().y(),
-            grid.getOrigin().z() + ( entity.getCoordinates().z() + 0.5 ) * grid.getSpaceStep().z() );
+            grid.getOrigin().x() + ( entity.getCoordinates().x() + 0.5 ) * grid.getSpaceSteps().x(),
+            grid.getOrigin().y() + ( entity.getCoordinates().y() + 0.5 ) * grid.getSpaceSteps().y(),
+            grid.getOrigin().z() + ( entity.getCoordinates().z() + 0.5 ) * grid.getSpaceSteps().z() );
       }
 };
 
@@ -196,7 +196,7 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Index 
    public:
       
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, 3 > GridEntityType;
+      typedef tnlGridEntity< GridType, 0 > GridEntityType;
       typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline
@@ -204,9 +204,9 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Index 
       {
          const GridType& grid = entity.grid;
          return VertexType(
-            grid.getOrigin().x() + ( entity.getCoordinates().x() ) * grid.getSpaceStep().x(),
-            grid.getOrigin().y() + ( entity.getCoordinates().y() ) * grid.getSpaceStep().y(),
-            grid.getOrigin().z() + ( entity.getCoordinates().z() ) * grid.getSpaceStep().z() );
+            grid.getOrigin().x() + ( entity.getCoordinates().x() ) * grid.getSpaceSteps().x(),
+            grid.getOrigin().y() + ( entity.getCoordinates().y() ) * grid.getSpaceSteps().y(),
+            grid.getOrigin().z() + ( entity.getCoordinates().z() ) * grid.getSpaceSteps().z() );
       }
 };
 

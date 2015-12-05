@@ -73,7 +73,7 @@ Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index > >::getDifference( c
 
    if( YDifferenceOrder > 0 || ZDifferenceOrder > 0 )
       return 0.0;
-   const RealType hx = grid.getCellProportions().x();
+   const RealType hx = grid.getSpaceSteps().x();
    auto neighbourEntities = cell.getNeighbourEntities();
    IndexType cellIndex = grid.getEntityIndex( cell );
    if( XDifferenceOrder == 1 )
@@ -130,26 +130,26 @@ Real tnlFiniteDifferences< tnlGrid< 2, Real, Device, Index > >::getDifference( c
    IndexType cellIndex = grid.getEntityIndex( cell );
    if( XDifferenceOrder == 1 )
    {
-      const RealType hx = grid.getCellProportions().x();
+      const RealType hx = grid.getSpaceSteps().x();
       return ( function[ neighbourEntities.template getEntityIndex< XDifferenceDirection, 0 >( cellIndex ) ] -
                function[ cellIndex ] ) / ( XDifferenceDirection * hx );
    }
    if( XDifferenceOrder == 2 )
    {
-      const RealType hx = grid.getCellProportions().x();
+      const RealType hx = grid.getSpaceSteps().x();
       return ( function[ neighbourEntities.template getEntityIndex< 1, 0 >( cellIndex ) ] -
                2.0 * function[ cellIndex ] +
                function[ neighbourEntities.template getEntityIndex< -1, 0 >( cellIndex ) ] ) / (  hx * hx );
    }
    if( YDifferenceOrder == 1 )
    {
-      const RealType hy = grid.getCellProportions().y();
+      const RealType hy = grid.getSpaceSteps().y();
       return ( function[ neighbourEntities.template getEntityIndex< 0, YDifferenceDirection >( cellIndex ) ] -
                function[ cellIndex ] ) / ( YDifferenceDirection * hy );
    }
    if( YDifferenceOrder == 2 )
    {
-      const RealType hy = grid.getCellProportions().y();
+      const RealType hy = grid.getSpaceSteps().y();
       return ( function[ neighbourEntities.template getEntityIndex< 0, 1 >( cellIndex ) ] -
                2.0 * function[ cellIndex ] +
                function[ neighbourEntities.template getEntityIndex< 0, -1 >( cellIndex ) ] ) / (  hy * hy );
@@ -194,39 +194,39 @@ Real tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index > >::getDifference( c
 
    if( XDifferenceOrder == 1 )
    {
-      const RealType hx = grid.getCellProportions().x();
+      const RealType hx = grid.getSpaceSteps().x();
       return ( function[ neighbourEntities.template getEntityIndex< XDifferenceDirection, 0, 0 >( cellIndex ) ] -
                function[ cellIndex ] ) / ( XDifferenceDirection * hx );
    }
    if( XDifferenceOrder == 2 )
    {
-      const RealType hx = grid.getCellProportions().x();
+      const RealType hx = grid.getSpaceSteps().x();
       return ( function[ neighbourEntities.template getEntityIndex< 1, 0, 0 >( cellIndex ) ] -
                2.0 * function[ cellIndex ] +
                function[ neighbourEntities.template getEntityIndex< -1, 0, 0 >( cellIndex ) ] ) / (  hx * hx );
    }
    if( YDifferenceOrder == 1 )
    {      
-      const RealType hy = grid.getCellProportions().y();
+      const RealType hy = grid.getSpaceSteps().y();
       return ( function[ neighbourEntities.template getEntityIndex< 0, YDifferenceDirection, 0 >( cellIndex ) ] -
                function[ cellIndex ] ) / ( YDifferenceDirection * hy );
    }
    if( YDifferenceOrder == 2 )
    {
-      const RealType hy = grid.getCellProportions().y();
+      const RealType hy = grid.getSpaceSteps().y();
       return ( function[ neighbourEntities.template getEntityIndex< 0, 1, 0 >( cellIndex ) ] -
                2.0 * function[ cellIndex ] +
                function[ neighbourEntities.template getEntityIndex< 0, -1, 0 >( cellIndex ) ] ) / (  hy * hy );
    }
    if( ZDifferenceOrder == 1 )
    {
-      const RealType hz = grid.getCellProportions().z();
+      const RealType hz = grid.getSpaceSteps().z();
       return ( function[ neighbourEntities.template getEntityIndex< 0, 0, ZDifferenceDirection >( cellIndex ) ] -
                function[ cellIndex ] ) / ( ZDifferenceDirection * hz );
    }
    if( ZDifferenceOrder == 2 )
    {
-      const RealType hz = grid.getCellProportions().z();
+      const RealType hz = grid.getSpaceSteps().z();
       return ( function[ neighbourEntities.template getEntityIndex< 0, 0, 1 >( cellIndex ) ] -
                2.0 * function[ cellIndex ] +
                function[ neighbourEntities.template getEntityIndex< 0, 0, -1 >( cellIndex ) ] ) / (  hz * hz );

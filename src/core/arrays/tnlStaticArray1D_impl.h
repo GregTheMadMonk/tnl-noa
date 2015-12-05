@@ -144,6 +144,18 @@ inline bool tnlStaticArray< 1, Element >::operator != ( const Array& array ) con
 }
 
 template< typename Element >
+   template< typename OtherElement >
+__cuda_callable__
+tnlStaticArray< 1, Element >::
+operator tnlStaticArray< 1, OtherElement >() const
+{
+   tnlStaticArray< 1, OtherElement > aux;
+   aux[ 0 ] = data[ 0 ];
+   return aux;
+}
+
+
+template< typename Element >
 __cuda_callable__
 inline void tnlStaticArray< 1, Element >::setValue( const ElementType& val )
 {

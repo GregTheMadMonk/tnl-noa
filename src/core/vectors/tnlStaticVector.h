@@ -83,7 +83,12 @@ class tnlStaticVector : public tnlStaticArray< Size, Real >
 
    __cuda_callable__
    bool operator >= ( const tnlStaticVector& v ) const;
+
+   template< typename OtherReal >
+   __cuda_callable__
+   operator tnlStaticVector< Size, OtherReal >() const;   
    
+   __cuda_callable__
    ThisType abs() const;
 };
 
@@ -147,7 +152,12 @@ class tnlStaticVector< 1, Real > : public tnlStaticArray< 1, Real >
 
    __cuda_callable__
    bool operator >= ( const tnlStaticVector& v ) const;
+
+   template< typename OtherReal >
+   __cuda_callable__
+   operator tnlStaticVector< 1, OtherReal >() const;   
    
+   __cuda_callable__
    ThisType abs() const;
 };
 
@@ -218,6 +228,11 @@ class tnlStaticVector< 2, Real > : public tnlStaticArray< 2, Real >
    __cuda_callable__
    bool operator >= ( const tnlStaticVector& v ) const;
    
+   template< typename OtherReal >
+   __cuda_callable__
+   operator tnlStaticVector< 2, OtherReal >() const;   
+   
+   __cuda_callable__
    ThisType abs() const;
 };
 
@@ -287,7 +302,12 @@ class tnlStaticVector< 3, Real > : public tnlStaticArray< 3, Real >
 
    __cuda_callable__
    bool operator >= ( const tnlStaticVector& v ) const;
+
+   template< typename OtherReal >
+   __cuda_callable__
+   operator tnlStaticVector< 3, OtherReal >() const;   
    
+   __cuda_callable__
    ThisType abs() const;
 };
 

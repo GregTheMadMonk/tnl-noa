@@ -8,11 +8,11 @@ WITH_TESTS="yes"
 WITH_CUDA_ARCH="auto"
 WITH_CUBLAS="no"
 WITH_TEMPLATE_INSTANTIATION="yes"
-INSTANTIATE_LONG_INT="yes"
+INSTANTIATE_LONG_INT="no"
 INSTANTIATE_INT="yes"
-INSTANTIATE_LONG_DOUBLE="yes"
+INSTANTIATE_LONG_DOUBLE="no"
 INSTANTIATE_DOUBLE="yes"
-INSTANTIATE_FLOAT="yes"
+INSTANTIATE_FLOAT="no"
 CMAKE="cmake"
 CMAKE_ONLY="no"
 HELP="no"
@@ -35,11 +35,11 @@ do
         --instantiate-long-double=*    ) INSTANTIATE_LONG_DOUBLE="${option#*=}" ;;
         --instantiate-double=*         ) INSTANTIATE_DOUBLE="${option#*=}" ;;
         --instantiate-float=*          ) INSTANTIATE_FLOAT="${option#*=}" ;;
-        --fast-build                   ) INSTANTIATE_LONG_INT="no"
+        --full-build                   ) INSTANTIATE_LONG_INT="yes"
                                          INSTANTIATE_INT="yes"
-                                         INSTANTIATE_LONG_DOUBLE="no"
+                                         INSTANTIATE_LONG_DOUBLE="yes"
                                          INSTANTIATE_DOUBLE="yes"
-                                         INSTANTIATE_FLOAT="no";;
+                                         INSTANTIATE_FLOAT="yes";;
         --with-cmake=*                 ) CMAKE="${option#*=}" ;;
         --build-jobs=*                 ) BUILD_JOBS="${option#*=}" ;;
         --cmake-only=*                 ) CMAKE_ONLY="${option#*=}" ;;
@@ -62,6 +62,7 @@ then
     echo "   --with-cuda=yes/no                    Enable CUDA. 'yes' by default (CUDA Toolkit is required)."
     echo "   --with-cuda-arch=all/auto/30/35/...   Choose CUDA architecture."   
     echo "   --with-templates-instantiation=yes/no Some TNL templates are precompiled during the build. 'yes' by default."
+    echo "   --full-build                          Instantiate all -- long int indexing, float and long double floating point arithmetics."
     echo "   --with-cmake=CMAKE                    Path to cmake. 'cmake' by default."
     echo "   --build-jobs=NUM                      Number of processes to be used for the build. It is set to a number of CPU cores by default."
     echo "   --verbose                             It enables verbose build."

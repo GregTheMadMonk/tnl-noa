@@ -63,7 +63,6 @@ inline tnlStaticArray< 3, Element >::tnlStaticArray( const tnlStaticArray< size,
 }
 
 template< typename Element >
-__cuda_callable__
 tnlString tnlStaticArray< 3, Element >::getType()
 {
    return tnlString( "tnlStaticArray< " ) +
@@ -191,6 +190,19 @@ __cuda_callable__
 bool tnlStaticArray< 3, Element >::operator != ( const Array& array ) const
 {
    return ! this->operator == ( array );
+}
+
+template< typename Element >
+   template< typename OtherElement >
+__cuda_callable__
+tnlStaticArray< 3, Element >::
+operator tnlStaticArray< 3, OtherElement >() const
+{
+   tnlStaticArray< 3, OtherElement > aux;
+   aux[ 0 ] = data[ 0 ];
+   aux[ 1 ] = data[ 1 ];
+   aux[ 2 ] = data[ 2 ];
+   return aux;
 }
 
 template< typename Element >

@@ -81,11 +81,13 @@ void tnlGrid< 1, Real, Device, Index > :: computeSpaceSteps()
 {
    if( this->getDimensions().x() != 0 )
    {
-      this->cellProportions = this->proportions.x() / ( Real ) this->getDimensions().x();
-      this->hx = this->proportions.x() / ( Real )  this->getDimensions().x();
-      this->hxSquare = this->hx * this->hx;
-      this->hxInverse = 1.0 / this->hx;
-      this->hxSquareInverse = this->hxInverse * this->hxInverse;
+      this->spaceSteps.x() = this->proportions.x() / ( Real )  this->getDimensions().x();
+      const RealType& hx = this->spaceSteps.x();
+      this->spaceStepsProducts[ 0 ] = 1.0 / ( hx * hx );
+      this->spaceStepsProducts[ 1 ] = 1.0 / hx;
+      this->spaceStepsProducts[ 2 ] = 1.0;
+      this->spaceStepsProducts[ 3 ] = hx;
+      this->spaceStepsProducts[ 4 ] = hx * hx;
    }
 }
 
@@ -153,16 +155,6 @@ const typename tnlGrid< 1, Real, Device, Index > :: VertexType&
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__ inline
-const typename tnlGrid< 1, Real, Device, Index > :: VertexType& 
-   tnlGrid< 1, Real, Device, Index > :: getCellProportions() const
-{
-   return this->cellProportions;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< int EntityDimensions >
 __cuda_callable__  inline
 Index
@@ -211,74 +203,29 @@ getEntityIndex( const GridEntity< EntityDimensions >& entity ) const
    return tnlGridEntityGetter< ThisType, EntityDimensions >::getEntityIndex( *this, entity );
 }
 
-/*
 template< typename Real,
           typename Device,
           typename Index >
-   template< int EntityDimensions,
-             typename Vertex >
 __cuda_callable__ inline
-Vertex tnlGrid< 1, Real, Device, Index > :: getEntityCenter( const GridEntity< EntityDimensions >& entity ) const
-{
-   static_assert( EntityDimensions <= 1 &&
-                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
-   tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
-              entity.getCoordinates() <= this->getDimensions() - entity.getBasis(),
-                    cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                         << " this->getDimensions() = " << this->getDimensions()
-                         << " entity.getBasis() = " << entity.getBasis() );
-   return Vertex( this->origin.x() + ( entity.getCoordinates().x() + 0.5 * entity.getBasis().x() ) * this->cellProportions.x() );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename GridEntityType,
-             int NeighbourEntityDimensions >
- __cuda_callable__ inline
- tnlNeighbourGridEntityGetter< GridEntityType, NeighbourEntityDimensions > 
+typename tnlGrid< 1, Real, Device, Index >::VertexType
 tnlGrid< 1, Real, Device, Index >::
-getNeighbourEntities( const GridEntityType& entity ) const
+getSpaceSteps() const
 {
-   return tnlNeighbourGridEntityGetter< GridEntityType, NeighbourEntityDimensions >( *this, entity );
-}
-*/
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const Real& tnlGrid< 1, Real, Device, Index > :: getHx() const
-{
-   return this->hx;
+   return this->spaceSteps;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__ inline
-const Real& tnlGrid< 1, Real, Device, Index > :: getHxSquare() const
+   template< int xPow >
+__cuda_callable__ inline 
+const Real& 
+tnlGrid< 1, Real, Device, Index >::
+getSpaceStepsProducts() const
 {
-   return this->hxSquare;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const Real& tnlGrid< 1, Real, Device, Index > :: getHxInverse() const
-{
-   return this->hxInverse;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-const Real& tnlGrid< 1, Real, Device, Index > :: getHxSquareInverse() const
-{
-   return this->hxSquareInverse;
+   tnlAssert( xPow >= -2 && xPow <= 2, 
+              cerr << " xPow = " << xPow );
+   return this->spaceStepsProducts[ xPow + 2 ];
 }
 
 template< typename Real,
@@ -287,7 +234,7 @@ template< typename Real,
 __cuda_callable__ inline
 Real tnlGrid< 1, Real, Device, Index > :: getSmallestSpaceStep() const
 {
-   return this->hx;
+   return this->spaceSteps.x();
 }
 
 template< typename Real,
@@ -321,7 +268,7 @@ tnlGrid< 1, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
                                                         const typename GridFunction::RealType& p ) const
 {
    typedef typename GridFunction::RealType FunctionRealType;
-   FunctionRealType lpNorm( 0.0 ), cellVolume( this->cellProportions.x() );
+   FunctionRealType lpNorm( 0.0 ), cellVolume( this->getSpaceSteps().x() );
 
    GridEntity< Cells > cell( *this );
    for( cell.getCoordinates().x() = 0;
@@ -422,7 +369,7 @@ bool tnlGrid< 1, Real, Device, Index > :: write( const MeshFunction& function,
       return false;
    }
    file << setprecision( 12 );
-   const RealType hx = getCellProportions(). x();
+   const RealType hx = getSpaceSteps(). x();
    if( format == "gnuplot" )
    {
       typename ThisType::template GridEntity< Dimensions > entity( *this );
@@ -431,7 +378,7 @@ bool tnlGrid< 1, Real, Device, Index > :: write( const MeshFunction& function,
            coordinates.x() < getDimensions(). x();
            coordinates.x() ++ )
       {
-         VertexType v = this->getEntityCenter( entity );
+         VertexType v = entity.getCenter();
          tnlGnuplotWriter::write( file,  v );
          tnlGnuplotWriter::write( file,  function[ this->getEntityIndex( entity ) ] );
          file << endl;
@@ -452,7 +399,7 @@ writeProlog( tnlLogger& logger )
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );
-   logger.writeParameter( "Cell proportions:", this->cellProportions );
+   logger.writeParameter( "Space steps:", this->getSpaceSteps() );
 }
 
 #endif /* TNLGRID1D_IMPL_H_ */

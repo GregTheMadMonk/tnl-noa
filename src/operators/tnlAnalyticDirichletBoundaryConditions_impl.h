@@ -109,7 +109,7 @@ setBoundaryConditions( const RealType& time,
                        DofVectorType& fu ) const
 {
    fu[ index ] = 0;
-   u[ index ] = function.getValue( mesh.getEntityCenter( entity ), time );
+   u[ index ] = function.getValue( entity.getCenter(), time );
 }
 
 template< int Dimensions,
@@ -152,7 +152,7 @@ updateLinearSystem( const RealType& time,
 {
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    matrixRow.setElement( 0, index, 1.0 );
-   b[ index ] = function.getValue( mesh.getEntityCenter( entity ), time );
+   b[ index ] = function.getValue( entity.getCenter(), time );
 }
 
 #endif	/* tnlAnalyticDirichletBoundaryConditions_IMPL_H */

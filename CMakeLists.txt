@@ -149,7 +149,7 @@ if( WITH_CUDA STREQUAL "yes" )
 else( WITH_CUDA STREQUAL "yes" )
    #AddCompilerFlag( "-std=gnu++0x -ftree-vectorizer-verbose=1" )       
    AddCompilerFlag( "-std=c++11" )       
-endif( WITH_CUDA STREQUAL "yes" )    
+endif( WITH_CUDA STREQUAL "yes" )
 
 ####
 # Check for OpenMP

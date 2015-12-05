@@ -169,6 +169,18 @@ bool tnlStaticVector< 3, Real >::operator >= ( const tnlStaticVector& v ) const
             this->data[ 1 ] >= v[ 1 ] &&
             this->data[ 2 ] >= v[ 2 ] );
 }
+template< typename Real >
+   template< typename OtherReal >
+__cuda_callable__
+tnlStaticVector< 3, Real >::
+operator tnlStaticVector< 3, OtherReal >() const
+{
+   tnlStaticVector< 3, OtherReal > aux;
+   aux[ 0 ] = this->data[ 0 ];
+   aux[ 1 ] = this->data[ 1 ];
+   aux[ 2 ] = this->data[ 2 ];
+   return aux;
+}
 
 template< typename Real >
 __cuda_callable__

@@ -163,6 +163,18 @@ bool tnlStaticVector< Size, Real >::operator >= ( const tnlStaticVector& v ) con
 }
 
 template< int Size, typename Real >
+   template< typename OtherReal >
+__cuda_callable__
+tnlStaticVector< Size, Real >::
+operator tnlStaticVector< Size, OtherReal >() const
+{
+   tnlStaticVector< Size, OtherReal > aux;
+   for( int i = 0; i < Size; i++ )
+      aux[ i ] = this->data[ i ];
+   return aux;
+}
+
+template< int Size, typename Real >
 __cuda_callable__
 tnlStaticVector< Size, Real >
 tnlStaticVector< Size, Real >::abs() const

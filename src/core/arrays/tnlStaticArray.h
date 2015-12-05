@@ -78,6 +78,10 @@ class tnlStaticArray
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
+         
+   template< typename OtherElement >
+   __cuda_callable__
+   operator tnlStaticArray< Size, OtherElement >() const;
 
    __cuda_callable__
    inline void setValue( const ElementType& val );
@@ -155,6 +159,10 @@ class tnlStaticArray< 1, Element >
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
+   
+   template< typename OtherElement >
+   __cuda_callable__
+   operator tnlStaticArray< 1, OtherElement >() const;   
 
    __cuda_callable__
    inline
@@ -244,6 +252,10 @@ class tnlStaticArray< 2, Element >
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
+   
+   template< typename OtherElement >
+   __cuda_callable__
+   operator tnlStaticArray< 2, OtherElement >() const;   
 
    __cuda_callable__
    inline void setValue( const ElementType& val );
@@ -340,6 +352,10 @@ class tnlStaticArray< 3, Element >
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
+   
+   template< typename OtherElement >
+   __cuda_callable__
+   operator tnlStaticArray< 3, OtherElement >() const;
 
    __cuda_callable__
    inline void setValue( const ElementType& val );

@@ -32,7 +32,7 @@ void tnlFunctionDiscretizer< Mesh, Function, Vector >::discretize( const Mesh& m
    {
       while( i < mesh.template getEntitiesCount< Mesh::Cells >() )
       {
-         VertexType v = mesh.template getEntity< Mesh::Cells >( i ).getCenter();
+         VertexType v = static_cast< VertexType >( mesh.template getEntity< Mesh::Cells >( i ).getCenter() );
          discreteFunction[ i ] = function.template getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( v, time );
          i++;
       }

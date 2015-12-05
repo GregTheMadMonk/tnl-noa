@@ -75,9 +75,6 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 
    __cuda_callable__
    inline const VertexType& getProportions() const;
-
-   __cuda_callable__
-   inline const VertexType& getCellProportions() const;
    
    template< int EntityDimensions >
    __cuda_callable__
@@ -93,21 +90,11 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    
    __cuda_callable__
    inline VertexType getSpaceSteps() const;
+
+   template< int xPow >
+   __cuda_callable__
+   inline const RealType& getSpaceStepsProducts() const;
    
-   
-
-   __cuda_callable__
-   inline const RealType& getHx() const;
-
-   __cuda_callable__
-   inline const RealType& getHxSquare() const;
-
-   __cuda_callable__
-   inline const RealType& getHxInverse() const;
-
-   __cuda_callable__
-   inline const RealType& getHxSquareInverse() const;
-
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
 
@@ -150,15 +137,14 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    void computeSpaceSteps();
 
    CoordinatesType dimensions;
-
-   VertexType origin, proportions, cellProportions;
-
-   IndexType numberOfCells, numberOfVertices;
    
-   VertexType spaceSteps, spaceStepsSquare, spaceStepsInverse, spaceStepsSquareInverse;
+   IndexType numberOfCells, numberOfVertices;
 
-   //RealType hx, hxSquare, hxInverse, hxSquareInverse;
-
+   VertexType origin, proportions;
+   
+   VertexType spaceSteps;
+   
+   RealType spaceStepsProducts[ 5 ];
 };
 
 #include <mesh/grids/tnlGrid1D_impl.h>

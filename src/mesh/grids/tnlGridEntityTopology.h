@@ -28,7 +28,9 @@ class tnlGridEntityTopology
       
       typedef Grid GridType;
       
-      static const int meshDimensions = GridType::Dimensions;
+      // TODO: restore when CUDA allows it
+      //static const int meshDimensions = GridType::Dimensions;
+      enum { meshDimensions = GridType::Dimensions };
       
       static const int entityDimensions = EntityDimensions;
       
@@ -36,8 +38,9 @@ class tnlGridEntityTopology
            
       typedef EntityProportions_ EntityProportions;
       
-   static_assert( meshDimensions == EntityOrientation_::size, 
-                  "Entity orientation is not a proper static multiindex." );
+      // TODO: restore when CUDA allows it
+   //static_assert( meshDimensions == EntityOrientation_::size, 
+   //               "Entity orientation is not a proper static multiindex." );
 };
 
 
