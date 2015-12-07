@@ -34,7 +34,8 @@
 #endif
 
 
-template< typename SchemeHost,
+template< int Dimension,
+		  typename SchemeHost,
 		  typename SchemeDevice,
 		  typename Device,
 		  typename RealType = double,
@@ -42,8 +43,8 @@ template< typename SchemeHost,
 class tnlParallelEikonalSolver
 {};
 
-template< typename SchemeHost, typename SchemeDevice, typename Device>
-class tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >
+template<typename SchemeHost, typename SchemeDevice, typename Device>
+class tnlParallelEikonalSolver<2, SchemeHost, SchemeDevice, Device, double, int >
 {
 public:
 
@@ -96,7 +97,7 @@ public:
 	SchemeHost schemeHost;
 	SchemeDevice schemeDevice;
 	double delta, tau0, stopTime,cflCondition;
-	int gridRows, gridCols, currentStep, n;
+	int gridRows, gridCols, gridLevels, currentStep, n;
 
 	std::clock_t start;
 	double time_diff;
@@ -104,14 +105,14 @@ public:
 
 	tnlDeviceEnum device;
 
-	tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* getSelf()
+	tnlParallelEikonalSolver<2, SchemeHost, SchemeDevice, Device, double, int >* getSelf()
 	{
 		return this;
 	};
 
 #ifdef HAVE_CUDA
 
-	tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver;
+	tnlParallelEikonalSolver<2, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver;
 
 	double* work_u_cuda;
 
@@ -129,27 +130,27 @@ public:
 	int run_host;
 
 
-	__device__ void getSubgridCUDA( const int i, tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* caller, double* a);
+	__device__ void getSubgridCUDA2D( const int i, tnlParallelEikonalSolver<2, SchemeHost, SchemeDevice, Device, double, int >* caller, double* a);
 
-	__device__ void updateSubgridCUDA( const int i, tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* caller, double* a);
+	__device__ void updateSubgridCUDA2D( const int i, tnlParallelEikonalSolver<2, SchemeHost, SchemeDevice, Device, double, int >* caller, double* a);
 
-	__device__ void insertSubgridCUDA( double u, const int i );
+	__device__ void insertSubgridCUDA2D( double u, const int i );
 
-	__device__ void runSubgridCUDA( int boundaryCondition, double* u, int subGridID);
+	__device__ void runSubgridCUDA2D( int boundaryCondition, double* u, int subGridID);
 
 	/*__global__ void runCUDA();*/
 
 	//__device__ void synchronizeCUDA();
 
-	__device__ int getOwnerCUDA( int i) const;
+	__device__ int getOwnerCUDA2D( int i) const;
 
-	__device__ int getSubgridValueCUDA( int i ) const;
+	__device__ int getSubgridValueCUDA2D( int i ) const;
 
-	__device__ void setSubgridValueCUDA( int i, int value );
+	__device__ void setSubgridValueCUDA2D( int i, int value );
 
-	__device__ int getBoundaryConditionCUDA( int i ) const;
+	__device__ int getBoundaryConditionCUDA2D( int i ) const;
 
-	__device__ void setBoundaryConditionCUDA( int i, int value );
+	__device__ void setBoundaryConditionCUDA2D( int i, int value );
 
 	//__device__ bool initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
 
@@ -158,23 +159,173 @@ public:
 #endif
 
 };
+
+
+
+
+
+
+
+	template<typename SchemeHost, typename SchemeDevice, typename Device>
+	class tnlParallelEikonalSolver<3, SchemeHost, SchemeDevice, Device, double, int >
+	{
+	public:
+
+		typedef SchemeDevice SchemeTypeDevice;
+		typedef SchemeHost SchemeTypeHost;
+		typedef Device DeviceType;
+		typedef tnlVector< double, tnlHost, int > VectorType;
+		typedef tnlVector< int, tnlHost, int > IntVectorType;
+		typedef tnlGrid< 3, double, tnlHost, int > MeshType;
+	#ifdef HAVE_CUDA
+		typedef tnlVector< double, tnlHost, int > VectorTypeCUDA;
+		typedef tnlVector< int, tnlHost, int > IntVectorTypeCUDA;
+		typedef tnlGrid< 3, double, tnlHost, int > MeshTypeCUDA;
+	#endif
+		tnlParallelEikonalSolver();
+		bool init( const tnlParameterContainer& parameters );
+		void run();
+
+		void test();
+
+	/*private:*/
+
+
+		void synchronize();
+
+		int getOwner( int i) const;
+
+		int getSubgridValue( int i ) const;
+
+		void setSubgridValue( int i, int value );
+
+		int getBoundaryCondition( int i ) const;
+
+		void setBoundaryCondition( int i, int value );
+
+		void stretchGrid();
+
+		void contractGrid();
+
+		VectorType getSubgrid( const int i ) const;
+
+		void insertSubgrid( VectorType u, const int i );
+
+		VectorType runSubgrid( int boundaryCondition, VectorType u, int subGridID);
+
+
+		VectorType u0, work_u;
+		IntVectorType subgridValues, boundaryConditions, unusedCell, calculationsCount;
+		MeshType mesh, subMesh;
+		SchemeHost schemeHost;
+		SchemeDevice schemeDevice;
+		double delta, tau0, stopTime,cflCondition;
+		int gridRows, gridCols, gridLevels, currentStep, n;
+
+		std::clock_t start;
+		double time_diff;
+
+
+		tnlDeviceEnum device;
+
+		tnlParallelEikonalSolver<3, SchemeHost, SchemeDevice, Device, double, int >* getSelf()
+		{
+			return this;
+		};
+
 #ifdef HAVE_CUDA
-template <typename SchemeHost, typename SchemeDevice, typename Device>
-__global__ void runCUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* caller);
 
-template <typename SchemeHost, typename SchemeDevice, typename Device>
-__global__ void initRunCUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* caller);
+	tnlParallelEikonalSolver<3, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver;
 
-template <typename SchemeHost, typename SchemeDevice, typename Device>
-__global__ void initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr, int * ptr2, int* ptr3);
+	double* work_u_cuda;
 
-template <typename SchemeHost, typename SchemeDevice, typename Device>
-__global__ void synchronizeCUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
+	int* subgridValues_cuda;
+	int*boundaryConditions_cuda;
+	int* unusedCell_cuda;
+	int* calculationsCount_cuda;
+	double* tmpw;
+	//MeshTypeCUDA mesh_cuda, subMesh_cuda;
+	//SchemeDevice scheme_cuda;
+	//double delta_cuda, tau0_cuda, stopTime_cuda,cflCondition_cuda;
+	//int gridRows_cuda, gridCols_cuda, currentStep_cuda, n_cuda;
 
-template <typename SchemeHost, typename SchemeDevice, typename Device>
-__global__ void synchronize2CUDA(tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
+	int* runcuda;
+	int run_host;
+
+
+	__device__ void getSubgridCUDA3D( const int i, tnlParallelEikonalSolver<3, SchemeHost, SchemeDevice, Device, double, int >* caller, double* a);
+
+	__device__ void updateSubgridCUDA3D( const int i, tnlParallelEikonalSolver<3, SchemeHost, SchemeDevice, Device, double, int >* caller, double* a);
+
+	__device__ void insertSubgridCUDA3D( double u, const int i );
+
+	__device__ void runSubgridCUDA3D( int boundaryCondition, double* u, int subGridID);
+
+	/*__global__ void runCUDA();*/
+
+	//__device__ void synchronizeCUDA();
+
+	__device__ int getOwnerCUDA3D( int i) const;
+
+	__device__ int getSubgridValueCUDA3D( int i ) const;
+
+	__device__ void setSubgridValueCUDA3D( int i, int value );
+
+	__device__ int getBoundaryConditionCUDA3D( int i ) const;
+
+	__device__ void setBoundaryConditionCUDA3D( int i, int value );
+
+	//__device__ bool initCUDA( tnlParallelEikonalSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
+
+	/*__global__ void initRunCUDA(tnlParallelEikonalSolver<Scheme, double, tnlHost, int >* caller);*/
+
 #endif
 
-#include "tnlParallelEikonalSolver_impl.h"
+};
+
+
+
+
+
+
+#ifdef HAVE_CUDA
+template <typename SchemeHost, typename SchemeDevice, typename Device>
+__global__ void runCUDA2D(tnlParallelEikonalSolver<2, SchemeHost, SchemeDevice, Device, double, int >* caller);
+
+template <typename SchemeHost, typename SchemeDevice, typename Device>
+__global__ void initRunCUDA2D(tnlParallelEikonalSolver<2, SchemeHost, SchemeDevice, Device, double, int >* caller);
+
+template <typename SchemeHost, typename SchemeDevice, typename Device>
+__global__ void initCUDA2D( tnlParallelEikonalSolver<2, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr, int * ptr2, int* ptr3);
+
+template <typename SchemeHost, typename SchemeDevice, typename Device>
+__global__ void synchronizeCUDA2D(tnlParallelEikonalSolver<2, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
+
+template <typename SchemeHost, typename SchemeDevice, typename Device>
+__global__ void synchronize2CUDA2D(tnlParallelEikonalSolver<2, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
+
+
+
+
+
+
+
+template <typename SchemeHost, typename SchemeDevice, typename Device>
+__global__ void runCUDA3D(tnlParallelEikonalSolver<3, SchemeHost, SchemeDevice, Device, double, int >* caller);
+
+template <typename SchemeHost, typename SchemeDevice, typename Device>
+__global__ void initRunCUDA3D(tnlParallelEikonalSolver<3, SchemeHost, SchemeDevice, Device, double, int >* caller);
+
+template <typename SchemeHost, typename SchemeDevice, typename Device>
+__global__ void initCUDA3D( tnlParallelEikonalSolver<3, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr, int * ptr2, int* ptr3);
+
+template <typename SchemeHost, typename SchemeDevice, typename Device>
+__global__ void synchronizeCUDA3D(tnlParallelEikonalSolver<3, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
+
+template <typename SchemeHost, typename SchemeDevice, typename Device>
+__global__ void synchronize2CUDA3D(tnlParallelEikonalSolver<3, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
+#endif
+
+#include "tnlParallelEikonalSolver2D_impl.h"
 
 #endif /* TNLPARALLELEIKONALSOLVER_H_ */

@@ -57,7 +57,7 @@ int main( int argc, char* argv[] )
 	   typedef tnlHost Device;
 
 
-   	   tnlParallelEikonalSolver<SchemeTypeHost,SchemeTypeDevice, Device> solver;
+   	   tnlParallelEikonalSolver<2,SchemeTypeHost,SchemeTypeDevice, Device> solver;
    	   if(!solver.init(parameters))
    	   {
    		   cerr << "Solver failed to initialize." << endl;
@@ -72,7 +72,7 @@ int main( int argc, char* argv[] )
 	   typedef tnlCuda Device;
   	   //typedef parallelGodunovEikonalScheme< tnlGrid<2,double,Device, int>, double, int > SchemeType;
 
-   	   tnlParallelEikonalSolver<SchemeTypeHost,SchemeTypeDevice, Device> solver;
+   	   tnlParallelEikonalSolver<2,SchemeTypeHost,SchemeTypeDevice, Device> solver;
    	   if(!solver.init(parameters))
    	   {
    		   cerr << "Solver failed to initialize." << endl;

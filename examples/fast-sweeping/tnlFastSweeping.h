@@ -107,9 +107,87 @@ protected:
 
 };
 
+
+
+
+
+
+
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+class tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+{
+
+public:
+	typedef Real RealType;
+	typedef Device DeviceType;
+	typedef Index IndexType;
+	typedef tnlGrid< 3, Real, Device, Index > MeshType;
+	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+	typedef typename MeshType::CoordinatesType CoordinatesType;
+
+
+
+	static tnlString getType();
+	bool init( const tnlParameterContainer& parameters );
+
+	bool initGrid();
+	bool run();
+
+	//for single core version use this implementation:
+	void updateValue(const Index i, const Index j, const Index k);
+	//for parallel version use this one instead:
+//	void updateValue(const Index i, const Index j, DofVectorType* grid);
+
+
+	void setupSquare1000(Index i, Index j);
+	void setupSquare1100(Index i, Index j);
+	void setupSquare1010(Index i, Index j);
+	void setupSquare1001(Index i, Index j);
+	void setupSquare1110(Index i, Index j);
+	void setupSquare1101(Index i, Index j);
+	void setupSquare1011(Index i, Index j);
+	void setupSquare1111(Index i, Index j);
+	void setupSquare0000(Index i, Index j);
+	void setupSquare0100(Index i, Index j);
+	void setupSquare0010(Index i, Index j);
+	void setupSquare0001(Index i, Index j);
+	void setupSquare0110(Index i, Index j);
+	void setupSquare0101(Index i, Index j);
+	void setupSquare0011(Index i, Index j);
+	void setupSquare0111(Index i, Index j);
+
+	Real fabsMin(const Real x, const Real y);
+
+
+protected:
+
+	MeshType Mesh;
+
+	bool exactInput;
+
+	DofVectorType dofVector, dofVector2;
+
+	RealType h;
+
+#ifdef HAVE_OPENMP
+//	omp_lock_t* gridLock;
+#endif
+
+
+};
+
+
 	//for single core version use this implementation:
 #include "tnlFastSweeping2D_impl.h"
 	//for parallel version use this one instead:
 // #include "tnlFastSweeping2D_openMP_impl.h"
+
+#include "tnlFastSweeping3D_impl.h"
 
 #endif /* TNLFASTSWEEPING_H_ */
