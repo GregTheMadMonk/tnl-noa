@@ -134,17 +134,19 @@ __global__ void tnlTraverserGrid1DCells( const tnlGrid< 1, Real, tnlCuda, Index 
                                          UserData* userData,
                                          Index gridXIdx )
 {
+   typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
    const int CellDimensions = GridType::Dimensions;
-   typename GridType::template GridEntity< CellDimensions > entity( grid );
+   typename GridType::template GridEntity< CellDimensions > entity( *grid );
+   typedef typename GridType::CoordinatesType CoordinatesType;
    CoordinatesType& coordinates = entity.getCoordinates();
 
    const Index index = ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.x() = Index;
-   entity.setIndex( index )
+   coordinates.x() = index;   
 
    if( coordinates.x() < grid->getDimensions().x() )
    {
-      if( processAllEntties || entity.isBoundaryEntity() == processBoundaryEntities )
+      entity.setIndex( index );
+      if( processAllEntities || entity.isBoundaryEntity() == processBoundaryEntities )
       {
          EntitiesProcessor::processEntity( *grid, *userData, grid->getEntityIndex( entity ), entity );
       }
@@ -238,23 +240,24 @@ __global__ void tnlTraverserGrid1DVertices( const tnlGrid< 1, Real, tnlCuda, Ind
                                             UserData* userData,
                                             Index gridXIdx )
 {
-   typename template GridEntity< GridfType::Vertices > vertex;
+   typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
+   typename GridType::template GridEntity< GridType::Vertices > vertex;
 
-   const IndexType& xSize = grid->getDimensions().x();
+   const Index& xSize = grid->getDimensions().x();
 
    const Index index = ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   vertex.getCoordinates().x() = index;
-   vertex.setIndex( index );
+   vertex.getCoordinates().x() = index;   
 
    if( vertex.getCoordinates().x() <= grid->getDimensions().x() )
    {
+      vertex.setIndex( index );
       if( processAllEntities || vertex.isBoundaryEntity() == processBoundaryEntities )
       {
-         EntitiesProcessor::template processEntity< VertexTopology >
+         EntitiesProcessor::processEntity
             ( *grid,
               *userData,
-              grid->getVertexIndex( vertexCoordinates ),
-              vertexCoordinates );
+              vertex.getIndex(),
+              vertex );
       }
    }
 }
@@ -324,7 +327,7 @@ processInteriorEntities( const GridType& grid,
    {
       if( gridXIdx == cudaXGrids - 1 )
          cudaGridSize.x = cudaBlocks.x % tnlCuda::getMaxGridSize();
-      tnlTraverserGrid1DInteriorVertices< Real, Index, UserData, EntitiesProcessor, false, false >
+      tnlTraverserGrid1DVertices< Real, Index, UserData, EntitiesProcessor, false, false >
          <<< cudaGridSize, cudaBlockSize >>>
          ( kernelGrid,
            kernelUserData,

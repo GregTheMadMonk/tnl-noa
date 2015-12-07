@@ -479,13 +479,15 @@ __global__ void tnlTraverserGrid3DCells( const tnlGrid< 3, Real, tnlCuda, Index 
                                          const Index gridYIdx,
                                          const Index gridZIdx )
 {
+   typedef tnlGrid< 3, Real, tnlCuda, Index > GridType;
    const int CellDimensions = GridType::Dimensions;
-   typename GridType::template GridEntity< CellDimensions > entity;
+   typename GridType::template GridEntity< CellDimensions > entity( *grid );
+   typedef typename GridType::CoordinatesType CoordinatesType;
    CoordinatesType& coordinates = entity.getCoordinates();
 
-   const IndexType& xSize = grid->getDimensions().x();
-   const IndexType& ySize = grid->getDimensions().y();
-   const IndexType& zSize = grid->getDimensions().z();
+   const Index& xSize = grid->getDimensions().x();
+   const Index& ySize = grid->getDimensions().y();
+   const Index& zSize = grid->getDimensions().z();
 
    coordinates.x() = ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    coordinates.y() = ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
@@ -495,10 +497,9 @@ __global__ void tnlTraverserGrid3DCells( const tnlGrid< 3, Real, tnlCuda, Index 
        coordinates.y() < grid->getDimensions().y() &&
        coordinates.z() < grid->getDimensions().z() )
    {
+      entity.setIndex( grid->getEntityIndex( entity ) );
       if( processAllEntities || entity.isBoundaryEntity() == processBoundaryEntities )
-      {
-         entity.setIndex( grid.getEntityIndex( entity ) );
-         //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
+      {         
          EntitiesProcessor::template processEntity
             ( *grid,
               *userData,
@@ -523,13 +524,15 @@ __global__ void tnlTraverserGrid3DFaces( const tnlGrid< 3, Real, tnlCuda, Index 
                                          int ny,
                                          int nz )
 {
+   typedef tnlGrid< 3, Real, tnlCuda, Index > GridType;
    const int FaceDimensions = GridType::Dimensions - 1;
-   typename GridType::template GridEntity< FaceDimensions > entity;
+   typename GridType::template GridEntity< FaceDimensions > entity( *grid );
+   typedef typename GridType::CoordinatesType CoordinatesType;
    CoordinatesType& coordinates = entity.getCoordinates();
 
-   const IndexType& xSize = grid->getDimensions().x();
-   const IndexType& ySize = grid->getDimensions().y();
-   const IndexType& zSize = grid->getDimensions().z();
+   const Index& xSize = grid->getDimensions().x();
+   const Index& ySize = grid->getDimensions().y();
+   const Index& zSize = grid->getDimensions().z();
 
    coordinates.x() = ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    coordinates.y() = ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
@@ -539,10 +542,9 @@ __global__ void tnlTraverserGrid3DFaces( const tnlGrid< 3, Real, tnlCuda, Index 
        coordinates.y() < grid->getDimensions().y() + ny &&
        coordinates.z() < grid->getDimensions().z() + nz )
    {
+      entity.setIndex( grid->getEntityIndex( entity ) );
       if( processAllEntities || entity.isBoundaryEntity() == processBoundaryEntities )
-      {
-         entity.setIndex( grid.getEntityIndex( entity ) );
-         //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
+      {         
          EntitiesProcessor::processEntity
             ( *grid,
               *userData,
@@ -568,26 +570,27 @@ __global__ void tnlTraverserGrid3DEdges( const tnlGrid< 3, Real, tnlCuda, Index 
                                          int dy,
                                          int dz )
 {
+   typedef tnlGrid< 3, Real, tnlCuda, Index > GridType;
    const int EdgeDimensions = 1;
-   typename GridType::template GridEntity< EdgeDimensions > entity;
+   typename GridType::template GridEntity< EdgeDimensions > entity( *grid );
+   typedef typename GridType::CoordinatesType CoordinatesType;
    CoordinatesType& coordinates = entity.getCoordinates();
 
-   const IndexType& xSize = grid->getDimensions().x();
-   const IndexType& ySize = grid->getDimensions().y();
-   const IndexType& zSize = grid->getDimensions().z();
+   const Index& xSize = grid->getDimensions().x();
+   const Index& ySize = grid->getDimensions().y();
+   const Index& zSize = grid->getDimensions().z();
 
    coordinates.x() = ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    coordinates.y() = ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
    coordinates.z() = ( gridZIdx * tnlCuda::getMaxGridSize() + blockIdx.z ) * blockDim.z + threadIdx.z;
 
-   if( coordinates.x() < grid->getDimensions().x() + !nx &&
-       coordinates.y() < grid->getDimensions().y() + !ny &&
-       coordinates.z() < grid->getDimensions().z() + !nz )
+   if( coordinates.x() < grid->getDimensions().x() + !dx &&
+       coordinates.y() < grid->getDimensions().y() + !dy &&
+       coordinates.z() < grid->getDimensions().z() + !dz )
    {
-      if( processAllEntities || entity.isBoundaryEntity() == processBoundaryEntity )
-      {
-         entity.setIndex( grid.getEntityIndex( entity ) );
-         //printf( "Processing boundary conditions at %d %d \n", cellCoordinates.x(), cellCoordinates.y() );
+      entity.setIndex( grid->getEntityIndex( entity ) );
+      if( processAllEntities || entity.isBoundaryEntity() == processBoundaryEntities )
+      {         
          EntitiesProcessor::processEntity
             ( *grid,
               *userData,
@@ -609,13 +612,15 @@ __global__ void tnlTraverserGrid3DVertices( const tnlGrid< 3, Real, tnlCuda, Ind
                                             const Index gridYIdx,
                                             const Index gridZIdx )
 {
+   typedef tnlGrid< 3, Real, tnlCuda, Index > GridType;
    const int VertexDimensions = 0;
-   typename GridType::template GridEntity< VertexDimensions > entity;
+   typename GridType::template GridEntity< VertexDimensions > entity( *grid );
+   typedef typename GridType::CoordinatesType CoordinatesType;
    CoordinatesType& coordinates = entity.getCoordinates();
    
-   const IndexType& xSize = grid->getDimensions().x();
-   const IndexType& ySize = grid->getDimensions().y();
-   const IndexType& zSize = grid->getDimensions().z();
+   const Index& xSize = grid->getDimensions().x();
+   const Index& ySize = grid->getDimensions().y();
+   const Index& zSize = grid->getDimensions().z();
 
    coordinates.x() = ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    coordinates.y() = ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
@@ -625,9 +630,9 @@ __global__ void tnlTraverserGrid3DVertices( const tnlGrid< 3, Real, tnlCuda, Ind
        coordinates.y() < grid->getDimensions().y() &&
        coordinates.z() < grid->getDimensions().z() )
    {
-      if( processAllEntities || grid->isBoundaryVertex( vertexCoordinates ) == processBoundaryEntities )
-      {
-         entity.setIndex( grid.getEntityIndex( entity ) );
+      entity.setIndex( grid->getEntityIndex( entity ) );
+      if( processAllEntities || entity.isBoundaryEntity() == processBoundaryEntities )
+      {         
          EntitiesProcessor::template processEntity
          ( *grid,
            *userData,
@@ -906,7 +911,7 @@ processInteriorEntities( const GridType& grid,
       for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
          for( IndexType gridZIdx = 0; gridZIdx < cudaZGrids; gridZIdx ++ )
          {
-            tnlTraverserGrid3DInteriorFaces< Real, Index, UserData, EntitiesProcessor, false, false >
+            tnlTraverserGrid3DFaces< Real, Index, UserData, EntitiesProcessor, false, false >
                <<< cudaBlocks, cudaBlockSize >>>
                ( kernelGrid,
                  kernelUserData,
@@ -1188,7 +1193,7 @@ processInteriorEntities( const GridType& grid,
       for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
          for( IndexType gridZIdx = 0; gridZIdx < cudaZGrids; gridZIdx ++ )
          {
-            tnlTraverserGrid3DInteriorVertices< Real, Index, UserData, EntitiesProcessor, false, false >
+            tnlTraverserGrid3DVertices< Real, Index, UserData, EntitiesProcessor, false, false >
                <<< cudaBlocks, cudaBlockSize >>>
                ( kernelGrid,
                  kernelUserData,

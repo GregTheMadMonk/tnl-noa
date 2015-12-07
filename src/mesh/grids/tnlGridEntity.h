@@ -123,8 +123,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       
       EntityBasisType basis;
       
-      __cuda_callable__ inline
-      tnlGridEntity();
+      //__cuda_callable__ inline
+      //tnlGridEntity();
       
       friend class tnlBoundaryGridEntityChecker< ThisType >;
       
@@ -213,8 +213,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
       
       EntityBasisType basis;
       
-      __cuda_callable__ inline
-      tnlGridEntity();
+      //__cuda_callable__ inline
+      //tnlGridEntity();
       
       friend class tnlBoundaryGridEntityChecker< ThisType >;
       
@@ -301,8 +301,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       
       EntityBasisType basis;
       
-      __cuda_callable__ inline
-      tnlGridEntity();
+      //__cuda_callable__ inline
+      //tnlGridEntity();
       
       friend class tnlBoundaryGridEntityChecker< ThisType >;
       

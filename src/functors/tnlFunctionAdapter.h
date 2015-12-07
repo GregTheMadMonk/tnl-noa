@@ -58,7 +58,7 @@ class tnlFunctionAdapter< Mesh, Function, tnlAnalyticFunction >
                                 const RealType& time )
       {         
          return function.getValue( mesh.template getEntityCenter< EntityDimensions >( meshEntityIndex ), time );
-      };
+      }
 };
 
 /***

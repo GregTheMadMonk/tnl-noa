@@ -252,7 +252,7 @@ bool tnlFile ::  write( const Type* buffer,
    Type* buf = const_cast< Type* >( buffer );
    void* host_buffer( 0 );
    this->writtenElements = 0;
-   const Index host_buffer_size = :: Min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
+   const long int host_buffer_size = :: Min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
                                           elements );
    if( Device :: getDeviceType() == "tnlHost" )
    {
@@ -289,7 +289,7 @@ bool tnlFile ::  write( const Type* buffer,
 
          while( this->writtenElements < elements )
          {
-            Index transfer = :: Min( elements - this->writtenElements, host_buffer_size );
+            Index transfer = Min( elements - this->writtenElements, host_buffer_size );
             cudaMemcpy( host_buffer,
                        ( void* ) & ( buffer[ this->writtenElements ] ),
                        transfer * sizeof( Type ),

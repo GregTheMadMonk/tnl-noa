@@ -24,7 +24,7 @@
 #include <mesh/grids/tnlGridEntity.h>
 
 
-template< int Dimensions,
+/*template< int Dimensions,
           typename Real,
           typename Device,
           typename Index,
@@ -33,7 +33,7 @@ __cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >::
 tnlGridEntity()
 {
-}
+}*/
 
 template< int Dimensions,
           typename Real,
@@ -245,7 +245,7 @@ getCenter() const
 /****
  * Specialization for cells
  */
-template< int Dimensions,
+/*template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
@@ -253,7 +253,7 @@ __cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
 tnlGridEntity()
 {
-}
+}*/
 
 template< int Dimensions,
           typename Real,
@@ -438,7 +438,7 @@ getEntityProportions() const
 /****
  * Specialization for vertices
  */
-template< int Dimensions,
+/*template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
@@ -446,7 +446,7 @@ __cuda_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
 tnlGridEntity()
 {
-}
+}*/
 
 template< int Dimensions,
           typename Real,

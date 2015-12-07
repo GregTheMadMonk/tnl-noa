@@ -165,11 +165,7 @@ inline void tnlStaticArray< 1, Element >::setValue( const ElementType& val )
 template< typename Element >
 bool tnlStaticArray< 1, Element >::save( tnlFile& file ) const
 {
-#ifdef HAVE_NOT_CXX11
    if( ! file. write< Element, tnlHost, int >( data, size ) )
-#else
-   if( ! file. write( data, size ) )
-#endif
    {
       cerr << "Unable to write " << getType() << "." << endl;
       return false;

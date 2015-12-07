@@ -171,6 +171,7 @@ getEntitiesCount() const
       case 0:
          return this->numberOfVertices;
    }            
+   return -1;
 }
 
 template< typename Real,
@@ -373,10 +374,9 @@ bool tnlGrid< 1, Real, Device, Index > :: write( const MeshFunction& function,
    if( format == "gnuplot" )
    {
       typename ThisType::template GridEntity< Dimensions > entity( *this );
-      CoordinatesType coordinates = entity.getCoordinates();
-      for( coordinates.x() = 0;
-           coordinates.x() < getDimensions(). x();
-           coordinates.x() ++ )
+      for( entity.getCoordinates().x() = 0;
+           entity.getCoordinates().x() < getDimensions(). x();
+           entity.getCoordinates().x() ++ )
       {
          VertexType v = entity.getCenter();
          tnlGnuplotWriter::write( file,  v );

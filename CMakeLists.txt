@@ -56,7 +56,7 @@ if( WITH_CUDA STREQUAL "yes" )
         set(BUILD_SHARED_LIBS ON)
         set(CUDA_SEPARABLE_COMPILATION ON)
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -DHAVE_CUDA )
-        AddCompilerFlag( "-DHAVE_NOT_CXX11" ) # -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 " )
+        #AddCompilerFlag( "-DHAVE_NOT_CXX11" ) # -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 " )
         set( ALL_CUDA_ARCHS -gencode arch=compute_20,code=sm_20
                             -gencode arch=compute_30,code=sm_30
                             -gencode arch=compute_32,code=sm_32 
@@ -150,6 +150,7 @@ else( WITH_CUDA STREQUAL "yes" )
    #AddCompilerFlag( "-std=gnu++0x -ftree-vectorizer-verbose=1" )       
    AddCompilerFlag( "-std=c++11" )       
 endif( WITH_CUDA STREQUAL "yes" )
+AddCompilerFlag( "-std=c++11" )       
 
 ####
 # Check for OpenMP

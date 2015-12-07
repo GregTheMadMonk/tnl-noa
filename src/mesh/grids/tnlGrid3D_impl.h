@@ -269,6 +269,7 @@ getEntitiesCount() const
       case 0:
          return this->numberOfVertices;
    }            
+   return -1;
 }
 
 template< typename Real,
@@ -368,7 +369,7 @@ typename GridFunction::RealType
            cell.getCoordinates().y()++ )
          for( cell.getCoordinates().x() = 0;
               cell.getCoordinates().x() < getDimensions().x();
-              cell.getCoordinates().z()++ )
+              cell.getCoordinates().x()++ )
          {
             IndexType c = this->getEntityIndex( cell );
             lpNorm += pow( tnlAbs( f1[ c ] ), p );;
@@ -396,7 +397,7 @@ template< typename Real,
            cell.getCoordinates().y()++ )
          for( cell.getCoordinates().x() = 0;
               cell.getCoordinates().x() < getDimensions().x();
-              cell.getCoordinates().z()++ )
+              cell.getCoordinates().x()++ )
          {
             IndexType c = this -> getEntityIndex( cell );
             maxDiff = Max( maxDiff, tnlAbs( f1[ c ] - f2[ c ] ) );
@@ -424,7 +425,7 @@ template< typename Real,
            cell.getCoordinates().y()++ )
          for( cell.getCoordinates().x() = 0;
               cell.getCoordinates().x() < getDimensions().x();
-              cell.getCoordinates().z()++ )
+              cell.getCoordinates().x()++ )
          {
             IndexType c = this->getEntityIndex( cell );
             lpNorm += pow( tnlAbs( f1[ c ] - f2[ c ] ), p );

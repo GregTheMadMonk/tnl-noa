@@ -47,6 +47,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Ind
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
       
+      __cuda_callable__ inline
       tnlNeighbourGridEntityGetter( const GridType& grid,
                                     const GridEntityType& entity )
       : grid( grid ),
@@ -93,7 +94,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Ind
 
       const GridEntityType& entity;
       
-      tnlNeighbourGridEntityGetter(){};
+      //tnlNeighbourGridEntityGetter(){};
          
 };
 
@@ -121,6 +122,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Ind
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
       
+      __cuda_callable__ inline
       tnlNeighbourGridEntityGetter( const GridType& grid,
                                     const GridEntityType& entity )
       : grid( grid ),
@@ -167,7 +169,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Ind
 
       const GridEntityType& entity;
       
-      tnlNeighbourGridEntityGetter(){};
+      //tnlNeighbourGridEntityGetter(){};
       
 };
 
@@ -195,6 +197,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Ind
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
       
+      __cuda_callable__ inline
       tnlNeighbourGridEntityGetter( const GridType& grid,
                                     const GridEntityType& entity )
       : grid( grid ),
@@ -242,7 +245,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Ind
 
       const GridEntityType& entity;
       
-      tnlNeighbourGridEntityGetter(){};
+      //tnlNeighbourGridEntityGetter(){};
       
 };
 
@@ -270,6 +273,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Ind
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
 
+      __cuda_callable__ inline
       tnlNeighbourGridEntityGetter( const GridType& grid,
                                     const GridEntityType& entity )
       : grid( grid ),
@@ -317,7 +321,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Ind
 
       const GridEntityType& entity;
       
-      tnlNeighbourGridEntityGetter(){};      
+      //tnlNeighbourGridEntityGetter(){};      
 };
 
 

@@ -223,6 +223,7 @@ getEntitiesCount() const
       case 0:
          return this->numberOfVertices;
    }            
+   return -1;
 }
 
 template< typename Real,

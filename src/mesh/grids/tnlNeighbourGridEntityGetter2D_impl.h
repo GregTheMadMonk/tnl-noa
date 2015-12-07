@@ -47,6 +47,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Ind
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
 
+      __cuda_callable__ inline
       tnlNeighbourGridEntityGetter( const GridType& grid,
                                     const GridEntityType& entity )
       : grid( grid ),
@@ -95,7 +96,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Ind
 
       const GridEntityType& entity;
       
-      tnlNeighbourGridEntityGetter(){};      
+      //tnlNeighbourGridEntityGetter(){};      
 };
 
 /****
@@ -124,6 +125,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Ind
       typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
       typedef typename GridEntityType::EntityBasisType EntityBasisType;
 
+      __cuda_callable__ inline
       tnlNeighbourGridEntityGetter( const GridType& grid,
                                     const GridEntityType& entity )
       : grid( grid ),
@@ -173,7 +175,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Ind
 
       const GridEntityType& entity;
       
-      tnlNeighbourGridEntityGetter(){};      
+      //tnlNeighbourGridEntityGetter(){};      
 };
 
 /****
@@ -201,6 +203,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Ind
       typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
       typedef typename GridEntityType::EntityOrientationType EntityOrientationType;      
 
+      __cuda_callable__ inline
       tnlNeighbourGridEntityGetter( const GridType& grid,
                                     const GridEntityType& entity )
       : grid( grid ),
@@ -246,7 +249,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Ind
 
       const GridEntityType& entity;
       
-      tnlNeighbourGridEntityGetter(){};      
+      //tnlNeighbourGridEntityGetter(){};      
 };
 
 /****
@@ -274,6 +277,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Ind
       typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
       typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
 
+      __cuda_callable__ inline
       tnlNeighbourGridEntityGetter( const GridType& grid,
                                     const GridEntityType& entity )
       : grid( grid ),
@@ -319,7 +323,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Ind
 
       const GridEntityType& entity;
       
-      tnlNeighbourGridEntityGetter(){};      
+      //tnlNeighbourGridEntityGetter(){};      
 };
 
 /****
@@ -346,6 +350,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Ind
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
 
+      __cuda_callable__ inline
       tnlNeighbourGridEntityGetter( const GridType& grid,
                                     const GridEntityType& entity )
       : grid( grid ),
@@ -394,8 +399,7 @@ class tnlNeighbourGridEntityGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Ind
 
       const GridEntityType& entity;
       
-      tnlNeighbourGridEntityGetter(){};
-      
+      //tnlNeighbourGridEntityGetter(){};      
 };
 
 #endif	/* TNLNEIGHBOURGRIDENTITYGETTER2D_IMPL_H */

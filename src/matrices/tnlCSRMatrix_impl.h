@@ -729,7 +729,7 @@ class tnlCSRMatrixDeviceDependentCode< tnlHost >
 #pragma omp parallel for private( matrixPtr, inVectorPtr, outVectorPtr ), schedule(static )
 #endif         
          for( Index row = 0; row < rows; row ++ )
-            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+            ( *outVectorPtr )[ row ] = matrixPtr->rowVectorProduct( row, *inVectorPtr );
       }
 
 };

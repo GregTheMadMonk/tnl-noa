@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnl-benchmark-simple-heat-equation.cpp  -  description
+                          tnl-benchmark-simple-heat-equation.cu  -  description
                              -------------------
-    begin                : Nov 28, 2015
+    begin                : Dec 6, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -16,5 +16,3 @@
  ***************************************************************************/
 
 #include "tnl-benchmark-simple-heat-equation.h"
-
-
