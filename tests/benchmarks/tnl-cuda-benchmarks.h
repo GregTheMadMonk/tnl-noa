@@ -101,6 +101,7 @@ int main( int argc, char* argv[] )
     */
 
    Real resultHost, resultDevice, timeHost, timeDevice;
+
    cout << "Benchmarking scalar product on CPU: ";
    timer.reset();
    timer.start();
@@ -147,6 +148,35 @@ int main( int argc, char* argv[] )
 #endif    
 #endif
    
+
+   cout << "Benchmarking lpNorm on CPU: ";
+   timer.reset();
+   timer.start();
+   for( int i = 0; i < loops; i++ )
+     resultHost = hostVector.lpNorm( 2.0 );
+   timer.stop();
+   timeHost = timer.getTime();
+   bandwidth = 2 * datasetSize / timer.getTime();
+   cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+    
+   cout << "Benchmarking lpNorm on GPU: ";
+   timer.reset();
+   timer.start();
+   for( int i = 0; i < loops; i++ )
+      resultDevice = deviceVector.lpNorm( 2.0 );
+   timer.stop();
+   timeDevice = timer.getTime();
+   bandwidth = 2 * datasetSize / timer.getTime();
+   cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   cout << "CPU/GPU speedup: " << timeHost / timeDevice << endl;
+
+   if( resultHost != resultDevice )
+   {
+      cerr << "Error. " << resultHost << " != " << resultDevice << endl;
+      //return EXIT_FAILURE;
+   }
+
+
    cout << "Benchmarking prefix-sum on CPU: ";
    timer.reset();
    timer.start();
