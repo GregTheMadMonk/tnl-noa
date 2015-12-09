@@ -100,25 +100,28 @@ int main( int argc, char* argv[] )
     cout << bandwidth << " GB/sec." << endl;
     */
 
-   Real resultHost, resultDevice;
+   Real resultHost, resultDevice, timeHost, timeDevice;
    cout << "Benchmarking scalar product on CPU: ";
    timer.reset();
    timer.start();
    for( int i = 0; i < loops; i++ )
      resultHost = hostVector.scalarProduct( hostVector2 );
    timer.stop();
+   timeHost = timer.getTime();
    bandwidth = 2 * datasetSize / timer.getTime();
-   cout << bandwidth << " GB/sec." << endl;
+   cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
     
-   cout << "Benchmarking scalar product on GPU: " << endl;
+   cout << "Benchmarking scalar product on GPU: ";
    timer.reset();
    timer.start();
    for( int i = 0; i < loops; i++ )
-      resultDevice = deviceVector.scalarProduct( deviceVector );
-   cout << "Time: " << timer.getTime() << endl;
+      resultDevice = deviceVector.scalarProduct( deviceVector2 );
    timer.stop();
+   timeDevice = timer.getTime();
    bandwidth = 2 * datasetSize / timer.getTime();
-   cout << "Time: " << timer.getTime() << " bandwidth: " << bandwidth << " GB/sec." << endl;
+   cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   cout << "CPU/GPU speedup: " << timeHost / timeDevice << endl;
+
    if( resultHost != resultDevice )
    {
       cerr << "Error. " << resultHost << " != " << resultDevice << endl;
@@ -144,23 +147,24 @@ int main( int argc, char* argv[] )
 #endif    
 #endif
    
-   cout << "Benchmarking prefix-sum on CPU ..." << endl;
+   cout << "Benchmarking prefix-sum on CPU: ";
    timer.reset();
    timer.start();
    hostVector.computePrefixSum();
-   cout << "Time: " << timer.getTime() << endl;
    timer.stop();
+   timeHost = timer.getTime();
    bandwidth = 2 * datasetSize / loops / timer.getTime();
-   cout << "Time: " << timer.getTime() << " bandwidth: " << bandwidth << " GB/sec." << endl;
+   cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
    
-   cout << "Benchmarking prefix-sum on GPU ..." << endl;
+   cout << "Benchmarking prefix-sum on GPU: ";
    timer.reset();
    timer.start();
    deviceVector.computePrefixSum();
-   cout << "Time: " << timer.getTime() << endl;
    timer.stop();
+   timeDevice = timer.getTime();
    bandwidth = 2 * datasetSize / loops / timer.getTime();
-   cout << "Time: " << timer.getTime() << " bandwidth: " << bandwidth << " GB/sec." << endl;
+   cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   cout << "CPU/GPU speedup: " << timeHost / timeDevice << endl;
 
    for( int i = 0; i < size; i++ )
       if( hostVector.getElement( i ) != deviceVector.getElement( i ) )
