@@ -501,6 +501,35 @@ class tnlParallelReductionAbsMax : public tnlParallelReductionMax< Real, Index >
    }   
 };
 
+template< typename Real, typename Index >
+class tnlParallelReductionL2Norm : public tnlParallelReductionSum< Real, Index >
+{
+   public:
+
+   typedef Real RealType;
+   typedef Index IndexType;
+   typedef Real ResultType;
+   typedef tnlParallelReductionSum< Real, Index > LaterReductionOperation;
+
+   ResultType reduceOnHost( const IndexType idx,
+                            const ResultType& current,
+                            const RealType* data1,
+                            const RealType* data2 ) const
+   {
+      return current + data1[ idx ] * data1[ idx ];
+   };
+
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) 0; };
+   
+   __cuda_callable__ void cudaFirstReduction( ResultType& result, 
+                                              const IndexType index,
+                                              const RealType* data1,
+                                              const RealType* data2 ) const
+   {
+      result += data1[ index ] * data1[ index ];
+   }
+};
+
 
 template< typename Real, typename Index >
 class tnlParallelReductionLpNorm : public tnlParallelReductionSum< Real, Index >
@@ -798,6 +827,37 @@ class tnlParallelReductionDiffAbsMax : public tnlParallelReductionMax< Real, Ind
                                           const RealType* data2 ) const
    {
       result = tnlCudaMax( result, tnlCudaAbs( data1[ index ] - data2[ index ] ) );
+   }
+};
+
+template< typename Real, typename Index >
+class tnlParallelReductionDiffL2Norm : public tnlParallelReductionSum< Real, Index >
+{
+   public:
+
+   typedef Real RealType;
+   typedef Index IndexType;
+   typedef Real ResultType;
+   typedef tnlParallelReductionSum< Real, Index > LaterReductionOperation;
+
+   ResultType reduceOnHost( const IndexType idx,
+                            const ResultType& current,
+                            const RealType* data1,
+                            const RealType* data2 ) const
+   {
+      const RealType aux( data2[ idx ] - data1[ idx ]  );
+      return current + aux * aux;
+   };
+
+   __cuda_callable__ ResultType initialValue() const { return ( ResultType ) 0; };
+   
+   __cuda_callable__ void cudaFirstReduction( ResultType& result, 
+                                              const IndexType index,
+                                              const RealType* data1,
+                                              const RealType* data2 ) const
+   {
+      const RealType aux( data2[ index ] - data1[ index ]  );
+      result += aux * aux;
    }
 };
 
