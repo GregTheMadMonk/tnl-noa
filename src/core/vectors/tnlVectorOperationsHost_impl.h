@@ -90,10 +90,46 @@ typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorAbsMin( c
    return result;
 }
 
+template< typename Vector >
+typename Vector::RealType
+tnlVectorOperations< tnlHost >::
+getVectorL1Norm( const Vector& v )
+{
+   typedef typename Vector :: RealType Real;
+   typedef typename Vector :: IndexType Index;
+   tnlAssert( v. getSize() > 0, );
+
+   Real result = fabs( v. getElement( 0 ) );
+   const Index n = v. getSize();
+   for( Index i = 1; i < n; i ++ )
+      result += fabs( v. getElement( i ) );
+   return result;
+}
 
 template< typename Vector >
-typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorLpNorm( const Vector& v,
-                                                                               const typename Vector :: RealType& p )
+typename Vector::RealType
+tnlVectorOperations< tnlHost >::
+getVectorL2Norm( const Vector& v )
+{
+   typedef typename Vector :: RealType Real;
+   typedef typename Vector :: IndexType Index;
+   tnlAssert( v. getSize() > 0, );
+   Real result = v. getElement( 0 );
+   result *= result;
+   const Index n = v. getSize();
+   for( Index i = 1; i < n; i ++ )
+   {
+      const Real aux = v. getElement( i );
+      result += aux * aux;
+   }
+   return sqrt( result );
+}
+
+template< typename Vector >
+typename Vector::RealType
+tnlVectorOperations< tnlHost >::
+getVectorLpNorm( const Vector& v,
+                 const typename Vector :: RealType& p )
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
@@ -101,25 +137,10 @@ typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorLpNorm( c
    tnlAssert( p > 0.0,
               cerr << " p = " << p );
    if( p == 1.0 )
-   {
-      Real result = fabs( v. getElement( 0 ) );
-      const Index n = v. getSize();
-      for( Index i = 1; i < n; i ++ )
-         result += fabs( v. getElement( i ) );
-      return result;
-   }
+      return getVectorL1Norm( v );
    if( p == 2.0 )
-   {
-      Real result = v. getElement( 0 );
-      result *= result;
-      const Index n = v. getSize();
-      for( Index i = 1; i < n; i ++ )
-      {
-         const Real aux = v. getElement( i );
-         result += aux * aux;
-      }
-      return sqrt( result );
-   }
+      return getVectorL2Norm( v );
+
    Real result = pow( fabs( v. getElement( 0 ) ), p );
    const Index n = v. getSize();
    for( Index i = 1; i < n; i ++ )
@@ -207,11 +228,55 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
    return result;
 }
 
+template< typename Vector1, typename Vector2 >
+typename Vector1::RealType
+tnlVectorOperations< tnlHost >::
+getVectorDifferenceL1Norm( const Vector1& v1,
+                           const Vector2& v2 )
+{
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
+
+   Real result = fabs( v1. getElement( 0 ) - v2. getElement( 0 ) );
+   const Index n = v1. getSize();
+   for( Index i = 1; i < n; i ++ )
+      result += fabs( v1. getElement( i ) - v2. getElement( i ) );
+   return result;
+}
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferenceLpNorm( const Vector1& v1,
-                                                                                          const Vector2& v2,
-                                                                                          const typename Vector1 :: RealType& p )
+typename Vector1::RealType
+tnlVectorOperations< tnlHost >::
+getVectorDifferenceL2Norm( const Vector1& v1,
+                           const Vector2& v2 )
+{
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
+
+   Real result = fabs( v1. getElement( 0 ) - v2. getElement( 0 ) );
+   result *= result;
+   const Index n = v1. getSize();
+   for( Index i = 1; i < n; i ++ )
+   {
+      Real aux = fabs( v1. getElement( i ) - v2. getElement( i ) );
+      result += aux * aux;
+   }
+   return sqrt( result );
+}
+
+
+template< typename Vector1, typename Vector2 >
+typename Vector1::RealType
+tnlVectorOperations< tnlHost >::
+getVectorDifferenceLpNorm( const Vector1& v1,
+                           const Vector2& v2,
+                           const typename Vector1::RealType& p )
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
@@ -222,25 +287,10 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
    tnlAssert( v1. getSize() == v2. getSize(), );
 
    if( p == 1.0 )
-   {
-      Real result = fabs( v1. getElement( 0 ) - v2. getElement( 0 ) );
-      const Index n = v1. getSize();
-      for( Index i = 1; i < n; i ++ )
-         result += fabs( v1. getElement( i ) - v2. getElement( i ) );
-      return result;
-   }
+      return getVectorDifferenceL1Norm( v1, v2 );
    if( p == 2.0 )
-   {
-      Real result = fabs( v1. getElement( 0 ) - v2. getElement( 0 ) );
-      result *= result;
-      const Index n = v1. getSize();
-      for( Index i = 1; i < n; i ++ )
-      {
-         Real aux = fabs( v1. getElement( i ) - v2. getElement( i ) );
-         result += aux * aux;
-      }
-      return sqrt( result );
-   }
+      return getVectorDifferenceL2Norm( v1, v2 );
+
    Real result = pow( fabs( v1. getElement( 0 ) - v2. getElement( 0 ) ), p );
    const Index n = v1. getSize();
    for( Index i = 1; i < n; i ++ )
@@ -249,8 +299,8 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferenceSum( const Vector1& v1,
-                                                                                       const Vector2& v2 )
+typename Vector1::RealType tnlVectorOperations< tnlHost > :: getVectorDifferenceSum( const Vector1& v1,
+                                                                                     const Vector2& v2 )
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;

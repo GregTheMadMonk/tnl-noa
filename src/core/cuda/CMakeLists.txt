@@ -20,6 +20,7 @@ IF( BUILD_CUDA )
         ${CURRENT_DIR}/cuda-reduction-abs-max_impl.cu
         ${CURRENT_DIR}/cuda-reduction-and_impl.cu
         ${CURRENT_DIR}/cuda-reduction-or_impl.cu
+        ${CURRENT_DIR}/cuda-reduction-l2-norm_impl.cu
         ${CURRENT_DIR}/cuda-reduction-lp-norm_impl.cu
         ${CURRENT_DIR}/cuda-reduction-equalities_impl.cu
         ${CURRENT_DIR}/cuda-reduction-inequalities_impl.cu
@@ -30,6 +31,7 @@ IF( BUILD_CUDA )
         ${CURRENT_DIR}/cuda-reduction-diff-abs-sum_impl.cu
         ${CURRENT_DIR}/cuda-reduction-diff-abs-min_impl.cu
         ${CURRENT_DIR}/cuda-reduction-diff-abs-max_impl.cu
+        ${CURRENT_DIR}/cuda-reduction-diff-l2-norm_impl.cu        
         ${CURRENT_DIR}/cuda-reduction-diff-lp-norm_impl.cu        
         ${CURRENT_DIR}/cuda-prefix-sum_impl.cu
         PARENT_SCOPE )        
