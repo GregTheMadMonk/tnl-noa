@@ -42,14 +42,14 @@ using namespace std;
  * are reduced on CPU. The constant must not be larger
  * than maximal CUDA grid size.
  */
-const int minGPUReductionDataSize = 128;//65536; //16384;//1024;//256;
+const int minGPUReductionDataSize = 256;//65536; //16384;//1024;//256;
 
 //static tnlCudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
 
 #ifdef HAVE_CUDA
 
 template< typename Operation, int blockSize >
-__global__ void tnlCUDAReductionKernel( const Operation operation,
+__global__ void tnlCUDAReductionKernel( Operation operation,
                                         const typename Operation :: IndexType size,
                                         const typename Operation :: RealType* input1,
                                         const typename Operation :: RealType* input2,
@@ -60,7 +60,7 @@ __global__ void tnlCUDAReductionKernel( const Operation operation,
 };
 
 template< typename Operation >
-typename Operation::IndexType reduceOnCudaDevice( const Operation& operation,
+typename Operation::IndexType reduceOnCudaDevice( Operation& operation,
                                                   const typename Operation::IndexType size,
                                                   const typename Operation::RealType* input1,
                                                   const typename Operation::RealType* input2,
@@ -135,7 +135,7 @@ typename Operation::IndexType reduceOnCudaDevice( const Operation& operation,
 #endif
 
 template< typename Operation >
-bool reductionOnCudaDevice( const Operation& operation,
+bool reductionOnCudaDevice( Operation& operation,
                             const typename Operation :: IndexType size,
                             const typename Operation :: RealType* deviceInput1,
                             const typename Operation :: RealType* deviceInput2,
@@ -231,7 +231,6 @@ bool reductionOnCudaDevice( const Operation& operation,
 /****
  * Sum
  */
-
 extern template bool reductionOnCudaDevice< tnlParallelReductionSum< char, int > >
                                    ( const tnlParallelReductionSum< char, int >& operation,
                                      const typename tnlParallelReductionSum< char, int > :: IndexType size,
@@ -311,7 +310,6 @@ extern template bool reductionOnCudaDevice< tnlParallelReductionSum< long double
 /****
  * Min
  */
-
 extern template bool reductionOnCudaDevice< tnlParallelReductionMin< char, int > >
                                    ( const tnlParallelReductionMin< char, int >& operation,
                                      const typename tnlParallelReductionMin< char, int > :: IndexType size,
