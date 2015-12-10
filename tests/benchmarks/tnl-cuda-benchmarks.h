@@ -230,10 +230,13 @@ int main( int argc, char* argv[] )
    cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
    cout << "CPU/GPU speedup: " << timeHost / timeDevice << endl;
 
+   HostVector auxHostVector;
+   auxHostVector.setLike( deviceVector );
+   auxHostVector = deviceVector;
    for( int i = 0; i < size; i++ )
-      if( hostVector.getElement( i ) != deviceVector.getElement( i ) )
+      if( hostVector.getElement( i ) != auxHostVector.getElement( i ) )
       {
-         cerr << "Error in prefix sum at position " << i << ":  " << hostVector.getElement( i ) << " != " << deviceVector.getElement( i ) << endl;
+         cerr << "Error in prefix sum at position " << i << ":  " << hostVector.getElement( i ) << " != " << auxHostVector.getElement( i ) << endl;
       }
 */
    /****
