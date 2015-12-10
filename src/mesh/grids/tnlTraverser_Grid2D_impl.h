@@ -271,16 +271,16 @@ __global__ void tnlTraverserGrid2DCells( const tnlGrid< 2, Real, tnlCuda, Index 
    const int CellDimensions = GridType::Dimensions;
    typename GridType::template GridEntity< CellDimensions > entity( *grid );
    typedef typename GridType::CoordinatesType CoordinatesType;
-   CoordinatesType& coordinates = entity.getCoordinates();
+   //CoordinatesType& coordinates = entity.getCoordinates();
 
-   const Index& xSize = grid->getDimensions().x();
-   const Index& ySize = grid->getDimensions().y();
+   /*const Index& xSize = grid->getDimensions().x();
+   const Index& ySize = grid->getDimensions().y();*/
 
-   coordinates.x() = ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
+   entity.getCoordinates().x() = ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   entity.getCoordinates().y() = ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
 
-   if( coordinates.x() < grid->getDimensions().x() &&
-       coordinates.y() < grid->getDimensions().y() )
+   if( entity.getCoordinates().x() < grid->getDimensions().x() &&
+       entity.getCoordinates().y() < grid->getDimensions().y() )
    {
       entity.setIndex( grid->getEntityIndex( entity ) );
       if( processAllEntities || entity.isBoundaryEntity() == processBoundaryEntities )

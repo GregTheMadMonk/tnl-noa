@@ -158,7 +158,6 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
          currentTau = Min( currentTau, this->getMaxTau() );
       }
    }
-   return false;
 };
 
 template< typename Problem >
