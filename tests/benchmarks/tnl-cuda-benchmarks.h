@@ -143,6 +143,31 @@ int main( int argc, char* argv[] )
    cout << "Time: " << timer.getTime() << " bandwidth: " << bandwidth << " GB/sec." << endl;
 #endif    
 #endif
+
+   cout << "Benchmarking L2 norm on CPU: ";
+   timer.reset();
+   timer.start();
+   for( int i = 0; i < loops; i++ )
+     resultHost = hostVector.lpNorm( 2.0 );
+   timer.stop();
+   bandwidth = 2 * datasetSize / timer.getTime();
+   cout << bandwidth << " GB/sec." << endl;
+    
+   cout << "Benchmarking L2 norm on GPU: " << endl;
+   timer.reset();
+   timer.start();
+   for( int i = 0; i < loops; i++ )
+      resultDevice = deviceVector.lpNorm( 2.0 );
+   cout << "Time: " << timer.getTime() << endl;
+   timer.stop();
+   bandwidth = 2 * datasetSize / timer.getTime();
+   cout << "Time: " << timer.getTime() << " bandwidth: " << bandwidth << " GB/sec." << endl;
+   if( resultHost != resultDevice )
+   {
+      cerr << "Error. " << resultHost << " != " << resultDevice << endl;
+      //return EXIT_FAILURE;
+   }
+
    
    cout << "Benchmarking prefix-sum on CPU ..." << endl;
    timer.reset();
