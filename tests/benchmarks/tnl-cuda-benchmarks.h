@@ -156,7 +156,7 @@ int main( int argc, char* argv[] )
      resultHost = hostVector.lpNorm( 2.0 );
    timer.stop();
    timeHost = timer.getTime();
-   bandwidth = 2 * datasetSize / timer.getTime();
+   bandwidth = datasetSize / timer.getTime();
    cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
     
    cout << "Benchmarking lpNorm on GPU: ";
@@ -166,7 +166,7 @@ int main( int argc, char* argv[] )
       resultDevice = deviceVector.lpNorm( 2.0 );
    timer.stop();
    timeDevice = timer.getTime();
-   bandwidth = 2 * datasetSize / timer.getTime();
+   bandwidth = datasetSize / timer.getTime();
    cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
    cout << "CPU/GPU speedup: " << timeHost / timeDevice << endl;
 
