@@ -222,6 +222,8 @@ int main( int argc, char* argv[] )
       }      
    }
    datasetSize = loops * elements * sizeof( double ) / oneGB;
+   hostVector.setValue( 1.0 );
+   deviceVector.setValue( 1.0 );
    cout << "Benchmarking SpMV on CPU: ";
    timer.reset();
    for( int i = 0; i < loops; i++ )
@@ -236,6 +238,12 @@ int main( int argc, char* argv[] )
    for( int i = 0; i < loops; i++ )
       deviceMatrix.vectorProduct( deviceVector, deviceVector2 );
    timer.stop();
+   //cout << hostVector2 << endl << deviceVector2 << endl;
+      
+   if( hostVector2 != deviceVector2 )
+   {
+      cerr << "Error in SliceEllpack Spmv kernel." << endl;
+   }
    bandwidth = 2 * datasetSize / loops / timer.getTime();
    cout << timer.getTime() << " => " << bandwidth << " GB/s" << " speedup " << hostTime / timer.getTime() << endl;
    

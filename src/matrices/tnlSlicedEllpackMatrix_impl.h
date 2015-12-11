@@ -863,6 +863,31 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
                                  OutVector& outVector )
       {
          tnlMatrixVectorProductCuda( matrix, inVector, outVector );
+         /*#ifdef HAVE_CUDA    
+            typedef tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > Matrix;
+            typedef typename Matrix::IndexType IndexType;
+            Matrix* kernel_this = tnlCuda::passToDevice( matrix );
+            InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
+            OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
+            dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+            const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
+            const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+            for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+            {
+               if( gridIdx == cudaGrids - 1 )
+                  cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+               tnlMatrixVectorProductCudaKernel<<< cudaGridSize, cudaBlockSize >>>
+                                              ( kernel_this,
+                                                kernel_inVector,
+                                                kernel_outVector,
+                                                gridIdx );
+               checkCudaDevice;
+            }
+            tnlCuda::freeFromDevice( kernel_this );
+            tnlCuda::freeFromDevice( kernel_inVector );
+            tnlCuda::freeFromDevice( kernel_outVector );
+            checkCudaDevice;
+         #endif*/
       }
 
 };
