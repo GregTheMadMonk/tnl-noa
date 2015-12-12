@@ -252,7 +252,8 @@ int main( int argc, char* argv[] )
    int elements( 0 );
    for( int row = 0; row < size; row++ )
    {
-      cout << "Row " << row << "/" << size << "     \r" << flush;
+      if( row % 100 == 0 )
+         cout << "Row " << row << "/" << size << "     \r" << flush;
       int col = Max( 0, row - elementsPerRow / 2 );   
       for( int element = 0; element < elementsPerRow; element++ )
       {
@@ -266,7 +267,7 @@ int main( int argc, char* argv[] )
    }
    cout << endl;
    setCudaTestMatrix< DeviceMatrix >( deviceMatrix, elementsPerRow );
-   datasetSize = loops * elements * sizeof( double ) / oneGB;
+   datasetSize = loops * elements * ( 2 * sizeof( Real ) + sizeof( int ) ) / oneGB;
    hostVector.setValue( 1.0 );
    deviceVector.setValue( 1.0 );
    cout << "Benchmarking SpMV on CPU: ";
@@ -275,7 +276,7 @@ int main( int argc, char* argv[] )
       hostMatrix.vectorProduct( hostVector, hostVector2 );
    timer.stop();
    double hostTime = timer.getTime();
-   bandwidth = 2 * datasetSize / loops / timer.getTime();
+   bandwidth = datasetSize / timer.getTime();
    cout << timer.getTime() << " => " << bandwidth << " GB/s" << endl;
    
    cout << "Benchmarking SpMV on GPU: ";
@@ -293,7 +294,7 @@ int main( int argc, char* argv[] )
       //      cerr << " " << i;
          
    }
-   bandwidth = 2 * datasetSize / loops / timer.getTime();
+   bandwidth = datasetSize / timer.getTime();
    cout << timer.getTime() << " => " << bandwidth << " GB/s" << " speedup " << hostTime / timer.getTime() << endl;
    
    return EXIT_SUCCESS;

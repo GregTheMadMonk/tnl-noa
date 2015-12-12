@@ -687,11 +687,21 @@ class tnlEllpackMatrixDeviceDependentCode< tnlHost >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
-#ifdef HAVE_OPENMP
-#pragma omp parallel for
-#endif           
+//#ifdef HAVE_OPENMP
+//#pragma omp parallel for
+//#endif           
+//         for( Index row = 0; row < matrix.getRows(); row ++ )
+//            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+         Index col;
          for( Index row = 0; row < matrix.getRows(); row ++ )
-            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+         {
+            outVector[ row ] = 0.0;
+            const Index rowEnd = ( row + 1 ) * matrix.rowLengths;
+            for( Index i = row * matrix.rowLengths; i < rowEnd; i++ )
+               if( ( col = matrix.columnIndexes[ i ] ) < matrix.columns )
+                  outVector[ row ] += matrix.values[ i ] * inVector[ col ];
+         }
+
       }
 };
 
