@@ -777,6 +777,42 @@ __global__ void tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKerne
 }
 #endif
 
+#ifdef HAVE_CUDA    
+template< 
+   typename Real,
+   typename Index,
+   int SliceSize >
+__global__ void tnlSlicedEllpackMatrixVectorProductCudaKernel(
+   const Index rows,
+   const Index columns,
+   const Index* slicePointers,
+   const Index* sliceCompressedRowsLengths,
+   const Index* columnIndexes,
+   const Real* values,
+   const Real* inVector,
+   Real* outVector,
+   const Index gridIdx )
+{
+   const Index rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   if( rowIdx >= rows )
+      return;
+   const Index sliceIdx = rowIdx / SliceSize;
+   const Index slicePointer = slicePointers[ sliceIdx ];
+   const Index rowLength = sliceCompressedRowsLengths[ sliceIdx ];   
+   Index i = slicePointer + rowIdx - sliceIdx * SliceSize;
+   const Index rowEnd = i + rowLength * SliceSize;
+   Real result( 0.0 );
+   Index columnIndex;
+   while( i < rowEnd && ( columnIndex = columnIndexes[ i ] ) < columns )
+   {
+      result += values[ i ] * inVector[ columnIndex ];
+      i += SliceSize;
+   }
+   outVector[ rowIdx ] = result;   
+}
+#endif
+
+
 template<>
 class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
 {
@@ -862,13 +898,13 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
-         tnlMatrixVectorProductCuda( matrix, inVector, outVector );
-         /*#ifdef HAVE_CUDA    
+         //tnlMatrixVectorProductCuda( matrix, inVector, outVector );
+         #ifdef HAVE_CUDA    
             typedef tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > Matrix;
             typedef typename Matrix::IndexType IndexType;
-            Matrix* kernel_this = tnlCuda::passToDevice( matrix );
-            InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
-            OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
+            //Matrix* kernel_this = tnlCuda::passToDevice( matrix );
+            //InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
+            //OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
             dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
             const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
             const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
@@ -876,18 +912,26 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
             {
                if( gridIdx == cudaGrids - 1 )
                   cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
-               tnlMatrixVectorProductCudaKernel<<< cudaGridSize, cudaBlockSize >>>
-                                              ( kernel_this,
-                                                kernel_inVector,
-                                                kernel_outVector,
-                                                gridIdx );
+               tnlSlicedEllpackMatrixVectorProductCudaKernel
+               < Real, Index, SliceSize >
+                <<< cudaGridSize, cudaBlockSize >>>
+                ( matrix.getRows(),
+                  matrix.getColumns(),
+                  matrix.slicePointers.getData(),
+                  matrix.sliceCompressedRowsLengths.getData(),
+                  matrix.columnIndexes.getData(),
+                  matrix.values.getData(),
+                  inVector.getData(),
+                  outVector.getData(),
+                  gridIdx );
                checkCudaDevice;
             }
-            tnlCuda::freeFromDevice( kernel_this );
-            tnlCuda::freeFromDevice( kernel_inVector );
-            tnlCuda::freeFromDevice( kernel_outVector );
+            //tnlCuda::freeFromDevice( kernel_this );
+            //tnlCuda::freeFromDevice( kernel_inVector );
+            //tnlCuda::freeFromDevice( kernel_outVector );
             checkCudaDevice;
-         #endif*/
+            cudaThreadSynchronize();
+         #endif
       }
 
 };

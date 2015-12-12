@@ -115,6 +115,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::setLike( const tnlEllpackMatrix< R
    if( ! tnlSparseMatrix< Real, Device, Index >::setLike( matrix ) )
       return false;
    this->rowLengths = matrix.rowLengths;
+   this->alignedRows = matrix.alignedRows;
    return true;
 }
 
@@ -125,6 +126,7 @@ void tnlEllpackMatrix< Real, Device, Index > :: reset()
 {
    tnlSparseMatrix< Real, Device, Index >::reset();
    this->rowLengths = 0;
+   this->alignedRows = 0;
 }
 
 template< typename Real,
@@ -693,6 +695,39 @@ class tnlEllpackMatrixDeviceDependentCode< tnlHost >
       }
 };
 
+#ifdef HAVE_CUDA    
+template< 
+   typename Real,
+   typename Index >
+__global__ void tnlEllpackMatrixVectorProductCudaKernel(
+   const Index rows,
+   const Index columns,
+   const Index compressedRowsLengths,
+   const Index alignedRows,
+   const Index* columnIndexes,
+   const Real* values,
+   const Real* inVector,
+   Real* outVector,
+   const Index gridIdx )
+{
+   const Index rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   if( rowIdx >= rows )
+      return;
+   Index i = rowIdx;
+   Index el( 0 );
+   Real result( 0.0 );
+   Index columnIndex;
+   while( el++ < compressedRowsLengths && ( columnIndex = columnIndexes[ i ] ) < columns )
+   {
+      result += values[ i ] * inVector[ columnIndex ];
+      i += alignedRows;
+   }
+   outVector[ rowIdx ] = result;   
+}
+#endif
+
+
+
 template<>
 class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
 {
@@ -734,7 +769,41 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
-         tnlMatrixVectorProductCuda( matrix, inVector, outVector );
+         //tnlMatrixVectorProductCuda( matrix, inVector, outVector );
+         #ifdef HAVE_CUDA    
+            typedef tnlEllpackMatrix< Real, Device, Index > Matrix;
+            typedef typename Matrix::IndexType IndexType;
+            //Matrix* kernel_this = tnlCuda::passToDevice( matrix );
+            //InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
+            //OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
+            dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+            const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
+            const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+            for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+            {
+               if( gridIdx == cudaGrids - 1 )
+                  cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+               tnlEllpackMatrixVectorProductCudaKernel
+               < Real, Index >
+                <<< cudaGridSize, cudaBlockSize >>>
+                ( matrix.getRows(),
+                  matrix.getColumns(),
+                  matrix.rowLengths,
+                  matrix.alignedRows,
+                  matrix.columnIndexes.getData(),
+                  matrix.values.getData(),
+                  inVector.getData(),
+                  outVector.getData(),
+                  gridIdx );
+               checkCudaDevice;
+            }
+            //tnlCuda::freeFromDevice( kernel_this );
+            //tnlCuda::freeFromDevice( kernel_inVector );
+            //tnlCuda::freeFromDevice( kernel_outVector );
+            checkCudaDevice;
+            cudaThreadSynchronize();
+         #endif
+         
       }
 };
 
