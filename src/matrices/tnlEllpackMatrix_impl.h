@@ -687,12 +687,12 @@ class tnlEllpackMatrixDeviceDependentCode< tnlHost >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
-//#ifdef HAVE_OPENMP
-//#pragma omp parallel for
-//#endif           
-//         for( Index row = 0; row < matrix.getRows(); row ++ )
-//            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
-         Index col;
+#ifdef HAVE_OPENMP
+#pragma omp parallel for
+#endif           
+         for( Index row = 0; row < matrix.getRows(); row ++ )
+            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+         /*Index col;
          for( Index row = 0; row < matrix.getRows(); row ++ )
          {
             outVector[ row ] = 0.0;
@@ -700,8 +700,7 @@ class tnlEllpackMatrixDeviceDependentCode< tnlHost >
             for( Index i = row * matrix.rowLengths; i < rowEnd; i++ )
                if( ( col = matrix.columnIndexes[ i ] ) < matrix.columns )
                   outVector[ row ] += matrix.values[ i ] * inVector[ col ];
-         }
-
+         }*/
       }
 };
 
@@ -714,6 +713,7 @@ __global__ void tnlEllpackMatrixVectorProductCudaKernel(
    const Index columns,
    const Index compressedRowsLengths,
    const Index alignedRows,
+   const Index paddingIndex,
    const Index* columnIndexes,
    const Real* values,
    const Real* inVector,
@@ -727,7 +727,9 @@ __global__ void tnlEllpackMatrixVectorProductCudaKernel(
    Index el( 0 );
    Real result( 0.0 );
    Index columnIndex;
-   while( el++ < compressedRowsLengths && ( columnIndex = columnIndexes[ i ] ) < columns )
+   while( el++ < compressedRowsLengths && 
+          ( columnIndex = columnIndexes[ i ] ) < columns &&
+          columnIndex != paddingIndex )
    {
       result += values[ i ] * inVector[ columnIndex ];
       i += alignedRows;
@@ -800,6 +802,7 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
                   matrix.getColumns(),
                   matrix.rowLengths,
                   matrix.alignedRows,
+                  matrix.getPaddingIndex(),
                   matrix.columnIndexes.getData(),
                   matrix.values.getData(),
                   inVector.getData(),
