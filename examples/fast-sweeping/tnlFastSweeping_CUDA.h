@@ -134,7 +134,7 @@ public:
 	__host__ bool run();
 
 #ifdef HAVE_CUDA
-	__device__ bool initGrid();
+	__device__ bool initGrid(int i, int j, int k);
 	__device__ void updateValue(const Index i, const Index j, const Index k);
 	__device__ void updateValue(const Index i, const Index j, const Index k, double** sharedMem, const int k3);
 	__device__ Real fabsMin(const Real x, const Real y);

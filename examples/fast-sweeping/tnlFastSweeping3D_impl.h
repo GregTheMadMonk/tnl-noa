@@ -66,7 +66,7 @@ bool tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > ::
 		exactInput=false;
 	else
 		exactInput=true;
-	cout << "bla "<<endl;
+//	cout << "bla "<<endl;
 	return initGrid();
 }
 
@@ -78,231 +78,14 @@ template< typename MeshReal,
           typename Index >
 bool tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: initGrid()
 {
-
 	for(int i=0; i< Mesh.getDimensions().x()*Mesh.getDimensions().y()*Mesh.getDimensions().z();i++)
 	{
-		dofVector2[i]=INT_MAX*Sign(dofVector[i]);
+
 		if (abs(dofVector[i]) < 1.8*h)
 			dofVector2[i]=dofVector[i];
+		else
+			dofVector2[i]=INT_MAX*Sign(dofVector[i]);
 	}
-	cout << "bla 2"<<endl;
-//
-//	for(int i = 0 ; i < Mesh.getDimensions().x()-1; i++)
-//	{
-//		for(int j = 0 ; j < Mesh.getDimensions().x()-1; j++)
-//			{
-//				if(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] > 0)
-//				{
-//					if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))] > 0)
-//					{
-//						if(dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))] > 0)
-//						{
-//							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
-//								setupSquare1111(i,j);
-//							else
-//								setupSquare1110(i,j);
-//						}
-//						else
-//						{
-//							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
-//								setupSquare1101(i,j);
-//							else
-//								setupSquare1100(i,j);
-//						}
-//					}
-//					else
-//					{
-//						if(dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))] > 0)
-//						{
-//							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
-//								setupSquare1011(i,j);
-//							else
-//								setupSquare1010(i,j);
-//						}
-//						else
-//						{
-//							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
-//								setupSquare1001(i,j);
-//							else
-//								setupSquare1000(i,j);
-//						}
-//					}
-//				}
-//				else
-//				{
-//					if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))] > 0)
-//					{
-//						if(dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))] > 0)
-//						{
-//							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
-//								setupSquare0111(i,j);
-//							else
-//								setupSquare0110(i,j);
-//						}
-//						else
-//						{
-//							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
-//								setupSquare0101(i,j);
-//							else
-//								setupSquare0100(i,j);
-//						}
-//					}
-//					else
-//					{
-//						if(dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))] > 0)
-//						{
-//							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
-//								setupSquare0011(i,j);
-//							else
-//								setupSquare0010(i,j);
-//						}
-//						else
-//						{
-//							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
-//								setupSquare0001(i,j);
-//							else
-//								setupSquare0000(i,j);
-//						}
-//					}
-//				}
-//
-//			}
-//	}
-
-//	Real tmp = 0.0;
-//	Real ax=0.5/sqrt(2.0);
-//
-//	if(!exactInput)
-//	{
-//		for(Index i = 0; i < Mesh.getDimensions().x()*Mesh.getDimensions().y(); i++)
-//				dofVector[i]=0.5*h*Sign(dofVector[i]);
-//	}
-//
-//
-//	for(Index i = 1; i < Mesh.getDimensions().x()-1; i++)
-//	{
-//		for(Index j = 1; j < Mesh.getDimensions().y()-1; j++)
-//		{
-//			 tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//
-//			if(tmp == 0.0)
-//			{}
-//			else if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
-//					dofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
-//					dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 ||
-//					dofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
-//			{}
-//			else
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//		}
-//	}
-//
-//
-//
-//	for(int i = 1; i < Mesh.getDimensions().x()-1; i++)
-//	{
-//		Index j = 0;
-//		tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//
-//
-//		if(tmp == 0.0)
-//		{}
-//		else if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 )
-//		{}
-//		else
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//	}
-//
-//	for(int i = 1; i < Mesh.getDimensions().x()-1; i++)
-//	{
-//		Index j = Mesh.getDimensions().y() - 1;
-//		tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//
-//
-//		if(tmp == 0.0)
-//		{}
-//		else if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
-//		{}
-//		else
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//	}
-//
-//	for(int j = 1; j < Mesh.getDimensions().y()-1; j++)
-//	{
-//		Index i = 0;
-//		tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//
-//
-//		if(tmp == 0.0)
-//		{}
-//		else if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
-//		{}
-//		else
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//	}
-//
-//	for(int j = 1; j < Mesh.getDimensions().y()-1; j++)
-//	{
-//		Index i = Mesh.getDimensions().x() - 1;
-//		tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//
-//
-//		if(tmp == 0.0)
-//		{}
-//		else if(dofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
-//		{}
-//		else
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//	}
-//
-//
-//	Index i = Mesh.getDimensions().x() - 1;
-//	Index j = Mesh.getDimensions().y() - 1;
-//
-//	tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//	if(dofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp > 0.0 &&
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp > 0.0)
-//
-//		dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//
-//
-//
-//	j = 0;
-//	tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//	if(dofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp > 0.0 &&
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp > 0.0)
-//
-//		dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//
-//
-//
-//	i = 0;
-//	j = Mesh.getDimensions().y() -1;
-//	tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//	if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp > 0.0 &&
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp > 0.0)
-//
-//		dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//
-//
-//
-//	j = 0;
-//	tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//	if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp > 0.0 &&
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp > 0.0)
-//
-//		dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-
-
-	dofVector2.save("u-00000.tnl");
 
 	return true;
 }
@@ -475,12 +258,12 @@ void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > ::
 				 dofVector2[Mesh.template getCellNextToCell<0,0,1>(index)] );
 	}
 
-	Real hD= 2.0*(a*a+b*b+c*c-a*b-a*c-b*c);
+	Real hD = 3.0*h*h - 2.0*(a*a+b*b+c*c-a*b-a*c-b*c);
 
-	if(hD >= 3.0*h)
+	if(hD < 0.0)
 		tmp = fabsMin(a,fabsMin(b,c)) + Sign(value)*h;
 	else
-		tmp = (1.0/3.0) * ( a + b + c + Sign(value)*sqrt(3.0*h*h-hD) );
+		tmp = (1.0/3.0) * ( a + b + c + Sign(value)*sqrt(hD) );
 
 
 	dofVector2[index]  = fabsMin(value, tmp);
