@@ -542,18 +542,20 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 
 	this->gridCols = ceil( ((double)(this->mesh.getDimensions().x()-1)) / ((double)(this->n-1)) );
 	this->gridRows = ceil( ((double)(this->mesh.getDimensions().y()-1)) / ((double)(this->n-1)) );
+	this->gridLevels = ceil( ((double)(this->mesh.getDimensions().z()-1)) / ((double)(this->n-1)) );
 
 	//this->gridCols = (this->mesh.getDimensions().x()-1) / (this->n-1) ;
 	//this->gridRows = (this->mesh.getDimensions().y()-1) / (this->n-1) ;
 
 	cout << "Setting gridCols to " << this->gridCols << "." << endl;
 	cout << "Setting gridRows to " << this->gridRows << "." << endl;
+	cout << "Setting gridLevels to " << this->gridLevels << "." << endl;
 
-	this->subgridValues.setSize(this->gridCols*this->gridRows);
+	this->subgridValues.setSize(this->gridCols*this->gridRows*this->gridLevels);
 	this->subgridValues.setValue(0);
-	this->boundaryConditions.setSize(this->gridCols*this->gridRows);
+	this->boundaryConditions.setSize(this->gridCols*this->gridRows*this->gridLevels);
 	this->boundaryConditions.setValue(0);
-	this->calculationsCount.setSize(this->gridCols*this->gridRows);
+	this->calculationsCount.setSize(this->gridCols*this->gridRows*this->gridLevels);
 	this->calculationsCount.setValue(0);
 
 	for(int i = 0; i < this->subgridValues.getSize(); i++ )
@@ -562,7 +564,8 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 		this->boundaryConditions[i] = 0;
 	}
 
-	int stretchedSize = this->n*this->n*this->gridCols*this->gridRows;
+	int levelSize = this->n*this->n*this->gridCols*this->gridRows;
+	int stretchedSize = this->n*levelSize*this->gridLevels;
 
 	if(!this->work_u.setSize(stretchedSize))
 		cerr << "Could not allocate memory for stretched grid." << endl;
@@ -571,41 +574,42 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	int idealStretch =this->mesh.getDimensions().x() + (this->mesh.getDimensions().x()-2)/(this->n-1);
 	cout << idealStretch << endl;
 
-	for(int i = 0; i < stretchedSize; i++)
+
+
+
+	for(int i = 0; i < levelSize; i++)
 	{
 		this->unusedCell[i] = 1;
 		int diff =(this->n*this->gridCols) - idealStretch ;
-		//cout << "diff = " << diff <<endl;
+
 		int k = i/this->n - i/(this->n*this->gridCols) + this->mesh.getDimensions().x()*(i/(this->n*this->n*this->gridCols)) + (i/(this->n*this->gridCols))*diff;
 
 		if(i%(this->n*this->gridCols) - idealStretch  >= 0)
 		{
-			//cout << i%(this->n*this->gridCols) - idealStretch +1 << endl;
 			k+= i%(this->n*this->gridCols) - idealStretch +1 ;
 		}
 
 		if(i/(this->n*this->gridCols) - idealStretch + 1  > 0)
 		{
-			//cout << i/(this->n*this->gridCols) - idealStretch + 1  << endl;
 			k+= (i/(this->n*this->gridCols) - idealStretch +1 )* this->mesh.getDimensions().x() ;
 		}
 
-		//cout << "i = " << i << " : i-k = " << i-k << endl;
-		/*int j=(i % (this->n*this->gridCols)) - ( (this->mesh.getDimensions().x() - this->n)/(this->n - 1) + this->mesh.getDimensions().x() - 1)
-				+ (this->n*this->gridCols - this->mesh.getDimensions().x())*(i/(this->n*this->n*this->gridCols)) ;
 
-		if(j > 0)
-			k += j;
+		for( int j = 0; j<this->n*this->gridLevels; j++)
+		{
 
-		int l = i-k - (this->u0.getSize() - 1);
-		int m = (l % this->mesh.getDimensions().x());
+			int l = j/this->n;
 
-		if(l>0)
-			k+= l + ( (l / this->mesh.getDimensions().x()) + 1 )*this->mesh.getDimensions().x() - (l % this->mesh.getDimensions().x());*/
+			if(j%(this->n*this->gridLevels) - idealStretch  >= 0)
+			{
+				l+= j%(this->n*this->gridLevels) - idealStretch + 1;
+			}
 
-		this->work_u[i] = this->u0[i-k];
-		//cout << (i-k) <<endl;
+			this->work_u[i+(j-l)*levelSize] = this->u0[i+(j-l)*levelSize-k];
+		}
+
 	}
+
 
 
 	cout << "Grid stretched." << endl;
@@ -615,20 +619,26 @@ template< typename SchemeHost, typename SchemeDevice, typename Device>
 void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::contractGrid()
 {
 	cout << "Contracting grid..." << endl;
-	int stretchedSize = this->n*this->n*this->gridCols*this->gridRows;
+	int levelSize = this->n*this->n*this->gridCols*this->gridRows;
+	int stretchedSize = this->n*levelSize*this->gridLevels;
 
 	int idealStretch =this->mesh.getDimensions().x() + (this->mesh.getDimensions().x()-2)/(this->n-1);
 	cout << idealStretch << endl;
 
-	for(int i = 0; i < stretchedSize; i++)
+
+	for(int i = 0; i < levelSize; i++)
 	{
 		int diff =(this->n*this->gridCols) - idealStretch ;
 		int k = i/this->n - i/(this->n*this->gridCols) + this->mesh.getDimensions().x()*(i/(this->n*this->n*this->gridCols)) + (i/(this->n*this->gridCols))*diff;
 
-		if((i%(this->n*this->gridCols) - idealStretch  < 0) && (i/(this->n*this->gridCols) - idealStretch + 1  <= 0))
+		if((i%(this->n*this->gridCols) - idealStretch  < 0) && (i/(this->n*this->gridCols) - idealStretch + 1  <= 0) )
 		{
-			//cout << i <<" : " <<i-k<< endl;
-			this->u0[i-k] = this->work_u[i];
+			for( int j = 0; j<this->n*this->gridLevels; j++)
+			{
+				int l = j/this->n;
+
+				this->u0[i+(j-l)*levelSize-k] = this->work_u[i+(j-l)*levelSize];
+			}
 		}
 
 	}
@@ -1024,7 +1034,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 {
 	//int j = threadIdx.x + threadIdx.y * blockDim.x;
 	int th = (blockIdx.z*caller->n + threadIdx.z) * caller->n*caller->n*caller->gridCols*caller->gridRows
-			 (blockIdx.y) * caller->n*caller->n*caller->gridCols
+			 + (blockIdx.y) * caller->n*caller->n*caller->gridCols
              + (blockIdx.x) * caller->n
              + threadIdx.y * caller->n*caller->gridCols
              + threadIdx.x;
@@ -1041,7 +1051,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 {
 //	int j = threadIdx.x + threadIdx.y * blockDim.x;
 	int index = (blockIdx.z*caller->n + threadIdx.z) * caller->n*caller->n*caller->gridCols*caller->gridRows
-				(blockIdx.y) * caller->n*caller->n*caller->gridCols
+				+ (blockIdx.y) * caller->n*caller->n*caller->gridCols
 				+ (blockIdx.x) * caller->n
 				+ threadIdx.y * caller->n*caller->gridCols
 				+ threadIdx.x;
@@ -1067,7 +1077,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	//printf("j = %d, u = %f\n", j,u);
 
 		int index = (blockIdx.z*caller->n + threadIdx.z) * caller->n*caller->n*caller->gridCols*caller->gridRows
-				 (blockIdx.y) * caller->n*caller->n*caller->gridCols
+				 + (blockIdx.y) * caller->n*caller->n*caller->gridCols
 	             + (blockIdx.x) * caller->n
 	             + threadIdx.y * caller->n*caller->gridCols
 	             + threadIdx.x;
@@ -1092,20 +1102,24 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	__shared__ int tmp;
 	__shared__ double value;
 	//double tmpRes = 0.0;
-	volatile double* sharedTau = &u[blockDim.x*blockDim.y];
-	volatile double* absVal = &u[2*blockDim.x*blockDim.y];
+	volatile double* sharedTau = &u[blockDim.x*blockDim.y*blockDim.z];
+	volatile double* absVal = &u[2*blockDim.x*blockDim.y*blockDim.z];
 	int i = threadIdx.x;
 	int j = threadIdx.y;
-	int l = threadIdx.y * blockDim.x + threadIdx.x;
+	int k = threadIdx.z;
+	int l = threadIdx.y * blockDim.x + threadIdx.x + blockDim.x*blockDim.y*threadIdx.z;
 	bool computeFU = !((i == 0 && (boundaryCondition & 4)) or
 			 (i == blockDim.x - 1 && (boundaryCondition & 2)) or
 			 (j == 0 && (boundaryCondition & 8)) or
-			 (j == blockDim.y - 1  && (boundaryCondition & 1)));
+			 (j == blockDim.y - 1  && (boundaryCondition & 1))or
+			 (k == 0 && (boundaryCondition & 32)) or
+			 (k == blockDim.z - 1  && (boundaryCondition & 16)));
 
 	if(l == 0)
 	{
 		tmp = 0;
-		int centreGID = (blockDim.y*blockIdx.y + (blockDim.y>>1))*(blockDim.x*gridDim.x) + blockDim.x*blockIdx.x + (blockDim.x>>1);
+		int centreGID = (blockDim.y*blockIdx.y + (blockDim.y>>1) )*(blockDim.x*gridDim.x) + blockDim.x*blockIdx.x + (blockDim.x>>1)
+				      + ((blockDim.z>>1)+blockDim.z*blockIdx.z)*blockDim.x*blockDim.y*gridDim.x*gridDim.y;
 		if(this->unusedCell_cuda[centreGID] == 0 || boundaryCondition == 0)
 			tmp = 1;
 	}
@@ -1141,13 +1155,17 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 		if(computeFU)
 		{
 			if(boundaryCondition == 4)
-				u[l] = u[threadIdx.y * blockDim.x] + Sign(u[0])*this->subMesh.getHx()*(threadIdx.x) ;//+  2*Sign(u[0])*this->subMesh.getHx()*(threadIdx.x+this->n);
+				u[l] = u[this->subMesh.getCellCoordinates(0,j,k)] + Sign(u[0])*this->subMesh.getHx()*(threadIdx.x) ;//+  2*Sign(u[0])*this->subMesh.getHx()*(threadIdx.x+this->n);
 			else if(boundaryCondition == 2)
-				u[l] = u[threadIdx.y * blockDim.x + blockDim.x - 1] + Sign(u[0])*this->subMesh.getHx()*(this->n - 1 - threadIdx.x);//+ 2*Sign(u[0])*this->subMesh.getHx()*(blockDim.x - threadIdx.x - 1+this->n);
+				u[l] = u[this->subMesh.getCellCoordinates(blockDim.x - 1,j,k)] + Sign(u[0])*this->subMesh.getHx()*(this->n - 1 - threadIdx.x);//+ 2*Sign(u[0])*this->subMesh.getHx()*(blockDim.x - threadIdx.x - 1+this->n);
 			else if(boundaryCondition == 8)
-				u[l] = u[threadIdx.x] + Sign(u[0])*this->subMesh.getHx()*(threadIdx.y) ;//+ 2*Sign(u[0])*this->subMesh.getHx()*(threadIdx.y+this->n);
+				u[l] = u[this->subMesh.getCellCoordinates(i,0,k)] + Sign(u[0])*this->subMesh.getHx()*(threadIdx.y) ;//+ 2*Sign(u[0])*this->subMesh.getHx()*(threadIdx.y+this->n);
 			else if(boundaryCondition == 1)
-				u[l] = u[(blockDim.y - 1)* blockDim.x + threadIdx.x] + Sign(u[0])*this->subMesh.getHx()*(this->n - 1 - threadIdx.y) ;//+ Sign(u[0])*this->subMesh.getHx()*(blockDim.y - threadIdx.y  - 1 +this->n);
+				u[l] = u[this->subMesh.getCellCoordinates(i,blockDim.y - 1,k)] + Sign(u[0])*this->subMesh.getHx()*(this->n - 1 - threadIdx.y) ;//+ Sign(u[0])*this->subMesh.getHx()*(blockDim.y - threadIdx.y  - 1 +this->n);
+			else if(boundaryCondition == 32)
+				u[l] = u[this->subMesh.getCellCoordinates(i,j,0)] + Sign(u[0])*this->subMesh.getHx()*(threadIdx.z);
+			else if(boundaryCondition == 16)
+				u[l] = u[this->subMesh.getCellCoordinates(i,j,blockDim.z - 1)] + Sign(u[0])*this->subMesh.getHx()*(this->n - 1 - threadIdx.z) ;
 		}
 	}
 
@@ -1175,14 +1193,14 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
       {
     	  if(sharedTau[0] > 1.0 * this->subMesh.getHx())	sharedTau[0] = 1.0 * this->subMesh.getHx();
       }
-      else if(l == blockDim.x*blockDim.y - 1)
+      else if(l == blockDim.x*blockDim.y*blockDim.z - 1)
     	  if( time + sharedTau[l] > finalTime )		sharedTau[l] = finalTime - time;
 
 
 
-      if((blockDim.x == 16) && (l < 128))		sharedTau[l] = Min(sharedTau[l],sharedTau[l+128]);
+      if((blockDim.x == 8) && (l < 128))		sharedTau[l] = Min(sharedTau[l],sharedTau[l+128]);
       __syncthreads();
-      if((blockDim.x == 16) && (l < 64))		sharedTau[l] = Min(sharedTau[l],sharedTau[l+64]);
+      if((blockDim.x == 8) && (l < 64))		sharedTau[l] = Min(sharedTau[l],sharedTau[l+64]);
       __syncthreads();
       if(l < 32)    							sharedTau[l] = Min(sharedTau[l],sharedTau[l+32]);
       if(l < 16)								sharedTau[l] = Min(sharedTau[l],sharedTau[l+16]);
@@ -1204,8 +1222,10 @@ template< typename SchemeHost, typename SchemeDevice, typename Device>
 __device__
 int tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::getOwnerCUDA3D(int i) const
 {
+	int j = i % (this->gridCols*this->gridRows*this->n*this->n)
 
-	return ((i / (this->gridCols*this->n*this->n))*this->gridCols
+	return ( (i / (this->gridCols*this->gridRows*this->n*this->n))/this->n
+			+ (j / (this->gridCols*this->n*this->n))*this->gridCols
 			+ (i % (this->gridCols*this->n))/this->n);
 }
 
@@ -1243,7 +1263,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 
 
 
-//north - 1, east - 2, west - 4, south - 8
+//north - 1, east - 2, west - 4, south - 8, up -16, down - 32
 
 template <typename SchemeHost, typename SchemeDevice, typename Device>
 __global__
