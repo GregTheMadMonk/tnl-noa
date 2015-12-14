@@ -1023,10 +1023,11 @@ __device__
 void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::getSubgridCUDA3D( const int i ,tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int >* caller, double* a)
 {
 	//int j = threadIdx.x + threadIdx.y * blockDim.x;
-	int th = (blockIdx.y) * caller->n*caller->n*caller->gridCols
-            + (blockIdx.x) * caller->n
-            + threadIdx.y * caller->n*caller->gridCols
-            + threadIdx.x;
+	int th = (blockIdx.z*caller->n + threadIdx.z) * caller->n*caller->n*caller->gridCols*caller->gridRows
+			 (blockIdx.y) * caller->n*caller->n*caller->gridCols
+             + (blockIdx.x) * caller->n
+             + threadIdx.y * caller->n*caller->gridCols
+             + threadIdx.x;
 	//printf("i= %d,j= %d,th= %d\n",i,j,th);
 	*a = caller->work_u_cuda[th];
 	//printf("Hi %f \n", *a);
@@ -1038,11 +1039,12 @@ template< typename SchemeHost, typename SchemeDevice, typename Device>
 __device__
 void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::updateSubgridCUDA3D( const int i ,tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int >* caller, double* a)
 {
-	int j = threadIdx.x + threadIdx.y * blockDim.x;
-	int index = (blockIdx.y) * caller->n*caller->n*caller->gridCols
-            + (blockIdx.x) * caller->n
-            + threadIdx.y * caller->n*caller->gridCols
-            + threadIdx.x;
+//	int j = threadIdx.x + threadIdx.y * blockDim.x;
+	int index = (blockIdx.z*caller->n + threadIdx.z) * caller->n*caller->n*caller->gridCols*caller->gridRows
+				(blockIdx.y) * caller->n*caller->n*caller->gridCols
+				+ (blockIdx.x) * caller->n
+				+ threadIdx.y * caller->n*caller->gridCols
+				+ threadIdx.x;
 
 	if( (fabs(caller->work_u_cuda[index]) > fabs(*a)) || (caller->unusedCell_cuda[index] == 1) )
 	{
@@ -1064,10 +1066,11 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 //	int j = threadIdx.x + threadIdx.y * blockDim.x;
 	//printf("j = %d, u = %f\n", j,u);
 
-		int index = (blockIdx.y)*this->n*this->n*this->gridCols
-					+ (blockIdx.x)*this->n
-					+ threadIdx.y*this->n*this->gridCols
-					+ threadIdx.x;
+		int index = (blockIdx.z*caller->n + threadIdx.z) * caller->n*caller->n*caller->gridCols*caller->gridRows
+				 (blockIdx.y) * caller->n*caller->n*caller->gridCols
+	             + (blockIdx.x) * caller->n
+	             + threadIdx.y * caller->n*caller->gridCols
+	             + threadIdx.x;
 
 		//printf("i= %d,j= %d,index= %d\n",i,j,index);
 		if( (fabs(this->work_u_cuda[index]) > fabs(u)) || (this->unusedCell_cuda[index] == 1) )
