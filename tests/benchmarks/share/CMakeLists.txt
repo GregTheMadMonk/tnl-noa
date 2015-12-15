@@ -6,6 +6,7 @@ INSTALL( FILES matrix-market
                run-matrix-solvers-benchmark
                run-tnl-benchmark-spmv
                run-tnl-benchmark-linear-solvers
+               tnl-run-heat-equation-benchmark
                cuda-profiler.conf
                process-cuda-profile.pl 
                tnl-log-to-html.py

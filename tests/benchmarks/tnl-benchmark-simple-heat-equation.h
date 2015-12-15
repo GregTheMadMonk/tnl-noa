@@ -191,15 +191,15 @@ __global__ void boundaryConditionsKernel( const Real* u, Real* aux,
 {
    const Index i = ( blockIdx.x ) * blockDim.x + threadIdx.x;
    const Index j = ( blockIdx.y ) * blockDim.y + threadIdx.y;
-   /*if( i == 0 && j < gridYSize )
+   if( i == 0 && j < gridYSize )
       aux[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
-   /*if( i == gridXSize - 1 && j < gridYSize )
+   if( i == gridXSize - 1 && j < gridYSize )
       aux[ j * gridXSize + gridXSize - 2 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
    if( j == 0 && i < gridXSize )
       aux[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
    if( j == gridYSize -1  && i < gridXSize )
       aux[ j * gridXSize + gridXSize - 2 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
-    */
+    
 }
 
 
@@ -217,7 +217,6 @@ __global__ void heatEquationKernel( const Real* u,
    if( i > 0 && i < gridXSize - 1 &&
        j > 0 && j < gridYSize - 1 )
    {
-      printf( "( %d, %d ) ", i, j );
       const Index c = j * gridXSize + i;
       aux[ c ] = tau * ( ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ] ) * hx_inv +
                        ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
@@ -232,19 +231,18 @@ __global__ void updateKernel( Real* u,
 {
    const Index blockOffset = blockIdx.x * blockDim.x;
    Index idx = blockOffset + threadIdx.x;
-   //if( idx < dofs )
-   if( threadIdx.x == 0 && idx < dofs )
-      printf( "%d %d %d -> %d \n", blockIdx.x, blockDim.x, blockOffset, idx );
-   //   u[ idx ] += aux[ idx ];
+   
+   if( idx < dofs )
+      u[ idx ] += aux[ idx ];
    
    __syncthreads();
 
    const Index rest = dofs - blockOffset;
    Index n =  rest < blockDim.x ? rest : blockDim.x;
 
-   //computeBlockResidue< Real, Index >( aux,
-   //                                    cudaBlockResidue,
-   //                                    n );
+   computeBlockResidue< Real, Index >( aux,
+                                       cudaBlockResidue,
+                                       n );
 }
 
 template< typename Real, typename Index >
@@ -370,13 +368,13 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
          cerr << "Setting of boundary conditions failed. " << cudaErr << endl;
          return false;
       }
-                  
+                    
       /****
        * Laplace operator
        */
-      cout << "Laplace operator ... " << endl;
-     //heatEquationKernel<<< cudaGridSize, cudaBlockSize >>>
-     //    ( cuda_u, cuda_aux, tau, hx_inv, hy_inv, gridXSize, gridYSize );
+      //cout << "Laplace operator ... " << endl;
+      heatEquationKernel<<< cudaGridSize, cudaBlockSize >>>
+         ( cuda_u, cuda_aux, tau, hx_inv, hy_inv, gridXSize, gridYSize );
       if( cudaGetLastError() != cudaSuccess )
       {
          cerr << "Laplace operator failed." << endl;
@@ -386,8 +384,8 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
       /****
        * Update
        */            
-      cout << "Update ... " << endl;
-      updateKernel<<< cudaUpdateBlocks, cudaUpdateBlockSize >>>( u, aux, cuda_max_du, dofsCount );
+      //cout << "Update ... " << endl;
+      updateKernel<<< cudaUpdateBlocks, cudaUpdateBlockSize >>>( cuda_u, cuda_aux, cuda_max_du, dofsCount );
       if( cudaGetLastError() != cudaSuccess )
       {
          cerr << "Update failed." << endl;
@@ -409,7 +407,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
             
       time += currentTau;
       iteration++;
-      if( verbose )
+      if( verbose && iteration % 1000 == 0 )
          cout << "Iteration: " << iteration << "\t Time:" << time << "    \r" << flush;
    }
    timer.stop();
