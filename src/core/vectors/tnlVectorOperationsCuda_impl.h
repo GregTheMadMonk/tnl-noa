@@ -45,8 +45,7 @@ typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorMax( cons
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
 
-   tnlAssert( v. getSize() > 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( v. getSize() > 0, );
 
    Real result( 0 );
    tnlParallelReductionMax< Real, Index > operation;
@@ -64,8 +63,7 @@ typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorMin( cons
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
 
-   tnlAssert( v. getSize() > 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( v. getSize() > 0, );
 
    Real result( 0 );
    tnlParallelReductionMin< Real, Index > operation;
@@ -83,8 +81,7 @@ typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorAbsMax( c
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
 
-   tnlAssert( v. getSize() > 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( v. getSize() > 0, );
 
    Real result( 0 );
    tnlParallelReductionAbsMax< Real, Index > operation;
@@ -102,8 +99,7 @@ typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorAbsMin( c
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
 
-   tnlAssert( v. getSize() > 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( v. getSize() > 0, );
 
    Real result( 0 );
    tnlParallelReductionAbsMin< Real, Index > operation;
@@ -116,17 +112,63 @@ typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorAbsMin( c
 }
 
 template< typename Vector >
-typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorLpNorm( const Vector& v,
-                                                    const typename Vector :: RealType& p )
+typename Vector::RealType 
+tnlVectorOperations< tnlCuda >::
+getVectorL1Norm( const Vector& v )
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
 
-   tnlAssert( v. getSize() > 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( v. getSize() > 0, );
+
+   Real result( 0 );
+   tnlParallelReductionAbsSum< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v. getSize(),
+                          v. getData(),
+                          ( Real* ) 0,
+                          result );
+   return result;
+}
+
+template< typename Vector >
+typename Vector::RealType 
+tnlVectorOperations< tnlCuda >::
+getVectorL2Norm( const Vector& v )
+{
+   typedef typename Vector :: RealType Real;
+   typedef typename Vector :: IndexType Index;
+
+   tnlAssert( v. getSize() > 0, );
+
+   Real result( 0 );
+   tnlParallelReductionL2Norm< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v. getSize(),
+                          v. getData(),
+                          ( Real* ) 0,
+                          result );
+   return sqrt( result );
+}
+
+
+template< typename Vector >
+typename Vector::RealType
+tnlVectorOperations< tnlCuda >::
+getVectorLpNorm( const Vector& v,
+                 const typename Vector::RealType& p )
+{
+   typedef typename Vector :: RealType Real;
+   typedef typename Vector :: IndexType Index;
+
+   tnlAssert( v. getSize() > 0, );
    tnlAssert( p > 0.0,
               cerr << " p = " << p );
-
+   
+   if( p == 1 )
+      return getVectorL1Norm( v );
+   if( p == 2 )
+      return getVectorL2Norm( v );
    Real result( 0 );
    tnlParallelReductionLpNorm< Real, Index > operation;
    operation. setPower( p );
@@ -144,8 +186,7 @@ typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorSum( cons
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
 
-   tnlAssert( v. getSize() > 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( v. getSize() > 0, );
 
    Real result( 0 );
    tnlParallelReductionSum< Real, Index > operation;
@@ -164,10 +205,8 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferen
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( v1. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
-   tnlAssert( v1. getSize() == v2. getSize(),
-              cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
    tnlParallelReductionDiffMax< Real, Index > operation;
@@ -186,10 +225,8 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferen
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( v1. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
-   tnlAssert( v1. getSize() == v2. getSize(),
-              cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
    tnlParallelReductionDiffMin< Real, Index > operation;
@@ -209,10 +246,8 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferen
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( v1. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
-   tnlAssert( v1. getSize() == v2. getSize(),
-              cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
    tnlParallelReductionDiffAbsMax< Real, Index > operation;
@@ -231,10 +266,8 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferen
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( v1. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
-   tnlAssert( v1. getSize() == v2. getSize(),
-              cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
    tnlParallelReductionDiffAbsMin< Real, Index > operation;
@@ -249,6 +282,51 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferen
 template< typename Vector1, typename Vector2 >
 typename Vector1::RealType
 tnlVectorOperations< tnlCuda >::
+getVectorDifferenceL1Norm( const Vector1& v1,
+                           const Vector2& v2 )
+{
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
+
+   Real result( 0 );
+   tnlParallelReductionDiffAbsSum< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v1. getSize(),
+                          v1. getData(),
+                          v2. getData(),
+                          result );
+   return result;
+}
+
+template< typename Vector1, typename Vector2 >
+typename Vector1::RealType
+tnlVectorOperations< tnlCuda >::
+getVectorDifferenceL2Norm( const Vector1& v1,
+                           const Vector2& v2 )
+{
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
+
+   Real result( 0 );
+   tnlParallelReductionDiffL2Norm< Real, Index > operation;
+   reductionOnCudaDevice( operation,
+                          v1. getSize(),
+                          v1. getData(),
+                          v2. getData(),
+                          result );
+   return sqrt( result );
+}
+
+
+template< typename Vector1, typename Vector2 >
+typename Vector1::RealType
+tnlVectorOperations< tnlCuda >::
 getVectorDifferenceLpNorm( const Vector1& v1,
                            const Vector2& v2,
                            const typename Vector1 :: RealType& p )
@@ -258,10 +336,8 @@ getVectorDifferenceLpNorm( const Vector1& v1,
 
    tnlAssert( p > 0.0,
               cerr << " p = " << p );
-   tnlAssert( v1. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
-   tnlAssert( v1. getSize() == v2. getSize(),
-              cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
    tnlParallelReductionDiffLpNorm< Real, Index > operation;
@@ -281,10 +357,8 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferen
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( v1. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
-   tnlAssert( v1. getSize() == v2. getSize(),
-              cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
    tnlParallelReductionDiffSum< Real, Index > operation;
@@ -319,8 +393,7 @@ void tnlVectorOperations< tnlCuda > :: vectorScalarMultiplication( Vector& v,
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
 
-   tnlAssert( v. getSize() > 0,
-              cerr << "Vector name is " << v. getName() );
+   tnlAssert( v. getSize() > 0, );
 
    #ifdef HAVE_CUDA
       dim3 blockSize( 0 ), gridSize( 0 );
@@ -345,10 +418,8 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getScalarProduct(
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( v1. getSize() > 0,
-              cerr << "Vector name is " << v1. getName() );
-   tnlAssert( v1. getSize() == v2. getSize(),
-              cerr << "Vector names are " << v1. getName() << " and " << v2. getName() );
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
 /*#if defined HAVE_CUBLAS && defined HAVE_CUDA
@@ -402,10 +473,8 @@ void tnlVectorOperations< tnlCuda > :: addVector( Vector1& y,
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( y. getSize() > 0,
-              cerr << "Vector name is " << y. getName() );
-   tnlAssert( y. getSize() == x. getSize(),
-              cerr << "Vector names are " << x. getName() << " and " << y. getName() );
+   tnlAssert( y. getSize() > 0, );
+   tnlAssert( y. getSize() == x. getSize(), );
    tnlAssert( y.getData() != 0, );
    tnlAssert( x.getData() != 0, );
 
@@ -476,12 +545,9 @@ addVectors( Vector1& v,
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
 
-   tnlAssert( v.getSize() > 0,
-              cerr << "Vector name is " << v.getName() );
-   tnlAssert( v.getSize() == v1.getSize(),
-              cerr << "Vector names are " << v.getName() << " and " << v1.getName() );
-   tnlAssert( v.getSize() == v2.getSize(),
-              cerr << "Vector names are " << v.getName() << " and " << v2.getName() );
+   tnlAssert( v.getSize() > 0, );
+   tnlAssert( v.getSize() == v1.getSize(), );
+   tnlAssert( v.getSize() == v2.getSize(), );
    tnlAssert( v.getData() != 0, );
    tnlAssert( v1.getData() != 0, );
    tnlAssert( v2.getData() != 0, );

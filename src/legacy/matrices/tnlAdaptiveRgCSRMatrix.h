@@ -926,13 +926,14 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOutGroup( ostream& st
 
 template< typename Real, typename Device, typename Index >
 void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
+                                                                const tnlString& name, 
                                                                 const tnlString& format,
 		                                                          const Index lines ) const
 {
    if( format == "" || format == "text" )
    {
       str << "Structure of tnlAdaptiveRgCSRMatrix" << endl;
-      str << "Matrix name:" << this -> getName() << endl;
+      str << "Matrix name:" << name << endl;
       str << "Matrix size:" << this -> getSize() << endl;
       str << "Allocated elements:" << nonzeroElements. getSize() << endl;
       str << "Number of groups: " << numberOfGroups << endl;
@@ -954,7 +955,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
    if( format == "html" )
    {
       str << "<h1>Structure of tnlAdaptiveRgCSRMatrix</h1>" << endl;
-      str << "<b>Matrix name:</b> " << this -> getName() << "<p>" << endl;
+      str << "<b>Matrix name:</b> " << name << "<p>" << endl;
       str << "<b>Matrix size:</b> " << this -> getSize() << "<p>" << endl;
       str << "<b>Allocated elements:</b> " << nonzeroElements. getSize() << "<p>" << endl;
       str << "<b>Number of groups:</b> " << this -> numberOfGroups << "<p>" << endl;

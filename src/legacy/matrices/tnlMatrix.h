@@ -188,7 +188,7 @@ Index tnlMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 template< typename Real, typename Device, typename Index >
 Index tnlMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& row ) const
 {
-   tnlAssert( false, cerr << "not implemented yet - matrix name is " << this -> getName() );
+   tnlAssert( false, cerr << "not implemented yet." );
    /*
     * TODO: this method should be abstract
     */

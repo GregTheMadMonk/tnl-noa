@@ -33,11 +33,6 @@ tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::t
   R( 0.0 ),
   T( 0.0 )
 {
-   this->rho.setName( "navier-stokes-rho" );
-   this->u1.setName( "navier-stokes-u1");
-   this->u2.setName( "navier-stokes-u2" );
-   this->p.setName( "navier-stokes-p" );
-   this->energy.setName( "navier-stokes-energy" );
 }
 
 template< typename AdvectionScheme,

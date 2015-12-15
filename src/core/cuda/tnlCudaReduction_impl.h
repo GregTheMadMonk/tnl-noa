@@ -22,7 +22,7 @@ template< typename Operation, int blockSize >
 __device__
 void
 tnlCUDAReduction< Operation, blockSize >::
-reduce( const Operation operation,
+reduce( Operation& operation,
         const IndexType size,
         const RealType* input1,
         const RealType* input2,
@@ -158,7 +158,7 @@ template< typename Real, typename Index, int blockSize >
 __device__
 void
 tnlCUDAReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize >::
-reduce( const Operation operation,
+reduce( Operation& operation,
         const IndexType size,
         const RealType* input1,
         const RealType* input2,
@@ -182,7 +182,7 @@ reduce( const Operation operation,
     * sequential reduction.
     */
    sdata[ tid ] = ( RealType ) 0;
-   while( gid + 4 * gridSize < size )
+   /*while( gid + 4 * gridSize < size )
    {
       sdata[ tid ] += input1[ gid                ] * input2[ gid ];
       sdata[ tid ] += input1[ gid + gridSize     ] * input2[ gid + gridSize ];
@@ -195,7 +195,7 @@ reduce( const Operation operation,
       sdata[ tid ] += input1[ gid            ] * input2[ gid ];
       sdata[ tid ] += input1[ gid + gridSize ] * input2[ gid + gridSize ];
       gid += 2*gridSize;
-   }
+   }*/
    while( gid < size )
    {
       sdata[ tid ] += input1[ gid ] * input2[ gid ];

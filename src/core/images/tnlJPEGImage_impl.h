@@ -108,7 +108,7 @@ read( const tnlRegionOfInterest< Index > roi,
       const tnlGrid< 2, Real, Device, Index >& grid,
       Vector& vector )
 {
-#ifdef HAVE_PNG_H
+#ifdef HAVE_JPEG_H
    typedef tnlGrid< 2, Real, Device, Index > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
    
@@ -195,7 +195,7 @@ writeHeader( const tnlGrid< 2, Real, Device, Index >& grid )
    jpeg_set_defaults( &this->cinfo );
    jpeg_start_compress( &this->cinfo, true );
 #else
-   //cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
+   //cerr << "TNL was not compiled with support of JPEG. You may still use PGM format." << endl;
    return false;
 #endif    
 }

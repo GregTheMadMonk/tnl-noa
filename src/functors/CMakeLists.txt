@@ -12,7 +12,7 @@ SET( headers tnlFunctionDiscretizer.h
              tnlSinWaveFunction.h
              tnlSinWaveFunction_impl.h
              tnlTestFunction.h
-             tnlFunctionType.h
+             tnlFunction.h
              tnlTestFunction_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/functors )

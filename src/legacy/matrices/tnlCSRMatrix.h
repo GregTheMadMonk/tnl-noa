@@ -798,11 +798,12 @@ tnlCSRMatrix< Real, Device, Index >& tnlCSRMatrix< Real, Device, Index > :: oper
 
 template< typename Real, typename Device, typename Index >
 void tnlCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
+                                                      const tnlString& name, 
                                                       const tnlString& format,
 		                                                const Index lines ) const
 {
    str << "Structure of tnlCSRMatrix" << endl;
-   str << "Matrix name:" << this -> getName() << endl;
+   str << "Matrix name:" << name << endl;
    str << "Matrix size:" << this -> getSize() << endl;
    str << "Allocated elements:" << nonzero_elements. getSize() << endl;
    str << "Matrix rows:" << endl;

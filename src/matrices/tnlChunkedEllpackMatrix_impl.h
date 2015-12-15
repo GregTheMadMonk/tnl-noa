@@ -42,12 +42,6 @@ tnlChunkedEllpackMatrix< Real, Device, Index >::tnlChunkedEllpackMatrix()
   desiredChunkSize( 16 ),
   numberOfSlices( 0 )
 {
-   this->values.setName( "tnlChunkedEllpackMatrix::values" );
-   this->columnIndexes.setName( "tnlChunkedEllpackMatrix::columnIndexes" );
-   rowToChunkMapping.setName( "tnlChunkedEllpackMatrix::rowToChunkMapping" );
-   rowToSliceMapping.setName( "tnlChunkedEllpackMatrix::rowToSliceMapping" );
-   rowPointers.setName( "tnlChunkedEllpackMatrix::rowPointers" );
-   slices.setName( "tnlChunkedEllpackMatrix::slices" );
 };
 
 template< typename Real,
@@ -353,9 +347,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::operator == ( const tnlChun
               cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
                    << " this->getColumns() = " << this->getColumns()
-                   << " matrix.getColumns() = " << matrix.getColumns()
-                   << " this->getName() = " << this->getName()
-                   << " matrix.getName() = " << matrix.getName() );
+                   << " matrix.getColumns() = " << matrix.getColumns() );
    // TODO: implement this
    return false;
 }
@@ -1154,8 +1146,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::performSORIteration( const 
 {
    tnlAssert( row >=0 && row < this->getRows(),
               cerr << "row = " << row
-                   << " this->getRows() = " << this->getRows()
-                   << " this->getName() = " << this->getName() << endl );
+                   << " this->getRows() = " << this->getRows() << endl );
 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
@@ -1176,7 +1167,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::performSORIteration( const 
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-      cerr << "There is zero on the diagonal in " << row << "-th row of thge matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
+      cerr << "There is zero on the diagonal in " << row << "-th row of a matrix. I cannot perform SOR iteration." << endl;
       return false;
    }
    x. setElement( row, x[ row ] + omega / diagonalValue * ( b[ row ] - sum ) );
@@ -1258,11 +1249,12 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::print( ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index >
-void tnlChunkedEllpackMatrix< Real, Device, Index >::printStructure( ostream& str ) const
+void tnlChunkedEllpackMatrix< Real, Device, Index >::printStructure( ostream& str,
+                                                                     const tnlString& name ) const
 {
    const IndexType numberOfSlices = this->getNumberOfSlices();
    str << "Matrix type: " << getType() << endl
-       << "Marix name: " << this->getName() << endl
+       << "Marix name: " << name << endl
        << "Rows: " << this->getRows() << endl
        << "Columns: " << this->getColumns() << endl
        << "Slices: " << numberOfSlices << endl;

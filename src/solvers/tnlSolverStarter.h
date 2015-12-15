@@ -23,7 +23,7 @@
 #include <core/tnlTimerCPU.h>
 #include <ostream>
 
-template< typename ConfigTag >
+template< typename MeshConfig >
 class tnlSolverStarter
 {
    public:

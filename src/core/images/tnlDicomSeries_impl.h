@@ -182,7 +182,7 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
 #ifdef HAVE_DCMTK_H
    //load header
    tnlDicomHeader *header = new tnlDicomHeader();
-   dicomSeriesHeaders.setSize( fileList->getSize() );
+   dicomSeriesHeaders.setSize( fileList.getSize() );
    dicomSeriesHeaders.setElement( number, header );
    if( !header->loadFromFile( filePath ) )
       return false;
@@ -283,7 +283,7 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
         imagesInfo.frameSize = size;
         if (pixelData)
             delete pixelData;
-        pixelData = new Uint16[imagesInfo.frameUintsCount * fileList->getSize()];
+        pixelData = new Uint16[imagesInfo.frameUintsCount * fileList.getSize()];
     }
     else
     {//check image size for compatibility

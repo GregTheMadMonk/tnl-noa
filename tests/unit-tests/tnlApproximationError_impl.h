@@ -24,6 +24,7 @@
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlMatrixSetter.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
+#include <solvers/pde/tnlNoTimeDiscretisation.h>
 #include <operators/tnlExactOperatorEvaluator.h>
 
 template< typename Mesh,
@@ -122,7 +123,7 @@ getError( const Mesh& mesh,
    if( ! matrix.setCompressedRowsLengths( rowLengths ) )
       return;
 
-   tnlLinearSystemAssembler< Mesh, Vector, ApproximateOperator, BoundaryConditionsType, ConstantFunctionType, MatrixType > systemAssembler;
+   tnlLinearSystemAssembler< Mesh, Vector, ApproximateOperator, BoundaryConditionsType, ConstantFunctionType, tnlNoTimeDiscretisation, MatrixType > systemAssembler;
    systemAssembler.template assembly< Mesh::Dimensions >( 0.0, // time
                                                           1.0, // tau
                                                           mesh,

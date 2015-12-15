@@ -1,3 +1,17 @@
+###############################################################################
+#                      Cmake project script for TNL
+#                             -------------------
+#    begin               : Dec 8, 2010
+#    copyright           : (C) 2010 by Tomas Oberhuber et al.
+#    email               : tomas.oberhuber@fjfi.cvut.cz
+#
+###############################################################################
+#
+# Authors:
+# Tomas Oberhuber
+# Vladimir Klement
+# Jakub Klinkovsky
+
 cmake_minimum_required( VERSION 2.8.10 )
 
 project( tnl )
@@ -130,11 +144,11 @@ if( WITH_CUDA STREQUAL "yes" )
         endif( NOT WITH_CUSPARSE STREQUAL "no" )
    
     else( CUDA_FOUND )
-      AddCompilerFlag( "-std=gnu++0x" )         
+      AddCompilerFlag( "-std=c++11" )         
     endif( CUDA_FOUND )
 else( WITH_CUDA STREQUAL "yes" )
    #AddCompilerFlag( "-std=gnu++0x -ftree-vectorizer-verbose=1" )       
-   AddCompilerFlag( "-std=gnu++0x" )       
+   AddCompilerFlag( "-std=c++11" )       
 endif( WITH_CUDA STREQUAL "yes" )    
 
 ####

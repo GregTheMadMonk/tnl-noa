@@ -43,8 +43,6 @@ class tnlMultiArray< 1, Element, Device, Index > : public tnlArray< Element, Dev
 
    tnlMultiArray();
 
-   tnlMultiArray( const tnlString& name );
-
    static tnlString getType();
 
    tnlString getTypeVirtual() const;
@@ -123,8 +121,6 @@ class tnlMultiArray< 2, Element, Device, Index > : public tnlArray< Element, Dev
 
 
    tnlMultiArray();
-
-   tnlMultiArray( const tnlString& name );
 
    static tnlString getType();
 
@@ -209,8 +205,6 @@ class tnlMultiArray< 3, Element, Device, Index > : public tnlArray< Element, Dev
 
    tnlMultiArray();
 
-   tnlMultiArray( const tnlString& name );
-
    static tnlString getType();
 
    tnlString getTypeVirtual() const;
@@ -293,8 +287,6 @@ class tnlMultiArray< 4, Element, Device, Index > : public tnlArray< Element, Dev
 
 
    tnlMultiArray();
-
-   tnlMultiArray( const tnlString& name );
 
    static tnlString getType();
 

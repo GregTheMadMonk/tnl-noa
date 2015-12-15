@@ -498,10 +498,12 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
 
 template< typename Real, typename Device, typename Index >
    template< typename Device2 >
-bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix )
+bool
+tnlRgCSRMatrix< Real, Device, Index >::
+copyFrom( const tnlRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix )
 {
    dbgFunctionName( "tnlRgCSRMatrix< Real, Device, Index >", "copyFrom" );
-   tnlAssert( rgCSRMatrix. getSize() > 0, cerr << "Copying from matrix " << rgCSRMatrix. getName() << " with non-positiove size." );
+   tnlAssert( rgCSRMatrix. getSize() > 0, cerr << "Copying from matrix with non-positiove size." );
 
    this -> cudaBlockSize = rgCSRMatrix. cudaBlockSize;
    this -> groupSize = rgCSRMatrix. groupSize;
@@ -797,13 +799,14 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
 
 template< typename Real, typename Device, typename Index >
 void tnlRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
+                                                        const tnlString& name,
                                                         const tnlString& format,
 		                                                  const Index lines ) const
 {
    if( format == "" || format == "text" )
    {
       str << "Structure of tnlRgCSRMatrix" << endl;
-      str << "Matrix name:" << this -> getName() << endl;
+      str << "Matrix name:" << name << endl;
       str << "Matrix size:" << this -> getSize() << endl;
       str << "Allocated elements:" << nonzeroElements. getSize() << endl;
       str << "Number of groups: " << groupOffsets. getSize() << endl;
@@ -851,7 +854,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
    if( format == "html" )
    {
       str << "<h1>Structure of tnlRgCSRMatrix</h1>" << endl;
-      str << "<b>Matrix name:</b> " << this -> getName() << "<p>" << endl;
+      str << "<b>Matrix name:</b> " << name << "<p>" << endl;
       str << "<b>Matrix size:</b> " << this -> getSize() << "<p>" << endl;
       str << "<b>Allocated elements:</b> " << nonzeroElements. getSize() << "<p>" << endl;
       str << "<b>Number of groups:</b> " << this -> numberOfGroups << "<p>" << endl;

@@ -28,10 +28,10 @@
 #include <problems/tnlHeatEquationEocRhs.h>
 #include <problems/tnlHeatEquationEocProblem.h>
 
-//typedef tnlDefaultBuildConfigTag BuildConfig;
+//typedef tnlDefaultBuildMeshConfig BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
 
-template< typename ConfigTag >
+template< typename MeshConfig >
 class heatEquationEocConfig
 {
    public:
@@ -47,7 +47,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MeshType,
-          typename ConfigTag,
+          typename MeshConfig,
           typename SolverStarter >
 class heatEquationSetter
 {

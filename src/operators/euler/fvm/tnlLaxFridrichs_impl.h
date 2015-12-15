@@ -31,9 +31,6 @@ tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >,
   mesh( 0 ),
   pressureGradient( 0 )
 {
-   rho. setName( "Lax-Fridrichs:rho" );
-   rho_u1. setName( "Lax-Fridrichs:rho_u1" );
-   rho_u2. setName( "Lax-Fridrichs:rho_u2" );
 }
 
 template< typename Real,
@@ -99,7 +96,6 @@ template< typename Real,
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRho( Vector& rho )
 {
    this->rho.bind( rho );
-   this->rho.setName( tnlString( "bind Of " ) + rho. getName() );
 }
 
 template< typename Real,
@@ -111,7 +107,6 @@ template< typename Real,
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRhoU1( Vector& rho_u1 )
 {
    this -> rho_u1. bind( rho_u1 );
-   this -> rho_u1. setName( tnlString( "bind Of " ) + rho_u1. getName() );
 }
 
 template< typename Real,
@@ -123,7 +118,6 @@ template< typename Real,
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRhoU2( Vector& rho_u2 )
 {
    this -> rho_u2. bind( rho_u2 );
-   this -> rho_u2. setName( tnlString( "bind Of " ) + rho_u2. getName() );
 }
 
 template< typename Real,
@@ -135,7 +129,6 @@ template< typename Real,
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setE( Vector& e )
 {
    this->e.bind( e );
-   this->e.setName( tnlString( "bind Of " ) + e.getName() );
 }
 
 template< typename Real,
@@ -349,7 +342,6 @@ template< typename Real,
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRho( Vector& rho )
 {
    this -> rho. bind( rho );
-   this -> rho. setName( tnlString( "bind Of " ) + rho. getName() );
 }
 
 template< typename Real,
@@ -360,7 +352,6 @@ template< typename Real,
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRhoU1( Vector& rho_u1 )
 {
    this -> rho_u1. bind( rho_u1 );
-   this -> rho_u1. setName( tnlString( "bind Of " ) + rho_u1. getName() );
 }
 
 template< typename Real,
@@ -371,7 +362,6 @@ template< typename Real,
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRhoU2( Vector& rho_u2 )
 {
    this -> rho_u2. bind( rho_u2 );
-   this -> rho_u2. setName( tnlString( "bind Of " ) + rho_u2. getName() );
 }
 
 template< typename Real,
@@ -382,7 +372,6 @@ template< typename Real,
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setE( Vector& e )
 {
    this->energy.bind( e );
-   this->energy.setName( tnlString( "bind Of " ) + e.getName() );
 }
 
 template< typename Real,
@@ -393,7 +382,6 @@ template< typename Real,
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setP( Vector& p )
 {
    this->p.bind( p );
-   this->p.setName( tnlString( "bind Of " ) + p.getName() );
 }
 
 template< typename Real,

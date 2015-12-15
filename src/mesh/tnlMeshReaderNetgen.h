@@ -22,14 +22,18 @@
 #include <istream>
 #include <sstream>
 
+#include <mesh/tnlMeshBuilder.h>
+
 using namespace std;
 
 class tnlMeshReaderNetgen
 {
    public:
 
-   static bool detectDimensions( const tnlString& fileName,
-                                 int& dimensions )
+      tnlMeshReaderNetgen()
+      : dimensions( 0 ){}
+      
+   bool detectMesh( const tnlString& fileName )
    {
       fstream inputFile( fileName.getString() );
       if( ! inputFile )
@@ -52,6 +56,11 @@ class tnlMeshReaderNetgen
       if( ! inputFile )
          return false;
       getline( inputFile, line );
+      iss.str( line );
+      long int numberOfVertices;
+      iss >> numberOfVertices;
+      
+      //cout << "There are " << numberOfVertices << " vertices." << endl;
 
       /****
        * Read the first vertex and compute number of components
@@ -59,14 +68,60 @@ class tnlMeshReaderNetgen
       if( ! inputFile )
          return false;
       getline( inputFile, line );
+      iss.clear();
       iss.str( line );
-      dimensions = -1;
+      this->dimensions = -1;
       while( iss )
       {
          double aux;
          iss >> aux;
-         dimensions++;
+         this->dimensions++;
       }
+      
+      /****
+       * Skip vertices
+       */
+      long int verticesRead( 1 );
+      while( verticesRead < numberOfVertices )
+      {
+         getline( inputFile, line );
+         if( ! inputFile )
+         {
+            cerr << "The mesh file " << fileName << " is probably corrupted, some vertices are missing." << endl;
+            return false;
+         }
+         verticesRead++;
+      }
+      
+      /****
+       * Skip whitespaces
+       */
+      inputFile >> ws;
+         
+      /****
+       * Get number of cells
+       */
+      long int numberOfCells;
+      getline( inputFile, line );
+      iss.clear();
+      iss.str( line );
+      iss >> numberOfCells;
+      //cout << "There are " << numberOfCells << " cells." << endl;
+      
+      /****
+       * Get number of vertices in a cell
+       */
+      getline( inputFile, line );
+      iss.clear();
+      iss.str( line );
+      this->verticesInCell = -2;
+      while( iss )
+      {
+         int aux;
+         iss >> aux;
+         this->verticesInCell++;
+      }
+      //cout << "There are " << this->verticesInCell << " vertices in cell ..." << endl;
       return true;
    }
 
@@ -76,6 +131,8 @@ class tnlMeshReaderNetgen
                          bool verbose )
    {
       typedef typename MeshType::PointType PointType;
+      typedef tnlMeshBuilder< MeshType > MeshBuilder;
+      
       const int dimensions = PointType::size;
 
       fstream inputFile( fileName.getString() );
@@ -85,6 +142,7 @@ class tnlMeshReaderNetgen
          return false;
       }
 
+      MeshBuilder meshBuilder;
       string line;
       istringstream iss;
 
@@ -100,16 +158,16 @@ class tnlMeshReaderNetgen
          return false;
       getline( inputFile, line );
       iss.str( line );
-      typedef typename MeshType::template EntitiesTraits< 0 >::GlobalIndexType VertexIndexType;
-      VertexIndexType numberOfVertices;
-      iss >> numberOfVertices;
-      if( ! mesh.setNumberOfVertices( numberOfVertices ) )
+      typedef typename MeshType::MeshTraits::template EntityTraits< 0 >::GlobalIndexType VertexIndexType;
+      VertexIndexType pointsCount;
+      iss >> pointsCount;
+      if( ! meshBuilder.setPointsCount( pointsCount ) )
       {
-         cerr << "I am not able to allocate enough memory for " << numberOfVertices << " vertices." << endl;
+         cerr << "I am not able to allocate enough memory for " << pointsCount << " vertices." << endl;
          return false;
       }
 
-      for( VertexIndexType i = 0; i < numberOfVertices; i++ )
+      for( VertexIndexType i = 0; i < pointsCount; i++ )
       {
          getline( inputFile, line );
          iss.clear();
@@ -117,10 +175,11 @@ class tnlMeshReaderNetgen
          PointType p;
          for( int d = 0; d < dimensions; d++ )
             iss >> p[ d ];
-         mesh.setVertex( i, p );
+         //cout << "Setting point number " << i << " of " << pointsCount << endl;
+         meshBuilder.setPoint( i, p );
          if( verbose )
-            cout << numberOfVertices << " vertices expected ... " << i+1 << "/" << numberOfVertices << "        \r" << flush;
-         const PointType& point = mesh.getVertex( i ).getPoint();
+            cout << pointsCount << " vertices expected ... " << i+1 << "/" << pointsCount << "        \r" << flush;
+         //const PointType& point = mesh.getVertex( i ).getPoint();
       }
       if( verbose )
          cout << endl;
@@ -133,14 +192,18 @@ class tnlMeshReaderNetgen
       /****
        * Read number of cells
        */
-       typedef typename MeshType::template EntitiesTraits< dimensions >::GlobalIndexType CellIndexType;
+       typedef typename MeshType::MeshTraits::template EntityTraits< dimensions >::GlobalIndexType CellIndexType;
        if( ! inputFile )
+       {
+          cerr << "I cannot read the mesh cells." << endl;
           return false;
+       }
        getline( inputFile, line );
+       iss.clear();
        iss.str( line );
-       CellIndexType numberOfCells;
-       iss >> numberOfCells;
-       if( ! mesh.template setNumberOfEntities< dimensions >( numberOfCells ) )
+       CellIndexType numberOfCells=atoi( line.data() );
+       //iss >> numberOfCells; // TODO: I do not know why this does not work
+       if( ! meshBuilder.setCellsCount( numberOfCells ) )
        {
           cerr << "I am not able to allocate enough memory for " << numberOfCells << " cells." << endl;
           return false;
@@ -152,23 +215,36 @@ class tnlMeshReaderNetgen
           iss.str( line );
           int subdomainIndex;
           iss >> subdomainIndex;
-          for( int cellVertex = 0; cellVertex < dimensions + 1; cellVertex++ )
+          //cout << "Setting cell number " << i << " of " << numberOfCells << endl;
+          typedef typename MeshBuilder::CellSeedType CellSeedType;
+          for( int cellVertex = 0; cellVertex < CellSeedType::getCornersCount(); cellVertex++ )
           {
              VertexIndexType vertexIdx;
              iss >> vertexIdx;
-             mesh.template getEntity< dimensions >( i ).setVertexIndex( cellVertex, vertexIdx );
+             meshBuilder.getCellSeed( i ).setCornerId( cellVertex, vertexIdx - 1 );
           }
-          cout << endl;
           if( verbose )
              cout << numberOfCells << " cells expected ... " << i+1 << "/" << numberOfCells << "                 \r" << flush;
        }
        if( verbose )
           cout << endl;
+       meshBuilder.build( mesh );
        return true;
    }
 
+   int getDimensions() const 
+   {
+      return this->dimensions;      
+   }
+   
+   int getVerticesInCell() const
+   {
+      return this->verticesInCell;
+   }
+   
    protected:
 
+      int dimensions, verticesInCell;
 
 };
 

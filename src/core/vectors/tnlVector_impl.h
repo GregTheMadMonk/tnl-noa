@@ -31,17 +31,8 @@ tnlVector< Real, Device, Index > :: tnlVector()
 template< typename Real,
           typename Device,
           typename Index >
-tnlVector< Real, Device, Index > :: tnlVector( const tnlString& name )
+tnlVector< Real, Device, Index > :: tnlVector( const Index size )
 {
-   this -> setName( name );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-tnlVector< Real, Device, Index > :: tnlVector( const tnlString& name, const Index size )
-{
-   this -> setName( name );
    this -> setSize( size );
 }
 
@@ -136,7 +127,7 @@ template< typename Real,
    template< typename Vector >
 bool tnlVector< Real, Device, Index > :: operator != ( const Vector& vector ) const
 {
-   return tnlArray< Real, Device, Index > :: operator == ( vector );
+   return tnlArray< Real, Device, Index > :: operator != ( vector );
 }
 
 template< typename Real,

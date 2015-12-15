@@ -1,6 +1,6 @@
 ADD_SUBDIRECTORY( core )
 ADD_SUBDIRECTORY( diff )
-ADD_SUBDIRECTORY( mesh )
+#ADD_SUBDIRECTORY( mesh )
 ADD_SUBDIRECTORY( solvers )
 
 SET( headers  )

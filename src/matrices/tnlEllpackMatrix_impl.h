@@ -39,6 +39,8 @@ tnlString tnlEllpackMatrix< Real, Device, Index > :: getType()
           tnlString( ::getType< Real >() ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
+          tnlString( ", " ) +
+          tnlString( ::getType< Index >() ) +          
           tnlString( " >" );
 }
 
@@ -113,6 +115,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::setLike( const tnlEllpackMatrix< R
    if( ! tnlSparseMatrix< Real, Device, Index >::setLike( matrix ) )
       return false;
    this->rowLengths = matrix.rowLengths;
+   this->alignedRows = matrix.alignedRows;
    return true;
 }
 
@@ -123,6 +126,7 @@ void tnlEllpackMatrix< Real, Device, Index > :: reset()
 {
    tnlSparseMatrix< Real, Device, Index >::reset();
    this->rowLengths = 0;
+   this->alignedRows = 0;
 }
 
 template< typename Real,
@@ -138,9 +142,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::operator == ( const tnlEllpackMatr
               cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
                    << " this->getColumns() = " << this->getColumns()
-                   << " matrix.getColumns() = " << matrix.getColumns()
-                   << " this->getName() = " << this->getName()
-                   << " matrix.getName() = " << matrix.getName() );
+                   << " matrix.getColumns() = " << matrix.getColumns() );
    // TODO: implement this
    return false;
 }
@@ -539,8 +541,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: performSORIteration( const Vecto
 {
    tnlAssert( row >=0 && row < this->getRows(),
               cerr << "row = " << row
-                   << " this->getRows() = " << this->getRows()
-                   << " this->getName() = " << this->getName() << endl );
+                   << " this->getRows() = " << this->getRows() << endl );
 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
@@ -560,7 +561,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: performSORIteration( const Vecto
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-      cerr << "There is zero on the diagonal in " << row << "-th row of thge matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
+      cerr << "There is zero on the diagonal in " << row << "-th row of a matrix. I cannot perform SOR iteration." << endl;
       return false;
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
@@ -691,8 +692,53 @@ class tnlEllpackMatrixDeviceDependentCode< tnlHost >
 #endif           
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+         /*Index col;
+         for( Index row = 0; row < matrix.getRows(); row ++ )
+         {
+            outVector[ row ] = 0.0;
+            const Index rowEnd = ( row + 1 ) * matrix.rowLengths;
+            for( Index i = row * matrix.rowLengths; i < rowEnd; i++ )
+               if( ( col = matrix.columnIndexes[ i ] ) < matrix.columns )
+                  outVector[ row ] += matrix.values[ i ] * inVector[ col ];
+         }*/
       }
 };
+
+#ifdef HAVE_CUDA    
+template< 
+   typename Real,
+   typename Index >
+__global__ void tnlEllpackMatrixVectorProductCudaKernel(
+   const Index rows,
+   const Index columns,
+   const Index compressedRowsLengths,
+   const Index alignedRows,
+   const Index paddingIndex,
+   const Index* columnIndexes,
+   const Real* values,
+   const Real* inVector,
+   Real* outVector,
+   const Index gridIdx )
+{
+   const Index rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   if( rowIdx >= rows )
+      return;
+   Index i = rowIdx;
+   Index el( 0 );
+   Real result( 0.0 );
+   Index columnIndex;
+   while( el++ < compressedRowsLengths && 
+          ( columnIndex = columnIndexes[ i ] ) < columns &&
+          columnIndex != paddingIndex )
+   {
+      result += values[ i ] * inVector[ columnIndex ];
+      i += alignedRows;
+   }
+   outVector[ rowIdx ] = result;   
+}
+#endif
+
+
 
 template<>
 class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
@@ -735,7 +781,42 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
-         tnlMatrixVectorProductCuda( matrix, inVector, outVector );
+         //tnlMatrixVectorProductCuda( matrix, inVector, outVector );
+         #ifdef HAVE_CUDA    
+            typedef tnlEllpackMatrix< Real, Device, Index > Matrix;
+            typedef typename Matrix::IndexType IndexType;
+            //Matrix* kernel_this = tnlCuda::passToDevice( matrix );
+            //InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
+            //OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
+            dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+            const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
+            const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+            for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+            {
+               if( gridIdx == cudaGrids - 1 )
+                  cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+               tnlEllpackMatrixVectorProductCudaKernel
+               < Real, Index >
+                <<< cudaGridSize, cudaBlockSize >>>
+                ( matrix.getRows(),
+                  matrix.getColumns(),
+                  matrix.rowLengths,
+                  matrix.alignedRows,
+                  matrix.getPaddingIndex(),
+                  matrix.columnIndexes.getData(),
+                  matrix.values.getData(),
+                  inVector.getData(),
+                  outVector.getData(),
+                  gridIdx );
+               checkCudaDevice;
+            }
+            //tnlCuda::freeFromDevice( kernel_this );
+            //tnlCuda::freeFromDevice( kernel_inVector );
+            //tnlCuda::freeFromDevice( kernel_outVector );
+            checkCudaDevice;
+            cudaThreadSynchronize();
+         #endif
+         
       }
 };
 

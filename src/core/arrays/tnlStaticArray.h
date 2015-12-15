@@ -100,6 +100,8 @@ class tnlStaticArray
    bool load( tnlFile& file);
 
    void sort();
+   
+   ostream& write( ostream& str, const char* separator = " " ) const;
 
    protected:
    Element data[ Size ];
@@ -192,6 +194,8 @@ class tnlStaticArray< 1, Element >
    bool load( tnlFile& file);
 
    void sort();
+   
+   ostream& write( ostream& str, const char* separator = " " ) const;
 
    protected:
    Element data[ size ];
@@ -301,6 +305,8 @@ class tnlStaticArray< 2, Element >
    bool load( tnlFile& file);
 
    void sort();
+   
+   ostream& write( ostream& str, const char* separator = " " ) const;
 
    protected:
    Element data[ size ];
@@ -422,6 +428,8 @@ class tnlStaticArray< 3, Element >
    bool load( tnlFile& file);
 
    void sort();
+   
+   ostream& write( ostream& str, const char* separator = " " ) const;
 
    protected:
    Element data[ size ];

@@ -78,11 +78,9 @@ void tnlConstSharedArray< Element, Device, Index > :: bind( const Element* data,
 {
    tnlAssert( size >= 0,
               cerr << "You try to set size of tnlConstSharedArray to negative value."
-                   << "Name: " << this -> getName() << endl
                    << "New size: " << size << endl );
    tnlAssert( data != 0,
-              cerr << "You try to use null pointer to data for tnlConstSharedArray."
-                   << "Name: " << this -> getName() );
+              cerr << "You try to use null pointer to data for tnlConstSharedArray." );
 
    this -> size = size;
    this -> data = data;
@@ -96,8 +94,9 @@ void tnlConstSharedArray< Element, Device, Index > :: bind( const Array& array,
                                                             IndexType index,
                                                             IndexType size )
 {
-   tnlStaticAssert( Array::DeviceType::DeviceType == DeviceType::DeviceType,
-                    "Attempt to bind arrays between different devices." );
+   // TODO: This does not work for static arrays.
+   //tnlStaticAssert( Array::DeviceType::DeviceType == DeviceType::DeviceType,
+   //                 "Attempt to bind arrays between different devices." );
    this->data = &( array. getData()[ index ] );
    if( ! size )
       this->size = array. getSize();
@@ -140,7 +139,6 @@ Element tnlConstSharedArray< Element, Device, Index > :: getElement( Index i ) c
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for getElement method in tnlConstSharedArray with name "
-                   << this -> getName()
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    return tnlArrayOperations< Device >::getMemoryElement( &( this -> data[ i ] ) );
@@ -154,7 +152,6 @@ const Element& tnlConstSharedArray< Element, Device, Index > :: operator[] ( Ind
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for operator[] in tnlConstSharedArray with name "
-                   << this -> getName()
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    // TODO: add static assert - this does not make sense for tnlCudaDevice
@@ -240,7 +237,7 @@ template< typename Element,
 bool tnlConstSharedArray< Element, Device, Index > :: save( tnlFile& file ) const
 {
    tnlAssert( this -> size != 0,
-              cerr << "You try to save empty array. Its name is " << this -> getName() );
+              cerr << "You try to save empty array." );
    if( ! tnlObject :: save( file ) )
       return false;
 #ifdef HAVE_NOT_CXX11
@@ -251,7 +248,7 @@ bool tnlConstSharedArray< Element, Device, Index > :: save( tnlFile& file ) cons
       return false;
    if( ! file. write< Element, Device, Index >( this -> data, this -> size ) )
    {
-      cerr << "I was not able to WRITE tnlConstSharedArray " << this -> getName()
+      cerr << "I was not able to WRITE tnlConstSharedArray " 
            << " with size " << this -> getSize() << endl;
       return false;
    }

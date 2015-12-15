@@ -256,6 +256,9 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( const Element1* dest
                                                             const Element2* source,
                                                             const Index size )
 {
+   /***
+    * Here, destination is on host and source is on CUDA device.
+    */
    tnlAssert( destination, );
    tnlAssert( source, );
    tnlAssert( size >= 0, cerr << "size = " << size );
@@ -268,7 +271,7 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( const Element1* dest
    }
    Index compared( 0 );
    while( compared < size )
-   {
+   {      
       Index transfer = Min( size - compared, tnlCuda::getGPUTransferBufferSize() );
       if( cudaMemcpy( ( void* ) host_buffer,
                       ( void* ) & ( source[ compared ] ),
@@ -280,7 +283,7 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( const Element1* dest
          delete[] host_buffer;
          return false;
       }
-      if( ! tnlArrayOperations< tnlHost >::compareMemory( host_buffer, destination, transfer ) )
+      if( ! tnlArrayOperations< tnlHost >::compareMemory( &destination[ compared ], host_buffer, transfer ) )
       {
          delete[] host_buffer;
          return false;

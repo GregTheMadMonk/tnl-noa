@@ -30,10 +30,8 @@ __global__ void updateUEuler( const Index size,
 
 template< typename Problem >
 tnlEulerSolver< Problem > :: tnlEulerSolver()
-: k1( "tnlEulerSolver:k1" ),
-  cflCondition( 0.0 )
+: cflCondition( 0.0 )
 {
-   //this->setName( "EulerSolver" );
 };
 
 template< typename Problem >

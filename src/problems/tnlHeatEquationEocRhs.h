@@ -2,7 +2,7 @@
                           tnlHeatEquationEocRhs.h  -  description
                              -------------------
     begin                : Sep 8, 2014
-    copyright            : (C) 2014 by oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,10 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Szekely Ondrej, ondra.szekely@gmail.com
+ */
+
 #ifndef TNLHEATEQUATIONEOCRHS_H_
 #define TNLHEATEQUATIONEOCRHS_H_
 
-#include <functors/tnlFunctionType.h>
+#include <functors/tnlFunction.h>
 
 template< typename ExactOperator,
           typename TestFunction >
@@ -29,6 +35,9 @@ class tnlHeatEquationEocRhs
       typedef ExactOperator ExactOperatorType;
       typedef TestFunction TestFunctionType;
 
+      //static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }     
+      enum { functionType = tnlAnalyticFunction };
+      
       bool setup( const tnlParameterContainer& parameters,
                   const tnlString& prefix = "" )
       {
@@ -53,6 +62,7 @@ class tnlHeatEquationEocRhs
       TestFunction testFunction;
 };
 
+/*
 template< typename ExactOperator,
           typename TestFunction >
 class tnlFunctionType< tnlHeatEquationEocRhs< ExactOperator, TestFunction > >
@@ -61,5 +71,6 @@ class tnlFunctionType< tnlHeatEquationEocRhs< ExactOperator, TestFunction > >
 
       enum { Type = tnlAnalyticFunction };
 };
+*/
 
 #endif /* TNLHEATEQUATIONEOCRHS_H_ */
