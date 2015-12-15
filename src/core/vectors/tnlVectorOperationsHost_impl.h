@@ -90,10 +90,51 @@ typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorAbsMin( c
    return result;
 }
 
+template< typename Vector >
+typename Vector::RealType
+tnlVectorOperations< tnlHost >::
+getVectorL1Norm( const Vector& v )
+{
+   typedef typename Vector :: RealType Real;
+   typedef typename Vector :: IndexType Index;
+   tnlAssert( v. getSize() > 0, );
+
+   Real result( 0.0 );
+   const Index n = v. getSize();
+#ifdef HAVE_OPENMP
+#pragma omp parallel for reduction(+:result) if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif           
+   for( Index i = 0; i < n; i ++ )
+      result += fabs( v[ i ] );
+   return result;
+}
 
 template< typename Vector >
-typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorLpNorm( const Vector& v,
-                                                                               const typename Vector :: RealType& p )
+typename Vector::RealType
+tnlVectorOperations< tnlHost >::
+getVectorL2Norm( const Vector& v )
+{
+   typedef typename Vector :: RealType Real;
+   typedef typename Vector :: IndexType Index;
+   tnlAssert( v. getSize() > 0, );
+   Real result( 0.0 );
+   const Index n = v. getSize();
+#ifdef HAVE_OPENMP
+#pragma omp parallel for reduction(+:result) if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif           
+   for( Index i = 0; i < n; i ++ )
+   {
+      const Real& aux = v[ i ];
+      result += aux * aux;
+   }
+   return sqrt( result );
+}
+
+template< typename Vector >
+typename Vector::RealType
+tnlVectorOperations< tnlHost >::
+getVectorLpNorm( const Vector& v,
+                 const typename Vector :: RealType& p )
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
@@ -101,29 +142,17 @@ typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorLpNorm( c
    tnlAssert( p > 0.0,
               cerr << " p = " << p );
    if( p == 1.0 )
-   {
-      Real result = fabs( v. getElement( 0 ) );
-      const Index n = v. getSize();
-      for( Index i = 1; i < n; i ++ )
-         result += fabs( v. getElement( i ) );
-      return result;
-   }
+      return getVectorL1Norm( v );
    if( p == 2.0 )
-   {
-      Real result = v. getElement( 0 );
-      result *= result;
-      const Index n = v. getSize();
-      for( Index i = 1; i < n; i ++ )
-      {
-         const Real aux = v. getElement( i );
-         result += aux * aux;
-      }
-      return sqrt( result );
-   }
-   Real result = pow( fabs( v. getElement( 0 ) ), p );
+      return getVectorL2Norm( v );
+
+   Real result( 0.0 );
    const Index n = v. getSize();
-   for( Index i = 1; i < n; i ++ )
-      result += pow( fabs( v. getElement( i ) ), p );
+#ifdef HAVE_OPENMP
+#pragma omp parallel for reduction(+:result) if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif           
+   for( Index i = 0; i < n; i ++ )
+      result += pow( fabs( v[ i ] ), p );
    return pow( result, 1.0 / p );
 }
 
@@ -134,10 +163,13 @@ typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorSum( cons
    typedef typename Vector :: IndexType Index;
    tnlAssert( v. getSize() > 0, );
 
-   Real result = v. getElement( 0 );
+   Real result( 0.0 );
    const Index n = v. getSize();
-   for( Index i = 1; i < n; i ++ )
-      result += v. getElement( i );
+#ifdef HAVE_OPENMP
+#pragma omp parallel for reduction(+:result) if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif        
+   for( Index i = 0; i < n; i ++ )
+      result += v[ i ];
    return result;
 }
 
@@ -200,18 +232,67 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
    tnlAssert( v1. getSize() > 0, );
    tnlAssert( v1. getSize() == v2. getSize(), );
 
-   Real result = fabs( v1. getElement( 0 ) - v2. getElement( 0 ) );
+   Real result = fabs( v1[ 0 ] - v2[ 0 ] );
    const Index n = v1. getSize();
    for( Index i = 1; i < n; i ++ )
-      result =  Min( result, ( Real ) fabs( v1. getElement( i ) - v2. getElement( i ) ) );
+      result =  Min( result, ( Real ) fabs( v1[ i ] - v2[ i ] ) );
    return result;
+}
+
+template< typename Vector1, typename Vector2 >
+typename Vector1::RealType
+tnlVectorOperations< tnlHost >::
+getVectorDifferenceL1Norm( const Vector1& v1,
+                           const Vector2& v2 )
+{
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
+
+   Real result( 0.0 );
+   const Index n = v1. getSize();
+#ifdef HAVE_OPENMP
+#pragma omp parallel for reduction(+:result) if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif        
+   for( Index i = 0; i < n; i ++ )
+      result += fabs( v1[ i ] - v2[ i ] );
+   return result;
+}
+
+template< typename Vector1, typename Vector2 >
+typename Vector1::RealType
+tnlVectorOperations< tnlHost >::
+getVectorDifferenceL2Norm( const Vector1& v1,
+                           const Vector2& v2 )
+{
+   typedef typename Vector1 :: RealType Real;
+   typedef typename Vector1 :: IndexType Index;
+
+   tnlAssert( v1. getSize() > 0, );
+   tnlAssert( v1. getSize() == v2. getSize(), );
+
+   Real result( 0.0 );
+   const Index n = v1. getSize();
+#ifdef HAVE_OPENMP
+#pragma omp parallel for reduction(+:result) if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif        
+   for( Index i = 0; i < n; i ++ )
+   {
+      Real aux = fabs( v1[ i ] - v2[ i ] );
+      result += aux * aux;
+   }
+   return sqrt( result );
 }
 
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferenceLpNorm( const Vector1& v1,
-                                                                                          const Vector2& v2,
-                                                                                          const typename Vector1 :: RealType& p )
+typename Vector1::RealType
+tnlVectorOperations< tnlHost >::
+getVectorDifferenceLpNorm( const Vector1& v1,
+                           const Vector2& v2,
+                           const typename Vector1::RealType& p )
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
@@ -222,35 +303,23 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
    tnlAssert( v1. getSize() == v2. getSize(), );
 
    if( p == 1.0 )
-   {
-      Real result = fabs( v1. getElement( 0 ) - v2. getElement( 0 ) );
-      const Index n = v1. getSize();
-      for( Index i = 1; i < n; i ++ )
-         result += fabs( v1. getElement( i ) - v2. getElement( i ) );
-      return result;
-   }
+      return getVectorDifferenceL1Norm( v1, v2 );
    if( p == 2.0 )
-   {
-      Real result = fabs( v1. getElement( 0 ) - v2. getElement( 0 ) );
-      result *= result;
-      const Index n = v1. getSize();
-      for( Index i = 1; i < n; i ++ )
-      {
-         Real aux = fabs( v1. getElement( i ) - v2. getElement( i ) );
-         result += aux * aux;
-      }
-      return sqrt( result );
-   }
-   Real result = pow( fabs( v1. getElement( 0 ) - v2. getElement( 0 ) ), p );
+      return getVectorDifferenceL2Norm( v1, v2 );
+
+   Real result( 0.0 );
    const Index n = v1. getSize();
-   for( Index i = 1; i < n; i ++ )
+#ifdef HAVE_OPENMP
+#pragma omp parallel for reduction(+:result) if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif        
+   for( Index i = 0; i < n; i ++ )
       result += pow( fabs( v1. getElement( i ) - v2. getElement( i ) ), p );
    return pow( result, 1.0 / p );
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferenceSum( const Vector1& v1,
-                                                                                       const Vector2& v2 )
+typename Vector1::RealType tnlVectorOperations< tnlHost > :: getVectorDifferenceSum( const Vector1& v1,
+                                                                                     const Vector2& v2 )
 {
    typedef typename Vector1 :: RealType Real;
    typedef typename Vector1 :: IndexType Index;
@@ -258,9 +327,12 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
    tnlAssert( v1. getSize() > 0, );
    tnlAssert( v1. getSize() == v2. getSize(), );
 
-   Real result = v1. getElement( 0 ) - v2. getElement( 0 );
+   Real result( 0.0 );
    const Index n = v1. getSize();
-   for( Index i = 1; i < n; i ++ )
+#ifdef HAVE_OPENMP
+#pragma omp parallel for reduction(+:result) if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif        
+   for( Index i = 0; i < n; i ++ )
       result += v1. getElement( i ) - v2. getElement( i );
    return result;
 }
@@ -276,6 +348,9 @@ void tnlVectorOperations< tnlHost > :: vectorScalarMultiplication( Vector& v,
    tnlAssert( v. getSize() > 0, );
 
    const Index n = v. getSize();
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif        
    for( Index i = 0; i < n; i ++ )
       v[ i ] *= alpha;
 }
@@ -333,9 +408,15 @@ void tnlVectorOperations< tnlHost > :: addVector( Vector1& y,
 
    const Index n = y. getSize();
    if( thisMultiplicator == 1.0 )
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif           
       for( Index i = 0; i < n; i ++ )
          y[ i ] += alpha * x[ i ];
    else
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif           
       for( Index i = 0; i < n; i ++ )
          y[ i ] = thisMultiplicator * y[ i ] + alpha * x[ i ];
 }
@@ -361,9 +442,15 @@ addVectors( Vector1& v,
    
    const Index n = v.getSize();
    if( thisMultiplicator == 1.0 )
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif           
       for( Index i = 0; i < n; i ++ )
          v[ i ] += multiplicator1 * v1[ i ] + multiplicator2 * v2[ i ];
    else
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#endif           
       for( Index i = 0; i < n; i ++ )
          v[ i ] = thisMultiplicator * v[ i ] * multiplicator1 * v1[ i ] + multiplicator2 * v2[ i ];
 }

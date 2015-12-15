@@ -543,8 +543,8 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
       
       time += currentTau;
       iteration++;
-      if( verbose )
-         cout << "Iteration: " << iteration << "\t Time:" << time << "    \r" << flush;
+      if( verbose && iteration % 10000 == 0 )
+         cout << "Iteration: " << iteration << "\t \t Time:" << time << "    \r" << flush;
    }
    timer.stop();
    if( verbose )      

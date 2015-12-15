@@ -21,12 +21,51 @@
 #include <tnlConfig.h>
 #include <core/vectors/tnlVector.h>
 #include <core/tnlTimerRT.h>
+#include <matrices/tnlSlicedEllpackMatrix.h>
+#include <matrices/tnlEllpackMatrix.h>
 
 #ifdef HAVE_CUBLAS
 //#include <cublas.h>
 #endif    
 
+template< typename Matrix >
+__global__ void setCudaTestMatrixKernel( Matrix* matrix,
+                                         const int elementsPerRow,
+                                         const int gridIdx )
+{
+   const int rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   if( rowIdx >= matrix->getRows() )
+      return;
+   int col = rowIdx - elementsPerRow / 2;   
+   for( int element = 0; element < elementsPerRow; element++ )
+   {
+      if( col + element >= 0 &&
+          col + element < matrix->getColumns() )
+         matrix->setElementFast( rowIdx, col + element, element + 1 );
+   }      
+}
 
+template< typename Matrix >
+void setCudaTestMatrix( Matrix& matrix,
+                        const int elementsPerRow )
+{
+   typedef typename Matrix::IndexType IndexType;
+   typedef typename Matrix::RealType RealType;
+   Matrix* kernel_matrix = tnlCuda::passToDevice( matrix );
+   dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+   const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
+   const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+   for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+   {
+      if( gridIdx == cudaGrids - 1 )
+         cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+      setCudaTestMatrixKernel< Matrix >
+       <<< cudaGridSize, cudaBlockSize >>>
+       ( kernel_matrix, elementsPerRow, gridIdx );
+      checkCudaDevice;
+   }
+   tnlCuda::freeFromDevice( kernel_matrix );
+}
 
 int main( int argc, char* argv[] )
 {
@@ -114,8 +153,7 @@ int main( int argc, char* argv[] )
    timer.reset();
    timer.start();
    for( int i = 0; i < loops; i++ )
-      resultDevice = deviceVector.scalarProduct( deviceVector );
-   cout << "Time: " << timer.getTime() << endl;
+      resultDevice = deviceVector.scalarProduct( deviceVector2 );
    timer.stop();
    bandwidth = 2 * datasetSize / timer.getTime();
    cout << "Time: " << timer.getTime() << " bandwidth: " << bandwidth << " GB/sec." << endl;
@@ -142,8 +180,32 @@ int main( int argc, char* argv[] )
    bandwidth = 2 * datasetSize / timer.getTime();
    cout << "Time: " << timer.getTime() << " bandwidth: " << bandwidth << " GB/sec." << endl;
 #endif    
-#endif
-   
+
+   cout << "Benchmarking L2 norm on CPU: ";
+   timer.reset();
+   timer.start();
+   for( int i = 0; i < loops; i++ )
+     resultHost = hostVector.lpNorm( 2.0 );
+   timer.stop();
+   bandwidth = datasetSize / timer.getTime();
+   cout << bandwidth << " GB/sec." << endl;
+    
+   cout << "Benchmarking L2 norm on GPU: " << endl;
+   timer.reset();
+   timer.start();
+   for( int i = 0; i < loops; i++ )
+      resultDevice = deviceVector.lpNorm( 2.0 );
+
+   timer.stop();
+   bandwidth = datasetSize / timer.getTime();
+   cout << "Time: " << timer.getTime() << " bandwidth: " << bandwidth << " GB/sec." << endl;
+   if( resultHost != resultDevice )
+   {
+      cerr << "Error. " << resultHost << " != " << resultDevice << endl;
+      //return EXIT_FAILURE;
+   }
+
+   /*
    cout << "Benchmarking prefix-sum on CPU ..." << endl;
    timer.reset();
    timer.start();
@@ -167,8 +229,73 @@ int main( int argc, char* argv[] )
       {
          cerr << "Error in prefix sum at position " << i << ":  " << hostVector.getElement( i ) << " != " << deviceVector.getElement( i ) << endl;
       }
-
+*/
+   /****
+    * Sliced Ellpack test
+    */
+   const int elementsPerRow( 5 );
+   typedef tnlEllpackMatrix< double, tnlCuda > DeviceMatrix;
+   tnlEllpackMatrix< double, tnlHost > hostMatrix;
+   DeviceMatrix deviceMatrix;
+   tnlVector< int, tnlHost, int > hostRowLengths;
+   tnlVector< int, tnlCuda, int > deviceRowLengths;
+   hostRowLengths.setSize( size );
+   deviceRowLengths.setSize( size );
+   hostMatrix.setDimensions( size, size );
+   deviceMatrix.setDimensions( size, size );
+   hostRowLengths.setValue( elementsPerRow );
+   deviceRowLengths.setValue( elementsPerRow );
+   hostMatrix.setCompressedRowsLengths( hostRowLengths );
+   if( ! deviceMatrix.setCompressedRowsLengths( deviceRowLengths ) )
+   {
+      cerr << "Unable to allocate matrix elements." << endl;
+      return false;
+   }
+   int elements( 0 );
+   for( int row = 0; row < size; row++ )
+   {
+      if( row % 100 == 0 )
+         cout << "Row " << row << "/" << size << "     \r" << flush;
+      int col = row - elementsPerRow / 2;   
+      for( int element = 0; element < elementsPerRow; element++ )
+      {
+         if( col + element >= 0 && col + element < size )
+         {
+            hostMatrix.setElement( row, col + element, element + 1 );
+            //deviceMatrix.setElement( row, col + element, 1.0 );
+            elements++;
+         }
+      }      
+   }
+   cout << endl;
+   setCudaTestMatrix< DeviceMatrix >( deviceMatrix, elementsPerRow );
+   datasetSize = loops * elements * ( 2 * sizeof( Real ) + sizeof( int ) ) / oneGB;
+   hostVector.setValue( 1.0 );
+   deviceVector.setValue( 1.0 );
+   cout << "Benchmarking SpMV on CPU: ";
+   timer.reset();
+   for( int i = 0; i < loops; i++ )
+      hostMatrix.vectorProduct( hostVector, hostVector2 );
+   timer.stop();
+   double hostTime = timer.getTime();
+   bandwidth = datasetSize / timer.getTime();
+   cout << timer.getTime() << " => " << bandwidth << " GB/s" << endl;
+   
+   cout << "Benchmarking SpMV on GPU: ";
+   deviceVector2.setValue( 0.0 );
+   timer.reset();
+   for( int i = 0; i < loops; i++ )
+      deviceMatrix.vectorProduct( deviceVector, deviceVector2 );
+   timer.stop();
+      
+   if( hostVector2 != deviceVector2 )
+      cerr << "Error in Spmv kernel" << endl;
+   
+   bandwidth = datasetSize / timer.getTime();
+   cout << timer.getTime() << " => " << bandwidth << " GB/s" << " speedup " << hostTime / timer.getTime() << endl;
+   
    return EXIT_SUCCESS;
+#endif
 }
 
 #endif /* TNLCUDABENCHMARKS_H_ */

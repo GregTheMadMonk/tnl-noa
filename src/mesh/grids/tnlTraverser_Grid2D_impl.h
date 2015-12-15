@@ -238,7 +238,7 @@ processInteriorEntities( const GridType& grid,
    const IndexType& ySize = grid.getDimensions().y();
 
 #ifdef HAVE_OPENMP
-//#pragma omp parallel for
+  //#pragma omp parallel for
 #endif
    CoordinatesType& coordinates = entity.getCoordinates();
    for( coordinates.y() = 1; coordinates.y() < ySize; coordinates.y() ++ )

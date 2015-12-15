@@ -55,6 +55,12 @@ class tnlVectorOperations< tnlHost >
    static typename Vector::RealType getVectorAbsMin( const Vector& v );
 
    template< typename Vector >
+   static typename Vector::RealType getVectorL1Norm( const Vector& v );
+   
+   template< typename Vector >
+   static typename Vector::RealType getVectorL2Norm( const Vector& v );
+   
+   template< typename Vector >
    static typename Vector::RealType getVectorLpNorm( const Vector& v,
                                                      const typename Vector::RealType& p );
 
@@ -78,6 +84,14 @@ class tnlVectorOperations< tnlHost >
                                                                   const Vector2& v2 );
 
    template< typename Vector1, typename Vector2 >
+   static typename Vector1::RealType getVectorDifferenceL1Norm( const Vector1& v1,
+                                                           const Vector2& v2 );
+
+   template< typename Vector1, typename Vector2 >
+   static typename Vector1::RealType getVectorDifferenceL2Norm( const Vector1& v1,
+                                                           const Vector2& v2 );
+   
+   template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceLpNorm( const Vector1& v1,
                                                            const Vector2& v2,
                                                            const typename Vector1::RealType& p );
@@ -85,6 +99,8 @@ class tnlVectorOperations< tnlHost >
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceSum( const Vector1& v1,
                                                                const Vector2& v2 );
+   
+   
    template< typename Vector >
    static void vectorScalarMultiplication( Vector& v,
                                            const typename Vector::RealType& alpha );
@@ -146,11 +162,17 @@ class tnlVectorOperations< tnlCuda >
 
    template< typename Vector >
    static typename Vector::RealType getVectorAbsMin( const Vector& v );
-
+   
+   template< typename Vector >
+   static typename Vector::RealType getVectorL1Norm( const Vector& v );
+   
+   template< typename Vector >
+   static typename Vector::RealType getVectorL2Norm( const Vector& v );
+   
    template< typename Vector >
    static typename Vector::RealType getVectorLpNorm( const Vector& v,
                                                      const typename Vector::RealType& p );
-
+   
    template< typename Vector >
    static typename Vector::RealType getVectorSum( const Vector& v );
 
@@ -168,8 +190,16 @@ class tnlVectorOperations< tnlCuda >
 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceAbsMin( const Vector1& v1,
-                                                                  const Vector2& v2 );
+                                                                const Vector2& v2 );
+  
+   template< typename Vector1, typename Vector2 >
+   static typename Vector1::RealType getVectorDifferenceL1Norm( const Vector1& v1,
+                                                                const Vector2& v2 );
 
+   template< typename Vector1, typename Vector2 >
+   static typename Vector1::RealType getVectorDifferenceL2Norm( const Vector1& v1,
+                                                                const Vector2& v2 );
+  
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceLpNorm( const Vector1& v1,
                                                            const Vector2& v2,
@@ -178,6 +208,7 @@ class tnlVectorOperations< tnlCuda >
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceSum( const Vector1& v1,
                                                                const Vector2& v2 );
+   
    template< typename Vector >
    static void vectorScalarMultiplication( Vector& v,
                                            const typename Vector::RealType& alpha );

@@ -23,30 +23,31 @@ BUILD_JOBS=`grep -c processor /proc/cpuinfo`
 for option in "$@"
 do
     case $option in
-        --prefix=*                     ) PREFIX="${option#*=}" ;;
-        --build=*                      ) BUILD="${option#*=}" ;;
-        --with-tests=*                 ) WITH_TESTS="${option#*=}" ;;
-        --with-cuda=*                  ) WITH_CUDA="${option#*=}" ;;
-        --with-cublas=*                ) WITH_CUBLAS="${option#*=}" ;;
-        --with-cuda-arch=*             ) WITH_CUDA_ARCH="${option#*=}";;
-        --with-templates-instantiation ) WITH_TEMPLATE_INSTANTIATION="${option#*=}" ;;
-        --instantiate-long-int=*       ) INSTANTIATE_LONG_INT="${option#*=}" ;;
-        --instantiate-int=*            ) INSTANTIATE_INT="${option#*=}" ;;
-        --instantiate-long-double=*    ) INSTANTIATE_LONG_DOUBLE="${option#*=}" ;;
-        --instantiate-double=*         ) INSTANTIATE_DOUBLE="${option#*=}" ;;
-        --instantiate-float=*          ) INSTANTIATE_FLOAT="${option#*=}" ;;
-        --full-build                   ) INSTANTIATE_LONG_INT="yes"
-                                         INSTANTIATE_INT="yes"
-                                         INSTANTIATE_LONG_DOUBLE="yes"
-                                         INSTANTIATE_DOUBLE="yes"
-                                         INSTANTIATE_FLOAT="yes";;
-        --with-cmake=*                 ) CMAKE="${option#*=}" ;;
-        --build-jobs=*                 ) BUILD_JOBS="${option#*=}" ;;
-        --cmake-only=*                 ) CMAKE_ONLY="${option#*=}" ;;
-        --verbose                      ) VERBOSE="VERBOSE=1" ;;
-        --root-dir=*                   ) ROOT_DIR="${option#*=}" ;;
-        --help                         ) HELP="yes" ;;
-        *                              ) 
+        --prefix=*                       ) PREFIX="${option#*=}" ;;
+        --build=*                        ) BUILD="${option#*=}" ;;
+        --with-tests=*                   ) WITH_TESTS="${option#*=}" ;;
+        --with-cuda=*                    ) WITH_CUDA="${option#*=}" ;;
+        --with-cublas=*                  ) WITH_CUBLAS="${option#*=}" ;;
+        --with-cuda-arch=*               ) WITH_CUDA_ARCH="${option#*=}";;
+        --with-templates-instantiation=* ) WITH_TEMPLATE_INSTANTIATION="${option#*=}" ;;
+        --instantiate-long-int=*         ) INSTANTIATE_LONG_INT="${option#*=}" ;;
+        --instantiate-int=*              ) INSTANTIATE_INT="${option#*=}" ;;
+        --instantiate-long-double=*      ) INSTANTIATE_LONG_DOUBLE="${option#*=}" ;;
+        --instantiate-double=*           ) INSTANTIATE_DOUBLE="${option#*=}" ;;
+        --instantiate-float=*            ) INSTANTIATE_FLOAT="${option#*=}" ;;
+        --fast-build                     ) INSTANTIATE_LONG_INT="no"
+                                           INSTANTIATE_INT="yes"
+                                           INSTANTIATE_LONG_DOUBLE="no"
+                                           INSTANTIATE_DOUBLE="yes"
+                                           INSTANTIATE_FLOAT="no"
+                                           WITH_CUDA_ARCH="auto" ;;
+        --with-cmake=*                   ) CMAKE="${option#*=}" ;;
+        --build-jobs=*                   ) BUILD_JOBS="${option#*=}" ;;
+        --cmake-only=*                   ) CMAKE_ONLY="${option#*=}" ;;
+        --verbose                        ) VERBOSE="VERBOSE=1" ;;
+        --root-dir=*                     ) ROOT_DIR="${option#*=}" ;;
+        --help                           ) HELP="yes" ;;
+        *                                ) 
            echo "Unknown option ${option}. Use --help for more information."
            exit 1 ;;
     esac

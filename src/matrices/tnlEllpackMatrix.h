@@ -60,7 +60,7 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    bool setLike( const tnlEllpackMatrix< Real2, Device2, Index2 >& matrix );
 
    void reset();
-
+   
    template< typename Real2, typename Device2, typename Index2 >
    bool operator == ( const tnlEllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
 

@@ -127,7 +127,7 @@ template< typename Real,
    template< typename Vector >
 bool tnlVector< Real, Device, Index > :: operator != ( const Vector& vector ) const
 {
-   return tnlArray< Real, Device, Index > :: operator == ( vector );
+   return tnlArray< Real, Device, Index > :: operator != ( vector );
 }
 
 template< typename Real,
