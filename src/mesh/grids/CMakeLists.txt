@@ -1,4 +1,5 @@
-SET( headers tnlGrid1D.h
+SET( headers tnlBoundaryGridEntityChecker.h
+             tnlGrid1D.h
              tnlGrid1D_impl.h
              tnlGrid2D.h
              tnlGrid2D_impl.h
@@ -7,8 +8,13 @@ SET( headers tnlGrid1D.h
              tnlGridEntityTopology.h
              tnlGridEntity.h
              tnlGridEntity_impl.h
+             tnlGridEntityCenterGetter.h
              tnlGridEntityGetter.h
              tnlGridEntityGetter_impl.h
+             tnlNeighbourGridEntityGetter.h
+             tnlNeighbourGridEntityGetter1D_impl.h
+             tnlNeighbourGridEntityGetter2D_impl.h
+             tnlNeighbourGridEntityGetter3D_impl.h
              tnlTraverser_Grid1D.h
              tnlTraverser_Grid1D_impl.h 
              tnlTraverser_Grid2D.h

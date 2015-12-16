@@ -18,7 +18,7 @@
 #ifndef SRC_MESH_TNLGRID1D_H_
 #define SRC_MESH_TNLGRID1D_H_
 
-#include <core/tnlStaticMultiIndex.h>
+//#include <core/tnlStaticMultiIndex.h>
 #include <core/tnlLogger.h>
 #include <mesh/grids/tnlGridEntityTopology.h>
 #include <mesh/grids/tnlGridEntityGetter.h>

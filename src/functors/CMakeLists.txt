@@ -3,6 +3,7 @@ SET( headers tnlFunctionDiscretizer.h
              tnlFunctionEnumerator.h
              tnlFunctionEnumerator_impl.h
              tnlFunctorAdapter.h
+             tnlFunctionAdapter.h
              tnlConstantFunction.h
              tnlConstantFunction_impl.h
              tnlExpBumpFunction.h
