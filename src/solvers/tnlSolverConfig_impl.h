@@ -119,6 +119,9 @@ bool tnlSolverConfig< MeshConfig, ProblemConfig >::configSetup( tnlConfigDescrip
       if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitSORSolverTag >::enabled )
          config.addEntryEnum( "sor" );
    }
+   config.addEntry< tnlString >( "preconditioner", "The preconditioner for the discrete solver:", "none" );
+   config.addEntryEnum( "none" );
+   config.addEntryEnum( "diagonal" );
    if( tnlMeshConfigTimeDiscretisation< MeshConfig, tnlExplicitTimeDiscretisationTag >::enabled ||
        tnlMeshConfigTimeDiscretisation< MeshConfig, tnlSemiImplicitTimeDiscretisationTag >::enabled )
    {

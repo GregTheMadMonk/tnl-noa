@@ -269,11 +269,9 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       if( preconditioner )
       {
          matrix -> vectorProduct( x, _M_tmp );
-         for( IndexType i = 0; i < _size; i ++ )
-            M_tmp[ i ] = b[ i ] - M_tmp[ i ];
-         //preconditioner -> solve( M_tmp, r );
-         for( IndexType i = 0; i < _size; i ++ )
-            beta += r[ i ] * r[ i ];
+         _M_tmp.addVector( b, ( RealType ) 1.0, -1.0 );
+         preconditioner -> solve( _M_tmp, _r );
+         beta = _r. lpNorm( ( RealType ) 2.0 );
       }
       else
       {

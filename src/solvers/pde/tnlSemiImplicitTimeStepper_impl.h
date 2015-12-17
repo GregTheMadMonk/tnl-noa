@@ -141,6 +141,10 @@ solve( const RealType& time,
    tnlAssert( this->problem != 0, );
    RealType t = time;
    this->linearSystemSolver->setMatrix( this->matrix );
+   PreconditionerType preconditioner;
+   tnlSolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerType >
+       ::run( *(this->linearSystemSolver), preconditioner );
+
    while( t < stopTime )
    {
       RealType currentTau = Min( this->timeStep, stopTime - t );
@@ -172,6 +176,9 @@ solve( const RealType& time,
 
       if( verbose )
          cout << "                                                                  Solving the linear system for time " << t + currentTau << "             \r" << flush;
+
+      // TODO: add timer
+      preconditioner.update( this->matrix );
 
       this->linearSystemSolverTimer.start();
       if( ! this->linearSystemSolver->template solve< DofVectorType, tnlLinearResidueGetter< MatrixType, DofVectorType > >( this->rightHandSide, dofVector ) )
