@@ -45,7 +45,7 @@ class tnlDimensionsTag
 
       typedef tnlDimensionsTag< Dimensions - 1 > Decrement;
 
-      tnlStaticAssert( value >= 0, "The value of the dimensions cannot be negative." );
+      static_assert( value >= 0, "The value of the dimensions cannot be negative." );
 };
 
 template<>

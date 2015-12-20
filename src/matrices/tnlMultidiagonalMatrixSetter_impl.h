@@ -30,7 +30,7 @@ setupMatrix( const MeshType& mesh,
              int stencilSize,
              bool crossStencil )
 {
-   const Index dofs = mesh.template getEntitiesCount< MeshType::Cells >();
+   const Index dofs = mesh.template getEntitiesCount< typename MeshType::Cell >();
    matrix.setDimensions( dofs, dofs );
    CoordinatesType centerCell( stencilSize );
    tnlVector< Index, Device, Index > diagonals;
@@ -56,7 +56,7 @@ setupMatrix( const MeshType& mesh,
              int stencilSize,
              bool crossStencil )
 {
-   const Index dofs = mesh.template getEntitiesCount< MeshType::Cells >();
+   const Index dofs = mesh.template getEntitiesCount< typename MeshType::Cell >();
    matrix.setDimensions( dofs, dofs );
    CoordinatesType centerCell( stencilSize );
    tnlVector< Index, Device, Index > diagonals;
@@ -84,7 +84,7 @@ setupMatrix( const MeshType& mesh,
              int stencilSize,
              bool crossStencil )
 {
-   const Index dofs = mesh.template getEntitiesCount< MeshType::Cells >();
+   const Index dofs = mesh.template getEntitiesCount< typename MeshType::Cell >();
    matrix.setDimensions( dofs, dofs );
    CoordinatesType centerCell( stencilSize );
    tnlVector< Index, Device, Index > diagonals;

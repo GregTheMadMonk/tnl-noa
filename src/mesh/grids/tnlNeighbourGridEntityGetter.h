@@ -18,8 +18,25 @@
 #ifndef TNLNEIGHBOURGRIDENTITYGETTER_H
 #define	TNLNEIGHBOURGRIDENTITYGETTER_H
 
+enum tnlGridEntityStencilStorage
+{ 
+   tnlGridEntityNoStencil = 0,
+   tnlGridEntityCrossStencil,
+   tnlGridEntityFullStencil
+};
+
+template< int storage >
+class tnlGridEntityStencilStorageTag
+{
+   public:
+      
+      static const int stencilStorage = storage;
+};
+
 template< typename GridEntity,
-          int NeighbourEntityDimensions >
+          int NeighbourEntityDimensions,
+          typename EntityStencilTag = 
+            tnlGridEntityStencilStorageTag< GridEntity::ConfigType::template neighbourEntityStorage< GridEntity >( NeighbourEntityDimensions ) > >
 class tnlNeighbourGridEntityGetter
 {
 };

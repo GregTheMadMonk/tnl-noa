@@ -39,7 +39,7 @@ bool renderFunction( const tnlParameterContainer& parameters )
    if( ! mesh.load( meshFile ) )
       return false;
 
-   typedef tnlTestFunction< MeshType::Dimensions, RealType > FunctionType;
+   typedef tnlTestFunction< MeshType::meshDimensions, RealType > FunctionType;
    FunctionType function;
    cout << "Setting up the function ... " << endl;
    if( ! function.setup( parameters, "" ) )
@@ -47,7 +47,7 @@ bool renderFunction( const tnlParameterContainer& parameters )
    cout << "done." << endl;
    typedef tnlVector< RealType, tnlHost, typename MeshType::IndexType > DiscreteFunctionType;
    DiscreteFunctionType discreteFunction;
-   if( ! discreteFunction.setSize( mesh.template getEntitiesCount< MeshType::Cells >() ) )
+   if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
       return false;
    
    double finalTime = parameters.getParameter< double >( "final-time" );
@@ -65,7 +65,7 @@ bool renderFunction( const tnlParameterContainer& parameters )
       {
          cout << "+ -> Computing the finite differences ... " << endl;
          DiscreteFunctionType auxDiscreteFunction;
-         if( ! auxDiscreteFunction.setSize( mesh.template getEntitiesCount< MeshType::Cells >() ) )
+         if( ! auxDiscreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
             return false;
          tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< 0, 0, 0 >( mesh, function, auxDiscreteFunction, time );
          tnlFiniteDifferences< MeshType >::template getDifference< DiscreteFunctionType, xDiff, yDiff, zDiff, 0, 0, 0 >( mesh, auxDiscreteFunction, discreteFunction );

@@ -37,17 +37,21 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    typedef tnlStaticVector< 3, Index > CoordinatesType;
    typedef tnlGrid< 3, Real, tnlHost, Index > HostType;
    typedef tnlGrid< 3, Real, tnlCuda, Index > CudaType;
-
    typedef tnlGrid< 3, Real, Device, Index > ThisType;
-
-   template< int EntityDimensions > using GridEntity = 
-      tnlGridEntity< ThisType, EntityDimensions >;   
    
-   enum { Dimensions = 3 };
-   enum { Cells = 3 };
-   enum { Faces = 2 };
-   enum { Edges = 1 };
-   enum { Vertices = 0 };
+   static const int meshDimensions = 3;
+
+   template< int EntityDimensions, 
+             typename Config = tnlGridEntityCrossStencilStorage< 1 > >
+   using GridEntity = tnlGridEntity< ThisType, EntityDimensions, Config >;
+
+   
+   typedef GridEntity< meshDimensions > Cell;
+   typedef GridEntity< meshDimensions - 1 > Face;
+   typedef GridEntity< 1 > Edge;
+   typedef GridEntity< 0 > Vertex;
+
+   static constexpr int getDimensionsCount() { return meshDimensions; };
 
    tnlGrid();
 
@@ -74,17 +78,17 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    __cuda_callable__
    inline const VertexType& getProportions() const;
 
-   template< int EntityDimensions >
+   template< typename EntityType >
    __cuda_callable__
    inline IndexType getEntitiesCount() const;
    
-   template< int EntityDimensions >
+   template< typename EntityType >
    __cuda_callable__
-   inline GridEntity< EntityDimensions > getEntity( const IndexType& entityIndex ) const;
+   inline EntityType getEntity( const IndexType& entityIndex ) const;
    
-   template< int EntityDimensions >
+   template< typename EntityType >
    __cuda_callable__
-   inline Index getEntityIndex( const GridEntity< EntityDimensions >& entity ) const;
+   inline Index getEntityIndex( const EntityType& entity ) const;
 
    __cuda_callable__
    inline VertexType getSpaceSteps() const;

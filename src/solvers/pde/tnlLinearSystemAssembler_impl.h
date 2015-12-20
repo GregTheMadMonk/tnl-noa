@@ -29,7 +29,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename TimeDiscretisation,
           typename Matrix >
-   template< int EntityDimensions >
+   template< typename EntityType >
 void
 tnlLinearSystemAssembler< Mesh, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide, TimeDiscretisation, Matrix >::
 assembly( const RealType& time,
@@ -52,7 +52,7 @@ assembly( const RealType& time,
    if( DeviceType::DeviceType == tnlHostDevice )
    {
       TraverserUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b );
-      tnlTraverser< MeshType, EntityDimensions > meshTraverser;
+      tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
                                                     ( mesh,
@@ -74,7 +74,7 @@ assembly( const RealType& time,
       MatrixType* kernelMatrix = tnlCuda::passToDevice( matrix );
       TraverserUserData userData( *kernelTime, *kernelTau, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelMatrix, *kernelB );
       checkCudaDevice;
-      tnlTraverser< MeshType, EntityDimensions > meshTraverser;
+      tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
                                                     ( mesh,
@@ -107,7 +107,7 @@ template< int Dimensions,
           typename RightHandSide,
           typename TimeDiscretisation,
           typename Matrix >
-   template< int EntityDimensions >
+   template< typename EntityType >
 void
 tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide, TimeDiscretisation, Matrix >::
 assembly( const RealType& time,
@@ -133,7 +133,7 @@ assembly( const RealType& time,
                                   u,
                                   matrix,
                                   b );
-      tnlTraverser< MeshType, EntityDimensions > meshTraverser;
+      tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
                                                     ( mesh,
@@ -162,7 +162,7 @@ assembly( const RealType& time,
                                   *kernelMatrix,
                                   *kernelB );
       checkCudaDevice;
-      tnlTraverser< MeshType, EntityDimensions > meshTraverser;
+      tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
                                                     ( mesh,

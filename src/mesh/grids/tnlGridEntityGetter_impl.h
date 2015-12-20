@@ -47,9 +47,9 @@ class tnlGridEntityGetter< tnlGrid< 1, Real, Device, Index >,
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {         
-         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< entityDimensions >(),
+         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
               cerr << " index = " << index
-                   << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< entityDimensions >()
+                   << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                    << " entityDimensions = " << entityDimensions );
          return GridEntity
             ( grid,
@@ -92,9 +92,9 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 2 >
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< entityDimensions >(),
+         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
            cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< entityDimensions >()
+                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
 
          const CoordinatesType dimensions = grid.getDimensions();         
@@ -143,9 +143,9 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 1 >
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< entityDimensions >(),
+         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
            cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< entityDimensions >()
+                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
          
          const CoordinatesType dimensions = grid.getDimensions();
@@ -205,9 +205,9 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, 0 >
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< entityDimensions >(),
+         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
            cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< entityDimensions >()
+                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
 
          const CoordinatesType dimensions = grid.getDimensions();
@@ -257,9 +257,9 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 3 >
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< entityDimensions >(),
+         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
            cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< entityDimensions >()
+                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
 
          const CoordinatesType dimensions = grid.getDimensions();
@@ -308,9 +308,9 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 2 >
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< entityDimensions >(),
+         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
            cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< entityDimensions >()
+                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
 
          const CoordinatesType dimensions = grid.getDimensions();
@@ -397,9 +397,9 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 1 >
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< entityDimensions >(),
+         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
            cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< entityDimensions >()
+                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
          
          const CoordinatesType dimensions = grid.getDimensions();
@@ -486,9 +486,9 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, 0 >
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< entityDimensions >(),
+         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
            cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< entityDimensions >()
+                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
 
          const CoordinatesType dimensions = grid.getDimensions();

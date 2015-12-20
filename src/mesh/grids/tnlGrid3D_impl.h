@@ -49,7 +49,7 @@ template< typename Real,
 tnlString tnlGrid< 3, Real, Device, Index > :: getType()
 {
    return tnlString( "tnlGrid< " ) +
-          tnlString( Dimensions ) + ", " +
+          tnlString( meshDimensions ) + ", " +
           tnlString( ::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
           tnlString( ::getType< IndexType >() ) + " >";
@@ -249,16 +249,16 @@ const typename tnlGrid< 3, Real, Device, Index > :: VertexType&
 template< typename Real,
           typename Device,
           typename Index >
-   template< int EntityDimensions >
+   template< typename EntityType >
 __cuda_callable__  inline
 Index
 tnlGrid< 3, Real, Device, Index >:: 
 getEntitiesCount() const
 {
-   static_assert( EntityDimensions <= 3 &&
-                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimensions <= 3 &&
+                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
    
-   switch( EntityDimensions )
+   switch( EntityType::entityDimensions )
    {
       case 3:
          return this->numberOfCells;
@@ -275,31 +275,31 @@ getEntitiesCount() const
 template< typename Real,
           typename Device,
           typename Index >
-   template< int EntityDimensions >
+   template< typename EntityType >
  __cuda_callable__ inline
-typename tnlGrid< 3, Real, Device, Index >::template GridEntity< EntityDimensions >
+EntityType
 tnlGrid< 3, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
-   static_assert( EntityDimensions <= 3 &&
-                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimensions <= 3 &&
+                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
    
-   return tnlGridEntityGetter< ThisType, EntityDimensions >::getEntity( *this, entityIndex );
+   return tnlGridEntityGetter< ThisType, EntityType::entityDimensions >::getEntity( *this, entityIndex );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< int EntityDimensions >
+   template< typename EntityType >
 __cuda_callable__ inline
 Index
 tnlGrid< 3, Real, Device, Index >::
-getEntityIndex( const GridEntity< EntityDimensions >& entity ) const
+getEntityIndex( const EntityType& entity ) const
 {
-   static_assert( EntityDimensions <= 3 &&
-                  EntityDimensions >= 0, "Wrong grid entity dimensions." );
+   static_assert( EntityType::entityDimensions <= 3 &&
+                  EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
    
-   return tnlGridEntityGetter< ThisType, EntityDimensions >::getEntityIndex( *this, entity );
+   return tnlGridEntityGetter< ThisType, EntityType::entityDimensions >::getEntityIndex( *this, entity );
 }
 
 template< typename Real,
@@ -360,7 +360,7 @@ typename GridFunction::RealType
                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   GridEntity< Dimensions > cell;
+   GridEntity< getDimensionsCount() > cell;
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -388,7 +388,7 @@ template< typename Real,
                                                                            const GridFunction& f2 ) const
 {
    typename GridFunction::RealType maxDiff( -1.0 );
-   GridEntity< Dimensions > cell( *this );
+   GridEntity< getDimensionsCount() > cell( *this );
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -415,7 +415,7 @@ template< typename Real,
                                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   GridEntity< Dimensions > cell( *this );
+   GridEntity< getDimensionsCount() > cell( *this );
 
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
@@ -504,10 +504,10 @@ bool tnlGrid< 3, Real, Device, Index > :: write( const MeshFunction& function,
                                                  const tnlString& fileName,
                                                  const tnlString& format ) const
 {
-   if( this -> template getEntitiesCount< Cells >() != function. getSize() )
+   if( this -> template getEntitiesCount< Cell >() != function. getSize() )
    {
       cerr << "The size ( " << function. getSize() 
-           << " ) of a mesh function does not agree with the DOFs ( " << this -> template getEntitiesCount< Cells >() << " ) of a mesh." << endl;
+           << " ) of a mesh function does not agree with the DOFs ( " << this -> template getEntitiesCount< Cell >() << " ) of a mesh." << endl;
       return false;
    }
    fstream file;
@@ -520,7 +520,7 @@ bool tnlGrid< 3, Real, Device, Index > :: write( const MeshFunction& function,
    file << setprecision( 12 );
    if( format == "gnuplot" )
    {
-      GridEntity< Cells > cell( *this );
+      Cell cell( *this );
       for( cell.getCoordinates().z() = 0;
            cell.getCoordinates().z() < getDimensions().z();
            cell.getCoordinates().z()++ )
@@ -554,7 +554,7 @@ void
 tnlGrid< 3, Real, Device, Index >::
 writeProlog( tnlLogger& logger )
 {
-   logger.writeParameter( "Dimensions:", Dimensions );
+   logger.writeParameter( "Dimensions:", getDimensionsCount() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

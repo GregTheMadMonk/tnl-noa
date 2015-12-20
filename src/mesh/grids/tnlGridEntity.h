@@ -18,8 +18,11 @@
 #ifndef TNLGRIDENTITY_H
 #define	TNLGRIDENTITY_H
 
+#include <mesh/grids/tnlNeighbourGridEntitiesStorage.h>
+
 template< typename GridEntity,
-          int NeighbourEntityDimensions >
+          int NeighbourEntityDimensions,
+          typename StencilStorage >
 class tnlNeighbourGridEntityGetter;
 
 template< typename GridEntityType >
@@ -29,8 +32,9 @@ template< typename GridEntityType >
 class tnlGridEntityCenterGetter;
 
 
-template< typename Grid,
-          int EntityDimensions >
+template< typename Grid,          
+          int EntityDimensions,
+          typename Config >
 class tnlGridEntity
 {
 };
@@ -39,15 +43,17 @@ class tnlGridEntity
 template< int Dimensions,
           typename Real,
           typename Device,
-          typename Index,
-          int EntityDimensions >
-class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >
+          typename Index,          
+          int EntityDimensions,
+          typename Config >
+class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >
 {
    public:
       
       typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
+      typedef Config ConfigType;
       
       static const int meshDimensions = GridType::Dimensions;
       
@@ -55,8 +61,10 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       
       typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
-      typedef tnlGridEntity< GridType, entityDimensions > ThisType;
+      typedef tnlGridEntity< GridType, entityDimensions, Config > ThisType;
       typedef typename GridType::VertexType VertexType;
+      
+      typedef tnlNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
       
       __cuda_callable__ inline
       tnlGridEntity( const GridType& grid );
@@ -76,8 +84,14 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       __cuda_callable__ inline
       void setCoordinates( const CoordinatesType& coordinates );
 
+      /***
+       * Call this method every time the coordinates are changed
+       * to recompute the mesh entity index. The reason for this strange
+       * mechanism is a performance.
+       */
       __cuda_callable__ inline
-      void setIndex( IndexType entityIndex );
+      //void setIndex( IndexType entityIndex );
+      void refresh();
 
       __cuda_callable__ inline
       Index getIndex() const;
@@ -101,7 +115,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       __cuda_callable__ inline
       tnlNeighbourGridEntityGetter<
          tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
-                        EntityDimensions >,
+                        EntityDimensions,
+                        Config >,
          NeighbourEntityDimensions >
       getNeighbourEntities() const;
       
@@ -110,6 +125,9 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       
       __cuda_callable__ inline
       VertexType getCenter() const;
+      
+      __cuda_callable__ inline
+      const GridType& getGrid() const;
       
    protected:
       
@@ -122,6 +140,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       EntityOrientationType orientation;
       
       EntityBasisType basis;
+      
+      NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
       
       //__cuda_callable__ inline
       //tnlGridEntity();
@@ -137,8 +157,9 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
 template< int Dimensions,
           typename Real,
           typename Device,
-          typename Index >
-class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
+          typename Index,
+          typename Config >
+class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >
 {
    public:
       
@@ -146,14 +167,16 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::VertexType VertexType;
+      typedef Config ConfigType;
       
-      static const int meshDimensions = GridType::Dimensions;
+      static const int meshDimensions = GridType::meshDimensions;
       
       static const int entityDimensions = meshDimensions;
       
       typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
-      typedef tnlGridEntity< GridType, entityDimensions > ThisType;
+      typedef tnlGridEntity< GridType, entityDimensions, Config > ThisType;
+      typedef tnlNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
 
       __cuda_callable__ inline
       tnlGridEntity( const GridType& grid );
@@ -173,8 +196,14 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
       __cuda_callable__ inline
       void setCoordinates( const CoordinatesType& coordinates );
 
+      /***
+       * Call this method every time the coordinates are changed
+       * to recompute the mesh entity index. The reason for this strange
+       * mechanism is a performance.
+       */
       __cuda_callable__ inline
-      void setIndex( IndexType entityIndex );
+      //void setIndex( IndexType entityIndex );
+      void refresh();
 
       __cuda_callable__ inline
       Index getIndex() const;
@@ -188,7 +217,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
       template< int NeighbourEntityDimensions = Dimensions >
       __cuda_callable__ inline
       tnlNeighbourGridEntityGetter<
-         tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >,
+         tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >,
          NeighbourEntityDimensions >
       getNeighbourEntities() const;
       
@@ -200,6 +229,9 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
       
       __cuda_callable__ inline
       const VertexType& getEntityProportions() const;      
+      
+      __cuda_callable__ inline
+      const GridType& getGrid() const;
 
    protected:
       
@@ -213,6 +245,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
       
       EntityBasisType basis;
       
+      NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
+      
       //__cuda_callable__ inline
       //tnlGridEntity();
       
@@ -224,12 +258,12 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
 /****
  * Specialization for vertices
  */
-
 template< int Dimensions,
           typename Real,
           typename Device,
-          typename Index >
-class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
+          typename Index,
+          typename Config >
+class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
 {
    public:
       
@@ -237,14 +271,16 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::VertexType VertexType;
+      typedef Config ConfigType;
       
-      static const int meshDimensions = GridType::Dimensions;
+      static const int meshDimensions = GridType::meshDimensions;
       
       static const int entityDimensions = 0;
       
       typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
-      typedef tnlGridEntity< GridType, entityDimensions > ThisType;
+      typedef tnlGridEntity< GridType, entityDimensions, Config > ThisType;
+      typedef tnlNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
 
       __cuda_callable__ inline
       tnlGridEntity( const GridType& grid );
@@ -263,9 +299,15 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       
       __cuda_callable__ inline
       void setCoordinates( const CoordinatesType& coordinates );
-      
+
+      /***
+       * Call this method every time the coordinates are changed
+       * to recompute the mesh entity index. The reason for this strange
+       * mechanism is a performance.
+       */
       __cuda_callable__ inline
-      void setIndex( IndexType entityIndex ) const;
+      //void setIndex( IndexType entityIndex );
+      void refresh();
 
       __cuda_callable__ inline
       Index getIndex() const;
@@ -289,6 +331,9 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       __cuda_callable__ inline
       VertexType getEntityProportions() const;
       
+      __cuda_callable__ inline
+      const GridType& getGrid() const;
+      
    protected:
       
       const GridType& grid;
@@ -300,6 +345,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >
       EntityOrientationType orientation;
       
       EntityBasisType basis;
+      
+      NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
       
       //__cuda_callable__ inline
       //tnlGridEntity();

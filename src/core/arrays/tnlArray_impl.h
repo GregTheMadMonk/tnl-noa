@@ -141,7 +141,7 @@ Index tnlArray< Element, Device, Index > :: getSize() const
 template< typename Element,
            typename Device,
            typename Index >
-void tnlArray< Element, Device, Index > :: setElement( const Index i, const Element& x )
+void tnlArray< Element, Device, Index > :: setElement( const Index& i, const Element& x )
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for setElement method in tnlArray "
@@ -153,7 +153,7 @@ void tnlArray< Element, Device, Index > :: setElement( const Index i, const Elem
 template< typename Element,
            typename Device,
            typename Index >
-Element tnlArray< Element, Device, Index > :: getElement( Index i ) const
+Element tnlArray< Element, Device, Index > :: getElement( const Index& i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for getElement method in tnlArray "
@@ -166,7 +166,7 @@ template< typename Element,
           typename Device,
           typename Index >
 __cuda_callable__
-inline Element& tnlArray< Element, Device, Index > :: operator[] ( Index i )
+inline Element& tnlArray< Element, Device, Index > :: operator[] ( const Index& i )
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for operator[] in tnlArray "
@@ -179,7 +179,7 @@ template< typename Element,
            typename Device,
            typename Index >
 __cuda_callable__
-inline const Element& tnlArray< Element, Device, Index > :: operator[] ( Index i ) const
+inline const Element& tnlArray< Element, Device, Index > :: operator[] ( const Index& i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for operator[] in tnlArray "

@@ -43,7 +43,7 @@ getError( const Mesh& mesh,
 {
    typedef tnlVector< RealType, DeviceType, IndexType > Vector;
    Vector functionData, exactData, approximateData, aux;
-   const IndexType entities = mesh.template getEntitiesCount< Mesh::Cells >();
+   const IndexType entities = mesh.template getEntitiesCount< typename Mesh::Cell >();
    BoundaryConditionsType boundaryConditions;
    boundaryConditions.setFunction( function );
    ConstantFunctionType zeroFunction;
@@ -67,7 +67,7 @@ getError( const Mesh& mesh,
    tnlExactOperatorEvaluator< Mesh, Vector, ExactOperator, Function, BoundaryConditionsType > operatorEvaluator;
    operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
 
-   typename Mesh::template GridEntity< Mesh::Cells > cell( mesh );
+   typename Mesh::template GridEntity< typename Mesh::Cell > cell( mesh );
    for( cell.getCoordinates().x() = 0;
         cell.getCoordinates().x() < entities;
         cell.getCoordinates().x()++ )
@@ -110,7 +110,7 @@ getError( const Mesh& mesh,
    boundaryConditions.setFunction( function );
    ConstantFunctionType zeroFunction;
 
-   const IndexType entities = mesh.template getEntitiesCount< Mesh::Cells >();
+   const IndexType entities = mesh.template getEntitiesCount< typename Mesh::Cell >();
 
    if( ! functionData.setSize( entities ) ||
        ! exactData.setSize( entities ) ||
@@ -144,7 +144,7 @@ getError( const Mesh& mesh,
    tnlExactOperatorEvaluator< Mesh, Vector, ExactOperator, Function, BoundaryConditionsType > operatorEvaluator;
    operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
 
-   typename Mesh::template GridEntity< Mesh::Cells > cell( mesh );
+   typename Mesh::template GridEntity< typename Mesh::Cell > cell( mesh );
    for( cell.getCoordinates().x() = 0;
         cell.getCoordinates().x() < entities;
         cell.getCoordinates().x()++ )

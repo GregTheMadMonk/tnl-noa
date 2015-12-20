@@ -73,7 +73,7 @@ class tnlExplicitUpdater
                                                    BoundaryConditions,
                                                    RightHandSide > TraverserUserData;
 
-      template< int EntityDimensions >
+      template< typename EntityType >
       void update( const RealType& time,
                    const MeshType& mesh,
                    DifferentialOperator& differentialOperator,
@@ -86,7 +86,7 @@ class tnlExplicitUpdater
       {
          public:
 
-            template< int EntityDimension >
+            template< typename EntityType >
             __cuda_callable__
             static inline void processEntity( const MeshType& mesh,
                                               TraverserUserData& userData,
@@ -105,7 +105,7 @@ class tnlExplicitUpdater
       {
          public:
 
-            template< int EntityDimensions >
+            template< typename EntityType >
             __cuda_callable__
             static inline void processEntity( const MeshType& mesh,
                                               TraverserUserData& userData,
@@ -153,7 +153,7 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
                                                    BoundaryConditions,
                                                    RightHandSide > TraverserUserData;
       
-      template< int EntityDimensions >
+      template< typename EntityType >
       void update( const RealType& time,
                    const MeshType& mesh,
                    const DifferentialOperator& differentialOperator,

@@ -44,7 +44,7 @@ class tnlMeshWriterNetgen
       outputFile << setprecision( 6 );
       outputFile << fixed;
 
-      const int meshDimensions = MeshType::dimensions;
+      const int meshDimensions = MeshType::meshDimensions;
       typedef typename MeshType::template EntitiesTraits< 0 >::GlobalIndexType VerticesIndexType;
       typedef typename MeshType::PointType                                     PointType;
       const VerticesIndexType numberOfVertices = mesh.getNumberOfVertices();

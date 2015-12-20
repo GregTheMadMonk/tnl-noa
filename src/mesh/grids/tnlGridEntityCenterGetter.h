@@ -29,13 +29,14 @@ class tnlGridEntityCenterGetter
  */
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Index >, 1 > >
+          typename Index,
+          typename Config >
+class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Index >, 1, Config > >
 {
    public:
       
       typedef tnlGrid< 1, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, 1 > GridEntityType;
+      typedef tnlGridEntity< GridType, 1, Config > GridEntityType;
       typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline
@@ -49,13 +50,14 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Index 
 
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Index >, 0 > >
+          typename Index,
+          typename Config >
+class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Index >, 0, Config > >
 {
    public:
       
       typedef tnlGrid< 1, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, 0 > GridEntityType;
+      typedef tnlGridEntity< GridType, 0, Config > GridEntityType;
       typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline
@@ -72,13 +74,14 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 1, Real, Device, Index 
  */
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 2 > >
+          typename Index,
+          typename Config >
+class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 2, Config > >
 {
    public:
       
       typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, 2 > GridEntityType;
+      typedef tnlGridEntity< GridType, 2, Config > GridEntityType;
       typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline
@@ -93,13 +96,14 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Index 
 
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 1 > >
+          typename Index,
+          typename Config >
+class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 1, Config > >
 {
    public:
       
       typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, 1 > GridEntityType;
+      typedef tnlGridEntity< GridType, 1, Config > GridEntityType;
       typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline
@@ -117,13 +121,14 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Index 
 
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 0 > >
+          typename Index,
+          typename Config >
+class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 0, Config > >
 {
    public:
       
       typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, 0 > GridEntityType;
+      typedef tnlGridEntity< GridType, 0, Config > GridEntityType;
       typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline
@@ -143,13 +148,14 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 2, Real, Device, Index 
 template< typename Real,
           typename Device,
           typename Index,
-          int EntityDimensions >
-class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, EntityDimensions > >
+          int EntityDimensions,
+          typename Config >
+class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, EntityDimensions, Config > >
 {
    public:
       
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, EntityDimensions > GridEntityType;
+      typedef tnlGridEntity< GridType, EntityDimensions, Config > GridEntityType;
       typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline
@@ -168,13 +174,14 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Index 
 
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, 3 > >
+          typename Index,
+          typename Config  >
+class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, 3, Config > >
 {
    public:
       
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, 3 > GridEntityType;
+      typedef tnlGridEntity< GridType, 3, Config > GridEntityType;
       typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline
@@ -190,13 +197,14 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Index 
 
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, 0 > >
+          typename Index,
+          typename Config  >
+class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, 0, Config > >
 {
    public:
       
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, 0 > GridEntityType;
+      typedef tnlGridEntity< GridType, 0, Config > GridEntityType;
       typedef typename GridType::VertexType VertexType;
       
       __cuda_callable__ inline

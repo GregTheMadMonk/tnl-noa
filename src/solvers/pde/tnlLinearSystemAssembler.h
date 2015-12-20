@@ -93,7 +93,7 @@ class tnlLinearSystemAssembler
                                                       RightHandSide,
                                                       MatrixType > TraverserUserData;
 
-   template< int EntityDimensions >
+   template< typename EntityType >
    void assembly( const RealType& time,
                   const RealType& tau,
                   const MeshType& mesh,
@@ -108,7 +108,7 @@ class tnlLinearSystemAssembler
    {
       public:
 
-         template< int EntityDimension >
+         template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraverserUserData& userData,
@@ -128,7 +128,7 @@ class tnlLinearSystemAssembler
    {
       public:
 
-         template< int EntityDimensions >
+         template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraverserUserData& userData,
@@ -196,7 +196,7 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
                                                       RightHandSide,
                                                       MatrixType > TraverserUserData;
 
-   template< int EntityDimensions >
+   template< typename EntityType >
    void assembly( const RealType& time,
                   const RealType& tau,
                   const MeshType& mesh,

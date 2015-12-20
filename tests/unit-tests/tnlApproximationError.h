@@ -65,7 +65,7 @@ class tnlApproximationError< Mesh, ExactOperator, ApproximateOperator, Function,
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::VertexType VertexType;
-      typedef tnlConstantFunction< MeshType::Dimensions, RealType > ConstantFunctionType;
+      typedef tnlConstantFunction< MeshType::meshDimensions, RealType > ConstantFunctionType;
       typedef tnlAnalyticDirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
 
       static void getError( const Mesh& mesh,
@@ -90,7 +90,7 @@ class tnlApproximationError< Mesh, ExactOperator, ApproximateOperator, Function,
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::VertexType VertexType;
-      typedef tnlConstantFunction< MeshType::Dimensions, RealType > ConstantFunctionType;
+      typedef tnlConstantFunction< MeshType::meshDimensions, RealType > ConstantFunctionType;
       typedef tnlAnalyticDirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
 
       static void getError( const Mesh& mesh,

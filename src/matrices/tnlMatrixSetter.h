@@ -55,7 +55,7 @@ class tnlMatrixSetter
                                              BoundaryConditions,
                                              CompressedRowsLengthsVector > TraversalUserData;
 
-   template< int EntityDimensions >
+   template< typename EntityType >
    void getCompressedRowsLengths( const MeshType& mesh,
                        DifferentialOperator& differentialOperator,
                        BoundaryConditions& boundaryConditions,
@@ -82,7 +82,7 @@ class tnlMatrixSetter
    {
       public:
 
-         template< int EntityDimensions >
+         template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraversalUserData& userData,
@@ -117,7 +117,7 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
                                              BoundaryConditions,
                                              CompressedRowsLengthsVector > TraversalUserData;
 
-   template< int EntityDimensions >
+   template< typename EntityType >
    void getCompressedRowsLengths( const MeshType& mesh,
                        const DifferentialOperator& differentialOperator,
                        const BoundaryConditions& boundaryConditions,

@@ -8,6 +8,7 @@ SET( headers tnlBoundaryGridEntityChecker.h
              tnlGridEntityTopology.h
              tnlGridEntity.h
              tnlGridEntity_impl.h
+             tnlGridEntityConfig.h
              tnlGridEntityCenterGetter.h
              tnlGridEntityGetter.h
              tnlGridEntityGetter_impl.h

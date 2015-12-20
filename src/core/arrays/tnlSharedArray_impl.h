@@ -180,7 +180,7 @@ Index tnlSharedArray< Element, Device, Index > :: getSize() const
 template< typename Element,
           typename Device,
           typename Index >
-void tnlSharedArray< Element, Device, Index > :: setElement( const Index i, const Element& x )
+void tnlSharedArray< Element, Device, Index > :: setElement( const Index& i, const Element& x )
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for setElement method in tnlSharedArray "
@@ -192,7 +192,7 @@ void tnlSharedArray< Element, Device, Index > :: setElement( const Index i, cons
 template< typename Element,
           typename Device,
           typename Index >
-Element tnlSharedArray< Element, Device, Index > :: getElement( Index i ) const
+Element tnlSharedArray< Element, Device, Index > :: getElement( const Index& i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for getElement method in tnlSharedArray "
@@ -205,7 +205,7 @@ template< typename Element,
           typename Device,
           typename Index >
 __cuda_callable__
-Element& tnlSharedArray< Element, Device, Index > :: operator[] ( Index i )
+Element& tnlSharedArray< Element, Device, Index > :: operator[] ( const Index& i )
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for operator[] in tnlSharedArray "
@@ -218,7 +218,7 @@ template< typename Element,
           typename Device,
           typename Index >
 __cuda_callable__
-const Element& tnlSharedArray< Element, Device, Index > :: operator[] ( Index i ) const
+const Element& tnlSharedArray< Element, Device, Index > :: operator[] ( const Index& i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for operator[] in tnlSharedArray "

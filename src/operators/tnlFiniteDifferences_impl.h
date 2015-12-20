@@ -42,7 +42,7 @@ Real tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index > >::getDifference( c
    else
       iEnd = grid.getDimensions().x();
 
-   typename GridType::template GridEntity< GridType::Cells > cell( grid );
+   typename GridType::Cell cell( grid );
    for( cell.getCoordinates().x() = iBegin;
         cell.getCoordinates().x() < iEnd;
         cell.getCoordinates().x()++ )

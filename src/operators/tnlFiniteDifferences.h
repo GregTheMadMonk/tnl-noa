@@ -35,7 +35,8 @@ class tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index > >
    typedef Index IndexType;
    typedef tnlGrid< 1, Real, Device, Index > GridType;
    //typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename GridType::template GridEntity< GridType::Cells > CellType;
+   typedef typename GridType::Cell CellType;
+
 
 #ifdef HAVE_NOT_CXX11
    template< typename GridFunction,
@@ -97,7 +98,7 @@ class tnlFiniteDifferences< tnlGrid< 2, Real, Device, Index > >
    typedef Index IndexType;
    typedef tnlGrid< 2, Real, Device, Index > GridType;
    //typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename GridType::template GridEntity< GridType::Cells > CellType;
+   typedef typename GridType::Cell CellType;
 
 
 #ifdef HAVE_NOT_CXX11
@@ -160,7 +161,7 @@ class tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index > >
    typedef Index IndexType;
    typedef tnlGrid< 3, Real, Device, Index > GridType;
    //typedef typename GridType::CoordinatesType CoordinatesType;
-   typedef typename GridType::template GridEntity< GridType::Cells > CellType;
+   typedef typename GridType::Cell CellType;
 
 #ifdef HAVE_NOT_CXX11
    template< typename GridFunction,

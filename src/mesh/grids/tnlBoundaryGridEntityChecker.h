@@ -29,13 +29,14 @@ class tnlBoundaryGridEntityChecker
  */
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 1, Real, Device, Index >, 1 > >
+          typename Index,
+          typename Config >
+class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 1, Real, Device, Index >, 1, Config  > >
 {
    public:
       
       typedef tnlGrid< 1, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType,1 > GridEntityType;
+      typedef tnlGridEntity< GridType, 1, Config > GridEntityType;
       
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
@@ -47,13 +48,14 @@ class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 1, Real, Device, Ind
 
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 1, Real, Device, Index >, 0 > >
+          typename Index,
+          typename Config  >
+class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 1, Real, Device, Index >, 0, Config > >
 {
    public:
       
       typedef tnlGrid< 1, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType,1 > GridEntityType;
+      typedef tnlGridEntity< GridType, 1, Config > GridEntityType;
       
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
@@ -68,13 +70,14 @@ class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 1, Real, Device, Ind
  */
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 2 > >
+          typename Index,
+          typename Config  >
+class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 2, Config > >
 {
    public:
       
       typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, 2 > GridEntityType;
+      typedef tnlGridEntity< GridType, 2, Config > GridEntityType;
       
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
@@ -88,13 +91,14 @@ class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 2, Real, Device, Ind
 
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 1 > >
+          typename Index,
+          typename Config  >
+class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 1, Config > >
 {
    public:
       
       typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType,2 > GridEntityType;
+      typedef tnlGridEntity< GridType, 2, Config > GridEntityType;
       
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
@@ -112,13 +116,14 @@ class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 2, Real, Device, Ind
 
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 0 > >
+          typename Index,
+          typename Config  >
+class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 0, Config > >
 {
    public:
       
       typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType,2 > GridEntityType;
+      typedef tnlGridEntity< GridType, 2, Config > GridEntityType;
       
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
@@ -138,13 +143,14 @@ class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 2, Real, Device, Ind
 template< typename Real,
           typename Device,
           typename Index,
+          typename Config ,
           int EntityDimensions >
-class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, EntityDimensions > >
+class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, EntityDimensions, Config > >
 {
    public:
       
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, 3 > GridEntityType;
+      typedef tnlGridEntity< GridType, 3, Config > GridEntityType;
       
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
@@ -164,13 +170,14 @@ class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
 
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, 3 > >
+          typename Index,
+          typename Config  >
+class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, 3, Config > >
 {
    public:
       
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, 3 > GridEntityType;
+      typedef tnlGridEntity< GridType, 3, Config > GridEntityType;
       
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
@@ -186,13 +193,14 @@ class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
 
 template< typename Real,
           typename Device,
-          typename Index >
-class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, 0 > >
+          typename Index,
+          typename Config  >
+class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, 0, Config > >
 {
    public:
       
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, 3 > GridEntityType;
+      typedef tnlGridEntity< GridType, 3, Config > GridEntityType;
       
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )

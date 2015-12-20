@@ -44,8 +44,8 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef typename MeshType::template GridEntity< MeshType::Dimensions > CellType;
-      enum { Dimensions = MeshType::Dimensions };
+      typedef typename MeshType::template GridEntity< MeshType::meshDimensions > CellType;
+      enum { Dimensions = MeshType::meshDimensions };
 
       static tnlString getType();
 
@@ -90,7 +90,7 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      enum { Dimensions = MeshType::Dimensions };
+      enum { Dimensions = MeshType::meshDimensions };
 
       static tnlString getType();
 
@@ -138,7 +138,7 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      enum { Dimensions = MeshType::Dimensions };
+      enum { Dimensions = MeshType::meshDimensions };
 
       static tnlString getType();
 
