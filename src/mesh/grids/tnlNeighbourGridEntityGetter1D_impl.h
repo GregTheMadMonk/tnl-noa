@@ -128,6 +128,7 @@ class tnlNeighbourGridEntityGetter<
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
+      typedef tnlNeighbourGridEntityGetter< GridEntityType, 1, StencilStorage > ThisType;
       
       static const int stencilSize = Config::getStencilSize();
       
@@ -167,8 +168,8 @@ class tnlNeighbourGridEntityGetter<
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         //if( step < -stencilSize || step > stencilSize )
-         //   return this->entity.getIndex() + step;
+         if( step < -stencilSize || step > stencilSize )
+            return this->entity.getIndex() + step;
          return stencil[ stencilSize + step ];
       }
      
@@ -178,16 +179,16 @@ class tnlNeighbourGridEntityGetter<
          public:
             
             __cuda_callable__
-            void exec( const IndexType& entityIndex )
+            static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
             {
-               //stencil[ index + stencilSize ] = entityIndex + index;
+               neighbourEntityGetter.stencil[ index + stencilSize ] = entityIndex + index;
             }
       };
       
       __cuda_callable__
       void refresh( const GridType& grid, const IndexType& entityIndex )
       {
-         tnlStaticFor< IndexType, -stencilSize, stencilSize, StencilRefresher >::exec( entityIndex );
+         tnlStaticFor< IndexType, -stencilSize, stencilSize, StencilRefresher >::exec( *this, entityIndex );
       };      
       
    protected:

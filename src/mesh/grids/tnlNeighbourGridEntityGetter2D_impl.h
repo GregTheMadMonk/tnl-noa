@@ -129,6 +129,8 @@ class tnlNeighbourGridEntityGetter<
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
+      
+      static const int stencilSize = Config::getStencilSize();
 
       __cuda_callable__ inline
       tnlNeighbourGridEntityGetter( const GridEntityType& entity )
@@ -149,9 +151,9 @@ class tnlNeighbourGridEntityGetter<
               cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
                    << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         return NeighbourGridEntityType( this->grid,
-                                         CoordinatesType( entity.getCoordinates().x() + stepX,
-                                                          entity.getCoordinates().y() + stepY ) );
+            return NeighbourGridEntityType( this->grid,
+                                            CoordinatesType( entity.getCoordinates().x() + stepX,
+                                                             entity.getCoordinates().y() + stepY ) );
       }
       
       template< int stepX, int stepY >
@@ -168,15 +170,56 @@ class tnlNeighbourGridEntityGetter<
               cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
                    << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         return this->entity.getIndex() + stepY * entity.getGrid().getDimensions().x() + stepX;
+         if( ( stepX != 0 && stepY != 0 ) ||
+             ( stepX < -stencilSize || stepX > stencilSize ||
+               stepY < -stencilSize || stepY > stencilSize ) )         
+            return this->entity.getIndex() + stepY * entity.getGrid().getDimensions().x() + stepX;
+         if( stepY == 0 )
+            return stencilX[ stepX + stencilSize ];
+         return stencilY[ stepY + stencilSize ];
+         
       }
       
+      template< IndexType index > 
+      class StencilXRefresher
+      {
+         public:
+            
+            __cuda_callable__
+            static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
+            {
+               neighbourEntityGetter.stencil[ index + stencilSize ] = entityIndex + index;
+            }
+      };
+
+      template< IndexType index > 
+      class StencilYRefresher
+      {
+         public:
+            
+            __cuda_callable__
+            static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
+            {
+               neighbourEntityGetter.stencil[ index + stencilSize ] = 
+                  entityIndex + index * neighbourEntityGetter.entity.getGrid().getDimensions().x();
+            }
+      };
+
+      
       __cuda_callable__
-      void refresh( const GridType& grid, const IndexType& entityIndex ){};
+      void refresh( const GridType& grid, const IndexType& entityIndex )
+      {
+         tnlStaticFor< IndexType, -stencilSize, -1, StencilYRefresher >::exec( *this, entityIndex );
+         tnlStaticFor< IndexType, 1, stencilSize, StencilYRefresher >::exec( *this, entityIndex );
+         tnlStaticFor< IndexType, -stencilSize, stencilSize, StencilXRefresher >::exec( *this, entityIndex );
+      };
       
    protected:
 
       const GridEntityType& entity;
+      
+      IndexType stencilX[ 2 * stencilSize + 1 ];
+      IndexType stencilY[ 2 * stencilSize + 1 ];
       
       //tnlNeighbourGridEntityGetter(){};      
 };

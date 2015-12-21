@@ -171,15 +171,62 @@ class tnlNeighbourGridEntityGetter<
                    << entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ )
                    << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         return this->entity.getIndex() + ( stepZ * entity.getGrid().getDimensions().y() + stepY ) * entity.getGrid().getDimensions().x() + stepX;
+         if( ( stepX != 0 && stepY != 0 && stepZ != 0 ) ||
+             ( stepX < -stencilSize || stepX > stencilSize ||
+               stepY < -stencilSize || stepY > stencilSize ||
+               stepZ < -stencilSize || stepZ > stencilSize ) )                  
+            return this->entity.getIndex() + ( stepZ * entity.getGrid().getDimensions().y() + stepY ) * entity.getGrid().getDimensions().x() + stepX;
+         if( stepY == 0 && stepZ == 0 )
+            return stencilX[ stepX + stencilSize ];
+         if( stepZ == 0 )
+            return stencilY[ stepY + stencilSize ];
+         return stencilZ[ stepZ + stencilSize ];
+
       }
       
+      template< IndexType index > 
+      class StencilXRefresher
+      {
+         public:
+            
+            __cuda_callable__
+            static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
+            {
+               neighbourEntityGetter.stencil[ index + stencilSize ] = entityIndex + index;
+            }
+      };
+
+      template< IndexType index > 
+      class StencilYRefresher
+      {
+         public:
+            
+            __cuda_callable__
+            static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
+            {
+               neighbourEntityGetter.stencil[ index + stencilSize ] = 
+                  entityIndex + index * neighbourEntityGetter.entity.getGrid().getDimensions().x();
+            }
+      };
+
+      
       __cuda_callable__
-      void refresh( const GridType& grid, const IndexType& entityIndex ){};
+      void refresh( const GridType& grid, const IndexType& entityIndex )
+      {
+         tnlStaticFor< IndexType, -stencilSize, -1, StencilZRefresher >::exec( *this, entityIndex );
+         tnlStaticFor< IndexType, 1, stencilSize, StencilZRefresher >::exec( *this, entityIndex );
+         tnlStaticFor< IndexType, -stencilSize, -1, StencilYRefresher >::exec( *this, entityIndex );
+         tnlStaticFor< IndexType, 1, stencilSize, StencilYRefresher >::exec( *this, entityIndex );         
+         tnlStaticFor< IndexType, -stencilSize, stencilSize, StencilXRefresher >::exec( *this, entityIndex );
+      };
       
    protected:
 
       const GridEntityType& entity;
+      
+      IndexType stencilX[ 2 * stencilSize + 1 ];
+      IndexType stencilY[ 2 * stencilSize + 1 ];
+      IndexType stencilZ[ 2 * stencilSize + 1 ];
       
       //tnlNeighbourGridEntityGetter(){};            
 };
