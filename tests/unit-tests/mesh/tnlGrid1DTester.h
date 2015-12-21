@@ -59,7 +59,7 @@ class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCas
       GridType grid;
       grid.setDimensions( xSize );
       
-      typename GridType::template GridEntity< GridType::Cells > cell( grid );
+      typename GridType::Cell cell( grid );
       for( cell.getCoordinates().x() = 0;
            cell.getCoordinates().x() < xSize;
            cell.getCoordinates().x()++ )

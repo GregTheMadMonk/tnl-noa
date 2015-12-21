@@ -584,8 +584,11 @@ int main( int argc, char* argv[] )
    if( device == "host" &&
        ! solveHeatEquationHost< double, int >( parameters  ) )
       return EXIT_FAILURE;
+#ifdef HAVE_CUDA
    if( device == "cuda" &&
        ! solveHeatEquationCuda< double, int >( parameters  ) )
+      return EXIT_FAILURE;   
+#endif      
    return EXIT_SUCCESS;   
 }
 

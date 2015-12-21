@@ -18,7 +18,7 @@
 #include <core/cuda/reduction-operations.h>
 #include <core/cuda/cuda-reduction.h>
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 /****
  * Sum
