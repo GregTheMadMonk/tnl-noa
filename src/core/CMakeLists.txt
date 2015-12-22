@@ -2,6 +2,7 @@ ADD_SUBDIRECTORY( arrays )
 ADD_SUBDIRECTORY( containers )
 ADD_SUBDIRECTORY( cuda )
 ADD_SUBDIRECTORY( vectors )
+ADD_SUBDIRECTORY( images )
 ADD_SUBDIRECTORY( multimaps )
 
 set (headers tnlAssert.h               
@@ -56,6 +57,7 @@ IF( BUILD_CUDA )
         ${tnl_core_containers_CUDA__SOURCES}
         ${tnl_core_cuda_CUDA__SOURCES}
         ${tnl_core_vectors_CUDA__SOURCES}
+        ${tnl_core_images_CUDA__SOURCES}
         ${common_SOURCES} 
         ${CURRENT_DIR}/tnlCuda.cu
         ${CURRENT_DIR}/tnlCudaDeviceInfo.cu
@@ -67,6 +69,7 @@ set( tnl_core_SOURCES
      ${tnl_core_containers_SOURCES}
      ${tnl_core_cuda_SOURCES}
      ${tnl_core_vectors_SOURCES}
+     ${tnl_core_images_SOURCES}
      ${common_SOURCES}
      ${CURRENT_DIR}/tnlCudaDeviceInfo.cpp
      PARENT_SCOPE )

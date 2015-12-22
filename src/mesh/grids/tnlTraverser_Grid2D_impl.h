@@ -205,7 +205,7 @@ processInteriorEntities( const GridType& grid,
    const IndexType& ySize = grid.getDimensions().y();
 
 #ifdef HAVE_OPENMP
-//#pragma omp parallel for
+  //#pragma omp parallel for
 #endif
    for( coordinates.y() = 1; coordinates.y() < ySize; coordinates.y() ++ )
       for( coordinates.x() = 1; coordinates.x() < xSize; coordinates.x() ++ )

@@ -18,6 +18,8 @@
 #ifndef SRC_MESH_TNLGRID3D_H_
 #define SRC_MESH_TNLGRID3D_H_
 
+#include <mesh/tnlGrid.h>
+
 template< typename Real,
           typename Device,
           typename Index >

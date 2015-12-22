@@ -183,7 +183,11 @@ parseCommandLine( int argc, char* argv[],
          parse_error = true;
          continue;
       }
-      
+      if( strcmp( _option, "--help" ) == 0 )
+      {
+          config_description.printUsage( argv[ 0 ] );
+          return true;
+      }
       const char* option = _option + 2;
       const tnlConfigEntryBase* entry;
       if( ( entry = config_description.getEntry( option ) ) == NULL )

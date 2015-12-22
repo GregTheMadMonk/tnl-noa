@@ -787,6 +787,7 @@ __global__ void tnlSlicedEllpackMatrixVectorProductCudaKernel(
    const Index columns,
    const Index* slicePointers,
    const Index* sliceCompressedRowsLengths,
+   const Index paddingIndex,
    const Index* columnIndexes,
    const Real* values,
    const Real* inVector,
@@ -803,7 +804,9 @@ __global__ void tnlSlicedEllpackMatrixVectorProductCudaKernel(
    const Index rowEnd = i + rowLength * SliceSize;
    Real result( 0.0 );
    Index columnIndex;
-   while( i < rowEnd && ( columnIndex = columnIndexes[ i ] ) < columns )
+   while( i < rowEnd &&
+         ( columnIndex = columnIndexes[ i ] ) < columns &&
+         columnIndex < paddingIndex )
    {
       result += values[ i ] * inVector[ columnIndex ];
       i += SliceSize;
@@ -919,6 +922,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
                   matrix.getColumns(),
                   matrix.slicePointers.getData(),
                   matrix.sliceCompressedRowsLengths.getData(),
+                  matrix.getPaddingIndex(),
                   matrix.columnIndexes.getData(),
                   matrix.values.getData(),
                   inVector.getData(),

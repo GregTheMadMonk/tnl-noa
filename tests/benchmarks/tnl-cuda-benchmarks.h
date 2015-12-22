@@ -36,11 +36,12 @@ __global__ void setCudaTestMatrixKernel( Matrix* matrix,
    const int rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( rowIdx >= matrix->getRows() )
       return;
-   int col = Max( 0, rowIdx - elementsPerRow / 2 );   
+   int col = rowIdx - elementsPerRow / 2;   
    for( int element = 0; element < elementsPerRow; element++ )
    {
-      if( col + element < matrix->getColumns() )
-         matrix->setElementFast( rowIdx, col + element, 1.0 );
+      if( col + element >= 0 &&
+          col + element < matrix->getColumns() )
+         matrix->setElementFast( rowIdx, col + element, element + 1 );
    }      
 }
 
@@ -154,7 +155,7 @@ int main( int argc, char* argv[] )
    timer.reset();
    timer.start();
    for( int i = 0; i < loops; i++ )
-      resultDevice = deviceVector.scalarProduct( deviceVector );
+      resultDevice = deviceVector.scalarProduct( deviceVector2 );
    timer.stop();
    timeDevice = timer.getTime();
    bandwidth = 2 * datasetSize / timer.getTime();
@@ -199,6 +200,7 @@ int main( int argc, char* argv[] )
    timer.start();
    for( int i = 0; i < loops; i++ )
       resultDevice = deviceVector.lpNorm( 2.0 );
+
    timer.stop();
    bandwidth = datasetSize / timer.getTime();
    cout << "Time: " << timer.getTime() << " bandwidth: " << bandwidth << " GB/sec." << endl;
@@ -263,12 +265,12 @@ int main( int argc, char* argv[] )
    {
       if( row % 100 == 0 )
          cout << "Row " << row << "/" << size << "     \r" << flush;
-      int col = Max( 0, row - elementsPerRow / 2 );   
+      int col = row - elementsPerRow / 2;   
       for( int element = 0; element < elementsPerRow; element++ )
       {
-         if( col + element < size )
+         if( col + element >= 0 && col + element < size )
          {
-            hostMatrix.setElement( row, col + element, 1.0 );
+            hostMatrix.setElement( row, col + element, element + 1 );
             //deviceMatrix.setElement( row, col + element, 1.0 );
             elements++;
          }
@@ -289,20 +291,15 @@ int main( int argc, char* argv[] )
    cout << timer.getTime() << " => " << bandwidth << " GB/s" << endl;
    
    cout << "Benchmarking SpMV on GPU: ";
+   deviceVector2.setValue( 0.0 );
    timer.reset();
    for( int i = 0; i < loops; i++ )
       deviceMatrix.vectorProduct( deviceVector, deviceVector2 );
    timer.stop();
-   //cout << hostVector2 << endl << deviceVector2 << endl;
       
    if( hostVector2 != deviceVector2 )
-   {      
-      cerr << "Error in SliceEllpack Spmv kernel at positions" << endl;
-      //for( int i = 0; i < size; i++ )
-      //   if( hostVector2.getElement( i ) != deviceVector2.getElement( i ) )
-      //      cerr << " " << i;
-         
-   }
+      cerr << "Error in Spmv kernel" << endl;
+   
    bandwidth = datasetSize / timer.getTime();
    cout << timer.getTime() << " => " << bandwidth << " GB/s" << " speedup " << hostTime / timer.getTime() << endl;
    
