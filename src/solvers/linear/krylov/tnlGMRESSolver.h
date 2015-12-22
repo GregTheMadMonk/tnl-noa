@@ -97,9 +97,7 @@ class tnlGMRESSolver : public tnlObject,
    tnlVector< RealType, DeviceType, IndexType > _r, _w, _v, _M_tmp;
    tnlVector< RealType, tnlHost, IndexType > _s, _cs, _sn, _H;
 
-   IndexType size, restarting, maxIterations;
-
-   RealType maxResidue;
+   IndexType size, restarting;
 
    const MatrixType* matrix;
    const PreconditionerType* preconditioner;

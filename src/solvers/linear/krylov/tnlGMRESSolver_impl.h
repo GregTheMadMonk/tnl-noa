@@ -384,7 +384,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: setSize( IndexType _size, Index
        ! _H. setSize( ( restarting + 1 ) * restarting ) ||
        ! _M_tmp. setSize( size ) )
    {
-      cerr << "I could not allocated all supporting arrays for the CG solver." << endl;
+      cerr << "I could not allocate all supporting arrays for the GMRES solver." << endl;
       return false;
    }
    return true;
