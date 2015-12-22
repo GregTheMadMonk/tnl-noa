@@ -146,7 +146,7 @@ template< typename Real,
    template< typename Vector >
 bool tnlSharedVector< Real, Device, Index > :: operator != ( const Vector& vector ) const
 {
-   return tnlSharedArray< Real, Device, Index > :: operator == ( vector );
+   return tnlSharedArray< Real, Device, Index > :: operator != ( vector );
 }
 
 template< typename Real,

@@ -30,7 +30,7 @@ class tnlCUDAReduction
       typedef typename Operation::ResultType ResultType;
 
       
-      __device__ static void reduce( const Operation operation,
+      __device__ static void reduce( Operation& operation,
                                      const IndexType size,
                                      const RealType* input1,
                                      const RealType* input2,
@@ -47,7 +47,7 @@ class tnlCUDAReduction< tnlParallelReductionScalarProduct< Real, Index >, blockS
       typedef typename Operation::RealType RealType;
       typedef typename Operation::ResultType ResultType;
       
-      __device__ static void reduce( const Operation operation,
+      __device__ static void reduce( Operation operation,
                                      const IndexType size,
                                      const RealType* input1,
                                      const RealType* input2,

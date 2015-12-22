@@ -30,7 +30,7 @@ template< typename DataType,
           typename Operation,
           typename Index >
 __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumType,
-                                              const Operation operation,
+                                              Operation operation,
                                               const Index size,
                                               const Index elementsInBlock,
                                               const DataType* input,
@@ -159,7 +159,7 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
 template< typename DataType,
           typename Operation,
           typename Index >
-__global__ void cudaSecondPhaseBlockPrefixSum( const Operation operation,
+__global__ void cudaSecondPhaseBlockPrefixSum( Operation operation,
                                                const Index size,
                                                const Index elementsInBlock,
                                                const Index gridShift,
@@ -186,7 +186,7 @@ template< typename DataType,
           typename Operation,
           typename Index >
 bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
-                             const Operation& operation,
+                             Operation& operation,
                              const Index size,
                              const Index blockSize,
                              const Index elementsInBlock,
@@ -276,7 +276,7 @@ template< typename DataType,
           typename Operation,
           typename Index >
 bool cudaGridPrefixSum( enumPrefixSumType prefixSumType,
-                        const Operation& operation,
+                        Operation& operation,
                         const Index size,
                         const Index blockSize,
                         const Index elementsInBlock,
@@ -313,7 +313,7 @@ bool cudaPrefixSum( const Index size,
                     const Index blockSize,
                     const DataType *deviceInput,
                     DataType* deviceOutput,
-                    const Operation& operation,
+                    Operation& operation,
                     const enumPrefixSumType prefixSumType )
 {
    /****
@@ -361,7 +361,7 @@ extern template bool cudaPrefixSum( const int size,
                                     const int blockSize,
                                     const int *deviceInput,
                                     int* deviceOutput,
-                                    const tnlParallelReductionSum< int, int >& operation,
+                                    tnlParallelReductionSum< int, int >& operation,
                                     const enumPrefixSumType prefixSumType );
 
 
@@ -369,14 +369,14 @@ extern template bool cudaPrefixSum( const int size,
                                     const int blockSize,
                                     const float *deviceInput,
                                     float* deviceOutput,
-                                    const tnlParallelReductionSum< float, int >& operation,
+                                    tnlParallelReductionSum< float, int >& operation,
                                     const enumPrefixSumType prefixSumType );
 
 extern template bool cudaPrefixSum( const int size,
                                     const int blockSize,
                                     const double *deviceInput,
                                     double* deviceOutput,
-                                    const tnlParallelReductionSum< double, int >& operation,
+                                    tnlParallelReductionSum< double, int >& operation,
                                     const enumPrefixSumType prefixSumType );
 
 #ifdef INSTANTIATE_LONG_DOUBLE
@@ -384,7 +384,7 @@ extern template bool cudaPrefixSum( const int size,
                                     const int blockSize,
                                     const long double *deviceInput,
                                     long double* deviceOutput,
-                                    const tnlParallelReductionSum< long double, int >& operation,
+                                    tnlParallelReductionSum< long double, int >& operation,
                                     const enumPrefixSumType prefixSumType );
 #endif
 
@@ -393,7 +393,7 @@ extern template bool cudaPrefixSum( const long int size,
                                     const long int blockSize,
                                     const int *deviceInput,
                                     int* deviceOutput,
-                                    const tnlParallelReductionSum< int, long int >& operation,
+                                    tnlParallelReductionSum< int, long int >& operation,
                                     const enumPrefixSumType prefixSumType );
 
 
@@ -401,14 +401,14 @@ extern template bool cudaPrefixSum( const long int size,
                                     const long int blockSize,
                                     const float *deviceInput,
                                     float* deviceOutput,
-                                    const tnlParallelReductionSum< float, long int >& operation,
+                                    tnlParallelReductionSum< float, long int >& operation,
                                     const enumPrefixSumType prefixSumType );
 
 extern template bool cudaPrefixSum( const long int size,
                                     const long int blockSize,
                                     const double *deviceInput,
                                     double* deviceOutput,
-                                    const tnlParallelReductionSum< double, long int >& operation,
+                                    tnlParallelReductionSum< double, long int >& operation,
                                     const enumPrefixSumType prefixSumType );
 
 #ifdef INSTANTIATE_LONG_DOUBLE
@@ -416,7 +416,7 @@ extern template bool cudaPrefixSum( const long int size,
                                     const long int blockSize,
                                     const long double *deviceInput,
                                     long double* deviceOutput,
-                                    const tnlParallelReductionSum< long double, long int >& operation,
+                                    tnlParallelReductionSum< long double, long int >& operation,
                                     const enumPrefixSumType prefixSumType );
 #endif
 #endif

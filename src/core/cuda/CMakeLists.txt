@@ -34,7 +34,7 @@ IF( BUILD_CUDA )
         ${CURRENT_DIR}/cuda-reduction-diff-l2-norm_impl.cu        
         ${CURRENT_DIR}/cuda-reduction-diff-lp-norm_impl.cu        
         ${CURRENT_DIR}/cuda-prefix-sum_impl.cu
-        PARENT_SCOPE )        
+        PARENT_SCOPE ) 
 endif() 
 
 set( tnl_core_cuda_SOURCES
