@@ -21,12 +21,46 @@
 #include <tnlConfig.h>
 #include <core/vectors/tnlVector.h>
 #include <core/tnlTimerRT.h>
+#include <core/tnlList.h>
 #include <matrices/tnlSlicedEllpackMatrix.h>
 #include <matrices/tnlEllpackMatrix.h>
+#include <matrices/tnlCSRMatrix.h>
 
 #ifdef HAVE_CUBLAS
 //#include <cublas.h>
 #endif    
+
+// silly alias to match the number of template parameters with other formats
+template< typename Real, typename Device, typename Index >
+using SlicedEllpackMatrix = tnlSlicedEllpackMatrix< Real, Device, Index >;
+
+const double oneGB = 1024.0 * 1024.0 * 1024.0;
+
+
+template< typename Matrix >
+int setHostTestMatrix( Matrix& matrix,
+                       const int elementsPerRow )
+{
+   const int size = matrix.getRows();
+   int elements( 0 );
+   for( int row = 0; row < size; row++ )
+   {
+      if( row % 100 == 0 )
+         cout << "Filling row " << row << "/" << size << "     \r" << flush;
+      int col = row - elementsPerRow / 2;
+      for( int element = 0; element < elementsPerRow; element++ )
+      {
+         if( col + element >= 0 &&
+             col + element < size )
+         {
+            matrix.setElement( row, col + element, element + 1 );
+            elements++;
+         }
+      }      
+   }
+   cout << endl;
+   return elements;
+}
 
 template< typename Matrix >
 __global__ void setCudaTestMatrixKernel( Matrix* matrix,
@@ -67,6 +101,97 @@ void setCudaTestMatrix( Matrix& matrix,
    tnlCuda::freeFromDevice( kernel_matrix );
 }
 
+template< typename Real,
+          template< typename, typename, typename > class Matrix,
+          template< typename, typename, typename > class Vector = tnlVector >
+bool
+benchmarkSpMV( const int & loops,
+               const int & size,
+               const int elementsPerRow = 5 )
+{
+   typedef Matrix< Real, tnlHost, int > HostMatrix;
+   typedef Matrix< Real, tnlCuda, int > DeviceMatrix;
+   typedef tnlVector< Real, tnlHost, int > HostVector;
+   typedef tnlVector< Real, tnlCuda, int > CudaVector;
+
+   HostMatrix hostMatrix;
+   DeviceMatrix deviceMatrix;
+   tnlVector< int, tnlHost, int > hostRowLengths;
+   tnlVector< int, tnlCuda, int > deviceRowLengths;
+   HostVector hostVector, hostVector2;
+   CudaVector deviceVector, deviceVector2;
+
+   if( ! hostRowLengths.setSize( size ) ||
+       ! deviceRowLengths.setSize( size ) ||
+       ! hostMatrix.setDimensions( size, size ) ||
+       ! deviceMatrix.setDimensions( size, size ) ||
+       ! hostVector.setSize( size ) ||
+       ! hostVector2.setSize( size ) ||
+       ! deviceVector.setSize( size ) ||
+       ! deviceVector2.setSize( size ) )
+   {
+      cerr << "Unable to allocate all matrices and vectors for the SpMV benchmark." << endl;
+      return false;
+   }
+
+   hostRowLengths.setValue( elementsPerRow );
+   deviceRowLengths.setValue( elementsPerRow );
+
+   if( ! hostMatrix.setCompressedRowsLengths( hostRowLengths ) )
+   {
+      cerr << "Unable to allocate host matrix elements." << endl;
+      return false;
+   }
+   if( ! deviceMatrix.setCompressedRowsLengths( deviceRowLengths ) )
+   {
+      cerr << "Unable to allocate device matrix elements." << endl;
+      return false;
+   }
+
+   tnlTimerRT timer;
+   double bandwidth( 0.0 ), datasetSize( 0.0 ), timeHost( 0.0 ), timeDevice( 0.0 );
+
+   tnlList< tnlString > parsedType;
+   parseObjectType( HostMatrix::getType(), parsedType );
+   cout << "Benchmarking SpMV (matrix type: " << parsedType[ 0 ] << ", rows: " << size << ", elements per row: " << elementsPerRow << "):" << endl;
+
+   const int elements = setHostTestMatrix< HostMatrix >( hostMatrix, elementsPerRow );
+   setCudaTestMatrix< DeviceMatrix >( deviceMatrix, elementsPerRow );
+   datasetSize = loops * elements * ( 2 * sizeof( Real ) + sizeof( int ) ) / oneGB;
+   hostVector.setValue( 1.0 );
+   deviceVector.setValue( 1.0 );
+
+   timer.reset();
+   for( int i = 0; i < loops; i++ )
+      hostMatrix.vectorProduct( hostVector, hostVector2 );
+   timer.stop();
+   timeHost = timer.getTime();
+   bandwidth = datasetSize / timer.getTime();
+   cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   
+   timer.reset();
+   for( int i = 0; i < loops; i++ )
+      deviceMatrix.vectorProduct( deviceVector, deviceVector2 );
+   timer.stop();
+   timeDevice = timer.getTime();
+   bandwidth = datasetSize / timer.getTime();
+   cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   cout << "  CPU/GPU speedup: " << timeHost / timeDevice << endl;
+
+   //cout << hostVector2 << endl << deviceVector2 << endl;
+      
+   if( hostVector2 != deviceVector2 )
+   {      
+      cerr << "Error in SliceEllpack Spmv kernel at positions" << endl;
+      //for( int i = 0; i < size; i++ )
+      //   if( hostVector2.getElement( i ) != deviceVector2.getElement( i ) )
+      //      cerr << " " << i;
+         
+   }
+
+   return true;
+}
+
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CUDA
@@ -86,10 +211,12 @@ int main( int argc, char* argv[] )
    int loops = 10;
    if( argc > 2 )
       loops = atoi( argv[ 2 ] );
+   int elementsPerRow = 5;
+   if( argc > 3 )
+      elementsPerRow = atoi( argv[ 3 ] );
    
    
    
-   const double oneGB = 1024.0 * 1024.0 * 1024.0;
    double datasetSize = ( double ) ( loops * size ) * sizeof( Real ) / oneGB;
    
    HostVector hostVector, hostVector2;
@@ -248,71 +375,15 @@ int main( int argc, char* argv[] )
          cerr << "Error in prefix sum at position " << i << ":  " << hostVector.getElement( i ) << " != " << auxHostVector.getElement( i ) << endl;
       }
 */
-   /****
-    * Sliced Ellpack test
-    */
-   const int elementsPerRow( 5 );
-   typedef tnlEllpackMatrix< double, tnlCuda > DeviceMatrix;
-   tnlEllpackMatrix< double, tnlHost > hostMatrix;
-   DeviceMatrix deviceMatrix;
-   tnlVector< int, tnlHost, int > hostRowLengths;
-   tnlVector< int, tnlCuda, int > deviceRowLengths;
-   hostRowLengths.setSize( size );
-   deviceRowLengths.setSize( size );
-   hostMatrix.setDimensions( size, size );
-   deviceMatrix.setDimensions( size, size );
-   hostRowLengths.setValue( elementsPerRow );
-   deviceRowLengths.setValue( elementsPerRow );
-   hostMatrix.setCompressedRowsLengths( hostRowLengths );
-   if( ! deviceMatrix.setCompressedRowsLengths( deviceRowLengths ) )
-   {
-      cerr << "Unable to allocate matrix elements." << endl;
-      return false;
-   }
-   int elements( 0 );
-   for( int row = 0; row < size; row++ )
-   {
-      if( row % 100 == 0 )
-         cout << "Row " << row << "/" << size << "     \r" << flush;
-      int col = row - elementsPerRow / 2;   
-      for( int element = 0; element < elementsPerRow; element++ )
-      {
-         if( col + element >= 0 && col + element < size )
-         {
-            hostMatrix.setElement( row, col + element, element + 1 );
-            //deviceMatrix.setElement( row, col + element, 1.0 );
-            elements++;
-         }
-      }      
-   }
-   cout << endl;
-   setCudaTestMatrix< DeviceMatrix >( deviceMatrix, elementsPerRow );
-   datasetSize = loops * elements * ( 2 * sizeof( Real ) + sizeof( int ) ) / oneGB;
-   hostVector.setValue( 1.0 );
-   deviceVector.setValue( 1.0 );
-   cout << "Benchmarking SpMV on CPU: ";
-   timer.reset();
-   for( int i = 0; i < loops; i++ )
-      hostMatrix.vectorProduct( hostVector, hostVector2 );
-   timer.stop();
-   double hostTime = timer.getTime();
-   bandwidth = datasetSize / timer.getTime();
-   cout << timer.getTime() << " => " << bandwidth << " GB/s" << endl;
-   
-   cout << "Benchmarking SpMV on GPU: ";
-   deviceVector2.setValue( 0.0 );
-   timer.reset();
-   for( int i = 0; i < loops; i++ )
-      deviceMatrix.vectorProduct( deviceVector, deviceVector2 );
-   timer.stop();
-      
-   if( hostVector2 != deviceVector2 )
-      cerr << "Error in Spmv kernel" << endl;
-   
-   bandwidth = datasetSize / timer.getTime();
-   cout << timer.getTime() << " => " << bandwidth << " GB/s" << " speedup " << hostTime / timer.getTime() << endl;
+
+   benchmarkSpMV< Real, tnlEllpackMatrix >( loops, size, elementsPerRow );
+   benchmarkSpMV< Real, SlicedEllpackMatrix >( loops, size, elementsPerRow );
+   benchmarkSpMV< Real, tnlCSRMatrix >( loops, size, elementsPerRow );
    
    return EXIT_SUCCESS;
+#else
+   tnlCudaSupportMissingMessage;
+   return EXIT_FAILURE;
 #endif
 }
 
