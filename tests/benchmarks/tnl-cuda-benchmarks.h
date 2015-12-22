@@ -108,8 +108,9 @@ int main( int argc, char* argv[] )
 
    tnlTimerRT timer;
    double bandwidth( 0.0 );
+   Real resultHost, resultDevice, timeHost, timeDevice;
 
-   /*   
+
    cout << "Benchmarking CPU-GPU memory bandwidth: ";
    timer.reset();
    timer.start();
@@ -119,29 +120,36 @@ int main( int argc, char* argv[] )
    bandwidth = datasetSize / timer.getTime();
    cout << bandwidth << " GB/sec." << endl;
     
-   cout << "Benchmarking vector addition on CPU: ";
+
+   cout << "Benchmarking vector addition:" << endl;
    timer.reset();
    timer.start();
    for( int i = 0; i < loops; i++ )
      hostVector.addVector( hostVector2 );
    timer.stop();
-   bandwidth = 2 * datasetSize / timer.getTime();
-   cout << bandwidth << " GB/sec." << endl;
+   timeHost = timer.getTime();
+   bandwidth = 3 * datasetSize / timer.getTime();
+   cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
     
-    cout << "Benchmarking vector addition on GPU: ";
-    timer.reset();
-    timer.start();
-    for( int i = 0; i < loops; i++ )
-      deviceVector.addVector( deviceVector2 );
-    cudaThreadSynchronize();
-    timer.stop();
-    bandwidth = 3 * datasetSize / timer.getTime();
-    cout << bandwidth << " GB/sec." << endl;
-    */
+   timer.reset();
+   timer.start();
+   for( int i = 0; i < loops; i++ )
+     deviceVector.addVector( deviceVector2 );
+   cudaThreadSynchronize();
+   timer.stop();
+   timeDevice = timer.getTime();
+   bandwidth = 3 * datasetSize / timer.getTime();
+   cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   cout << "  CPU/GPU speedup: " << timeHost / timeDevice << endl;
 
-   Real resultHost, resultDevice, timeHost, timeDevice;
 
-   cout << "Benchmarking scalar product on CPU: ";
+   hostVector.setValue( 1.0 );
+   deviceVector.setValue( 1.0 );
+   hostVector2.setValue( 1.0 );
+   deviceVector2.setValue( 1.0 );
+
+
+   cout << "Benchmarking scalar product:" << endl;
    timer.reset();
    timer.start();
    for( int i = 0; i < loops; i++ )
@@ -149,9 +157,8 @@ int main( int argc, char* argv[] )
    timer.stop();
    timeHost = timer.getTime();
    bandwidth = 2 * datasetSize / timer.getTime();
-   cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
     
-   cout << "Benchmarking scalar product on GPU: ";
    timer.reset();
    timer.start();
    for( int i = 0; i < loops; i++ )
@@ -159,8 +166,8 @@ int main( int argc, char* argv[] )
    timer.stop();
    timeDevice = timer.getTime();
    bandwidth = 2 * datasetSize / timer.getTime();
-   cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
-   cout << "CPU/GPU speedup: " << timeHost / timeDevice << endl;
+   cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   cout << "  CPU/GPU speedup: " << timeHost / timeDevice << endl;
 
    if( resultHost != resultDevice )
    {
@@ -183,52 +190,54 @@ int main( int argc, char* argv[] )
    cudaThreadSynchronize();
    timer.stop();
    bandwidth = 2 * datasetSize / timer.getTime();
-   cout << "Time: " << timer.getTime() << " bandwidth: " << bandwidth << " GB/sec." << endl;
+   cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
 #endif    
 
-   cout << "Benchmarking L2 norm on CPU: ";
+   cout << "Benchmarking L2 norm: ";
    timer.reset();
    timer.start();
    for( int i = 0; i < loops; i++ )
      resultHost = hostVector.lpNorm( 2.0 );
    timer.stop();
+   timeHost = timer.getTime();
    bandwidth = datasetSize / timer.getTime();
-   cout << bandwidth << " GB/sec." << endl;
+   cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
     
-   cout << "Benchmarking L2 norm on GPU: " << endl;
    timer.reset();
    timer.start();
    for( int i = 0; i < loops; i++ )
       resultDevice = deviceVector.lpNorm( 2.0 );
-
    timer.stop();
+   timeDevice = timer.getTime();
    bandwidth = datasetSize / timer.getTime();
-   cout << "Time: " << timer.getTime() << " bandwidth: " << bandwidth << " GB/sec." << endl;
+   cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   cout << "  CPU/GPU speedup: " << timeHost / timeDevice << endl;
+
    if( resultHost != resultDevice )
    {
       cerr << "Error. " << resultHost << " != " << resultDevice << endl;
       //return EXIT_FAILURE;
    }
 
+
    /*
-   cout << "Benchmarking prefix-sum on CPU ..." << endl;
+   cout << "Benchmarking prefix-sum:" << endl;
    timer.reset();
    timer.start();
    hostVector.computePrefixSum();
    timer.stop();
    timeHost = timer.getTime();
    bandwidth = 2 * datasetSize / loops / timer.getTime();
-   cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
    
-   cout << "Benchmarking prefix-sum on GPU: ";
    timer.reset();
    timer.start();
    deviceVector.computePrefixSum();
    timer.stop();
    timeDevice = timer.getTime();
    bandwidth = 2 * datasetSize / loops / timer.getTime();
-   cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
-   cout << "CPU/GPU speedup: " << timeHost / timeDevice << endl;
+   cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   cout << "  CPU/GPU speedup: " << timeHost / timeDevice << endl;
 
    HostVector auxHostVector;
    auxHostVector.setLike( deviceVector );
