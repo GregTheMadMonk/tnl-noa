@@ -57,7 +57,7 @@ getError( const Mesh& mesh,
    tnlFunctionDiscretizer< Mesh, Function, Vector >::template discretize< 0, 0, 0 >( mesh, function, functionData );
 
    tnlExplicitUpdater< Mesh, Vector, ApproximateOperator, BoundaryConditionsType, ConstantFunctionType > explicitUpdater;
-   explicitUpdater.template update< Mesh::Dimensions >( 0.0,
+   explicitUpdater.template update< typename Mesh::Cell >( 0.0,
                                                         mesh,
                                                         approximateOperator,
                                                         boundaryConditions,
@@ -65,14 +65,16 @@ getError( const Mesh& mesh,
                                                         functionData,
                                                         approximateData );
    tnlExactOperatorEvaluator< Mesh, Vector, ExactOperator, Function, BoundaryConditionsType > operatorEvaluator;
-   operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
+   operatorEvaluator.template evaluate< typename Mesh::Cell >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
 
-   typename Mesh::template GridEntity< typename Mesh::Cell > cell( mesh );
+   typename Mesh::Cell cell( mesh );
+
    for( cell.getCoordinates().x() = 0;
         cell.getCoordinates().x() < entities;
         cell.getCoordinates().x()++ )
    {
-      cell.setIndex( mesh.getEntityIndex( cell ) );
+      //cell.setIndex( mesh.getEntityIndex( cell ) );
+      cell.refresh();
       if( cell.isBoundaryEntity() )
          approximateData.setElement( cell.getIndex(), exactData.getElement( cell.getIndex() ) );
    }
@@ -121,16 +123,17 @@ getError( const Mesh& mesh,
    tnlFunctionDiscretizer< Mesh, Function, Vector >::template discretize< 0, 0, 0 >( mesh, function, functionData );
 
    tnlMatrixSetter< MeshType, ApproximateOperator, BoundaryConditionsType, CompressedRowsLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowsLengths< Mesh::Dimensions >( mesh,
-                                                            approximateOperator,
-                                                            boundaryConditions,
-                                                            rowLengths );
+   matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >(
+      mesh,
+      approximateOperator,
+      boundaryConditions,
+      rowLengths );
    matrix.setDimensions( entities, entities );
    if( ! matrix.setCompressedRowsLengths( rowLengths ) )
       return;
 
    tnlLinearSystemAssembler< Mesh, Vector, ApproximateOperator, BoundaryConditionsType, ConstantFunctionType, tnlNoTimeDiscretisation, MatrixType > systemAssembler;
-   systemAssembler.template assembly< Mesh::Dimensions >( 0.0, // time
+   systemAssembler.template assembly< typename Mesh::Cell >( 0.0, // time
                                                           1.0, // tau
                                                           mesh,
                                                           approximateOperator,
@@ -142,9 +145,9 @@ getError( const Mesh& mesh,
                                                           );
 
    tnlExactOperatorEvaluator< Mesh, Vector, ExactOperator, Function, BoundaryConditionsType > operatorEvaluator;
-   operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
+   operatorEvaluator.template evaluate< typename Mesh::Cell >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
 
-   typename Mesh::template GridEntity< typename Mesh::Cell > cell( mesh );
+   typename Mesh::Cell cell( mesh );
    for( cell.getCoordinates().x() = 0;
         cell.getCoordinates().x() < entities;
         cell.getCoordinates().x()++ )

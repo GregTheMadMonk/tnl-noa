@@ -18,6 +18,8 @@
 #ifndef TNLNEIGHBOURGRIDENTITYGETTER_H
 #define	TNLNEIGHBOURGRIDENTITYGETTER_H
 
+#include <core/tnlAssert.h>
+
 enum tnlGridEntityStencilStorage
 { 
    tnlGridEntityNoStencil = 0,
@@ -39,6 +41,23 @@ template< typename GridEntity,
             tnlGridEntityStencilStorageTag< GridEntity::ConfigType::template neighbourEntityStorage< GridEntity >( NeighbourEntityDimensions ) > >
 class tnlNeighbourGridEntityGetter
 {
+   public:
+
+      // TODO: not all specializations are implemented yet
+      
+      __cuda_callable__
+      tnlNeighbourGridEntityGetter( const GridEntity& entity )
+      {
+         tnlAssert( false, );
+      };
+      
+      __cuda_callable__
+      void refresh( const typename GridEntity::GridType& grid,
+                    const typename GridEntity::IndexType& entityIndex )
+      {
+         tnlAssert( false, );
+      };
+
 };
 
 

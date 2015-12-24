@@ -216,7 +216,7 @@ ostream& operator << ( ostream& str, const tnlStaticArray< Size, Element >& a )
    return str;
 };
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 // TODO: it does not work with CUDA
 

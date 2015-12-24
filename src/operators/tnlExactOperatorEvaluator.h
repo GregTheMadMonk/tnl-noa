@@ -70,7 +70,7 @@ class tnlExactOperatorEvaluator
                                                           Function,
                                                           BoundaryConditions > TraversalUserData;
 
-      template< int EntityDimensions >
+      template< typename EntityType >
       void evaluate( const RealType& time,
                      const MeshType& mesh,
                      const DifferentialOperator& differentialOperator,
@@ -140,7 +140,7 @@ class tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, Dof
                                                           Function,
                                                           BoundaryConditions > TraversalUserData;
 
-      template< int EntityDimensions >
+      template< typename EntityType >
       void evaluate( const RealType& time,
                      const MeshType& mesh,
                      const DifferentialOperator& differentialOperator,

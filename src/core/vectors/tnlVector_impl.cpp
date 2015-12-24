@@ -17,7 +17,7 @@
 
 #include <core/vectors/tnlVector.h>
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
 template class tnlVector< float, tnlHost, int >;

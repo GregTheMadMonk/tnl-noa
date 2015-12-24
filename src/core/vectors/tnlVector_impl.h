@@ -357,7 +357,7 @@ void tnlVector< Real, Device, Index > :: computeExclusivePrefixSum( const IndexT
 }
 
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
 extern template class tnlVector< float, tnlHost, int >;

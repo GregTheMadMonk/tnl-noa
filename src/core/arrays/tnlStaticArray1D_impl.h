@@ -200,7 +200,7 @@ ostream& tnlStaticArray< 1, Element >::write( ostream& str, const char* separato
    return str;
 }
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 // TODO: it does not work with CUDA
 

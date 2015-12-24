@@ -186,7 +186,7 @@ getEntity( const IndexType& entityIndex ) const
    static_assert( EntityType::entityDimensions <= 1 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
    
-   return tnlGridEntityGetter< ThisType, EntityType::entityDimensions >::getEntity( *this, entityIndex );
+   return tnlGridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
 
 template< typename Real,
@@ -201,7 +201,7 @@ getEntityIndex( const EntityType& entity ) const
    static_assert( EntityType::entityDimensions <= 1 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
    
-   return tnlGridEntityGetter< ThisType, EntityType::entityDimensions >::getEntityIndex( *this, entity );
+   return tnlGridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
 
 template< typename Real,

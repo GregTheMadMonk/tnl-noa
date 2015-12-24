@@ -69,7 +69,8 @@ tnlGridEntity( const tnlGrid< Dimensions, Real, Device, Index >& grid,
   entityIndex( -1 ),
   coordinates( coordinates ),
   orientation( orientation ),
-  basis( basis )
+  basis( basis ),
+  neighbourEntitiesStorage( *this )
 {  
 }
 
@@ -265,7 +266,7 @@ const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Entity
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
 getGrid() const
 {
-   return this->gridType;
+   return this->grid;
 }
 
 /****
@@ -529,7 +530,8 @@ tnlGridEntity( const GridType& grid,
                const EntityBasisType& basis )
 : grid( grid ),
   entityIndex( -1 ),
-  coordinates( coordinates )
+  coordinates( coordinates ),
+  neighbourEntitiesStorage( *this )
 {  
 }
 

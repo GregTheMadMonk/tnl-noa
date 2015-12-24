@@ -19,7 +19,8 @@
 #define TNLGRIDENTITYGETTER_H
 
 template< typename Grid,
-          int EntityDimensions >
+          typename GridEntity,
+          int EntityDimensions = GridEntity::entityDimensions >
 class tnlGridEntityGetter
 {
    //static_assert( false, "Wrong mesh type or entity topology." );

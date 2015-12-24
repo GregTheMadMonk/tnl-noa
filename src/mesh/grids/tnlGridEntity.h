@@ -55,7 +55,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef Config ConfigType;
       
-      static const int meshDimensions = GridType::Dimensions;
+      static const int meshDimensions = GridType::meshDimensions;
       
       static const int entityDimensions = EntityDimensions;
       

@@ -38,7 +38,7 @@
  *           XXXXX
  */
 
-class tnlGridEntityNoStorage
+class tnlGridEntityNoStencilStorage
 {
    public:
       

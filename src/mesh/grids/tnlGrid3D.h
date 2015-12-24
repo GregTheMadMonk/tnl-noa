@@ -151,16 +151,17 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
 
    VertexType origin, proportions;
 
-   //IndexType cellZNeighboursStep;
+   IndexType cellZNeighboursStep;
    
    VertexType spaceSteps;
    
    RealType spaceStepsProducts[ 5 ][ 5 ][ 5 ];
 
-   friend class tnlGridEntityGetter< ThisType, 3 >;
-   friend class tnlGridEntityGetter< ThisType, 2 >;
-   friend class tnlGridEntityGetter< ThisType, 1 >;
-   friend class tnlGridEntityGetter< ThisType, 0 >;
+   template< typename, typename, int >
+   friend class tnlGridEntityGetter;
+      
+   template< typename, int, typename >
+   friend class tnlNeighbourGridEntityGetter;
 };
 
 #include <mesh/grids/tnlGrid3D_impl.h>

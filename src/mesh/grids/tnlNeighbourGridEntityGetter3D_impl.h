@@ -22,6 +22,8 @@
 #include <mesh/grids/tnlGrid1D.h>
 #include <mesh/grids/tnlGrid2D.h>
 #include <mesh/grids/tnlGrid3D.h>
+#include <core/tnlStaticFor.h>
+
 
 /****
  * +-----------------+---------------------------+-------------------+
@@ -49,7 +51,7 @@ class tnlNeighbourGridEntityGetter<
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
+      typedef tnlGridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
 
       __cuda_callable__ inline
       tnlNeighbourGridEntityGetter( const GridEntityType& entity )
@@ -130,8 +132,12 @@ class tnlNeighbourGridEntityGetter<
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
+      typedef tnlGridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
+      typedef tnlGridEntityStencilStorageTag< tnlGridEntityCrossStencil > StencilStorage;
+      typedef tnlNeighbourGridEntityGetter< GridEntityType, 3, StencilStorage > ThisType;
 
+      static const int stencilSize = Config::getStencilSize();      
+      
       __cuda_callable__ inline
       tnlNeighbourGridEntityGetter( const GridEntityType& entity )
       : entity( entity )
@@ -192,7 +198,7 @@ class tnlNeighbourGridEntityGetter<
             __cuda_callable__
             static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
             {
-               neighbourEntityGetter.stencil[ index + stencilSize ] = entityIndex + index;
+               neighbourEntityGetter.stencilX[ index + stencilSize ] = entityIndex + index;
             }
       };
 
@@ -204,8 +210,21 @@ class tnlNeighbourGridEntityGetter<
             __cuda_callable__
             static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
             {
-               neighbourEntityGetter.stencil[ index + stencilSize ] = 
+               neighbourEntityGetter.stencilY[ index + stencilSize ] = 
                   entityIndex + index * neighbourEntityGetter.entity.getGrid().getDimensions().x();
+            }
+      };
+      
+      template< IndexType index > 
+      class StencilZRefresher
+      {
+         public:
+            
+            __cuda_callable__
+            static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
+            {
+               neighbourEntityGetter.stencilZ[ index + stencilSize ] = 
+                  entityIndex + index * neighbourEntityGetter.entity.getGrid().cellZNeighboursStep;
             }
       };
 
@@ -213,11 +232,11 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__
       void refresh( const GridType& grid, const IndexType& entityIndex )
       {
-         tnlStaticFor< IndexType, -stencilSize, -1, StencilZRefresher >::exec( *this, entityIndex );
-         tnlStaticFor< IndexType, 1, stencilSize, StencilZRefresher >::exec( *this, entityIndex );
-         tnlStaticFor< IndexType, -stencilSize, -1, StencilYRefresher >::exec( *this, entityIndex );
-         tnlStaticFor< IndexType, 1, stencilSize, StencilYRefresher >::exec( *this, entityIndex );         
-         tnlStaticFor< IndexType, -stencilSize, stencilSize, StencilXRefresher >::exec( *this, entityIndex );
+         tnlStaticFor< IndexType, -stencilSize, 0, StencilZRefresher >::exec( *this, entityIndex );
+         tnlStaticFor< IndexType, 1, stencilSize + 1, StencilZRefresher >::exec( *this, entityIndex );
+         tnlStaticFor< IndexType, -stencilSize, 0, StencilYRefresher >::exec( *this, entityIndex );
+         tnlStaticFor< IndexType, 1, stencilSize + 1, StencilYRefresher >::exec( *this, entityIndex );         
+         tnlStaticFor< IndexType, -stencilSize, stencilSize + 1, StencilXRefresher >::exec( *this, entityIndex );
       };
       
    protected:
@@ -259,7 +278,7 @@ class tnlNeighbourGridEntityGetter<
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
+      typedef tnlGridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
       typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
       typedef typename GridEntityType::EntityBasisType EntityBasisType;
 
@@ -348,7 +367,7 @@ class tnlNeighbourGridEntityGetter<
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
+      typedef tnlGridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
       typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
       typedef typename GridEntityType::EntityBasisType EntityBasisType;
 
@@ -435,7 +454,7 @@ class tnlNeighbourGridEntityGetter<
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
+      typedef tnlGridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
       typedef typename GridEntityType::EntityOrientationType EntityOrientationType;      
 
       __cuda_callable__ inline
@@ -519,7 +538,7 @@ class tnlNeighbourGridEntityGetter<
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
+      typedef tnlGridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
       typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
 
       __cuda_callable__ inline
@@ -603,7 +622,7 @@ class tnlNeighbourGridEntityGetter<
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef tnlGridEntityGetter< GridType, NeighbourEntityDimensions > GridEntityGetter;
+      typedef tnlGridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
 
       __cuda_callable__ inline
       tnlNeighbourGridEntityGetter( const GridEntityType& entity )

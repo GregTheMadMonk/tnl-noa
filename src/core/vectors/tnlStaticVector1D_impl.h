@@ -153,7 +153,7 @@ tnlStaticVector< 1, Real >::abs() const
    return tnlStaticVector< 1, Real >( tnlAbs( this->data[ 0 ] ) );
 } 
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifndef HAVE_CUDA
 // TODO: does not work with CUDA

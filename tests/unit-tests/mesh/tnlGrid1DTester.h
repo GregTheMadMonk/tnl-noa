@@ -65,8 +65,8 @@ class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCas
            cell.getCoordinates().x()++ )
       {
          CPPUNIT_ASSERT( grid.getEntityIndex( cell ) >= 0 );
-         CPPUNIT_ASSERT( grid.getEntityIndex( cell ) < grid.template getEntitiesCount< GridType::Cells >() );
-         CPPUNIT_ASSERT( grid.template getEntity< GridType::Cells >( grid.getEntityIndex( cell ) ).getCoordinates() == cell.getCoordinates() );
+         CPPUNIT_ASSERT( grid.getEntityIndex( cell ) < grid.template getEntitiesCount< typename GridType::Cell >() );
+         CPPUNIT_ASSERT( grid.template getEntity< typename GridType::Cell >( grid.getEntityIndex( cell ) ).getCoordinates() == cell.getCoordinates() );
       }
    }
 
@@ -76,14 +76,14 @@ class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCas
       GridType grid;
       grid.setDimensions( xSize );
 
-      typename GridType::template GridEntity< GridType::Vertices > vertex( grid );
+      typename GridType::Vertex vertex( grid );      
       for( vertex.getCoordinates().x() = 0;
            vertex.getCoordinates().x() < xSize;
            vertex.getCoordinates().x()++ )
       {
          CPPUNIT_ASSERT( grid.getEntityIndex( vertex ) >= 0 );
-         CPPUNIT_ASSERT( grid.getEntityIndex( vertex ) < grid.template getEntitiesCount< GridType::Vertices >() );
-         CPPUNIT_ASSERT( grid.template getEntity< GridType::Vertices >( grid.getEntityIndex( vertex ) ).getCoordinates() == vertex.getCoordinates() );
+         CPPUNIT_ASSERT( grid.getEntityIndex( vertex ) < grid.template getEntitiesCount< typename GridType::Vertex >() );
+         CPPUNIT_ASSERT( grid.template getEntity< typename GridType::Vertex >( grid.getEntityIndex( vertex ) ).getCoordinates() == vertex.getCoordinates() );
       }
    }
 

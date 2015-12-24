@@ -192,7 +192,7 @@ tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector<
    return u * c;
 }
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifndef HAVE_CUDA
 // TODO: does not work with CUDA

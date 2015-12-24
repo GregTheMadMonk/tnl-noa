@@ -427,7 +427,7 @@ ostream& operator << ( ostream& str, const tnlSharedArray< Element, Device, Inde
 //}; // namespace implementation
 
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 // TODO: this does not work with CUDA 5.5 - fix it later
 

@@ -92,9 +92,9 @@ class tnlNeighbourGridEntityLayer< GridEntity, 0 >
 
 template< typename GridEntity >
 class tnlNeighbourGridEntitiesStorage
-: public tnlNeighbourGridEntityLayer< GridEntity, GridEntity::entityDimensions >
+: public tnlNeighbourGridEntityLayer< GridEntity, GridEntity::meshDimensions >
 {
-   typedef tnlNeighbourGridEntityLayer< GridEntity, GridEntity::entityDimensions > BaseType;
+   typedef tnlNeighbourGridEntityLayer< GridEntity, GridEntity::meshDimensions > BaseType;
    
    public:
       
@@ -102,7 +102,7 @@ class tnlNeighbourGridEntitiesStorage
       
       __cuda_callable__
       tnlNeighbourGridEntitiesStorage( const GridEntity& entity )
-      : tnlNeighbourGridEntityLayer< GridEntity, GridEntity::entityDimensions >( entity )
+      : BaseType( entity )
       {}
 
       
@@ -111,7 +111,7 @@ class tnlNeighbourGridEntitiesStorage
       const tnlNeighbourGridEntityGetter< GridEntity, EntityDimensions >&
       getNeighbourEntities() const
       {
-         return getNeighbourEntities( tnlDimensionsTag< EntityDimensions >() );
+         return BaseType::getNeighbourEntities( tnlDimensionsTag< EntityDimensions >() );
       }            
 
       __cuda_callable__

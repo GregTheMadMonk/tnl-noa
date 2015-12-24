@@ -18,7 +18,7 @@
 #include <core/arrays/tnlStaticArray.h>
 
 #ifndef HAVE_CUDA
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 template class tnlStaticArray< 1, char >;
 template class tnlStaticArray< 1, int >;

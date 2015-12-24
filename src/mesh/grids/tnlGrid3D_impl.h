@@ -192,7 +192,7 @@ void tnlGrid< 3, Real, Device, Index > :: setDimensions( const Index xSize, cons
                          this->numberOfDzEdges;
    this->numberOfVertices = ( xSize + 1 ) * ( ySize + 1 ) * ( zSize + 1 );
    
-   //this->cellZNeighboursStep = xSize * ySize;
+   this->cellZNeighboursStep = xSize * ySize;
 
    computeSpaceSteps();
 }
@@ -284,7 +284,7 @@ getEntity( const IndexType& entityIndex ) const
    static_assert( EntityType::entityDimensions <= 3 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
    
-   return tnlGridEntityGetter< ThisType, EntityType::entityDimensions >::getEntity( *this, entityIndex );
+   return tnlGridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
 
 template< typename Real,
@@ -299,7 +299,7 @@ getEntityIndex( const EntityType& entity ) const
    static_assert( EntityType::entityDimensions <= 3 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
    
-   return tnlGridEntityGetter< ThisType, EntityType::entityDimensions >::getEntityIndex( *this, entity );
+   return tnlGridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
 
 template< typename Real,

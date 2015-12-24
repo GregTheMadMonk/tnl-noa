@@ -46,7 +46,7 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    using GridEntity = tnlGridEntity< ThisType, EntityDimensions, Config >;
    
     
-   typedef GridEntity< meshDimensions > Cell;
+   typedef GridEntity< meshDimensions, tnlGridEntityCrossStencilStorage< 1 > > Cell;
    typedef GridEntity< meshDimensions - 1 > Face;
    typedef GridEntity< 0 > Vertex;
    
@@ -151,10 +151,9 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    VertexType spaceSteps;
    
    RealType spaceStepsProducts[ 5 ][ 5 ];
-   
-   friend class tnlGridEntityGetter< ThisType, 2 >;
-   friend class tnlGridEntityGetter< ThisType, 1 >;
-   friend class tnlGridEntityGetter< ThisType, 0 >;
+  
+   template< typename, typename, int > 
+   friend class tnlGridEntityGetter;
 };
 
 #include <mesh/grids/tnlGrid2D_impl.h>
