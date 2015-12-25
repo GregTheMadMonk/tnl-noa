@@ -42,16 +42,19 @@ assembly( const RealType& time,
           MatrixType& matrix,
           DofVector& b ) const
 {
-   const IndexType maxRowLength = matrix.getMaxRowLength();
+      const IndexType maxRowLength = matrix.getMaxRowLength();
    tnlAssert( maxRowLength > 0, );
-   typedef typename TraverserUserData::RowValuesType RowValuesType;
-   typedef typename TraverserUserData::RowColumnsType RowColumnsType;
-   RowValuesType values;
-   RowColumnsType columns;
 
-   if( DeviceType::DeviceType == tnlHostDevice )
+   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlHostDevice )
    {
-      TraverserUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b );
+      TraverserUserData userData( time,
+                                  tau,
+                                  differentialOperator,
+                                  boundaryConditions,
+                                  rightHandSide,
+                                  u,
+                                  matrix,
+                                  b );
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
@@ -62,7 +65,7 @@ assembly( const RealType& time,
                                                     ( mesh,
                                                       userData );
    }
-   if( DeviceType::DeviceType == tnlCudaDevice )
+   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlCudaDevice )
    {
       RealType* kernelTime = tnlCuda::passToDevice( time );
       RealType* kernelTau = tnlCuda::passToDevice( tau );
@@ -72,7 +75,14 @@ assembly( const RealType& time,
       DofVector* kernelU = tnlCuda::passToDevice( u );
       DofVector* kernelB = tnlCuda::passToDevice( b );
       MatrixType* kernelMatrix = tnlCuda::passToDevice( matrix );
-      TraverserUserData userData( *kernelTime, *kernelTau, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelMatrix, *kernelB );
+      TraverserUserData userData( *kernelTime,
+                                  *kernelTau,
+                                  *kernelDifferentialOperator,
+                                  *kernelBoundaryConditions,
+                                  *kernelRightHandSide,
+                                  *kernelU,
+                                  *kernelMatrix,
+                                  *kernelB );
       checkCudaDevice;
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
@@ -97,6 +107,7 @@ assembly( const RealType& time,
    }
 }
 
+/*
 template< int Dimensions,
           typename Real,
           typename Device,
@@ -184,6 +195,6 @@ assembly( const RealType& time,
       checkCudaDevice;
    }
 }
-
+*/
 
 #endif /* TNLLINEARSYSTEMASSEMBLER_IMPL_H_ */

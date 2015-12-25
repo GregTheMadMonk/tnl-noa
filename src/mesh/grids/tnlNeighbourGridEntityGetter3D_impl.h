@@ -106,6 +106,7 @@ class tnlNeighbourGridEntityGetter<
       
 };
 
+
 /****
  * +-----------------+---------------------------+-------------------+
  * | EntityDimenions | NeighbourEntityDimensions |  Stored Stencil   |       
@@ -177,6 +178,7 @@ class tnlNeighbourGridEntityGetter<
                    << entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ )
                    << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
+#ifndef HAVE_CUDA // TODO: fix this to work with CUDA         
          if( ( stepX != 0 && stepY != 0 && stepZ != 0 ) ||
              ( stepX < -stencilSize || stepX > stencilSize ||
                stepY < -stencilSize || stepY > stencilSize ||
@@ -187,6 +189,9 @@ class tnlNeighbourGridEntityGetter<
          if( stepZ == 0 )
             return stencilY[ stepY + stencilSize ];
          return stencilZ[ stepZ + stencilSize ];
+#else
+         return this->entity.getIndex() + ( stepZ * entity.getGrid().getDimensions().y() + stepY ) * entity.getGrid().getDimensions().x() + stepX;
+#endif         
 
       }
       
@@ -232,11 +237,13 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__
       void refresh( const GridType& grid, const IndexType& entityIndex )
       {
+#ifndef HAVE_CUDA // TODO: fix this to work with CUDA                  
          tnlStaticFor< IndexType, -stencilSize, 0, StencilZRefresher >::exec( *this, entityIndex );
          tnlStaticFor< IndexType, 1, stencilSize + 1, StencilZRefresher >::exec( *this, entityIndex );
          tnlStaticFor< IndexType, -stencilSize, 0, StencilYRefresher >::exec( *this, entityIndex );
          tnlStaticFor< IndexType, 1, stencilSize + 1, StencilYRefresher >::exec( *this, entityIndex );         
          tnlStaticFor< IndexType, -stencilSize, stencilSize + 1, StencilXRefresher >::exec( *this, entityIndex );
+#endif         
       };
       
    protected:
@@ -249,8 +256,6 @@ class tnlNeighbourGridEntityGetter<
       
       //tnlNeighbourGridEntityGetter(){};            
 };
-
-
 
 /****
  * +-----------------+---------------------------+-------------------+

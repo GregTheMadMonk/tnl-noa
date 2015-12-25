@@ -294,7 +294,6 @@ __global__ void tnlTraverserGrid2DCells( const tnlGrid< 2, Real, tnlCuda, Index 
          EntitiesProcessor::processEntity
          ( *grid,
            *userData,
-           grid->getEntityIndex( entity ),
            entity );
       }
    }
@@ -336,7 +335,6 @@ __global__ void tnlTraverserGrid2DFaces( const tnlGrid< 2, Real, tnlCuda, Index 
          EntitiesProcessor::processEntity
             ( *grid,
               *userData,
-              grid->getEntityIndex( entity ),
               entity );
       }
    }
@@ -375,7 +373,6 @@ __global__ void tnlTraverserGrid2DVertices( const tnlGrid< 2, Real, tnlCuda, Ind
          EntitiesProcessor::processEntity
          ( *grid,
            *userData,
-           grid->getEntityIndex( entity ),
            entity );
       }
    }

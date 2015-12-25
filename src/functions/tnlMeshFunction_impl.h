@@ -152,6 +152,7 @@ template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
    template< typename EntityType >
+__cuda_callable__
 typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType& 
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator()( const EntityType& meshEntity )
@@ -164,6 +165,7 @@ template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
    template< typename EntityType >
+__cuda_callable__
 const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType& 
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator()( const EntityType& meshEntity ) const

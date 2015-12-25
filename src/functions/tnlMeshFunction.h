@@ -73,9 +73,11 @@ class tnlMeshFunction : public tnlFunction< Mesh::meshDimensions,
                      const RealType& value );
       
       template< typename EntityType >
+      __cuda_callable__
       RealType& operator()( const EntityType& meshEntityIndex );
       
       template< typename EntityType >
+      __cuda_callable__
       const RealType& operator()( const EntityType& meshEntityIndex ) const;
             
    protected:

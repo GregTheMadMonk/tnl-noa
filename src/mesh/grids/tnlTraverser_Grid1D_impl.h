@@ -152,7 +152,7 @@ __global__ void tnlTraverserGrid1DCells( const tnlGrid< 1, Real, tnlCuda, Index 
       entity.refresh();
       if( processAllEntities || entity.isBoundaryEntity() == processBoundaryEntities )
       {
-         EntitiesProcessor::processEntity( *grid, *userData, grid->getEntityIndex( entity ), entity );
+         EntitiesProcessor::processEntity( *grid, *userData, entity );
       }
    }
 }

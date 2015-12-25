@@ -168,9 +168,14 @@ class tnlNeighbourGridEntityGetter<
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
+#ifndef HAVE_CUDA  // TODO: fix it -- does not work with nvcc
          if( step < -stencilSize || step > stencilSize )
             return this->entity.getIndex() + step;
          return stencil[ stencilSize + step ];
+#else         
+         return this->entity.getIndex() + step;
+#endif         
+         
       }
      
       template< IndexType index > 
@@ -180,7 +185,7 @@ class tnlNeighbourGridEntityGetter<
             
             __cuda_callable__
             static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
-            {
+            {               
                neighbourEntityGetter.stencil[ index + stencilSize ] = entityIndex + index;
             }
       };
@@ -188,7 +193,9 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__
       void refresh( const GridType& grid, const IndexType& entityIndex )
       {
+#ifndef HAVE_CUDA  // TODO: fix it -- does not work with nvcc         
          tnlStaticFor< IndexType, -stencilSize, stencilSize + 1, StencilRefresher >::exec( *this, entityIndex );
+#endif         
       };      
       
    protected:
@@ -197,7 +204,6 @@ class tnlNeighbourGridEntityGetter<
       
       IndexType stencil[ 2 * stencilSize + 1 ];
 };
-
 
 /****
  * +-----------------+---------------------------+-------------------+

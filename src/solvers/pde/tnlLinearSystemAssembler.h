@@ -92,7 +92,7 @@ class tnlLinearSystemAssembler
                                                       BoundaryConditions,
                                                       RightHandSide,
                                                       MatrixType > TraverserUserData;
-
+      
    template< typename EntityType >
    void assembly( const RealType& time,
                   const RealType& tau,
@@ -104,110 +104,8 @@ class tnlLinearSystemAssembler
                   MatrixType& matrix,
                   DofVector& b ) const;
 
-   class TraverserBoundaryEntitiesProcessor
-   {
-      public:
-
-         template< typename EntityType >
-         __cuda_callable__
-         static void processEntity( const MeshType& mesh,
-                                    TraverserUserData& userData,
-                                    const IndexType index )
-         {            
-            userData.boundaryConditions->updateLinearSystem( *userData.time + *userData.tau,
-                                                             mesh,
-                                                             index,
-                                                             *userData.u,
-                                                             *userData.b,
-                                                             *userData.matrix );
-         }
-
-   };
-
-   class TraverserInteriorEntitiesProcessor
-   {
-      public:
-
-         template< typename EntityType >
-         __cuda_callable__
-         static void processEntity( const MeshType& mesh,
-                                    TraverserUserData& userData,
-                                    const IndexType index )
-         {
-            typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            ( *userData.b )[ index ] = 0.0;/*( *userData.u )[ index ] +
-                     ( *userData.tau ) * FunctionAdapter::getValue( mesh,
-                                                                    *userData.rightHandSide,
-                                                                    index,
-                                                                    *userData.time );*/
-
-            userData.differentialOperator->updateLinearSystem( *userData.time,
-                                                               *userData.tau,
-                                                               mesh,
-                                                               index,
-                                                               *userData.u,
-                                                               *userData.b,
-                                                               *userData.matrix );
-
-            const RealType& rhs = FunctionAdapter::getValue( mesh,
-                                                             *userData.rightHandSide,
-                                                             index,
-                                                             *userData.time );
-            TimeDiscretisation::applyTimeDiscretisation( *userData.matrix,
-                                                         ( *userData.b )[ index ],
-                                                         index,
-                                                         ( *userData.u )[ index ],
-                                                         ( *userData.tau ),
-                                                         rhs );
-            
-         }
-   };
-};
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename DofVector,
-          typename DifferentialOperator,
-          typename BoundaryConditions,
-          typename RightHandSide,
-          typename TimeDiscretisation,
-          typename Matrix >
-class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
-                                DofVector,
-                                DifferentialOperator,
-                                BoundaryConditions,
-                                RightHandSide,
-                                TimeDiscretisation,
-                                Matrix >
-{
-   public:
-   typedef tnlGrid< Dimensions, Real, Device, Index > MeshType;
-   typedef typename DofVector::RealType RealType;
-   typedef typename DofVector::DeviceType DeviceType;
-   typedef typename DofVector::IndexType IndexType;
-   typedef Matrix MatrixType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef tnlLinearSystemAssemblerTraverserUserData< RealType,
-                                                      DofVector,
-                                                      DifferentialOperator,
-                                                      BoundaryConditions,
-                                                      RightHandSide,
-                                                      MatrixType > TraverserUserData;
-
-   template< typename EntityType >
-   void assembly( const RealType& time,
-                  const RealType& tau,
-                  const MeshType& mesh,
-                  const DifferentialOperator& differentialOperator,
-                  const BoundaryConditions& boundaryConditions,
-                  const RightHandSide& rightHandSide,
-                  DofVector& u,
-                  MatrixType& matrix,
-                  DofVector& b ) const;
-
-   class TraverserBoundaryEntitiesProcessor
+   
+      class TraverserBoundaryEntitiesProcessor
    {
       public:
          

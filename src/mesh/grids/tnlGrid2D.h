@@ -45,7 +45,6 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
              typename Config = tnlGridEntityCrossStencilStorage< 1 > >
    using GridEntity = tnlGridEntity< ThisType, EntityDimensions, Config >;
    
-    
    typedef GridEntity< meshDimensions, tnlGridEntityCrossStencilStorage< 1 > > Cell;
    typedef GridEntity< meshDimensions - 1 > Face;
    typedef GridEntity< 0 > Vertex;

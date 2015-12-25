@@ -231,7 +231,7 @@ __global__ void tnlMatrixVectorProductCudaKernel( const Matrix* matrix,
                                                   OutVector* outVector,
                                                   int gridIdx )
 {
-   tnlStaticAssert( Matrix::DeviceType::DeviceType == tnlCudaDevice, );
+   static_assert( Matrix::DeviceType::DeviceType == tnlCudaDevice, "" );
    const typename Matrix::IndexType rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( rowIdx < matrix->getRows() )
       ( *outVector )[ rowIdx ] = matrix->rowVectorProduct( rowIdx, *inVector );

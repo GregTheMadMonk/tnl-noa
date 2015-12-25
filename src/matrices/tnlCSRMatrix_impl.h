@@ -746,7 +746,7 @@ __global__ void tnlCSRMatrixVectorProductCudaKernel( const tnlCSRMatrix< Real, t
                                                      int gridIdx )
 {
    typedef tnlCSRMatrix< Real, tnlCuda, Index > Matrix;
-   tnlStaticAssert( Matrix::DeviceType::DeviceType == tnlCudaDevice, );
+   static_assert( Matrix::DeviceType::DeviceType == tnlCudaDevice, "" );
    const typename Matrix::IndexType rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( matrix->getCudaKernelType() == Matrix::scalar )
    {
