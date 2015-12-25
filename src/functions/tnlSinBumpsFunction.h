@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlExpBumpFunction.h  -  description
+                          tnlSinBumpsFunction.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,79 +15,59 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLEXPBUMPFUNCTION_H_
-#define TNLEXPBUMPFUNCTION_H_
+#ifndef TNLSINBUMPSFUNCTION_H_
+#define TNLSINBUMPSFUNCTION_H_
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functors/tnlFunction.h>
+#include <functions/tnlFunction.h>
 
-template< int dimensions,
-          typename Real >
-class tnlExpBumpFunctionBase : public tnlFunction< dimensions, tnlAnalyticFunction >
+template< typename Vertex >
+class tnlSinBumpsFunctionBase : public tnlFunction< Vertex::size, AnalyticFunction >
 {
    public:
-     
-      typedef Real RealType;
       
-      bool setup( const tnlParameterContainer& parameters,
-                 const tnlString& prefix = "" );
+      typedef Vertex VertexType;
+      typedef typename Vertex::RealType RealType;
+      enum { Dimensions = VertexType::size };
+
+      void setWaveLength( const VertexType& waveLength );
+
+      const VertexType& getWaveLength() const;
 
       void setAmplitude( const RealType& amplitude );
 
       const RealType& getAmplitude() const;
 
-      void setSigma( const RealType& sigma );
+      void setPhase( const VertexType& phase );
 
-      const RealType& getSigma() const;
+      const VertexType& getPhase() const;
 
    protected:
 
-      RealType amplitude, sigma;
+      RealType amplitude;
+
+      VertexType waveLength, phase;
 };
 
-template< int Dimensions,
-          typename Real >
-class tnlExpBumpFunction
+template< int Dimensions, typename Real >
+class tnlSinBumpsFunction
 {
 };
 
 template< typename Real >
-class tnlExpBumpFunction< 1, Real > : public tnlExpBumpFunctionBase< 1, Real >
+class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStaticVector< 1, Real > >
 {
    public:
-     
+      
       typedef Real RealType;
       typedef tnlStaticVector< 1, RealType > VertexType;      
 
-      static tnlString getType();
 
-      tnlExpBumpFunction();
+      tnlSinBumpsFunction();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
-      template< int XDiffOrder = 0,
-                int YDiffOrder = 0,
-                int ZDiffOrder = 0 >
-#endif   
-   __cuda_callable__ RealType getValue( const VertexType& v,
-                                        const Real& time = 0.0 ) const;
-};
-
-template< typename Real >
-class tnlExpBumpFunction< 2, Real > : public tnlExpBumpFunctionBase< 2, Real >
-{
-   public:
- 
-      typedef Real RealType;
-      typedef tnlStaticVector< 2, RealType > VertexType;      
-
-      static tnlString getType();
-
-      tnlExpBumpFunction();
+      bool setup( const tnlParameterContainer& parameters,
+                  const tnlString& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -98,23 +78,24 @@ class tnlExpBumpFunction< 2, Real > : public tnlExpBumpFunctionBase< 2, Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
 #endif
-   __cuda_callable__ inline
-   RealType getValue( const VertexType& v,
-                      const Real& time = 0.0 ) const;
+      __cuda_callable__
+      RealType getValue( const VertexType& v,
+                         const Real& time = 0.0 ) const;
 };
 
 template< typename Real >
-class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< 3, Real >
+class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStaticVector< 2, Real > >
 {
    public:
-      
+
       typedef Real RealType;
-      typedef tnlStaticVector< 3, RealType > VertexType;      
+      typedef tnlStaticVector< 2, RealType > VertexType;      
+      
 
-    
-      static tnlString getType();
+      tnlSinBumpsFunction();
 
-      tnlExpBumpFunction();
+      bool setup( const tnlParameterContainer& parameters,
+                 const tnlString& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -124,20 +105,50 @@ class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< 3, Real >
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif   
-   __cuda_callable__    RealType getValue( const VertexType& v,
-                                           const Real& time = 0.0 ) const;
+#endif
+      __cuda_callable__
+      RealType getValue( const VertexType& v,
+                         const Real& time = 0.0 ) const;
+};
+
+template< typename Real >
+class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStaticVector< 3, Real > >
+{
+   public:
+
+      typedef Real RealType;
+      typedef tnlStaticVector< 3, RealType > VertexType;
+
+      tnlSinBumpsFunction();
+
+      bool setup( const tnlParameterContainer& parameters,
+                  const tnlString& prefix = "" );
+
+#ifdef HAVE_NOT_CXX11
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+#else
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+#endif
+      __cuda_callable__
+      RealType getValue( const VertexType& v,
+                         const Real& time = 0.0 ) const;
 };
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlExpBumpFunction< Dimensions, Real >& f )
+ostream& operator << ( ostream& str, const tnlSinBumpsFunction< Dimensions, Real >& f )
 {
-   str << "ExpBump. function: amplitude = " << f.getAmplitude() << " sigma = " << f.getSigma();
+   str << "Sin Bumps. function: amplitude = " << f.getAmplitude()
+       << " wavelength = " << f.getWaveLength()
+       << " phase = " << f.getPhase();
    return str;
 }
 
-#include <functors/tnlExpBumpFunction_impl.h>
+#include <functions/tnlSinBumpsFunction_impl.h>
 
 
-#endif /* TNLEXPBUMPFUNCTION_H_ */
+#endif /* TNLSINBUMPSFUNCTION_H_ */

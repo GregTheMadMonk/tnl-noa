@@ -24,12 +24,12 @@
 #ifndef TNLHEATEQUATIONEOCRHS_H_
 #define TNLHEATEQUATIONEOCRHS_H_
 
-#include <functors/tnlFunction.h>
+#include <functions/tnlFunction.h>
 
 template< typename ExactOperator,
           typename TestFunction >
 class tnlHeatEquationEocRhs : public tnlFunction< TestFunction::Dimensions,
-                                                  tnlAnalyticFunction >
+                                                  AnalyticFunction >
 {
    public:
 
@@ -38,8 +38,7 @@ class tnlHeatEquationEocRhs : public tnlFunction< TestFunction::Dimensions,
       typedef typename TestFunction::RealType RealType;
       typedef typename TestFunction::VertexType VertexType;
 
-      //static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }     
-      enum { functionType = tnlAnalyticFunction };
+      static constexpr tnlFunctionType getFunctionType() { return AnalyticFunction; }     
       
       bool setup( const tnlParameterContainer& parameters,
                   const tnlString& prefix = "" )

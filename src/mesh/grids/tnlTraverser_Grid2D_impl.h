@@ -43,19 +43,19 @@ processBoundaryEntities( const GridType& grid,
    {
       coordinates.y() = 0;
       entity.refresh();
-      EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
+      EntitiesProcessor::processEntity( grid, userData, entity );
       coordinates.y() = ySize - 1;
       entity.refresh();
-      EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
+      EntitiesProcessor::processEntity( grid, userData, entity );
    }
    for( coordinates.y() = 1; coordinates.y() < ySize - 1; coordinates.y() ++ )
    {
       coordinates.x() = 0;
       entity.refresh();
-      EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
+      EntitiesProcessor::processEntity( grid, userData, entity );
       coordinates.x() = xSize - 1;
       entity.refresh();
-      EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
+      EntitiesProcessor::processEntity( grid, userData, entity );
    }
 }
 
@@ -87,7 +87,7 @@ processInteriorEntities( const GridType& grid,
       for( coordinates.x() = 1; coordinates.x() < xSize - 1; coordinates.x() ++ )
       {
          entity.refresh();
-         EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
+         EntitiesProcessor::processEntity( grid, userData, entity );
       }
 }
 

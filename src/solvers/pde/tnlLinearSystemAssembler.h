@@ -18,7 +18,7 @@
 #ifndef TNLLINEARSYSTEMASSEMBLER_H_
 #define TNLLINEARSYSTEMASSEMBLER_H_
 
-#include <functors/tnlFunctorAdapter.h>
+#include <functions/tnlFunctionAdapter.h>
 
 template< typename Real,
           typename DofVector,
@@ -215,14 +215,13 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraverserUserData& userData,
-                                    const IndexType index,
                                     const EntityType& entity )
          {
-             ( *userData.b )[ index ] = 0.0;           
+             ( *userData.b )[ entity.getIndex() ] = 0.0;           
              userData.boundaryConditions->updateLinearSystem
                ( *userData.time + *userData.tau,
                  mesh,
-                 index,
+                 entity.getIndex(),
                  entity,
                  *userData.u,
                  *userData.b,
@@ -238,15 +237,14 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraverserUserData& userData,
-                                    const IndexType index,
                                     const EntityType& entity )
          {
-            ( *userData.b )[ index ] = 0.0;            
+            ( *userData.b )[ entity.getIndex() ] = 0.0;            
             userData.differentialOperator->updateLinearSystem
                ( *userData.time,
                  *userData.tau,
                  mesh,
-                 index,
+                 entity.getIndex(),
                  entity,
                  *userData.u,
                  *userData.b,
@@ -254,15 +252,13 @@ class tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >,
             
             typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
             const RealType& rhs = FunctionAdapter::getValue
-               ( mesh,
-                 *userData.rightHandSide,
-                 index,
+               ( *userData.rightHandSide,
                  entity,
                  *userData.time );
             TimeDiscretisation::applyTimeDiscretisation( *userData.matrix,
-                                                         ( *userData.b )[ index ],
-                                                         index,
-                                                         ( *userData.u )[ index ],
+                                                         ( *userData.b )[ entity.getIndex() ],
+                                                         entity.getIndex(),
+                                                         ( *userData.u )[ entity.getIndex() ],
                                                          ( *userData.tau ),
                                                          rhs );
          }

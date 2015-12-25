@@ -19,10 +19,10 @@
 #define TNLTESTFUNCTION_IMPL_H_
 
 #include <core/tnlCuda.h>
-#include <functors/tnlConstantFunction.h>
-#include <functors/tnlExpBumpFunction.h>
-#include <functors/tnlSinBumpsFunction.h>
-#include <functors/tnlSinWaveFunction.h>
+#include <functions/tnlConstantFunction.h>
+#include <functions/tnlExpBumpFunction.h>
+#include <functions/tnlSinBumpsFunction.h>
+#include <functions/tnlSinWaveFunction.h>
 
 template< int FunctionDimensions,
           typename Real,

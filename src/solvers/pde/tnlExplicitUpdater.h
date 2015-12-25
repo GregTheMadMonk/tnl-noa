@@ -18,7 +18,7 @@
 #ifndef TNLEXPLICITUPDATER_H_
 #define TNLEXPLICITUPDATER_H_
 
-#include <functors/tnlFunctionAdapter.h>
+#include <functions/tnlFunctionAdapter.h>
 
 template< typename Real,
           typename DofVector,
@@ -90,11 +90,11 @@ class tnlExplicitUpdater
             __cuda_callable__
             static inline void processEntity( const MeshType& mesh,
                                               TraverserUserData& userData,
-                                              const IndexType index )
+                                              const EntityType& entity )
             {
                userData.boundaryConditions->setBoundaryConditions( *userData.time,
                                                                    mesh,
-                                                                   index,
+                                                                   entity,
                                                                    *userData.u,
                                                                    *userData.fu );
             }
@@ -109,16 +109,16 @@ class tnlExplicitUpdater
             __cuda_callable__
             static inline void processEntity( const MeshType& mesh,
                                               TraverserUserData& userData,
-                                              const IndexType index )
+                                              const EntityType& entity )
             {
-               (* userData.fu )[ index ] = userData.differentialOperator->getValue( mesh,
-                                                                                    index,
+               (* userData.fu )[ entity.getIndex() ] = userData.differentialOperator->getValue( mesh,
+                                                                                    entity,
                                                                                     *userData.u,
                                                                                     *userData.time );
                typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               ( *userData.fu )[ index ] += FunctionAdapter::getValue( mesh,
+               ( *userData.fu )[ entity.getIndex() ] += FunctionAdapter::getValue( mesh,
                                                                        *userData.rightHandSide,
-                                                                       index,
+                                                                       entity,
                                                                        *userData.time );
             }
 
@@ -170,13 +170,11 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
             __cuda_callable__
             static inline void processEntity( const MeshType& mesh,
                                               TraverserUserData& userData,
-                                              const IndexType index,
                                               const GridEntity& entity )
             {
                userData.boundaryConditions->setBoundaryConditions
                ( *userData.time,
                  mesh,
-                 index,
                  entity,
                  *userData.u,
                  *userData.fu );
@@ -194,25 +192,21 @@ class tnlExplicitUpdater< tnlGrid< Dimensions, Real, Device, Index >,
             __cuda_callable__
             static inline void processEntity( const MeshType& mesh,
                                               TraverserUserData& userData,
-                                              const IndexType index,
                                               const EntityType& entity )
             {
-               ( *userData.fu)[ index ] = 
+               ( *userData.fu)[ entity.getIndex() ] = 
                   userData.differentialOperator->getValue(
                      mesh,
-                     index,
                      entity,
                      *userData.u,
                      *userData.time );
 
                typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               ( * userData.fu )[ index ] += 
+               ( * userData.fu )[ entity.getIndex() ] += 
                   FunctionAdapter::getValue(
-                     mesh,
                      *userData.rightHandSide,
-                     index,
                      entity,
-                    *userData.time );
+                     *userData.time );
             }
       };
 };

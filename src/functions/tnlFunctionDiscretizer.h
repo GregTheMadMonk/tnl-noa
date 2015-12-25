@@ -48,6 +48,6 @@ class tnlFunctionDiscretizer
    
 };
 
-#include <functors/tnlFunctionDiscretizer_impl.h>
+#include <functions/tnlFunctionDiscretizer_impl.h>
 
 #endif /* TNLFUNCTIONDISCRETIZER_H_ */

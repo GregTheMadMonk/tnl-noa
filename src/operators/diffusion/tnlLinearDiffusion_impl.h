@@ -47,7 +47,6 @@ inline
 Real
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const MeshType& mesh,
-          const IndexType cellIndex,
           const CellType& cell,
           const Vector& u,
           const Real& time ) const
@@ -55,7 +54,7 @@ getValue( const MeshType& mesh,
    auto neighbourEntities = cell.getNeighbourEntities();
    const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< - 2 >();
    return ( u[ neighbourEntities.template getEntityIndex< -1 >() ]
-            - 2.0 * u[ cellIndex ]
+            - 2.0 * u[ cell.getIndex() ]
             + u[ neighbourEntities.template getEntityIndex< 1 >() ] ) * hxSquareInverse;
 }
 
@@ -147,7 +146,6 @@ inline
 Real
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const MeshType& mesh,
-          const IndexType cellIndex,
           const EntityType& entity,
           const Vector& u,
           const Real& time ) const
@@ -155,12 +153,11 @@ getValue( const MeshType& mesh,
    auto neighbourEntities = entity.getNeighbourEntities();
    const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< -2, 0 >();
    const RealType& hySquareInverse = mesh.template getSpaceStepsProducts< 0, -2 >();
-   return ( u[ neighbourEntities.template getEntityIndex< -1, 0 >() ]
-            - 2.0 * u[ cellIndex ]
-            + u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] ) * hxSquareInverse +
-           ( u[ neighbourEntities.template getEntityIndex< 0, -1 >() ]
-             - 2.0 * u[ cellIndex ]
-             + u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] ) * hySquareInverse;
+   return ( u[ neighbourEntities.template getEntityIndex< -1,  0 >() ]
+          + u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] ) * hxSquareInverse +
+          ( u[ neighbourEntities.template getEntityIndex<  0, -1 >() ]
+          + u[ neighbourEntities.template getEntityIndex<  0,  1 >() ] ) * hySquareInverse
+          - 2.0 * u[ entity.getIndex() ] * ( hxSquareInverse + hySquareInverse );
 }
 
 template< typename MeshReal,
@@ -223,24 +220,21 @@ inline
 Real
 tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const MeshType& mesh,
-          const IndexType cellIndex,
           const EntityType& entity,
           const Vector& u,
           const Real& time ) const
 {
    auto neighbourEntities = entity.getNeighbourEntities();
-   const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< -2, 0, 0 >();
-   const RealType& hySquareInverse = mesh.template getSpaceStepsProducts< 0, -2, 0 >();
-   const RealType& hzSquareInverse = mesh.template getSpaceStepsProducts< 0, 0, -2 >();
-   return (   u[ neighbourEntities.template getEntityIndex< -1, 0, 0 >() ]
-            - 2.0 * u[ cellIndex ]
-            + u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] ) * hxSquareInverse +
-          (   u[ neighbourEntities.template getEntityIndex< 0, -1, 0 >() ]
-            - 2.0 * u[ cellIndex ]
-            + u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] ) * hySquareInverse +
-          (   u[ neighbourEntities.template getEntityIndex< 0, 0, -1 >() ]
-            - 2.0 * u[ cellIndex ]
-            + u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] ) * hzSquareInverse;
+   const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< -2,  0,  0 >();
+   const RealType& hySquareInverse = mesh.template getSpaceStepsProducts<  0, -2,  0 >();
+   const RealType& hzSquareInverse = mesh.template getSpaceStepsProducts<  0,  0, -2 >();
+   return (   u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ]
+            + u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] ) * hxSquareInverse +
+          (   u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ]
+            + u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] ) * hySquareInverse +
+          (   u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ]
+            + u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] ) * hzSquareInverse
+         - 2.0 * u[ entity.getIndex() ] * ( hxSquareInverse + hySquareInverse + hzSquareInverse );
 }
 
 template< typename MeshReal,

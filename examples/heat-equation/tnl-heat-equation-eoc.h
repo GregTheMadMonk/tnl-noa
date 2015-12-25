@@ -21,12 +21,12 @@
 #include <solvers/tnlSolver.h>
 #include <solvers/tnlFastBuildConfigTag.h>
 #include <solvers/tnlBuildConfigTags.h>
-#include <functors/tnlTestFunction.h>
+#include <functions/tnlTestFunction.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include <operators/diffusion/tnlExactLinearDiffusion.h>
-#include <operators/tnlAnalyticDirichletBoundaryConditions.h>
 #include <problems/tnlHeatEquationEocRhs.h>
 #include <problems/tnlHeatEquationEocProblem.h>
+#include <operators/tnlDirichletBoundaryConditions.h>
 
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
@@ -67,7 +67,7 @@ class heatEquationSetter
       typedef tnlTestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
       typedef tnlHeatEquationEocRhs< ExactOperator, TestFunction > RightHandSide;
       typedef tnlStaticVector < MeshType::meshDimensions, Real > Vertex;
-      typedef tnlAnalyticDirichletBoundaryConditions< MeshType, TestFunction, Real, Index > BoundaryConditions;
+      typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Real, Index > BoundaryConditions;
       typedef tnlHeatEquationEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );

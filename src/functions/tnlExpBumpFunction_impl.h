@@ -18,7 +18,7 @@
 #ifndef TNLEXPBUMPFUNCTION_IMPL_H_
 #define TNLEXPBUMPFUNCTION_IMPL_H_
 
-#include <functors/tnlExpBumpFunction.h>
+#include <functions/tnlExpBumpFunction.h>
 
 template< int dimensions, typename Real >
 bool

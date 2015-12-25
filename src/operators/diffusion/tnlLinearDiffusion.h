@@ -52,7 +52,6 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
       template< typename Vector >
       __cuda_callable__
       inline Real getValue( const MeshType& mesh,
-                            const IndexType cellIndex,
                             const CellType& cell,
                             const Vector& u,
                             const RealType& time ) const;
@@ -98,7 +97,6 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
                 typename EntityType >
       __cuda_callable__
       inline Real getValue( const MeshType& mesh,
-                            const IndexType cellIndex,
                             const EntityType& entity,
                             const Vector& u,
                             const Real& time ) const;
@@ -146,7 +144,6 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
                 typename EntityType >
       __cuda_callable__
       inline Real getValue( const MeshType& mesh,
-                            const IndexType cellIndex,
                             const EntityType& entity,
                             const Vector& u,
                             const Real& time ) const;

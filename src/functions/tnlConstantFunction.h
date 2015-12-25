@@ -20,11 +20,11 @@
 
 #include <iostream>
 #include <core/vectors/tnlStaticVector.h>
-#include <functors/tnlFunction.h>
+#include <functions/tnlFunction.h>
 
 template< int dimensions,
           typename Real = double >
-class tnlConstantFunction : public tnlFunction< dimensions, tnlAnalyticConstantFunction >
+class tnlConstantFunction : public tnlFunction< dimensions, AnalyticConstantFunction >
 {
    public:
       
@@ -85,6 +85,6 @@ std::ostream& operator << ( std::ostream& str, const tnlConstantFunction< dimens
    return str;
 }
 
-#include <functors/tnlConstantFunction_impl.h>
+#include <functions/tnlConstantFunction_impl.h>
 
 #endif /* TNLCONSTANTFUNCTION_H_ */

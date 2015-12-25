@@ -18,7 +18,7 @@
 #ifndef TNLSINWAVEFUNCTION_IMPL_H_
 #define TNLSINWAVEFUNCTION_IMPL_H_
 
-#include <functors/tnlSinWaveFunction.h>
+#include <functions/tnlSinWaveFunction.h>
 
 template< int dimensions, typename Real >
 tnlSinWaveFunctionBase< dimensions, Real >::tnlSinWaveFunctionBase()

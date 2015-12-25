@@ -18,68 +18,79 @@
 #ifndef TNLDIRICHLETBOUNDARYCONDITIONS_IMPL_H_
 #define TNLDIRICHLETBOUNDARYCONDITIONS_IMPL_H_
 
+#include <functions/tnlFunctionAdapter.h>
+
 template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
 void
-tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
+tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   config.addEntry     < tnlString >( prefix + "file", "Data for the boundary conditions." );
+   Function::configSetup( config );
 }
 
 template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
 bool
-tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
+tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
-   if( parameters.checkParameter( prefix + "file" ) )
-   {
-      tnlString fileName = parameters.getParameter< tnlString >( prefix + "file" );
-      if( ! this->vector.load( fileName ) )
-         return false;
-   }
-   return true;
+   return this->function.setup( parameters );
 }
 
 template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
-Vector&
-tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
-getVector()
+void
+tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+setFunction( const Function& function )
 {
-   return this->vector;
+   this->function = function;
 }
+
 
 template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
-const Vector&
-tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
-getVector() const
+Function&
+tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+getFunction()
 {
-   return this->vector;
+   return this->function;
+}
+
+template< int Dimensions,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Function,
+          typename Real,
+          typename Index >
+const Function&
+tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+getFunction() const
+{
+   return *this->function;
 }
 
 
@@ -87,35 +98,35 @@ template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
    template< typename EntityType >
 __cuda_callable__
 void
-tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
+tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setBoundaryConditions( const RealType& time,
                        const MeshType& mesh,
-                       const IndexType index,
                        const EntityType& entity,
                        DofVectorType& u,
                        DofVectorType& fu ) const
 {
+   const IndexType& index = entity.getIndex();
    fu[ index ] = 0;
-   u[ index ] = this->vector[ index ];
+   u[ index ] = tnlFunctionAdapter< MeshType, Function >::template getValue( this->function, entity, time );
 }
 
 template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
    template< typename EntityType >
 __cuda_callable__
 Index
-tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
+tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const EntityType& entity ) const
@@ -127,14 +138,14 @@ template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
    template< typename Matrix,
              typename EntityType >
 __cuda_callable__
 void
-tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >::
+tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
@@ -145,7 +156,7 @@ updateLinearSystem( const RealType& time,
 {
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    matrixRow.setElement( 0, index, 1.0 );
-   b[ index ] = this->vector[ index ];
+   b[ index ] = tnlFunctionAdapter< MeshType, Function >::getValue( this->function, entity, time );
 }
 
 

@@ -21,23 +21,21 @@
 
 #include <core/vectors/tnlStaticVector.h>
 
-enum tnlFunctionType { tnlGeneralFunction, 
-                       tnlDiscreteFunction,
-                       tnlAnalyticFunction,
-                       tnlAnalyticConstantFunction };
+enum tnlFunctionType { GeneralFunction, 
+                       MeshFunction,
+                       AnalyticFunction,
+                       AnalyticConstantFunction };
 
 template< int Dimensions,
-          tnlFunctionType FunctionType = tnlGeneralFunction >
+          tnlFunctionType FunctionType = GeneralFunction >
 class tnlFunction
 {
    public:
       
       static const int dimensions = Dimensions;
-      // TODO: restore constexpr when CUDA allows it
-      //static constexpr int getDimensions() { return Dimensions; }
+      static constexpr int getDimensions() { return Dimensions; }
       
-      //static constexpr tnlFunctionType getFunctionType() { return FunctionType; }
-      enum { functionType = FunctionType };
+      static constexpr tnlFunctionType getFunctionType() { return FunctionType; }
 };
 
 

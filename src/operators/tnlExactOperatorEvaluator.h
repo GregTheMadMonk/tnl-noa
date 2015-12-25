@@ -156,33 +156,15 @@ class tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, Dof
             __cuda_callable__
             static void processEntity( const MeshType& mesh,
                                        TraversalUserData& userData,
-                                       const IndexType index,
                                        const EntityType& entity )
             {
                userData.boundaryConditions.setBoundaryConditions
                   ( userData.time,
                     mesh,
-                    index,
                     entity,
                     userData.fu,
                     userData.fu );
             }
-
-            
-            __cuda_callable__
-            static void processCell( const MeshType& mesh,
-                                     TraversalUserData& userData,
-                                     const IndexType index,
-                                     const CoordinatesType& c )
-            {
-               userData.boundaryConditions.setBoundaryConditions( userData.time,
-                                                                  mesh,
-                                                                  index,
-                                                                  c,
-                                                                  userData.fu,
-                                                                  userData.fu );
-            }
-
       };
 
       class TraversalInteriorEntitiesProcessor
@@ -193,10 +175,9 @@ class tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, Dof
             __cuda_callable__
             static void processEntity( const MeshType& mesh,
                                        TraversalUserData& userData,
-                                       const IndexType index,
                                        const EntityType& entity )
             {
-               userData.fu[ index ] = 
+               userData.fu[ entity.getIndex() ] = 
                   userData.differentialOperator.getValue
                      ( userData.function,
                        entity.getCenter(),                                                                           

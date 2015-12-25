@@ -18,7 +18,9 @@
 #ifndef TNLDUMMYMESH_H_
 #define TNLDUMMYMESH_H_
 
-template< typename Real, typename Device, typename Index >
+template< typename Real = double,
+          typename Device = tnlHost,
+          typename Index = int >
 class tnlDummyMesh
 {
    public:
@@ -27,6 +29,7 @@ class tnlDummyMesh
    typedef Device DeviceType;
    typedef Index IndexType;
 
+   static const int meshDimensions = 1;
 
    const Real& getParametricStep(){ return 0.0; }
 

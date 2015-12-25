@@ -38,10 +38,10 @@ processBoundaryEntities( const GridType& grid,
    const IndexType& xSize = grid.getDimensions().x();   
    coordinates.x() = 0;
    entity.refresh();
-   EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
+   EntitiesProcessor::processEntity( grid, userData, entity );
    coordinates.x() = xSize - 1;
    entity.refresh();
-   EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
+   EntitiesProcessor::processEntity( grid, userData, entity );
 }
 
 template< typename Real,
@@ -66,7 +66,7 @@ processInteriorEntities( const GridType& grid,
         cell.getCoordinates().x()++ )
    {
       cell.refresh();
-      EntitiesProcessor::processEntity( grid, userData, grid.getEntityIndex( cell ), cell );
+      EntitiesProcessor::processEntity( grid, userData, cell );
    }
 }
 

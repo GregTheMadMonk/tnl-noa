@@ -18,14 +18,14 @@
 #ifndef TNLEXACTLINEARDIFFUSION_H_
 #define TNLEXACTLINEARDIFFUSION_H_
 
-#include <functors/tnlFunction.h>
+#include <functions/tnlFunction.h>
 
 template< int Dimensions >
 class tnlExactLinearDiffusion
 {};
 
 template<>
-class tnlExactLinearDiffusion< 1 > : public tnlFunction< 1, tnlAnalyticFunction >
+class tnlExactLinearDiffusion< 1 > : public tnlFunction< 1, AnalyticFunction >
 {
    public:
 
@@ -39,7 +39,7 @@ class tnlExactLinearDiffusion< 1 > : public tnlFunction< 1, tnlAnalyticFunction 
 };
 
 template<>
-class tnlExactLinearDiffusion< 2 > : public tnlFunction< 2, tnlAnalyticFunction >
+class tnlExactLinearDiffusion< 2 > : public tnlFunction< 2, AnalyticFunction >
 {
    public:
       

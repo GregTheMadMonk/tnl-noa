@@ -25,7 +25,7 @@
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include <operators/diffusion/tnlExactLinearDiffusion.h>
 #include "../tnlPDEOperatorEocTestResult.h"
-#include <functors/tnlExpBumpFunction.h>
+#include <functions/tnlExpBumpFunction.h>
 
 template< int Dimensions,
           typename Real,

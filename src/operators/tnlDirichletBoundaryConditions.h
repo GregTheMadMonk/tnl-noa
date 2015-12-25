@@ -19,7 +19,7 @@
 #define TNLDIRICHLETBOUNDARYCONDITIONS_H_
 
 template< typename Mesh,
-          typename Vector,
+          typename Function,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class tnlDirichletBoundaryConditions
@@ -31,48 +31,50 @@ template< int Dimensions,
           typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
-class tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >
+class tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >
 {
    public:
 
    typedef tnlGrid< Dimensions, MeshReal, Device, MeshIndex > MeshType;
+   typedef Function FunctionType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef Vector VectorType;
-   typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
+   
+   //typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< Dimensions, RealType > VertexType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
+   //typedef typename MeshType::CoordinatesType CoordinatesType;
 
-   void configSetup( tnlConfigDescription& config,
-                     const tnlString& prefix );
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
 
    bool setup( const tnlParameterContainer& parameters,
                const tnlString& prefix = "" );
 
-   Vector& getVector();
+   void setFunction( const Function& function );
+   
+   Function& getFunction();
 
-   const Vector& getVector() const;
+   const Function& getFunction() const;
 
    template< typename EntityType >
    __cuda_callable__
    void setBoundaryConditions( const RealType& time,
                                const MeshType& mesh,
-                               const IndexType index,
                                const EntityType& entity,
                                DofVectorType& u,
                                DofVectorType& fu ) const;
 
    template< typename EntityType >
    __cuda_callable__
-   Index getLinearSystemRowLength( const MeshType& mesh,
-                                   const IndexType& index,
-                                   const EntityType& entity ) const;
+   IndexType getLinearSystemRowLength( const MeshType& mesh,
+                                       const IndexType& index,
+                                       const EntityType& entity ) const;
 
    template< typename MatrixRow,
              typename EntityType >
@@ -87,14 +89,14 @@ class tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, Mes
 
    protected:
 
-   Vector vector;
+   Function function;
+   
+   //static_assert( Device::DeviceType == Function::Device::DeviceType );
 };
 
 template< typename Mesh,
-          typename Function,
-          typename Real,
-          typename Index >
-ostream& operator << ( ostream& str, const tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >& bc )
+          typename Function >
+ostream& operator << ( ostream& str, const tnlDirichletBoundaryConditions< Mesh, Function >& bc )
 {
    str << "Dirichlet boundary conditions: vector = " << bc.getVector();
    return str;

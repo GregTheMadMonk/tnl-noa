@@ -20,11 +20,11 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functors/tnlFunction.h>
+#include <functions/tnlFunction.h>
 
 template< int dimensions,
           typename Real = double >
-class tnlSinWaveFunctionBase : public tnlFunction< dimensions, tnlAnalyticFunction >
+class tnlSinWaveFunctionBase : public tnlFunction< dimensions, AnalyticFunction >
 {
    public:
       
@@ -134,6 +134,6 @@ ostream& operator << ( ostream& str, const tnlSinWaveFunction< Dimensions, Real 
    return str;
 }
 
-#include <functors/tnlSinWaveFunction_impl.h>
+#include <functions/tnlSinWaveFunction_impl.h>
 
 #endif /* TNLSINWAVEFUNCTION_H_ */

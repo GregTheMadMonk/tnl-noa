@@ -30,17 +30,17 @@
 template< typename Mesh,
           typename Function,
           //tnlFunctionType functionType = Function::functionType >
-          int functionType = Function::functionType >
+          int functionType = Function::getFunctionType() >
 class tnlFunctionAdapter
 {
 };
 
 /***
- * Specialization for analytic functions
+ * Specialization for general functions
  */
 template< typename Mesh,
           typename Function >
-class tnlFunctionAdapter< Mesh, Function, tnlAnalyticFunction >
+class tnlFunctionAdapter< Mesh, Function, GeneralFunction >
 {
    public:
       
@@ -50,74 +50,86 @@ class tnlFunctionAdapter< Mesh, Function, tnlAnalyticFunction >
       typedef typename MeshType::IndexType     IndexType;      
       typedef typename FunctionType::VertexType VertexType;
       
-      template< int EntityDimensions >
+      template< typename EntityType >
       __cuda_callable__ inline
-      static RealType getValue( const MeshType& mesh,
-                                const FunctionType& function,
-                                const IndexType meshEntityIndex,
+      static RealType getValue( const FunctionType& function,
+                                const EntityType& meshEntity,
                                 const RealType& time )
       {         
-         return function.getValue( mesh.template getEntityCenter< EntityDimensions >( meshEntityIndex ), time );
+         return function.getValue( meshEntity, time );
       }
 };
 
 /***
- * Specialization for analytic functions and grids.
+ * Specialization for mesh functions
  */
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
+template< typename Mesh,
           typename Function >
-class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, tnlAnalyticFunction >
+class tnlFunctionAdapter< Mesh, Function, MeshFunction >
 {
    public:
-     
-      typedef Function FunctionType; 
-      typedef tnlGrid< Dimensions, Real, Device, Index > MeshType;
-      typedef typename FunctionType::RealType RealType;
-      typedef typename MeshType::IndexType IndexType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
+      
+      typedef Function FunctionType;
+      typedef Mesh MeshType;
+      typedef typename FunctionType::RealType  RealType;
+      typedef typename MeshType::IndexType     IndexType;      
       
       template< typename EntityType >
       __cuda_callable__ inline
-      static RealType getValue( const MeshType& mesh,
-                                const FunctionType& function,
-                                const IndexType meshEntytiIndex,
-                                const EntityType& entity,
+      static RealType getValue( const FunctionType& function,
+                                const EntityType& meshEntity,
                                 const RealType& time )
-      {
-         return function.getValue( entity.getCenter(), time );
-         //return 0.0;
+      {         
+         return function( meshEntity );
       }
 };
 
 /***
- * Specialization for constant functions and grids.
+ * Specialization for analytic functions
  */
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
+template< typename Mesh,
           typename Function >
-class tnlFunctionAdapter< tnlGrid< Dimensions, Real, Device, Index >, Function, tnlAnalyticConstantFunction >
+class tnlFunctionAdapter< Mesh, Function, AnalyticFunction >
 {
    public:
-     
-      typedef Function FunctionType; 
-      typedef tnlGrid< Dimensions, Real, Device, Index > MeshType;
-      typedef typename FunctionType::RealType RealType;
-      typedef typename MeshType::IndexType IndexType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
+      
+      typedef Function FunctionType;
+      typedef Mesh MeshType;
+      typedef typename FunctionType::RealType  RealType;
+      typedef typename MeshType::IndexType     IndexType;      
+      typedef typename FunctionType::VertexType VertexType;
       
       template< typename EntityType >
       __cuda_callable__ inline
-      static RealType getValue( const MeshType& mesh,
-                                const FunctionType& function,
-                                const IndexType meshEntytiIndex,
-                                const EntityType& entity,
+      static RealType getValue( const FunctionType& function,
+                                const EntityType& meshEntity,
                                 const RealType& time )
-      {
+      {         
+         return function.getValue( meshEntity.getCenter(), time );
+      }
+};
+
+/***
+ * Specialization for constant analytic functions
+ */
+template< typename Mesh,
+          typename Function >
+class tnlFunctionAdapter< Mesh, Function, AnalyticConstantFunction >
+{
+   public:
+      
+      typedef Function FunctionType;
+      typedef Mesh MeshType;
+      typedef typename FunctionType::RealType  RealType;
+      typedef typename MeshType::IndexType     IndexType;      
+      typedef typename FunctionType::VertexType VertexType;
+      
+      template< typename EntityType >
+      __cuda_callable__ inline
+      static RealType getValue( const FunctionType& function,
+                                const EntityType& meshEntity,
+                                const RealType& time )
+      {         
          return function.getValue( time );
       }
 };

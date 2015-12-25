@@ -22,11 +22,12 @@
 #include <core/vectors/tnlStaticVector.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
+#include <functions/tnlFunction.h>
 
 template< int FunctionDimensions,
           typename Real = double,
           typename Device = tnlHost >
-class tnlTestFunction
+class tnlTestFunction : public tnlFunction< FunctionDimensions, AnalyticFunction >
 {
    protected:
 
@@ -140,6 +141,6 @@ ostream& operator << ( ostream& str, const tnlTestFunction< FunctionDimensions, 
    return f.print( str );
 }
 
-#include <functors/tnlTestFunction_impl.h>
+#include <functions/tnlTestFunction_impl.h>
 
 #endif /* TNLTESTFUNCTION_H_ */
