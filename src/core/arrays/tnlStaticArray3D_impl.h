@@ -21,18 +21,14 @@
 #include <core/param-types.h>
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
-tnlStaticArray< 3, Element >::tnlStaticArray()
+__cuda_callable__
+inline tnlStaticArray< 3, Element >::tnlStaticArray()
 {
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
-tnlStaticArray< 3, Element >::tnlStaticArray( const Element v[ size ] )
+__cuda_callable__
+inline tnlStaticArray< 3, Element >::tnlStaticArray( const Element v[ size ] )
 {
    data[ 0 ] = v[ 0 ];
    data[ 1 ] = v[ 1 ];
@@ -40,10 +36,8 @@ tnlStaticArray< 3, Element >::tnlStaticArray( const Element v[ size ] )
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
-tnlStaticArray< 3, Element >::tnlStaticArray( const Element& v )
+__cuda_callable__
+inline tnlStaticArray< 3, Element >::tnlStaticArray( const Element& v )
 {
    data[ 0 ] = v;
    data[ 1 ] = v;
@@ -51,10 +45,8 @@ tnlStaticArray< 3, Element >::tnlStaticArray( const Element& v )
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
-tnlStaticArray< 3, Element >::tnlStaticArray( const Element& v1, const Element& v2, const Element& v3 )
+__cuda_callable__
+inline tnlStaticArray< 3, Element >::tnlStaticArray( const Element& v1, const Element& v2, const Element& v3 )
 {
    data[ 0 ] = v1;
    data[ 1 ] = v2;
@@ -62,10 +54,8 @@ tnlStaticArray< 3, Element >::tnlStaticArray( const Element& v1, const Element& 
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
-tnlStaticArray< 3, Element >::tnlStaticArray( const tnlStaticArray< size, Element >& v )
+__cuda_callable__
+inline tnlStaticArray< 3, Element >::tnlStaticArray( const tnlStaticArray< size, Element >& v )
 {
    data[ 0 ] = v[ 0 ];
    data[ 1 ] = v[ 1 ];
@@ -83,37 +73,29 @@ tnlString tnlStaticArray< 3, Element >::getType()
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
-int tnlStaticArray< 3, Element >::getSize() const
+__cuda_callable__
+inline int tnlStaticArray< 3, Element >::getSize() const
 {
    return size;
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
-Element* tnlStaticArray< 3, Element >::getData()
+__cuda_callable__
+inline Element* tnlStaticArray< 3, Element >::getData()
 {
    return data;
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
-const Element* tnlStaticArray< 3, Element >::getData() const
+__cuda_callable__
+inline const Element* tnlStaticArray< 3, Element >::getData() const
 {
    return data;
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
-const Element& tnlStaticArray< 3, Element >::operator[]( int i ) const
+__cuda_callable__
+inline const Element& tnlStaticArray< 3, Element >::operator[]( int i ) const
 {
    tnlAssert( i >= 0 && i < size,
             cerr << "i = " << i << " size = " << size << endl; );
@@ -121,10 +103,8 @@ const Element& tnlStaticArray< 3, Element >::operator[]( int i ) const
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
-Element& tnlStaticArray< 3, Element >::operator[]( int i )
+__cuda_callable__
+inline Element& tnlStaticArray< 3, Element >::operator[]( int i )
 {
    tnlAssert( i >= 0 && i < size,
             cerr << "i = " << i << " size = " << size << endl; );
@@ -132,59 +112,48 @@ Element& tnlStaticArray< 3, Element >::operator[]( int i )
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
-Element& tnlStaticArray< 3, Element >::x()
+__cuda_callable__
+inline Element& tnlStaticArray< 3, Element >::x()
 {
    return data[ 0 ];
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
-const Element& tnlStaticArray< 3, Element >::x() const
+__cuda_callable__
+inline const Element& tnlStaticArray< 3, Element >::x() const
 {
    return data[ 0 ];
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
-Element& tnlStaticArray< 3, Element >::y()
+__cuda_callable__
+inline Element& tnlStaticArray< 3, Element >::y()
 {
    return data[ 1 ];
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
-const Element& tnlStaticArray< 3, Element >::y() const
+__cuda_callable__
+inline const Element& tnlStaticArray< 3, Element >::y() const
 {
    return data[ 1 ];
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
-Element& tnlStaticArray< 3, Element >::z()
+__cuda_callable__
+inline Element& tnlStaticArray< 3, Element >::z()
 {
    return data[ 2 ];
 }
 
 template< typename Element >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
-const Element& tnlStaticArray< 3, Element >::z() const
+__cuda_callable__
+inline const Element& tnlStaticArray< 3, Element >::z() const
 {
    return data[ 2 ];
 }
 template< typename Element >
+__cuda_callable__
 tnlStaticArray< 3, Element >& tnlStaticArray< 3, Element >::operator = ( const tnlStaticArray< 3, Element >& array )
 {
    data[ 0 ] = array[ 0 ];
@@ -195,6 +164,7 @@ tnlStaticArray< 3, Element >& tnlStaticArray< 3, Element >::operator = ( const t
 
 template< typename Element >
    template< typename Array >
+__cuda_callable__
 tnlStaticArray< 3, Element >& tnlStaticArray< 3, Element >::operator = ( const Array& array )
 {
    data[ 0 ] = array[ 0 ];
@@ -205,6 +175,7 @@ tnlStaticArray< 3, Element >& tnlStaticArray< 3, Element >::operator = ( const A
 
 template< typename Element >
    template< typename Array >
+__cuda_callable__
 bool tnlStaticArray< 3, Element >::operator == ( const Array& array ) const
 {
    return( ( int ) size == ( int ) Array::size &&
@@ -215,12 +186,27 @@ bool tnlStaticArray< 3, Element >::operator == ( const Array& array ) const
 
 template< typename Element >
    template< typename Array >
+__cuda_callable__
 bool tnlStaticArray< 3, Element >::operator != ( const Array& array ) const
 {
    return ! this->operator == ( array );
 }
 
 template< typename Element >
+   template< typename OtherElement >
+__cuda_callable__
+tnlStaticArray< 3, Element >::
+operator tnlStaticArray< 3, OtherElement >() const
+{
+   tnlStaticArray< 3, OtherElement > aux;
+   aux[ 0 ] = data[ 0 ];
+   aux[ 1 ] = data[ 1 ];
+   aux[ 2 ] = data[ 2 ];
+   return aux;
+}
+
+template< typename Element >
+__cuda_callable__
 void tnlStaticArray< 3, Element >::setValue( const ElementType& val )
 {
    data[ 2 ] = data[ 1 ] = data[ 0 ] = val;
@@ -229,11 +215,7 @@ void tnlStaticArray< 3, Element >::setValue( const ElementType& val )
 template< typename Element >
 bool tnlStaticArray< 3, Element >::save( tnlFile& file ) const
 {
-#ifdef HAVE_NOT_CXX11
    if( ! file. write< Element, tnlHost, int >( data, size ) )
-#else
-   if( ! file. write( data, size ) )
-#endif
    {
       cerr << "Unable to write " << getType() << "." << endl;
       return false;
@@ -244,11 +226,7 @@ bool tnlStaticArray< 3, Element >::save( tnlFile& file ) const
 template< typename Element >
 bool tnlStaticArray< 3, Element >::load( tnlFile& file)
 {
-#ifdef HAVE_NOT_CXX11
    if( ! file.read< Element, tnlHost, int >( data, size ) )
-#else
-   if( ! file.read( data, size ) )
-#endif
    {
       cerr << "Unable to read " << getType() << "." << endl;
       return false;
@@ -278,7 +256,7 @@ ostream& tnlStaticArray< 3, Element >::write( ostream& str, const char* separato
 }
 
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 // TODO: it does not work with CUDA
 

@@ -85,7 +85,7 @@ bool convertObject( const Mesh& mesh,
       GridType grid;
       grid. setDomain( VertexType( 0.0 ), VertexType( 1.0 ) );
       grid. setDimensions( CoordinatesType( multiVector. getDimensions() ) );
-      const Real spaceStep = grid. getCellProportions(). x();
+      const Real spaceStep = grid. getSpaceSteps(). x();
       if( ! grid. write( multiVector, outputFileName, outputFormat ) )
          return false;
    }
@@ -198,6 +198,7 @@ bool setElementType( const Mesh& mesh,
 {
    tnlString elementType;
 
+   // TODO: Fix this even for arrays
    if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
       elementType = parsedObjectType[ 2 ];

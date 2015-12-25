@@ -61,13 +61,13 @@ class tnlArray : public virtual tnlObject
 
    __cuda_callable__ Index getSize() const;
 
-   void setElement( const Index i, const Element& x );
+   void setElement( const Index& i, const Element& x );
 
-   Element getElement( Index i ) const;
+   Element getElement( const Index& i ) const;
 
-   __cuda_callable__ Element& operator[] ( Index i );
+   __cuda_callable__ inline Element& operator[] ( const Index& i );
 
-   __cuda_callable__ const Element& operator[] ( Index i ) const;
+   __cuda_callable__ inline const Element& operator[] ( const Index& i ) const;
 
    tnlArray< Element, Device, Index >& operator = ( const tnlArray< Element, Device, Index >& array );
 

@@ -110,7 +110,7 @@ read( const tnlRegionOfInterest< Index > roi,
 {
 #ifdef HAVE_JPEG_H
    typedef tnlGrid< 2, Real, Device, Index > GridType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   typename GridType::Cell cell( grid );
    
    /***
     * Prepare the long jump back from libjpeg.
@@ -140,9 +140,12 @@ read( const tnlRegionOfInterest< Index > roi,
       {
          if( !roi.isIn( i, j ) )
             continue;
-      
-         Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
-                                              roi.getBottom() - 1 - i ) );
+     
+         cell.getCoordinates().x() =  j - roi.getLeft();
+         cell.getCoordinates().y() = roi.getBottom() - 1 - i;
+         //Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
+         //                                     roi.getBottom() - 1 - i ) );
+         cell.refresh();
          unsigned char char_color[ 4 ];
          unsigned int int_color[ 4 ];
          Real value, r, g, b;
@@ -151,7 +154,7 @@ read( const tnlRegionOfInterest< Index > roi,
             case 1:
                char_color[ 0 ] = row[ 0 ][ j ];
                value = char_color[ 0 ] / ( Real ) 255.0;
-               vector.setElement( cellIndex, value );
+               vector.setElement( cell.getIndex(), value );
                break;
             case 3:
                char_color[ 0 ] = row[ 0 ][ 3 * j ];
@@ -161,7 +164,7 @@ read( const tnlRegionOfInterest< Index > roi,
                g = char_color[ 1 ] / ( Real ) 255.0;
                b = char_color[ 2 ] / ( Real ) 255.0;
                value = 0.2989 * r + 0.5870 * g + 0.1140 * b;
-               vector.setElement( cellIndex, value );
+               vector.setElement( cell.getIndex(), value );
                break;
             default:
                cerr << "Unknown JPEG color type." << endl;
@@ -231,7 +234,7 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
        Vector& vector )
 {
    typedef tnlGrid< 2, Real, Device, Index > GridType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   typename GridType::Cell cell( grid );
 
 #ifdef HAVE_JPEG_H   
    Index i( 0 ), j;
@@ -242,10 +245,13 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
    {
       for( j = 0; j < grid.getDimensions().x(); j ++ )
       {
-         Index cellIndex = grid.getCellIndex( CoordinatesType( j,
-                                              grid.getDimensions().y() - 1 - i ) );
+         cell.getCoordinates().x() = j;
+         cell.getCoordinates().y() = grid.getDimensions().y() - 1 - i;
 
-         row[ 0 ][ j ] = 255 * vector.getElement( cellIndex );         
+         //Index cellIndex = grid.getCellIndex( CoordinatesType( j,
+         //                                     grid.getDimensions().y() - 1 - i ) );
+
+         row[ 0 ][ j ] = 255 * vector.getElement( cell.getIndex() );         
       }
       jpeg_write_scanlines( &this->cinfo, row, 1 );
       i++;

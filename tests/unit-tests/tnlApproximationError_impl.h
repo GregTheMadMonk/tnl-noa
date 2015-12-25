@@ -20,7 +20,7 @@
 
 #include <mesh/tnlTraverser.h>
 #include <core/vectors/tnlVector.h>
-#include <functors/tnlFunctionDiscretizer.h>
+#include <functions/tnlFunctionDiscretizer.h>
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlMatrixSetter.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
@@ -43,7 +43,7 @@ getError( const Mesh& mesh,
 {
    typedef tnlVector< RealType, DeviceType, IndexType > Vector;
    Vector functionData, exactData, approximateData, aux;
-   const IndexType entities = mesh.getNumberOfCells();
+   const IndexType entities = mesh.template getEntitiesCount< typename Mesh::Cell >();
    BoundaryConditionsType boundaryConditions;
    boundaryConditions.setFunction( function );
    ConstantFunctionType zeroFunction;
@@ -57,7 +57,7 @@ getError( const Mesh& mesh,
    tnlFunctionDiscretizer< Mesh, Function, Vector >::template discretize< 0, 0, 0 >( mesh, function, functionData );
 
    tnlExplicitUpdater< Mesh, Vector, ApproximateOperator, BoundaryConditionsType, ConstantFunctionType > explicitUpdater;
-   explicitUpdater.template update< Mesh::Dimensions >( 0.0,
+   explicitUpdater.template update< typename Mesh::Cell >( 0.0,
                                                         mesh,
                                                         approximateOperator,
                                                         boundaryConditions,
@@ -65,11 +65,19 @@ getError( const Mesh& mesh,
                                                         functionData,
                                                         approximateData );
    tnlExactOperatorEvaluator< Mesh, Vector, ExactOperator, Function, BoundaryConditionsType > operatorEvaluator;
-   operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
+   operatorEvaluator.template evaluate< typename Mesh::Cell >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
 
-   for( IndexType i = 0; i < entities; i++ )
-      if( mesh.isBoundaryCell( i ) )
-         approximateData.setElement( i, exactData.getElement( i ) );
+   typename Mesh::Cell cell( mesh );
+
+   for( cell.getCoordinates().x() = 0;
+        cell.getCoordinates().x() < entities;
+        cell.getCoordinates().x()++ )
+   {
+      //cell.setIndex( mesh.getEntityIndex( cell ) );
+      cell.refresh();
+      if( cell.isBoundaryEntity() )
+         approximateData.setElement( cell.getIndex(), exactData.getElement( cell.getIndex() ) );
+   }
 
    l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
    l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );
@@ -104,7 +112,7 @@ getError( const Mesh& mesh,
    boundaryConditions.setFunction( function );
    ConstantFunctionType zeroFunction;
 
-   const IndexType entities = mesh.getNumberOfCells();
+   const IndexType entities = mesh.template getEntitiesCount< typename Mesh::Cell >();
 
    if( ! functionData.setSize( entities ) ||
        ! exactData.setSize( entities ) ||
@@ -115,16 +123,17 @@ getError( const Mesh& mesh,
    tnlFunctionDiscretizer< Mesh, Function, Vector >::template discretize< 0, 0, 0 >( mesh, function, functionData );
 
    tnlMatrixSetter< MeshType, ApproximateOperator, BoundaryConditionsType, CompressedRowsLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowsLengths< Mesh::Dimensions >( mesh,
-                                                            approximateOperator,
-                                                            boundaryConditions,
-                                                            rowLengths );
+   matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >(
+      mesh,
+      approximateOperator,
+      boundaryConditions,
+      rowLengths );
    matrix.setDimensions( entities, entities );
    if( ! matrix.setCompressedRowsLengths( rowLengths ) )
       return;
 
    tnlLinearSystemAssembler< Mesh, Vector, ApproximateOperator, BoundaryConditionsType, ConstantFunctionType, tnlNoTimeDiscretisation, MatrixType > systemAssembler;
-   systemAssembler.template assembly< Mesh::Dimensions >( 0.0, // time
+   systemAssembler.template assembly< typename Mesh::Cell >( 0.0, // time
                                                           1.0, // tau
                                                           mesh,
                                                           approximateOperator,
@@ -136,20 +145,31 @@ getError( const Mesh& mesh,
                                                           );
 
    tnlExactOperatorEvaluator< Mesh, Vector, ExactOperator, Function, BoundaryConditionsType > operatorEvaluator;
-   operatorEvaluator.template evaluate< Mesh::Dimensions >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
+   operatorEvaluator.template evaluate< typename Mesh::Cell >( 0.0, mesh, exactOperator, function, boundaryConditions, exactData );
 
-   for( IndexType i = 0; i < entities; i++ )
-      if( ! mesh.isBoundaryCell( i ) )
+   typename Mesh::Cell cell( mesh );
+   for( cell.getCoordinates().x() = 0;
+        cell.getCoordinates().x() < entities;
+        cell.getCoordinates().x()++ )
+   {
+      IndexType i = mesh.getEntityIndex( cell );
+      if( ! cell.isBoundaryEntity() )
          matrix.setElement( i, i, matrix.getElement( i, i ) - 1.0 );
+   }
    matrix.vectorProduct( functionData, approximateData );
 
    // TODO: replace this when matrix.vectorProduct has multiplicator parameter
    for( IndexType i = 0; i < entities; i++ )
       approximateData.setElement( i, -1.0 * approximateData.getElement( i ) );
 
-   for( IndexType i = 0; i < entities; i++ )
-      if( mesh.isBoundaryCell( i ) )
+   for( cell.getCoordinates().x() = 0;
+        cell.getCoordinates().x() < entities;
+        cell.getCoordinates().x()++ )
+   {
+      IndexType i = mesh.getEntityIndex( cell );
+      if( cell.isBoundaryEntity() )
          approximateData.setElement( i, exactData.getElement( i ) );
+   }
 
    l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
    l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );

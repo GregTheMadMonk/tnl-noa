@@ -92,7 +92,7 @@ getImage( const int imageIdx,
 #ifdef HAVE_DCMTK_H
    const Uint16* imageData = this->getData( imageIdx );
    typedef tnlGrid< 2, Real, Device, Index > GridType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   typename GridType::Cell cell( grid );
    
    Index i, j;
    int position( 0 );
@@ -102,10 +102,13 @@ getImage( const int imageIdx,
       {
          if( roi.isIn( i, j ) )
          {
-            Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
-                                                                  roi.getBottom() - 1 - i ) );
+            cell.getCoordinates().x() = j - roi.getLeft();
+            cell.getCoordinates().y() = roi.getBottom() - 1 - i;
+            cell.refresh();
+            //Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
+            //                                                      roi.getBottom() - 1 - i ) );
             Uint16 col = imageData[ position ];
-            vector.setElement( cellIndex, ( Real ) col / ( Real ) 65535 );
+            vector.setElement( cell.getIndex(), ( Real ) col / ( Real ) 65535 );
             //cout << vector.getElement( cellIndex ) << " ";
          }
          position++;

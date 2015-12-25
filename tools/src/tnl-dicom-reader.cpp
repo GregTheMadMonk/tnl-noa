@@ -47,7 +47,8 @@ bool processDicomSeries( const tnlParameterContainer& parameters )
    tnlString meshFile = parameters.getParameter< tnlString >( "mesh-file" );    
    bool verbose = parameters.getParameter< bool >( "verbose" );
 
-   tnlGrid< 2, double, tnlHost, int > grid;
+   typedef tnlGrid< 2, double, tnlHost, int > GridType;
+   GridType grid;
    tnlVector< double, tnlHost, int > vector;
    tnlRegionOfInterest< int > roi;   
    for( int i = 0; i < dicomSeriesNames.getSize(); i++ )
@@ -64,7 +65,7 @@ bool processDicomSeries( const tnlParameterContainer& parameters )
          if( ! roi.setup( parameters, &dicomSeries ) )
             return false;
          roi.setGrid( grid, verbose );
-         vector.setSize( grid.getNumberOfCells() );
+         vector.setSize( grid.template getEntitiesCount< typename GridType::Cell >() );
          cout << "Writing grid to file " << meshFile << endl;
          grid.save( meshFile );
       }

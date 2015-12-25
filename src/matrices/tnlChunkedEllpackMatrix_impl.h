@@ -1070,7 +1070,7 @@ __device__ void tnlChunkedEllpackMatrix< Real, Device, Index >::computeSliceVect
                                                                                            OutVector* outVector,
                                                                                            int sliceIdx  ) const
 {
-   tnlStaticAssert( DeviceType::DeviceType == tnlCudaDevice, );
+   static_assert( DeviceType::DeviceType == tnlCudaDevice, "" );
 
    RealType* chunkProducts = getSharedMemory< RealType >();
    ChunkedEllpackSliceInfo* sliceInfo = ( ChunkedEllpackSliceInfo* ) & chunkProducts[ blockDim.x ];

@@ -34,7 +34,9 @@ class tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index > >
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlGrid< 1, Real, Device, Index > GridType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   //typedef typename GridType::CoordinatesType CoordinatesType;
+   typedef typename GridType::Cell CellType;
+
 
 #ifdef HAVE_NOT_CXX11
    template< typename GridFunction,
@@ -69,7 +71,7 @@ class tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index > >
              int YDifferenceDirection,
              int ZDifferenceDirection >
    static RealType getDifference( const GridType& grid,
-                                  const CoordinatesType& c,
+                                  const CellType& cell,
                                   const GridFunction& function );
 #else
    template< typename GridFunction,
@@ -80,7 +82,7 @@ class tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index > >
              int YDifferenceDirection = 0,
              int ZDifferenceDirection = 0 >
    static RealType getDifference( const GridType& grid,
-                                  const CoordinatesType& c,
+                                  const CellType& cell,
                                   const GridFunction& function );
 #endif   
 
@@ -95,7 +97,8 @@ class tnlFiniteDifferences< tnlGrid< 2, Real, Device, Index > >
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlGrid< 2, Real, Device, Index > GridType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   //typedef typename GridType::CoordinatesType CoordinatesType;
+   typedef typename GridType::Cell CellType;
 
 
 #ifdef HAVE_NOT_CXX11
@@ -131,7 +134,7 @@ class tnlFiniteDifferences< tnlGrid< 2, Real, Device, Index > >
              int YDifferenceDirection,
              int ZDifferenceDirection >
    static RealType getDifference( const GridType& grid,
-                                  const CoordinatesType& c,
+                                  const CellType& cell,
                                   const GridFunction& function );
 #else
    template< typename GridFunction,
@@ -142,7 +145,7 @@ class tnlFiniteDifferences< tnlGrid< 2, Real, Device, Index > >
              int YDifferenceDirection = 0,
              int ZDifferenceDirection = 0 >
    static RealType getDifference( const GridType& grid,
-                                  const CoordinatesType& c,
+                                  const CellType& cell,
                                   const GridFunction& function );
 #endif   
 
@@ -157,7 +160,8 @@ class tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index > >
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlGrid< 3, Real, Device, Index > GridType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   //typedef typename GridType::CoordinatesType CoordinatesType;
+   typedef typename GridType::Cell CellType;
 
 #ifdef HAVE_NOT_CXX11
    template< typename GridFunction,
@@ -192,7 +196,7 @@ class tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index > >
              int YDifferenceDirection,
              int ZDifferenceDirection >
    static RealType getDifference( const GridType& grid,
-                                  const CoordinatesType& c,
+                                  const CellType& cell,
                                   const GridFunction& function );
 #else
    template< typename GridFunction,
@@ -203,7 +207,7 @@ class tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index > >
              int YDifferenceDirection = 0,
              int ZDifferenceDirection = 0 >
    static RealType getDifference( const GridType& grid,
-                                  const CoordinatesType& c,
+                                  const CellType& cell,
                                   const GridFunction& function );
 #endif   
 

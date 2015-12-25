@@ -19,35 +19,27 @@
 #define TNLSTATICVECTOR_IMPL_H_
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticVector< Size, Real >::tnlStaticVector()
 {
 }
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticVector< Size, Real >::tnlStaticVector( const Real v[ Size ] )
 : tnlStaticArray< Size, Real >( v )
 {
 }
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticVector< Size, Real >::tnlStaticVector( const Real& v )
 : tnlStaticArray< Size, Real >( v )
 {
 }
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticVector< Size, Real >::tnlStaticVector( const tnlStaticVector< Size, Real >& v )
 : tnlStaticArray< Size, Real >( v )
 {
@@ -64,9 +56,7 @@ tnlString tnlStaticVector< Size, Real >::getType()
 }
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real >::operator += ( const tnlStaticVector& v )
 {
    for( int i = 0; i < Size; i++ )
@@ -75,9 +65,7 @@ tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real >::operator += ( cons
 }
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real >::operator -= ( const tnlStaticVector& v )
 {
    for( int i = 0; i < Size; i++ )
@@ -86,9 +74,7 @@ tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real >::operator -= ( cons
 }
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real >::operator *= ( const Real& c )
 {
    for( int i = 0; i < Size; i++ )
@@ -97,9 +83,7 @@ tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real >::operator *= ( cons
 }
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticVector< Size, Real > tnlStaticVector< Size, Real >::operator + ( const tnlStaticVector& u ) const
 {
    tnlStaticVector< Size, Real > res;
@@ -109,9 +93,7 @@ tnlStaticVector< Size, Real > tnlStaticVector< Size, Real >::operator + ( const 
 }
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticVector< Size, Real > tnlStaticVector< Size, Real >::operator - ( const tnlStaticVector& u ) const
 {
    tnlStaticVector< Size, Real > res;
@@ -121,9 +103,7 @@ tnlStaticVector< Size, Real > tnlStaticVector< Size, Real >::operator - ( const 
 }
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 tnlStaticVector< Size, Real > tnlStaticVector< Size, Real >::operator * ( const Real& c ) const
 {
    tnlStaticVector< Size, Real > res;
@@ -133,9 +113,7 @@ tnlStaticVector< Size, Real > tnlStaticVector< Size, Real >::operator * ( const 
 }
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 Real tnlStaticVector< Size, Real >::operator * ( const tnlStaticVector& u ) const
 {
    Real res( 0.0 );
@@ -145,9 +123,7 @@ Real tnlStaticVector< Size, Real >::operator * ( const tnlStaticVector& u ) cons
 }
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 bool tnlStaticVector< Size, Real >::operator < ( const tnlStaticVector& v ) const
 {
    for( int i = 0; i < Size; i++ )
@@ -157,9 +133,7 @@ bool tnlStaticVector< Size, Real >::operator < ( const tnlStaticVector& v ) cons
 }
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 bool tnlStaticVector< Size, Real >::operator <= ( const tnlStaticVector& v ) const
 {
    for( int i = 0; i < Size; i++ )
@@ -169,9 +143,7 @@ bool tnlStaticVector< Size, Real >::operator <= ( const tnlStaticVector& v ) con
 }
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 bool tnlStaticVector< Size, Real >::operator > ( const tnlStaticVector& v ) const
 {
    for( int i = 0; i < Size; i++ )
@@ -181,9 +153,7 @@ bool tnlStaticVector< Size, Real >::operator > ( const tnlStaticVector& v ) cons
 }
 
 template< int Size, typename Real >
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 bool tnlStaticVector< Size, Real >::operator >= ( const tnlStaticVector& v ) const
 {
    for( int i = 0; i < Size; i++ )
@@ -193,12 +163,36 @@ bool tnlStaticVector< Size, Real >::operator >= ( const tnlStaticVector& v ) con
 }
 
 template< int Size, typename Real >
+   template< typename OtherReal >
+__cuda_callable__
+tnlStaticVector< Size, Real >::
+operator tnlStaticVector< Size, OtherReal >() const
+{
+   tnlStaticVector< Size, OtherReal > aux;
+   for( int i = 0; i < Size; i++ )
+      aux[ i ] = this->data[ i ];
+   return aux;
+}
+
+template< int Size, typename Real >
+__cuda_callable__
+tnlStaticVector< Size, Real >
+tnlStaticVector< Size, Real >::abs() const
+{
+   tnlStaticVector< Size, Real > v;
+   for( int i = 0; i < Size; i++ )
+      v.data[ i ] = tnlAbs( this->data[ i ] );
+   return v;
+} 
+
+
+template< int Size, typename Real >
 tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector< Size, Real >& u )
 {
    return u * c;
 }
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifndef HAVE_CUDA
 // TODO: does not work with CUDA

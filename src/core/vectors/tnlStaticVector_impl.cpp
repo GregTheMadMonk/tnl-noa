@@ -18,7 +18,7 @@
 #include <core/vectors/tnlStaticVector.h>
 
 #ifndef HAVE_CUDA
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
 template class tnlStaticVector< 1, float >;

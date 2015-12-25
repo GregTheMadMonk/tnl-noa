@@ -22,11 +22,12 @@
 #include <core/vectors/tnlStaticVector.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
+#include <functions/tnlFunction.h>
 
 template< int FunctionDimensions,
           typename Real = double,
           typename Device = tnlHost >
-class tnlTestFunction
+class tnlTestFunction : public tnlFunction< FunctionDimensions, AnalyticFunction >
 {
    protected:
 
@@ -59,40 +60,36 @@ class tnlTestFunction
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 #else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
-             int ZDiffOrder = 0,
-             typename Vertex = VertexType >
+             int ZDiffOrder = 0 >
 #endif
    __cuda_callable__
-   Real getValue( const Vertex& vertex,
+   Real getValue( const VertexType& vertex,
                   const Real& time = 0 ) const;
 
 #ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-   Real getValue( const Vertex& vertex,
+   __cuda_callable__
+   Real getValue( const VertexType& vertex,
                   const Real& time = 0 ) const
    {
-      return this->getValue< 0, 0, 0, Vertex >( vertex, time );
+      return this->getValue< 0, 0, 0 >( vertex, time );
    }
 #endif                  
 
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 #else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
-             int ZDiffOrder = 0,
-             typename Vertex = VertexType >
+             int ZDiffOrder = 0 >
 #endif
    __cuda_callable__
-   Real getTimeDerivative( const Vertex& vertex,
+   Real getTimeDerivative( const VertexType& vertex,
                            const Real& time = 0 ) const;
 
 #ifdef HAVE_NOT_CXX11
@@ -144,6 +141,6 @@ ostream& operator << ( ostream& str, const tnlTestFunction< FunctionDimensions, 
    return f.print( str );
 }
 
-#include <functors/tnlTestFunction_impl.h>
+#include <functions/tnlTestFunction_impl.h>
 
 #endif /* TNLTESTFUNCTION_H_ */

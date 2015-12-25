@@ -19,7 +19,8 @@
 #define TNLTRAVERSER_H_
 
 template< typename Mesh,
-          int EntitiesDimensions = Mesh::Dimensions >
+          typename MeshEntity,
+          int EntitiesDimensions = MeshEntity::entityDimensions >
 class tnlTraverser{};
 
 

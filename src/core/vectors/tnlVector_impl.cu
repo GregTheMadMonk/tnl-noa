@@ -17,7 +17,7 @@
 
 #include <core/vectors/tnlVector.h>
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef HAVE_CUDA
 #ifdef INSTANTIATE_FLOAT

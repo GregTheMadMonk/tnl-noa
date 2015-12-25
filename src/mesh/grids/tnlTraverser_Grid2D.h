@@ -21,8 +21,9 @@
 
 
 template< typename Real,
-          typename Index >
-class tnlTraverser< tnlGrid< 2, Real, tnlHost, Index >, 2 >
+          typename Index,
+          typename GridEntity >
+class tnlTraverser< tnlGrid< 2, Real, tnlHost, Index >, GridEntity, 2 >
 {
    public:
       typedef tnlGrid< 2, Real, tnlHost, Index > GridType;
@@ -43,8 +44,9 @@ class tnlTraverser< tnlGrid< 2, Real, tnlHost, Index >, 2 >
 };
 
 template< typename Real,
-          typename Index >
-class tnlTraverser< tnlGrid< 2, Real, tnlHost, Index >, 1 >
+          typename Index,
+          typename GridEntity >
+class tnlTraverser< tnlGrid< 2, Real, tnlHost, Index >, GridEntity, 1 >
 {
    public:
       typedef tnlGrid< 2, Real, tnlHost, Index > GridType;
@@ -65,8 +67,9 @@ class tnlTraverser< tnlGrid< 2, Real, tnlHost, Index >, 1 >
 };
 
 template< typename Real,
-          typename Index >
-class tnlTraverser< tnlGrid< 2, Real, tnlHost, Index >, 0 >
+          typename Index,
+          typename GridEntity >
+class tnlTraverser< tnlGrid< 2, Real, tnlHost, Index >, GridEntity, 0 >
 {
    public:
       typedef tnlGrid< 2, Real, tnlHost, Index > GridType;
@@ -88,8 +91,9 @@ class tnlTraverser< tnlGrid< 2, Real, tnlHost, Index >, 0 >
 
 
 template< typename Real,
-          typename Index >
-class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, 2 >
+          typename Index,
+          typename GridEntity >
+class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, GridEntity, 2 >
 {
    public:
       typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
@@ -111,8 +115,9 @@ class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, 2 >
 };
 
 template< typename Real,
-          typename Index >
-class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, 1 >
+          typename Index,
+          typename GridEntity >
+class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, GridEntity, 1 >
 {
    public:
       typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
@@ -133,8 +138,9 @@ class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, 1 >
 };
 
 template< typename Real,
-          typename Index >
-class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, 0 >
+          typename Index,
+          typename GridEntity >
+class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, GridEntity, 0 >
 {
    public:
       typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;

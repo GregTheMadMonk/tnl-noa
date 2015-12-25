@@ -19,6 +19,12 @@
 #define SRC_MESH_TNLGRID1D_H_
 
 #include <mesh/tnlGrid.h>
+#include <core/tnlLogger.h>
+#include <mesh/grids/tnlGridEntityTopology.h>
+#include <mesh/grids/tnlGridEntityGetter.h>
+#include <mesh/grids/tnlNeighbourGridEntityGetter.h>
+#include <mesh/grids/tnlGridEntity.h>
+#include <mesh/grids/tnlGridEntityConfig.h>
 
 template< typename Real,
           typename Device,
@@ -31,12 +37,22 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlStaticVector< 1, Real > VertexType;
-   typedef tnlStaticVector< 1, Index > CoordinatesType;
+   typedef tnlStaticVector< 1, Index > CoordinatesType;   
    typedef tnlGrid< 1, Real, tnlHost, Index > HostType;
    typedef tnlGrid< 1, Real, tnlCuda, Index > CudaType;
+   typedef tnlGrid< 1, Real, Device, Index > ThisType;
+   
+   static const int meshDimensions = 1;
+   
+   template< int EntityDimensions, 
+             typename Config = tnlGridEntityCrossStencilStorage< 1 > >
+   using GridEntity = tnlGridEntity< ThisType, EntityDimensions, Config >;
+     
+   typedef GridEntity< meshDimensions, tnlGridEntityCrossStencilStorage< 1 > > Cell;
+   typedef GridEntity< 0 > Vertex;
 
-   enum { Dimensions = 1};
-
+   static constexpr int getDimensionsCount() { return meshDimensions; };
+   
    tnlGrid();
 
    static tnlString getType();
@@ -51,93 +67,40 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
 
    void setDimensions( const CoordinatesType& dimensions );
 
-   __cuda_callable__
+   __cuda_callable__ inline
    const CoordinatesType& getDimensions() const;
 
    void setDomain( const VertexType& origin,
                    const VertexType& proportions );
 
    __cuda_callable__
-   const VertexType& getOrigin() const;
+   inline const VertexType& getOrigin() const;
 
    __cuda_callable__
-   const VertexType& getProportions() const;
-
+   inline const VertexType& getProportions() const;
+   
+   template< typename EntityType >
    __cuda_callable__
-   const VertexType& getCellProportions() const;
-
+   inline IndexType getEntitiesCount() const;
+   
+   template< typename EntityType >
    __cuda_callable__
-   Index getCellIndex( const CoordinatesType& cellCoordinates ) const;
-
+   inline EntityType getEntity( const IndexType& entityIndex ) const;
+   
+   template< typename EntityType >
    __cuda_callable__
-   CoordinatesType getCellCoordinates( const Index cellIndex ) const;
-
+   inline Index getEntityIndex( const EntityType& entity ) const;
+   
    __cuda_callable__
-   Index getVertexIndex( const CoordinatesType& vertexCoordinates ) const;
+   inline VertexType getSpaceSteps() const;
 
+   template< int xPow >
    __cuda_callable__
-   CoordinatesType getVertexCoordinates( const Index vertexCoordinates ) const;
+   inline const RealType& getSpaceStepsProducts() const;
+   
+   __cuda_callable__
+   inline RealType getSmallestSpaceStep() const;
 
-   template< int dx >
-   __cuda_callable__
-   IndexType getCellNextToCell( const IndexType& cellIndex ) const;
-
-   __cuda_callable__
-   const RealType& getHx() const;
-
-   __cuda_callable__
-   const RealType& getHxSquare() const;
-
-   __cuda_callable__
-   const RealType& getHxInverse() const;
-
-   __cuda_callable__
-   const RealType& getHxSquareInverse() const;
-
-   __cuda_callable__
-   RealType getSmallestSpaceStep() const;
-
-   /****
-    * The type Vertex can have different Real type.
-    */
-#ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-#else
-   template< typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getCellCenter( const CoordinatesType& cellCoordinates ) const;
-
-#ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-#else
-   template< typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getCellCenter( const IndexType& cellIndex ) const;
-
-#ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-#else
-   template< typename Vertex = VertexType >
-#endif
-   __cuda_callable__
-   Vertex getVertex( const CoordinatesType& vertexCoordinates ) const;
-
-   __cuda_callable__
-   Index getNumberOfCells() const;
-
-   __cuda_callable__
-   Index getNumberOfVertices() const;
-
-   __cuda_callable__
-   bool isBoundaryCell( const CoordinatesType& cellCoordinates ) const;
-
-   __cuda_callable__
-   bool isBoundaryCell( const IndexType& cellIndex ) const;
-
-   __cuda_callable__
-   bool isBoundaryVertex( const CoordinatesType& vertexCoordinates ) const;
 
    template< typename GridFunction >
    typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
@@ -177,13 +140,14 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    void computeSpaceSteps();
 
    CoordinatesType dimensions;
-
-   VertexType origin, proportions, cellProportions;
-
+   
    IndexType numberOfCells, numberOfVertices;
 
-   RealType hx, hxSquare, hxInverse, hxSquareInverse;
-
+   VertexType origin, proportions;
+   
+   VertexType spaceSteps;
+   
+   RealType spaceStepsProducts[ 5 ];
 };
 
 #include <mesh/grids/tnlGrid1D_impl.h>

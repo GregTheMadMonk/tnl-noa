@@ -43,17 +43,19 @@ template< typename MeshReal,
           typename Index >
 template< typename Vector >
 __cuda_callable__
+inline
 Real
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const CellType& cell,
           const Vector& u,
           const Real& time ) const
 {
-   return ( u[ mesh.template getCellNextToCell< -1 >( cellIndex ) ]
-            - 2.0 * u[ cellIndex ]
-            + u[ mesh.template getCellNextToCell< 1 >( cellIndex ) ] ) * mesh.getHxSquareInverse();
+   auto neighbourEntities = cell.getNeighbourEntities();
+   const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< - 2 >();
+   return ( u[ neighbourEntities.template getEntityIndex< -1 >() ]
+            - 2.0 * u[ cell.getIndex() ]
+            + u[ neighbourEntities.template getEntityIndex< 1 >() ] ) * hxSquareInverse;
 }
 
 template< typename MeshReal,
@@ -62,11 +64,12 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 __cuda_callable__
+inline
 Index
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
-                          const CoordinatesType& coordinates ) const
+                          const CellType& cell ) const
 {
    return 3;
 }
@@ -78,24 +81,24 @@ template< typename MeshReal,
           typename Index >
    template< typename Vector, typename Matrix >
 __cuda_callable__
+inline
 void
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,
-                    const CoordinatesType& coordinates,
+                    const CellType& cell,
                     Vector& u,
                     Vector& b,
                     Matrix& matrix ) const
 {
+   auto neighbourEntities = cell.getNeighbourEntities();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   const RealType lambdaX = tau * mesh.getHxSquareInverse();
-   //printf( "tau = %f lambda = %f dx_sqr = %f dx = %f, \n", tau, lambdaX, mesh.getHxSquareInverse(), mesh.getHx() );
-   matrixRow.setElement( 0, mesh.template getCellNextToCell< -1 >( index ),     - lambdaX );
-   matrixRow.setElement( 1, index,                             2.0 * lambdaX );
-   matrixRow.setElement( 2, mesh.template getCellNextToCell< 1 >( index ),       - lambdaX );
-   //printf( "Linear diffusion index %d columns %d %d %d \n", index, columns[ 0 ], columns[ 1 ], columns[ 2 ] );
+   const RealType lambdaX = tau * mesh.template getSpaceStepsProducts< -2 >();
+   matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1 >(),      - lambdaX );
+   matrixRow.setElement( 1, index,                                              2.0 * lambdaX );
+   matrixRow.setElement( 2, neighbourEntities.template getEntityIndex< 1 >(),       - lambdaX );   
 }
 
 template< typename MeshReal,
@@ -118,12 +121,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
+   template< typename EntityType >
 __cuda_callable__
+inline
 Index
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
-                          const CoordinatesType& coordinates ) const
+                          const EntityType& entity ) const
 {
    return 5;
 }
@@ -134,22 +139,25 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector >
+template< typename Vector,
+          typename EntityType >
 __cuda_callable__
+inline
 Real
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const EntityType& entity,
           const Vector& u,
           const Real& time ) const
 {
-   return ( u[ mesh.template getCellNextToCell< -1, 0 >( cellIndex ) ]
-            - 2.0 * u[ cellIndex ]
-            + u[ mesh.template getCellNextToCell< 1, 0 >( cellIndex ) ] ) * mesh.getHxSquareInverse() +
-           ( u[ mesh.template getCellNextToCell< 0, -1 >( cellIndex ) ]
-             - 2.0 * u[ cellIndex ]
-             + u[ mesh.template getCellNextToCell< 0, 1 >( cellIndex ) ] ) * mesh.getHySquareInverse();
+   auto neighbourEntities = entity.getNeighbourEntities();
+   const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< -2, 0 >();
+   const RealType& hySquareInverse = mesh.template getSpaceStepsProducts< 0, -2 >();
+   return ( u[ neighbourEntities.template getEntityIndex< -1,  0 >() ]
+          + u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] ) * hxSquareInverse +
+          ( u[ neighbourEntities.template getEntityIndex<  0, -1 >() ]
+          + u[ neighbourEntities.template getEntityIndex<  0,  1 >() ] ) * hySquareInverse
+          - 2.0 * u[ entity.getIndex() ] * ( hxSquareInverse + hySquareInverse );
 }
 
 template< typename MeshReal,
@@ -157,27 +165,31 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename Vector, typename Matrix >
+   template< typename Vector,
+             typename Matrix,
+             typename EntityType >
 __cuda_callable__
+inline
 void
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,
-                    const CoordinatesType& coordinates,
+                    const EntityType& entity,
                     Vector& u,
                     Vector& b,
                     Matrix& matrix ) const
 {
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   const RealType lambdaX = tau * mesh.getHxSquareInverse();
-   const RealType lambdaY = tau * mesh.getHySquareInverse();
-   matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, -1 >( index ), -lambdaY );
-   matrixRow.setElement( 1, mesh.template getCellNextToCell< -1, 0 >( index ), -lambdaX );
-   matrixRow.setElement( 2, index,                                             2.0 * ( lambdaX + lambdaY ) );
-   matrixRow.setElement( 3, mesh.template getCellNextToCell< 1, 0 >( index ),   -lambdaX );
-   matrixRow.setElement( 4, mesh.template getCellNextToCell< 0, 1 >( index ),   -lambdaY );
+   const RealType lambdaX = tau * mesh.template getSpaceStepsProducts< -2, 0 >();
+   const RealType lambdaY = tau * mesh.template getSpaceStepsProducts< 0, -2 >();
+   auto neighbourEntities = entity.getNeighbourEntities();
+   matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, -1 >(), -lambdaY );
+   matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< -1, 0 >(), -lambdaX );
+   matrixRow.setElement( 2, index,                                                        2.0 * ( lambdaX + lambdaY ) );
+   matrixRow.setElement( 3, neighbourEntities.template getEntityIndex< 1, 0 >(),   -lambdaX );
+   matrixRow.setElement( 4, neighbourEntities.template getEntityIndex< 0, 1 >(),   -lambdaY );
 }
 
 
@@ -201,25 +213,28 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector >
+template< typename Vector,
+          typename EntityType >
 __cuda_callable__
+inline
 Real
 tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const EntityType& entity,
           const Vector& u,
           const Real& time ) const
 {
-   return ( u[ mesh.template getCellNextToCell< -1, 0, 0 >( cellIndex ) ]
-            - 2.0 * u[ cellIndex ]
-            + u[ mesh.template getCellNextToCell< 1, 0, 0 >( cellIndex ) ] ) * mesh.getHxSquareInverse() +
-          ( u[ mesh.template getCellNextToCell< 0, -1, 0 >( cellIndex ) ]
-            - 2.0 * u[ cellIndex ]
-            + u[ mesh.template getCellNextToCell< 0, 1, 0 >( cellIndex ) ] ) * mesh.getHySquareInverse() +
-          ( u[ mesh.template getCellNextToCell< 0, 0, -1 >( cellIndex ) ]
-            - 2.0 * u[ cellIndex ]
-            + u[ mesh.template getCellNextToCell< 0, 0, 1 >( cellIndex ) ] ) * mesh.getHzSquareInverse();
+   auto neighbourEntities = entity.getNeighbourEntities();
+   const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< -2,  0,  0 >();
+   const RealType& hySquareInverse = mesh.template getSpaceStepsProducts<  0, -2,  0 >();
+   const RealType& hzSquareInverse = mesh.template getSpaceStepsProducts<  0,  0, -2 >();
+   return (   u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ]
+            + u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] ) * hxSquareInverse +
+          (   u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ]
+            + u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] ) * hySquareInverse +
+          (   u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ]
+            + u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] ) * hzSquareInverse
+         - 2.0 * u[ entity.getIndex() ] * ( hxSquareInverse + hySquareInverse + hzSquareInverse );
 }
 
 template< typename MeshReal,
@@ -227,12 +242,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
+   template< typename EntityType >          
 __cuda_callable__
+inline
 Index
 tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
-                          const CoordinatesType& coordinates ) const
+                          const EntityType& entity ) const
 {
    return 7;
 }
@@ -242,30 +259,34 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename Vector, typename Matrix >
+   template< typename Vector,
+             typename Matrix,
+             typename EntityType >
 __cuda_callable__
+inline
 void
 tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,
-                    const CoordinatesType& coordinates,
+                    const EntityType& entity,
                     Vector& u,
                     Vector& b,
                     Matrix& matrix ) const
 {
+   auto neighbourEntities = entity.getNeighbourEntities();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   const RealType lambdaX = tau * mesh.getHxSquareInverse();
-   const RealType lambdaY = tau * mesh.getHySquareInverse();
-   const RealType lambdaZ = tau * mesh.getHzSquareInverse();
-   matrixRow.setElement( 0, mesh.template getCellNextToCell< 0, 0, -1 >( index ), -lambdaZ );
-   matrixRow.setElement( 1, mesh.template getCellNextToCell< 0, -1, 0 >( index ), -lambdaY );
-   matrixRow.setElement( 2, mesh.template getCellNextToCell< -1, 0, 0 >( index ), -lambdaX );
+   const RealType lambdaX = tau * mesh.template getSpaceStepsProducts< -2, 0, 0 >();
+   const RealType lambdaY = tau * mesh.template getSpaceStepsProducts< 0, -2, 0 >();
+   const RealType lambdaZ = tau * mesh.template getSpaceStepsProducts< 0, 0, -2 >();
+   matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, 0, -1 >(), -lambdaZ );
+   matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, -1, 0 >(), -lambdaY );
+   matrixRow.setElement( 2, neighbourEntities.template getEntityIndex< -1, 0, 0 >(), -lambdaX );
    matrixRow.setElement( 3, index,                             2.0 * ( lambdaX + lambdaY + lambdaZ ) );
-   matrixRow.setElement( 4, mesh.template getCellNextToCell< 1, 0, 0 >( index ),   -lambdaX );
-   matrixRow.setElement( 5, mesh.template getCellNextToCell< 0, 1, 0 >( index ),   -lambdaY );
-   matrixRow.setElement( 6, mesh.template getCellNextToCell< 0, 0, 1 >( index ),   -lambdaZ );
+   matrixRow.setElement( 4, neighbourEntities.template getEntityIndex< 1, 0, 0 >(),   -lambdaX );
+   matrixRow.setElement( 5, neighbourEntities.template getEntityIndex< 0, 1, 0 >(),   -lambdaY );
+   matrixRow.setElement( 6, neighbourEntities.template getEntityIndex< 0, 0, 1 >(),   -lambdaZ );
 }
 
 #endif	/* TNLLINEARDIFFUSION_IMP_H */

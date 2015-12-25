@@ -52,13 +52,13 @@ template< int Dimensions, typename Real, typename Device, typename Index >
 /****
  * Please, chose your preferred time discretisation  here.
  */
-template<> struct tnlMeshConfigTimeDiscretisation< tnlFastBuildConfig, tnlExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
-template<> struct tnlMeshConfigTimeDiscretisation< tnlFastBuildConfig, tnlSemiImplicitTimeDiscretisationTag >{ enum { enabled = true }; };
-template<> struct tnlMeshConfigTimeDiscretisation< tnlFastBuildConfig, tnlImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
+template<> struct tnlConfigTagTimeDiscretisation< tnlFastBuildConfig, tnlExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
+template<> struct tnlConfigTagTimeDiscretisation< tnlFastBuildConfig, tnlSemiImplicitTimeDiscretisationTag >{ enum { enabled = true }; };
+template<> struct tnlConfigTagTimeDiscretisation< tnlFastBuildConfig, tnlImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
 
 /****
  * Only the Runge-Kutta-Merson solver is enabled by default.
  */
-template<> struct tnlMeshConfigExplicitSolver< tnlFastBuildConfig, tnlExplicitEulerSolverTag >{ enum { enabled = false }; };
+//template<> struct tnlMeshConfigExplicitSolver< tnlFastBuildConfig, tnlExplicitEulerSolverTag >{ enum { enabled = false }; };
 
 #endif /* TNLFASTBUILDCONFIGTAG_H_ */

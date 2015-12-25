@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlFunction.h  -  description
+                          tnl-benchmark-simple-heat-equation.cpp  -  description
                              -------------------
-    begin                : Nov 8, 2015
-    copyright            : (C) 2015 by oberhuber
+    begin                : Nov 28, 2015
+    copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,22 +15,6 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "tnl-benchmark-simple-heat-equation.h"
 
-#ifndef TNLFUNCTION_H
-#define	TNLFUNCTION_H
-
-enum tnlFunctionType { tnlGeneralFunction, 
-                       tnlDiscreteFunction,
-                       tnlAnalyticFunction };
-
-template< tnlFunctionType FunctionType >
-class tnlFunction
-{
-   public:
-   
-      //static constexpr tnlFunctionType getFunctionType() { return FunctionType; }
-      enum { functionType = FunctionType };
-};
-
-#endif	/* TNLFUNCTION_H */
 

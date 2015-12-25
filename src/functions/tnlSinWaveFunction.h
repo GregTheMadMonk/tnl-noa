@@ -20,10 +20,11 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functors/tnlFunction.h>
+#include <functions/tnlFunction.h>
 
-template< typename Real = double >
-class tnlSinWaveFunctionBase : public tnlFunction< tnlAnalyticFunction >
+template< int dimensions,
+          typename Real = double >
+class tnlSinWaveFunctionBase : public tnlFunction< dimensions, AnalyticFunction >
 {
    public:
       
@@ -55,79 +56,71 @@ class tnlSinWaveFunction
 };
 
 template< typename Real >
-class tnlSinWaveFunction< 1, Real > : public tnlSinWaveFunctionBase< Real >
+class tnlSinWaveFunction< 1, Real > : public tnlSinWaveFunctionBase< 1, Real >
 {
    public:
-
-      enum { Dimensions = 1 };
-      typedef tnlStaticVector< 1, Real > VertexType;
+      
       typedef Real RealType;
+      typedef tnlStaticVector< 1, RealType > VertexType;
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getValue( const Vertex& v,
+      RealType getValue( const VertexType& v,
                          const Real& time = 0.0 ) const;
 
 };
 
 template< typename Real >
-class tnlSinWaveFunction< 2, Real > : public tnlSinWaveFunctionBase< Real >
+class tnlSinWaveFunction< 2, Real > : public tnlSinWaveFunctionBase< 2, Real >
 {
    public:
-
-         enum { Dimensions = 2 };
-         typedef tnlStaticVector< 2, Real > VertexType;
-         typedef Real RealType;
-
+            
+      typedef Real RealType;
+      typedef tnlStaticVector< 2, RealType > VertexType;      
+      
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getValue( const Vertex& v,
+      RealType getValue( const VertexType& v,
                          const Real& time = 0.0 ) const;
 };
 
 template< typename Real >
-class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< Real >
+class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< 3, Real >
 {
-   public:
-
-      enum { Dimensions = 3 };
-      typedef tnlStaticVector< 3, Real > VertexType;
+   public:      
+          
       typedef Real RealType;
+      typedef tnlStaticVector< 3, RealType > VertexType;      
 
 
+      
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getValue( const Vertex& v,
+      RealType getValue( const VertexType& v,
                          const Real& time = 0.0 ) const;
 };
 
@@ -141,6 +134,6 @@ ostream& operator << ( ostream& str, const tnlSinWaveFunction< Dimensions, Real 
    return str;
 }
 
-#include <functors/tnlSinWaveFunction_impl.h>
+#include <functions/tnlSinWaveFunction_impl.h>
 
 #endif /* TNLSINWAVEFUNCTION_H_ */

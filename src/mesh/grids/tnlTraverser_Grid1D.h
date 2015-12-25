@@ -21,8 +21,9 @@
 #include <mesh/tnlTraverser.h>
 
 template< typename Real,
-          typename Index >
-class tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, 1 >
+          typename Index,
+          typename GridEntity >
+class tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, GridEntity, 1 >
 {
    public:
       typedef tnlGrid< 1, Real, tnlHost, Index > GridType;
@@ -45,8 +46,9 @@ class tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, 1 >
 
 
 template< typename Real,
-          typename Index >
-class tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, 0 >
+          typename Index,
+          typename GridEntity >
+class tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, GridEntity, 0 >
 {
    public:
       typedef tnlGrid< 1, Real, tnlHost, Index > GridType;
@@ -70,8 +72,9 @@ class tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, 0 >
  * CUDA traversals
  */
 template< typename Real,
-          typename Index >
-class tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, 1 >
+          typename Index,
+          typename GridEntity >
+class tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, GridEntity, 1 >
 {
    public:
       typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
@@ -94,8 +97,9 @@ class tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, 1 >
 };
 
 template< typename Real,
-          typename Index >
-class tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, 0 >
+          typename Index,
+          typename GridEntity >
+class tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, GridEntity, 0 >
 {
    public:
       typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;

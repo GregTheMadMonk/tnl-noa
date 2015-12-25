@@ -200,7 +200,7 @@ class tnlParallelReductionSum
    typedef Real ResultType;
    typedef tnlParallelReductionSum< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -211,7 +211,7 @@ class tnlParallelReductionSum
    __cuda_callable__ ResultType initialValue() { return 0; };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {
@@ -245,7 +245,7 @@ class tnlParallelReductionMin
    typedef Real ResultType;
    typedef tnlParallelReductionMin< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -256,7 +256,7 @@ class tnlParallelReductionMin
    __cuda_callable__ ResultType initialValue() { return tnlMaxValue< ResultType>(); };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {
@@ -290,7 +290,7 @@ class tnlParallelReductionMax
    typedef Real ResultType;
    typedef tnlParallelReductionMax< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -301,7 +301,7 @@ class tnlParallelReductionMax
    __cuda_callable__ ResultType initialValue() { return tnlMinValue< ResultType>(); };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {
@@ -333,7 +333,7 @@ class tnlParallelReductionLogicalAnd
    typedef Real ResultType;
    typedef tnlParallelReductionLogicalAnd< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -344,7 +344,7 @@ class tnlParallelReductionLogicalAnd
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) true; };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {
@@ -380,7 +380,7 @@ class tnlParallelReductionLogicalOr
    typedef Real ResultType;
    typedef tnlParallelReductionLogicalOr< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -391,7 +391,7 @@ class tnlParallelReductionLogicalOr
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) false; };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {
@@ -424,7 +424,7 @@ class tnlParallelReductionAbsSum : public tnlParallelReductionSum< Real, Index >
    typedef Real ResultType;
    typedef tnlParallelReductionSum< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -435,7 +435,7 @@ class tnlParallelReductionAbsSum : public tnlParallelReductionSum< Real, Index >
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
 
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {
@@ -453,7 +453,7 @@ class tnlParallelReductionAbsMin : public tnlParallelReductionMin< Real, Index >
    typedef Real ResultType;
    typedef tnlParallelReductionMin< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -464,7 +464,7 @@ class tnlParallelReductionAbsMin : public tnlParallelReductionMin< Real, Index >
    __cuda_callable__ ResultType initialValue() { return tnlMaxValue< ResultType>(); };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {
@@ -482,7 +482,7 @@ class tnlParallelReductionAbsMax : public tnlParallelReductionMax< Real, Index >
    typedef Real ResultType;
    typedef tnlParallelReductionMax< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -493,7 +493,7 @@ class tnlParallelReductionAbsMax : public tnlParallelReductionMax< Real, Index >
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
 
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {
@@ -511,7 +511,7 @@ class tnlParallelReductionL2Norm : public tnlParallelReductionSum< Real, Index >
    typedef Real ResultType;
    typedef tnlParallelReductionSum< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -523,7 +523,7 @@ class tnlParallelReductionL2Norm : public tnlParallelReductionSum< Real, Index >
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {
@@ -548,7 +548,7 @@ class tnlParallelReductionLpNorm : public tnlParallelReductionSum< Real, Index >
       this -> p = p;
    };
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -559,7 +559,7 @@ class tnlParallelReductionLpNorm : public tnlParallelReductionSum< Real, Index >
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {
@@ -581,7 +581,7 @@ class tnlParallelReductionEqualities : public tnlParallelReductionLogicalAnd< bo
    typedef bool ResultType;
    typedef tnlParallelReductionLogicalAnd< bool, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -592,7 +592,7 @@ class tnlParallelReductionEqualities : public tnlParallelReductionLogicalAnd< bo
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) true; }; 
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {
@@ -610,7 +610,7 @@ class tnlParallelReductionInequalities : public tnlParallelReductionLogicalAnd< 
    typedef bool ResultType;
    typedef tnlParallelReductionLogicalAnd< bool, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -621,7 +621,7 @@ class tnlParallelReductionInequalities : public tnlParallelReductionLogicalAnd< 
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) false; };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {
@@ -639,7 +639,7 @@ class tnlParallelReductionScalarProduct : public tnlParallelReductionSum< Real, 
    typedef Real ResultType;
    typedef tnlParallelReductionSum< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -650,7 +650,7 @@ class tnlParallelReductionScalarProduct : public tnlParallelReductionSum< Real, 
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
    
    __cuda_callable__ inline void cudaFirstReduction( ResultType& result, 
-                                                 const IndexType index,
+                                                 const IndexType& index,
                                                  const RealType* data1,
                                                  const RealType* data2 )
    {
@@ -668,7 +668,7 @@ class tnlParallelReductionDiffSum : public tnlParallelReductionSum< Real, Index 
    typedef Real ResultType;
    typedef tnlParallelReductionSum< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -679,7 +679,7 @@ class tnlParallelReductionDiffSum : public tnlParallelReductionSum< Real, Index 
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };   
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                          const IndexType index,
+                                          const IndexType& index,
                                           const RealType* data1,
                                           const RealType* data2 )
    {
@@ -697,7 +697,7 @@ class tnlParallelReductionDiffMin : public tnlParallelReductionMin< Real, Index 
    typedef Real ResultType;
    typedef tnlParallelReductionMin< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -708,7 +708,7 @@ class tnlParallelReductionDiffMin : public tnlParallelReductionMin< Real, Index 
    __cuda_callable__ ResultType initialValue() { return tnlMaxValue< ResultType>(); };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                          const IndexType index,
+                                          const IndexType& index,
                                           const RealType* data1,
                                           const RealType* data2 )
    {
@@ -726,7 +726,7 @@ class tnlParallelReductionDiffMax : public tnlParallelReductionMax< Real, Index 
    typedef Real ResultType;
    typedef tnlParallelReductionMax< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -737,7 +737,7 @@ class tnlParallelReductionDiffMax : public tnlParallelReductionMax< Real, Index 
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {
@@ -755,7 +755,7 @@ class tnlParallelReductionDiffAbsSum : public tnlParallelReductionMax< Real, Ind
    typedef Real ResultType;
    typedef tnlParallelReductionSum< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -766,7 +766,7 @@ class tnlParallelReductionDiffAbsSum : public tnlParallelReductionMax< Real, Ind
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                          const IndexType index,
+                                          const IndexType& index,
                                           const RealType* data1,
                                           const RealType* data2 )
    {
@@ -784,7 +784,7 @@ class tnlParallelReductionDiffAbsMin : public tnlParallelReductionMin< Real, Ind
    typedef Real ResultType;
    typedef tnlParallelReductionMin< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -795,7 +795,7 @@ class tnlParallelReductionDiffAbsMin : public tnlParallelReductionMin< Real, Ind
    __cuda_callable__ ResultType initialValue() { return tnlMaxValue< ResultType>(); };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                          const IndexType index,
+                                          const IndexType& index,
                                           const RealType* data1,
                                           const RealType* data2 )
    {
@@ -813,7 +813,7 @@ class tnlParallelReductionDiffAbsMax : public tnlParallelReductionMax< Real, Ind
    typedef Real ResultType;
    typedef tnlParallelReductionMax< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -824,7 +824,7 @@ class tnlParallelReductionDiffAbsMax : public tnlParallelReductionMax< Real, Ind
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                          const IndexType index,
+                                          const IndexType& index,
                                           const RealType* data1,
                                           const RealType* data2 )
    {
@@ -842,7 +842,7 @@ class tnlParallelReductionDiffL2Norm : public tnlParallelReductionSum< Real, Ind
    typedef Real ResultType;
    typedef tnlParallelReductionSum< Real, Index > LaterReductionOperation;
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -854,7 +854,7 @@ class tnlParallelReductionDiffL2Norm : public tnlParallelReductionSum< Real, Ind
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {
@@ -882,7 +882,7 @@ class tnlParallelReductionDiffLpNorm : public tnlParallelReductionSum< Real, Ind
       this -> p = p;
    };
 
-   ResultType reduceOnHost( const IndexType idx,
+   ResultType reduceOnHost( const IndexType& idx,
                             const ResultType& current,
                             const RealType* data1,
                             const RealType* data2 )
@@ -893,7 +893,7 @@ class tnlParallelReductionDiffLpNorm : public tnlParallelReductionSum< Real, Ind
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
    
    __cuda_callable__ void cudaFirstReduction( ResultType& result, 
-                                              const IndexType index,
+                                              const IndexType& index,
                                               const RealType* data1,
                                               const RealType* data2 )
    {

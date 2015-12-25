@@ -105,12 +105,12 @@ class tnlMeshWriterVTKLegacy
          file << endl;
       }
       file << endl;
-      file << "CELLS " << mesh.template getNumberOfCells();
+      file << "CELLS " << mesh.getNumberOfCells();
       long int listSize( 0 );
-      for( int i = 0; i < mesh.template getNumberOfCells(); i++ )
+      for( int i = 0; i < mesh.getNumberOfCells(); i++ )
          listSize += mesh.getCell( i ).template getNumberOfSubentities< 0 >() + 1;
       file << " " << listSize << endl;
-      for( int i = 0; i < mesh.template getNumberOfCells(); i++ )
+      for( int i = 0; i < mesh.getNumberOfCells(); i++ )
       {
          int numberOfVertices = mesh.getCell( i ).template getNumberOfSubentities< 0 >();
          file << numberOfVertices << " ";
@@ -119,8 +119,8 @@ class tnlMeshWriterVTKLegacy
          file << mesh.getCell( i ).template getSubentityIndex< 0 >( numberOfVertices - 1 ) << endl;
       }
       file << endl;
-      file << "CELL_TYPES " <<  mesh.template getNumberOfCells() << endl;      
-      for( int i = 0; i < mesh.template getNumberOfCells(); i++ )      
+      file << "CELL_TYPES " <<  mesh.getNumberOfCells() << endl;      
+      for( int i = 0; i < mesh.getNumberOfCells(); i++ )      
       {
          file << tnlMeshEntityVTKType< CellType >::VTKType << endl;
       }

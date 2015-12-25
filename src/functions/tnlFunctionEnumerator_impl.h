@@ -17,7 +17,7 @@
 #ifndef SRC_FUNCTIONS_TNLFUNCTIONENUMERATOR_IMPL_H_
 #define SRC_FUNCTIONS_TNLFUNCTIONENUMERATOR_IMPL_H_
 
-#include <functors/tnlFunctionEnumerator.h>
+#include <functions/tnlFunctionEnumerator.h>
 #include <mesh/tnlTraverser_Grid1D.h>
 #include <mesh/tnlTraverser_Grid2D.h>
 #include <mesh/tnlTraverser_Grid3D.h>

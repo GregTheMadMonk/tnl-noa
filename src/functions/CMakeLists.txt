@@ -2,7 +2,7 @@ SET( headers tnlFunctionDiscretizer.h
              tnlFunctionDiscretizer_impl.h
              tnlFunctionEnumerator.h
              tnlFunctionEnumerator_impl.h
-             tnlFunctorAdapter.h
+             tnlFunctionAdapter.h
              tnlConstantFunction.h
              tnlConstantFunction_impl.h
              tnlExpBumpFunction.h
@@ -15,19 +15,19 @@ SET( headers tnlFunctionDiscretizer.h
              tnlFunction.h
              tnlTestFunction_impl.h )
 
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/functors )
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/functions )
 set( common_SOURCES
      ${CURRENT_DIR}/tnlTestFunction_impl.cpp )       
 
 IF( BUILD_CUDA )
-   set( tnl_functors_CUDA__SOURCES
+   set( tnl_functions_CUDA__SOURCES
         ${common_SOURCES} 
         ${CURRENT_DIR}/tnlTestFunction_impl.cu
         PARENT_SCOPE )
 ENDIF()    
 
-set( tnl_functors_SOURCES     
+set( tnl_functions_SOURCES     
      ${common_SOURCES}
      PARENT_SCOPE )
         
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/functors )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/functions )

@@ -19,10 +19,10 @@
 #define TNLTESTFUNCTION_IMPL_H_
 
 #include <core/tnlCuda.h>
-#include <functors/tnlConstantFunction.h>
-#include <functors/tnlExpBumpFunction.h>
-#include <functors/tnlSinBumpsFunction.h>
-#include <functors/tnlSinWaveFunction.h>
+#include <functions/tnlConstantFunction.h>
+#include <functions/tnlExpBumpFunction.h>
+#include <functions/tnlSinBumpsFunction.h>
+#include <functions/tnlSinWaveFunction.h>
 
 template< int FunctionDimensions,
           typename Real,
@@ -200,12 +200,11 @@ template< int FunctionDimensions,
           typename Device >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
 tnlTestFunction< FunctionDimensions, Real, Device >::
-getValue( const Vertex& vertex,
+getValue( const VertexType& vertex,
           const Real& time ) const
 {
    Real scale( 1.0 );
@@ -229,16 +228,16 @@ getValue( const Vertex& vertex,
    {
       case constant:
          return scale * ( ( tnlConstantFunction< Dimensions, Real >* ) function )->
-                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case expBump:
          return scale * ( ( tnlExpBumpFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinBumps:
          return scale * ( ( tnlSinBumpsFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinWave:
          return scale * ( ( tnlSinWaveFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       default:
          return 0.0;
    }
@@ -249,12 +248,11 @@ template< int FunctionDimensions,
           typename Device >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
 tnlTestFunction< FunctionDimensions, Real, Device >::
-getTimeDerivative( const Vertex& vertex,
+getTimeDerivative( const VertexType& vertex,
                    const Real& time ) const
 {
    Real scale( 0.0 );
@@ -276,16 +274,16 @@ getTimeDerivative( const Vertex& vertex,
    {
       case constant:
          return scale * ( ( tnlConstantFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case expBump:
          return scale * ( ( tnlExpBumpFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinBumps:
          return scale * ( ( tnlSinBumpsFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinWave:
          return scale * ( ( tnlSinWaveFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder, Vertex >( vertex, time );
+                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       default:
          return 0.0;
    }

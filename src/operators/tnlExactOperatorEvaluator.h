@@ -70,7 +70,7 @@ class tnlExactOperatorEvaluator
                                                           Function,
                                                           BoundaryConditions > TraversalUserData;
 
-      template< int EntityDimensions >
+      template< typename EntityType >
       void evaluate( const RealType& time,
                      const MeshType& mesh,
                      const DifferentialOperator& differentialOperator,
@@ -83,9 +83,7 @@ class tnlExactOperatorEvaluator
          public:
 
             template< int EntityDimension >
-#ifdef HAVE_CUDA
-            __host__ __device__
-#endif
+            __cuda_callable__
             static void processEntity( const MeshType& mesh,
                                        TraversalUserData& userData,
                                        const IndexType index )
@@ -104,16 +102,16 @@ class tnlExactOperatorEvaluator
          public:
 
             template< int EntityDimensions >
-#ifdef HAVE_CUDA
-            __host__ __device__
-#endif
+            __cuda_callable__
             static void processEntity( const MeshType& mesh,
                                        TraversalUserData& userData,
                                        const IndexType index )
             {
-               userData.fu[ index ] = userData.differentialOperator.getValue( userData.function,
-                                                                              mesh.template getEntityCenter< EntityDimensions >( index ),
-                                                                              userData.time );
+               userData.fu[ index ] = 
+                  userData.differentialOperator.template getValue
+                  ( userData.function,
+                    mesh.template getEntityCenter< EntityDimensions >( index ),
+                    userData.time );
             }
 
       };
@@ -142,7 +140,7 @@ class tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, Dof
                                                           Function,
                                                           BoundaryConditions > TraversalUserData;
 
-      template< int EntityDimensions >
+      template< typename EntityType >
       void evaluate( const RealType& time,
                      const MeshType& mesh,
                      const DifferentialOperator& differentialOperator,
@@ -154,31 +152,40 @@ class tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, Dof
       {
          public:
 
-#ifdef HAVE_CUDA
-            __host__ __device__
-#endif
-            static void processCell( const MeshType& mesh,
-                                     TraversalUserData& userData,
-                                     const IndexType index,
-                                     const CoordinatesType& c )
+            template< typename EntityType >
+            __cuda_callable__
+            static void processEntity( const MeshType& mesh,
+                                       TraversalUserData& userData,
+                                       const EntityType& entity )
             {
-               userData.boundaryConditions.setBoundaryConditions( userData.time,
-                                                                  mesh,
-                                                                  index,
-                                                                  c,
-                                                                  userData.fu,
-                                                                  userData.fu );
+               userData.boundaryConditions.setBoundaryConditions
+                  ( userData.time,
+                    mesh,
+                    entity,
+                    userData.fu,
+                    userData.fu );
             }
-
       };
 
       class TraversalInteriorEntitiesProcessor
       {
          public:
+            
+            template< typename EntityType >
+            __cuda_callable__
+            static void processEntity( const MeshType& mesh,
+                                       TraversalUserData& userData,
+                                       const EntityType& entity )
+            {
+               userData.fu[ entity.getIndex() ] = 
+                  userData.differentialOperator.getValue
+                     ( userData.function,
+                       entity.getCenter(),                                                                           
+                       userData.time );
+            }
 
-#ifdef HAVE_CUDA
-            __host__ __device__
-#endif
+            
+            __cuda_callable__
             static void processCell( const MeshType& mesh,
                                      TraversalUserData& userData,
                                      const IndexType index,

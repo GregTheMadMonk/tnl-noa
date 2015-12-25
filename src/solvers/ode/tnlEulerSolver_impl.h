@@ -57,6 +57,7 @@ bool tnlEulerSolver< Problem > :: setup( const tnlParameterContainer& parameters
    tnlExplicitSolver< Problem >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "euler-cfl" ) )
       this->setCFLCondition( parameters.getParameter< double >( prefix + "euler-cfl" ) );
+   return true;
 }
 
 template< typename Problem >
@@ -234,7 +235,7 @@ __global__ void updateUEuler( const Index size,
 
    computeBlockResidue( du,
                         cudaBlockResidue,
-                        n );
+                        n );   
 }
 #endif
 

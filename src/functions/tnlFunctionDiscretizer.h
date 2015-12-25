@@ -25,7 +25,7 @@ class tnlFunctionDiscretizer
 
       typedef typename Vector::DeviceType DeviceType;
       typedef typename Mesh::IndexType IndexType;
-      typedef typename Mesh::VertexType VertexType;
+      typedef typename Function::VertexType VertexType;
       typedef typename Mesh::CoordinatesType CoordinatesType;
 
 #ifdef HAVE_NOT_CXX11
@@ -48,6 +48,6 @@ class tnlFunctionDiscretizer
    
 };
 
-#include <functors/tnlFunctionDiscretizer_impl.h>
+#include <functions/tnlFunctionDiscretizer_impl.h>
 
 #endif /* TNLFUNCTIONDISCRETIZER_H_ */

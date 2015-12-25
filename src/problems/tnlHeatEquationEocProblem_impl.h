@@ -25,6 +25,9 @@
 #ifndef TNLHEATEQUATIONEOCPROBLEM_IMPL_H_
 #define TNLHEATEQUATIONEOCPROBLEM_IMPL_H_
 
+#include "tnlHeatEquationProblem.h"
+
+
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,

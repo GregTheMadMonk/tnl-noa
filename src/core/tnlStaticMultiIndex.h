@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlTestFunction_impl.cu  -  description
+                          tnlStaticMultiIndex.h  -  description
                              -------------------
-    begin                : Sep 21, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    begin                : Nov 13, 2015
+    copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,22 +15,50 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
-#ifdef HAVE_CUDA
+#ifndef TNLSTATICMULTIINDEX_H
+#define	TNLSTATICMULTIINDEX_H
 
-#include <functors/tnlTestFunction.h>
+template< int i1_ >
+class tnlStaticMultiIndex1D
+{
+   public:
+      
+      static const int i1 = i1_;
+      
+      static const int size = 1;
+};
 
-template class tnlTestFunction< 1, float, tnlCuda >;
-template class tnlTestFunction< 2, float, tnlCuda >;
-template class tnlTestFunction< 3, float, tnlCuda >;
+template< int i1_,
+          int i2_ >
+class tnlStaticMultiIndex2D
+{
+   public:
+      
+      static const int i1 = i1_;
+      
+      static const int i2 = i2_;
+      
+      static const int size = 2;
+};
 
-template class tnlTestFunction< 1, double, tnlCuda >;
-template class tnlTestFunction< 2, double, tnlCuda >;
-template class tnlTestFunction< 3, double, tnlCuda >;
+template< int i1_,
+          int i2_,
+          int i3_ >
+class tnlStaticMultiIndex3D
+{
+   public:
+      
+      static const int i1 = i1_;
+      
+      static const int i2 = i2_;
+      
+      static const int i3 = i3_;
+      
+      static const int size = 3;
+};
 
-/*template class tnlTestFunction< 1, long double, tnlCuda >;
-template class tnlTestFunction< 2, long double, tnlCuda >;
-template class tnlTestFunction< 3, long double, tnlCuda >;*/
 
-#endif
-#endif
+
+
+#endif	/* TNLSTATICMULTIINDEX_H */
+

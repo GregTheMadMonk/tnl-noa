@@ -24,19 +24,21 @@
 #ifndef TNLHEATEQUATIONEOCRHS_H_
 #define TNLHEATEQUATIONEOCRHS_H_
 
-#include <functors/tnlFunction.h>
+#include <functions/tnlFunction.h>
 
 template< typename ExactOperator,
           typename TestFunction >
-class tnlHeatEquationEocRhs
+class tnlHeatEquationEocRhs : public tnlFunction< TestFunction::Dimensions,
+                                                  AnalyticFunction >
 {
    public:
 
       typedef ExactOperator ExactOperatorType;
       typedef TestFunction TestFunctionType;
+      typedef typename TestFunction::RealType RealType;
+      typedef typename TestFunction::VertexType VertexType;
 
-      //static constexpr tnlFunctionType getFunctionType() { return tnlAnalyticFunction; }     
-      enum { functionType = tnlAnalyticFunction };
+      static constexpr tnlFunctionType getFunctionType() { return AnalyticFunction; }     
       
       bool setup( const tnlParameterContainer& parameters,
                   const tnlString& prefix = "" )
@@ -46,11 +48,9 @@ class tnlHeatEquationEocRhs
          return true;
       };
 
-      template< typename Vertex,
-                typename Real >
       __cuda_callable__
-      Real getValue( const Vertex& vertex,
-                     const Real& time ) const
+      RealType getValue( const VertexType& vertex,
+                         const RealType& time = 0.0 ) const
       {
          return testFunction.getTimeDerivative( vertex, time )
                 - exactOperator.getValue( testFunction, vertex, time );

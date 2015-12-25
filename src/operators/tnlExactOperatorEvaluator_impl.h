@@ -23,7 +23,7 @@ template< typename Mesh,
           typename DifferentialOperator,
           typename Function,
           typename BoundaryConditions >
-   template< int EntityDimensions >
+   template< typename EntityType >
 void
 tnlExactOperatorEvaluator< Mesh, DofVector, DifferentialOperator, Function, BoundaryConditions >::
 evaluate( const RealType& time,
@@ -36,7 +36,7 @@ evaluate( const RealType& time,
    TraversalUserData userData( time, differentialOperator, function, boundaryConditions, fu );
    TraversalBoundaryEntitiesProcessor boundaryEntitiesProcessor;
    TraversalInteriorEntitiesProcessor interiorEntitiesProcessor;
-   tnlTraverser< MeshType, EntityDimensions > meshTraversal;
+   tnlTraverser< MeshType, EntityType > meshTraversal;
    meshTraversal.template processEntities< TraversalUserData,
                                            TraversalBoundaryEntitiesProcessor,
                                            TraversalInteriorEntitiesProcessor >
@@ -54,7 +54,7 @@ template< int Dimensions,
           typename DifferentialOperator,
           typename Function,
           typename BoundaryConditions >
-   template< int EntityDimensions >
+   template< typename EntityType >
 void
 tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, DofVector, DifferentialOperator, Function, BoundaryConditions >::
 evaluate( const RealType& time,
@@ -65,7 +65,7 @@ evaluate( const RealType& time,
           DofVector& fu ) const
 {
    TraversalUserData userData( time, differentialOperator, function, boundaryConditions, fu );
-   tnlTraverser< MeshType, EntityDimensions > meshTraverser;
+   tnlTraverser< MeshType, EntityType > meshTraverser;
    meshTraverser.template processBoundaryEntities< TraversalUserData,
                                                    TraversalBoundaryEntitiesProcessor >
                                                  ( mesh,

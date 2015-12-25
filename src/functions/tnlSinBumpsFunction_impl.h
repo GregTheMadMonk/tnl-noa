@@ -18,7 +18,7 @@
 #ifndef TNLSINBUMPSFUNCTION_IMPL_H_
 #define TNLSINBUMPSFUNCTION_IMPL_H_
 
-#include <functors/tnlSinBumpsFunction.h>
+#include <functions/tnlSinBumpsFunction.h>
 
 template< typename Vertex >
 void tnlSinBumpsFunctionBase< Vertex >::setWaveLength( const Vertex& waveLength )
@@ -79,12 +79,11 @@ bool tnlSinBumpsFunction< 1, Real >::setup( const tnlParameterContainer& paramet
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
 tnlSinBumpsFunction< 1, Real >::
-getValue( const Vertex& v,
+getValue( const VertexType& v,
           const Real& time ) const
 {
    const RealType& x = v.x();
@@ -124,12 +123,11 @@ bool tnlSinBumpsFunction< 2, Real >::setup( const tnlParameterContainer& paramet
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
 tnlSinBumpsFunction< 2, Real>::
-getValue( const Vertex& v,
+getValue( const VertexType& v,
           const Real& time ) const
 {
    const RealType& x = v.x();
@@ -178,12 +176,11 @@ bool tnlSinBumpsFunction< 3, Real >::setup( const tnlParameterContainer& paramet
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
 tnlSinBumpsFunction< 3, Real >::
-getValue( const Vertex& v,
+getValue( const VertexType& v,
           const Real& time ) const
 {
    const RealType& x = v.x();

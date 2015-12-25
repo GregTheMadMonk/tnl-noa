@@ -6,12 +6,8 @@ SET( headers tnlFiniteDifferences.h
              tnlFiniteDifferences_impl.h
              tnlDirichletBoundaryConditions.h
              tnlDirichletBoundaryConditions_impl.h
-             tnlAnalyticDirichletBoundaryConditions.h
-             tnlAnalyticDirichletBoundaryConditions_impl.h
              tnlNeumannBoundaryConditions.h
              tnlNeumannBoundaryConditions_impl.h
-             tnlAnalyticNeumannBoundaryConditions.h
-             tnlAnalyticNeumannBoundaryConditions_impl.h
              tnlExactOperatorEvaluator.h
              tnlOperatorEnumerator.h
              tnlOperatorEnumerator_impl.h )

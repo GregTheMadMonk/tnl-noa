@@ -44,33 +44,33 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      enum { Dimensions = MeshType::Dimensions };
+      typedef typename MeshType::template GridEntity< MeshType::meshDimensions > CellType;
+      enum { Dimensions = MeshType::meshDimensions };
 
       static tnlString getType();
 
       template< typename Vector >
       __cuda_callable__
-      Real getValue( const MeshType& mesh,
-                     const IndexType cellIndex,
-                     const CoordinatesType& coordinates,
-                     const Vector& u,
-                     const RealType& time ) const;
+      inline Real getValue( const MeshType& mesh,
+                            const CellType& cell,
+                            const Vector& u,
+                            const RealType& time ) const;
 
       __cuda_callable__
-      Index getLinearSystemRowLength( const MeshType& mesh,
-                                      const IndexType& index,
-                                      const CoordinatesType& coordinates ) const;
+      inline Index getLinearSystemRowLength( const MeshType& mesh,
+                                             const IndexType& index,
+                                             const CellType& cell ) const;
 
       template< typename Vector, typename MatrixRow >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const CoordinatesType& coordinates,
-                               Vector& u,
-                               Vector& b,
-                               MatrixRow& matrixRow ) const;
+      inline void updateLinearSystem( const RealType& time,
+                                      const RealType& tau,
+                                      const MeshType& mesh,
+                                      const IndexType& index,
+                                      const CellType& cell,
+                                      Vector& u,
+                                      Vector& b,
+                                      MatrixRow& matrixRow ) const;
 
 };
 
@@ -89,33 +89,36 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      enum { Dimensions = MeshType::Dimensions };
+      enum { Dimensions = MeshType::meshDimensions };
 
       static tnlString getType();
 
-      template< typename Vector >
+      template< typename Vector,
+                typename EntityType >
       __cuda_callable__
-      Real getValue( const MeshType& mesh,
-                     const IndexType cellIndex,
-                     const CoordinatesType& coordinates,
-                     const Vector& u,
-                     const Real& time ) const;
+      inline Real getValue( const MeshType& mesh,
+                            const EntityType& entity,
+                            const Vector& u,
+                            const Real& time ) const;
 
+      template< typename EntityType >
       __cuda_callable__
-      Index getLinearSystemRowLength( const MeshType& mesh,
+      inline Index getLinearSystemRowLength( const MeshType& mesh,
+                                             const IndexType& index,
+                                             const EntityType& entity ) const;
+
+      template< typename Vector,
+                typename MatrixRow,
+                typename EntityType >
+      __cuda_callable__
+      inline void updateLinearSystem( const RealType& time,
+                                      const RealType& tau,
+                                      const MeshType& mesh,
                                       const IndexType& index,
-                                      const CoordinatesType& coordinates ) const;
-
-      template< typename Vector, typename MatrixRow >
-      __cuda_callable__
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const CoordinatesType& coordinates,
-                               Vector& u,
-                               Vector& b,
-                               MatrixRow& matrixRow ) const;
+                                      const EntityType& entity,
+                                      Vector& u,
+                                      Vector& b,
+                                      MatrixRow& matrixRow ) const;
 };
 
 
@@ -133,33 +136,36 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      enum { Dimensions = MeshType::Dimensions };
+      enum { Dimensions = MeshType::meshDimensions };
 
       static tnlString getType();
 
-      template< typename Vector >
+      template< typename Vector,
+                typename EntityType >
       __cuda_callable__
-      Real getValue( const MeshType& mesh,
-                     const IndexType cellIndex,
-                     const CoordinatesType& coordinates,
-                     const Vector& u,
-                     const Real& time ) const;
+      inline Real getValue( const MeshType& mesh,
+                            const EntityType& entity,
+                            const Vector& u,
+                            const Real& time ) const;
 
+      template< typename EntityType >
       __cuda_callable__
-      Index getLinearSystemRowLength( const MeshType& mesh,
+      inline Index getLinearSystemRowLength( const MeshType& mesh,
+                                             const IndexType& index,
+                                             const EntityType& entity ) const;
+
+      template< typename Vector,
+                typename MatrixRow,
+                typename EntityType >
+      __cuda_callable__
+      inline void updateLinearSystem( const RealType& time,
+                                      const RealType& tau,
+                                      const MeshType& mesh,
                                       const IndexType& index,
-                                      const CoordinatesType& coordinates ) const;
-
-      template< typename Vector, typename MatrixRow >
-      __cuda_callable__
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const CoordinatesType& coordinates,
-                               Vector& u,
-                               Vector& b,
-                               MatrixRow& matrixRow ) const;
+                                      const EntityType& entity,
+                                      Vector& u,
+                                      Vector& b,
+                                      MatrixRow& matrixRow ) const;
 
 };
 

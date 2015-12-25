@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTestFunction_impl.cpp  -  description
+                          tnlTestFunction_impl.cu  -  description
                              -------------------
     begin                : Sep 21, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,22 +15,22 @@
  *                                                                         *
  ***************************************************************************/
 
-
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef HAVE_CUDA
 
-#include <functors/tnlTestFunction.h>
+#include <functions/tnlTestFunction.h>
 
-template class tnlTestFunction< 1, float, tnlHost >;
-template class tnlTestFunction< 2, float, tnlHost >;
-template class tnlTestFunction< 3, float, tnlHost >;
+template class tnlTestFunction< 1, float, tnlCuda >;
+template class tnlTestFunction< 2, float, tnlCuda >;
+template class tnlTestFunction< 3, float, tnlCuda >;
 
-template class tnlTestFunction< 1, double, tnlHost >;
-template class tnlTestFunction< 2, double, tnlHost >;
-template class tnlTestFunction< 3, double, tnlHost >;
+template class tnlTestFunction< 1, double, tnlCuda >;
+template class tnlTestFunction< 2, double, tnlCuda >;
+template class tnlTestFunction< 3, double, tnlCuda >;
 
-template class tnlTestFunction< 1, long double, tnlHost >;
-template class tnlTestFunction< 2, long double, tnlHost >;
-template class tnlTestFunction< 3, long double, tnlHost >;
+/*template class tnlTestFunction< 1, long double, tnlCuda >;
+template class tnlTestFunction< 2, long double, tnlCuda >;
+template class tnlTestFunction< 3, long double, tnlCuda >;*/
 
 #endif
-
+#endif

@@ -67,7 +67,7 @@ getNumberOfEntities() const
 template< typename MeshConfig >   
 typename tnlMesh< MeshConfig >::GlobalIndexType
 tnlMesh< MeshConfig >::
-getNumberOfCells() const
+template getNumberOfCells() const
 {
    return entitiesStorage.getNumberOfEntities( tnlDimensionsTag< dimensions >() );
 }

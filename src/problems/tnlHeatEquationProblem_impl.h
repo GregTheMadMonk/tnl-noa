@@ -90,7 +90,7 @@ getDofs( const MeshType& mesh ) const
    /****
     * Set-up DOFs and supporting grid functions
     */
-   return mesh.getNumberOfCells();
+   return mesh.template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
@@ -102,7 +102,7 @@ tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOper
 bindDofs( const MeshType& mesh,
           DofVectorType& dofVector )
 {
-   const IndexType dofs = mesh.getNumberOfCells();
+   const IndexType dofs = mesh.template getEntitiesCount< typename MeshType::Cell >();
    this->solution.bind( dofVector.getData(), dofs );
 }
 
@@ -143,10 +143,11 @@ setupLinearSystem( const MeshType& mesh,
    if( ! rowLengths.setSize( dofs ) )
       return false;
    tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowsLengths< Mesh::Dimensions >( mesh,
-                                                            differentialOperator,
-                                                            boundaryCondition,
-                                                            rowLengths );
+   matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >(
+      mesh,
+      differentialOperator,
+      boundaryCondition,
+      rowLengths );
    matrix.setDimensions( dofs, dofs );
    if( ! matrix.setCompressedRowsLengths( rowLengths ) )
       return false;
@@ -202,18 +203,19 @@ getExplicitRHS( const RealType& time,
    //cout << "u = " << u << endl;
    this->bindDofs( mesh, u );
    tnlExplicitUpdater< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   explicitUpdater.template update< Mesh::Dimensions >( time,
-                                                        mesh,
-                                                        this->differentialOperator,
-                                                        this->boundaryCondition,
-                                                        this->rightHandSide,
-                                                        u,
-                                                        fu );
-   //cout << "u = " << u << endl;
-   //cout << "fu = " << fu << endl;
-   //_u.save( "u.tnl" );
-   //_fu.save( "fu.tnl" );
-   //getchar();
+   explicitUpdater.template update< typename Mesh::Cell >( 
+      time,
+      mesh,
+      this->differentialOperator,
+      this->boundaryCondition,
+      this->rightHandSide,
+      u,
+      fu );
+   /*cout << "u = " << u << endl;
+   cout << "fu = " << fu << endl;
+   u.save( "u.tnl" );
+   fu.save( "fu.tnl" );
+   getchar();*/
 }
 
 template< typename Mesh,
@@ -238,15 +240,16 @@ assemblyLinearSystem( const RealType& time,
                              RightHandSide,
                              tnlBackwardTimeDiscretisation,
                              Matrix > systemAssembler;
-   systemAssembler.template assembly< Mesh::Dimensions >( time,
-                                                          tau,
-                                                          mesh,
-                                                          this->differentialOperator,
-                                                          this->boundaryCondition,
-                                                          this->rightHandSide,
-                                                          u,
-                                                          matrix,
-                                                          b );
+   systemAssembler.template assembly< typename Mesh::Cell >(
+      time,
+      tau,
+      mesh,
+      this->differentialOperator,
+      this->boundaryCondition,
+      this->rightHandSide,
+      u,
+      matrix,
+      b );
    /*matrix.print( cout );
    cout << endl << b << endl;
    cout << endl << u << endl;

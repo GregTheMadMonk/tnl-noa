@@ -134,7 +134,7 @@ read( const tnlRegionOfInterest< Index > roi,
 {
 #ifdef HAVE_PNG_H
    typedef tnlGrid< 2, Real, Device, Index > GridType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   typename GridType::Cell cell( grid );
    
    /***
     * Prepare the long jump back from libpng.
@@ -156,9 +156,12 @@ read( const tnlRegionOfInterest< Index > roi,
       {
          if( !roi.isIn( i, j ) )
             continue;
-      
-         Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
-                                              roi.getBottom() - 1 - i ) );
+         
+         cell.getCoordinates().x() = j - roi.getLeft();
+         cell.getCoordinates().y() = roi.getBottom() - 1 - i;
+         cell.refresh();
+         //Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
+         //                                     roi.getBottom() - 1 - i ) );
          unsigned char char_color[ 4 ];
          unsigned short int int_color[ 4 ];
          switch( this->color_type )
@@ -168,13 +171,13 @@ read( const tnlRegionOfInterest< Index > roi,
                {
                   char_color[ 0 ] = row_pointers[ i ][ j ];
                   Real value = char_color[ 0 ] / ( Real ) 255.0;
-                  vector.setElement( cellIndex, value );
+                  vector.setElement( cell.getIndex(), value );
                }
                if( this->bit_depth == 16 )
                {
                   int_color[ 0 ] = row_pointers[ i ][ j ];
                   Real value = int_color[ 0 ] / ( Real ) 65535.0;
-                  vector.setElement( cellIndex, value );
+                  vector.setElement( cell.getIndex(), value );
                }
                break;
             case PNG_COLOR_TYPE_RGB:
@@ -188,7 +191,7 @@ read( const tnlRegionOfInterest< Index > roi,
                   Real g = char_color[ 1 ] / ( Real ) 255.0;
                   Real b = char_color[ 2 ] / ( Real ) 255.0;
                   Real value = 0.2989 * r + 0.5870 * g + 0.1140 * b;
-                  vector.setElement( cellIndex, value );
+                  vector.setElement( cell.getIndex(), value );
                }
                if( this->bit_depth == 16 )
                {
@@ -200,7 +203,7 @@ read( const tnlRegionOfInterest< Index > roi,
                   Real g = int_color[ 1 ] / ( Real ) 66355.0;
                   Real b = int_color[ 2 ] / ( Real ) 65535.0;
                   Real value = 0.2989 * r + 0.5870 * g + 0.1140 * b;
-                  vector.setElement( cellIndex, value );
+                  vector.setElement( cell.getIndex(), value );
                }
                break;
             default:
@@ -306,7 +309,7 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
 {
 #ifdef HAVE_PNG_H   
    typedef tnlGrid< 2, Real, Device, Index > GridType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   typename GridType::Cell cell( grid );
    
    /***
     * Prepare the long jump back from libpng.
@@ -325,10 +328,13 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
    {
       for( j = 0; j < grid.getDimensions().x(); j ++ )
       {
-         Index cellIndex = grid.getCellIndex( CoordinatesType( j,
-                                              grid.getDimensions().y() - 1 - i ) );
+         cell.getCoordinates().x() = j;
+         cell.getCoordinates().y() = grid.getDimensions().y() - 1 - i;
 
-         row[ j ] = 255 * vector.getElement( cellIndex );         
+         //Index cellIndex = grid.getCellIndex( CoordinatesType( j,
+         //                                     grid.getDimensions().y() - 1 - i ) );
+
+         row[ j ] = 255 * vector.getElement( cell.getIndex() );         
       }
       png_write_row( this->png_ptr, row );
    }

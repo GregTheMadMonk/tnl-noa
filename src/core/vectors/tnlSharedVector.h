@@ -20,7 +20,7 @@
 
 #include <core/arrays/tnlSharedArray.h>
 #include <core/vectors/tnlVector.h>
-#include <functors/tnlFunction.h>
+#include <functions/tnlFunction.h>
 
 class tnlHost;
 
@@ -36,9 +36,6 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    typedef Index IndexType;
    typedef tnlSharedVector< Real, tnlHost, Index > HostType;
    typedef tnlSharedVector< Real, tnlCuda, Index > CudaType;
-
-   //static constexpr tnlFunctionType getFunctionType() { return tnlDiscreteFunction; }
-   enum { functionType = tnlDiscreteFunction };
 
    tnlSharedVector();
 

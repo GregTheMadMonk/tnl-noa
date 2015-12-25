@@ -19,7 +19,7 @@
 #define TNLVECTOR_H_
 
 #include <core/arrays/tnlArray.h>
-#include <functors/tnlFunction.h>
+#include <functions/tnlFunction.h>
 
 class tnlHost;
 
@@ -35,9 +35,6 @@ class tnlVector : public tnlArray< Real, Device, Index >
    typedef Index IndexType;
    typedef tnlVector< Real, tnlHost, Index > HostType;
    typedef tnlVector< Real, tnlCuda, Index > CudaType;
-
-   //static constexpr tnlFunctionType getFunctionType() { return tnlDiscreteFunction; }
-   enum { functionType = tnlDiscreteFunction };
 
    tnlVector();
 

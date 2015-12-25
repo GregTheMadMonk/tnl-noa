@@ -95,7 +95,7 @@ read( const tnlRegionOfInterest< Index > roi,
       Vector& vector )
 {
    typedef tnlGrid< 2, Real, Device, Index > GridType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   typename GridType::Cell cell( grid );
    
    Index i, j;
    for( i = 0; i < this->height; i ++ )
@@ -111,9 +111,12 @@ read( const tnlRegionOfInterest< Index > roi,
          else this -> file >> col;
          if( roi.isIn( i, j ) )
          {
-            Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
-                                                                  roi.getBottom() - 1 - i ) );
-            vector.setElement( cellIndex, ( Real ) col / ( Real ) this->maxColors );
+            cell.getCoordinates().x() = j - roi.getLeft();
+            cell.getCoordinates().y() = roi.getBottom() - 1 - i;
+            cell.refresh();
+            //Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
+            //                                                      roi.getBottom() - 1 - i ) );
+            vector.setElement( cell.getIndex(), ( Real ) col / ( Real ) this->maxColors );
          }
       }
    return true;
@@ -172,16 +175,21 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
        Vector& vector )
 {
    typedef tnlGrid< 2, Real, Device, Index > GridType;
-   typedef typename GridType::CoordinatesType CoordinatesType;
+   typename GridType::Cell cell( grid );
    
    Index i, j;
    for( i = 0; i < grid.getDimensions().y(); i ++ )
    {
       for( j = 0; j < grid.getDimensions().x(); j ++ )
       {
-         Index cellIndex = grid.getCellIndex( CoordinatesType( j,
-                                              grid.getDimensions().y() - 1 - i ) );
-         unsigned char color = 255 * vector.getElement( cellIndex );
+         cell.getCoordinates().x() = j;
+         cell.getCoordinates().y() = grid.getDimensions().y() - 1 - i;
+         cell.refresh();
+                        
+         //Index cellIndex = grid.getCellIndex( CoordinatesType( j,
+         //                                     grid.getDimensions().y() - 1 - i ) );
+
+         unsigned char color = 255 * vector.getElement( cell.getIndex() );
          if ( ! this -> binary )
 	 {
 	     int color_aux = (int)color;

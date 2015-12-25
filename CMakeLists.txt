@@ -42,7 +42,7 @@ else()
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
     #OptimizeForArchitecture()
-    AddCompilerFlag( "-O3 -march=native -DNDEBUG" )
+    AddCompilerFlag( "-O3 -march=native -DNDEBUG -g" )
 endif()
 
 #####
@@ -56,7 +56,7 @@ if( WITH_CUDA STREQUAL "yes" )
         set(BUILD_SHARED_LIBS ON)
         set(CUDA_SEPARABLE_COMPILATION ON)
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -DHAVE_CUDA )
-        AddCompilerFlag( "-DHAVE_NOT_CXX11" ) # -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 " )
+        #AddCompilerFlag( "-DHAVE_NOT_CXX11" ) # -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 " )
         set( ALL_CUDA_ARCHS -gencode arch=compute_20,code=sm_20
                             -gencode arch=compute_30,code=sm_30
                             -gencode arch=compute_32,code=sm_32 
@@ -149,7 +149,8 @@ if( WITH_CUDA STREQUAL "yes" )
 else( WITH_CUDA STREQUAL "yes" )
    #AddCompilerFlag( "-std=gnu++0x -ftree-vectorizer-verbose=1" )       
    AddCompilerFlag( "-std=c++11" )       
-endif( WITH_CUDA STREQUAL "yes" )    
+endif( WITH_CUDA STREQUAL "yes" )
+AddCompilerFlag( "-std=c++11" )       
 
 ####
 # Check for OpenMP
@@ -157,7 +158,7 @@ endif( WITH_CUDA STREQUAL "yes" )
 find_package( OpenMP ) 
 if( OPENMP_FOUND )
    message( "Compiler supports OpenMP." )
-   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp")
+   #set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp")
 endif()
 
 ####

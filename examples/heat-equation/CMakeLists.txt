@@ -1,6 +1,8 @@
 set( tnl_heat_equation_SOURCES     
      tnl-heat-equation.cpp
-     tnl-heat-equation-eoc.cpp )
+     tnl-heat-equation-eoc.cpp
+     tnl-heat-equation.cu
+     tnl-heat-equation-eoc.cu )
                
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE(tnl-heat-equation${debugExt} tnl-heat-equation.cu)
@@ -22,4 +24,5 @@ INSTALL( TARGETS tnl-heat-equation${debugExt}
         
 INSTALL( FILES tnl-run-heat-equation-eoc-test
                tnl-run-heat-equation
+               ${tnl_heat_equation_SOURCES}
          DESTINATION share/tnl-${tnlVersion}/examples/heat-equation )

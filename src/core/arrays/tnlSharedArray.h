@@ -80,13 +80,13 @@ class tnlSharedArray : public tnlObject
 
    __cuda_callable__ Index getSize() const;
 
-   void setElement( const Index i, const Element& x );
+   void setElement( const Index& i, const Element& x );
 
-   Element getElement( Index i ) const;
+   Element getElement( const Index& i ) const;
 
-   __cuda_callable__ Element& operator[] ( Index i );
+   __cuda_callable__ Element& operator[] ( const Index& i );
 
-   __cuda_callable__ const Element& operator[] ( Index i ) const;
+   __cuda_callable__ const Element& operator[] ( const Index& i ) const;
 
    tnlSharedArray< Element, Device, Index >& operator = ( const tnlSharedArray< Element, Device, Index >& array );
 

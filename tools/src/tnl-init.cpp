@@ -21,7 +21,7 @@
 #include <debug/tnlDebug.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
-#include <functors/tnlTestFunction.h>
+#include <functions/tnlTestFunction.h>
 #include <mesh/tnlDummyMesh.h>
 #include <mesh/tnlGrid.h>
 
