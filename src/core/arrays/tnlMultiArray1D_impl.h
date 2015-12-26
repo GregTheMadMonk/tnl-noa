@@ -67,7 +67,7 @@ bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const Index iS
    tnlAssert( iSize > 0,
               cerr << "iSize = " << iSize );
    dimensions[ 0 ] = iSize;
-   return tnlArray< Element, Device, Index > :: setSize( iSize );
+   return tnlArray< Element, Device, Index >::setSize( iSize );
 }
 
 template< typename Element, typename Device, typename Index >
@@ -76,7 +76,7 @@ bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const tnlStati
    tnlAssert( dimensions[ 0 ] > 0,
               cerr << " dimensions[ 0 ] = " << dimensions[ 0 ] );
    this -> dimensions = dimensions;
-   return tnlArray< Element, Device, Index > :: setSize( this -> dimensions[ 0 ] );
+   return tnlArray< Element, Device, Index >::setSize( this -> dimensions[ 0 ] );
 }
 
 template< typename Element, typename Device, typename Index >

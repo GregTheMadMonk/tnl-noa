@@ -54,6 +54,7 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    typedef tnlArrayTester< ElementType, Device, IndexType > ArrayTester;
    typedef CppUnit :: TestCaller< ArrayTester > TestCaller;
+   typedef tnlArray< ElementType, Device, IndexType > Array;
 
    tnlArrayTester(){};
 
@@ -66,6 +67,7 @@ class tnlArrayTester : public CppUnit :: TestCase
       CppUnit :: TestResult result;
       suiteOfTests -> addTest( new TestCaller( "testConstructorDestructor", &ArrayTester::testConstructorDestructor ) );
       suiteOfTests -> addTest( new TestCaller( "testSetSize", &ArrayTester::testSetSize ) );
+      suiteOfTests -> addTest( new TestCaller( "testBind", &ArrayTester::testBind ) );
       suiteOfTests -> addTest( new TestCaller( "testSetGetElement", &ArrayTester::testSetGetElement ) );
       suiteOfTests -> addTest( new TestCaller( "testComparisonOperator", &ArrayTester::testComparisonOperator ) );
       suiteOfTests -> addTest( new TestCaller( "testAssignmentOperator", &ArrayTester::testAssignmentOperator ) );
@@ -79,14 +81,42 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testConstructorDestructor()
    {
-      tnlArray< ElementType, Device, IndexType > u;
+      Array u;
+      Array v( 10 );
+      CPPUNIT_ASSERT( v.getSize() == 10 );
    }
 
    void testSetSize()
    {
-      tnlArray< ElementType, Device, IndexType > u, v;
-      u. setSize( 10 );
-      v. setSize( 10 );
+      Array u, v;
+      u.setSize( 10 );
+      v.setSize( 10 );
+      CPPUNIT_ASSERT( u.getSize() == 10 );
+      CPPUNIT_ASSERT( v.getSize() == 10 );
+   }
+   
+   void testBind()
+   {
+      Array u( 10 ), v;
+      u.setValue( 27 );
+      v.bind( u );
+      CPPUNIT_ASSERT( v.getSize() == u.getSize() );
+      CPPUNIT_ASSERT( u.getElement( 0 ) == 27 );
+      v.setValue( 50 );
+      CPPUNIT_ASSERT( u.getElement( 0 ) == 50 );
+      u.reset();
+      CPPUNIT_ASSERT( u.getSize() == 0 );
+      CPPUNIT_ASSERT( v.getElement( 0 ) == 50 );
+      
+      ElementType data[ 10 ] = { 1, 2, 3, 4, 5, 6, 7, 8, 10 };
+      u.bind( data, 10 );
+      CPPUNIT_ASSERT( u.getElement( 1 ) == 2 );
+      v.bind( u );
+      CPPUNIT_ASSERT( v.getElement( 1 ) == 2 );
+      u.reset();
+      v.setElement( 1, 3 );      
+      v.reset();
+      CPPUNIT_ASSERT( data[ 1 ] == 3 );
    }
 
    void testSetGetElement()

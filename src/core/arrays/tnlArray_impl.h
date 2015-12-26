@@ -26,20 +26,87 @@
 #include <core/arrays/tnlArrayOperations.h>
 #include <core/arrays/tnlArrayIO.h>
 
+#include "tnlArray.h"
+
 using namespace std;
 
 template< typename Element,
            typename Device,
            typename Index >
-tnlArray< Element, Device, Index > :: tnlArray()
-: size( 0 ), data( 0 )
+tnlArray< Element, Device, Index >::
+tnlArray()
+: size( 0 ),
+  data( 0 ),
+  allocationPointer( 0 ),
+  referenceCounter( 0 )
 {
 };
 
 template< typename Element,
            typename Device,
            typename Index >
-tnlString tnlArray< Element, Device, Index > :: getType()
+tnlArray< Element, Device, Index >::
+tnlArray( const IndexType& size )
+: size( 0 ),
+  data( 0 ),
+  allocationPointer( 0 ),
+  referenceCounter( 0 )
+{
+   this->setSize( size );
+}
+
+template< typename Element,
+           typename Device,
+           typename Index >
+tnlArray< Element, Device, Index >::
+tnlArray( Element* data,
+          const IndexType& size )
+: size( size ),
+  data( data ),
+  allocationPointer( 0 ),
+  referenceCounter( 0 )
+{   
+}
+
+template< typename Element,
+           typename Device,
+           typename Index >
+tnlArray< Element, Device, Index >::
+tnlArray( tnlArray< Element, Device, Index >& array,
+          const IndexType& begin,
+          const IndexType& size )
+: size( size ),
+  data( &array.getData()[ begin ] ),
+  allocationPointer( array.allocationPointer ),
+  referenceCounter( 0 )
+{
+   tnlAssert( begin < array.getSize(),
+              std::cerr << " begin = " << begin << " array.getSize() = " << array.getSize() );
+   tnlAssert( begin + size  < array.getSize(),
+              std::cerr << " begin = " << begin << " size = " << size <<  " array.getSize() = " << array.getSize() );
+   if( ! this->size )
+      this->size = array.getSize() - begin;
+   if( array.allocationPointer )
+   {
+      if( array.referenceCounter )
+      {
+         this->referenceCounter = array.referenceCounter;
+         *this->referenceCounter++;
+      }
+      else
+      {
+         this->referenceCounter = array.referenceCounter = new int;
+         *this->referenceCounter = 2;            
+      }
+   }   
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
+tnlString 
+tnlArray< Element, Device, Index >::
+getType()
 {
    return tnlString( "tnlArray< " ) +
                      ::getType< Element >() + ", " +
@@ -51,7 +118,9 @@ tnlString tnlArray< Element, Device, Index > :: getType()
 template< typename Element,
            typename Device,
            typename Index >
-tnlString tnlArray< Element, Device, Index > :: getTypeVirtual() const
+tnlString 
+tnlArray< Element, Device, Index >::
+getTypeVirtual() const
 {
    return this->getType();
 };
@@ -59,7 +128,9 @@ tnlString tnlArray< Element, Device, Index > :: getTypeVirtual() const
 template< typename Element,
            typename Device,
            typename Index >
-tnlString tnlArray< Element, Device, Index > :: getSerializationType()
+tnlString
+tnlArray< Element, Device, Index >::
+getSerializationType()
 {
    return HostType::getType();
 };
@@ -67,7 +138,9 @@ tnlString tnlArray< Element, Device, Index > :: getSerializationType()
 template< typename Element,
            typename Device,
            typename Index >
-tnlString tnlArray< Element, Device, Index > :: getSerializationTypeVirtual() const
+tnlString 
+tnlArray< Element, Device, Index >::
+getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 };
@@ -75,26 +148,49 @@ tnlString tnlArray< Element, Device, Index > :: getSerializationTypeVirtual() co
 template< typename Element,
            typename Device,
            typename Index >
-bool tnlArray< Element, Device, Index > :: setSize( const Index size )
+void
+tnlArray< Element, Device, Index >::
+releaseData() const
+{
+   if( this->referenceCounter )
+   {
+      if( --*this->referenceCounter == 0 )
+      {
+         tnlArrayOperations< Device >::freeMemory( this->allocationPointer );
+         delete this->referenceCounter;
+      }
+   }
+   else
+      if( allocationPointer )
+         tnlArrayOperations< Device >::freeMemory( this->allocationPointer );
+   this->allocationPointer = 0;
+   this->data = 0;
+   this->size = 0;
+   this->referenceCounter = 0;
+}
+
+template< typename Element,
+           typename Device,
+           typename Index >
+bool
+tnlArray< Element, Device, Index >::
+setSize( const Index size )
 {
    tnlAssert( size >= 0,
               cerr << "You try to set size of tnlArray to negative value."
                    << "New size: " << size << endl );
-   if( this->size == size ) return true;
-   if( this->data )
-   {
-      tnlArrayOperations< Device >::freeMemory( this->data );
-      this->data = 0;
-   }
+   if( this->size == size && allocationPointer && ! referenceCounter ) return true;
+   this->releaseData();
+   tnlArrayOperations< Device >::allocateMemory( this->allocationPointer, size );
+   this->data = this->allocationPointer;
    this->size = size;
-   tnlArrayOperations< Device >::allocateMemory( this->data, size );
-   if( ! this->data )
+   if( ! this->allocationPointer )
    {
       cerr << "I am not able to allocate new array with size "
            << ( double ) this->size * sizeof( ElementType ) / 1.0e9 << " GB." << endl;
       this -> size = 0;
       return false;
-   }
+   }   
    return true;
 };
 
@@ -102,7 +198,9 @@ template< typename Element,
            typename Device,
            typename Index >
    template< typename Array >
-bool tnlArray< Element, Device, Index > :: setLike( const Array& array )
+bool
+tnlArray< Element, Device, Index >::
+setLike( const Array& array )
 {
    tnlAssert( array. getSize() >= 0,
               cerr << "You try to set size of tnlArray to negative value."
@@ -111,29 +209,98 @@ bool tnlArray< Element, Device, Index > :: setLike( const Array& array )
 };
 
 template< typename Element,
+           typename Device,
+           typename Index >
+void 
+tnlArray< Element, Device, Index >::
+bind( Element* data,
+      const Index size )
+{
+   this->releaseData();
+   this->data = data;
+   this->size = size;   
+}
+
+template< typename Element,
+           typename Device,
+           typename Index >
+void
+tnlArray< Element, Device, Index >::
+bind( tnlArray< Element, Device, Index >& array,
+      const IndexType& begin,
+      const IndexType& size )
+{
+   tnlAssert( begin < array.getSize(),
+              std::cerr << " begin = " << begin << " array.getSize() = " << array.getSize() );
+   tnlAssert( begin + size  < array.getSize(),
+              std::cerr << " begin = " << begin << " size = " << size <<  " array.getSize() = " << array.getSize() );
+   
+   this->releaseData();
+   if( size )
+      this->size = size;
+   else
+      this->size = array.getSize() - begin;
+   this->data = &array.getData()[ begin ];
+   this->allocationPointer = array.allocationPointer;
+   if( array.allocationPointer )
+   {
+      if( array.referenceCounter )
+      {
+         this->referenceCounter = array.referenceCounter;
+         *this->referenceCounter++;
+      }
+      else
+      {
+         this->referenceCounter = array.referenceCounter = new int;
+         *this->referenceCounter = 2;            
+      }
+   }   
+}
+
+template< typename Element,
+           typename Device,
+           typename Index >
+   template< int Size >
+void
+tnlArray< Element, Device, Index >::
+bind( tnlStaticArray< Size, Element >& array )
+{
+   this->releaseData();
+   this->size = Size;
+   this->data = array.getData();
+}
+
+
+template< typename Element,
           typename Device,
           typename Index >
-void tnlArray< Element, Device, Index > :: swap( tnlArray< Element, Device, Index >& array )
+void 
+tnlArray< Element, Device, Index >::
+swap( tnlArray< Element, Device, Index >& array )
 {
    ::swap( this->size, array.size );
    ::swap( this->data, array.data );
+   ::swap( this->allocationPointer, array.allocationPointer );
+   ::swap( this->referenceCounter, array.referenceCounter );
 };
 
 template< typename Element,
           typename Device,
           typename Index >
-void tnlArray< Element, Device, Index > :: reset()
+void 
+tnlArray< Element, Device, Index >::
+reset()
 {
-   this->size = 0;
-   tnlArrayOperations< Device >::freeMemory( this->data );
-   this->data = 0;
+   this->releaseData();
 };
 
 template< typename Element,
           typename Device,
           typename Index >
 __cuda_callable__
-Index tnlArray< Element, Device, Index > :: getSize() const
+Index 
+tnlArray< Element, Device, Index >::
+getSize() const
 {
    return this -> size;
 }
@@ -141,7 +308,9 @@ Index tnlArray< Element, Device, Index > :: getSize() const
 template< typename Element,
            typename Device,
            typename Index >
-void tnlArray< Element, Device, Index > :: setElement( const Index& i, const Element& x )
+void
+tnlArray< Element, Device, Index >::
+setElement( const Index& i, const Element& x )
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for setElement method in tnlArray "
@@ -153,7 +322,9 @@ void tnlArray< Element, Device, Index > :: setElement( const Index& i, const Ele
 template< typename Element,
            typename Device,
            typename Index >
-Element tnlArray< Element, Device, Index > :: getElement( const Index& i ) const
+Element
+tnlArray< Element, Device, Index >::
+getElement( const Index& i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for getElement method in tnlArray "
@@ -166,7 +337,9 @@ template< typename Element,
           typename Device,
           typename Index >
 __cuda_callable__
-inline Element& tnlArray< Element, Device, Index > :: operator[] ( const Index& i )
+inline Element&
+tnlArray< Element, Device, Index >::
+operator[] ( const Index& i )
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for operator[] in tnlArray "
@@ -179,7 +352,9 @@ template< typename Element,
            typename Device,
            typename Index >
 __cuda_callable__
-inline const Element& tnlArray< Element, Device, Index > :: operator[] ( const Index& i ) const
+inline const Element& 
+tnlArray< Element, Device, Index >::
+operator[] ( const Index& i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for operator[] in tnlArray "
@@ -192,7 +367,8 @@ template< typename Element,
            typename Device,
            typename Index >
 tnlArray< Element, Device, Index >&
-   tnlArray< Element, Device, Index > :: operator = ( const tnlArray< Element, Device, Index >& array )
+tnlArray< Element, Device, Index >::
+operator = ( const tnlArray< Element, Device, Index >& array )
 {
    tnlAssert( array. getSize() == this -> getSize(),
            cerr << "Source size: " << array. getSize() << endl
@@ -212,7 +388,8 @@ template< typename Element,
            typename Index >
    template< typename Array >
 tnlArray< Element, Device, Index >&
-   tnlArray< Element, Device, Index > :: operator = ( const Array& array )
+tnlArray< Element, Device, Index >::
+operator = ( const Array& array )
 {
    tnlAssert( array. getSize() == this -> getSize(),
            cerr << "Source size: " << array. getSize() << endl
@@ -232,7 +409,9 @@ template< typename Element,
           typename Device,
           typename Index >
    template< typename Array >
-bool tnlArray< Element, Device, Index > :: operator == ( const Array& array ) const
+bool
+tnlArray< Element, Device, Index >::
+operator == ( const Array& array ) const
 {
    if( array. getSize() != this -> getSize() )
       return false;
@@ -327,7 +506,9 @@ bool tnlArray< Element, Device, Index > :: save( tnlFile& file ) const
 template< typename Element,
           typename Device,
           typename Index >
-bool tnlArray< Element, Device, Index > :: load( tnlFile& file )
+bool
+tnlArray< Element, Device, Index >::
+load( tnlFile& file )
 {
    if( ! tnlObject :: load( file ) )
       return false;
@@ -360,26 +541,10 @@ bool tnlArray< Element, Device, Index > :: load( tnlFile& file )
 template< typename Element,
           typename Device,
           typename Index >
-bool tnlArray< Element, Device, Index > :: save( const tnlString& fileName ) const
+tnlArray< Element, Device, Index >::
+~tnlArray()
 {
-   return tnlObject :: save( fileName );
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
-bool tnlArray< Element, Device, Index > :: load( const tnlString& fileName )
-{
-   return tnlObject :: load( fileName );
-}
-
-template< typename Element,
-          typename Device,
-          typename Index >
-tnlArray< Element, Device, Index > :: ~tnlArray()
-{
-   if( this -> data )
-      tnlArrayOperations< Device > :: freeMemory( this -> data );
+   this->releaseData();
 }
 
 template< typename Element, typename Device, typename Index >
