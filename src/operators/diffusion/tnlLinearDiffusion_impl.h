@@ -41,20 +41,21 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector >
+template< typename MeshEntity,
+          typename Vector >
 __cuda_callable__
 inline
 Real
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const MeshType& mesh,
-          const CellType& cell,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
-   const typename CellType::template NeighbourEntities< 1 >& neighbourEntities = cell.getNeighbourEntities();
+   const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< - 2 >();
    return ( u[ neighbourEntities.template getEntityIndex< -1 >() ]
-            - 2.0 * u[ cell.getIndex() ]
+            - 2.0 * u[ entity.getIndex() ]
             + u[ neighbourEntities.template getEntityIndex< 1 >() ] ) * hxSquareInverse;
 }
 
@@ -63,13 +64,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
+   template< typename MeshEntity >          
 __cuda_callable__
 inline
 Index
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
-                          const CellType& cell ) const
+                          const MeshEntity& entity ) const
 {
    return 3;
 }
@@ -79,7 +81,9 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename Vector, typename Matrix >
+   template< typename MeshEntity,
+             typename Vector, 
+             typename Matrix >
 __cuda_callable__
 inline
 void
@@ -88,12 +92,12 @@ updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,
-                    const CellType& cell,
+                    const MeshEntity& entity,
                     Vector& u,
                     Vector& b,
                     Matrix& matrix ) const
 {
-   const typename CellType::template NeighbourEntities< 1 >& neighbourEntities = cell.getNeighbourEntities();
+   const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * mesh.template getSpaceStepsProducts< -2 >();
    matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1 >(),      - lambdaX );
@@ -139,8 +143,8 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector,
-          typename EntityType >
+template< typename EntityType,
+          typename Vector >
 __cuda_callable__
 inline
 Real
@@ -213,8 +217,8 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector,
-          typename EntityType >
+template< typename EntityType,
+          typename Vector >
 __cuda_callable__
 inline
 Real
@@ -279,7 +283,7 @@ updateLinearSystem( const RealType& time,
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * mesh.template getSpaceStepsProducts< -2, 0, 0 >();
    const RealType lambdaY = tau * mesh.template getSpaceStepsProducts< 0, -2, 0 >();
-   const RealType lambdaZ = tau * mesh.template getSpaceStepsProducts< 0, 0, -2 >();
+   const RealType  lambdaZ = tau * mesh.template getSpaceStepsProducts< 0, 0, -2 >();
    matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, 0, -1 >(), -lambdaZ );
    matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, -1, 0 >(), -lambdaY );
    matrixRow.setElement( 2, neighbourEntities.template getEntityIndex< -1, 0, 0 >(), -lambdaX );

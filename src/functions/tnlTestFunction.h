@@ -34,7 +34,12 @@ class tnlTestFunction : public tnlFunction< FunctionDimensions, AnalyticFunction
    enum TestFunctions{ constant,
                        expBump,
                        sinBumps,
-                       sinWave };
+                       sinWave,
+		       cylinder,
+		       flowerpot,
+		       twins,
+           pseudoSquare,
+           blob };
 
    enum TimeDependence { none,
                          linear,

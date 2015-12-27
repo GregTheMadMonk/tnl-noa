@@ -1,0 +1,84 @@
+
+#ifndef TNLONESIDEDIFFNONLINEAROPERATOR_IMPL_H
+#define	TNLONESIDEDIFFNONLINEAROPERATOR_IMPL_H
+
+#include "tnlOneSideDiffNonlinearOperator.h"
+
+#include <mesh/tnlGrid.h>
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index,
+          typename OperatorQ >
+tnlString
+tnlOneSideDiffNonlinearOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+getType()
+{
+   return tnlString( "tnlOneSideDiffNonlinearOperator< " ) +
+          MeshType::getType() + ", " +
+          ::getType< Real >() + ", " +
+          ::getType< Index >() + ", " +
+	  OperatorQ::getType() + " >";
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index,
+	  typename OperatorQ >
+tnlString
+tnlNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+getType()
+{
+   return tnlString( "tnlOneSideDiffNonlinearOperator< " ) +
+          MeshType::getType() + ", " +
+          ::getType< Real >() + ", " +
+          ::getType< Index >() + ", " +
+	  OperatorQ::getType() + " >";
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index,
+          typename OperatorQ >
+template< typename Vector >
+#ifdef HAVE_CUDA
+__device__ __host__
+#endif
+Real
+tnlNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+getValue( const MeshType& mesh,
+          const IndexType cellIndex,
+          const CoordinatesType& coordinates,
+          const Vector& u,
+          const Real& time ) const
+{
+   return operatorQ.getValueStriped(mesh,cellIndex,u)*((fDifference.getValueX(mesh,cellIndex,u)/operatorQ.getValue(mesh,cellIndex,u)
+          -bDifference.getValueX(mesh,cellIndex,u)/operatorQ.getValue(mesh,mesh.template getCellNextToCell<-1,0>(cellIndex),u))
+          *mesh.getHxInverse()+(fDifference.getValueY(mesh,cellIndex,u)/operatorQ.getValue(mesh,cellIndex,u)
+          -bDifference.getValueY(mesh,cellIndex,u)/operatorQ.getValue(mesh,mesh.template getCellNextToCell<0,-1>(cellIndex),u))*mesh.getHyInverse());
+}
+       
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index,
+ 	  typename OperatorQ >
+tnlString
+tnlNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+getType()
+{
+   return tnlString( "tnlOneSideDiffNonlinearOperator< " ) +
+          MeshType::getType() + ", " +
+          ::getType< Real >() + ", " +
+          ::getType< Index >() + ", " +
+	  OperatorQ::getType() + " >";
+}
+
+#endif	/* TNLONESIDEDIFFNONLINEAROPERATOR_IMPL_H */

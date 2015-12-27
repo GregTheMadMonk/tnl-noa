@@ -5,7 +5,12 @@ SET( headers tnlProblem.h
              tnlHeatEquationProblem_impl.h
              tnlHeatEquationEocProblem.h
              tnlHeatEquationEocProblem_impl.h             
-             tnlHeatEquationEocRhs.h             
+             tnlHeatEquationEocRhs.h 
+	     tnlMeanCurvatureFlowEocProblem.h
+	     tnlMeanCurvatureFlowEocProblem_impl.h
+	     tnlMeanCurvatureFlowEocRhs.h
+	     tnlMeanCurvatureFlowProblem.h
+	     tnlMeanCurvatureFlowProblem_impl.h            
    )
    
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/problems )
