@@ -227,7 +227,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          vi. addVector( _w, ( RealType ) 1.0 / normw );
          
          //cout << "vi = " << vi << endl;
-
+         
          /****
           * Applying the Givens rotations
           */
@@ -251,7 +251,10 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
                              sn[ i ] );
 
          this->setResidue( fabs( s[ i + 1 ] ) / normb );
-         if( this->getIterations() > this->getMinIterations() && this->getResidue() < this->getConvergenceResidue() ) {
+         // The nextIteration() method should not be called here, because it increments
+         // the iteration counter. The condition below is slightly different than in
+         // nextIteration(), because it first increments and then compares.
+         if( this->getIterations() >= this->getMinIterations() && this->getResidue() < this->getConvergenceResidue() ) {
             update( i, m, _H, _s, _v, x );
             this->refreshSolverMonitor( true );
             return this->checkConvergence();
