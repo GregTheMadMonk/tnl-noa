@@ -66,6 +66,14 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       
       typedef tnlNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
       
+      template< int NeighbourEntityDimensions = entityDimensions >
+      using NeighbourEntities = 
+         tnlNeighbourGridEntityGetter<
+            tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
+                           EntityDimensions,
+                           Config >,
+            NeighbourEntityDimensions >;
+      
       __cuda_callable__ inline
       tnlGridEntity( const GridType& grid );
       
@@ -113,11 +121,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       
       template< int NeighbourEntityDimensions = entityDimensions >
       __cuda_callable__ inline
-      tnlNeighbourGridEntityGetter<
-         tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
-                        EntityDimensions,
-                        Config >,
-         NeighbourEntityDimensions >
+      const NeighbourEntities< NeighbourEntityDimensions >&
       getNeighbourEntities() const;
       
       __cuda_callable__ inline
@@ -177,6 +181,15 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Con
       typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
       typedef tnlGridEntity< GridType, entityDimensions, Config > ThisType;
       typedef tnlNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
+      
+      template< int NeighbourEntityDimensions = entityDimensions >
+      using NeighbourEntities = 
+         tnlNeighbourGridEntityGetter<
+            tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
+                           entityDimensions,
+                           Config >,
+            NeighbourEntityDimensions >;
+
 
       __cuda_callable__ inline
       tnlGridEntity( const GridType& grid );
@@ -216,9 +229,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Con
       
       template< int NeighbourEntityDimensions = Dimensions >
       __cuda_callable__ inline
-      tnlNeighbourGridEntityGetter<
-         tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >,
-         NeighbourEntityDimensions >
+      const NeighbourEntities< NeighbourEntityDimensions >&
       getNeighbourEntities() const;
       
       __cuda_callable__ inline
@@ -281,6 +292,15 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
       typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
       typedef tnlGridEntity< GridType, entityDimensions, Config > ThisType;
       typedef tnlNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
+      
+      template< int NeighbourEntityDimensions = entityDimensions >
+      using NeighbourEntities = 
+         tnlNeighbourGridEntityGetter<
+            tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
+                           entityDimensions,
+                           Config >,
+            NeighbourEntityDimensions >;
+
 
       __cuda_callable__ inline
       tnlGridEntity( const GridType& grid );
@@ -320,7 +340,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
       
       template< int NeighbourEntityDimensions = entityDimensions >
       __cuda_callable__ inline
-      tnlNeighbourGridEntityGetter< ThisType, NeighbourEntityDimensions > getNeighbourEntities() const;
+      const NeighbourEntities< NeighbourEntityDimensions >&
+      getNeighbourEntities() const;
       
       __cuda_callable__ inline
       bool isBoundaryEntity() const;

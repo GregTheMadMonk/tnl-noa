@@ -218,11 +218,9 @@ template< int Dimensions,
           typename Config >
    template< int NeighbourEntityDimensions >
 __cuda_callable__ inline
-tnlNeighbourGridEntityGetter< 
-   tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >, 
-   NeighbourEntityDimensions >
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::template NeighbourEntities< NeighbourEntityDimensions >&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-getNeighbourEntities() const
+getNeighbourEntities() const 
 {
    return neighbourEntitiesStorage.template getNeighbourEntities< NeighbourEntityDimensions >();
 }
@@ -425,9 +423,7 @@ template< int Dimensions,
           typename Config >
    template< int NeighbourEntityDimensions >
 __cuda_callable__ inline
-tnlNeighbourGridEntityGetter< 
-   tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >, 
-   NeighbourEntityDimensions >
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::template NeighbourEntities< NeighbourEntityDimensions >&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
 getNeighbourEntities() const
 {
@@ -641,9 +637,7 @@ template< int Dimensions,
           typename Config >
    template< int NeighbourEntityDimensions >
 __cuda_callable__ inline
-tnlNeighbourGridEntityGetter< 
-   tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >, 
-   NeighbourEntityDimensions >
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::template NeighbourEntities< NeighbourEntityDimensions >&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
 getNeighbourEntities() const
 {

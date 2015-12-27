@@ -51,7 +51,7 @@ getValue( const MeshType& mesh,
           const Vector& u,
           const Real& time ) const
 {
-   auto neighbourEntities = cell.getNeighbourEntities();
+   const typename CellType::template NeighbourEntities< 1 >& neighbourEntities = cell.getNeighbourEntities();
    const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< - 2 >();
    return ( u[ neighbourEntities.template getEntityIndex< -1 >() ]
             - 2.0 * u[ cell.getIndex() ]
@@ -93,7 +93,7 @@ updateLinearSystem( const RealType& time,
                     Vector& b,
                     Matrix& matrix ) const
 {
-   auto neighbourEntities = cell.getNeighbourEntities();
+   const typename CellType::template NeighbourEntities< 1 >& neighbourEntities = cell.getNeighbourEntities();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * mesh.template getSpaceStepsProducts< -2 >();
    matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1 >(),      - lambdaX );
@@ -150,7 +150,7 @@ getValue( const MeshType& mesh,
           const Vector& u,
           const Real& time ) const
 {
-   auto neighbourEntities = entity.getNeighbourEntities();
+   const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< -2, 0 >();
    const RealType& hySquareInverse = mesh.template getSpaceStepsProducts< 0, -2 >();
    return ( u[ neighbourEntities.template getEntityIndex< -1,  0 >() ]
@@ -184,7 +184,7 @@ updateLinearSystem( const RealType& time,
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * mesh.template getSpaceStepsProducts< -2, 0 >();
    const RealType lambdaY = tau * mesh.template getSpaceStepsProducts< 0, -2 >();
-   auto neighbourEntities = entity.getNeighbourEntities();
+   const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
    matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, -1 >(), -lambdaY );
    matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< -1, 0 >(), -lambdaX );
    matrixRow.setElement( 2, index,                                                        2.0 * ( lambdaX + lambdaY ) );
@@ -224,7 +224,7 @@ getValue( const MeshType& mesh,
           const Vector& u,
           const Real& time ) const
 {
-   auto neighbourEntities = entity.getNeighbourEntities();
+   const typename EntityType::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< -2,  0,  0 >();
    const RealType& hySquareInverse = mesh.template getSpaceStepsProducts<  0, -2,  0 >();
    const RealType& hzSquareInverse = mesh.template getSpaceStepsProducts<  0,  0, -2 >();
@@ -275,7 +275,7 @@ updateLinearSystem( const RealType& time,
                     Vector& b,
                     Matrix& matrix ) const
 {
-   auto neighbourEntities = entity.getNeighbourEntities();
+   const typename EntityType::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const RealType lambdaX = tau * mesh.template getSpaceStepsProducts< -2, 0, 0 >();
    const RealType lambdaY = tau * mesh.template getSpaceStepsProducts< 0, -2, 0 >();

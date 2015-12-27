@@ -170,8 +170,8 @@ releaseData() const
 }
 
 template< typename Element,
-           typename Device,
-           typename Index >
+          typename Device,
+          typename Index >
 bool
 tnlArray< Element, Device, Index >::
 setSize( const Index size )
