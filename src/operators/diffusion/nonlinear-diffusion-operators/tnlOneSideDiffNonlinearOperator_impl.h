@@ -236,12 +236,12 @@ __cuda_callable__
 Real
 tnlOneSideDiffNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 getValue( const MeshType& mesh,
-          const IndexType cellIndex,
           const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
    const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+   const IndexType& cellIndex = entity.getIndex();
    return operatorQ.getValueStriped( mesh, entity, u, time ) *
       ( ( (  u[ neighbourEntities.template getEntityIndex<  1,  0, 0 >() ] - u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue( mesh, entity, u, time ) -
           ( -u[ neighbourEntities.template getEntityIndex< -1,  0, 0 >() ] + u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1,  0,  0 >(), u, time ) ) * mesh.getHxInverse() + 

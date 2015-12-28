@@ -114,8 +114,9 @@ getValue( const MeshType& mesh,
    const IndexType& cellIndex = entity.getIndex();
    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();      
    // TODO: fix this
-   return sqrt( this->eps + ( u[ neighbourEntities.template getEntityIndex< 1 >( cellIndex ) ] - u[ cellIndex ]) * 
-          ( u[ neighbourEntities.template getEntityIndex< 1 >( cellIndex ) ] - u[ cellIndex ]) *
+   return sqrt( this->eps + 
+      ( u[ neighbourEntities.template getEntityIndex< 1 >() ] - u[ cellIndex ]) * 
+      ( u[ neighbourEntities.template getEntityIndex< 1 >() ] - u[ cellIndex ]) *
           mesh.template getSpaceStepsProducts< -2 >() );
 }
 
@@ -152,10 +153,10 @@ getValueStriped( const MeshType& mesh,
 {
    const IndexType& cellIndex = entity.getIndex();
    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();      
-   return sqrt( this->eps + 0.5*( ( u[ neighbourEntities.template getEntityIndex< 1 >( cellIndex ) ] - u[ cellIndex ]) * 
-          ( u[ neighbourEntities.template getEntityIndex< 1 >( cellIndex ) ] - u[ cellIndex ]) *
-          mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >() + ( - u[ neighbourEntities.template getEntityIndex< -1 >( cellIndex ) ] + u[ cellIndex ] ) 
-          * ( - u[ neighbourEntities.template getEntityIndex< -1 >( cellIndex ) ] + u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >() ) );
+   return sqrt( this->eps + 0.5*( ( u[ neighbourEntities.template getEntityIndex< 1 >() ] - u[ cellIndex ]) * 
+          (  u[ neighbourEntities.template getEntityIndex<  1 >() ] - u[ cellIndex ]) * mesh.template getSpaceStepsProducts< -1 >() * mesh.template getSpaceStepsProducts< -1 >() + 
+          ( -u[ neighbourEntities.template getEntityIndex< -1 >() ] + u[ cellIndex ] ) 
+          * ( - u[ neighbourEntities.template getEntityIndex< -1 >() ] + u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1 >() * mesh.template getSpaceStepsProducts< -1 >() ) );
 }
 
 template< typename MeshReal,
@@ -286,10 +287,10 @@ getValue( const MeshType& mesh,
 {
    const IndexType& cellIndex = entity.getIndex();
    const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
-   return sqrt( this->eps + ( u[ neighbourEntities.template getEntityIndex< 0,1 >( cellIndex ) ] - u[ cellIndex ] ) * 
-          ( u[ neighbourEntities.template getEntityIndex< 0,1 >( cellIndex ) ] - u[ cellIndex ] )
-          * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0 >( cellIndex ) ] - u[ cellIndex ] ) 
-          * ( u[ neighbourEntities.template getEntityIndex< 1,0 >( cellIndex ) ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >() );
+   return sqrt( this->eps + ( u[ neighbourEntities.template getEntityIndex< 0,1 >() ] - u[ cellIndex ] ) * 
+          ( u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - u[ cellIndex ] )
+          * mesh.template getSpaceStepsProducts< 0, -1 >() * mesh.template getSpaceStepsProducts< 0, -1 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0 >() ] - u[ cellIndex ] ) 
+          * ( u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0 >() * mesh.template getSpaceStepsProducts< -1, 0 >() );
 }
 
 template< typename MeshReal,
@@ -326,14 +327,14 @@ getValueStriped( const MeshType& mesh,
 {
    const IndexType& cellIndex = entity.getIndex();
    const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
-   return sqrt( this->eps + 0.5*( ( u[ neighbourEntities.template getEntityIndex< 0,1 >( cellIndex ) ] - u[ cellIndex ] ) * 
-          ( u[ neighbourEntities.template getEntityIndex< 0,1 >( cellIndex ) ] - u[ cellIndex ] )
-          * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0 >( cellIndex ) ] - u[ cellIndex ] ) 
-          * ( u[ neighbourEntities.template getEntityIndex< 1,0 >( cellIndex ) ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >()
-          + ( - u[ neighbourEntities.template getEntityIndex< -1,0 >( cellIndex ) ] + u[ cellIndex ]) * ( - u[ neighbourEntities.template getEntityIndex< -1,0 >( cellIndex ) ] + u[ cellIndex ]) 
-          * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >()
-          + ( - u[ neighbourEntities.template getEntityIndex< 0,-1 >( cellIndex ) ] + u[ cellIndex ]) * ( - u[ neighbourEntities.template getEntityIndex< 0,-1 >( cellIndex ) ] + u[ cellIndex ]) * 
-          mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() ) );
+   return sqrt( this->eps + 0.5*( ( u[ neighbourEntities.template getEntityIndex< 0,1 >() ] - u[ cellIndex ] ) * 
+          ( u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - u[ cellIndex ] )
+          * mesh.template getSpaceStepsProducts< 0, -1 >() * mesh.template getSpaceStepsProducts< 0, -1 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0 >() ] - u[ cellIndex ] ) 
+          * ( u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0 >() * mesh.template getSpaceStepsProducts< -1, 0 >()
+          + ( - u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] + u[ cellIndex ]) * ( - u[ neighbourEntities.template getEntityIndex< -1,0 >() ] + u[ cellIndex ]) 
+          * mesh.template getSpaceStepsProducts< -1, 0 >() * mesh.template getSpaceStepsProducts< -1, 0 >()
+          + ( - u[ neighbourEntities.template getEntityIndex< 0,-1 >() ] + u[ cellIndex ]) * ( - u[ neighbourEntities.template getEntityIndex< 0,-1 >() ] + u[ cellIndex ]) * 
+          mesh.template getSpaceStepsProducts< 0, -1 >() * mesh.template getSpaceStepsProducts< 0, -1 >() ) );
 }
 
 template< typename MeshReal,
@@ -462,11 +463,11 @@ getValue( const MeshType& mesh,
 {
    const IndexType& cellIndex = entity.getIndex();
    const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();      
-   return sqrt( 1.0 + ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >( cellIndex ) ] - u[ cellIndex ] ) * 
-          ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >( cellIndex ) ] - u[ cellIndex ] )
-          * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >( cellIndex ) ] - u[ cellIndex ] ) 
-          * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >( cellIndex ) ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >() 
-          + ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >( cellIndex ) ] - u[ cellIndex ] ) * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >( cellIndex ) ] - u[ cellIndex ] )
+   return sqrt( 1.0 + ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] ) * 
+          ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] )
+          * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] ) 
+          * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >() 
+          + ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >() ] - u[ cellIndex ] ) * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >() ] - u[ cellIndex ] )
             * mesh.template getSpaceStepsProducts< 0, 0, -1 >() * mesh.template getSpaceStepsProducts< 0, 0, -1 >() );
 }
    
@@ -486,16 +487,16 @@ getValueStriped( const MeshType& mesh,
 {
    const IndexType& cellIndex = entity.getIndex();
    const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();      
-   return sqrt( this->eps + 0.5*( ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >( cellIndex ) ] - u[ cellIndex ] ) * 
-           ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >( cellIndex ) ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() 
-           + ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >( cellIndex ) ] - u[ cellIndex ] ) * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >( cellIndex ) ] - u[ cellIndex ] ) 
-           * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >() + ( - u[ neighbourEntities.template getEntityIndex< -1,0,0 >( cellIndex ) ] + u[ cellIndex ]) 
-           * ( - u[ neighbourEntities.template getEntityIndex< -1,0,0 >( cellIndex ) ] + u[ cellIndex ]) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >()
-           + ( - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >( cellIndex ) ] + u[ cellIndex ]) * 
-           ( - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >( cellIndex ) ] + u[ cellIndex ]) * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() 
-           + ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >( cellIndex ) ] - u[ cellIndex ] ) * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >( cellIndex ) ] - u[ cellIndex ] )
-           * mesh.template getSpaceStepsProducts< 0, 0, -1 >() * mesh.template getSpaceStepsProducts< 0, 0, -1 >() + ( - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >( cellIndex ) ] + u[ cellIndex ]) * 
-           ( - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >( cellIndex ) ] + u[ cellIndex ]) * mesh.template getSpaceStepsProducts< 0, 0, -1 >() * mesh.template getSpaceStepsProducts< 0, 0, -1 >()
+   return sqrt( this->eps + 0.5*( ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] ) * 
+           ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() 
+           + ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] ) * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] ) 
+           * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >() + ( - u[ neighbourEntities.template getEntityIndex< -1,0,0 >() ] + u[ cellIndex ]) 
+           * ( - u[ neighbourEntities.template getEntityIndex< -1,0,0 >() ] + u[ cellIndex ]) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >()
+           + ( - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >() ] + u[ cellIndex ]) * 
+           ( - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >() ] + u[ cellIndex ]) * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() 
+           + ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >() ] - u[ cellIndex ] ) * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >() ] - u[ cellIndex ] )
+           * mesh.template getSpaceStepsProducts< 0, 0, -1 >() * mesh.template getSpaceStepsProducts< 0, 0, -1 >() + ( - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >() ] + u[ cellIndex ]) * 
+           ( - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >() ] + u[ cellIndex ]) * mesh.template getSpaceStepsProducts< 0, 0, -1 >() * mesh.template getSpaceStepsProducts< 0, 0, -1 >()
            ) );
 }   
 #endif	/* TNLONESIDEDIFFOPERATORQ_IMPL_H */

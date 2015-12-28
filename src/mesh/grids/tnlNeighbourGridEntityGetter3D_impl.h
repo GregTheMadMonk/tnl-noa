@@ -153,12 +153,12 @@ class tnlNeighbourGridEntityGetter<
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() + CoordinatesType( stepX, stepY ) < entity.getGrid().getDimensions(),
-              cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
+         tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) >= CoordinatesType( 0, 0, 0 ) &&
+                    entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) < entity.getGrid().getDimensions(),
+              cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ )
                    << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         return NeighbourGridEntity( CoordinatesType( entity.getCoordinates().x() + stepX,
+         return NeighbourGridEntityType( this->entity.getGrid(), CoordinatesType( entity.getCoordinates().x() + stepX,
                                                       entity.getCoordinates().y() + stepY,
                                                       entity.getCoordinates().z() + stepZ ) );
       }

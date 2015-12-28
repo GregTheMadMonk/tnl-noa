@@ -143,7 +143,6 @@ class tnlOneSideDiffNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >
              typename MeshEntity >
    __cuda_callable__
    Real getValue( const MeshType& mesh,
-                  const IndexType cellIndex,
                   const MeshEntity& entity,
                   const Vector& u,
                   const RealType& time) const;

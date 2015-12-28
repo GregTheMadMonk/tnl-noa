@@ -37,7 +37,7 @@ template< typename MeshConfig > struct tnlMeshConfigDevice< MeshConfig, tnlCuda 
 template< typename MeshConfig, typename Real > struct tnlMeshConfigReal{ enum { enabled = true }; };
 
 /****
- * All index types are enabled ba default.
+ * All index types are enabled by default.
  */
 template< typename MeshConfig, typename Index > struct tnlMeshConfigIndex{ enum { enabled = true }; };
 
