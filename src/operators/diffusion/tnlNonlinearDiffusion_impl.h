@@ -112,12 +112,11 @@ __cuda_callable__
 Real
 tnlNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 getValue( const MeshType& mesh,
-          const IndexType cellIndex,
           const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
-    return nonlinearDiffusionOperator.getValue( mesh, cellIndex, entity, u, time );
+    return nonlinearDiffusionOperator.getValue( mesh, entity, u, time );
 }
        
 template< typename MeshReal,
@@ -190,12 +189,11 @@ __cuda_callable__
 Real
 tnlNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 getValue( const MeshType& mesh,
-          const IndexType cellIndex,
           const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
-    return nonlinearDiffusionOperator.getValue( mesh, cellIndex, entity, u, time );
+    return nonlinearDiffusionOperator.getValue( mesh, entity, u, time );
 }
 
 template< typename MeshReal,

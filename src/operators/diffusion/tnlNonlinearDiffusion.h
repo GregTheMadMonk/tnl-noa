@@ -91,7 +91,6 @@ class tnlNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Nonlinea
                 typename Vector >
       __cuda_callable__
       Real getValue( const MeshType& mesh,
-                     const IndexType cellIndex,
                      const MeshEntity& entity,
                      const Vector& u,
                      const RealType& time) const;
@@ -144,7 +143,6 @@ class tnlNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Nonlinea
                 typename Vector >
       __cuda_callable__
       Real getValue( const MeshType& mesh,
-                     const IndexType cellIndex,
                      const MeshEntity& entity,
                      const Vector& u,
                      const RealType& time) const;

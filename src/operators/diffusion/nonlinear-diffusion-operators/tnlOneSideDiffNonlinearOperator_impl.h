@@ -35,16 +35,16 @@ __cuda_callable__
 Real
 tnlOneSideDiffNonlinearOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 getValue( const MeshType& mesh,
-          const IndexType cellIndex,
           const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
-   const typename EntityType::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
-   return operatorQ.getValueStriped(mesh,cellIndex, entity, u, time)*((( u[ mesh.template getCellNextToCell< 1 >( cellIndex ) ] - u[ cellIndex ]) 
-          * mesh.getHxInverse() / operatorQ.getValue(mesh,cellIndex, entity, u, time) - ( - u[ mesh.template getCellNextToCell< -1>( cellIndex ) ]
-          + u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue(mesh,mesh.template getCellNextToCell<-1>(cellIndex), entity, u, time))
-          *mesh.getHxInverse());
+   const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+   const IndexType& cellIndex = entity.getIndex();
+   return operatorQ.getValueStriped( mesh, entity, u, time )*
+      ( ( (  u[ neighbourEntities.template getEntityIndex<  1 >() ] - u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue( mesh, entity, u, time ) -
+          ( -u[ neighbourEntities.template getEntityIndex< -1 >() ] + u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1 >(), u, time ) 
+        ) * mesh.getHxInverse() );
 }
 
 template< typename MeshReal,
@@ -85,17 +85,20 @@ updateLinearSystem( const RealType& time,
                     Vector& b,
                     MatrixRow& matrixRow ) const
 {
-   const typename EntityType::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
-   const RealType aCoef = - tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * mesh.getHxSquareInverse() / 
-                       operatorQ.getValue(mesh, mesh.template getCellNextToCell< -1 >( index ), entity, u, time );
-   const RealType bCoef = tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * ( mesh.getHxSquareInverse() / 
-                          operatorQ.getValue(mesh, index, entity, u, time ) + mesh.getHxSquareInverse() / 
-                          operatorQ.getValue(mesh, mesh.template getCellNextToCell< -1 >( index ), entity, u, time ) );
-   const RealType cCoef = - tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * mesh.getHxSquareInverse() / 
-                       operatorQ.getValue(mesh, index, entity, u, time );
-   matrixRow.setElement( 0, mesh.template getCellNextToCell< -1 >( index ),     aCoef );
-   matrixRow.setElement( 1, index,                             bCoef );
-   matrixRow.setElement( 2, mesh.template getCellNextToCell< 1 >( index ),      cCoef );
+   const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+   const RealType aCoef = -tau * 
+      operatorQ.getValueStriped( mesh, entity, u, time ) *
+      mesh.template getSpaceStepsProducts< -2 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1 >(), u, time );
+   const RealType bCoef = tau * 
+      operatorQ.getValueStriped( mesh, entity, u, time ) * 
+      ( mesh.template getSpaceStepsProducts< -2 >() / operatorQ.getValue( mesh, entity, u, time ) + 
+        mesh.template getSpaceStepsProducts< -2 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1 >(), u, time ) );
+   const RealType cCoef = -tau * 
+      operatorQ.getValueStriped( mesh, entity, u, time ) * 
+      mesh.template getSpaceStepsProducts< -2 >() / operatorQ.getValue( mesh, entity, u, time );
+   matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1 >(), aCoef );
+   matrixRow.setElement( 1, entity.getIndex(),                                 bCoef );
+   matrixRow.setElement( 2, neighbourEntities.template getEntityIndex<  1 >(), cCoef );
 }
 
 template< typename MeshReal,
@@ -127,20 +130,17 @@ __cuda_callable__
 Real
 tnlOneSideDiffNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 getValue( const MeshType& mesh,
-          const IndexType cellIndex,
           const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
-   const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
-   return operatorQ.getValueStriped(mesh,cellIndex, entity, u, time)*(((u[ mesh.template getCellNextToCell< 1,0 >( cellIndex ) ] - u[ cellIndex ]) 
-          * mesh.getHxInverse()/operatorQ.getValue(mesh,cellIndex, entity, u, time)
-          -( - u[ mesh.template getCellNextToCell< -1,0 >( cellIndex ) ]+ u[ cellIndex ]) * mesh.getHxInverse()/
-          operatorQ.getValue(mesh,mesh.template getCellNextToCell<-1,0>(cellIndex), entity, u, time))
-          *mesh.getHxInverse()+(( u[ mesh.template getCellNextToCell< 0,1 >( cellIndex ) ]  - u[ cellIndex ]) 
-          * mesh.getHyInverse()/operatorQ.getValue(mesh,cellIndex, entity, u, time)
-          -( - u[ mesh.template getCellNextToCell< 0,-1 >( cellIndex ) ] + u[ cellIndex ]) * mesh.getHyInverse()
-          /operatorQ.getValue(mesh,mesh.template getCellNextToCell<0,-1>(cellIndex),entity, u, time))*mesh.getHyInverse());
+   const IndexType& cellIndex = entity.getIndex();
+   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+   return operatorQ.getValueStriped( mesh, entity, u, time ) *
+      ( ( (  u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] - u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue( mesh, entity, u, time )
+         -( -u[ neighbourEntities.template getEntityIndex< -1,  0 >() ] + u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1,  0 >(), u, time ) )*mesh.getHxInverse() 
+       +( (  u[ neighbourEntities.template getEntityIndex<  0,  1 >() ] - u[ cellIndex ] ) * mesh.getHyInverse() / operatorQ.getValue( mesh, entity, u, time )
+         -( -u[ neighbourEntities.template getEntityIndex<  0, -1 >() ] + u[ cellIndex ] ) * mesh.getHyInverse() / operatorQ.getValue( mesh, neighbourEntities.template getEntity<  0, -1 >(), u, time ) )*mesh.getHyInverse());
 }
 
 template< typename MeshReal,
@@ -181,25 +181,30 @@ updateLinearSystem( const RealType& time,
                     Vector& b,
                     MatrixRow& matrixRow ) const
 {
-   const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
-   const RealType aCoef = - tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * mesh.getHySquareInverse() / 
-                       operatorQ.getValue(mesh, mesh.template getCellNextToCell< 0,-1 >( index ), entity, u, time );
-   const RealType bCoef = - tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * mesh.getHxSquareInverse() / 
-                       operatorQ.getValue(mesh, mesh.template getCellNextToCell< -1,0 >( index ), entity, u, time );
-   const RealType cCoef = tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * ( mesh.getHySquareInverse() / 
-                       operatorQ.getValue(mesh, index, entity, u, time ) + mesh.getHySquareInverse() / 
-                       operatorQ.getValue(mesh, mesh.template getCellNextToCell< 0,-1 >( index ), entity, u, time )
-                       + mesh.getHxSquareInverse() / operatorQ.getValue(mesh, index, entity, u, time ) + 
-                       mesh.getHxSquareInverse() / operatorQ.getValue(mesh, mesh.template getCellNextToCell< -1,0 >( index ), entity, u, time ) );
-   const RealType dCoef = - tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * mesh.getHxSquareInverse() / 
-                       operatorQ.getValue(mesh, index, entity, u, time );
-   const RealType eCoef = - tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * mesh.getHySquareInverse() / 
-                       operatorQ.getValue(mesh, index, entity, u, time );
-   matrixRow.setElement( 0, mesh.template getCellNextToCell< 0,-1 >( index ),     aCoef );
-   matrixRow.setElement( 1, mesh.template getCellNextToCell< -1,0 >( index ),     bCoef );
-   matrixRow.setElement( 2, index                                           ,     cCoef );
-   matrixRow.setElement( 3, mesh.template getCellNextToCell< 1,0 >( index ),      dCoef );
-   matrixRow.setElement( 4, mesh.template getCellNextToCell< 0,1 >( index ),      eCoef );
+   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+   const RealType aCoef = -tau * 
+      operatorQ.getValueStriped( mesh, entity, u, time ) *
+      mesh.template getSpaceStepsProducts< 0, -2 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< 0,-1 >(), u, time );
+   const RealType bCoef = -tau * 
+      operatorQ.getValueStriped( mesh, entity, u, time ) * 
+      mesh.template getSpaceStepsProducts< -2, 0 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1,0 >(), u, time );
+   const RealType cCoef = tau * 
+      operatorQ.getValueStriped( mesh, entity, u, time ) * 
+      ( mesh.template getSpaceStepsProducts< 0, -2 >() / operatorQ.getValue( mesh, entity, u, time ) + 
+        mesh.template getSpaceStepsProducts< 0, -2 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< 0,-1 >(), u, time ) +
+        mesh.template getSpaceStepsProducts< -2, 0 >() / operatorQ.getValue( mesh, entity, u, time ) + 
+        mesh.template getSpaceStepsProducts< -2, 0 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1,0 >(), u, time ) );
+   const RealType dCoef = -tau * 
+      operatorQ.getValueStriped( mesh, entity, u, time ) * 
+      mesh.template getSpaceStepsProducts< -2, 0 >() / operatorQ.getValue( mesh, entity, u, time );
+   const RealType eCoef = -tau * 
+      operatorQ.getValueStriped( mesh, entity, u, time ) * 
+      mesh.template getSpaceStepsProducts< 0, -2 >() / operatorQ.getValue( mesh, entity, u, time );
+   matrixRow.setElement( 0, neighbourEntities.template getEntityIndex<  0, -1 >(), aCoef );
+   matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< -1,  0 >(), bCoef );
+   matrixRow.setElement( 2, entity.getIndex()                                    , cCoef );
+   matrixRow.setElement( 3, neighbourEntities.template getEntityIndex<  1,  0 >(), dCoef );
+   matrixRow.setElement( 4, neighbourEntities.template getEntityIndex<  0,  1 >(), eCoef );
 }
 
 template< typename MeshReal,
@@ -236,19 +241,14 @@ getValue( const MeshType& mesh,
           const Vector& u,
           const Real& time ) const
 {
-   const typename EntityType::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
-   return operatorQ.getValueStriped(mesh,cellIndex, entity, u, time)*(((u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] - u[ cellIndex ]) 
-          * mesh.getHxInverse()/operatorQ.getValue(mesh,cellIndex, entity, u, time)
-          -( - u[ mesh.template getCellNextToCell< -1,0,0 >( cellIndex ) ]+ u[ cellIndex ]) * mesh.getHxInverse()/
-          operatorQ.getValue(mesh,mesh.template getCellNextToCell<-1,0,0>(cellIndex), entity, u, time))
-          *mesh.getHxInverse()+(( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ]  - u[ cellIndex ]) 
-          * mesh.getHyInverse()/operatorQ.getValue(mesh,cellIndex, entity, u, time)
-          -( - u[ mesh.template getCellNextToCell< 0,-1,0 >( cellIndex ) ] + u[ cellIndex ]) * mesh.getHyInverse()
-          /operatorQ.getValue(mesh,mesh.template getCellNextToCell<0,-1,0>(cellIndex),entity, u, time))*mesh.getHyInverse()
-          +(( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ]  - u[ cellIndex ]) 
-          * mesh.getHzInverse()/operatorQ.getValue(mesh,cellIndex, entity, u, time)
-          -( - u[ mesh.template getCellNextToCell< 0,0,-1 >( cellIndex ) ] + u[ cellIndex ]) * mesh.getHzInverse()
-          /operatorQ.getValue(mesh,mesh.template getCellNextToCell<0,0,-1>(cellIndex),entity, u, time))*mesh.getHzInverse());
+   const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+   return operatorQ.getValueStriped( mesh, entity, u, time ) *
+      ( ( (  u[ neighbourEntities.template getEntityIndex<  1,  0, 0 >() ] - u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue( mesh, entity, u, time ) -
+          ( -u[ neighbourEntities.template getEntityIndex< -1,  0, 0 >() ] + u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1,  0,  0 >(), u, time ) ) * mesh.getHxInverse() + 
+        ( (  u[ neighbourEntities.template getEntityIndex<  0,  1, 0 >() ] - u[ cellIndex ] ) * mesh.getHyInverse() / operatorQ.getValue( mesh, entity, u, time ) -
+          ( -u[ neighbourEntities.template getEntityIndex<  0, -1, 0 >() ] + u[ cellIndex ] ) * mesh.getHyInverse() / operatorQ.getValue( mesh, neighbourEntities.template getEntity<  0, -1,  0 >(), u, time ) ) * mesh.getHyInverse() +
+        ( (  u[ neighbourEntities.template getEntityIndex<  0,  0, 1 >() ] - u[ cellIndex ] ) * mesh.getHzInverse() / operatorQ.getValue( mesh, entity, u, time ) -
+          ( -u[ neighbourEntities.template getEntityIndex<  0,  0,-1 >() ] + u[ cellIndex ] ) * mesh.getHzInverse() / operatorQ.getValue( mesh, neighbourEntities.template getEntity<  0,  0, -1 >(), u, time) ) * mesh.getHzInverse() );
 }
 
 template< typename MeshReal,
@@ -289,32 +289,33 @@ updateLinearSystem( const RealType& time,
                     Vector& b,
                     MatrixRow& matrixRow ) const
 {
-   const typename EntityType::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
-   const RealType aCoef = - tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * mesh.getHzSquareInverse() / 
-                       operatorQ.getValue(mesh, mesh.template getCellNextToCell< 0,0,-1 >( index ), entity, u, time );
-   const RealType bCoef = - tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * mesh.getHySquareInverse() / 
-                       operatorQ.getValue(mesh, mesh.template getCellNextToCell< 0,-1,0 >( index ), entity, u, time );
-   const RealType cCoef = - tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * mesh.getHxSquareInverse() / 
-                       operatorQ.getValue(mesh, mesh.template getCellNextToCell< -1,0,0 >( index ), entity, u, time );
-   const RealType dCoef = tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * ( mesh.getHySquareInverse() / 
-                       operatorQ.getValue(mesh, index, entity, u, time ) + mesh.getHySquareInverse() / 
-                       operatorQ.getValue(mesh, mesh.template getCellNextToCell< 0,-1,0 >( index ), entity, u, time )
-                       + mesh.getHxSquareInverse() / operatorQ.getValue(mesh, index, entity, u, time ) + 
-                       mesh.getHxSquareInverse() / operatorQ.getValue(mesh, mesh.template getCellNextToCell< -1,0,0 >( index ), entity, u, time )
-                       + mesh.getHzSquareInverse() / operatorQ.getValue(mesh, index, entity, u, time ) + 
-                       mesh.getHzSquareInverse() / operatorQ.getValue(mesh, mesh.template getCellNextToCell< 0,0,-1 >( index ), entity, u, time ) );
-   const RealType eCoef = - tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * mesh.getHxSquareInverse() / 
-                       operatorQ.getValue(mesh, index, entity, u, time );
-   const RealType fCoef = - tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * mesh.getHySquareInverse() / 
-                       operatorQ.getValue(mesh, index, entity, u, time );
-   const RealType gCoef = - tau * operatorQ.getValueStriped(mesh, index, entity, u, time ) * mesh.getHzSquareInverse() / 
-                       operatorQ.getValue(mesh, index, entity, u, time );
-   matrixRow.setElement( 0, mesh.template getCellNextToCell< 0,0,-1 >( index ),     aCoef );
-   matrixRow.setElement( 1, mesh.template getCellNextToCell< 0,-1,0 >( index ),     bCoef );
-   matrixRow.setElement( 2, mesh.template getCellNextToCell< -1,0,0 >( index ),     cCoef );
-   matrixRow.setElement( 3, index,                                                  dCoef );
-   matrixRow.setElement( 4, mesh.template getCellNextToCell< 1,0,0 >( index ),      eCoef );
-   matrixRow.setElement( 5, mesh.template getCellNextToCell< 0,1,0 >( index ),      fCoef );
-   matrixRow.setElement( 6, mesh.template getCellNextToCell< 0,0,1 >( index ),      gCoef );
+   const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+   const RealType aCoef = -tau * operatorQ.getValueStriped( mesh, entity, u, time ) * 
+      mesh.template getSpaceStepsProducts< 0, 0, -2 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity<  0,  0, -1 >(), u, time );
+   const RealType bCoef = -tau * operatorQ.getValueStriped( mesh, entity, u, time ) * 
+      mesh.template getSpaceStepsProducts< 0, -2, 0 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity<  0, -1,  0 >(), u, time );
+   const RealType cCoef = -tau * operatorQ.getValueStriped( mesh, entity, u, time ) *
+      mesh.template getSpaceStepsProducts< -2, 0, 0 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1,  0,  0 >(), u, time );
+   const RealType dCoef = tau * 
+      operatorQ.getValueStriped( mesh, entity, u, time ) * 
+      ( mesh.template getSpaceStepsProducts< 0, -2, 0 >() / operatorQ.getValue( mesh, entity, u, time ) + 
+        mesh.template getSpaceStepsProducts< 0, -2, 0 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity<  0, -1,  0 >(), u, time ) +
+        mesh.template getSpaceStepsProducts< -2, 0, 0 >() / operatorQ.getValue( mesh, entity, u, time ) + 
+        mesh.template getSpaceStepsProducts< -2, 0, 0 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1,  0,  0 >(), u, time ) +
+        mesh.template getSpaceStepsProducts< 0, 0, -2 >() / operatorQ.getValue( mesh, entity, u, time ) + 
+        mesh.template getSpaceStepsProducts< 0, 0, -2 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity<  0,  0, -1 >(), u, time ) );
+   const RealType eCoef = -tau * operatorQ.getValueStriped( mesh, entity, u, time ) *
+      mesh.template getSpaceStepsProducts< -2, 0, 0 >() / operatorQ.getValue( mesh, entity, u, time );
+   const RealType fCoef = -tau * operatorQ.getValueStriped( mesh, entity, u, time ) * 
+      mesh.template getSpaceStepsProducts< 0, -2, 0 >() / operatorQ.getValue( mesh, entity, u, time );
+   const RealType gCoef = -tau * operatorQ.getValueStriped( mesh, entity, u, time ) * 
+      mesh.template getSpaceStepsProducts< 0, 0, -2 >() / operatorQ.getValue( mesh, entity, u, time );
+   matrixRow.setElement( 0, neighbourEntities.template getEntityIndex<  0,  0, -1 >(), aCoef );
+   matrixRow.setElement( 1, neighbourEntities.template getEntityIndex<  0, -1,  0 >(), bCoef );
+   matrixRow.setElement( 2, neighbourEntities.template getEntityIndex< -1,  0,  0 >(), cCoef );
+   matrixRow.setElement( 3, entity.getIndex(),                                         dCoef );
+   matrixRow.setElement( 4, neighbourEntities.template getEntityIndex<  1,  0,  0 >(), eCoef );
+   matrixRow.setElement( 5, neighbourEntities.template getEntityIndex<  0,  1,  0 >(), fCoef );
+   matrixRow.setElement( 6, neighbourEntities.template getEntityIndex<  0,  0,  1 >(), gCoef );
 }
 #endif	/* TNLONESIDEDIFFNONLINEAROPERATOR_IMPL_H */

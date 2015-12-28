@@ -36,19 +36,15 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, 
    IndexType bind( Vector& u) 
    { return 0; }
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   __cuda_callable__
    void update( const MeshType& mesh, const RealType& time ) 
    {}
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValue( const MeshType& mesh,
           const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time,
           const IndexType& dx = 0, 
@@ -59,20 +55,19 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, 
       
    private:
    
-   template< typename Vector, int AxeX = 0, int AxeY = 0, int AxeZ = 0 >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif  
-   Real boundaryDerivative( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
-          const Vector& u,
-          const Real& time,
-          const IndexType& dx = 0, 
-          const IndexType& dy = 0,
-          const IndexType& dz = 0 ) const;
-       
-   RealType eps;
+      template< typename MeshEntity, typename Vector, int AxeX = 0, int AxeY = 0, int AxeZ = 0 >
+      __cuda_callable__
+      Real 
+      boundaryDerivative( 
+         const MeshType& mesh,
+         const MeshEntity& entity,
+         const Vector& u,
+         const Real& time,
+         const IndexType& dx = 0, 
+         const IndexType& dy = 0,
+         const IndexType& dz = 0 ) const;
+
+      RealType eps;
 };
 
 
@@ -97,36 +92,29 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, 
    IndexType bind( Vector& u)
    { return 0; }
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   __cuda_callable__
    void update( const MeshType& mesh, const RealType& time )
    {}   
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
-   Real getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
-          const Vector& u,
-          const Real& time,
-          const IndexType& dx = 0, 
-          const IndexType& dy = 0,
-          const IndexType& dz = 0 ) const;
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
+   Real getValue( 
+      const MeshType& mesh,
+      const MeshEntity& entity,
+      const Vector& u,
+      const Real& time,
+      const IndexType& dx = 0, 
+      const IndexType& dy = 0,
+      const IndexType& dz = 0 ) const;
         
    bool setEps(const Real& eps);
    
    private:
 
-   template< typename Vector, int AxeX = 0, int AxeY = 0, int AxeZ = 0 >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif  
+   template< typename MeshEntity, typename Vector, int AxeX = 0, int AxeY = 0, int AxeZ = 0 >
+   __cuda_callable__
    Real boundaryDerivative( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time,
           const IndexType& dx = 0, 
@@ -158,19 +146,14 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, 
    IndexType bind( Vector& u)
    { return 0; }
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   __cuda_callable__
    void update( const MeshType& mesh, const RealType& time )
    {}
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time,
           const IndexType& dx = 0, 
@@ -181,13 +164,11 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, 
    
    private:
 
-   template< typename Vector, int AxeX = 0, int AxeY = 0, int AxeZ = 0 >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif  
+   template< typename MeshEntity, typename Vector, int AxeX = 0, int AxeY = 0, int AxeZ = 0 >
+   __cuda_callable__
    Real boundaryDerivative( const MeshType& mesh,
           const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time,
           const IndexType& dx = 0, 
@@ -218,18 +199,14 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, 
    template< typename Vector >
    Index bind( Vector& u);
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   __cuda_callable__
    void update( const MeshType& mesh, const RealType& time );
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValue( const MeshType& mesh,
           const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time,
           const IndexType& dx = 0, 
@@ -240,22 +217,20 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, 
    
    private:
    
-      template< typename Vector, int AxeX = 0, int AxeY = 0, int AxeZ = 0 >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif  
-   Real boundaryDerivative( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
-          const Vector& u,
-          const Real& time,
-          const IndexType& dx = 0, 
-          const IndexType& dy = 0,
-          const IndexType& dz = 0 ) const;    
-   
-   tnlSharedVector< RealType, DeviceType, IndexType > u;
-   tnlVector< RealType, DeviceType, IndexType> q;
-   RealType eps;
+      template< typename MeshEntity, typename Vector, int AxeX = 0, int AxeY = 0, int AxeZ = 0 >
+      __cuda_callable__
+      Real boundaryDerivative( const MeshType& mesh,
+             const IndexType cellIndex,
+             const MeshEntity& entity,
+             const Vector& u,
+             const Real& time,
+             const IndexType& dx = 0, 
+             const IndexType& dy = 0,
+             const IndexType& dz = 0 ) const;    
+
+      tnlSharedVector< RealType, DeviceType, IndexType > u;
+      tnlVector< RealType, DeviceType, IndexType> q;
+      RealType eps;
 };
 
 
@@ -280,18 +255,14 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, 
    template< typename Vector >
    Index bind( Vector& u);
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   __cuda_callable__
    void update( const MeshType& mesh, const RealType& time ); 
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValue( const MeshType& mesh,
           const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time,
           const IndexType& dx = 0, 
@@ -302,13 +273,11 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, 
    
    private:
    
-   template< typename Vector, int AxeX = 0, int AxeY = 0, int AxeZ = 0 >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif  
+   template< typename MeshEntity, typename Vector, int AxeX = 0, int AxeY = 0, int AxeZ = 0 >
+   __cuda_callable__
    Real boundaryDerivative( const MeshType& mesh,
           const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time,
           const IndexType& dx = 0, 
@@ -341,18 +310,14 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, 
    template< typename Vector >
    Index bind( Vector& u);
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   __cuda_callable__
    void update( const MeshType& mesh, const RealType& time );
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValue( const MeshType& mesh,
           const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time,
           const IndexType& dx = 0, 
@@ -363,22 +328,20 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, 
    
    private:
    
-   template< typename Vector, int AxeX = 0, int AxeY = 0, int AxeZ = 0 >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif  
-   Real boundaryDerivative( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
-          const Vector& u,
-          const Real& time,
-          const IndexType& dx = 0, 
-          const IndexType& dy = 0,
-          const IndexType& dz = 0 ) const;
-       
-   tnlSharedVector< RealType, DeviceType, IndexType > u;
-   tnlVector< RealType, DeviceType, IndexType> q;
-   RealType eps;
+      template< typename MeshEntity, typename Vector, int AxeX = 0, int AxeY = 0, int AxeZ = 0 >
+      __cuda_callable__
+      Real boundaryDerivative( const MeshType& mesh,
+             const IndexType cellIndex,
+             const MeshEntity& entity,
+             const Vector& u,
+             const Real& time,
+             const IndexType& dx = 0, 
+             const IndexType& dy = 0,
+             const IndexType& dz = 0 ) const;
+
+      tnlSharedVector< RealType, DeviceType, IndexType > u;
+      tnlVector< RealType, DeviceType, IndexType> q;
+      RealType eps;
 };
 
 #include <operators/operator-Q/tnlFiniteVolumeOperatorQ_impl.h>

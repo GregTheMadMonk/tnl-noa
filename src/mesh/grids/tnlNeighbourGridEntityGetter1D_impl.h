@@ -151,7 +151,7 @@ class tnlNeighbourGridEntityGetter<
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         return NeighbourGridEntity( CoordinatesType( entity.getCoordinates().x() + step ) );
+         return NeighbourGridEntityType( this->entity.getGrid(), CoordinatesType( entity.getCoordinates().x() + step ) );
       }
       
       template< int step >

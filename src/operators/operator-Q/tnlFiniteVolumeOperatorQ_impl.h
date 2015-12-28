@@ -64,9 +64,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >   
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void  
 tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 update( const MeshType& mesh, const RealType& time )
@@ -78,20 +76,17 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector, int AxeX, int AxeY, int AxeZ >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+template< typename MeshEntity, typename Vector, int AxeX, int AxeY, int AxeZ >
+__cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 boundaryDerivative( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
-          const Vector& u,
-          const Real& time,
-          const IndexType& dx, 
-          const IndexType& dy,
-          const IndexType& dz ) const
+                    const MeshEntity& entity,
+                    const Vector& u,
+                    const Real& time,
+                    const IndexType& dx, 
+                    const IndexType& dy,
+                    const IndexType& dz ) const
 {
     return 0.0;
 }
@@ -101,20 +96,19 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+template< typename MeshEntity,
+          typename Vector >
+__cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
-          const Vector& u,
-          const Real& time,
-          const IndexType& dx, 
-          const IndexType& dy,
-          const IndexType& dz ) const
+getValue( 
+   const MeshType& mesh,
+   const MeshEntity& entity,
+   const Vector& u,
+   const Real& time,
+   const IndexType& dx, 
+   const IndexType& dy,
+   const IndexType& dz ) const
 {
     return 0.0;
 }
@@ -124,20 +118,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector, int AxeX, int AxeY, int AxeZ >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+template< typename MeshEntity, typename Vector, int AxeX, int AxeY, int AxeZ >
+__cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
-boundaryDerivative( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
-          const Vector& u,
-          const Real& time,
-          const IndexType& dx, 
-          const IndexType& dy,
-          const IndexType& dz ) const
+boundaryDerivative( 
+   const MeshType& mesh,
+   const MeshEntity& entity,
+   const Vector& u,
+   const Real& time,
+   const IndexType& dx, 
+   const IndexType& dy,
+   const IndexType& dz ) const
 {
     return 0.0;
 }
@@ -147,20 +139,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+template< typename MeshEntity, typename Vector >
+__cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
-getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
-          const Vector& u,
-          const Real& time,
-          const IndexType& dx, 
-          const IndexType& dy,
-          const IndexType& dz ) const
+getValue( 
+   const MeshType& mesh,
+   const MeshEntity& entity,
+   const Vector& u,
+   const Real& time,
+   const IndexType& dx, 
+   const IndexType& dy,
+   const IndexType& dz ) const
 {
     return 0.0;
 }
@@ -232,9 +222,7 @@ bind( Vector& u)
     return 0;
 }
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
@@ -259,50 +247,49 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector, int AxeX, int AxeY, int AxeZ >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+template< typename MeshEntity, typename Vector, int AxeX, int AxeY, int AxeZ >
+__cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-boundaryDerivative( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
-          const Vector& u,
-          const Real& time,
-          const IndexType& dx, 
-          const IndexType& dy,
-          const IndexType& dz ) const
+boundaryDerivative( 
+   const MeshType& mesh,
+   const MeshEntity& entity,
+   const Vector& u,
+   const Real& time,
+   const IndexType& dx, 
+   const IndexType& dy,
+   const IndexType& dz ) const
 {
+   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
     if ( ( AxeX == 1 ) && ( AxeY == 0 ) && ( AxeZ == 0 ) )
     {
         if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.getHxInverse() * ( u[ mesh.template getCellNextToCell< 1,0 >( cellIndex ) ] - u[ cellIndex ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * ( u[ neighbourEntities.template getEntityIndex< 1,0 >( cellIndex ) ] - u[ cellIndex ] );
         if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.getHxInverse() * ( u[ cellIndex ] - u[ mesh.template getCellNextToCell< -1,0 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * ( u[ cellIndex ] - u[ neighbourEntities.template getEntityIndex< -1,0 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == 1 ) && ( dz == 0 ) )
-            return mesh.getHxInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 1,0 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< 1,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< -1,0 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< -1,1 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 1,0 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< 1,1 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< -1,0 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< -1,1 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
-            return mesh.getHxInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 1,0 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< 1,-1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< -1,0 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< -1,-1 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 1,0 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< 1,-1 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< -1,0 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< -1,-1 >( cellIndex ) ] );
     }
     if ( ( AxeX == 0 ) && ( AxeY == 1 ) && ( AxeZ == 0 ) )
     {
         if ( ( dx == 0 ) && ( dy == 1 ) && ( dz == 0 ) )
-            return mesh.getHyInverse() * ( u[ mesh.template getCellNextToCell< 0,1 >( cellIndex ) ] - u[ cellIndex ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * ( u[ neighbourEntities.template getEntityIndex< 0,1 >( cellIndex ) ] - u[ cellIndex ] );
         if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
-            return mesh.getHyInverse() * ( u[ cellIndex ] - u[ mesh.template getCellNextToCell< 0,-1 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * ( u[ cellIndex ] - u[ neighbourEntities.template getEntityIndex< 0,-1 >( cellIndex ) ] );
         if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.getHyInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,1 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< 1,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,-1 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< 1,-1 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,1 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< 1,1 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< 0,-1 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< 1,-1 >( cellIndex ) ] );
         if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.getHyInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,1 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< -1,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,-1 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< -1,-1 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,1 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< -1,1 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< 0,-1 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< -1,-1 >( cellIndex ) ] );
     }
     return 0.0;
 }
@@ -312,26 +299,24 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+template< typename MeshEntity, typename Vector >
+__cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time,
           const IndexType& dx, 
           const IndexType& dy,
           const IndexType& dz ) const
 {
+   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
     if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 0 ) )
-        return sqrt( this->eps + ( u[ mesh.template getCellNextToCell< 0,1 >( cellIndex ) ] - u[ cellIndex ] ) * 
-                ( u[ mesh.template getCellNextToCell< 0,1 >( cellIndex ) ] - u[ cellIndex ] )
-                * mesh.getHyInverse() * mesh.getHyInverse() + ( u[ mesh.template getCellNextToCell< 1,0 >( cellIndex ) ] - u[ cellIndex ] ) 
-                * ( u[ mesh.template getCellNextToCell< 1,0 >( cellIndex ) ] - u[ cellIndex ] ) * mesh.getHxInverse() * mesh.getHxInverse() );
+        return sqrt( this->eps + ( u[ neighbourEntities.template getEntityIndex< 0,1 >( cellIndex ) ] - u[ cellIndex ] ) * 
+                ( u[ neighbourEntities.template getEntityIndex< 0,1 >( cellIndex ) ] - u[ cellIndex ] )
+                * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0 >( cellIndex ) ] - u[ cellIndex ] ) 
+                * ( u[ neighbourEntities.template getEntityIndex< 1,0 >( cellIndex ) ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >() );
     if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
         return sqrt( this->eps + this->template boundaryDerivative< Vector,1,0 >( mesh, cellIndex, coordinates, u, time, 1, 0 ) * 
                this->template boundaryDerivative< Vector,1,0 >( mesh, cellIndex, coordinates, u, time, 1, 0 ) + 
@@ -360,15 +345,12 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+template< typename MeshEntity, typename Vector >
+__cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time,
           const IndexType& dx, 
@@ -449,9 +431,7 @@ bind( Vector& u)
     return 0;
 }
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
@@ -475,89 +455,88 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector, int AxeX, int AxeY, int AxeZ >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+template< typename MeshEntity, typename Vector, int AxeX, int AxeY, int AxeZ >
+__cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-boundaryDerivative( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
-          const Vector& u,
-          const Real& time,
-          const IndexType& dx, 
-          const IndexType& dy,
-          const IndexType& dz  ) const
+boundaryDerivative( 
+   const MeshType& mesh,
+   const MeshEntity& entity,
+   const Vector& u,
+   const Real& time,
+   const IndexType& dx, 
+   const IndexType& dy,
+   const IndexType& dz ) const
 {
+   const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();      
     if ( ( AxeX == 1 ) && ( AxeY == 0 ) && ( AxeZ == 0 ) )
     {
         if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.getHxInverse() * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] - u[ cellIndex ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >( cellIndex ) ] - u[ cellIndex ] );
         if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.getHxInverse() * ( u[ cellIndex ] - u[ mesh.template getCellNextToCell< -1,0,0 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * ( u[ cellIndex ] - u[ neighbourEntities.template getEntityIndex< -1,0,0 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == 1 ) && ( dz == 0 ) )
-            return mesh.getHxInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< 1,1,0 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< -1,0,0 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< -1,1,0 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< 1,1,0 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< -1,0,0 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< -1,1,0 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
-            return mesh.getHxInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< 1,-1,0 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< -1,0,0 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< -1,-1,0 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< 1,-1,0 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< -1,0,0 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< -1,-1,0 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 1 ) )
-            return mesh.getHxInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< 1,0,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< -1,0,0 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< -1,0,1 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< 1,0,1 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< -1,0,0 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< -1,0,1 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == -1 ) )
-            return mesh.getHxInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< 1,0,-1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< -1,0,0 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< -1,0,-1 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< -1, 0, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< 1,0,-1 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< -1,0,0 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< -1,0,-1 >( cellIndex ) ] );
     }
     if ( ( AxeX == 0 ) && ( AxeY == 1 ) && ( AxeZ == 0 ) )
     {
         if ( ( dx == 0 ) && ( dy == 1 ) && ( dz == 0 ) )
-            return mesh.getHyInverse() * ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] - u[ cellIndex ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >( cellIndex ) ] - u[ cellIndex ] );
         if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
-            return mesh.getHyInverse() * ( u[ cellIndex ] - u[ mesh.template getCellNextToCell< 0,-1,0 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * ( u[ cellIndex ] - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >( cellIndex ) ] );
         if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.getHyInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< 1,1,0 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,-1,0 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< 1,-1,0 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< 1,1,0 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< 1,-1,0 >( cellIndex ) ] );
         if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.getHyInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< -1,1,0 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,-1,0 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< -1,-1,0 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< -1,1,0 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< -1,-1,0 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 1 ) )
-            return mesh.getHyInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< 0,1,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,-1,0 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< 0,-1,1 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< 0,1,1 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< 0,-1,1 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == -1 ) )
-            return mesh.getHyInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< 0,1,-1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,-1,0 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< 0,-1,-1 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< 0, -1, 0 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< 0,1,-1 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< 0,-1,0 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< 0,-1,-1 >( cellIndex ) ] );
     }
     if ( ( AxeX == 0 ) && ( AxeY == 0 ) && ( AxeZ == 1 ) )
     {
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 1 ) )
-            return mesh.getHzInverse() * ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] - u[ cellIndex ] );
+            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >( cellIndex ) ] - u[ cellIndex ] );
         if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == -1 ) )
-            return mesh.getHzInverse() * ( u[ cellIndex ] - u[ mesh.template getCellNextToCell< 0,0,-1 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * ( u[ cellIndex ] - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >( cellIndex ) ] );
         if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.getHzInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< 1,0,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,0,-1 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< 1,0,-1 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< 1,0,1 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< 1,0,-1 >( cellIndex ) ] );
         if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
-            return mesh.getHzInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< -1,0,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,0,-1 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< -1,0,-1 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< -1,0,1 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< -1,0,-1 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == 1 ) && ( dz == 0 ) )
-            return mesh.getHzInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< 0,1,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,0,-1 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< 0,1,-1 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< 0,1,1 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< 0,1,-1 >( cellIndex ) ] );
         if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
-            return mesh.getHzInverse() * 0.25 * ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] + 
-                   u[ mesh.template getCellNextToCell< 0,-1,1 >( cellIndex ) ] - u[ mesh.template getCellNextToCell< 0,0,-1 >( cellIndex ) ] -
-                   u[ mesh.template getCellNextToCell< 0,-1,-1 >( cellIndex ) ] );
+            return mesh.template getSpaceStepsProducts< 0, 0, -1 >() * 0.25 * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >( cellIndex ) ] + 
+                   u[ neighbourEntities.template getEntityIndex< 0,-1,1 >( cellIndex ) ] - u[ neighbourEntities.template getEntityIndex< 0,0,-1 >( cellIndex ) ] -
+                   u[ neighbourEntities.template getEntityIndex< 0,-1,-1 >( cellIndex ) ] );
     }
     return 0.0;
 }
@@ -567,28 +546,27 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
+template< typename MeshEntity, typename Vector >
+__cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
-          const Vector& u,
-          const Real& time,
-          const IndexType& dx, 
-          const IndexType& dy,
-          const IndexType& dz ) const
+getValue( 
+   const MeshType& mesh,
+   const MeshEntity& entity,
+   const Vector& u,
+   const Real& time,
+   const IndexType& dx, 
+   const IndexType& dy,
+   const IndexType& dz ) const
 {
+   const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();      
     if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 0 ) )
-        return sqrt( this->eps + ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] - u[ cellIndex ] ) * 
-                ( u[ mesh.template getCellNextToCell< 0,1,0 >( cellIndex ) ] - u[ cellIndex ] )
-                * mesh.getHyInverse() * mesh.getHyInverse() + ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] - u[ cellIndex ] ) 
-                * ( u[ mesh.template getCellNextToCell< 1,0,0 >( cellIndex ) ] - u[ cellIndex ] ) * mesh.getHxInverse() * mesh.getHxInverse()
-                + ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] - u[ cellIndex ] ) 
-                * ( u[ mesh.template getCellNextToCell< 0,0,1 >( cellIndex ) ] - u[ cellIndex ] ) * mesh.getHzInverse() * mesh.getHzInverse() );
+        return sqrt( this->eps + ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >( cellIndex ) ] - u[ cellIndex ] ) * 
+                ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >( cellIndex ) ] - u[ cellIndex ] )
+                * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >( cellIndex ) ] - u[ cellIndex ] ) 
+                * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >( cellIndex ) ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >()
+                + ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >( cellIndex ) ] - u[ cellIndex ] ) 
+                * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >( cellIndex ) ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, 0, -1 >() * mesh.template getSpaceStepsProducts< 0, 0, -1 >() );
     if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
         return sqrt( this->eps + this->template boundaryDerivative< Vector,1,0,0 >( mesh, cellIndex, coordinates, u, time, 1, 0, 0 ) * 
                this->template boundaryDerivative< Vector,1,0,0 >( mesh, cellIndex, coordinates, u, time, 1, 0, 0 ) + 

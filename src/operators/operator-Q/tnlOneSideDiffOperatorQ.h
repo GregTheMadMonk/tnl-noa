@@ -36,29 +36,21 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
    IndexType bind( Vector& u) 
    { return 0; }
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   __cuda_callable__
    void update( const MeshType& mesh, const RealType& time ) 
    {}
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValueStriped( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time )const;
           
@@ -91,29 +83,21 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
    IndexType bind( Vector& u)
    { return 0; }
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   __cuda_callable__
    void update( const MeshType& mesh, const RealType& time )
    {}   
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
-   Real getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
+   Real getValue( const MeshType& mesh,          
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
-   Real getValueStriped( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
+   Real getValueStriped( const MeshType& mesh,          
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time )const;
         
@@ -146,29 +130,21 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, I
    IndexType bind( Vector& u)
    { return 0; }
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   __cuda_callable__
    void update( const MeshType& mesh, const RealType& time )
    {}
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValueStriped( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
         
@@ -200,28 +176,21 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
    template< typename Vector >
    Index bind( Vector& u);
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   __cuda_callable__
    void update( const MeshType& mesh, const RealType& time );
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValueStriped( const MeshType& mesh,
           const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
           
@@ -257,28 +226,21 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
    template< typename Vector >
    Index bind( Vector& u);
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   __cuda_callable__
    void update( const MeshType& mesh, const RealType& time ); 
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValue( const MeshType& mesh,
           const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValueStriped( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time )const;
           
@@ -313,28 +275,20 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, I
    template< typename Vector >
    Index bind( Vector& u);
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   __cuda_callable__
    void update( const MeshType& mesh, const RealType& time );
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
    
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif   
+   template< typename MeshEntity, typename Vector >
+   __cuda_callable__
    Real getValueStriped( const MeshType& mesh,
-          const IndexType cellIndex,
-          const CoordinatesType& coordinates,
+          const MeshEntity& entity,
           const Vector& u,
           const Real& time )const;
           
