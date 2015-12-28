@@ -161,6 +161,9 @@ benchmarkSpMV( const int & loops,
    hostVector.setValue( 1.0 );
    deviceVector.setValue( 1.0 );
 
+   // TODO: check operations with the timer:
+   //   -   reset() clears the timer and starts it again
+   //   -   getTime() stops the timer and starts it again !!!
    timer.reset();
    for( int i = 0; i < loops; i++ )
       hostMatrix.vectorProduct( hostVector, hostVector2 );
