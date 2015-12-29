@@ -77,13 +77,6 @@ class tnlExactOperatorQ< 3 >
                             const Real& time = 0.0, const Real& eps = 1.0 );
 };
 
-template< int Dimensions >
-class tnlFunctionType< tnlExactOperatorQ< Dimensions > >
-{
-   public:
-      enum { Type = tnlAnalyticFunction };
-};
-
 #include <operators/operator-Q/tnlExactOperatorQ_impl.h>
 
 

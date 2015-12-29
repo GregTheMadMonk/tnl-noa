@@ -42,9 +42,9 @@ getValue( const MeshType& mesh,
    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
    const IndexType& cellIndex = entity.getIndex();
    return operatorQ.getValueStriped( mesh, entity, u, time )*
-      ( ( (  u[ neighbourEntities.template getEntityIndex<  1 >() ] - u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue( mesh, entity, u, time ) -
-          ( -u[ neighbourEntities.template getEntityIndex< -1 >() ] + u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1 >(), u, time ) 
-        ) * mesh.getHxInverse() );
+      ( ( (  u[ neighbourEntities.template getEntityIndex<  1 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1 >() / operatorQ.getValue( mesh, entity, u, time ) -
+          ( -u[ neighbourEntities.template getEntityIndex< -1 >() ] + u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1 >(), u, time ) 
+        ) * mesh.template getSpaceStepsProducts< -1 >() );
 }
 
 template< typename MeshReal,
@@ -137,10 +137,10 @@ getValue( const MeshType& mesh,
    const IndexType& cellIndex = entity.getIndex();
    const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
    return operatorQ.getValueStriped( mesh, entity, u, time ) *
-      ( ( (  u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] - u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue( mesh, entity, u, time )
-         -( -u[ neighbourEntities.template getEntityIndex< -1,  0 >() ] + u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1,  0 >(), u, time ) )*mesh.getHxInverse() 
-       +( (  u[ neighbourEntities.template getEntityIndex<  0,  1 >() ] - u[ cellIndex ] ) * mesh.getHyInverse() / operatorQ.getValue( mesh, entity, u, time )
-         -( -u[ neighbourEntities.template getEntityIndex<  0, -1 >() ] + u[ cellIndex ] ) * mesh.getHyInverse() / operatorQ.getValue( mesh, neighbourEntities.template getEntity<  0, -1 >(), u, time ) )*mesh.getHyInverse());
+      ( ( (  u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0 >() / operatorQ.getValue( mesh, entity, u, time )
+         -( -u[ neighbourEntities.template getEntityIndex< -1,  0 >() ] + u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1,  0 >(), u, time ) )*mesh.template getSpaceStepsProducts< -1, 0 >() 
+       +( (  u[ neighbourEntities.template getEntityIndex<  0,  1 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, -1 >() / operatorQ.getValue( mesh, entity, u, time )
+         -( -u[ neighbourEntities.template getEntityIndex<  0, -1 >() ] + u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, -1 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity<  0, -1 >(), u, time ) )*mesh.template getSpaceStepsProducts< 0, -1 >());
 }
 
 template< typename MeshReal,
@@ -243,12 +243,12 @@ getValue( const MeshType& mesh,
    const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
    const IndexType& cellIndex = entity.getIndex();
    return operatorQ.getValueStriped( mesh, entity, u, time ) *
-      ( ( (  u[ neighbourEntities.template getEntityIndex<  1,  0, 0 >() ] - u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue( mesh, entity, u, time ) -
-          ( -u[ neighbourEntities.template getEntityIndex< -1,  0, 0 >() ] + u[ cellIndex ] ) * mesh.getHxInverse() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1,  0,  0 >(), u, time ) ) * mesh.getHxInverse() + 
-        ( (  u[ neighbourEntities.template getEntityIndex<  0,  1, 0 >() ] - u[ cellIndex ] ) * mesh.getHyInverse() / operatorQ.getValue( mesh, entity, u, time ) -
-          ( -u[ neighbourEntities.template getEntityIndex<  0, -1, 0 >() ] + u[ cellIndex ] ) * mesh.getHyInverse() / operatorQ.getValue( mesh, neighbourEntities.template getEntity<  0, -1,  0 >(), u, time ) ) * mesh.getHyInverse() +
-        ( (  u[ neighbourEntities.template getEntityIndex<  0,  0, 1 >() ] - u[ cellIndex ] ) * mesh.getHzInverse() / operatorQ.getValue( mesh, entity, u, time ) -
-          ( -u[ neighbourEntities.template getEntityIndex<  0,  0,-1 >() ] + u[ cellIndex ] ) * mesh.getHzInverse() / operatorQ.getValue( mesh, neighbourEntities.template getEntity<  0,  0, -1 >(), u, time) ) * mesh.getHzInverse() );
+      ( ( (  u[ neighbourEntities.template getEntityIndex<  1,  0, 0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() / operatorQ.getValue( mesh, entity, u, time ) -
+          ( -u[ neighbourEntities.template getEntityIndex< -1,  0, 0 >() ] + u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity< -1,  0,  0 >(), u, time ) ) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() + 
+        ( (  u[ neighbourEntities.template getEntityIndex<  0,  1, 0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, -1,  0 >() / operatorQ.getValue( mesh, entity, u, time ) -
+          ( -u[ neighbourEntities.template getEntityIndex<  0, -1, 0 >() ] + u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, -1,  0 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity<  0, -1,  0 >(), u, time ) ) * mesh.template getSpaceStepsProducts< 0, -1,  0 >() +
+        ( (  u[ neighbourEntities.template getEntityIndex<  0,  0, 1 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, 0, -1 >() / operatorQ.getValue( mesh, entity, u, time ) -
+          ( -u[ neighbourEntities.template getEntityIndex<  0,  0,-1 >() ] + u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, 0, -1 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity<  0,  0, -1 >(), u, time) ) * mesh.template getSpaceStepsProducts< 0, 0, -1 >() );
 }
 
 template< typename MeshReal,

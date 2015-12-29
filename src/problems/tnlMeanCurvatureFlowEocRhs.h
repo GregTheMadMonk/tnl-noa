@@ -21,13 +21,16 @@
 #include <functions/tnlFunction.h>
 
 template< typename ExactOperator,
-          typename TestFunction >
-class tnlMeanCurvatureFlowEocRhs
+          typename TestFunction,
+          int Dimensions >
+class tnlMeanCurvatureFlowEocRhs : public tnlFunction< Dimensions, AnalyticFunction >
 {
    public:
 
       typedef ExactOperator ExactOperatorType;
       typedef TestFunction TestFunctionType;
+      typedef typename TestFunctionType::RealType RealType;
+      typedef tnlStaticVector< Dimensions, RealType > VertexType;
 
       bool setup( const tnlParameterContainer& parameters,
                   const tnlString& prefix = "" )
@@ -39,9 +42,7 @@ class tnlMeanCurvatureFlowEocRhs
 
       template< typename Vertex,
                 typename Real >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       Real getValue( const Vertex& vertex,
                      const Real& time ) const
       {
@@ -55,13 +56,5 @@ class tnlMeanCurvatureFlowEocRhs
       TestFunction testFunction;
 };
 
-template< typename ExactOperator,
-          typename TestFunction >
-class tnlFunctionType< tnlMeanCurvatureFlowEocRhs< ExactOperator, TestFunction > >
-{
-   public:
-
-      enum { Type = tnlAnalyticFunction };
-};
 
 #endif /* TNLMEANCURVATUREFLOWEOCRHS_H_ */

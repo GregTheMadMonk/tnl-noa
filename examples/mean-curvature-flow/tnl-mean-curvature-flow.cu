@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnl-mean-curvature-flow-eoc.cpp  -  description
+                          tnl-mean-curvature-flow.cu  -  description
                              -------------------
     begin                : Dec 29, 2015
-    copyright            : (C) 2015 by oberhuber
+    copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,6 +15,4 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnl-mean-curvature-flow-eoc.h"
-
-
+#include "tnl-mean-curvature-flow.h"

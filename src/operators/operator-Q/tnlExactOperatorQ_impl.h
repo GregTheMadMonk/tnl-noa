@@ -40,7 +40,7 @@ getValue( const Function& function,
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
         return 0.0;
    if (XDiffOrder == 0)
-        return sqrt(eps * eps + function.template getValue< 1, 0, 0, Vertex >( v, time ) * function.template getValue< 1, 0, 0, Vertex >( v, time ) );
+        return sqrt(eps * eps + function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 1, 0, 0 >( v, time ) );
    if (XDiffOrder == 1)
         return (function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 2, 0, 0 >( v, time ) ) / getValue( function, v, time, eps);
    return 0;
@@ -66,8 +66,8 @@ getValue( const Function& function,
    if( ZDiffOrder != 0 )
         return 0.0;
    if (XDiffOrder == 0 && YDiffOrder == 0 )
-        return sqrt(eps * eps + function.template getValue< 1, 0, 0, Vertex >( v, time ) * function.template getValue< 1, 0, 0, Vertex >( v, time ) 
-                + function.template getValue< 0, 1, 0, Vertex >( v, time ) * function.template getValue< 0, 1, 0, Vertex >( v, time ) );
+        return sqrt(eps * eps + function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 1, 0, 0 >( v, time ) 
+                + function.template getValue< 0, 1, 0 >( v, time ) * function.template getValue< 0, 1, 0 >( v, time ) );
    if (XDiffOrder == 1 && YDiffOrder == 0 )
         return (function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 2, 0, 0 >( v, time ) + 
                 function.template getValue< 0, 1, 0 >( v, time ) * function.template getValue< 1, 1, 0 >( v, time )) / getValue( function, v, time, eps);
@@ -95,9 +95,9 @@ getValue( const Function& function,
           const Real& time, const Real& eps )
 {
    if ( XDiffOrder == 0 && YDiffOrder == 0  && ZDiffOrder == 0 )
-        return sqrt(eps * eps + function.template getValue< 1, 0, 0, Vertex >( v, time ) * function.template getValue< 1, 0, 0, Vertex >( v, time ) 
-                + function.template getValue< 0, 1, 0, Vertex >( v, time ) * function.template getValue< 0, 1, 0, Vertex >( v, time )
-                + function.template getValue< 0, 0, 1, Vertex >( v, time ) * function.template getValue< 0, 0, 1, Vertex >( v, time ) );
+        return sqrt(eps * eps + function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 1, 0, 0 >( v, time ) 
+                + function.template getValue< 0, 1, 0 >( v, time ) * function.template getValue< 0, 1, 0 >( v, time )
+                + function.template getValue< 0, 0, 1 >( v, time ) * function.template getValue< 0, 0, 1 >( v, time ) );
    if (XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 0 )
         return (function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 2, 0, 0 >( v, time ) + 
                 function.template getValue< 0, 1, 0 >( v, time ) * function.template getValue< 1, 1, 0 >( v, time ) + 

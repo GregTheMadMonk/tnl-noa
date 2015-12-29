@@ -25,7 +25,7 @@ class tnlExactNonlinearDiffusion
 {};
 
 template< typename OperatorQ >
-class tnlExactNonlinearDiffusion< OperatorQ, 1 >
+class tnlExactNonlinearDiffusion< OperatorQ, 1 > : public tnlFunction< 1, AnalyticFunction >
 {
    public:
 
@@ -38,16 +38,15 @@ class tnlExactNonlinearDiffusion< OperatorQ, 1 >
 #else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
 #endif      
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      
+      __cuda_callable__
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
 };
 
 template< typename OperatorQ >
-class tnlExactNonlinearDiffusion< OperatorQ, 2 >
+class tnlExactNonlinearDiffusion< OperatorQ, 2 > : public tnlFunction< 2, AnalyticFunction >
 {
    public:
 
@@ -60,16 +59,15 @@ class tnlExactNonlinearDiffusion< OperatorQ, 2 >
 #else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
 #endif 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif      
+
+      __cuda_callable__
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
 };
 
 template< typename OperatorQ >
-class tnlExactNonlinearDiffusion< OperatorQ, 3 >
+class tnlExactNonlinearDiffusion< OperatorQ, 3 > : public tnlFunction< 3, AnalyticFunction >
 {
    public:
 
@@ -82,19 +80,11 @@ class tnlExactNonlinearDiffusion< OperatorQ, 3 >
 #else   
       template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
 #endif 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+
+      __cuda_callable__
       static Real getValue( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
-};
-
-template< typename OperatorQ, int Dimensions >
-class tnlFunctionType< tnlExactNonlinearDiffusion< OperatorQ, Dimensions > >
-{
-   public:
-      enum { Type = tnlAnalyticFunction };
 };
 
 #include "tnlExactNonlinearDiffusion_impl.h"

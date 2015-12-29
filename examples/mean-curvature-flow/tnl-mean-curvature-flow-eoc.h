@@ -22,8 +22,8 @@
 #include <solvers/tnlFastBuildConfigTag.h>
 #include <solvers/tnlBuildConfigTags.h>
 #include <functions/tnlTestFunction.h>
-#include <operators/tnlAnalyticDirichletBoundaryConditions.h>
-#include <operators/tnlAnalyticNeumannBoundaryConditions.h>
+#include <operators/tnlDirichletBoundaryConditions.h>
+#include <operators/tnlNeumannBoundaryConditions.h>
 #include <problems/tnlMeanCurvatureFlowEocRhs.h>
 #include <problems/tnlMeanCurvatureFlowEocProblem.h>
 #include <operators/diffusion/tnlExactNonlinearDiffusion.h>
@@ -65,19 +65,19 @@ class meanCurvatureFlowEocSetter
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef tnlStaticVector< MeshType::Dimensions, Real > Vertex;
+   typedef typename MeshType::VertexType Vertex;
 
    static bool run( const tnlParameterContainer& parameters )
    {
-      enum { Dimensions = MeshType::Dimensions };
+      enum { Dimensions = MeshType::meshDimensions };
       typedef tnlFiniteVolumeOperatorQ<MeshType, Real, Index, 0> OperatorQ;
       typedef tnlFiniteVolumeNonlinearOperator<MeshType, OperatorQ, Real, Index > NonlinearOperator;
       typedef tnlNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
       typedef tnlExactNonlinearDiffusion< tnlExactOperatorQ<Dimensions>, Dimensions > ExactOperator;
-      typedef tnlTestFunction< MeshType::Dimensions, Real, Device > TestFunction;
-      typedef tnlMeanCurvatureFlowEocRhs< ExactOperator, TestFunction > RightHandSide;
-      typedef tnlStaticVector < MeshType::Dimensions, Real > Vertex;
-      typedef tnlAnalyticDirichletBoundaryConditions< MeshType, TestFunction, Real, Index > BoundaryConditions;
+      typedef tnlTestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
+      typedef tnlMeanCurvatureFlowEocRhs< ExactOperator, TestFunction, Dimensions > RightHandSide;
+      typedef tnlStaticVector < MeshType::meshDimensions, Real > Vertex;
+      typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Real, Index > BoundaryConditions;
       typedef tnlMeanCurvatureFlowEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );

@@ -43,7 +43,6 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, 
    template< typename MeshEntity, typename Vector >
    __cuda_callable__
    Real getValue( const MeshType& mesh,
-          const IndexType cellIndex,
           const MeshEntity& entity,
           const Vector& u,
           const Real& time,
@@ -167,7 +166,6 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, 
    template< typename MeshEntity, typename Vector, int AxeX = 0, int AxeY = 0, int AxeZ = 0 >
    __cuda_callable__
    Real boundaryDerivative( const MeshType& mesh,
-          const IndexType cellIndex,
           const MeshEntity& entity,
           const Vector& u,
           const Real& time,
@@ -205,7 +203,6 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, 
    template< typename MeshEntity, typename Vector >
    __cuda_callable__
    Real getValue( const MeshType& mesh,
-          const IndexType cellIndex,
           const MeshEntity& entity,
           const Vector& u,
           const Real& time,
@@ -220,7 +217,6 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, 
       template< typename MeshEntity, typename Vector, int AxeX = 0, int AxeY = 0, int AxeZ = 0 >
       __cuda_callable__
       Real boundaryDerivative( const MeshType& mesh,
-             const IndexType cellIndex,
              const MeshEntity& entity,
              const Vector& u,
              const Real& time,
@@ -261,7 +257,6 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, 
    template< typename MeshEntity, typename Vector >
    __cuda_callable__
    Real getValue( const MeshType& mesh,
-          const IndexType cellIndex,
           const MeshEntity& entity,
           const Vector& u,
           const Real& time,

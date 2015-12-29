@@ -34,11 +34,10 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >
 
    static tnlString getType();
    
-   template< typename Vector,
-             typename MeshEntity >
+   template< typename MeshEntity,
+             typename Vector >
    __cuda_callable__
    Real getValue( const MeshType& mesh,
-                  const IndexType cellIndex,
                   const MeshEntity& entity,
                   const Vector& u,
                   const RealType& time) const;
@@ -88,11 +87,10 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex 
 
    static tnlString getType();
    
-   template< typename Vector,
-             typename MeshEntity >
+   template< typename MeshEntity,
+             typename Vector >
    __cuda_callable__
    Real getValue( const MeshType& mesh,
-                  const IndexType cellIndex,
                   const MeshEntity& entity,
                   const Vector& u,
                   const RealType& time) const;
@@ -142,10 +140,10 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex 
 
    static tnlString getType();
    
-   template< typename Vector >
+   template< typename MeshEntity, 
+             typename Vector >
    __cuda_callable__
    Real getValue( const MeshType& mesh,
-                  const IndexType cellIndex,
                   const MeshEntity& entity,
                   const Vector& u,
                   const RealType& time) const;

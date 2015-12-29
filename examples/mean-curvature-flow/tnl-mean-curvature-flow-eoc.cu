@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnl-mean-curvature-flow-eoc.cpp  -  description
+                          tnl-mean-curvature-flow-eoc.cu  -  description
                              -------------------
     begin                : Dec 29, 2015
     copyright            : (C) 2015 by oberhuber

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnl-heat-equation.cpp  -  description
+                          tnl-mean-cudvature-flow.cpp  -  description
                              -------------------
-    begin                : Jan 12, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Dec 29, 2015
+    copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
