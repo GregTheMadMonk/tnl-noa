@@ -37,6 +37,12 @@ using SlicedEllpackMatrix = tnlSlicedEllpackMatrix< Real, Device, Index >;
 const double oneGB = 1024.0 * 1024.0 * 1024.0;
 
 
+// TODO:
+// check operations with the timer:
+//   - reset() clears the timer and starts it again
+//   - getTime() stops the timer and starts it again !!!
+
+
 template< typename Matrix >
 int setHostTestMatrix( Matrix& matrix,
                        const int elementsPerRow )
@@ -101,6 +107,21 @@ void setCudaTestMatrix( Matrix& matrix,
    tnlCuda::freeFromDevice( kernel_matrix );
 }
 
+template<typename Function, typename... Args>
+double time_void_function(int loops, Function & f, Args & ...args)
+{
+    tnlTimerRT timer;
+    timer.reset();
+
+    for(int i = 0; i < loops; ++i) {
+        timer.start();
+        f(args...);
+        timer.stop();
+    }
+
+    return timer.getTime();
+}
+
 template< typename Real,
           template< typename, typename, typename > class Matrix,
           template< typename, typename, typename > class Vector = tnlVector >
@@ -148,7 +169,6 @@ benchmarkSpMV( const int & loops,
       return false;
    }
 
-   tnlTimerRT timer;
    double bandwidth( 0.0 ), datasetSize( 0.0 ), timeHost( 0.0 ), timeDevice( 0.0 );
 
    tnlList< tnlString > parsedType;
@@ -161,31 +181,26 @@ benchmarkSpMV( const int & loops,
    hostVector.setValue( 1.0 );
    deviceVector.setValue( 1.0 );
 
-   // TODO: check operations with the timer:
-   //   -   reset() clears the timer and starts it again
-   //   -   getTime() stops the timer and starts it again !!!
-   timer.reset();
-   for( int i = 0; i < loops; i++ )
-      hostMatrix.vectorProduct( hostVector, hostVector2 );
-   timer.stop();
-   timeHost = timer.getTime();
-   bandwidth = datasetSize / timer.getTime();
-   cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   auto spmvHost = []( const HostMatrix & m, const HostVector & x, HostVector & y ) {
+      m.vectorProduct( x, y );
+   };
+   timeHost = time_void_function( loops, spmvHost, hostMatrix, hostVector, hostVector2 );
+   bandwidth = datasetSize / timeHost;
+   cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timeHost << " sec." << endl;
    
-   timer.reset();
-   for( int i = 0; i < loops; i++ )
-      deviceMatrix.vectorProduct( deviceVector, deviceVector2 );
-   timer.stop();
-   timeDevice = timer.getTime();
-   bandwidth = datasetSize / timer.getTime();
-   cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   auto spmvCuda = []( const DeviceMatrix & m, const CudaVector & x, CudaVector & y ) {
+      m.vectorProduct( x, y );
+   };
+   timeDevice = time_void_function( loops, spmvCuda, deviceMatrix, deviceVector, deviceVector2 );
+   bandwidth = datasetSize / timeDevice;
+   cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timeDevice << " sec." << endl;
    cout << "  CPU/GPU speedup: " << timeHost / timeDevice << endl;
 
    //cout << hostVector2 << endl << deviceVector2 << endl;
       
    if( hostVector2 != deviceVector2 )
    {      
-      cerr << "Error in SliceEllpack Spmv kernel at positions" << endl;
+      cerr << "Error in Spmv kernel" << endl;
       //for( int i = 0; i < size; i++ )
       //   if( hostVector2.getElement( i ) != deviceVector2.getElement( i ) )
       //      cerr << " " << i;
@@ -236,40 +251,35 @@ int main( int argc, char* argv[] )
    hostVector2.setValue( 1.0 );
    deviceVector2.setValue( 1.0 );
 
-   tnlTimerRT timer;
    double bandwidth( 0.0 );
    Real resultHost, resultDevice, timeHost, timeDevice;
 
 
    cout << "Benchmarking CPU-GPU memory bandwidth: ";
-   timer.reset();
-   timer.start();
-   for( int i = 0; i < loops; i++ )
-     deviceVector = hostVector;
-   timer.stop();    
-   bandwidth = datasetSize / timer.getTime();
+   auto copyAssign = []( CudaVector & v1, const HostVector & v2 ) {
+      v1 = v2;
+   };
+   timeHost = time_void_function( loops, copyAssign, deviceVector, hostVector );
+   bandwidth = datasetSize / timeHost;
    cout << bandwidth << " GB/sec." << endl;
     
 
    cout << "Benchmarking vector addition:" << endl;
-   timer.reset();
-   timer.start();
-   for( int i = 0; i < loops; i++ )
-     hostVector.addVector( hostVector2 );
-   timer.stop();
-   timeHost = timer.getTime();
-   bandwidth = 3 * datasetSize / timer.getTime();
-   cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   auto addVectorHost = []( HostVector & v1, const HostVector & v2 ) {
+      v1.addVector( v2 );
+   };
+   timeHost = time_void_function( loops, addVectorHost, hostVector, hostVector2 );
+   bandwidth = 3 * datasetSize / timeHost;
+   cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timeHost << " sec." << endl;
     
-   timer.reset();
-   timer.start();
-   for( int i = 0; i < loops; i++ )
-     deviceVector.addVector( deviceVector2 );
-   cudaThreadSynchronize();
-   timer.stop();
-   timeDevice = timer.getTime();
-   bandwidth = 3 * datasetSize / timer.getTime();
-   cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   auto addVectorCuda = []( CudaVector & v1, const CudaVector & v2 ) {
+      v1.addVector( v2 );
+      // TODO: synchronization should be part of addVector
+      cudaThreadSynchronize();
+   };
+   timeDevice = time_void_function( loops, addVectorCuda, deviceVector, deviceVector2 );
+   bandwidth = 3 * datasetSize / timeDevice;
+   cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timeDevice << " sec." << endl;
    cout << "  CPU/GPU speedup: " << timeHost / timeDevice << endl;
 
 
@@ -280,30 +290,31 @@ int main( int argc, char* argv[] )
 
 
    cout << "Benchmarking scalar product:" << endl;
-   timer.reset();
-   timer.start();
-   for( int i = 0; i < loops; i++ )
-     resultHost = hostVector.scalarProduct( hostVector2 );
-   timer.stop();
-   timeHost = timer.getTime();
-   bandwidth = 2 * datasetSize / timer.getTime();
-   cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   // FIXME: scalarProduct is not const method
+//   auto scalarProductHost = []( const HostVector & v1, const HostVector & v2 ) {
+   auto scalarProductHost = []( HostVector & v1, const HostVector & v2 ) {
+      return v1.scalarProduct( v2 );
+   };
+   timeHost = time_void_function( loops, scalarProductHost, hostVector, hostVector2 );
+   bandwidth = 2 * datasetSize / timeHost;
+   cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timeHost << " sec." << endl;
     
-   timer.reset();
-   timer.start();
-   for( int i = 0; i < loops; i++ )
-      resultDevice = deviceVector.scalarProduct( deviceVector2 );
-   timer.stop();
-   timeDevice = timer.getTime();
-   bandwidth = 2 * datasetSize / timer.getTime();
-   cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   // FIXME: scalarProduct is not const method
+//   auto scalarProductCuda = []( const CudaVector & v1, const CudaVector & v2 ) {
+   auto scalarProductCuda = []( CudaVector & v1, const CudaVector & v2 ) {
+      return v1.scalarProduct( v2 );
+   };
+   timeDevice = time_void_function( loops, scalarProductCuda, deviceVector, deviceVector2 );
+   bandwidth = 2 * datasetSize / timeDevice;
+   cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timeDevice << " sec." << endl;
    cout << "  CPU/GPU speedup: " << timeHost / timeDevice << endl;
 
-   if( resultHost != resultDevice )
-   {
-      cerr << "Error. " << resultHost << " != " << resultDevice << endl;
+   // TODO: devise a way to check the result of the timed function
+//   if( resultHost != resultDevice )
+//   {
+//      cerr << "Error. " << resultHost << " != " << resultDevice << endl;
       //return EXIT_FAILURE;
-   }
+//   }
 
 #ifdef HAVE_CUBLAS
    cout << "Benchmarking scalar product on GPU with Cublas: " << endl;
@@ -323,31 +334,28 @@ int main( int argc, char* argv[] )
    cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
 #endif    
 
-   cout << "Benchmarking L2 norm: ";
-   timer.reset();
-   timer.start();
-   for( int i = 0; i < loops; i++ )
-     resultHost = hostVector.lpNorm( 2.0 );
-   timer.stop();
-   timeHost = timer.getTime();
-   bandwidth = datasetSize / timer.getTime();
-   cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   cout << "Benchmarking L2 norm: " << endl;
+   auto l2normHost = []( const HostVector & v ) {
+      return v.lpNorm( 2.0 );
+   };
+   timeHost = time_void_function( loops, l2normHost, hostVector );
+   bandwidth = datasetSize / timeHost;
+   cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timeHost << " sec." << endl;
     
-   timer.reset();
-   timer.start();
-   for( int i = 0; i < loops; i++ )
-      resultDevice = deviceVector.lpNorm( 2.0 );
-   timer.stop();
-   timeDevice = timer.getTime();
-   bandwidth = datasetSize / timer.getTime();
-   cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   auto l2normCuda = []( const CudaVector & v ) {
+      return v.lpNorm( 2.0 );
+   };
+   timeDevice = time_void_function( loops, l2normCuda, deviceVector );
+   bandwidth = datasetSize / timeDevice;
+   cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timeDevice << " sec." << endl;
    cout << "  CPU/GPU speedup: " << timeHost / timeDevice << endl;
 
-   if( resultHost != resultDevice )
-   {
-      cerr << "Error. " << resultHost << " != " << resultDevice << endl;
+   // TODO: devise a way to check the result of the timed function
+//   if( resultHost != resultDevice )
+//   {
+//      cerr << "Error. " << resultHost << " != " << resultDevice << endl;
       //return EXIT_FAILURE;
-   }
+//   }
 
 
    /*
