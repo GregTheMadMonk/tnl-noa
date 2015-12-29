@@ -44,9 +44,13 @@ class meanCurvatureFlowEocConfig
    public:
       static void configSetup( tnlConfigDescription& config )
       {
-         config.addDelimiter( "Mean Curvature Flow EOC settings:" );
+         config.addDelimiter( "Mean Curvature Flow EOC settings:" );         
+         config.addEntry< tnlString >( "numerical-scheme", "Numerical scheme for the solution approximation.", "fvm" );
+            config.addEntryEnum< tnlString >( "fdm" );
+            config.addEntryEnum< tnlString >( "fvm" );
+
          config.addEntry< double >( "eps", "This sets a eps in operator Q.", 1.0 );
-         config.addDelimiter( "Tests setting::" );
+         config.addDelimiter( "Tests setting::" );         
          tnlTestFunction< 3, double >::configSetup( config );
       }
 };
@@ -66,10 +70,11 @@ class meanCurvatureFlowEocSetter
    typedef Index IndexType;
 
    typedef typename MeshType::VertexType Vertex;
+   enum { Dimensions = MeshType::meshDimensions };
 
    static bool run( const tnlParameterContainer& parameters )
    {
-      enum { Dimensions = MeshType::meshDimensions };
+
       typedef tnlFiniteVolumeOperatorQ<MeshType, Real, Index, 0> OperatorQ;
       typedef tnlFiniteVolumeNonlinearOperator<MeshType, OperatorQ, Real, Index > NonlinearOperator;
       typedef tnlNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;

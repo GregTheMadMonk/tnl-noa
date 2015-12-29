@@ -67,7 +67,7 @@ template< typename MeshReal,
           typename OperatorQ >
 template< typename Vector,
           typename MeshEntity,
-          typename MatrixRow >
+          typename Matrix >
 __cuda_callable__
 void
 tnlFiniteVolumeNonlinearOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
@@ -78,8 +78,9 @@ updateLinearSystem( const RealType& time,
                     const MeshEntity& entity,
                     Vector& u,
                     Vector& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
 }
 
 template< typename MeshReal,
@@ -149,7 +150,7 @@ template< typename MeshReal,
           typename OperatorQ >
 template< typename Vector,
           typename MeshEntity, 
-          typename MatrixRow >
+          typename Matrix >
 __cuda_callable__
 void
 tnlFiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
@@ -160,8 +161,9 @@ updateLinearSystem( const RealType& time,
                     const MeshEntity& entity,
                     Vector& u,
                     Vector& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType aCoef = - tau * operatorQ.getValue(mesh, entity, u, time ) * mesh.template getSpaceStepsProducts< 0, -2 >() / 
                        operatorQ.getValue(mesh, entity, u, time, 0, -1 );
@@ -258,7 +260,7 @@ template< typename MeshReal,
           typename OperatorQ >
 template< typename Vector,
           typename MeshEntity,
-          typename MatrixRow >
+          typename Matrix >
 #ifdef HAVE_CUDA
 __cuda_callable__
 #endif
@@ -271,8 +273,9 @@ updateLinearSystem( const RealType& time,
                     const MeshEntity& entity,
                     Vector& u,
                     Vector& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType aCoef = - tau * operatorQ.getValue(mesh, entity, u, time ) * mesh.template getSpaceStepsProducts< 0, 0, -2 >() / 
                        operatorQ.getValue( mesh, entity, u, time, 0, 0, -1 );

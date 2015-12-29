@@ -32,7 +32,8 @@ processBoundaryEntities( const GridType& grid,
     * Boundary conditions
     */
    const int CellDimensions = GridType::meshDimensions;
-   typename GridType::template GridEntity< CellDimensions > entity( grid );
+   //typename GridType::template GridEntity< CellDimensions > entity( grid );
+   GridEntity entity( grid );
    
    CoordinatesType& coordinates = entity.getCoordinates();
    const IndexType& xSize = grid.getDimensions().x();
@@ -86,7 +87,8 @@ processInteriorEntities( const GridType& grid,
     * Interior cells
     */
    const int CellDimensions = GridType::meshDimensions;
-   typename GridType::template GridEntity< CellDimensions > entity( grid );
+   //typename GridType::template GridEntity< CellDimensions > entity( grid );
+   GridEntity entity( grid );
 
    CoordinatesType& coordinates = entity.getCoordinates();
 
@@ -120,8 +122,8 @@ processBoundaryEntities( const GridType& grid,
     * Traversing boundary faces
     */
    const int FaceDimensions = GridType::meshDimensions - 1;
-   typedef typename GridType::template GridEntity< FaceDimensions > EntityType;
-   EntityType entity;
+   //typedef typename GridType::template GridEntity< FaceDimensions > EntityType;
+   GridEntity entity;
 
    CoordinatesType& coordinates = entity.getCoordinates();
 
@@ -129,7 +131,7 @@ processBoundaryEntities( const GridType& grid,
    const IndexType& ySize = grid.getDimensions().y();
    const IndexType& zSize = grid.getDimensions().z();
 
-   entity.setOrientation( typename EntityType::EntityOrientationType( 1, 0, 0 ) );
+   entity.setOrientation( typename GridEntity::EntityOrientationType( 1, 0, 0 ) );
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
       {
@@ -141,7 +143,7 @@ processBoundaryEntities( const GridType& grid,
          EntitiesProcessor::processEntity( grid, userData, entity );
       }
 
-   entity.setOrientation( typename EntityType::EntityOrientationType( 0, 1, 0 ) );
+   entity.setOrientation( typename GridEntity::EntityOrientationType( 0, 1, 0 ) );
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
       {
@@ -153,7 +155,7 @@ processBoundaryEntities( const GridType& grid,
          EntitiesProcessor::processEntity( grid, userData, entity );
       }
   
-   entity.setOrientation( typename EntityType::EntityOrientationType( 0, 0, 1 ) );
+   entity.setOrientation( typename GridEntity::EntityOrientationType( 0, 0, 1 ) );
    for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )      
       {         
@@ -180,8 +182,8 @@ processInteriorEntities( const GridType& grid,
     * Traversing interior faces
     */
    const int FaceDimensions = GridType::meshDimensions - 1;
-   typedef typename GridType::template GridEntity< FaceDimensions > EntityType;
-   EntityType entity;
+   //typedef typename GridType::template GridEntity< FaceDimensions > EntityType;
+   GridEntity entity( grid );
 
    CoordinatesType& coordinates = entity.getCoordinates();
 
@@ -193,7 +195,7 @@ processInteriorEntities( const GridType& grid,
 //#pragma omp parallel for
 #endif
 
-   entity.setOrientation( typename EntityType::EntityOrientationType( 1, 0, 0 ) );
+   entity.setOrientation( typename GridEntity::EntityOrientationType( 1, 0, 0 ) );
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
          for( coordinates.x() = 1; coordinates.x() < xSize; coordinates.x() ++ )
@@ -202,7 +204,7 @@ processInteriorEntities( const GridType& grid,
             EntitiesProcessor::processEntity( grid, userData, entity );
          }
 
-   entity.setOrientation( typename EntityType::EntityOrientationType( 0, 1, 0 ) );
+   entity.setOrientation( typename GridEntity::EntityOrientationType( 0, 1, 0 ) );
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 1; coordinates.y() < ySize; coordinates.y() ++ )
          for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
@@ -212,7 +214,7 @@ processInteriorEntities( const GridType& grid,
          }
             
    
-   entity.setOrientation( typename EntityType::EntityOrientationType( 0, 0, 1 ) );
+   entity.setOrientation( typename GridEntity::EntityOrientationType( 0, 0, 1 ) );
    for( coordinates.z() = 1; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
          for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
@@ -237,8 +239,8 @@ processBoundaryEntities( const GridType& grid,
     * Traversing boundary edges
     */
    const int EdgeDimensions = 1;
-   typedef typename GridType::template GridEntity< EdgeDimensions > EntityType;
-   EntityType entity;
+   //typedef typename GridType::template GridEntity< EdgeDimensions > EntityType;
+   GridEntity entity( grid );
 
    CoordinatesType& coordinates = entity.getCoordinates();
 
@@ -246,7 +248,7 @@ processBoundaryEntities( const GridType& grid,
    const IndexType& ySize = grid.getDimensions().y();
    const IndexType& zSize = grid.getDimensions().z();
    
-   entity.setBasis( typename EntityType::EntityBasisType( 1, 0, 0 ) );
+   entity.setBasis( typename GridEntity::EntityBasisType( 1, 0, 0 ) );
    for( coordinates.y() = 0; coordinates.y() <= ySize; coordinates.y() ++ )
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )      
       {
@@ -258,7 +260,7 @@ processBoundaryEntities( const GridType& grid,
          EntitiesProcessor::processEntity( grid, userData, entity );
       }
    
-   entity.setBasis( typename EntityType::EntityBasisType( 0, 1, 0 ) );
+   entity.setBasis( typename GridEntity::EntityBasisType( 0, 1, 0 ) );
    for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
       for( coordinates.x() = 0; coordinates.x() <= xSize; coordinates.x() ++ )      
       {
@@ -270,7 +272,7 @@ processBoundaryEntities( const GridType& grid,
          EntitiesProcessor::processEntity( grid, userData, entity );
       }
    
-   entity.setBasis( typename EntityType::EntityBasisType( 1, 0, 0 ) );
+   entity.setBasis( typename GridEntity::EntityBasisType( 1, 0, 0 ) );
    for( coordinates.z() = 0; coordinates.z() <= zSize; coordinates.z() ++ )
       for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
       {
@@ -282,7 +284,7 @@ processBoundaryEntities( const GridType& grid,
          EntitiesProcessor::processEntity( grid, userData, entity );
       }
    
-   entity.setBasis( typename EntityType::EntityBasisType( 0, 0, 1 ) );
+   entity.setBasis( typename GridEntity::EntityBasisType( 0, 0, 1 ) );
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.x() = 0; coordinates.x() <= xSize; coordinates.x() ++ )
       {
@@ -294,7 +296,7 @@ processBoundaryEntities( const GridType& grid,
          EntitiesProcessor::processEntity( grid, userData, entity );
       }
 
-   entity.setBasis( typename EntityType::EntityBasisType( 0, 1, 0 ) );
+   entity.setBasis( typename GridEntity::EntityBasisType( 0, 1, 0 ) );
    for( coordinates.z() = 0; coordinates.z() <= zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
       {
@@ -306,7 +308,7 @@ processBoundaryEntities( const GridType& grid,
          EntitiesProcessor::processEntity( grid, userData, entity );
       }
    
-   entity.setBasis( typename EntityType::EntityBasisType( 0, 0, 1 ) );
+   entity.setBasis( typename GridEntity::EntityBasisType( 0, 0, 1 ) );
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() <= ySize; coordinates.y() ++ )
       {
@@ -333,8 +335,8 @@ processInteriorEntities( const GridType& grid,
     * Traversing interior edges
     */
    const int EdgeDimensions = 1;
-   typedef typename GridType::template GridEntity< EdgeDimensions > EntityType;
-   EntityType entity;
+   //typedef typename GridType::template GridEntity< EdgeDimensions > EntityType;
+   GridEntity entity( grid );
 
    CoordinatesType& coordinates = entity.getCoordinates();
 
@@ -346,7 +348,7 @@ processInteriorEntities( const GridType& grid,
 //#pragma omp parallel for
 #endif
 
-   entity.setBasis( typename EntityType::EntityBasisType( 0, 0, 1 ) );
+   entity.setBasis( typename GridEntity::EntityBasisType( 0, 0, 1 ) );
    for( coordinates.z() = 1; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 1; coordinates.y() < ySize; coordinates.y() ++ )
          for( coordinates.x() = 0; coordinates.x() < xSize; coordinates.x() ++ )
@@ -355,7 +357,7 @@ processInteriorEntities( const GridType& grid,
             EntitiesProcessor::processEntity( grid, userData, entity );
          }
 
-   entity.setBasis( typename EntityType::EntityBasisType( 0, 1, 0 ) );
+   entity.setBasis( typename GridEntity::EntityBasisType( 0, 1, 0 ) );
    for( coordinates.z() = 1; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 0; coordinates.y() < ySize; coordinates.y() ++ )
          for( coordinates.x() = 1; coordinates.x() < xSize; coordinates.x() ++ )
@@ -364,7 +366,7 @@ processInteriorEntities( const GridType& grid,
             EntitiesProcessor::processEntity( grid, userData, entity );
          }
    
-   entity.setBasis( typename EntityType::EntityBasisType( 1, 0, 0 ) );
+   entity.setBasis( typename GridEntity::EntityBasisType( 1, 0, 0 ) );
    for( coordinates.z() = 0; coordinates.z() < zSize; coordinates.z() ++ )
       for( coordinates.y() = 1; coordinates.y() < ySize; coordinates.y() ++ )
          for( coordinates.x() = 1; coordinates.x() < xSize; coordinates.x() ++ )
@@ -389,8 +391,8 @@ processBoundaryEntities( const GridType& grid,
     * Traversing boundary vertices
     */
    const int VertexDimensions = 0;
-   typedef typename GridType::template GridEntity< VertexDimensions > EntityType;
-   EntityType entity;
+   //typedef typename GridType::template GridEntity< VertexDimensions > EntityType;
+   GridEntity entity;
 
    CoordinatesType& coordinates = entity.getCoordinates();
 
@@ -447,8 +449,8 @@ processInteriorEntities( const GridType& grid,
     * Traversing interior vertices
     */
    const int VertexDimensions = 0;
-   typedef typename GridType::template GridEntity< VertexDimensions > EntityType;
-   EntityType entity;
+   //typedef typename GridType::template GridEntity< VertexDimensions > EntityType;
+   GridEntity entity( grid );
    
    CoordinatesType& coordinates = entity.getCoordinates();
    
@@ -489,7 +491,8 @@ __global__ void tnlTraverserGrid3DCells( const tnlGrid< 3, Real, tnlCuda, Index 
 {
    typedef tnlGrid< 3, Real, tnlCuda, Index > GridType;
    const int CellDimensions = GridType::meshDimensions;
-   typename GridType::template GridEntity< CellDimensions > entity( *grid );
+   //typename GridType::template GridEntity< CellDimensions > entity( *grid );
+   GridEntity entity( *grid );
    typedef typename GridType::CoordinatesType CoordinatesType;
    CoordinatesType& coordinates = entity.getCoordinates();
 
@@ -533,7 +536,8 @@ __global__ void tnlTraverserGrid3DFaces( const tnlGrid< 3, Real, tnlCuda, Index 
 {
    typedef tnlGrid< 3, Real, tnlCuda, Index > GridType;
    const int FaceDimensions = GridType::meshDimensions - 1;
-   typename GridType::template GridEntity< FaceDimensions > entity( *grid );
+   //typename GridType::template GridEntity< FaceDimensions > entity( *grid );
+   GridEntity entity( *grid );
    entity.setOrientation( nx, ny, nz );
    typedef typename GridType::CoordinatesType CoordinatesType;
    CoordinatesType& coordinates = entity.getCoordinates();
@@ -578,7 +582,8 @@ __global__ void tnlTraverserGrid3DEdges( const tnlGrid< 3, Real, tnlCuda, Index 
 {
    typedef tnlGrid< 3, Real, tnlCuda, Index > GridType;
    const int EdgeDimensions = 1;
-   typename GridType::template GridEntity< EdgeDimensions > entity( *grid );
+   //typename GridType::template GridEntity< EdgeDimensions > entity( *grid );
+   GridEntity entity( *grid );
    entity.setBasis( dx, dy, dz );
    typedef typename GridType::CoordinatesType CoordinatesType;
    CoordinatesType& coordinates = entity.getCoordinates();
@@ -620,7 +625,8 @@ __global__ void tnlTraverserGrid3DVertices( const tnlGrid< 3, Real, tnlCuda, Ind
 {
    typedef tnlGrid< 3, Real, tnlCuda, Index > GridType;
    const int VertexDimensions = 0;
-   typename GridType::template GridEntity< VertexDimensions > entity( *grid );
+   //typename GridType::template GridEntity< VertexDimensions > entity( *grid );
+   GridEntity entity( *grid );
    typedef typename GridType::CoordinatesType CoordinatesType;
    CoordinatesType& coordinates = entity.getCoordinates();
    

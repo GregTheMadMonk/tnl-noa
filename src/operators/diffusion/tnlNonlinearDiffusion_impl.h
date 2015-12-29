@@ -67,7 +67,7 @@ template< typename MeshReal,
           typename NonlinearDiffusionOperator >
 template< typename MeshEntity,
           typename Vector,           
-          typename MatrixRow >
+          typename Matrix >
 __cuda_callable__
 void
 tnlNonlinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
@@ -78,9 +78,9 @@ updateLinearSystem( const RealType& time,
                     const MeshEntity& entity,
                     Vector& u,
                     Vector& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
-    nonlinearDiffusionOperator.updateLinearSystem( time, tau, mesh, index, entity, u, b, matrixRow );
+    nonlinearDiffusionOperator.updateLinearSystem( time, tau, mesh, index, entity, u, b, matrix );
 }
 
 template< typename MeshReal,
@@ -144,7 +144,7 @@ template< typename MeshReal,
           typename NonlinearDiffusionOperator >
 template< typename MeshEntity,
           typename Vector,           
-          typename MatrixRow >
+          typename Matrix >
 __cuda_callable__
 void
 tnlNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
@@ -155,9 +155,9 @@ updateLinearSystem( const RealType& time,
                     const MeshEntity& entity,
                     Vector& u,
                     Vector& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
-    nonlinearDiffusionOperator.updateLinearSystem( time, tau, mesh, index, entity, u, b, matrixRow );
+    nonlinearDiffusionOperator.updateLinearSystem( time, tau, mesh, index, entity, u, b, matrix );
 }
 
 template< typename MeshReal,
@@ -221,7 +221,7 @@ template< typename MeshReal,
           typename NonlinearDiffusionOperator >
 template< typename MeshEntity,
           typename Vector,          
-          typename MatrixRow >
+          typename Matrix >
 __cuda_callable__
 void
 tnlNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
@@ -232,9 +232,9 @@ updateLinearSystem( const RealType& time,
                     const MeshEntity& entity,
                     Vector& u,
                     Vector& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
-    nonlinearDiffusionOperator.updateLinearSystem( time, tau, mesh, index, entity, u, b, matrixRow );
+    nonlinearDiffusionOperator.updateLinearSystem( time, tau, mesh, index, entity, u, b, matrix );
 }
 
 #endif	/* TNLNONLINEARDIFFUSION_IMPL_H */

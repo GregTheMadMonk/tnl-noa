@@ -176,7 +176,8 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       /****
        * Starting m-loop
        */
-      for( IndexType i = 0; i < m && this->nextIteration(); i++ )
+      IndexType i;
+      for( i = 0; i < m && this->nextIteration(); i++ )
       {
          vi. bind( &( _v. getData()[ i * size ] ), size );
          /****
@@ -218,7 +219,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          RealType normw = _w. lpNorm( ( RealType ) 2.0 );
          H[ i + 1 + i * ( m + 1 ) ] = normw;
 
-         //cout << "normw = " << normw << endl;
+         cout << "normw = " << normw << endl;
          
          /***
           * v_{i+1} = w / |w|
@@ -251,6 +252,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
                              sn[ i ] );
 
          this->setResidue( fabs( s[ i + 1 ] ) / normb );
+         cout << " residue = " << fabs( s[ i + 1 ] ) / normb << endl;
          this->refreshSolverMonitor();
 
          /*if( this->getResidue() < this->getConvergenceResidue() )
@@ -261,7 +263,9 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          if( ! this->nextIteration() )
             return false;*/
       }
-      update( m - 1, m, _H, _s, _v, x );
+      cout << "x = " << x << endl;
+      update( i, m, _H, _s, _v, x );
+      cout << "x = " << x << endl;
 
       /****
        * r = M.solve(b - A * x);
@@ -319,9 +323,10 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
    // Backsolve:
    for( i = k; i >= 0; i--)
    {
+      cout << " y = " << y << endl;
       y[ i ] /= H[ i + i * ( m + 1 ) ];
       for( j = i - 1; j >= 0; j--)
-         y[ j ] -= H[ j + i * ( m + 1 ) ] * y[ i ];
+         y[ j ] -= H[ j + i * ( m + 1 ) ] * y[ i ];      
    }
 
    tnlSharedVector< RealType, DeviceType, IndexType > vi;

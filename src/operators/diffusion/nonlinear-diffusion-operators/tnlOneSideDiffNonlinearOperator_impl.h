@@ -72,7 +72,7 @@ template< typename MeshReal,
           typename OperatorQ >
 template< typename Vector,
           typename MeshEntity,
-          typename MatrixRow >
+          typename Matrix >
 __cuda_callable__
 void
 tnlOneSideDiffNonlinearOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
@@ -83,8 +83,9 @@ updateLinearSystem( const RealType& time,
                     const MeshEntity& entity,
                     Vector& u,
                     Vector& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType aCoef = -tau * 
       operatorQ.getValueStriped( mesh, entity, u, time ) *
@@ -168,7 +169,7 @@ template< typename MeshReal,
           typename OperatorQ >
 template< typename Vector,
           typename MeshEntity,
-          typename MatrixRow >
+          typename Matrix >
 __cuda_callable__
 void
 tnlOneSideDiffNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
@@ -179,8 +180,9 @@ updateLinearSystem( const RealType& time,
                     const MeshEntity& entity,
                     Vector& u,
                     Vector& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType aCoef = -tau * 
       operatorQ.getValueStriped( mesh, entity, u, time ) *
@@ -276,7 +278,7 @@ template< typename MeshReal,
           typename OperatorQ >
 template< typename Vector,
           typename MeshEntity,
-          typename MatrixRow >
+          typename Matrix >
 __cuda_callable__
 void
 tnlOneSideDiffNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
@@ -287,8 +289,9 @@ updateLinearSystem( const RealType& time,
                     const MeshEntity& entity,
                     Vector& u,
                     Vector& b,
-                    MatrixRow& matrixRow ) const
+                    Matrix& matrix ) const
 {
+   typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
    const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType aCoef = -tau * operatorQ.getValueStriped( mesh, entity, u, time ) * 
       mesh.template getSpaceStepsProducts< 0, 0, -2 >() / operatorQ.getValue( mesh, neighbourEntities.template getEntity<  0,  0, -1 >(), u, time );

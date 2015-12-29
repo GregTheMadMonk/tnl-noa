@@ -50,7 +50,7 @@ class tnlNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Nonlinear
 
       template< typename MeshEntity,
                 typename Vector,
-                typename MatrixRow >
+                typename Matrix >
       __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const RealType& tau,
@@ -59,7 +59,7 @@ class tnlNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Nonlinear
                                const MeshEntity& entity,
                                Vector& u,
                                Vector& b,
-                               MatrixRow& matrixRow ) const;
+                               Matrix& matrix ) const;
 
    public:
        
@@ -103,7 +103,7 @@ class tnlNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Nonlinea
 
       template< typename MeshEntity,
                 typename Vector,
-                typename MatrixRow >
+                typename Matrix >
       __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const RealType& tau,
@@ -112,7 +112,7 @@ class tnlNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Nonlinea
                                const MeshEntity& entity,
                                Vector& u,
                                Vector& b,
-                               MatrixRow& matrixRow ) const;
+                               Matrix& matrix ) const;
    
    public:
        
@@ -155,7 +155,7 @@ class tnlNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Nonlinea
 
       template< typename MeshEntity,
                 typename Vector,                
-                typename MatrixRow >
+                typename Matrix >
       __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const RealType& tau,
@@ -164,7 +164,7 @@ class tnlNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Nonlinea
                                const MeshEntity& entity,
                                Vector& u,
                                Vector& b,
-                               MatrixRow& matrixRow ) const;
+                               Matrix& matrix ) const;
      
    public:
        

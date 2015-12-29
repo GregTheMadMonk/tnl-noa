@@ -27,7 +27,9 @@
 #include <problems/tnlMeanCurvatureFlowProblem.h>
 #include <operators/diffusion/tnlNonlinearDiffusion.h>
 #include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
+#include <operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
 #include <operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
+#include <operators/diffusion/nonlinear-diffusion-operators/tnlFiniteVolumeNonlinearOperator.h>
 #include <functions/tnlMeshFunction.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
@@ -40,6 +42,9 @@ class meanCurvatureFlowConfig
       static void configSetup( tnlConfigDescription& config )
       {
          config.addDelimiter( "Mean Curvature Flow settings:" );
+         config.addEntry< tnlString >( "numerical-scheme", "Numerical scheme for the solution approximation.", "fvm" );
+            config.addEntryEnum< tnlString >( "fdm" );
+            config.addEntryEnum< tnlString >( "fvm" );
          config.addEntry< tnlString >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
             config.addEntryEnum< tnlString >( "dirichlet" );
             config.addEntryEnum< tnlString >( "neumann" );
@@ -47,8 +52,8 @@ class meanCurvatureFlowConfig
          config.addEntry< tnlString >( "boundary-conditions-file", "File with the values of the boundary conditions.", "boundary.tnl" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< tnlString >( "initial-condition", "File with the initial condition.", "initial.tnl");
-	 config.addEntry< double >( "right-hand-side-constant", "This sets a value in case of the constant right hand side.", 0.0 );
-	 config.addEntry< double >( "eps", "This sets a eps in operator Q.", 1.0 );
+	      config.addEntry< double >( "right-hand-side-constant", "This sets a value in case of the constant right hand side.", 0.0 );
+	      config.addEntry< double >( "eps", "This sets a eps in operator Q.", 1.0 );
       };
 };
 
@@ -66,13 +71,36 @@ class meanCurvatureFlowSetter
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef tnlStaticVector< MeshType::meshDimensions, Real > Vertex;
+   typedef typename MeshType::VertexType Vertex;
+   enum { Dimensions = MeshType::meshDimensions };
 
    static bool run( const tnlParameterContainer& parameters )
    {
-      enum { Dimensions = MeshType::meshDimensions };
-      typedef tnlOneSideDiffOperatorQ<MeshType, Real, Index, 0> OperatorQ;
-      typedef tnlOneSideDiffNonlinearOperator<MeshType, OperatorQ, Real, Index > NonlinearOperator;
+      return setNumericalScheme( parameters );
+   }
+   
+   static bool setNumericalScheme( const tnlParameterContainer& parameters )
+   {
+      const tnlString& numericalScheme = parameters.getParameter< tnlString >( "numerical-scheme" );
+      if( numericalScheme == "fdm" )
+      {
+         typedef tnlOneSideDiffOperatorQ<MeshType, Real, Index, 0> QOperator;
+         typedef tnlOneSideDiffNonlinearOperator<MeshType, QOperator, Real, Index > NonlinearOperator;         
+         return setBoundaryConditions< NonlinearOperator, QOperator >( parameters );
+      }
+      if( numericalScheme == "fvm" )
+      {
+         typedef tnlFiniteVolumeOperatorQ<MeshType, Real, Index, 0> QOperator;
+         typedef tnlFiniteVolumeNonlinearOperator<MeshType, QOperator, Real, Index > NonlinearOperator;         
+         return setBoundaryConditions< NonlinearOperator, QOperator >( parameters );
+      }
+      return false;
+   }
+   
+   template< typename NonlinearOperator,
+             typename QOperator >
+   static bool setBoundaryConditions( const tnlParameterContainer& parameters )
+   {
       typedef tnlNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
       typedef tnlConstantFunction< Dimensions, Real > RightHandSide;
       typedef tnlStaticVector< MeshType::meshDimensions, Real > Vertex;

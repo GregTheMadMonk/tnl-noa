@@ -214,11 +214,11 @@ getExplicitRHS( const RealType& time,
       this->rightHandSide,
       u,
       fu );
-   //cout << "u = " << u << endl;
-   //cout << "fu = " << fu << endl;
-   //_u.save( "u.tnl" );
-   //_fu.save( "fu.tnl" );
-   //getchar();
+   /*cout << "u = " << u << endl;
+   cout << "fu = " << fu << endl;
+   u.save( "u.tnl" );
+   fu.save( "fu.tnl" );
+   getchar();*/
 }
 
 template< typename Mesh,
@@ -253,10 +253,11 @@ assemblyLinearSystem( const RealType& time,
       u,
       matrix,
       b );
-   /*matrix.print( cout );
+   matrix.print( cout );
    cout << endl << b << endl;
    cout << endl << u << endl;
-   abort();*/
+   getchar();
+   //abort();*/
 }
 
 #endif /* TNLMEANCURVATUREFLOWPROBLEM_IMPL_H_ */

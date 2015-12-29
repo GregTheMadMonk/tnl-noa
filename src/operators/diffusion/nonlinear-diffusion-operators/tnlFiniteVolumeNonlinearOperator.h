@@ -50,7 +50,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >
 
    template< typename Vector,
              typename MeshEntity,
-             typename MatrixRow >
+             typename Matrix >
    __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const RealType& tau,
@@ -59,7 +59,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >
                                const MeshEntity& entity,
                                Vector& u,
                                Vector& b,
-                               MatrixRow& matrixRow ) const;
+                               Matrix& matrix ) const;
    
    public:
    
@@ -104,7 +104,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex 
 
    template< typename Vector,
              typename MeshEntity,
-             typename MatrixRow >
+             typename Matrix >
    __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const RealType& tau,
@@ -113,7 +113,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex 
                                const MeshEntity& entity,
                                Vector& u,
                                Vector& b,
-                               MatrixRow& matrixRow ) const;
+                               Matrix& matrix ) const;
    
    public:
    
@@ -156,7 +156,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex 
 
    template< typename Vector,
              typename MeshEntity,
-             typename MatrixRow >
+             typename Matrix >
    __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const RealType& tau,
@@ -165,7 +165,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex 
                                const MeshEntity& entity,
                                Vector& u,
                                Vector& b,
-                               MatrixRow& matrixRow ) const;
+                               Matrix& matrix ) const;
    
    public:
    

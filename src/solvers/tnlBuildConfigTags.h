@@ -60,11 +60,14 @@ template< typename MeshConfig, int Dimensions > struct tnlMeshConfigDimensions{ 
 template< typename MeshConfig, typename MeshType > struct tnlMeshConfigMesh{ enum { enabled = false }; };
 
 /****
- * Use of tnlGrid is enabled for allowed dimensions by default.
+ * Use of tnlGrid is enabled for allowed dimensions and Real, Device and Index types.
  */
 template< typename MeshConfig, int Dimensions, typename Real, typename Device, typename Index >
    struct tnlMeshConfigMesh< MeshConfig, tnlGrid< Dimensions, Real, Device, Index > >
-      { enum { enabled = tnlMeshConfigDimensions< MeshConfig, Dimensions >::enabled }; };
+      { enum { enabled = tnlMeshConfigDimensions< MeshConfig, Dimensions >::enabled  &&
+                         tnlMeshConfigReal< MeshConfig, Real >::enabled &&
+                         tnlMeshConfigDevice< MeshConfig, Device >::enabled &&
+                         tnlMeshConfigIndex< MeshConfig, Index >::enabled }; };
 
 /****
  * All time discretisations (explicit, semi-impicit and implicit ) are

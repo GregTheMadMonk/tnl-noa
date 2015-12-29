@@ -33,7 +33,8 @@ processBoundaryEntities( const GridType& grid,
     * Traversing boundary cells
     */
    const int CellDimensions = GridType::meshDimensions;
-   typename GridType::template GridEntity< CellDimensions > entity( grid );
+   //typename GridType::template GridEntity< CellDimensions > entity( grid );
+   GridEntity entity( grid );
 
    CoordinatesType& coordinates = entity.getCoordinates();
    const IndexType& xSize = grid.getDimensions().x();
@@ -74,7 +75,8 @@ processInteriorEntities( const GridType& grid,
     */
    const int CellDimensions = GridType::meshDimensions;
    
-   typename GridType::template GridEntity< CellDimensions > entity( grid );
+   //typename GridType::template GridEntity< CellDimensions > entity( grid );
+   GridEntity entity( grid );
    CoordinatesType& coordinates = entity.getCoordinates();
    
    const IndexType& xSize = grid.getDimensions().x();
@@ -105,9 +107,9 @@ processBoundaryEntities( const GridType& grid,
     * Traversing boundary faces
     */   
    const int FaceDimensions = GridType::meshDimensions - 1;
-   typedef typename GridType::template GridEntity< FaceDimensions > EntityType;
-   typedef typename EntityType::EntityOrientationType EntityOrientationType;
-   EntityType entity( grid );
+   //typedef typename GridType::template GridEntity< FaceDimensions > EntityType;
+   typedef typename GridEntity::EntityOrientationType EntityOrientationType;
+   GridEntity entity( grid );
 
    const IndexType& xSize = grid.getDimensions().x();
    const IndexType& ySize = grid.getDimensions().y();
@@ -150,9 +152,9 @@ processInteriorEntities( const GridType& grid,
     * Traversing interior faces
     */
    const int FaceDimensions = GridType::meshDimensions - 1;
-   typedef typename GridType::template GridEntity< FaceDimensions > EntityType;
-   typedef typename EntityType::EntityOrientationType EntityOrientationType;
-   EntityType entity( grid );
+   //typedef typename GridType::template GridEntity< FaceDimensions > EntityType;
+   typedef typename GridEntity::EntityOrientationType EntityOrientationType;
+   GridEntity entity( grid );
 
    const IndexType& xSize = grid.getDimensions().x();
    const IndexType& ySize = grid.getDimensions().y();
@@ -194,9 +196,9 @@ processBoundaryEntities( const GridType& grid,
     * Traversing boundary vertices
     */
    const int VertexDimensions = 0;
-   typedef typename GridType::template GridEntity< VertexDimensions > EntityType;
-   typedef typename EntityType::EntityOrientationType EntityOrientation;
-   EntityType entity( grid );
+   //typedef typename GridType::template GridEntity< VertexDimensions > EntityType;
+   typedef typename GridEntity::EntityOrientationType EntityOrientation;
+   GridEntity entity( grid );
 
    const IndexType& xSize = grid.getDimensions().x();
    const IndexType& ySize = grid.getDimensions().y();
@@ -236,9 +238,9 @@ processInteriorEntities( const GridType& grid,
     * Traversing interior vertices
     */
    const int VertexDimensions = 0;
-   typedef typename GridType::template GridEntity< VertexDimensions > EntityType;
-   typedef typename EntityType::EntityOrientationType EntityOrientation;
-   EntityType entity( grid );
+   //typedef typename GridType::template GridEntity< VertexDimensions > EntityType;
+   typedef typename GridEntity::EntityOrientationType EntityOrientation;
+   GridEntity entity( grid );
    
    const IndexType& xSize = grid.getDimensions().x();
    const IndexType& ySize = grid.getDimensions().y();
@@ -275,7 +277,7 @@ __global__ void tnlTraverserGrid2DCells( const tnlGrid< 2, Real, tnlCuda, Index 
 {
    typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
    const int CellDimensions = GridType::meshDimensions;
-   typename GridType::template GridEntity< CellDimensions > entity( *grid );
+   GridEntity entity( *grid );
    typedef typename GridType::CoordinatesType CoordinatesType;
    //CoordinatesType& coordinates = entity.getCoordinates();
 
@@ -314,8 +316,8 @@ __global__ void tnlTraverserGrid2DFaces( const tnlGrid< 2, Real, tnlCuda, Index 
 {
    typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
    const int FaceDimensions = GridType::meshDimensions - 1;
-   typedef typename GridType::template GridEntity< GridType::Cells > EntityType;
-   EntityType entity( *grid );
+   //typedef typename GridType::template GridEntity< GridType::Cells > EntityType;
+   GridEntity entity( *grid );
    typedef typename GridType::CoordinatesType CoordinatesType;
    CoordinatesType& coordinates = entity.getCoordinates();
    entity.setOrientation( typename EntityType::EntityOrientationType( nx, ny ) );
@@ -353,9 +355,9 @@ __global__ void tnlTraverserGrid2DVertices( const tnlGrid< 2, Real, tnlCuda, Ind
 {
    typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
    const int VertexDimensions = 0;
-   typedef typename GridType::template GridEntity< VertexDimensions > EntityType;
+   //typedef typename GridType::template GridEntity< VertexDimensions > EntityType;
    typedef typename GridType::CoordinatesType CoordinatesType;
-   EntityType entity( *grid );
+   GridEntity entity( *grid );
    CoordinatesType& coordinates = entity.getCoordinates();
 
    const Index& xSize = grid->getDimensions().x();
