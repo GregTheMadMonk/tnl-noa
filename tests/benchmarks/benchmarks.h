@@ -9,6 +9,8 @@ namespace tnl
 namespace benchmarks
 {
 
+const double oneGB = 1024.0 * 1024.0 * 1024.0;
+
 // TODO: add data member for error message
 struct BenchmarkError {};
 
