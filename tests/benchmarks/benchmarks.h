@@ -62,11 +62,13 @@ benchmarkCuda( const int & loops,
                CheckFunction check = trueFunc,
                ResetFunction reset = voidFunc )
 {
-    tnlTimerRT timerHost, timerCuda;
+    tnlTimerRT timerHost, timerCuda, timerCudaSync;
     timerHost.reset();
     timerHost.stop();
     timerCuda.reset();
     timerCuda.stop();
+    timerCudaSync.reset();
+    timerCudaSync.stop();
 
     for(int i = 0; i < loops; ++i) {
         timerHost.start();
@@ -81,15 +83,28 @@ benchmarkCuda( const int & loops,
             throw BenchmarkError();
 
         reset();
+
+        // Compute again on CUDA, with explicit synchronization of threads
+        timerCudaSync.start();
+        computeCuda();
+        cudaThreadSynchronize();
+        timerCudaSync.stop();
+
+        reset();
     }
 
     const double timeHost = timerHost.getTime();
     const double timeCuda = timerCuda.getTime();
+    const double timeCudaSync = timerCudaSync.getTime();
     const double bandwidthHost = datasetSize / timeHost;
     const double bandwidthCuda = datasetSize / timeCuda;
+    const double bandwidthCudaSync = datasetSize / timeCudaSync;
     std::cout << "  CPU: bandwidth: " << bandwidthHost << " GB/sec, time: " << timeHost << " sec." << std::endl;
     std::cout << "  GPU: bandwidth: " << bandwidthCuda << " GB/sec, time: " << timeCuda << " sec." << std::endl;
+    std::cout << "  GPU (sync): bandwidth: " << bandwidthCudaSync << " GB/sec, time: " << timeCudaSync << " sec." << std::endl;
     std::cout << "  CPU/GPU speedup: " << timeHost / timeCuda << std::endl;
+    std::cout << "  CPU/GPU (sync) speedup: " << timeHost / timeCudaSync << std::endl;
+    std::cout << std::endl;
 }
 
 } // namespace benchmarks

@@ -78,8 +78,6 @@ benchmarkVectorOperations( const int & loops,
     };
     auto addVectorCuda = [&]() {
         deviceVector.addVector( deviceVector2 );
-        // TODO: synchronization should be part of addVector
-        cudaThreadSynchronize();
     };
     benchmarkCuda( loops, 3 * datasetSize, addVectorHost, addVectorCuda, compare1, reset1 );
  

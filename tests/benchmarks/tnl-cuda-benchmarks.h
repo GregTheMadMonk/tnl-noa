@@ -43,7 +43,9 @@ using SlicedEllpackMatrix = tnlSlicedEllpackMatrix< Real, Device, Index >;
 //   - reset() clears the timer and starts it again
 //   - getTime() stops the timer and starts it again !!!
 //   - data members are not zero-initialized - reset has to be called manually, but it immediately starts the timer
-// FIXME: scalarProduct is not const method
+// FIXME:
+// - scalarProduct is not const method
+// - cudaThreadSynchronize() should be called from all CUDA methods
 
 
 template< typename Matrix >
@@ -183,8 +185,6 @@ benchmarkSpMV( const int & loops,
    };
    auto spmvCuda = [&]() {
       deviceMatrix.vectorProduct( deviceVector, deviceVector2 );
-      // TODO: tnlCSRMatrix does not synchronize
-      cudaThreadSynchronize();
    };
 
    benchmarkCuda( loops, datasetSize, spmvHost, spmvCuda, check, reset );
