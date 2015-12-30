@@ -44,7 +44,7 @@ class tnlIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
    
    void setRefreshRate( const IndexType& refreshRate );
 
-   virtual void refresh();
+   virtual void refresh( bool force = false );
 
    void resetTimers();
 

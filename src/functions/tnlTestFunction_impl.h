@@ -535,30 +535,38 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlTestFunction< 1, float, tnlHost >;
 extern template class tnlTestFunction< 2, float, tnlHost >;
 extern template class tnlTestFunction< 3, float, tnlHost >;
+#endif
 
 extern template class tnlTestFunction< 1, double, tnlHost >;
 extern template class tnlTestFunction< 2, double, tnlHost >;
 extern template class tnlTestFunction< 3, double, tnlHost >;
 
+#ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlTestFunction< 1, long double, tnlHost >;
 extern template class tnlTestFunction< 2, long double, tnlHost >;
 extern template class tnlTestFunction< 3, long double, tnlHost >;
+#endif
 
 #ifdef HAVE_CUDA
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlTestFunction< 1, float, tnlCuda>;
 extern template class tnlTestFunction< 2, float, tnlCuda >;
 extern template class tnlTestFunction< 3, float, tnlCuda >;
+#endif
 
 extern template class tnlTestFunction< 1, double, tnlCuda >;
 extern template class tnlTestFunction< 2, double, tnlCuda >;
 extern template class tnlTestFunction< 3, double, tnlCuda >;
 
-/*extern template class tnlTestFunction< 1, long double, tnlCuda >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlTestFunction< 1, long double, tnlCuda >;
 extern template class tnlTestFunction< 2, long double, tnlCuda >;
-extern template class tnlTestFunction< 3, long double, tnlCuda >;*/
+extern template class tnlTestFunction< 3, long double, tnlCuda >;
+#endif
 #endif
 
 #endif

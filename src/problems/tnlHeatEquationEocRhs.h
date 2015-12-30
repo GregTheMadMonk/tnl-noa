@@ -46,7 +46,7 @@ class tnlHeatEquationEocRhs : public tnlFunction< TestFunction::Dimensions,
          if( ! testFunction.setup( parameters, prefix ) )
             return false;
          return true;
-      };
+      }
 
       __cuda_callable__
       RealType getValue( const VertexType& vertex,
@@ -54,7 +54,7 @@ class tnlHeatEquationEocRhs : public tnlFunction< TestFunction::Dimensions,
       {
          return testFunction.getTimeDerivative( vertex, time )
                 - exactOperator.getValue( testFunction, vertex, time );
-      };
+      }
 
    protected:
       ExactOperator exactOperator;

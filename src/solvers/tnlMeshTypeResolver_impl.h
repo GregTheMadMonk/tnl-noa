@@ -98,7 +98,20 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename MeshConfig >
-   template< int MeshDimensions >
+   template< int MeshDimensions, typename, typename >
+bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, true >::resolveMeshRealType( const tnlParameterContainer& parameters,
+                                                                                                      const tnlList< tnlString >& parsedMeshType )
+{
+   cerr << "Mesh dimension " << MeshDimensions << " is not supported." << endl;
+   return false;
+}
+
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename MeshConfig >
+   template< int MeshDimensions, typename >
 bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, true >::resolveMeshRealType( const tnlParameterContainer& parameters,
                                                                                                       const tnlList< tnlString >& parsedMeshType )
 {
@@ -118,9 +131,25 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Index,
           typename MeshConfig >
    template< int MeshDimensions,
-             typename MeshRealType >
-bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, 1 >::resolveMeshIndexType( const tnlParameterContainer& parameters,
-                                                                                                    const tnlList< tnlString >& parsedMeshType )
+             typename MeshRealType,
+             typename, typename >
+bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, true >::resolveMeshIndexType( const tnlParameterContainer& parameters,
+                                                                                                        const tnlList< tnlString >& parsedMeshType )
+{
+   cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for real type." << endl;
+   return false;
+}
+
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename MeshConfig >
+   template< int MeshDimensions,
+             typename MeshRealType,
+             typename >
+bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, true >::resolveMeshIndexType( const tnlParameterContainer& parameters,
+                                                                                                        const tnlList< tnlString >& parsedMeshType )
 {
    if( parsedMeshType[ 4 ] == "short int" )
       return resolveMeshType< MeshDimensions, MeshRealType, short int >( parameters, parsedMeshType );
@@ -139,9 +168,26 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename MeshConfig >
    template< int MeshDimensions,
              typename MeshRealType,
-             typename MeshIndexType >
+             typename MeshIndexType,
+             typename, typename >
 bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, true >::resolveMeshType( const tnlParameterContainer& parameters,
-                                                                                                  const tnlList< tnlString >& parsedMeshType )
+                                                                                                   const tnlList< tnlString >& parsedMeshType )
+{
+   cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for indexing type." << endl;
+   return false;
+}
+
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename MeshConfig >
+   template< int MeshDimensions,
+             typename MeshRealType,
+             typename MeshIndexType,
+             typename >
+bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, true >::resolveMeshType( const tnlParameterContainer& parameters,
+                                                                                                   const tnlList< tnlString >& parsedMeshType )
 {
    if( parsedMeshType[ 0 ] == "tnlGrid" )
    {

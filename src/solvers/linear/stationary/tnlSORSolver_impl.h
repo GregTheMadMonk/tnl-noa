@@ -107,9 +107,10 @@ bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b,
                                       x,
                                       this->getOmega() );
       this -> setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
+      this -> refreshSolverMonitor();
    }
    this -> setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
-   this -> refreshSolverMonitor();
+   this -> refreshSolverMonitor( true );
    return this->checkConvergence();
 };
 

@@ -104,9 +104,8 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    }
 
    IndexType _size = size;
-
-   RealType *r = _r. getData();
-   RealType *w = _w. getData();
+   
+   //RealType *w = _w. getData();
    RealType *s = _s. getData();
    RealType *cs = _cs. getData();
    RealType *sn = _sn. getData();
@@ -176,8 +175,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       /****
        * Starting m-loop
        */
-      IndexType i;
-      for( i = 0; i < m && this->nextIteration(); i++ )
+      for( IndexType i = 0; i < m && this->nextIteration(); i++ )
       {
          vi. bind( &( _v. getData()[ i * size ] ), size );
          /****
@@ -186,10 +184,10 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          if( preconditioner )
          {
             matrix->vectorProduct( vi, _M_tmp );
-            this->preconditioner->solve( _M_tmp, _w );
+            this->preconditioner->solve( _M_tmp, w );
          }
          else
-             matrix -> vectorProduct( vi, _w );
+             matrix->vectorProduct( vi, w );
          
          //cout << " i = " << i << " vi = " << vi << endl;
 
@@ -202,33 +200,33 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
                /***
                 * H_{k,i} = ( w, v_k )
                 */
-               RealType H_k_i = _w. scalarProduct( vk );
+               RealType H_k_i = w. scalarProduct( vk );
                H[ k + i * ( m + 1 ) ] += H_k_i;           
 
                /****
                 * w = w - H_{k,i} v_k
                 */
-               _w. addVector( vk, -H_k_i );
+               w. addVector( vk, -H_k_i );
 
                //cout << "H_ki = " << H_k_i << endl;
-               //cout << "w = " << _w << endl;
+               //cout << "w = " << w << endl;
             }
          /***
           * H_{i+1,i} = |w|
           */
-         RealType normw = _w. lpNorm( ( RealType ) 2.0 );
+         RealType normw = w. lpNorm( ( RealType ) 2.0 );
          H[ i + 1 + i * ( m + 1 ) ] = normw;
 
-         cout << "normw = " << normw << endl;
+         //cout << "normw = " << normw << endl;
          
          /***
           * v_{i+1} = w / |w|
           */
          vi. bind( &( _v. getData()[ ( i + 1 ) * size ] ), size );
-         vi. addVector( _w, ( RealType ) 1.0 / normw );
+         vi. addVector( w, ( RealType ) 1.0 / normw );
          
          //cout << "vi = " << vi << endl;
-
+         
          /****
           * Applying the Givens rotations
           */
@@ -252,20 +250,23 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
                              sn[ i ] );
 
          this->setResidue( fabs( s[ i + 1 ] ) / normb );
-         cout << " residue = " << fabs( s[ i + 1 ] ) / normb << endl;
-         this->refreshSolverMonitor();
-
-         /*if( this->getResidue() < this->getConvergenceResidue() )
+         // The nextIteration() method should not be called here, because it increments
+         // the iteration counter. The condition below is slightly different than in
+         // nextIteration(), because it first increments and then compares.
+         if( this->getIterations() >= this->getMinIterations() && this->getResidue() < this->getConvergenceResidue() )
          {
             update( i, m, _H, _s, _v, x );
-            return true;
+            this->refreshSolverMonitor( true );
+            return this->checkConvergence();
          }
-         if( ! this->nextIteration() )
-            return false;*/
+         else
+         {
+            this->refreshSolverMonitor();
+         }
       }
-      cout << "x = " << x << endl;
-      update( i, m, _H, _s, _v, x );
-      cout << "x = " << x << endl;
+      //cout << "x = " << x << endl;
+      update( m - 1, m, _H, _s, _v, x );
+      //cout << "x = " << x << endl;
 
       /****
        * r = M.solve(b - A * x);
@@ -274,11 +275,9 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       if( preconditioner )
       {
          matrix -> vectorProduct( x, _M_tmp );
-         for( IndexType i = 0; i < _size; i ++ )
-            M_tmp[ i ] = b[ i ] - M_tmp[ i ];
-         //preconditioner -> solve( M_tmp, r );
-         for( IndexType i = 0; i < _size; i ++ )
-            beta += r[ i ] * r[ i ];
+         _M_tmp.addVector( b, ( RealType ) 1.0, -1.0 );
+         preconditioner -> solve( _M_tmp, _r );
+         beta = _r. lpNorm( ( RealType ) 2.0 );
       }
       else
       {
@@ -293,7 +292,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       //cout << "residue = " << beta / normb << endl;
 
    }
-   this->refreshSolverMonitor();
+   this->refreshSolverMonitor( true );
    return this->checkConvergence();
 };
 
@@ -323,7 +322,7 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
    // Backsolve:
    for( i = k; i >= 0; i--)
    {
-      cout << " y = " << y << endl;
+      //cout << " y = " << y << endl;
       y[ i ] /= H[ i + i * ( m + 1 ) ];
       for( j = i - 1; j >= 0; j--)
          y[ j ] -= H[ j + i * ( m + 1 ) ] * y[ i ];      
@@ -384,7 +383,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: setSize( IndexType _size, Index
    size = _size;
    restarting = m;
    if( ! _r. setSize( size ) ||
-       ! _w. setSize( size ) ||
+       ! w. setSize( size ) ||
        ! _s. setSize( restarting + 1 ) ||
        ! _cs. setSize( restarting + 1 ) ||
        ! _sn. setSize( restarting + 1 ) ||
@@ -392,7 +391,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: setSize( IndexType _size, Index
        ! _H. setSize( ( restarting + 1 ) * restarting ) ||
        ! _M_tmp. setSize( size ) )
    {
-      cerr << "I could not allocated all supporting arrays for the CG solver." << endl;
+      cerr << "I could not allocate all supporting arrays for the GMRES solver." << endl;
       return false;
    }
    return true;

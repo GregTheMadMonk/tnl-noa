@@ -256,7 +256,7 @@ class tnlStaticArray< 2, Element >
    template< typename OtherElement >
    __cuda_callable__
    operator tnlStaticArray< 2, OtherElement >() const;   
-
+   
    __cuda_callable__
    inline void setValue( const ElementType& val );
 

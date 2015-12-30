@@ -58,18 +58,48 @@ class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, true 
    static bool resolveMeshDimensions( const tnlParameterContainer& parameters,
                                       const tnlList< tnlString >& parsedMeshType );
 
-   template< int MeshDimensions >
+   // Overload for disabled dimensions
+   template< int MeshDimensions,
+             typename = typename std::enable_if< ! tnlMeshConfigDimensions<MeshConfig,MeshDimensions>::enabled >::type,
+             typename = void >
    static bool resolveMeshRealType( const tnlParameterContainer& parameters,
                                     const tnlList< tnlString >& parsedMeshType );
 
+   // Overload for enabled dimensions
    template< int MeshDimensions,
-             typename MeshRealType >
+             typename = typename std::enable_if< tnlMeshConfigDimensions<MeshConfig,MeshDimensions>::enabled >::type >
+   static bool resolveMeshRealType( const tnlParameterContainer& parameters,
+                                    const tnlList< tnlString >& parsedMeshType );
+
+   // Overload for disabled real types
+   template< int MeshDimensions,
+             typename MeshRealType,
+             typename = typename std::enable_if< ! tnlMeshConfigReal<MeshConfig, MeshRealType>::enabled >::type,
+             typename = void >
    static bool resolveMeshIndexType( const tnlParameterContainer& parameters,
                                      const tnlList< tnlString >& parsedMeshType );
 
+   // Overload for enabled real types
    template< int MeshDimensions,
              typename MeshRealType,
-             typename MeshIndexType >
+             typename = typename std::enable_if< tnlMeshConfigReal<MeshConfig, MeshRealType>::enabled >::type >
+   static bool resolveMeshIndexType( const tnlParameterContainer& parameters,
+                                     const tnlList< tnlString >& parsedMeshType );
+
+   // Overload for disabled index types
+   template< int MeshDimensions,
+             typename MeshRealType,
+             typename MeshIndexType,
+             typename = typename std::enable_if< ! tnlMeshConfigIndex<MeshConfig, MeshIndexType>::enabled >::type,
+             typename = void >
+   static bool resolveMeshType( const tnlParameterContainer& parameters,
+                                const tnlList< tnlString >& parsedMeshType );
+
+   // Overload for enabled index types
+   template< int MeshDimensions,
+             typename MeshRealType,
+             typename MeshIndexType,
+             typename = typename std::enable_if< tnlMeshConfigIndex<MeshConfig, MeshIndexType>::enabled >::type >
    static bool resolveMeshType( const tnlParameterContainer& parameters,
                                 const tnlList< tnlString >& parsedMeshType );
 

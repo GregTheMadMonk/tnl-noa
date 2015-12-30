@@ -36,6 +36,8 @@ class tnlLinearSystemAssemblerTraverserUserData
 
       const Real* tau;
 
+      const Real* timeDiscretisationCoefficient;
+
       const DifferentialOperator* differentialOperator;
 
       const BoundaryConditions* boundaryConditions;
@@ -45,8 +47,6 @@ class tnlLinearSystemAssemblerTraverserUserData
       DofVector *u, *b;
 
       Matrix *matrix;
-
-      const Real* timeDiscretisationCoefficient;
 
       tnlLinearSystemAssemblerTraverserUserData( const Real& time,
                                                  const Real& tau,

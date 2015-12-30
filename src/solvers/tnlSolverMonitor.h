@@ -23,7 +23,7 @@ class tnlSolverMonitor
 {
    public:
 
-   virtual void refresh() = 0;
+   virtual void refresh( bool force = false ) = 0;
 
    ~tnlSolverMonitor() {};
       

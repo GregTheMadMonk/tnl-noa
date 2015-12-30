@@ -29,7 +29,6 @@
 #include <core/mfuncs.h>
 #include <core/tnlAssert.h>
 #include <core/tnlString.h>
-#include <core/tnlObject.h>
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
 

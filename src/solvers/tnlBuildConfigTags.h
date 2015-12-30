@@ -19,6 +19,14 @@
 #define TNLMeshConfigS_H_
 
 #include <mesh/tnlGrid.h>
+#include <solvers/ode/tnlMersonSolver.h>
+#include <solvers/ode/tnlEulerSolver.h>
+#include <solvers/linear/stationary/tnlSORSolver.h>
+#include <solvers/linear/krylov/tnlCGSolver.h>
+#include <solvers/linear/krylov/tnlBICGStabSolver.h>
+#include <solvers/linear/krylov/tnlGMRESSolver.h>
+#include <solvers/linear/krylov/tnlTFQMRSolver.h>
+#include <solvers/preconditioners/tnlDummyPreconditioner.h>
 
 class tnlDefaultBuildMeshConfig{};
 
@@ -82,19 +90,69 @@ template< typename MeshConfig, typename TimeDiscretisation > struct tnlConfigTag
 /****
  * All explicit solvers are enabled by default
  */
-class tnlExplicitEulerSolverTag{};
-class tnlExplicitMersonSolverTag{};
+class tnlExplicitEulerSolverTag
+{
+public:
+    template< typename Problem >
+    using Template = tnlEulerSolver< Problem >;
+};
+
+class tnlExplicitMersonSolverTag
+{
+public:
+    template< typename Problem >
+    using Template = tnlMersonSolver< Problem >;
+};
 
 template< typename MeshConfig, typename ExplicitSolver > struct tnlMeshConfigExplicitSolver{ enum { enabled = true }; };
 
 /****
  * All semi-implicit solvers are enabled by default
  */
+class  tnlSemiImplicitSORSolverTag
+{
+public:
+    template< typename Matrix, typename Preconditioner = tnlDummyPreconditioner< typename Matrix::RealType,
+                                                                                 typename Matrix::DeviceType,
+                                                                                 typename Matrix::IndexType > >
+    using Template = tnlSORSolver< Matrix, Preconditioner >;
+};
 
-class  tnlSemiImplicitSORSolverTag{};
-class  tnlSemiImplicitCGSolverTag{};
-class  tnlSemiImplicitBICGStabSolverTag{};
-class  tnlSemiImplicitGMRESSolverTag{};
+class  tnlSemiImplicitCGSolverTag
+{
+public:
+    template< typename Matrix, typename Preconditioner = tnlDummyPreconditioner< typename Matrix::RealType,
+                                                                                 typename Matrix::DeviceType,
+                                                                                 typename Matrix::IndexType > >
+    using Template = tnlCGSolver< Matrix, Preconditioner >;
+};
+
+class  tnlSemiImplicitBICGStabSolverTag
+{
+public:
+    template< typename Matrix, typename Preconditioner = tnlDummyPreconditioner< typename Matrix::RealType,
+                                                                                 typename Matrix::DeviceType,
+                                                                                 typename Matrix::IndexType > >
+    using Template = tnlBICGStabSolver< Matrix, Preconditioner >;
+};
+
+class  tnlSemiImplicitGMRESSolverTag
+{
+public:
+    template< typename Matrix, typename Preconditioner = tnlDummyPreconditioner< typename Matrix::RealType,
+                                                                                 typename Matrix::DeviceType,
+                                                                                 typename Matrix::IndexType > >
+    using Template = tnlGMRESSolver< Matrix, Preconditioner >;
+};
+
+class  tnlSemiImplicitTFQMRSolverTag
+{
+public:
+    template< typename Matrix, typename Preconditioner = tnlDummyPreconditioner< typename Matrix::RealType,
+                                                                                 typename Matrix::DeviceType,
+                                                                                 typename Matrix::IndexType > >
+    using Template = tnlTFQMRSolver< Matrix, Preconditioner >;
+};
 
 template< typename MeshConfig, typename SemiImplicitSolver > struct tnlMeshConfigSemiImplicitSolver{ enum { enabled = true }; };
 

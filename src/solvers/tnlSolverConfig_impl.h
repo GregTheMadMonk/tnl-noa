@@ -114,9 +114,14 @@ bool tnlSolverConfig< MeshConfig, ProblemConfig >::configSetup( tnlConfigDescrip
          config.addEntryEnum( "bicgstab" );
       if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitGMRESSolverTag >::enabled )
          config.addEntryEnum( "gmres" );
+      if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitTFQMRSolverTag >::enabled )
+         config.addEntryEnum( "tfqmr" );
       if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitSORSolverTag >::enabled )
          config.addEntryEnum( "sor" );
    }
+   config.addEntry< tnlString >( "preconditioner", "The preconditioner for the discrete solver:", "none" );
+   config.addEntryEnum( "none" );
+   config.addEntryEnum( "diagonal" );
    if( tnlConfigTagTimeDiscretisation< MeshConfig, tnlExplicitTimeDiscretisationTag >::enabled ||
        tnlConfigTagTimeDiscretisation< MeshConfig, tnlSemiImplicitTimeDiscretisationTag >::enabled )
    {
@@ -143,6 +148,8 @@ bool tnlSolverConfig< MeshConfig, ProblemConfig >::configSetup( tnlConfigDescrip
          tnlBICGStabSolver< MatrixType >::configSetup( config );
       if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitGMRESSolverTag >::enabled )
          tnlGMRESSolver< MatrixType >::configSetup( config );
+      if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitTFQMRSolverTag >::enabled )
+         tnlTFQMRSolver< MatrixType >::configSetup( config );
       if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitSORSolverTag >::enabled )
          tnlSORSolver< MatrixType >::configSetup( config );
    }

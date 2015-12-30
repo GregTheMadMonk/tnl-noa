@@ -44,13 +44,17 @@ class tnlSharedArray : public tnlObject
    typedef tnlSharedArray< Element, tnlHost, Index > HostType;
    typedef tnlSharedArray< Element, tnlCuda, Index > CudaType;
 
+   __cuda_callable__
    tnlSharedArray();
 
+   __cuda_callable__
    tnlSharedArray( Element* _data,
                    const Index _size );
 
+   __cuda_callable__
    tnlSharedArray( tnlArray< Element, Device, Index >& array );
 
+   __cuda_callable__
    tnlSharedArray( tnlSharedArray< Element, Device, Index >& array );
 
    static tnlString getType();
@@ -61,17 +65,21 @@ class tnlSharedArray : public tnlObject
 
    virtual tnlString getSerializationTypeVirtual() const;
 
+   __cuda_callable__
    void bind( Element* _data,
               const Index _size );
 
    template< typename Array >
+   __cuda_callable__
    void bind( Array& array,
               IndexType index = 0,
               IndexType size = 0 );
 
    template< int Size >
+   __cuda_callable__
    void bind( tnlStaticArray< Size, Element >& array );
 
+   __cuda_callable__
    void bind( tnlSharedArray< Element, Device, Index >& array );
 
    void swap( tnlSharedArray< Element, Device, Index >& array );

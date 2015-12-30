@@ -18,6 +18,7 @@
 #ifndef tnlObjectH
 #define tnlObjectH
 
+#include <core/tnlCuda.h>
 #include <core/tnlString.h>
 
 class tnlFile;
@@ -39,10 +40,8 @@ class tnlObject
    public:
 
    //! Basic constructor
-   tnlObject();
-
-   //! Constructor with name
-   tnlObject( const tnlString& name );
+   __cuda_callable__
+   tnlObject() {};
 
    /****
     * Type getter. This returns the type in C++ style - for example the returned value
@@ -72,6 +71,9 @@ class tnlObject
    bool load( const tnlString& fileName );
 
    //! Destructor
+   // FIXME: __cuda_callable__ would have to be added to every overriding destructor,
+   // even if the object's constructor is not __cuda_callable__
+//   __cuda_callable__
    virtual ~tnlObject(){};
 
 };

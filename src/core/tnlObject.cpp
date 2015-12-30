@@ -27,15 +27,6 @@
 
 const char magic_number[] = "TNLMN";
 
-tnlObject :: tnlObject()
-{
-}
-
-
-tnlObject :: tnlObject( const tnlString& _name )
-{
-}
-
 tnlString tnlObject :: getType()
 {
    return tnlString( "tnlObject" );
@@ -206,5 +197,4 @@ bool parseObjectType( const tnlString& objectType,
    }
    return true;
 }
-
 

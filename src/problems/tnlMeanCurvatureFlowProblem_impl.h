@@ -253,7 +253,7 @@ assemblyLinearSystem( const RealType& time,
       u,
       matrix,
       b );
-   matrix.print( cout );
+   /*matrix.print( cout );
    cout << endl << b << endl;
    cout << endl << u << endl;
    getchar();

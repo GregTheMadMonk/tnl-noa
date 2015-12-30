@@ -35,6 +35,7 @@ class tnlSemiImplicitTimeStepper
    typedef typename ProblemType::DofVectorType DofVectorType;
    typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
    typedef LinearSystemSolver LinearSystemSolverType;
+   typedef typename LinearSystemSolverType::PreconditionerType PreconditionerType;
    typedef typename ProblemType::MatrixType MatrixType;
 
    tnlSemiImplicitTimeStepper();
@@ -79,7 +80,7 @@ class tnlSemiImplicitTimeStepper
 
    RealType timeStep;
 
-   tnlTimerRT linearSystemAssemblerTimer, linearSystemSolverTimer;
+   tnlTimerRT preIterateTimer, linearSystemAssemblerTimer, linearSystemSolverTimer, postIterateTimer;
    
    bool verbose;
 };

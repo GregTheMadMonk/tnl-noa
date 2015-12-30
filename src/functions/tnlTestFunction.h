@@ -99,6 +99,7 @@ class tnlTestFunction : public tnlFunction< FunctionDimensions, AnalyticFunction
 
 #ifdef HAVE_NOT_CXX11
    template< typename Vertex >
+   __cuda_callable__
    Real getTimeDerivative( const Vertex& vertex,
                            const Real& time = 0 ) const
    {

@@ -92,6 +92,9 @@ ObjectType* tnlCuda::passToDevice( const ObjectType& object )
       return 0;
    }
    return deviceObject;
+#else
+   tnlAssert( false, cerr << "CUDA support is missing." );
+   return 0;
 #endif
 }
 
