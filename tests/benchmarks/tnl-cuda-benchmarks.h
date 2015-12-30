@@ -20,11 +20,14 @@
 
 #include <tnlConfig.h>
 #include <core/vectors/tnlVector.h>
-#include <core/tnlTimerRT.h>
 #include <core/tnlList.h>
 #include <matrices/tnlSlicedEllpackMatrix.h>
 #include <matrices/tnlEllpackMatrix.h>
 #include <matrices/tnlCSRMatrix.h>
+
+#include "benchmarks.h"
+
+using namespace tnl::benchmarks;
 
 #ifdef HAVE_CUBLAS
 //#include <cublas.h>
@@ -109,87 +112,6 @@ void setCudaTestMatrix( Matrix& matrix,
    tnlCuda::freeFromDevice( kernel_matrix );
 }
 
-
-// TODO: add data member for error message
-struct BenchmarkError {};
-
-auto trueFunc = []() { return true; };
-auto voidFunc = [](){};
-
-template< typename ComputeFunction,
-          typename CheckFunction,
-          typename ResetFunction >
-double
-benchmarkSingle( const int & loops,
-                 const double & datasetSize, // in GB
-                 ComputeFunction compute,
-                 // TODO: check that default argument works here
-                 CheckFunction check = trueFunc,
-                 ResetFunction reset = voidFunc )
-{
-    tnlTimerRT timer;
-    timer.reset();
-
-    for(int i = 0; i < loops; ++i) {
-        timer.start();
-        compute();
-        timer.stop();
-
-        if( ! check() )
-            throw BenchmarkError();
-
-        reset();
-    }
-
-    const double time = timer.getTime();
-    const double bandwidth = datasetSize / time;
-    cout << "bandwidth: " << bandwidth << " GB/sec, time: " << time << " sec." << endl;
-
-    return time;
-}
-
-template< typename ComputeHostFunction,
-          typename ComputeCudaFunction,
-          typename CheckFunction,
-          typename ResetFunction >
-void
-benchmarkCuda( const int & loops,
-               const double & datasetSize, // in GB
-               ComputeHostFunction computeHost,
-               ComputeCudaFunction computeCuda,
-               // TODO: check that default argument works here
-               CheckFunction check = trueFunc,
-               ResetFunction reset = voidFunc )
-{
-    tnlTimerRT timerHost, timerCuda;
-    timerHost.reset();
-    timerHost.stop();
-    timerCuda.reset();
-    timerCuda.stop();
-
-    for(int i = 0; i < loops; ++i) {
-        timerHost.start();
-        computeHost();
-        timerHost.stop();
-
-        timerCuda.start();
-        computeCuda();
-        timerCuda.stop();
-
-        if( ! check() )
-            throw BenchmarkError();
-
-        reset();
-    }
-
-    const double timeHost = timerHost.getTime();
-    const double timeCuda = timerCuda.getTime();
-    const double bandwidthHost = datasetSize / timeHost;
-    const double bandwidthCuda = datasetSize / timeCuda;
-    cout << "  CPU: bandwidth: " << bandwidthHost << " GB/sec, time: " << timeHost << " sec." << endl;
-    cout << "  GPU: bandwidth: " << bandwidthCuda << " GB/sec, time: " << timeCuda << " sec." << endl;
-    cout << "  CPU/GPU speedup: " << timeHost / timeCuda << endl;
-}
 
 template< typename Real,
           template< typename, typename, typename > class Matrix,
