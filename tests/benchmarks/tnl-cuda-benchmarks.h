@@ -122,10 +122,10 @@ template< typename ComputeFunction,
 double
 benchmarkSingle( const int & loops,
                  const double & datasetSize, // in GB
-                 ComputeFunction & compute,
+                 ComputeFunction compute,
                  // TODO: check that default argument works here
-                 CheckFunction & check = trueFunc,
-                 ResetFunction & reset = voidFunc )
+                 CheckFunction check = trueFunc,
+                 ResetFunction reset = voidFunc )
 {
     tnlTimerRT timer;
     timer.reset();
@@ -155,11 +155,11 @@ template< typename ComputeHostFunction,
 void
 benchmarkCuda( const int & loops,
                const double & datasetSize, // in GB
-               ComputeHostFunction & computeHost,
-               ComputeCudaFunction & computeCuda,
+               ComputeHostFunction computeHost,
+               ComputeCudaFunction computeCuda,
                // TODO: check that default argument works here
-               CheckFunction & check = trueFunc,
-               ResetFunction & reset = voidFunc )
+               CheckFunction check = trueFunc,
+               ResetFunction reset = voidFunc )
 {
     tnlTimerRT timerHost, timerCuda;
     timerHost.reset();
@@ -263,7 +263,10 @@ benchmarkSpMV( const int & loops,
    };
    auto spmvCuda = [&]() {
       deviceMatrix.vectorProduct( deviceVector, deviceVector2 );
+      // TODO: tnlCSRMatrix does not synchronize
+      cudaThreadSynchronize();
    };
+
    benchmarkCuda( loops, datasetSize, spmvHost, spmvCuda, check, reset );
 
    return true;
