@@ -62,13 +62,8 @@ benchmarkCuda( const int & loops,
                CheckFunction check = trueFunc,
                ResetFunction reset = voidFunc )
 {
+    // timers are constructed zero-initialized and stopped
     tnlTimerRT timerHost, timerCuda, timerCudaSync;
-    timerHost.reset();
-    timerHost.stop();
-    timerCuda.reset();
-    timerCuda.stop();
-    timerCudaSync.reset();
-    timerCudaSync.stop();
 
     for(int i = 0; i < loops; ++i) {
         timerHost.start();

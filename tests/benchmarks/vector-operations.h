@@ -4,6 +4,10 @@
 
 #include <core/vectors/tnlVector.h>
 
+#ifdef HAVE_CUBLAS
+//#include <cublas.h>
+#endif
+
 namespace tnl
 {
 namespace benchmarks

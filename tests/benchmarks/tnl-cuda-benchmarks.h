@@ -28,25 +28,10 @@
 
 using namespace tnl::benchmarks;
 
-#ifdef HAVE_CUBLAS
-//#include <cublas.h>
-#endif    
 
 // silly alias to match the number of template parameters with other formats
 template< typename Real, typename Device, typename Index >
 using SlicedEllpackMatrix = tnlSlicedEllpackMatrix< Real, Device, Index >;
-
-
-
-// TODO:
-// check operations with the timer:
-//   - reset() clears the timer and starts it again
-//   - getTime() stops the timer and starts it again !!!
-//   - data members are not zero-initialized - reset has to be called manually, but it immediately starts the timer
-// FIXME:
-// - scalarProduct is not const method
-// - cudaThreadSynchronize() should be called from all CUDA methods
-
 
 template< typename Matrix >
 int setHostTestMatrix( Matrix& matrix,
