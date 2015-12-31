@@ -84,11 +84,14 @@ benchmarkCuda( const int & loops,
 
         reset();
 
-        // Compute again on CUDA, with explicit synchronization of threads
+        // Compute again on CUDA, with explicit synchronization
+#ifdef HAVE_CUDA
+        cudaDeviceSynchronize();
         timerCudaSync.start();
         computeCuda();
-        cudaThreadSynchronize();
+        cudaDeviceSynchronize();
         timerCudaSync.stop();
+#endif
 
         reset();
     }
