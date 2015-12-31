@@ -18,6 +18,7 @@
 #ifndef TNLEXPLICITUPDATER_IMPL_H_
 #define TNLEXPLICITUPDATER_IMPL_H_
 
+#include <type_traits>
 #include <mesh/grids/tnlTraverser_Grid1D.h>
 #include <mesh/grids/tnlTraverser_Grid2D.h>
 #include <mesh/grids/tnlTraverser_Grid3D.h>
@@ -38,7 +39,7 @@ update( const RealType& time,
         DofVector& u,
         DofVector& fu ) const
 {
-   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlHostDevice )
+   if( std::is_same< DeviceType, tnlHost >::value )
    {
       TraverserUserData userData( time, differentialOperator, boundaryConditions, rightHandSide, u, fu );
       tnlTraverser< MeshType, EntityType > meshTraverser;
@@ -52,7 +53,7 @@ update( const RealType& time,
                                                       userData );
 
    }
-   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlCudaDevice )
+   if( std::is_same< DeviceType, tnlCuda >::value )
    {
       RealType* kernelTime = tnlCuda::passToDevice( time );
       DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );

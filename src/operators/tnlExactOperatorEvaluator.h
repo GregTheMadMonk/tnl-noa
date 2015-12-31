@@ -158,11 +158,9 @@ class tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, Dof
                                        TraversalUserData& userData,
                                        const EntityType& entity )
             {
-               userData.boundaryConditions.setBoundaryConditions
-                  ( userData.time,
-                    mesh,
-                    entity,
-                    userData.fu,
+               userData.fu[ entity.getIndex() ] = userData.boundaryConditions.getValue
+                  ( entity,
+                    userData.time,
                     userData.fu );
             }
       };

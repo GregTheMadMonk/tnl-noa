@@ -65,11 +65,10 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, F
 
    template< typename EntityType >
    __cuda_callable__
-   void setBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
-                               const EntityType& entity,
-                               DofVectorType& u,
-                               DofVectorType& fu ) const;
+   const RealType getValue( const EntityType& entity,
+                             const RealType& time,                                                       
+                             DofVectorType& u ) const;
+
 
    template< typename EntityType >
    __cuda_callable__
@@ -116,12 +115,10 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, F
 
    template< typename EntityType >
    __cuda_callable__
-   void setBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
-                               const EntityType& entity,
-                               DofVectorType& u,
-                               DofVectorType& fu ) const;
-   
+   const RealType getValue( const EntityType& entity,
+                            const RealType& time,                                                       
+                            DofVectorType& u ) const;
+      
    template< typename EntityType >
    __cuda_callable__
    Index getLinearSystemRowLength( const MeshType& mesh,
@@ -167,11 +164,10 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, F
 
    template< typename EntityType >
    __cuda_callable__
-   void setBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
-                               const EntityType& entity,
-                               DofVectorType& u,
-                               DofVectorType& fu ) const;
+   const RealType getValue( const EntityType& entity,
+                            const RealType& time,                                                       
+                            DofVectorType& u ) const;
+   
 
    template< typename EntityType >
    __cuda_callable__
@@ -197,7 +193,7 @@ template< typename Mesh,
           typename Index >
 ostream& operator << ( ostream& str, const tnlNeumannBoundaryConditions< Mesh, Function, Real, Index >& bc )
 {
-   str << "Dirichlet boundary conditions: vector = " << bc.getFunction();
+   str << "Neumann boundary conditions: function = " << bc.getFunction();
    return str;
 }
 

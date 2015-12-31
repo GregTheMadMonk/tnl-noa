@@ -262,7 +262,7 @@ template< int Dimensions,
 __cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::GridType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-getGrid() const
+getMesh() const
 {
    return this->grid;
 }
@@ -477,7 +477,7 @@ template< int Dimensions,
 __cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::GridType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
-getGrid() const
+getMesh() const
 {
    return this->grid;
 }
@@ -691,7 +691,7 @@ template< int Dimensions,
 __cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::GridType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-getGrid() const
+getMesh() const
 {
    return this->gridType;
 }

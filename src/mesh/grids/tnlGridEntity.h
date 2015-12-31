@@ -131,7 +131,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       VertexType getCenter() const;
       
       __cuda_callable__ inline
-      const GridType& getGrid() const;
+      const GridType& getMesh() const;
       
    protected:
       
@@ -242,7 +242,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Con
       const VertexType& getEntityProportions() const;      
       
       __cuda_callable__ inline
-      const GridType& getGrid() const;
+      const GridType& getMesh() const;
 
    protected:
       
@@ -353,7 +353,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
       VertexType getEntityProportions() const;
       
       __cuda_callable__ inline
-      const GridType& getGrid() const;
+      const GridType& getMesh() const;
       
    protected:
       

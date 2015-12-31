@@ -24,31 +24,16 @@ template< typename Mesh,
           typename Index = typename Mesh::IndexType >
 class tnlDirichletBoundaryConditions
 {
-
-};
-
-template< int Dimensions,
-          typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Function,
-          typename Real,
-          typename Index >
-class tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Function, Real, Index >
-{
    public:
 
-   typedef tnlGrid< Dimensions, MeshReal, Device, MeshIndex > MeshType;
+   typedef Mesh MeshType;
    typedef Function FunctionType;
    typedef Real RealType;
-   typedef Device DeviceType;
+   typedef typename MeshType::DeviceType DeviceType;
    typedef Index IndexType;
-
-   
-   //typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
+  
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef tnlStaticVector< Dimensions, RealType > VertexType;
-   //typedef typename MeshType::CoordinatesType CoordinatesType;
+   typedef typename MeshType::VertexType VertexType;
 
    static void configSetup( tnlConfigDescription& config,
                             const tnlString& prefix = "" );
@@ -61,15 +46,13 @@ class tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, Mes
    Function& getFunction();
 
    const Function& getFunction() const;
-
+   
    template< typename EntityType >
    __cuda_callable__
-   void setBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
-                               const EntityType& entity,
-                               DofVectorType& u,
-                               DofVectorType& fu ) const;
-
+   const RealType getValue( const EntityType& entity,
+                            const RealType& time,                                                       
+                            DofVectorType& u ) const;
+   
    template< typename EntityType >
    __cuda_callable__
    IndexType getLinearSystemRowLength( const MeshType& mesh,

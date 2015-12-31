@@ -23,6 +23,7 @@
 #include <matrices/tnlMultidiagonalMatrixSetter.h>
 #include <core/tnlLogger.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
+#include <solvers/pde/tnlBoundaryConditionsSetter.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
 #include <solvers/pde/tnlBackwardTimeDiscretisation.h>
 
@@ -214,6 +215,14 @@ getExplicitRHS( const RealType& time,
       this->rightHandSide,
       u,
       fu );
+   
+   tnlBoundaryConditionsSetter< Mesh, DofVectorType, BoundaryCondition > boundaryConditionsSetter;
+   boundaryConditionsSetter.template apply< typename Mesh::Cell >(
+      time,
+      mesh,
+      this->boundaryCondition,
+      u );
+
    /*cout << "u = " << u << endl;
    cout << "fu = " << fu << endl;
    u.save( "u.tnl" );

@@ -92,12 +92,10 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const GridEntity& entity )
             {
-               userData.boundaryConditions->setBoundaryConditions
-               ( *userData.time,
-                 mesh,
-                 entity,
-                 *userData.u,
-                 *userData.fu );
+               ( *userData.u )[ entity.getIndex() ] = userData.boundaryConditions->getValue
+               ( entity,
+                 *userData.time,
+                 *userData.u );
             }
 
       };
