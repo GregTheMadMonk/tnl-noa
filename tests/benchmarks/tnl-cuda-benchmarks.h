@@ -172,7 +172,7 @@ benchmarkSpMV( const int & loops,
       deviceMatrix.vectorProduct( deviceVector, deviceVector2 );
    };
 
-   benchmarkOperation( operationDescription.getString(), 2 * datasetSize, loops, reset,
+   benchmarkOperation( operationDescription.getString(), datasetSize, loops, reset,
                        "CPU", spmvHost,
                        "GPU", spmvCuda );
 
