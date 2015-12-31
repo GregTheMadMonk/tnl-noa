@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <iomanip>
 
 #include <core/tnlTimerRT.h>
 
@@ -11,95 +12,98 @@ namespace benchmarks
 
 const double oneGB = 1024.0 * 1024.0 * 1024.0;
 
-// TODO: add data member for error message
-struct BenchmarkError {};
-
-auto trueFunc = []() { return true; };
-auto voidFunc = [](){};
-
 template< typename ComputeFunction,
-          typename CheckFunction,
           typename ResetFunction >
 double
-benchmarkSingle( const int & loops,
-                 const double & datasetSize, // in GB
-                 ComputeFunction compute,
-                 CheckFunction check,
-                 ResetFunction reset )
+timeFunction( ComputeFunction compute,
+              ResetFunction reset,
+              const int & loops,
+              const double & datasetSize, // in GB
+              const double & baseTime, // in seconds (baseline for speedup calculation)
+              const char* performer )
 {
+    // the timer is constructed zero-initialized and stopped
     tnlTimerRT timer;
-    timer.reset();
 
+    reset();
     for(int i = 0; i < loops; ++i) {
+        // TODO: not necessary for host computations
+        // Explicit synchronization of the CUDA device
+#ifdef HAVE_CUDA
+        cudaDeviceSynchronize();
+#endif
         timer.start();
         compute();
+#ifdef HAVE_CUDA
+        cudaDeviceSynchronize();
+#endif
         timer.stop();
-
-        if( ! check() )
-            throw BenchmarkError();
 
         reset();
     }
 
     const double time = timer.getTime();
     const double bandwidth = datasetSize / time;
-    std::cout << "bandwidth: " << bandwidth << " GB/sec, time: " << time << " sec." << std::endl;
+
+    using namespace std;
+    cout << "  " << performer << ": bandwidth: "
+         << setw( 8 ) << bandwidth << " GB/sec, time: "
+         << setw( 8 ) << time << " sec, speedup: ";
+    if( baseTime )
+        cout << baseTime / time << endl;
+    else
+        cout << "N/A" << endl;
 
     return time;
 }
 
-template< typename ComputeHostFunction,
-          typename ComputeCudaFunction,
-          typename CheckFunction,
-          typename ResetFunction >
-void
-benchmarkCuda( const int & loops,
-               const double & datasetSize, // in GB
-               ComputeHostFunction computeHost,
-               ComputeCudaFunction computeCuda,
-               CheckFunction check,
-               ResetFunction reset )
+// This specialization terminates the recursion
+template< typename ResetFunction,
+          typename ComputeFunction >
+inline void
+benchmarkNextOperation( const double & datasetSize,
+                        const int & loops,
+                        ResetFunction reset,
+                        const double & baseTime,
+                        const char* performer,
+                        ComputeFunction compute )
 {
-    // timers are constructed zero-initialized and stopped
-    tnlTimerRT timerHost, timerCuda, timerCudaSync;
+    timeFunction( compute, reset, loops, datasetSize, baseTime, performer );
+}
 
-    for(int i = 0; i < loops; ++i) {
-        timerHost.start();
-        computeHost();
-        timerHost.stop();
+// Recursive template function to deal with benchmarks involving multiple computations
+template< typename ResetFunction,
+          typename ComputeFunction,
+          typename... NextComputations >
+inline void
+benchmarkNextOperation( const double & datasetSize,
+                        const int & loops,
+                        ResetFunction reset,
+                        const double & baseTime,
+                        const char* performer,
+                        ComputeFunction compute,
+                        NextComputations & ... nextComputations )
+{
+    benchmarkNextOperation( datasetSize, loops, reset, baseTime, performer, compute );
+    benchmarkNextOperation( datasetSize, loops, reset, baseTime, nextComputations... );
+}
 
-        timerCuda.start();
-        computeCuda();
-        timerCuda.stop();
-
-        if( ! check() )
-            throw BenchmarkError();
-
-        reset();
-
-        // Compute again on CUDA, with explicit synchronization
-#ifdef HAVE_CUDA
-        cudaDeviceSynchronize();
-        timerCudaSync.start();
-        computeCuda();
-        cudaDeviceSynchronize();
-        timerCudaSync.stop();
-#endif
-
-        reset();
-    }
-
-    const double timeHost = timerHost.getTime();
-    const double timeCuda = timerCuda.getTime();
-    const double timeCudaSync = timerCudaSync.getTime();
-    const double bandwidthHost = datasetSize / timeHost;
-    const double bandwidthCuda = datasetSize / timeCuda;
-    const double bandwidthCudaSync = datasetSize / timeCudaSync;
-    std::cout << "  CPU: bandwidth: " << bandwidthHost << " GB/sec, time: " << timeHost << " sec." << std::endl;
-    std::cout << "  GPU: bandwidth: " << bandwidthCuda << " GB/sec, time: " << timeCuda << " sec." << std::endl;
-    std::cout << "  GPU (sync): bandwidth: " << bandwidthCudaSync << " GB/sec, time: " << timeCudaSync << " sec." << std::endl;
-    std::cout << "  CPU/GPU speedup: " << timeHost / timeCuda << std::endl;
-    std::cout << "  CPU/GPU (sync) speedup: " << timeHost / timeCudaSync << std::endl;
+// Main function for benchmarking
+template< typename ResetFunction,
+          typename ComputeFunction,
+          typename... NextComputations >
+void
+benchmarkOperation( const char* operation,
+                    const double & datasetSize,
+                    const int & loops,
+                    ResetFunction reset,
+                    const char* performer,
+                    ComputeFunction computeBase,
+                    NextComputations... nextComputations )
+{
+    cout << "Benchmarking " << operation << ":" << endl;
+    double baseTime = timeFunction( computeBase, reset, loops, datasetSize, 0.0, performer );
+    benchmarkNextOperation( datasetSize, loops, reset, baseTime, nextComputations... );
     std::cout << std::endl;
 }
 

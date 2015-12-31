@@ -29,6 +29,8 @@
 using namespace tnl::benchmarks;
 
 
+// TODO: should benchmarks check the result of the computation?
+
 // silly alias to match the number of template parameters with other formats
 template< typename Real, typename Device, typename Index >
 using SlicedEllpackMatrix = tnlSlicedEllpackMatrix< Real, Device, Index >;
@@ -147,19 +149,17 @@ benchmarkSpMV( const int & loops,
 
    tnlList< tnlString > parsedType;
    parseObjectType( HostMatrix::getType(), parsedType );
-   cout << "Benchmarking SpMV (matrix type: " << parsedType[ 0 ] << ", rows: " << size << ", elements per row: " << elementsPerRow << "):" << endl;
+   tnlString operationDescription = tnlString("SpMV (matrix type: ") + parsedType[ 0 ]
+        + ", rows: " + tnlString(size) + ", elements per row: " + tnlString(elementsPerRow) + ")";
 
    const int elements = setHostTestMatrix< HostMatrix >( hostMatrix, elementsPerRow );
    setCudaTestMatrix< DeviceMatrix >( deviceMatrix, elementsPerRow );
    const double datasetSize = loops * elements * ( 2 * sizeof( Real ) + sizeof( int ) ) / oneGB;
-   hostVector.setValue( 1.0 );
-   deviceVector.setValue( 1.0 );
 
-   // check and reset functions
-   auto check = [&]() {
-      return hostVector2 == deviceVector2;
-   };
+   // reset function
    auto reset = [&]() {
+      hostVector.setValue( 1.0 );
+      deviceVector.setValue( 1.0 );
       hostVector2.setValue( 0.0 );
       deviceVector2.setValue( 0.0 );
    };
@@ -172,7 +172,9 @@ benchmarkSpMV( const int & loops,
       deviceMatrix.vectorProduct( deviceVector, deviceVector2 );
    };
 
-   benchmarkCuda( loops, datasetSize, spmvHost, spmvCuda, check, reset );
+   benchmarkOperation( operationDescription.getString(), 2 * datasetSize, loops, reset,
+                       "CPU", spmvHost,
+                       "GPU", spmvCuda );
 
    return true;
 }

@@ -37,21 +37,10 @@ benchmarkVectorOperations( const int & loops,
     Real resultHost, resultDevice;
 
 
-    // check functions
-    auto compare1 = [&]() {
-        return hostVector == deviceVector;
-    };
-    auto compare2 = [&]() {
-        return hostVector2 == deviceVector2;
-    };
-    auto compare12 = [&]() {
-        return compare1() && compare2();
-    };
-    auto compareScalars = [&]() {
-        return resultHost == resultDevice;
-    };
-
     // reset functions
+    // (Make sure to always use some in benchmarks, even if it's not necessary
+    // to assure correct result - it helps to clear cache and avoid optimizations
+    // of the benchmark loop.)
     auto reset1 = [&]() {
         hostVector.setValue( 1.0 );
         deviceVector.setValue( 1.0 );
@@ -68,148 +57,152 @@ benchmarkVectorOperations( const int & loops,
 
     reset12();
 
-    cout << "Benchmarking CPU-CPU memory transfer:" << endl;
+
     auto copyAssignHostHost = [&]() {
         hostVector = hostVector2;
     };
-    cout << "  ";
-    benchmarkSingle( loops, datasetSize, copyAssignHostHost, trueFunc, reset1 );
-
-    cout << "Benchmarking CPU-GPU memory transfer:" << endl;
     auto copyAssignHostCuda = [&]() {
         deviceVector = hostVector;
     };
-    cout << "  ";
-    benchmarkSingle( loops, datasetSize, copyAssignHostCuda, compare1, reset1 );
-
-    cout << "Benchmarking GPU-GPU memory transfer:" << endl;
     auto copyAssignCudaCuda = [&]() {
         deviceVector = hostVector;
     };
-    cout << "  ";
-    benchmarkSingle( loops, datasetSize, copyAssignCudaCuda, trueFunc, reset1 );
+    benchmarkOperation( "copy assigment", datasetSize, loops, reset1,
+                        "CPU->CPU", copyAssignHostHost,
+                        "CPU->GPU", copyAssignHostCuda,
+                        "GPU->GPU", copyAssignCudaCuda );
 
-    cout << endl;
 
-
-    cout << "Benchmarking tnlVector.operator==" << endl;
     auto compareHost = [&]() {
         resultHost = (int) hostVector == hostVector2;
     };
     auto compareCuda = [&]() {
         resultDevice = (int) deviceVector == deviceVector2;
     };
-    benchmarkCuda( loops, 2 * datasetSize, compareHost, compareCuda, compareScalars, voidFunc );
+    benchmarkOperation( "comparison (operator==)", 2 * datasetSize, loops, reset1,
+                        "CPU", compareHost,
+                        "GPU", compareCuda );
 
 
-    cout << "Benchmarking scalar multiplication:" << endl;
     auto multiplyHost = [&]() {
         hostVector *= 0.5;
     };
     auto multiplyCuda = [&]() {
         deviceVector *= 0.5;
     };
-    benchmarkCuda( loops, 2 * datasetSize, multiplyHost, multiplyCuda, compare1, reset1 );
+    benchmarkOperation( "scalar multiplication", 2 * datasetSize, loops, reset1,
+                        "CPU", multiplyHost,
+                        "GPU", multiplyCuda );
 
 
-    cout << "Benchmarking vector addition:" << endl;
     auto addVectorHost = [&]() {
         hostVector.addVector( hostVector2 );
     };
     auto addVectorCuda = [&]() {
         deviceVector.addVector( deviceVector2 );
     };
-    benchmarkCuda( loops, 3 * datasetSize, addVectorHost, addVectorCuda, compare1, reset1 );
+    benchmarkOperation( "vector addition", 3 * datasetSize, loops, reset1,
+                        "CPU", addVectorHost,
+                        "GPU", addVectorCuda );
 
 
-    cout << "Benchmarking max:" << endl;
     auto maxHost = [&]() {
         resultHost = hostVector.max();
     };
     auto maxCuda = [&]() {
         resultDevice = deviceVector.max();
     };
-    benchmarkCuda( loops, datasetSize, maxHost, maxCuda, compareScalars, voidFunc );
+    benchmarkOperation( "max", datasetSize, loops, reset1,
+                        "CPU", maxHost,
+                        "GPU", maxCuda );
 
 
-    cout << "Benchmarking min:" << endl;
     auto minHost = [&]() {
         resultHost = hostVector.min();
     };
     auto minCuda = [&]() {
         resultDevice = deviceVector.min();
     };
-    benchmarkCuda( loops, datasetSize, minHost, minCuda, compareScalars, voidFunc );
+    benchmarkOperation( "min", datasetSize, loops, reset1,
+                        "CPU", minHost,
+                        "GPU", minCuda );
 
 
-    cout << "Benchmarking absMax:" << endl;
     auto absMaxHost = [&]() {
         resultHost = hostVector.absMax();
     };
     auto absMaxCuda = [&]() {
         resultDevice = deviceVector.absMax();
     };
-    benchmarkCuda( loops, datasetSize, absMaxHost, absMaxCuda, compareScalars, voidFunc );
+    benchmarkOperation( "absMax", datasetSize, loops, reset1,
+                        "CPU", absMaxHost,
+                        "GPU", absMaxCuda );
 
 
-    cout << "Benchmarking absMin:" << endl;
     auto absMinHost = [&]() {
         resultHost = hostVector.absMin();
     };
     auto absMinCuda = [&]() {
         resultDevice = deviceVector.absMin();
     };
-    benchmarkCuda( loops, datasetSize, absMinHost, absMinCuda, compareScalars, voidFunc );
+    benchmarkOperation( "absMin", datasetSize, loops, reset1,
+                        "CPU", absMinHost,
+                        "GPU", absMinCuda );
 
 
-    cout << "Benchmarking sum:" << endl;
     auto sumHost = [&]() {
         resultHost = hostVector.sum();
     };
     auto sumCuda = [&]() {
         resultDevice = deviceVector.sum();
     };
-    benchmarkCuda( loops, datasetSize, sumHost, sumCuda, compareScalars, voidFunc );
+    benchmarkOperation( "sum", datasetSize, loops, reset1,
+                        "CPU", sumHost,
+                        "GPU", sumCuda );
 
 
-    cout << "Benchmarking l1 norm: " << endl;
     auto l1normHost = [&]() {
         resultHost = hostVector.lpNorm( 1.0 );
     };
     auto l1normCuda = [&]() {
         resultDevice = deviceVector.lpNorm( 1.0 );
     };
-    benchmarkCuda( loops, datasetSize, l1normHost, l1normCuda, compareScalars, voidFunc );
+    benchmarkOperation( "l1 norm", datasetSize, loops, reset1,
+                        "CPU", l1normHost,
+                        "GPU", l1normCuda );
 
 
-    cout << "Benchmarking l2 norm: " << endl;
     auto l2normHost = [&]() {
         resultHost = hostVector.lpNorm( 2.0 );
     };
     auto l2normCuda = [&]() {
         resultDevice = deviceVector.lpNorm( 2.0 );
     };
-    benchmarkCuda( loops, datasetSize, l2normHost, l2normCuda, compareScalars, voidFunc );
+    benchmarkOperation( "l2 norm", datasetSize, loops, reset1,
+                        "CPU", l2normHost,
+                        "GPU", l2normCuda );
 
 
-    cout << "Benchmarking l3 norm: " << endl;
     auto l3normHost = [&]() {
         resultHost = hostVector.lpNorm( 3.0 );
     };
     auto l3normCuda = [&]() {
         resultDevice = deviceVector.lpNorm( 3.0 );
     };
-    benchmarkCuda( loops, datasetSize, l3normHost, l3normCuda, compareScalars, voidFunc );
+    benchmarkOperation( "l3 norm", datasetSize, loops, reset1,
+                        "CPU", l3normHost,
+                        "GPU", l3normCuda );
 
 
-    cout << "Benchmarking scalar product:" << endl;
     auto scalarProductHost = [&]() {
         resultHost = hostVector.scalarProduct( hostVector2 );
     };
     auto scalarProductCuda = [&]() {
         resultDevice = deviceVector.scalarProduct( deviceVector2 );
     };
-    benchmarkCuda( loops, 2 * datasetSize, scalarProductHost, scalarProductCuda, compareScalars, voidFunc );
+    benchmarkOperation( "scalar product", 2 * datasetSize, loops, reset1,
+                        "CPU", scalarProductHost,
+                        "GPU", scalarProductCuda );
 
 /* TODO
 #ifdef HAVE_CUBLAS
