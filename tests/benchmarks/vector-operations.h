@@ -63,18 +63,25 @@ benchmarkVectorOperations( const int & loops,
     reset12();
 
 
-    auto copyAssignHostHost = [&]() {
-        hostVector = hostVector2;
-    };
     auto copyAssignHostCuda = [&]() {
         deviceVector = hostVector;
     };
-    auto copyAssignCudaCuda = [&]() {
-        deviceVector = hostVector;
+    auto copyAssignCudaHost = [&]() {
+        hostVector = deviceVector;
     };
-    benchmarkOperation( "copy assigment", datasetSize, loops, reset1,
-                        "CPU->CPU", copyAssignHostHost,
+    benchmarkOperation( "copy assigment (cross-device)", datasetSize, loops, reset1,
                         "CPU->GPU", copyAssignHostCuda,
+                        "GPU->CPU", copyAssignCudaHost );
+
+
+    auto copyAssignHostHost = [&]() {
+        hostVector = hostVector2;
+    };
+    auto copyAssignCudaCuda = [&]() {
+        deviceVector = deviceVector2;
+    };
+    benchmarkOperation( "copy assigment", 2 * datasetSize, loops, reset1,
+                        "CPU->CPU", copyAssignHostHost,
                         "GPU->GPU", copyAssignCudaCuda );
 
 
