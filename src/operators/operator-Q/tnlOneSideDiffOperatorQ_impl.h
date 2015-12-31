@@ -106,13 +106,13 @@ template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
 tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getValue( const MeshType& mesh,
-          const MeshEntity& entity,
+getValue( const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
    const IndexType& cellIndex = entity.getIndex();
    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::MeshType& mesh = entity.getMesh();
    // TODO: fix this
    return sqrt( this->eps + 
       ( u[ neighbourEntities.template getEntityIndex< 1 >() ] - u[ cellIndex ]) * 
@@ -129,8 +129,7 @@ template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
 tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
-getValue( const MeshType& mesh,
-          const MeshEntity& entity,
+getValue( const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
@@ -146,13 +145,13 @@ template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
 tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getValueStriped( const MeshType& mesh,
-                 const MeshEntity& entity,
+getValueStriped( const MeshEntity& entity,
                  const Vector& u,
                  const Real& time ) const
 {
    const IndexType& cellIndex = entity.getIndex();
    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::MeshType& mesh = entity.getMesh();
    return sqrt( this->eps + 0.5*( ( u[ neighbourEntities.template getEntityIndex< 1 >() ] - u[ cellIndex ]) * 
           (  u[ neighbourEntities.template getEntityIndex<  1 >() ] - u[ cellIndex ]) * mesh.template getSpaceStepsProducts< -1 >() * mesh.template getSpaceStepsProducts< -1 >() + 
           ( -u[ neighbourEntities.template getEntityIndex< -1 >() ] + u[ cellIndex ] ) 
@@ -168,13 +167,12 @@ template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
 tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
-getValueStriped( const MeshType& mesh,
-          const IndexType cellIndex,
+getValueStriped(
           const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
-   return qStriped.getElement(cellIndex);
+   return qStriped.getElement( entity.getIndex() );
 }
 
 template< typename MeshReal,
@@ -251,12 +249,12 @@ bind( Vector& u)
     return 0;
 }
 
-__cuda_callable__
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
           typename Index >
+__cuda_callable__
 void 
 tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 update( const MeshType& mesh, const RealType& time )
@@ -280,13 +278,13 @@ template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
 tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getValue( const MeshType& mesh,          
-          const MeshEntity& entity,
+getValue( const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
    const IndexType& cellIndex = entity.getIndex();
    const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::MeshType& mesh = entity.getMesh();
    return sqrt( this->eps + ( u[ neighbourEntities.template getEntityIndex< 0,1 >() ] - u[ cellIndex ] ) * 
           ( u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - u[ cellIndex ] )
           * mesh.template getSpaceStepsProducts< 0, -1 >() * mesh.template getSpaceStepsProducts< 0, -1 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0 >() ] - u[ cellIndex ] ) 
@@ -302,13 +300,11 @@ template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
 tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
-getValue( const MeshType& mesh,
-          const IndexType cellIndex,
-          const MeshEntity& entity,
+getValue( const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
-   return q.getElement(cellIndex);
+   return q.getElement( entity.getIndex() );
 }
 
 template< typename MeshReal,
@@ -320,13 +316,13 @@ template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
 tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getValueStriped( const MeshType& mesh,          
-                 const MeshEntity& entity,
+getValueStriped( const MeshEntity& entity,
                  const Vector& u,
                  const Real& time ) const
 {
    const IndexType& cellIndex = entity.getIndex();
    const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::MeshType& mesh = entity.getMesh();
    return sqrt( this->eps + 0.5*( ( u[ neighbourEntities.template getEntityIndex< 0,1 >() ] - u[ cellIndex ] ) * 
           ( u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - u[ cellIndex ] )
           * mesh.template getSpaceStepsProducts< 0, -1 >() * mesh.template getSpaceStepsProducts< 0, -1 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0 >() ] - u[ cellIndex ] ) 
@@ -428,12 +424,12 @@ bind( Vector& u)
     return 0;
 }
 
-__cuda_callable__
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
           typename Index >
+__cuda_callable__
 void 
 tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 update( const MeshType& mesh, const RealType& time )
@@ -456,13 +452,13 @@ template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
 tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getValue( const MeshType& mesh,
-          const MeshEntity& entity,
+getValue( const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
    const IndexType& cellIndex = entity.getIndex();
    const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::MeshType& mesh = entity.getMesh();
    return sqrt( 1.0 + ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] ) * 
           ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] )
           * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] ) 
@@ -480,13 +476,13 @@ template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
 tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getValueStriped( const MeshType& mesh,          
-                 const MeshEntity& entity,
+getValueStriped( const MeshEntity& entity,
                  const Vector& u,
                  const Real& time ) const
 {
    const IndexType& cellIndex = entity.getIndex();
    const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::MeshType& mesh = entity.getMesh();
    return sqrt( this->eps + 0.5*( ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] ) * 
            ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() 
            + ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] ) * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] ) 

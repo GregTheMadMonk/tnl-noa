@@ -31,8 +31,7 @@ processBoundaryEntities( const GridType& grid,
    /****
     * Boundary cells
     */
-   const int CellDimensions = GridType::meshDimensions;
-   //typename GridType::template GridEntity< CellDimensions > entity( grid );
+   static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
    GridEntity entity( grid );
 
    CoordinatesType& coordinates = entity.getCoordinates();
@@ -58,8 +57,7 @@ processInteriorEntities( const GridType& grid,
    /****
     * Interior cells
     */
-   const int CellDimensions = GridType::meshDimensions;
-   //typename GridType::template GridEntity< CellDimensions > cell( grid );
+   static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
    GridEntity cell( grid );
 
    const IndexType& xSize = grid.getDimensions().x();
@@ -85,8 +83,7 @@ processBoundaryEntities( const GridType& grid,
    /****
     * Boundary vertices
     */
-   const int VerticesDimensions = 0;
-   //typename GridType::template GridEntity< VerticesDimensions > entity( grid );
+   static_assert( GridEntity::entityDimensions == 0, "The entity has wrong dimensions." );
    GridEntity entity( grid );
    
    CoordinatesType& coordinates = entity.getCoordinates();
@@ -112,10 +109,9 @@ processInteriorEntities( const GridType& grid,
    /****
     * Interior vertices
     */
-   const int VerticesDimensions = 0;
-   //typename GridType::template GridEntity< VerticesDimensions > entity( grid );
-   GridEntity entity( grid );
+   static_assert( GridEntity::entityDimensions == 0, "The entity has wrong dimensions." );
    
+   GridEntity entity( grid );   
    CoordinatesType& coordinates = entity.getCoordinates();
    const IndexType& xSize = grid.getDimensions().x();
    for( coordinates.x() = 1; coordinates.x() < xSize; coordinates.x() ++ )
@@ -134,6 +130,7 @@ processInteriorEntities( const GridType& grid,
 #ifdef HAVE_CUDA
 template< typename Real,
           typename Index,
+          typename GridEntity,
           typename UserData,
           typename EntitiesProcessor,
           bool processAllEntities,
@@ -142,11 +139,10 @@ __global__ void tnlTraverserGrid1DCells( const tnlGrid< 1, Real, tnlCuda, Index 
                                          UserData* userData,
                                          Index gridXIdx )
 {
-   typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
-   const int CellDimensions = GridType::meshDimensions;
-   //typename GridType::template GridEntity< CellDimensions > entity( *grid );
-   GridEntity entity( *grid );
+   typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;   
    typedef typename GridType::CoordinatesType CoordinatesType;
+   
+   GridEntity entity( *grid );
    CoordinatesType& coordinates = entity.getCoordinates();
 
    const Index index = ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
@@ -178,6 +174,7 @@ processBoundaryEntities( const GridType& grid,
    /****
     * Boundary conditions
     */
+   static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
    GridType* kernelGrid = tnlCuda::passToDevice( grid );
    UserData* kernelUserData = tnlCuda::passToDevice( userData );
 
@@ -187,7 +184,7 @@ processBoundaryEntities( const GridType& grid,
    const IndexType cudaXGrids = tnlCuda::getNumberOfGrids( cudaBlocks.x );
 
    for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
-      tnlTraverserGrid1DCells< Real, Index, UserData, EntitiesProcessor, false, true >
+      tnlTraverserGrid1DCells< Real, Index, GridEntity, UserData, EntitiesProcessor, false, true >
                              <<< cudaBlocks, cudaBlockSize >>>
                              ( kernelGrid,
                                kernelUserData,
@@ -213,6 +210,7 @@ processInteriorEntities( const GridType& grid,
    /****
     * Interior cells
     */
+   static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
    checkCudaDevice;
    GridType* kernelGrid = tnlCuda::passToDevice( grid );
    UserData* kernelUserData = tnlCuda::passToDevice( userData );
@@ -227,7 +225,7 @@ processInteriorEntities( const GridType& grid,
    {
       if( gridXIdx == cudaXGrids - 1 )
          cudaGridSize.x = cudaBlocks.x % tnlCuda::getMaxGridSize();
-      tnlTraverserGrid1DCells< Real, Index, UserData, EntitiesProcessor, false, false >
+      tnlTraverserGrid1DCells< Real, Index, GridEntity, UserData, EntitiesProcessor, false, false >
          <<< cudaGridSize, cudaBlockSize >>>
          ( kernelGrid,
            kernelUserData,
@@ -243,6 +241,7 @@ processInteriorEntities( const GridType& grid,
 #ifdef HAVE_CUDA
 template< typename Real,
           typename Index,
+          typename GridEntity,
           typename UserData,
           typename EntitiesProcessor,
           bool processAllEntities,
@@ -252,7 +251,6 @@ __global__ void tnlTraverserGrid1DVertices( const tnlGrid< 1, Real, tnlCuda, Ind
                                             Index gridXIdx )
 {
    typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
-   //typename GridType::template GridEntity< GridType::Vertices > vertex;
    GridEntity vertex( *grid );
 
    const Index& xSize = grid->getDimensions().x();
@@ -290,6 +288,7 @@ processBoundaryEntities( const GridType& grid,
    /****
     * Boundary vertices
     */
+   static_assert( GridEntity::entityDimensions == 0, "The entity has wrong dimensions." );
    GridType* kernelGrid = tnlCuda::passToDevice( grid );
    UserData* kernelUserData = tnlCuda::passToDevice( userData );
 
@@ -299,7 +298,7 @@ processBoundaryEntities( const GridType& grid,
    const IndexType cudaXGrids = tnlCuda::getNumberOfGrids( cudaBlocks.x );
 
    for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
-      tnlTraverserGrid1DVertices< Real, Index, UserData, EntitiesProcessor, false, true >
+      tnlTraverserGrid1DVertices< Real, Index, GridEntity, UserData, EntitiesProcessor, false, true >
          <<< cudaBlocks, cudaBlockSize >>>
          ( kernelGrid,
            kernelUserData,
@@ -327,6 +326,7 @@ processInteriorEntities( const GridType& grid,
    /****
     * Interior vertices
     */
+   static_assert( GridEntity::entityDimensions == 0, "The entity has wrong dimensions." );
    checkCudaDevice;
    GridType* kernelGrid = tnlCuda::passToDevice( grid );
    UserData* kernelUserData = tnlCuda::passToDevice( userData );
@@ -341,7 +341,7 @@ processInteriorEntities( const GridType& grid,
    {
       if( gridXIdx == cudaXGrids - 1 )
          cudaGridSize.x = cudaBlocks.x % tnlCuda::getMaxGridSize();
-      tnlTraverserGrid1DVertices< Real, Index, UserData, EntitiesProcessor, false, false >
+      tnlTraverserGrid1DVertices< Real, Index, GridEntity, UserData, EntitiesProcessor, false, false >
          <<< cudaGridSize, cudaBlockSize >>>
          ( kernelGrid,
            kernelUserData,

@@ -37,8 +37,7 @@ class tnlNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Nonlinear
       template< typename MeshEntity,
                 typename Vector >
       __cuda_callable__
-      Real getValue( const MeshType& mesh,
-                     const MeshEntity& entity,
+      Real getValue( const MeshEntity& entity,
                      const Vector& u,
                      const RealType& time) const;
 
@@ -90,13 +89,12 @@ class tnlNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Nonlinea
       template< typename MeshEntity,
                 typename Vector >
       __cuda_callable__
-      Real getValue( const MeshType& mesh,
-                     const MeshEntity& entity,
+      Real getValue( const MeshEntity& entity,
                      const Vector& u,
                      const RealType& time) const;
 
-      __cuda_callable__
       template< typename MeshEntity >
+      __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;
@@ -142,13 +140,12 @@ class tnlNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Nonlinea
       template< typename MeshEntity,
                 typename Vector >
       __cuda_callable__
-      Real getValue( const MeshType& mesh,
-                     const MeshEntity& entity,
+      Real getValue( const MeshEntity& entity,
                      const Vector& u,
                      const RealType& time) const;
 
-      __cuda_callable__
       template< typename MeshEntity >
+      __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;

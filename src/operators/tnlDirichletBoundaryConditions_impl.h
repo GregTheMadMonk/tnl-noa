@@ -87,8 +87,8 @@ __cuda_callable__
 const Real
 tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >::
 getValue( const EntityType& entity,
-          const RealType& time,                               
-          DofVectorType& u ) const
+          DofVectorType& u,
+          const RealType& time ) const
 {
    return tnlFunctionAdapter< MeshType, Function >::template getValue( this->function, entity, time );
 }

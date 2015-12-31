@@ -66,8 +66,8 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, F
    template< typename EntityType >
    __cuda_callable__
    const RealType getValue( const EntityType& entity,
-                             const RealType& time,                                                       
-                             DofVectorType& u ) const;
+                            DofVectorType& u,
+                            const RealType& time = 0 ) const;
 
 
    template< typename EntityType >
@@ -115,9 +115,9 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, F
 
    template< typename EntityType >
    __cuda_callable__
-   const RealType getValue( const EntityType& entity,
-                            const RealType& time,                                                       
-                            DofVectorType& u ) const;
+   const RealType getValue( const EntityType& entity,                            
+                            DofVectorType& u,
+                            const RealType& time = 0 ) const;
       
    template< typename EntityType >
    __cuda_callable__
@@ -164,9 +164,9 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, F
 
    template< typename EntityType >
    __cuda_callable__
-   const RealType getValue( const EntityType& entity,
-                            const RealType& time,                                                       
-                            DofVectorType& u ) const;
+   const RealType getValue( const EntityType& entity,                            
+                            DofVectorType& u,
+                            const RealType& time = 0 ) const;
    
 
    template< typename EntityType >

@@ -94,8 +94,8 @@ class tnlExplicitUpdater
             {
                ( *userData.u )[ entity.getIndex() ] = userData.boundaryConditions->getValue
                ( entity,
-                 *userData.time,
-                 *userData.u );
+                 *userData.u,
+                 *userData.time );
             }
 
       };
@@ -114,7 +114,6 @@ class tnlExplicitUpdater
             {
                ( *userData.fu)[ entity.getIndex() ] = 
                   userData.differentialOperator->getValue(
-                     mesh,
                      entity,
                      *userData.u,
                      *userData.time );

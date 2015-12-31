@@ -49,9 +49,9 @@ class tnlDirichletBoundaryConditions
    
    template< typename EntityType >
    __cuda_callable__
-   const RealType getValue( const EntityType& entity,
-                            const RealType& time,                                                       
-                            DofVectorType& u ) const;
+   const RealType getValue( const EntityType& entity,                            
+                            DofVectorType& u,
+                            const RealType& time = 0 ) const;
    
    template< typename EntityType >
    __cuda_callable__

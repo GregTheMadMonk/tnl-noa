@@ -79,8 +79,8 @@ class tnlBoundaryConditionsSetter
             {
                userData.boundaryConditions->getValue
                ( entity,
-                 *userData.time,                 
-                 *userData.u );
+                 *userData.u,
+                 *userData.time );
             }
 
       };

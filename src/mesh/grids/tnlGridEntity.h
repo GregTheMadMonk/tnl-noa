@@ -51,6 +51,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
    public:
       
       typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
+      typedef GridType MeshType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef Config ConfigType;
@@ -168,6 +169,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Con
    public:
       
       typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
+      typedef GridType MeshType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::VertexType VertexType;
@@ -278,7 +280,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
 {
    public:
       
-      typedef tnlGrid< Dimensions, Real, Device, Index > GridType;      
+      typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
+      typedef GridType MeshType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::VertexType VertexType;

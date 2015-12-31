@@ -47,13 +47,12 @@ __cuda_callable__
 inline
 Real
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
-getValue( const MeshType& mesh,
-          const MeshEntity& entity,
+getValue( const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
-   const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< - 2 >();
+   const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< - 2 >();
    return ( u[ neighbourEntities.template getEntityIndex< -1 >() ]
             - 2.0 * u[ entity.getIndex() ]
             + u[ neighbourEntities.template getEntityIndex< 1 >() ] ) * hxSquareInverse;
@@ -149,14 +148,13 @@ __cuda_callable__
 inline
 Real
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
-getValue( const MeshType& mesh,
-          const EntityType& entity,
+getValue( const EntityType& entity,
           const Vector& u,
           const Real& time ) const
 {
    const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
-   const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< -2, 0 >();
-   const RealType& hySquareInverse = mesh.template getSpaceStepsProducts< 0, -2 >();
+   const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >();
+   const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts< 0, -2 >();
    return ( u[ neighbourEntities.template getEntityIndex< -1,  0 >() ]
           + u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] ) * hxSquareInverse +
           ( u[ neighbourEntities.template getEntityIndex<  0, -1 >() ]
@@ -223,15 +221,14 @@ __cuda_callable__
 inline
 Real
 tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
-getValue( const MeshType& mesh,
-          const EntityType& entity,
+getValue( const EntityType& entity,
           const Vector& u,
           const Real& time ) const
 {
    const typename EntityType::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
-   const RealType& hxSquareInverse = mesh.template getSpaceStepsProducts< -2,  0,  0 >();
-   const RealType& hySquareInverse = mesh.template getSpaceStepsProducts<  0, -2,  0 >();
-   const RealType& hzSquareInverse = mesh.template getSpaceStepsProducts<  0,  0, -2 >();
+   const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >();
+   const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts<  0, -2,  0 >();
+   const RealType& hzSquareInverse = entity.getMesh().template getSpaceStepsProducts<  0,  0, -2 >();
    return (   u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ]
             + u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] ) * hxSquareInverse +
           (   u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ]

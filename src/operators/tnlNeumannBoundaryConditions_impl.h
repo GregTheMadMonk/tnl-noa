@@ -58,9 +58,9 @@ template< typename MeshReal,
 __cuda_callable__
 const Real
 tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
-getValue( const EntityType& entity,
-          const RealType& time,                                                       
-          DofVectorType& u ) const
+getValue( const EntityType& entity,          
+          DofVectorType& u,
+          const RealType& time ) const
 {
    const MeshType& mesh = entity.getMesh();
    auto neighbourEntities = entity.getNeighbourEntities();
@@ -141,9 +141,9 @@ template< typename MeshReal,
 __cuda_callable__
 const Real
 tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
-getValue( const EntityType& entity,
-          const RealType& time,                                                       
-          DofVectorType& u ) const
+getValue( const EntityType& entity,          
+          DofVectorType& u,
+          const RealType& time ) const
 {
    const MeshType& mesh = entity.getMesh();
    auto neighbourEntities = entity.getNeighbourEntities();
@@ -251,9 +251,9 @@ template< typename MeshReal,
 __cuda_callable__
 const Real
 tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
-getValue( const EntityType& entity,
-          const RealType& time,                                                       
-          DofVectorType& u ) const
+getValue( const EntityType& entity,          
+          DofVectorType& u,
+          const RealType& time ) const
 {
    const MeshType& mesh = entity.getMesh();
    auto neighbourEntities = entity.getNeighbourEntities();

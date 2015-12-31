@@ -42,14 +42,14 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
    
    template< typename MeshEntity, typename Vector >
    __cuda_callable__
-   Real getValue( const MeshType& mesh,
+   Real getValue(
           const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
    
    template< typename MeshEntity, typename Vector >
    __cuda_callable__
-   Real getValueStriped( const MeshType& mesh,
+   Real getValueStriped(
           const MeshEntity& entity,
           const Vector& u,
           const Real& time )const;
@@ -89,14 +89,14 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
    
    template< typename MeshEntity, typename Vector >
    __cuda_callable__
-   Real getValue( const MeshType& mesh,          
+   Real getValue(
           const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
    
    template< typename MeshEntity, typename Vector >
    __cuda_callable__
-   Real getValueStriped( const MeshType& mesh,          
+   Real getValueStriped(
           const MeshEntity& entity,
           const Vector& u,
           const Real& time )const;
@@ -136,14 +136,14 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, I
    
    template< typename MeshEntity, typename Vector >
    __cuda_callable__
-   Real getValue( const MeshType& mesh,
+   Real getValue(
           const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
    
    template< typename MeshEntity, typename Vector >
    __cuda_callable__
-   Real getValueStriped( const MeshType& mesh,
+   Real getValueStriped(
           const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
@@ -181,15 +181,14 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
    
    template< typename MeshEntity, typename Vector >
    __cuda_callable__
-   Real getValue( const MeshType& mesh,
+   Real getValue(
           const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
    
    template< typename MeshEntity, typename Vector >
    __cuda_callable__
-   Real getValueStriped( const MeshType& mesh,
-          const IndexType cellIndex,
+   Real getValueStriped( 
           const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
@@ -231,8 +230,7 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
    
    template< typename MeshEntity, typename Vector >
    __cuda_callable__
-   Real getValue( const MeshType& mesh,
-          const IndexType cellIndex,
+   Real getValue(
           const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
@@ -280,14 +278,14 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, I
    
    template< typename MeshEntity, typename Vector >
    __cuda_callable__
-   Real getValue( const MeshType& mesh,
+   Real getValue(
           const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const;
    
    template< typename MeshEntity, typename Vector >
    __cuda_callable__
-   Real getValueStriped( const MeshType& mesh,
+   Real getValueStriped(
           const MeshEntity& entity,
           const Vector& u,
           const Real& time )const;

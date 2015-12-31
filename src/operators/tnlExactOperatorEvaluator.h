@@ -160,8 +160,8 @@ class tnlExactOperatorEvaluator< tnlGrid< Dimensions, Real, Device, Index >, Dof
             {
                userData.fu[ entity.getIndex() ] = userData.boundaryConditions.getValue
                   ( entity,
-                    userData.time,
-                    userData.fu );
+                    userData.fu,
+                    userData.time );
             }
       };
 

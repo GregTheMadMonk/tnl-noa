@@ -80,8 +80,7 @@ template< typename MeshEntity, typename Vector, int AxeX, int AxeY, int AxeZ >
 __cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-boundaryDerivative( const MeshType& mesh,
-                    const MeshEntity& entity,
+boundaryDerivative( const MeshEntity& entity,
                     const Vector& u,
                     const Real& time,
                     const IndexType& dx, 
@@ -222,12 +221,12 @@ bind( Vector& u)
     return 0;
 }
 
-__cuda_callable__
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
           typename Index >
+__cuda_callable__
 void 
 tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 update( const MeshType& mesh, const RealType& time )
@@ -304,15 +303,15 @@ template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getValue( const MeshType& mesh,
-          const MeshEntity& entity,
+getValue( const MeshEntity& entity,
           const Vector& u,
           const Real& time,
           const IndexType& dx, 
           const IndexType& dy,
           const IndexType& dz ) const
 {
-   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
+   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+   const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const IndexType& cellIndex = entity.getIndex();
     if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 0 ) )
         return sqrt( this->eps + ( u[ neighbourEntities.template getEntityIndex< 0,1 >() ] - u[ cellIndex ] ) * 
@@ -433,12 +432,12 @@ bind( Vector& u)
     return 0;
 }
 
-__cuda_callable__
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
           typename Index >
+__cuda_callable__
 void 
 tnlFiniteVolumeOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 update( const MeshType& mesh, const RealType& time )
@@ -554,7 +553,6 @@ __cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 getValue( 
-   const MeshType& mesh,
    const MeshEntity& entity,
    const Vector& u,
    const Real& time,
@@ -563,6 +561,7 @@ getValue(
    const IndexType& dz ) const
 {
    const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
+   const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const IndexType& cellIndex = entity.getIndex();     
     if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 0 ) )
         return sqrt( this->eps + ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] ) * 
