@@ -12,7 +12,7 @@
 # Vladimir Klement
 # Jakub Klinkovsky
 
-cmake_minimum_required( VERSION 2.8.10 )
+cmake_minimum_required( VERSION 3.0 )
 
 project( tnl )
 
@@ -100,9 +100,9 @@ if( WITH_CUDA STREQUAL "yes" )
                 set( CUDA_ARCH -gencode arch=compute_${WITH_CUDA_ARCH},code=sm_${WITH_CUDA_ARCH} )
             endif()
         endif()
-        set( CUDA_ADD_EXECUTABLE_OPTIONS ${CUDA_ARCH} )
-        set( CUDA_ADD_LIBRARY_OPTIONS ${CUDA_ARCH} -shared )
-        set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared" )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} )
+        # TODO: this is necessary only due to a bug in cmake
+        set( CUDA_ADD_LIBRARY_OPTIONS -shared )
 
         ####
         # Check for cuBLAS
@@ -389,6 +389,4 @@ message( "   CMAKE_CXX_FLAGS_RELEASE = ${CMAKE_CXX_FLAGS_RELEASE}" )
 message( "   CMAKE_SHARED_LIBRARY_LINK_C_FLAGS = ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS}" )
 message( "   CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG = ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG}" )
 message( "   CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE = ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE}" )
-message( "   CUDA_ADD_EXECUTABLE_OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS}" )
-message( "   CUDA_ADD_LIBRARY_OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS}" )
-message( "   CUDA_LINKER_OPTIONS ${CUDA_LINKER_OPTIONS}" )
+message( "   CUDA_NVCC_FLAGS = ${CUDA_NVCC_FLAGS}" )
