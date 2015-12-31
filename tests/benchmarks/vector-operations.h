@@ -5,7 +5,7 @@
 #include <core/vectors/tnlVector.h>
 
 #ifdef HAVE_CUBLAS
-//#include <cublas.h>
+#include "cublasWrappers.h"
 #endif
 
 namespace tnl
@@ -35,6 +35,11 @@ benchmarkVectorOperations( const int & loops,
         return false;
 
     Real resultHost, resultDevice;
+
+#ifdef HAVE_CUBLAS
+    cublasHandle_t cublasHandle;
+    cublasCreate( &cublasHandle );
+#endif
 
 
     // reset functions
@@ -200,29 +205,21 @@ benchmarkVectorOperations( const int & loops,
     auto scalarProductCuda = [&]() {
         resultDevice = deviceVector.scalarProduct( deviceVector2 );
     };
+#ifdef HAVE_CUBLAS
+    auto scalarProductCublas = [&]() {
+        cublasGdot( cublasHandle, size,
+                    deviceVector.getData(), 1,
+                    deviceVector2.getData(), 1,
+                    &resultDevice );
+    };
+#endif
     benchmarkOperation( "scalar product", 2 * datasetSize, loops, reset1,
                         "CPU", scalarProductHost,
-                        "GPU", scalarProductCuda );
-
-/* TODO
+                        "GPU", scalarProductCuda
 #ifdef HAVE_CUBLAS
-   cout << "Benchmarking scalar product on GPU with Cublas: " << endl;
-   cublasHandle_t handle;
-   cublasCreate( &handle );
-   timer.reset();
-   timer.start();
-   for( int i = 0; i < loops; i++ )
-      cublasDdot( handle,
-                  size,
-                  deviceVector.getData(), 1,
-                  deviceVector.getData(), 1,
-                  &resultDevice );
-   cudaThreadSynchronize();
-   timer.stop();
-   bandwidth = 2 * datasetSize / timer.getTime();
-   cout << "bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+                      , "cuBLAS", scalarProductCublas
 #endif
-*/
+                      );
 
     /*
     cout << "Benchmarking prefix-sum:" << endl;
@@ -252,6 +249,10 @@ benchmarkVectorOperations( const int & loops,
           cerr << "Error in prefix sum at position " << i << ":  " << hostVector.getElement( i ) << " != " << auxHostVector.getElement( i ) << endl;
        }
     */
+
+#ifdef HAVE_CUBLAS
+    cublasDestroy( cublasHandle );
+#endif
 
     return true;
 }
