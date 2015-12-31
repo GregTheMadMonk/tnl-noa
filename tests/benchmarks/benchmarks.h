@@ -24,9 +24,8 @@ double
 benchmarkSingle( const int & loops,
                  const double & datasetSize, // in GB
                  ComputeFunction compute,
-                 // TODO: check that default argument works here
-                 CheckFunction check = trueFunc,
-                 ResetFunction reset = voidFunc )
+                 CheckFunction check,
+                 ResetFunction reset )
 {
     tnlTimerRT timer;
     timer.reset();
@@ -58,9 +57,8 @@ benchmarkCuda( const int & loops,
                const double & datasetSize, // in GB
                ComputeHostFunction computeHost,
                ComputeCudaFunction computeCuda,
-               // TODO: check that default argument works here
-               CheckFunction check = trueFunc,
-               ResetFunction reset = voidFunc )
+               CheckFunction check,
+               ResetFunction reset )
 {
     // timers are constructed zero-initialized and stopped
     tnlTimerRT timerHost, timerCuda, timerCudaSync;
