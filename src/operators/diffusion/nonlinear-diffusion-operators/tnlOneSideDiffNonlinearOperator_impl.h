@@ -70,8 +70,9 @@ template< typename MeshReal,
           typename Real,
           typename Index,
           typename OperatorQ >
-template< typename Vector,
-          typename MeshEntity,
+template< typename MeshEntity,
+          typename MeshFunction,
+          typename Vector,
           typename Matrix >
 __cuda_callable__
 void
@@ -81,7 +82,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const MeshEntity& entity,
-                    Vector& u,
+                    const MeshFunction& u,
                     Vector& b,
                     Matrix& matrix ) const
 {
@@ -164,8 +165,9 @@ template< typename MeshReal,
           typename Real,
           typename Index,
           typename OperatorQ >
-template< typename Vector,
-          typename MeshEntity,
+template< typename MeshEntity,
+          typename MeshFunction,
+          typename Vector,
           typename Matrix >
 __cuda_callable__
 void
@@ -175,7 +177,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const MeshEntity& entity,
-                    Vector& u,
+                    const MeshFunction& u,
                     Vector& b,
                     Matrix& matrix ) const
 {
@@ -268,9 +270,10 @@ template< typename MeshReal,
           typename Real,
           typename Index,
           typename OperatorQ >
-template< typename Vector,
-          typename MeshEntity,
-          typename Matrix >
+   template< typename MeshEntity,
+             typename MeshFunction,
+             typename Vector,
+             typename Matrix >
 __cuda_callable__
 void
 tnlOneSideDiffNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
@@ -279,7 +282,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const MeshEntity& entity,
-                    Vector& u,
+                    const MeshFunction& u,
                     Vector& b,
                     Matrix& matrix ) const
 {

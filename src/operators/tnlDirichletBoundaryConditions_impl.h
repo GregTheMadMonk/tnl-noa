@@ -82,12 +82,13 @@ template< typename Mesh,
           typename Function,
           typename Real,
           typename Index >
-template< typename EntityType >
+template< typename EntityType,
+          typename MeshFunction >
 __cuda_callable__
 const Real
 tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >::
 getValue( const EntityType& entity,
-          DofVectorType& u,
+          const MeshFunction& u,
           const RealType& time ) const
 {
    return tnlFunctionAdapter< MeshType, Function >::template getValue( this->function, entity, time );
@@ -113,7 +114,8 @@ template< typename Mesh,
           typename Real,
           typename Index >
    template< typename Matrix,
-             typename EntityType >
+             typename EntityType,
+             typename MeshFunction >
 __cuda_callable__
 void
 tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >::
@@ -121,7 +123,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const EntityType& entity,
-                    DofVectorType& u,
+                    const MeshFunction& u,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {

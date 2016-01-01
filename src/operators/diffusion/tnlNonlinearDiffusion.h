@@ -30,7 +30,7 @@ class tnlNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Nonlinear
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef NonlinearDiffusionOperator NonlinearDiffusionOperatorType;
-      typedef typename MeshType::template GridEntity< MeshType::meshDimensions > CellType;
+      typedef typename MeshType::template MeshEntity< MeshType::meshDimensions > CellType;
 
       static tnlString getType();
 
@@ -48,6 +48,7 @@ class tnlNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Nonlinear
                                       const MeshEntity& entity ) const;
 
       template< typename MeshEntity,
+                typename MeshFunction,
                 typename Vector,
                 typename Matrix >
       __cuda_callable__
@@ -56,7 +57,7 @@ class tnlNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Nonlinear
                                const MeshType& mesh,
                                const IndexType& index,
                                const MeshEntity& entity,
-                               Vector& u,
+                               const MeshFunction& u,
                                Vector& b,
                                Matrix& matrix ) const;
 
@@ -100,6 +101,7 @@ class tnlNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Nonlinea
                                       const MeshEntity& entity ) const;
 
       template< typename MeshEntity,
+                typename MeshFunction,
                 typename Vector,
                 typename Matrix >
       __cuda_callable__
@@ -108,7 +110,7 @@ class tnlNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Nonlinea
                                const MeshType& mesh,
                                const IndexType& index,
                                const MeshEntity& entity,
-                               Vector& u,
+                               const MeshFunction& u,
                                Vector& b,
                                Matrix& matrix ) const;
    
@@ -138,10 +140,10 @@ class tnlNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Nonlinea
       static tnlString getType();
 
       template< typename MeshEntity,
-                typename Vector >
+                typename MeshFunction >
       __cuda_callable__
       Real getValue( const MeshEntity& entity,
-                     const Vector& u,
+                     const MeshFunction& u,
                      const RealType& time) const;
 
       template< typename MeshEntity >
@@ -151,6 +153,7 @@ class tnlNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Nonlinea
                                       const MeshEntity& entity ) const;
 
       template< typename MeshEntity,
+                typename MeshFunction,
                 typename Vector,                
                 typename Matrix >
       __cuda_callable__
@@ -159,7 +162,7 @@ class tnlNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Nonlinea
                                const MeshType& mesh,
                                const IndexType& index,
                                const MeshEntity& entity,
-                               Vector& u,
+                               const MeshFunction& u,
                                Vector& b,
                                Matrix& matrix ) const;
      

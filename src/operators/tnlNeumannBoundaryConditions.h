@@ -63,10 +63,11 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, F
    typedef tnlStaticVector< 1, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
-   template< typename EntityType >
+   template< typename EntityType,
+             typename MeshFunction >
    __cuda_callable__
    const RealType getValue( const EntityType& entity,
-                            DofVectorType& u,
+                            const MeshFunction& u,
                             const RealType& time = 0 ) const;
 
 
@@ -77,13 +78,14 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, F
                                    const EntityType& entity ) const;
 
    template< typename MatrixRow,
-             typename EntityType >
+             typename EntityType,
+             typename MeshFunction >
    __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,
                                const EntityType& entity,
-                               DofVectorType& u,
+                               const MeshFunction& u,
                                DofVectorType& b,
                                MatrixRow& matrixRow ) const;
 };
@@ -113,10 +115,11 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, F
    typedef tnlStaticVector< 2, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
-   template< typename EntityType >
+   template< typename EntityType,
+             typename MeshFunction >
    __cuda_callable__
    const RealType getValue( const EntityType& entity,                            
-                            DofVectorType& u,
+                            const MeshFunction& u,
                             const RealType& time = 0 ) const;
       
    template< typename EntityType >
@@ -126,13 +129,14 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, F
                                    const EntityType& entity ) const;
 
    template< typename MatrixRow,
-             typename EntityType >
+             typename EntityType,
+             typename MeshFunction >
    __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,
                                const EntityType& entity,
-                               DofVectorType& u,
+                               const MeshFunction& u,
                                DofVectorType& b,
                                MatrixRow& matrixRow ) const;
 };
@@ -162,10 +166,11 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, F
    typedef tnlStaticVector< 3, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
-   template< typename EntityType >
+   template< typename EntityType,
+             typename MeshFunction >
    __cuda_callable__
    const RealType getValue( const EntityType& entity,                            
-                            DofVectorType& u,
+                            const MeshFunction& u,
                             const RealType& time = 0 ) const;
    
 
@@ -176,13 +181,14 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, F
                                    const EntityType& entity ) const;
 
    template< typename MatrixRow,
-             typename EntityType >
+             typename EntityType,
+             typename MeshFunction >
    __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,
                                const EntityType& entity,
-                               DofVectorType& u,
+                               const MeshFunction& u,
                                DofVectorType& b,
                                MatrixRow& matrixRow ) const;
 };

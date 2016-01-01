@@ -54,12 +54,13 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-   template< typename EntityType >
+   template< typename EntityType,
+             typename MeshFunction >
 __cuda_callable__
 const Real
 tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 getValue( const EntityType& entity,          
-          DofVectorType& u,
+          const MeshFunction& u,
           const RealType& time ) const
 {
    const MeshType& mesh = entity.getMesh();
@@ -98,7 +99,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
    template< typename Matrix,
-             typename EntityType >
+             typename EntityType,
+             typename MeshFunction >
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
@@ -106,7 +108,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const EntityType& entity,
-                    DofVectorType& u,
+                    const MeshFunction& u,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {
@@ -137,12 +139,13 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-   template< typename EntityType >
+   template< typename EntityType,
+             typename MeshFunction >
 __cuda_callable__
 const Real
 tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 getValue( const EntityType& entity,          
-          DofVectorType& u,
+          const MeshFunction& u,
           const RealType& time ) const
 {
    const MeshType& mesh = entity.getMesh();
@@ -194,7 +197,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
    template< typename Matrix,
-             typename EntityType >
+             typename EntityType,
+             typename MeshFunction >
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
@@ -202,7 +206,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const EntityType& entity,
-                    DofVectorType& u,
+                    const MeshFunction& u,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {
@@ -247,12 +251,13 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-   template< typename EntityType >
+   template< typename EntityType,
+             typename MeshFunction >
 __cuda_callable__
 const Real
 tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 getValue( const EntityType& entity,          
-          DofVectorType& u,
+          const MeshFunction& u,
           const RealType& time ) const
 {
    const MeshType& mesh = entity.getMesh();
@@ -314,7 +319,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
    template< typename Matrix,
-             typename EntityType >
+             typename EntityType,
+             typename MeshFunction >
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
@@ -322,7 +328,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const EntityType& entity,                    
-                    DofVectorType& u,
+                    const MeshFunction& u,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {

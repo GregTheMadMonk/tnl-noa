@@ -434,7 +434,7 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
            << this -> getProportions(). x() << "cm , "
            << this -> getProportions(). y() << "cm );"
            << endl << endl;
-      GridEntity< 0 > vertex( *this );
+      MeshEntity< 0 > vertex( *this );
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();
       VertexType v;
       for( Index j = 0; j < this -> dimensions. y(); j ++ )
@@ -472,7 +472,7 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
       }
       file << endl;
 
-      GridEntity< 2 > cell( *this );
+      MeshEntity< 2 > cell( *this );
       CoordinatesType& cellCoordinates = cell.getCoordinates();
       const RealType cellMeasure = this->getSpaceSteps().x() * this->getSpaceSteps().y();
       for( Index i = 0; i < this -> dimensions. x(); i ++ )

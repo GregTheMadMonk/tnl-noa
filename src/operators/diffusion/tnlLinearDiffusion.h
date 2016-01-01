@@ -19,6 +19,7 @@
 #define	TNLLINEARDIFFUSION_H
 
 #include <core/vectors/tnlVector.h>
+#include <functions/tnlMeshFunction.h>
 #include <mesh/tnlGrid.h>
 
 template< typename Mesh,
@@ -45,14 +46,16 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
       typedef Device DeviceType;
       typedef Index IndexType;      
       enum { Dimensions = MeshType::meshDimensions };
+      
+      template< int EntityDimensions = Dimensions >
+      using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;
 
       static tnlString getType();
 
-      template< typename MeshEntity,
-                typename Vector >
+      template< typename MeshEntity >
       __cuda_callable__
       inline Real getValue( const MeshEntity& entity,
-                            const Vector& u,
+                            const MeshFunction< 1 >& u,
                             const RealType& time ) const;
 
       template< typename MeshEntity >
@@ -70,7 +73,7 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
                                       const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity,
-                                      Vector& u,
+                                      const MeshFunction< 1 >& u,
                                       Vector& b,
                                       MatrixRow& matrixRow ) const;
 
@@ -92,14 +95,16 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
       typedef Device DeviceType;
       typedef Index IndexType;
       enum { Dimensions = MeshType::meshDimensions };
+      
+      template< int EntityDimensions = Dimensions >
+      using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;      
 
       static tnlString getType();
 
-      template< typename EntityType,
-                typename Vector >
+      template< typename EntityType >
       __cuda_callable__
       inline Real getValue( const EntityType& entity,
-                            const Vector& u,
+                            const MeshFunction< 2 >& u,
                             const Real& time ) const;
 
       template< typename EntityType >
@@ -117,7 +122,7 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
                                       const MeshType& mesh,
                                       const IndexType& index,
                                       const EntityType& entity,
-                                      Vector& u,
+                                      const MeshFunction< 2 >& u,
                                       Vector& b,
                                       MatrixRow& matrixRow ) const;
 };
@@ -139,13 +144,16 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
       typedef Index IndexType;
       enum { Dimensions = MeshType::meshDimensions };
 
+      template< int EntityDimensions = Dimensions >
+      using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;
+
+      
       static tnlString getType();
 
-      template< typename EntityType,
-                typename Vector >
+      template< typename EntityType >
       __cuda_callable__
       inline Real getValue( const EntityType& entity,
-                            const Vector& u,
+                            const MeshFunction< 3 >& u,
                             const Real& time ) const;
 
       template< typename EntityType >
@@ -163,7 +171,7 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
                                       const MeshType& mesh,
                                       const IndexType& index,
                                       const EntityType& entity,
-                                      Vector& u,
+                                      const MeshFunction< 3 >& u,
                                       Vector& b,
                                       MatrixRow& matrixRow ) const;
 

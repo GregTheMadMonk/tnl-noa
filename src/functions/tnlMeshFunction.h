@@ -15,6 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <core/tnlObject.h>
 #include <functions/tnlFunction.h>
 
 #ifndef TNLMESHFUNCTION_H
@@ -23,8 +24,9 @@
 template< typename Mesh,
           int MeshEntityDimensions = Mesh::meshDimensions,
           typename Real = typename Mesh::RealType >
-class tnlMeshFunction : public tnlFunction< Mesh::meshDimensions,
-                                            MeshFunction >
+class tnlMeshFunction : 
+   public tnlObject,
+   public tnlFunction< Mesh::meshDimensions, MeshFunction >
 {
    //static_assert( Mesh::DeviceType::DeviceType == Vector::DeviceType::DeviceType,
    //               "Both mesh and vector of a mesh function must reside on the same device.");
@@ -40,6 +42,8 @@ class tnlMeshFunction : public tnlFunction< Mesh::meshDimensions,
       
       tnlMeshFunction();
       
+      tnlMeshFunction( const MeshType& mesh );
+      
       template< typename Vector >
       tnlMeshFunction( const MeshType& mesh,
                        Vector& data,
@@ -51,11 +55,10 @@ class tnlMeshFunction : public tnlFunction< Mesh::meshDimensions,
       bool setup( const tnlParameterContainer& parameters,
                   const tnlString& prefix = "" );      
       
-      // TODO: implement bind tnlVector ( using shared pointers )
-      /*template< typename Vector >
-      bool bind( const MeshType& mesh,
-                 Vector& data,
-                 const IndexType& offset = 0 );*/
+      template< typename Vector >
+      void bind( const MeshType& mesh,
+                 const Vector& data,
+                 const IndexType& offset = 0 );
       
       void setMesh( const MeshType& mesh ) const;      
       
@@ -74,11 +77,26 @@ class tnlMeshFunction : public tnlFunction< Mesh::meshDimensions,
       
       template< typename EntityType >
       __cuda_callable__
-      RealType& operator()( const EntityType& meshEntityIndex );
+      RealType& operator()( const EntityType& meshEntity );
       
       template< typename EntityType >
       __cuda_callable__
-      const RealType& operator()( const EntityType& meshEntityIndex ) const;
+      const RealType& operator()( const EntityType& meshEntity ) const;
+      
+      __cuda_callable__
+      RealType& operator[]( const IndexType& meshEntityIndex );
+      
+      __cuda_callable__
+      const RealType& operator[]( const IndexType& meshEntityIndex ) const;
+
+      
+      bool save( tnlFile& file ) const;
+
+      bool load( tnlFile& file );
+      
+      using tnlObject::load;
+
+      using tnlObject::save;
             
    protected:
       

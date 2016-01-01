@@ -360,7 +360,7 @@ typename GridFunction::RealType
                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   GridEntity< getDimensionsCount() > cell;
+   MeshEntity< getDimensionsCount() > cell;
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -388,7 +388,7 @@ template< typename Real,
                                                                            const GridFunction& f2 ) const
 {
    typename GridFunction::RealType maxDiff( -1.0 );
-   GridEntity< getDimensionsCount() > cell( *this );
+   MeshEntity< getDimensionsCount() > cell( *this );
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -415,7 +415,7 @@ template< typename Real,
                                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   GridEntity< getDimensionsCount() > cell( *this );
+   MeshEntity< getDimensionsCount() > cell( *this );
 
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();

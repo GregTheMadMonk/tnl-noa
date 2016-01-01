@@ -28,6 +28,7 @@
 #include <problems/tnlPDEProblem.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include <matrices/tnlEllpackMatrix.h>
+#include <functions/tnlMeshFunction.h>
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -44,6 +45,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
+      typedef tnlMeshFunction< Mesh > MeshFunctionType;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
 
@@ -78,7 +80,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       IndexType getDofs( const MeshType& mesh ) const;
 
       void bindDofs( const MeshType& mesh,
-                     DofVectorType& dofs );
+                     const DofVectorType& dofs );
 
       void getExplicitRHS( const RealType& time,
                            const RealType& tau,
@@ -91,21 +93,21 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
                                  const MeshType& mesh,
-                                 DofVectorType& dofs,                                 
+                                 const DofVectorType& dofs,                                 
                                  Matrix& matrix,
                                  DofVectorType& rightHandSide,
 				 MeshDependentDataType& meshDependentData );
 
 
       protected:
+         
+         MeshFunctionType u;
+      
+         DifferentialOperator differentialOperator;
 
-      tnlSharedVector< RealType, DeviceType, IndexType > solution;
+         BoundaryCondition boundaryCondition;
 
-      DifferentialOperator differentialOperator;
-
-      BoundaryCondition boundaryCondition;
-   
-      RightHandSide rightHandSide;
+         RightHandSide rightHandSide;
 };
 
 #include <problems/tnlHeatEquationProblem_impl.h>

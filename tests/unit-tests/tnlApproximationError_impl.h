@@ -26,6 +26,8 @@
 #include <solvers/pde/tnlLinearSystemAssembler.h>
 #include <solvers/pde/tnlNoTimeDiscretisation.h>
 #include <operators/tnlExactOperatorEvaluator.h>
+#include <functions/tnlMeshFunction.h>
+
 
 template< typename Mesh,
           typename ExactOperator,
@@ -41,7 +43,7 @@ getError( const Mesh& mesh,
           RealType& l2Err,
           RealType& maxErr )
 {
-   typedef tnlVector< RealType, DeviceType, IndexType > Vector;
+   /*typedef tnlVector< RealType, DeviceType, IndexType > Vector;
    Vector functionData, exactData, approximateData, aux;
    const IndexType entities = mesh.template getEntitiesCount< typename Mesh::Cell >();
    BoundaryConditionsType boundaryConditions;
@@ -82,6 +84,7 @@ getError( const Mesh& mesh,
    l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
    l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );
    maxErr = mesh.getDifferenceAbsMax( exactData, approximateData );
+   */
 }
 
 /****
@@ -105,17 +108,18 @@ getError( const Mesh& mesh,
    typedef tnlVector< RealType, DeviceType, IndexType > Vector;
    typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
    typedef typename MatrixType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   Vector functionData, exactData, approximateData;
+   typedef tnlMeshFunction< Mesh > MeshFunction;
+   MeshFunction meshFunction( mesh );
+   Vector exactData, approximateData;
    MatrixType matrix;
    CompressedRowsLengthsVectorType rowLengths;
    BoundaryConditionsType boundaryConditions;
    boundaryConditions.setFunction( function );
    ConstantFunctionType zeroFunction;
-
+/*
    const IndexType entities = mesh.template getEntitiesCount< typename Mesh::Cell >();
 
-   if( ! functionData.setSize( entities ) ||
-       ! exactData.setSize( entities ) ||
+   if( ! exactData.setSize( entities ) ||
        ! approximateData.setSize( entities ) ||
        ! rowLengths.setSize( entities ) )
       return;
@@ -132,7 +136,7 @@ getError( const Mesh& mesh,
    if( ! matrix.setCompressedRowsLengths( rowLengths ) )
       return;
 
-   tnlLinearSystemAssembler< Mesh, Vector, ApproximateOperator, BoundaryConditionsType, ConstantFunctionType, tnlNoTimeDiscretisation, MatrixType > systemAssembler;
+   tnlLinearSystemAssembler< Mesh, MeshFunction, ApproximateOperator, BoundaryConditionsType, ConstantFunctionType, tnlNoTimeDiscretisation, MatrixType, Vector > systemAssembler;
    systemAssembler.template assembly< typename Mesh::Cell >( 0.0, // time
                                                           1.0, // tau
                                                           mesh,
@@ -174,6 +178,7 @@ getError( const Mesh& mesh,
    l1Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 1.0 );
    l2Err = mesh.getDifferenceLpNorm( exactData, approximateData, ( RealType ) 2.0 );
    maxErr = mesh.getDifferenceAbsMax( exactData, approximateData );
+   */
 }
 
 #endif /* TNLAPPROXIMATIONERROR_IMPL_H_ */

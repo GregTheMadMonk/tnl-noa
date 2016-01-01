@@ -77,7 +77,7 @@ class tnlArray : public virtual tnlObject
       void bind( Element* _data,
                  const Index _size );
 
-      void bind( tnlArray< Element, Device, Index >& array,
+      void bind( const tnlArray< Element, Device, Index >& array,
                  const IndexType& begin = 0,
                  const IndexType& size = 0 );
 

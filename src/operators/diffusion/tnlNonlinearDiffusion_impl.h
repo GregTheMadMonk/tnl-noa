@@ -65,6 +65,7 @@ template< typename MeshReal,
           typename Index,
           typename NonlinearDiffusionOperator >
 template< typename MeshEntity,
+          typename MeshFunction,
           typename Vector,           
           typename Matrix >
 __cuda_callable__
@@ -75,7 +76,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const MeshEntity& entity,
-                    Vector& u,
+                    const MeshFunction& u,
                     Vector& b,
                     Matrix& matrix ) const
 {
@@ -141,6 +142,7 @@ template< typename MeshReal,
           typename Index,
           typename NonlinearDiffusionOperator >
 template< typename MeshEntity,
+          typename MeshFunction,
           typename Vector,           
           typename Matrix >
 __cuda_callable__
@@ -151,7 +153,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const MeshEntity& entity,
-                    Vector& u,
+                    const MeshFunction& u,
                     Vector& b,
                     Matrix& matrix ) const
 {
@@ -217,6 +219,7 @@ template< typename MeshReal,
           typename Index,
           typename NonlinearDiffusionOperator >
 template< typename MeshEntity,
+          typename MeshFunction,
           typename Vector,          
           typename Matrix >
 __cuda_callable__
@@ -227,7 +230,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const MeshEntity& entity,
-                    Vector& u,
+                    const MeshFunction& u,
                     Vector& b,
                     Matrix& matrix ) const
 {

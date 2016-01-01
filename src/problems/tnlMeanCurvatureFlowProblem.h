@@ -23,6 +23,7 @@
 #include <problems/tnlPDEProblem.h>
 #include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <matrices/tnlCSRMatrix.h>
+#include <functions/tnlMeshFunction.h>
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -41,6 +42,7 @@ class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
+      typedef tnlMeshFunction< Mesh > MeshFunctionType;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType> MatrixType;
 

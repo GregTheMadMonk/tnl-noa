@@ -188,8 +188,8 @@ tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, Differentia
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshType& mesh,
-                DofVectorType& u,
-                DofVectorType& fu,
+                DofVectorType& inDofs,
+                DofVectorType& outDofs,
 		MeshDependentDataType& meshDependentData )
 {
    /****
@@ -204,9 +204,11 @@ getExplicitRHS( const RealType& time,
 //   this->differentialOperator.computeFirstGradient(mesh,time,u);
    
    //cout << "u = " << u << endl;
-   this->bindDofs( mesh, u );
+   //this->bindDofs( mesh, u );
+   MeshFunctionType u( mesh, inDofs );
+   MeshFunctionType fu( mesh, outDofs );
    differentialOperator.nonlinearDiffusionOperator.operatorQ.update( mesh, time );
-   tnlExplicitUpdater< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+   tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.template update< typename Mesh::Cell >(
       time,
       mesh,
@@ -216,7 +218,7 @@ getExplicitRHS( const RealType& time,
       u,
       fu );
    
-   tnlBoundaryConditionsSetter< Mesh, DofVectorType, BoundaryCondition > boundaryConditionsSetter;
+   tnlBoundaryConditionsSetter< Mesh, MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
    boundaryConditionsSetter.template apply< typename Mesh::Cell >(
       time,
       mesh,
@@ -240,18 +242,20 @@ tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, Differentia
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshType& mesh,
-                      DofVectorType& u,
+                      DofVectorType& dofsU,
                       Matrix& matrix,
                       DofVectorType& b,
                       MeshDependentDataType& meshDependentData )
 {
+   MeshFunctionType u( mesh, dofsU );
    tnlLinearSystemAssembler< Mesh, 
-			     DofVectorType, 
+			     MeshFunctionType, 
 			     DifferentialOperator, 
 			     BoundaryCondition, 
 			     RightHandSide, 
 			     tnlBackwardTimeDiscretisation, 
-			     MatrixType > systemAssembler;
+			     MatrixType,
+			     DofVectorType > systemAssembler;
    systemAssembler.template assembly< typename Mesh::Cell >(
       time,
       tau,

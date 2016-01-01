@@ -96,7 +96,7 @@ class tnlGridTester< 3, RealType, Device, IndexType >: public CppUnit :: TestCas
       GridType grid;
       grid.setDimensions( xSize, ySize, zSize );
             
-      typedef typename GridType::template GridEntity< 2 > FaceType;
+      typedef typename GridType::template MeshEntity< 2 > FaceType;
       typedef typename FaceType::EntityOrientationType OrientationType;
       typedef typename FaceType::EntityBasisType BasisType;
       FaceType face( grid );
@@ -172,7 +172,7 @@ class tnlGridTester< 3, RealType, Device, IndexType >: public CppUnit :: TestCas
       GridType grid;
       grid.setDimensions( xSize, ySize, zSize );
       
-      typedef typename GridType::template GridEntity< 1 > EdgeType;
+      typedef typename GridType::template MeshEntity< 1 > EdgeType;
       typedef typename EdgeType::EntityOrientationType OrientationType;
       typedef typename EdgeType::EntityBasisType BasisType;
       EdgeType edge( grid );
@@ -246,7 +246,7 @@ class tnlGridTester< 3, RealType, Device, IndexType >: public CppUnit :: TestCas
       GridType grid;
       grid.setDimensions( xSize, ySize, zSize );
       
-      typedef typename GridType::template GridEntity< 0 > VertexType;
+      typedef typename GridType::template MeshEntity< 0 > VertexType;
       typedef typename VertexType::EntityOrientationType OrientationType;
       typedef typename VertexType::EntityBasisType BasisType;
       VertexType vertex( grid );

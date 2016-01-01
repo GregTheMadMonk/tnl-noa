@@ -47,8 +47,9 @@ class tnlOneSideDiffNonlinearOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >,
                                    const IndexType& index,
                                    const MeshEntity& entity ) const;
 
-   template< typename Vector,
-             typename MeshEntity,
+   template< typename MeshEntity,
+             typename MeshFunction,
+             typename Vector,
              typename Matrix >
    __cuda_callable__
       void updateLinearSystem( const RealType& time,
@@ -56,7 +57,7 @@ class tnlOneSideDiffNonlinearOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >,
                                const MeshType& mesh,
                                const IndexType& index,
                                const MeshEntity& entity,
-                               Vector& u,
+                               const MeshFunction& u,
                                Vector& b,
                                Matrix& matrix ) const;
    
@@ -99,8 +100,9 @@ class tnlOneSideDiffNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >
                                    const IndexType& index,
                                    const MeshEntity& entity ) const;
 
-   template< typename Vector, 
-             typename MeshEntity,
+   template< typename MeshEntity,
+             typename MeshFunction,
+             typename Vector, 
              typename Matrix >
    __cuda_callable__
       void updateLinearSystem( const RealType& time,
@@ -108,7 +110,7 @@ class tnlOneSideDiffNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >
                                const MeshType& mesh,
                                const IndexType& index,
                                const MeshEntity& entity,
-                               Vector& u,
+                               const MeshFunction& u,
                                Vector& b,
                                Matrix& matrix ) const;
    
@@ -151,8 +153,9 @@ class tnlOneSideDiffNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >
                                    const IndexType& index,
                                    const MeshEntity& entity ) const;
 
-   template< typename Vector,
-             typename MeshEntity,
+   template< typename MeshEntity,
+             typename MeshFunction,
+             typename Vector,
              typename Matrix >
    __cuda_callable__
       void updateLinearSystem( const RealType& time,
@@ -160,7 +163,7 @@ class tnlOneSideDiffNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >
                                const MeshType& mesh,
                                const IndexType& index,
                                const MeshEntity& entity,
-                               Vector& u,
+                               const MeshFunction& u,
                                Vector& b,
                                Matrix& matrix ) const;
    

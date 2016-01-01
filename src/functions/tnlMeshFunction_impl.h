@@ -17,6 +17,8 @@
 
 #include <core/tnlAssert.h>
 
+#include "tnlMeshFunction.h"
+
 #ifndef TNLMESHFUNCTION_IMPL_H
 #define	TNLMESHFUNCTION_IMPL_H
 
@@ -32,13 +34,23 @@ tnlMeshFunction()
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+tnlMeshFunction( const Mesh& mesh )
+: mesh( &mesh )
+{
+   this->data.setSize( mesh.template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimensions > >() );
+}
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
    template< typename Vector >
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 tnlMeshFunction( const MeshType& mesh,
                  Vector& data,
                  const IndexType& offset )
 {
-   //this->bind( mesh, data, offset );   
+   this->bind( mesh, data, offset );   
 }
 
 template< typename Mesh,
@@ -69,19 +81,19 @@ setup( const tnlParameterContainer& parameters,
    return true;
 }
 
-/*template< typename Mesh,
+template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
    template< typename Vector >
-bool
+void
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 bind( const MeshType& mesh,
-      Vector& data,
+      const Vector& data,
       const IndexType& offset )
 {
    this->mesh = &mesh;
-   return this->data.bind( data, offset, mesh.template getEntitiesCount< MeshEntity >() );      
-}*/
+   this->data.bind( data, offset, mesh.template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimensions > >() );
+}
 
 template< typename Mesh,
           int MeshEntityDimensions,
@@ -172,6 +184,52 @@ operator()( const EntityType& meshEntity ) const
 {
    static_assert( EntityType::entityDimensions == MeshEntityDimensions, "Calling with wrong EntityType -- entity dimensions do not match." );
    return this->data[ meshEntity.getIndex() ];
+}
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
+__cuda_callable__
+typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType& 
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+operator[]( const IndexType& meshEntityIndex )
+{   
+   return this->data[ meshEntityIndex ];
+}
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
+__cuda_callable__
+const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType& 
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+operator[]( const IndexType& meshEntityIndex ) const
+{
+   return this->data[ meshEntityIndex ];
+}
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >      
+bool
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+save( tnlFile& file ) const
+{
+   //if( ! tnlObject::save( file ) )
+   //   return false;
+   return this->data.save( file );
+}
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
+bool
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+load( tnlFile& file )
+{
+   //if( ! tnlObject::load( file ) )
+   //   return false;
+   return this->data.load( file );   
 }
 
 #endif	/* TNLMESHFUNCTION_IMPL_H */

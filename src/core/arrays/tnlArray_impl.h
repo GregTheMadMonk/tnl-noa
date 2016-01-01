@@ -226,13 +226,13 @@ template< typename Element,
            typename Index >
 void
 tnlArray< Element, Device, Index >::
-bind( tnlArray< Element, Device, Index >& array,
+bind( const tnlArray< Element, Device, Index >& array,
       const IndexType& begin,
       const IndexType& size )
 {
-   tnlAssert( begin < array.getSize(),
+   tnlAssert( begin <= array.getSize(),
               std::cerr << " begin = " << begin << " array.getSize() = " << array.getSize() );
-   tnlAssert( begin + size  < array.getSize(),
+   tnlAssert( begin + size  <= array.getSize(),
               std::cerr << " begin = " << begin << " size = " << size <<  " array.getSize() = " << array.getSize() );
    
    this->releaseData();
@@ -240,7 +240,7 @@ bind( tnlArray< Element, Device, Index >& array,
       this->size = size;
    else
       this->size = array.getSize() - begin;
-   this->data = &array.getData()[ begin ];
+   this->data = const_cast< Element* >( &array.getData()[ begin ] );
    this->allocationPointer = array.allocationPointer;
    if( array.allocationPointer )
    {

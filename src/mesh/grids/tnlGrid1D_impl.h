@@ -373,7 +373,7 @@ bool tnlGrid< 1, Real, Device, Index > :: write( const MeshFunction& function,
    const RealType hx = getSpaceSteps(). x();
    if( format == "gnuplot" )
    {
-      typename ThisType::template GridEntity< getDimensionsCount() > entity( *this );
+      typename ThisType::template MeshEntity< getDimensionsCount() > entity( *this );
       for( entity.getCoordinates().x() = 0;
            entity.getCoordinates().x() < getDimensions(). x();
            entity.getCoordinates().x() ++ )

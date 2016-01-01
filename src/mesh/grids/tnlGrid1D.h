@@ -46,10 +46,10 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    
    template< int EntityDimensions, 
              typename Config = tnlGridEntityCrossStencilStorage< 1 > >
-   using GridEntity = tnlGridEntity< ThisType, EntityDimensions, Config >;
+   using MeshEntity = tnlGridEntity< ThisType, EntityDimensions, Config >;
      
-   typedef GridEntity< meshDimensions, tnlGridEntityCrossStencilStorage< 1 > > Cell;
-   typedef GridEntity< 0 > Vertex;
+   typedef MeshEntity< meshDimensions, tnlGridEntityCrossStencilStorage< 1 > > Cell;
+   typedef MeshEntity< 0 > Vertex;
 
    static constexpr int getDimensionsCount() { return meshDimensions; };
    

@@ -47,10 +47,11 @@ class tnlDirichletBoundaryConditions
 
    const Function& getFunction() const;
    
-   template< typename EntityType >
+   template< typename EntityType,
+             typename MeshFunction >
    __cuda_callable__
    const RealType getValue( const EntityType& entity,                            
-                            DofVectorType& u,
+                            const MeshFunction& u,
                             const RealType& time = 0 ) const;
    
    template< typename EntityType >
@@ -60,13 +61,14 @@ class tnlDirichletBoundaryConditions
                                        const EntityType& entity ) const;
 
    template< typename MatrixRow,
-             typename EntityType >
+             typename EntityType,
+             typename MeshFunction >
    __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,
                                const EntityType& entity,
-                               DofVectorType& u,
+                               const MeshFunction& u,
                                DofVectorType& b,
                                MatrixRow& matrixRow ) const;
 

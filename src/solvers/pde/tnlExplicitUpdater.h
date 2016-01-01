@@ -21,7 +21,7 @@
 #include <functions/tnlFunctionAdapter.h>
 
 template< typename Real,
-          typename DofVector,
+          typename MeshFunction,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename RightHandSide >
@@ -37,14 +37,14 @@ class tnlExplicitUpdaterTraverserUserData
 
       const RightHandSide* rightHandSide;
 
-      DofVector *u, *fu;
+      MeshFunction *u, *fu;
 
       tnlExplicitUpdaterTraverserUserData( const Real& time,
                                            const DifferentialOperator& differentialOperator,
                                            const BoundaryConditions& boundaryConditions,
                                            const RightHandSide& rightHandSide,
-                                           DofVector& u,
-                                           DofVector& fu )
+                                           MeshFunction& u,
+                                           MeshFunction& fu )
       : time( &time ),
         differentialOperator( &differentialOperator ),
         boundaryConditions( &boundaryConditions ),
@@ -56,7 +56,7 @@ class tnlExplicitUpdaterTraverserUserData
 
 
 template< typename Mesh,
-          typename DofVector,
+          typename MeshFunction,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename RightHandSide >
@@ -64,11 +64,11 @@ class tnlExplicitUpdater
 {
    public:
       typedef Mesh MeshType;
-      typedef typename DofVector::RealType RealType;
-      typedef typename DofVector::DeviceType DeviceType;
-      typedef typename DofVector::IndexType IndexType;
+      typedef typename MeshFunction::RealType RealType;
+      typedef typename MeshFunction::DeviceType DeviceType;
+      typedef typename MeshFunction::IndexType IndexType;
       typedef tnlExplicitUpdaterTraverserUserData< RealType,
-                                                   DofVector,
+                                                   MeshFunction,
                                                    DifferentialOperator,
                                                    BoundaryConditions,
                                                    RightHandSide > TraverserUserData;
@@ -79,8 +79,8 @@ class tnlExplicitUpdater
                    const DifferentialOperator& differentialOperator,
                    const BoundaryConditions& boundaryConditions,
                    const RightHandSide& rightHandSide,
-                   DofVector& u,
-                   DofVector& fu ) const;      
+                   MeshFunction& u,
+                   MeshFunction& fu ) const;      
       
             class TraverserBoundaryEntitiesProcessor
       {
@@ -92,7 +92,7 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const GridEntity& entity )
             {
-               ( *userData.u )[ entity.getIndex() ] = userData.boundaryConditions->getValue
+               ( *userData.u )( entity ) = userData.boundaryConditions->getValue
                ( entity,
                  *userData.u,
                  *userData.time );
@@ -112,14 +112,14 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const EntityType& entity )
             {
-               ( *userData.fu)[ entity.getIndex() ] = 
+               ( *userData.fu)( entity ) = 
                   userData.differentialOperator->getValue(
                      entity,
                      *userData.u,
                      *userData.time );
 
                typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               ( * userData.fu )[ entity.getIndex() ] += 
+               ( * userData.fu )( entity ) += 
                   FunctionAdapter::getValue(
                      *userData.rightHandSide,
                      entity,

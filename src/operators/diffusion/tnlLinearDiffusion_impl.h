@@ -41,16 +41,16 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename MeshEntity,
-          typename Vector >
+template< typename MeshEntity >
 __cuda_callable__
 inline
 Real
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const MeshEntity& entity,
-          const Vector& u,
+          const MeshFunction< 1 >& u,
           const Real& time ) const
 {
+   static_assert( MeshEntity::entityDimensions == 1, "Wrong mesh entity dimensions." );
    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< - 2 >();
    return ( u[ neighbourEntities.template getEntityIndex< -1 >() ]
@@ -92,7 +92,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const MeshEntity& entity,
-                    Vector& u,
+                    const MeshFunction< 1 >& u,
                     Vector& b,
                     Matrix& matrix ) const
 {
@@ -142,14 +142,13 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename EntityType,
-          typename Vector >
+template< typename EntityType >
 __cuda_callable__
 inline
 Real
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const EntityType& entity,
-          const Vector& u,
+          const MeshFunction< 2 >& u,
           const Real& time ) const
 {
    const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
@@ -179,7 +178,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const EntityType& entity,
-                    Vector& u,
+                    const MeshFunction< 2 >& u,
                     Vector& b,
                     Matrix& matrix ) const
 {
@@ -215,14 +214,13 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename EntityType,
-          typename Vector >
+template< typename EntityType >
 __cuda_callable__
 inline
 Real
 tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getValue( const EntityType& entity,
-          const Vector& u,
+          const MeshFunction< 3 >& u,
           const Real& time ) const
 {
    const typename EntityType::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
@@ -272,7 +270,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const EntityType& entity,
-                    Vector& u,
+                    const MeshFunction< 3 >& u,
                     Vector& b,
                     Matrix& matrix ) const
 {

@@ -21,11 +21,12 @@
 #include <functions/tnlFunctionAdapter.h>
 
 template< typename Real,
-          typename DofVector,
+          typename MeshFunction,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename RightHandSide,
-          typename Matrix >
+          typename Matrix,
+          typename DofVector >
 class tnlLinearSystemAssemblerTraverserUserData
 {
    public:
@@ -43,8 +44,10 @@ class tnlLinearSystemAssemblerTraverserUserData
       const BoundaryConditions* boundaryConditions;
 
       const RightHandSide* rightHandSide;
-
-      DofVector *u, *b;
+      
+      const MeshFunction *u;
+      
+      DofVector *b;
 
       Matrix *matrix;
 
@@ -53,7 +56,7 @@ class tnlLinearSystemAssemblerTraverserUserData
                                                  const DifferentialOperator& differentialOperator,
                                                  const BoundaryConditions& boundaryConditions,
                                                  const RightHandSide& rightHandSide,
-                                                 DofVector& u,
+                                                 const MeshFunction& u,
                                                  Matrix& matrix,
                                                  DofVector& b )
       : time( &time ),
@@ -72,26 +75,28 @@ class tnlLinearSystemAssemblerTraverserUserData
 
 
 template< typename Mesh,
-          typename DofVector,
+          typename MeshFunction,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename RightHandSide,
           typename TimeDiscretisation,
-          typename Matrix >
+          typename Matrix,
+          typename DofVector >
 class tnlLinearSystemAssembler
 {
    public:
    typedef Mesh MeshType;
-   typedef typename DofVector::RealType RealType;
-   typedef typename DofVector::DeviceType DeviceType;
-   typedef typename DofVector::IndexType IndexType;
+   typedef typename MeshFunction::RealType RealType;
+   typedef typename MeshFunction::DeviceType DeviceType;
+   typedef typename MeshFunction::IndexType IndexType;
    typedef Matrix MatrixType;
    typedef tnlLinearSystemAssemblerTraverserUserData< RealType,
-                                                      DofVector,
+                                                      MeshFunction,                                                      
                                                       DifferentialOperator,
                                                       BoundaryConditions,
                                                       RightHandSide,
-                                                      MatrixType > TraverserUserData;
+                                                      MatrixType,
+                                                      DofVector > TraverserUserData;
       
    template< typename EntityType >
    void assembly( const RealType& time,
@@ -100,7 +105,7 @@ class tnlLinearSystemAssembler
                   const DifferentialOperator& differentialOperator,
                   const BoundaryConditions& boundaryConditions,
                   const RightHandSide& rightHandSide,
-                  DofVector& u,
+                  const MeshFunction& u,
                   MatrixType& matrix,
                   DofVector& b ) const;
 
@@ -148,15 +153,16 @@ class tnlLinearSystemAssembler
                  *userData.b,
                  *userData.matrix );
             
-            typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-            const RealType& rhs = FunctionAdapter::getValue
+            typedef tnlFunctionAdapter< MeshType, RightHandSide > RhsFunctionAdapter;
+            typedef tnlFunctionAdapter< MeshType, MeshFunction > MeshFunctionAdapter;
+            const RealType& rhs = RhsFunctionAdapter::getValue
                ( *userData.rightHandSide,
                  entity,
                  *userData.time );
             TimeDiscretisation::applyTimeDiscretisation( *userData.matrix,
                                                          ( *userData.b )[ entity.getIndex() ],
                                                          entity.getIndex(),
-                                                         ( *userData.u )[ entity.getIndex() ],
+                                                         MeshFunctionAdapter::getValue( *userData.u, entity, *userData.time ),
                                                          ( *userData.tau ),
                                                          rhs );
          }
