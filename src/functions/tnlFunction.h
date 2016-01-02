@@ -32,6 +32,8 @@ class tnlFunction
 {
    public:
       
+      typedef void DeviceType;
+      
       static const int dimensions = Dimensions;
       static constexpr int getDimensions() { return Dimensions; }
       

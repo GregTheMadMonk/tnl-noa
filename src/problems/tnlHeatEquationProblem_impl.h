@@ -122,7 +122,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
 {
    this->bindDofs( mesh, dofs );
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
-   if( ! this->u.load( initialConditionFile ) )
+   if( ! this->u.boundLoad( initialConditionFile ) )
    {
       cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
       return false;
@@ -217,7 +217,7 @@ getExplicitRHS( const RealType& time,
       fu );
    tnlBoundaryConditionsSetter< Mesh, MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
    boundaryConditionsSetter.template apply< typename Mesh::Cell >(
-      time,
+      time + tau,
       mesh,
       this->boundaryCondition,
       this->u );

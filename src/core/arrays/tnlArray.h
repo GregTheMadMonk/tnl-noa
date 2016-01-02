@@ -139,6 +139,17 @@ class tnlArray : public virtual tnlObject
       //! Method for loading the object from a file as a binary data.
       bool load( tnlFile& file );
       
+      //! This method loads data without reallocation. 
+      /****
+       * This is useful for loading data into shared arrays.
+       * If the array was not initialize yet, common load is
+       * performed. Otherwise, the array size must fit with
+       * the size of array being loaded.
+       */
+      bool boundLoad( tnlFile& file );
+      
+      bool boundLoad( const tnlString& fileName );
+      
       using tnlObject::load;
 
       using tnlObject::save;

@@ -17,6 +17,8 @@
 
 #ifndef TNLARRAYOPERATIONSHOST_IMPL_H_
 #define TNLARRAYOPERATIONSHOST_IMPL_H_
+
+#include <type_traits>
 #include <tnlConfig.h>
 #include <string.h>
 
@@ -79,7 +81,7 @@ bool tnlArrayOperations< tnlHost >::copyMemory( DestinationElement* destination,
                                                 const SourceElement* source,
                                                 const Index size )
 {
-   if( tnlFastArrayOperations< DestinationElement, SourceElement >::enabled )
+   if( std::is_same< DestinationElement, SourceElement >::value )
       memcpy( destination, source, size * sizeof( DestinationElement ) );
    else
       for( Index i = 0; i < size; i ++ )
@@ -94,7 +96,7 @@ bool tnlArrayOperations< tnlHost >::compareMemory( const DestinationElement* des
                                                    const SourceElement* source,
                                                    const Index size )
 {
-   if( tnlFastArrayOperations< DestinationElement, SourceElement >::enabled )
+   if( std::is_same< DestinationElement, SourceElement >::value )
    {
       if( memcmp( destination, source, size * sizeof( DestinationElement ) ) != 0 )
          return false;

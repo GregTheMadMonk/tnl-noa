@@ -18,6 +18,8 @@
 #ifndef TNLTRAVERSER_GRID1D_IMPL_H_
 #define TNLTRAVERSER_GRID1D_IMPL_H_
 
+#include <mesh/grids/tnlGridTraverser.h>
+
 template< typename Real,
           typename Index,
           typename GridEntity >
@@ -34,14 +36,11 @@ processBoundaryEntities( const GridType& grid,
    static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
    GridEntity entity( grid );
 
-   CoordinatesType& coordinates = entity.getCoordinates();
-   const IndexType& xSize = grid.getDimensions().x();   
-   coordinates.x() = 0;
-   entity.refresh();
-   EntitiesProcessor::processEntity( grid, userData, entity );
-   coordinates.x() = xSize - 1;
-   entity.refresh();
-   EntitiesProcessor::processEntity( grid, userData, entity );
+   tnlGridTraverser< GridType >::template processBoundaryEntities< GridEntity, EntitiesProcessor, UserData >(
+      CoordinatesType( 0 ),
+      grid.getDimensions() - CoordinatesType( 1 ),
+      entity,
+      userData );
 }
 
 template< typename Real,
@@ -60,14 +59,60 @@ processInteriorEntities( const GridType& grid,
    static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
    GridEntity cell( grid );
 
+   tnlGridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData >(
+      CoordinatesType( 1 ),
+      grid.getDimensions() - CoordinatesType( 2 ),
+      cell,
+      userData );
+}
+
+template< typename Real,
+          typename Index,
+          typename GridEntity >
+   template< typename UserData,
+             typename EntitiesProcessor >
+void
+tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, GridEntity, 1 >::
+processAllEntities(
+   const GridType& grid,
+   UserData& userData ) const
+{
+   /****
+    * All cells
+    */
+   static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
+   GridEntity cell( grid );
+
+   processSubgridEntities(
+      grid,
+      CoordinatesType( 0 ),
+      grid.getDimensions().x(),
+      cell,
+      userData );
+}
+
+template< typename Real,
+          typename Index,
+          typename GridEntity >
+   template< typename UserData,
+             typename EntitiesProcessor >
+void
+tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, GridEntity, 1 >::
+processSubgridEntities(
+   const GridType& grid,
+   const CoordinatesType& begin,
+   const CoordinatesType& end,
+   GridEntity& entity,
+   UserData& userData ) const
+{
    const IndexType& xSize = grid.getDimensions().x();
-   for( cell.getCoordinates().x() = 1;
-        cell.getCoordinates().x() < xSize - 1;
-        cell.getCoordinates().x()++ )
+   for( entity.getCoordinates().x() = begin.x();
+        entity.getCoordinates().x() < end.x();
+        entity.getCoordinates().x()++ )
    {
-      cell.refresh();
-      EntitiesProcessor::processEntity( grid, userData, cell );
-   }
+      entity.refresh();
+      EntitiesProcessor::processEntity( grid, userData, entity );
+   }   
 }
 
 template< typename Real,
@@ -120,6 +165,30 @@ processInteriorEntities( const GridType& grid,
       EntitiesProcessor::processEntity( grid, userData, entity.getIndex(), entity );
    }
 }
+
+template< typename Real,
+          typename Index,
+          typename GridEntity >
+   template< typename UserData,
+             typename EntitiesProcessor >
+void
+tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, GridEntity, 0 >::
+processSubgridEntities(
+   const GridType& grid,
+   const CoordinatesType& begin,
+   const CoordinatesType& end,
+   GridEntity& entity,
+   UserData& userData ) const
+{
+   for( entity.getCoordinates().x() = begin.x();
+        entity.getCoordinates().x() < end.x();
+        entity.getCoordinates().x()++ )
+   {
+      entity.refresh();
+      EntitiesProcessor::processEntity( grid, userData, entity );
+   }   
+}
+
 
 /*****
  *

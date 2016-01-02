@@ -16,8 +16,9 @@
  ***************************************************************************/
 
 #include <core/tnlAssert.h>
-
-#include "tnlMeshFunction.h"
+#include <functions/tnlMeshFunction.h>
+#include <functions/tnlFunctionEvaluator.h>
+#include <functions/tnlMeshFunctionEvaluator.h>
 
 #ifndef TNLMESHFUNCTION_IMPL_H
 #define	TNLMESHFUNCTION_IMPL_H
@@ -210,6 +211,28 @@ operator[]( const IndexType& meshEntityIndex ) const
 
 template< typename Mesh,
           int MeshEntityDimensions,
+          typename Real >
+   template< typename Function >
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >&
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+operator = ( const Function& f )
+{
+   if( std::is_void< typename Function::DeviceType >::value ||
+       std::is_same< typename Function::DeviceType, DeviceType >::value )
+   {
+      tnlFunctionEvaluator< ThisType, Function >  evaluator;
+      evaluator.assignment( f, *this );
+      return *this;
+   }
+   if( Function::getFunctionType() == MeshFunction )
+   {
+      tnlMeshFunctionEvaluator< ThisType, Function >::assign( f, *this );
+      return *this;
+   }
+}
+
+template< typename Mesh,
+          int MeshEntityDimensions,
           typename Real >      
 bool
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
@@ -231,6 +254,19 @@ load( tnlFile& file )
    //   return false;
    return this->data.load( file );   
 }
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
+bool
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+boundLoad( tnlFile& file )
+{
+   //if( ! tnlObject::load( file ) )
+   //   return false;
+   return this->data.boundLoad( file );   
+}
+
 
 #endif	/* TNLMESHFUNCTION_IMPL_H */
 

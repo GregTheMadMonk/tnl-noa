@@ -65,10 +65,15 @@ class tnlObject
 
    //! Method for restoring the object from a file
    virtual bool load( tnlFile& file );
+   
+   //! Method for restoring the object from a file
+   virtual bool boundLoad( tnlFile& file );
 
    bool save( const tnlString& fileName ) const;
 
    bool load( const tnlString& fileName );
+   
+   bool boundLoad( const tnlString& fileName );
 
    //! Destructor
    // FIXME: __cuda_callable__ would have to be added to every overriding destructor,

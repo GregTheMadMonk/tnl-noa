@@ -49,8 +49,6 @@ tnlString tnlObject :: getSerializationTypeVirtual() const
 
 bool tnlObject :: save( tnlFile& file ) const
 {
-   dbgFunctionName( "tnlObject", "Save" );
-   dbgCout( "Writing magic number." );
 #ifdef HAVE_NOT_CXX11
    if( ! file. write< const char, tnlHost, int >( magic_number, strlen( magic_number ) ) )
 #else      
@@ -63,8 +61,6 @@ bool tnlObject :: save( tnlFile& file ) const
 
 bool tnlObject :: load( tnlFile& file )
 {
-   dbgFunctionName( "tnlObject", "Load" );
-   dbgCout( "Reading object type " );
    tnlString objectType;
    if( ! getObjectType( file, objectType ) )
       return false;
@@ -74,6 +70,11 @@ bool tnlObject :: load( tnlFile& file )
       return false;
    }
    return true;
+}
+
+bool tnlObject :: boundLoad( tnlFile& file )
+{
+   return load( file );
 }
 
 bool tnlObject :: save( const tnlString& fileName ) const
@@ -88,7 +89,7 @@ bool tnlObject :: save( const tnlString& fileName ) const
       return false;
    if( ! file. close() )
    {
-      cerr << "An error occured when I was closing the file " << fileName << "." << endl;
+      cerr << "An error occurred when I was closing the file " << fileName << "." << endl;
       return false;
    }
    return true;
@@ -106,11 +107,30 @@ bool tnlObject :: load( const tnlString& fileName )
       return false;
    if( ! file. close() )
    {
-      cerr << "An error occured when I was closing the file " << fileName << "." << endl;
+      cerr << "An error occurred when I was closing the file " << fileName << "." << endl;
       return false;
    }
    return true;
 }
+
+bool tnlObject :: boundLoad( const tnlString& fileName )
+{
+   tnlFile file;
+   if( ! file. open( fileName, tnlReadMode ) )
+   {
+      cerr << "I am not bale to open the file " << fileName << " for reading." << endl;
+      return false;
+   }
+   if( ! this->boundLoad( file ) )
+      return false;
+   if( ! file. close() )
+   {
+      cerr << "An error occurred when I was closing the file " << fileName << "." << endl;
+      return false;
+   }
+   return true;
+}
+
 
 bool getObjectType( tnlFile& file, tnlString& type )
 {

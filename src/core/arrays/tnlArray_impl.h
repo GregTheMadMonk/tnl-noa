@@ -541,6 +541,73 @@ load( tnlFile& file )
 template< typename Element,
           typename Device,
           typename Index >
+bool
+tnlArray< Element, Device, Index >::
+boundLoad( tnlFile& file )
+{
+   if( ! tnlObject :: load( file ) )
+      return false;
+   Index _size;
+#ifdef HAVE_NOT_CXX11
+   if( ! file. read< Index, tnlHost >( &_size ) )
+      return false;
+#else   
+   if( ! file. read( &_size ) )
+      return false;
+#endif      
+   if( _size < 0 )
+   {
+      cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << endl;
+      return false;
+   }
+   if( this->getSize() != 0 )
+   {
+      if( this->getSize() != _size )
+      {
+         std::cerr << "Error: The current array size is not zero and it is different from the size of" << std::endl
+                   << "the array being loaded. This is not possible. Call method reset() before." << std::endl;
+         return false;
+      }
+   }
+   else setSize( _size );
+   if( _size )
+   {
+      if( ! tnlArrayIO< Element, Device, Index >::load( file, this -> data, this -> size ) )
+      {
+         cerr << "I was not able to load " << this->getType()
+                    << " with size " << this -> getSize() << endl;
+         return false;
+      }
+   }
+   return true;
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
+bool
+tnlArray< Element, Device, Index >::
+boundLoad( const tnlString& fileName )
+{
+   tnlFile file;
+   if( ! file. open( fileName, tnlReadMode ) )
+   {
+      cerr << "I am not bale to open the file " << fileName << " for reading." << endl;
+      return false;
+   }
+   if( ! this->boundLoad( file ) )
+      return false;
+   if( ! file. close() )
+   {
+      cerr << "An error occurred when I was closing the file " << fileName << "." << endl;
+      return false;
+   }
+   return true;   
+}
+
+template< typename Element,
+          typename Device,
+          typename Index >
 tnlArray< Element, Device, Index >::
 ~tnlArray()
 {

@@ -37,6 +37,7 @@ class tnlMeshFunction :
       typedef typename MeshType::IndexType IndexType;
       typedef Real RealType;
       typedef tnlVector< RealType, DeviceType, IndexType > VectorType;
+      typedef tnlMeshFunction< Mesh, MeshEntityDimensions, Real > ThisType;
       
       static constexpr int getMeshEntityDimensions() { return  MeshEntityDimensions; };
       
@@ -89,14 +90,22 @@ class tnlMeshFunction :
       __cuda_callable__
       const RealType& operator[]( const IndexType& meshEntityIndex ) const;
 
+      template< typename Function >
+      ThisType& operator = ( const Function& f );
+      
+      RealType getLpNorm( const RealType& p );
       
       bool save( tnlFile& file ) const;
 
       bool load( tnlFile& file );
       
-      using tnlObject::load;
-
+      bool boundLoad( tnlFile& file );
+      
       using tnlObject::save;
+      
+      using tnlObject::load;
+            
+      using tnlObject::boundLoad;
             
    protected:
       
