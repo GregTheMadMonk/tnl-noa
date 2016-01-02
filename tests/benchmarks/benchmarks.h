@@ -63,7 +63,6 @@ public:
         : verbose(verbose)
     { }
 
-    // TODO: fix spacing (blank lines)
     void
     writeTitle( const tnlString & title )
     {

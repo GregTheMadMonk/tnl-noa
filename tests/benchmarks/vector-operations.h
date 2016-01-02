@@ -50,6 +50,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     auto reset1 = [&]() {
         hostVector.setValue( 1.0 );
         deviceVector.setValue( 1.0 );
+        resultHost = resultDevice = 0.0;
     };
     auto reset2 = [&]() {
         hostVector2.setValue( 1.0 );
