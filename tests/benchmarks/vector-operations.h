@@ -16,7 +16,8 @@ namespace benchmarks
 template< typename Real = double,
           typename Index = int >
 bool
-benchmarkVectorOperations( const int & loops,
+benchmarkVectorOperations( Benchmark & benchmark,
+                           const int & loops,
                            const int & size )
 {
     typedef tnlVector< Real, tnlHost, Index > HostVector;
@@ -63,48 +64,16 @@ benchmarkVectorOperations( const int & loops,
     reset12();
 
 
-    auto copyAssignHostCuda = [&]() {
-        deviceVector = hostVector;
-    };
-    auto copyAssignCudaHost = [&]() {
-        hostVector = deviceVector;
-    };
-    benchmarkOperation( "copy assigment (cross-device)", datasetSize, loops, reset1,
-                        "CPU->GPU", copyAssignHostCuda,
-                        "GPU->CPU", copyAssignCudaHost );
-
-
-    auto copyAssignHostHost = [&]() {
-        hostVector = hostVector2;
-    };
-    auto copyAssignCudaCuda = [&]() {
-        deviceVector = deviceVector2;
-    };
-    benchmarkOperation( "copy assigment", 2 * datasetSize, loops, reset1,
-                        "CPU->CPU", copyAssignHostHost,
-                        "GPU->GPU", copyAssignCudaCuda );
-
-
-    auto compareHost = [&]() {
-        resultHost = (int) hostVector == hostVector2;
-    };
-    auto compareCuda = [&]() {
-        resultDevice = (int) deviceVector == deviceVector2;
-    };
-    benchmarkOperation( "comparison (operator==)", 2 * datasetSize, loops, reset1,
-                        "CPU", compareHost,
-                        "GPU", compareCuda );
-
-
     auto multiplyHost = [&]() {
         hostVector *= 0.5;
     };
     auto multiplyCuda = [&]() {
         deviceVector *= 0.5;
     };
-    benchmarkOperation( "scalar multiplication", 2 * datasetSize, loops, reset1,
-                        "CPU", multiplyHost,
-                        "GPU", multiplyCuda );
+    benchmark.setOperation( "scalar multiplication", 2 * datasetSize );
+    benchmark.time( reset1,
+                    "CPU", multiplyHost,
+                    "GPU", multiplyCuda );
 
 
     auto addVectorHost = [&]() {
@@ -113,9 +82,10 @@ benchmarkVectorOperations( const int & loops,
     auto addVectorCuda = [&]() {
         deviceVector.addVector( deviceVector2 );
     };
-    benchmarkOperation( "vector addition", 3 * datasetSize, loops, reset1,
-                        "CPU", addVectorHost,
-                        "GPU", addVectorCuda );
+    benchmark.setOperation( "vector addition", 3 * datasetSize );
+    benchmark.time( reset1,
+                    "CPU", addVectorHost,
+                    "GPU", addVectorCuda );
 
 
     auto maxHost = [&]() {
@@ -124,9 +94,10 @@ benchmarkVectorOperations( const int & loops,
     auto maxCuda = [&]() {
         resultDevice = deviceVector.max();
     };
-    benchmarkOperation( "max", datasetSize, loops, reset1,
-                        "CPU", maxHost,
-                        "GPU", maxCuda );
+    benchmark.setOperation( "max", datasetSize );
+    benchmark.time( reset1,
+                    "CPU", maxHost,
+                    "GPU", maxCuda );
 
 
     auto minHost = [&]() {
@@ -135,9 +106,10 @@ benchmarkVectorOperations( const int & loops,
     auto minCuda = [&]() {
         resultDevice = deviceVector.min();
     };
-    benchmarkOperation( "min", datasetSize, loops, reset1,
-                        "CPU", minHost,
-                        "GPU", minCuda );
+    benchmark.setOperation( "min", datasetSize );
+    benchmark.time( reset1,
+                    "CPU", minHost,
+                    "GPU", minCuda );
 
 
     auto absMaxHost = [&]() {
@@ -146,9 +118,10 @@ benchmarkVectorOperations( const int & loops,
     auto absMaxCuda = [&]() {
         resultDevice = deviceVector.absMax();
     };
-    benchmarkOperation( "absMax", datasetSize, loops, reset1,
-                        "CPU", absMaxHost,
-                        "GPU", absMaxCuda );
+    benchmark.setOperation( "absMax", datasetSize );
+    benchmark.time( reset1,
+                    "CPU", absMaxHost,
+                    "GPU", absMaxCuda );
 
 
     auto absMinHost = [&]() {
@@ -157,9 +130,10 @@ benchmarkVectorOperations( const int & loops,
     auto absMinCuda = [&]() {
         resultDevice = deviceVector.absMin();
     };
-    benchmarkOperation( "absMin", datasetSize, loops, reset1,
-                        "CPU", absMinHost,
-                        "GPU", absMinCuda );
+    benchmark.setOperation( "absMin", datasetSize );
+    benchmark.time( reset1,
+                    "CPU", absMinHost,
+                    "GPU", absMinCuda );
 
 
     auto sumHost = [&]() {
@@ -168,9 +142,10 @@ benchmarkVectorOperations( const int & loops,
     auto sumCuda = [&]() {
         resultDevice = deviceVector.sum();
     };
-    benchmarkOperation( "sum", datasetSize, loops, reset1,
-                        "CPU", sumHost,
-                        "GPU", sumCuda );
+    benchmark.setOperation( "sum", datasetSize );
+    benchmark.time( reset1,
+                    "CPU", sumHost,
+                    "GPU", sumCuda );
 
 
     auto l1normHost = [&]() {
@@ -179,9 +154,10 @@ benchmarkVectorOperations( const int & loops,
     auto l1normCuda = [&]() {
         resultDevice = deviceVector.lpNorm( 1.0 );
     };
-    benchmarkOperation( "l1 norm", datasetSize, loops, reset1,
-                        "CPU", l1normHost,
-                        "GPU", l1normCuda );
+    benchmark.setOperation( "l1 norm", datasetSize );
+    benchmark.time( reset1,
+                    "CPU", l1normHost,
+                    "GPU", l1normCuda );
 
 
     auto l2normHost = [&]() {
@@ -190,9 +166,10 @@ benchmarkVectorOperations( const int & loops,
     auto l2normCuda = [&]() {
         resultDevice = deviceVector.lpNorm( 2.0 );
     };
-    benchmarkOperation( "l2 norm", datasetSize, loops, reset1,
-                        "CPU", l2normHost,
-                        "GPU", l2normCuda );
+    benchmark.setOperation( "l2 norm", datasetSize );
+    benchmark.time( reset1,
+                    "CPU", l2normHost,
+                    "GPU", l2normCuda );
 
 
     auto l3normHost = [&]() {
@@ -201,9 +178,10 @@ benchmarkVectorOperations( const int & loops,
     auto l3normCuda = [&]() {
         resultDevice = deviceVector.lpNorm( 3.0 );
     };
-    benchmarkOperation( "l3 norm", datasetSize, loops, reset1,
-                        "CPU", l3normHost,
-                        "GPU", l3normCuda );
+    benchmark.setOperation( "l3 norm", datasetSize );
+    benchmark.time( reset1,
+                    "CPU", l3normHost,
+                    "GPU", l3normCuda );
 
 
     auto scalarProductHost = [&]() {
@@ -220,13 +198,14 @@ benchmarkVectorOperations( const int & loops,
                     &resultDevice );
     };
 #endif
-    benchmarkOperation( "scalar product", 2 * datasetSize, loops, reset1,
-                        "CPU", scalarProductHost,
-                        "GPU", scalarProductCuda
+    benchmark.setOperation( "scalar product", 2 * datasetSize );
+    benchmark.time( reset1,
+                    "CPU", scalarProductHost,
+                    "GPU", scalarProductCuda
 #ifdef HAVE_CUBLAS
-                      , "cuBLAS", scalarProductCublas
+                  , "cuBLAS", scalarProductCublas
 #endif
-                      );
+                  );
 
     /*
     cout << "Benchmarking prefix-sum:" << endl;

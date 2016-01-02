@@ -18,18 +18,19 @@
 #ifndef TNLCUDABENCHMARKS_H_
 #define TNLCUDBENCHMARKS_H_
 
-#include <tnlConfig.h>
 #include <core/tnlList.h>
 #include <matrices/tnlSlicedEllpackMatrix.h>
 #include <matrices/tnlEllpackMatrix.h>
 #include <matrices/tnlCSRMatrix.h>
 
+#include "array-operations.h"
 #include "vector-operations.h"
 
 using namespace tnl::benchmarks;
 
 
 // TODO: should benchmarks check the result of the computation?
+
 
 // silly alias to match the number of template parameters with other formats
 template< typename Real, typename Device, typename Index >
@@ -43,8 +44,6 @@ int setHostTestMatrix( Matrix& matrix,
    int elements( 0 );
    for( int row = 0; row < size; row++ )
    {
-      if( row % 100 == 0 )
-         cout << "Filling row " << row << "/" << size << "     \r" << flush;
       int col = row - elementsPerRow / 2;
       for( int element = 0; element < elementsPerRow; element++ )
       {
@@ -56,7 +55,6 @@ int setHostTestMatrix( Matrix& matrix,
          }
       }      
    }
-   cout << endl;
    return elements;
 }
 
@@ -104,7 +102,8 @@ template< typename Real,
           template< typename, typename, typename > class Matrix,
           template< typename, typename, typename > class Vector = tnlVector >
 bool
-benchmarkSpMV( const int & loops,
+benchmarkSpMV( Benchmark & benchmark,
+               const int & loops,
                const int & size,
                const int elementsPerRow = 5 )
 {
@@ -149,8 +148,7 @@ benchmarkSpMV( const int & loops,
 
    tnlList< tnlString > parsedType;
    parseObjectType( HostMatrix::getType(), parsedType );
-   tnlString operationDescription = tnlString("SpMV (matrix type: ") + parsedType[ 0 ]
-        + ", rows: " + tnlString(size) + ", elements per row: " + tnlString(elementsPerRow) + ")";
+   benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
 
    const int elements = setHostTestMatrix< HostMatrix >( hostMatrix, elementsPerRow );
    setCudaTestMatrix< DeviceMatrix >( deviceMatrix, elementsPerRow );
@@ -172,9 +170,10 @@ benchmarkSpMV( const int & loops,
       deviceMatrix.vectorProduct( deviceVector, deviceVector2 );
    };
 
-   benchmarkOperation( operationDescription.getString(), datasetSize, loops, reset,
-                       "CPU", spmvHost,
-                       "GPU", spmvCuda );
+   benchmark.setOperation( datasetSize );
+   benchmark.time( reset,
+                   "CPU", spmvHost,
+                   "GPU", spmvCuda );
 
    return true;
 }
@@ -184,6 +183,7 @@ int main( int argc, char* argv[] )
 #ifdef HAVE_CUDA
    
    typedef double Real;
+   tnlString precision = getType< Real >();
    
    /****
     * The first argument of this program is the size od data set to be reduced.
@@ -198,12 +198,53 @@ int main( int argc, char* argv[] )
    int elementsPerRow = 5;
    if( argc > 3 )
       elementsPerRow = atoi( argv[ 3 ] );
-   
-   benchmarkVectorOperations< Real >( loops, size );
 
-   benchmarkSpMV< Real, tnlEllpackMatrix >( loops, size, elementsPerRow );
-   benchmarkSpMV< Real, SlicedEllpackMatrix >( loops, size, elementsPerRow );
-   benchmarkSpMV< Real, tnlCSRMatrix >( loops, size, elementsPerRow );
+   ofstream logFile( "tnl-cuda-benchmarks.log" );
+   Benchmark benchmark( loops, true );
+//   ostream & logFile = cout;
+//   Benchmark benchmark( loops, false );
+   
+   // TODO: add hostname, CPU info, GPU info, date, ...
+   Benchmark::MetadataMap metadata {
+      {"precision", precision},
+   };
+   // TODO: loop over sizes
+   
+
+   // Array operations
+   benchmark.newBenchmark( tnlString("Array operations (") + precision + ")",
+                           metadata );
+   benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+      {"size", size},
+   } ));
+   benchmarkArrayOperations< Real >( benchmark, loops, size );
+
+
+   // Vector operations
+   benchmark.newBenchmark( tnlString("Vector operations (") + precision + ")",
+                           metadata );
+   benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+      {"size", size},
+   } ));
+   benchmarkVectorOperations< Real >( benchmark, loops, size );
+
+
+   // SpMV
+   benchmark.newBenchmark( tnlString("SpMV (") + precision + ")",
+                           metadata );
+   benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+      {"rows", size},
+      {"columns", size},
+      {"elements per row", elementsPerRow},
+   } ));
+
+   benchmarkSpMV< Real, tnlEllpackMatrix >( benchmark, loops, size, elementsPerRow );
+   benchmarkSpMV< Real, SlicedEllpackMatrix >( benchmark, loops, size, elementsPerRow );
+   benchmarkSpMV< Real, tnlCSRMatrix >( benchmark, loops, size, elementsPerRow );
+
+
+   if( ! benchmark.save( logFile ) )
+       return EXIT_FAILURE;
    
    return EXIT_SUCCESS;
 #else
