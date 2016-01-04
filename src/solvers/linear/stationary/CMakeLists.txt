@@ -1,5 +1,6 @@
 SET( headers tnlSORSolver.h
              tnlSORSolver_impl.h
+             tnlJacobiSolver.h
    )
    
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/solvers/linear/stationary )    

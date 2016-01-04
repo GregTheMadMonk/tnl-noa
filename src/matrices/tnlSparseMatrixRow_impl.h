@@ -32,8 +32,8 @@ tnlSparseMatrixRow()
 template< typename Real, typename Index >
 __cuda_callable__
 tnlSparseMatrixRow< Real, Index >::
-tnlSparseMatrixRow( Index* columns,
-                    Real* values,
+tnlSparseMatrixRow( const Index* columns,
+					const Real* values,
                     const Index length,
                     const Index step )
 : values( values ),
@@ -73,8 +73,9 @@ setElement( const Index& elementIndex,
    tnlAssert( elementIndex >= 0 && elementIndex < this->length,
               cerr << "elementIndex = " << elementIndex << " this->length = " << this->length );
 
-   this->columns[ elementIndex * step ] = column;
-   this->values[ elementIndex * step ] = value;
+   tnlAssert(false, ); //Disabled
+   //this->columns[ elementIndex * step ] = column;
+   //this->values[ elementIndex * step ] = value;
 }
 
 #endif /* TNLSPARSEMATRIXROW_IMPL_H_ */

@@ -28,8 +28,8 @@ class tnlSparseMatrixRow
       tnlSparseMatrixRow();
 
       __cuda_callable__
-      tnlSparseMatrixRow( Index* columns,
-                          Real* values,
+	  tnlSparseMatrixRow( const Index* columns,
+						  const Real* values,
                           const Index length,
                           const Index step );
 
@@ -44,11 +44,11 @@ class tnlSparseMatrixRow
                        const Index& column,
                        const Real& value );
 
-   protected:
+  // protected:
 
-      Real* values;
+	  const Real* values;
 
-      Index* columns;
+	  const Index* columns;
 
       Index length, step;
 };

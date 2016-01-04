@@ -413,6 +413,7 @@ Real tnlEllpackMatrix< Real, Device, Index >::getElement( const IndexType row,
           this->columnIndexes.getElement( elementPtr ) != this->getPaddingIndex() ) elementPtr += step;
    if( elementPtr < rowEnd && this->columnIndexes.getElement( elementPtr ) == column )
       return this->values.getElement( elementPtr );
+   throw "Nenasel";
    return 0.0;
 }
 
@@ -564,6 +565,46 @@ bool tnlEllpackMatrix< Real, Device, Index > :: performSORIteration( const Vecto
       return false;
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
+   return true;
+}
+
+template< typename Real,
+		  typename Device,
+		  typename Index >
+   template< typename Vector >
+bool tnlEllpackMatrix< Real, Device, Index > :: performJacobiIteration( const Vector& b,
+																		const IndexType row,
+																		const Vector& old_x,
+																		Vector& x,
+																		const RealType& omega ) const
+{
+   tnlAssert( row >=0 && row < this->getRows(),
+			  cerr << "row = " << row
+				   << " this->getRows() = " << this->getRows()
+				   << " this->getName() = " << this->getName() << endl );
+
+   RealType diagonalValue( 0.0 );
+   RealType sum( 0.0 );
+
+   IndexType i = DeviceDependentCode::getRowBegin( *this, row );
+   const IndexType rowEnd = DeviceDependentCode::getRowEnd( *this, row );
+   const IndexType step = DeviceDependentCode::getElementStep( *this );
+
+   IndexType column;
+   while( i < rowEnd && ( column = this->columnIndexes[ i ] ) < this->columns )
+   {
+	  if( column == row )
+		 diagonalValue = this->values[ i ];
+	  else
+		 sum += this->values[ i ] * old_x[ column ];
+	  i++;
+   }
+   if( diagonalValue == ( Real ) 0.0 )
+   {
+	  cerr << "There is zero on the diagonal in " << row << "-th row of thge matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
+	  return false;
+   }
+   x[ row ] = ( 1.0 - omega ) * old_x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
    return true;
 }
 

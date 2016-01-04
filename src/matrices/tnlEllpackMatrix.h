@@ -124,6 +124,25 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
 
+   RealType getElementInRow( const IndexType row,
+						const IndexType indexInRow ) const
+   {
+		typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+		IndexType elementPtr = DDCType::getRowBegin( *this, row );
+		const IndexType step = DDCType::getElementStep( *this );
+		elementPtr += indexInRow * step;
+		return this->values.getElement( elementPtr );
+   }
+	RealType getColumnInRow( const IndexType row,
+						 const IndexType indexInRow ) const
+	{
+		typedef tnlEllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+		IndexType elementPtr = DDCType::getRowBegin( *this, row );
+		const IndexType step = DDCType::getElementStep( *this );
+		elementPtr += indexInRow * step;
+		return this->columnIndexes.getElement( elementPtr );
+	}
+
    __cuda_callable__
    void getRowFast( const IndexType row,
                     IndexType* columns,
@@ -159,6 +178,13 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                              const IndexType row,
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
+
+   template< typename Vector >
+   bool performJacobiIteration( const Vector& b,
+								const IndexType row,
+								const Vector& old_x,
+								Vector& x,
+								const RealType& omega ) const;
 
    bool save( tnlFile& file ) const;
 

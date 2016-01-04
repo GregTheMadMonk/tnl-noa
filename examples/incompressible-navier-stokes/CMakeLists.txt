@@ -2,15 +2,13 @@ set( tnl_incompressible_navier_stokes_SOURCES
      tnl-incompressible-navier-stokes.cpp
 tnlExplicitINSTimeStepper_impl.h
 tnlExplicitINSTimeStepper.h
-tnlPoissonProblem_impl.h
-tnlPoissonProblem.h
-tnlINSRightHandSide.h
-tnlINSBoundaryConditions.h
 tnlIncompressibleNavierStokesProblem_impl.h
 tnlIncompressibleNavierStokesProblem.h
 tnlNSFastBuildConfig.h
 visit_writer.h
 visit_writer.cpp
+solver.h
+base.h
       )
                
 IF( BUILD_CUDA )

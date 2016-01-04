@@ -19,11 +19,7 @@
 #define TNL_INCOMPRESSIBLE_NAVIER_STOKES_H_
 
 #include <solvers/tnlSolver.h>
-#include <solvers/tnlConfigTags.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
-#include "tnlINSBoundaryConditions.h"
-#include "tnlINSRightHandSide.h"
-#include "tnlIncompressibleNavierStokes.h"
 #include "tnlIncompressibleNavierStokesProblem.h"
 #include "tnlNSFastBuildConfig.h"
 
@@ -48,19 +44,29 @@ class tnlIncompressibleNavierStokesConfig
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< double >( "right-hand-side-constant", "This sets a constant value for the right-hand side.", 0.0 );
          config.addEntry< tnlString >( "initial-condition", "File with the initial condition.", "initial.tnl");*/
-      };
+	  }
 };
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MeshType,
-          typename ConfigTag,
-          typename SolverStarter >
-class tnlIncompressibleNavierStokesSetter
+template< typename Mesh, typename Real = typename Mesh::RealType, typename Index = typename Mesh::IndexType >
+class tnlINSBoundaryConditions{};
+
+template< typename Mesh, typename Real = typename Mesh::RealType, typename Index = typename Mesh::IndexType >
+class tnlINSRightHandSide{};
+
+template< typename Mesh, typename Real = typename Mesh::RealType, typename Index = typename Mesh::IndexType >
+class tnlIncompressibleNavierStokes
 {
    public:
+	  typedef Real RealType;
+	  typedef typename Mesh::DeviceType DeviceType;
+	  typedef Index IndexType;
+};
 
+
+template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter >
+class tnlIncompressibleNavierStokesSetter
+{
+public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
@@ -72,13 +78,13 @@ class tnlIncompressibleNavierStokesSetter
       enum { Dimensions = MeshType::Dimensions };
       typedef tnlStaticVector < MeshType::Dimensions, Real > Vertex;
 
-      typedef tnlINSBoundaryConditions< MeshType, Real, Index > BoundaryConditions;
-      typedef tnlIncompressibleNavierStokes< MeshType, Real, Index > ApproximateOperator;
-      typedef tnlINSRightHandSide< MeshType, Real, Index > RightHandSide;
+	  typedef tnlINSBoundaryConditions< MeshType > BoundaryConditions;
+	  typedef tnlIncompressibleNavierStokes< MeshType > ApproximateOperator;
+	  typedef tnlINSRightHandSide< MeshType > RightHandSide;
       typedef tnlIncompressibleNavierStokesProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );
-   };
+   }
 };
 
 int main( int argc, char* argv[] )

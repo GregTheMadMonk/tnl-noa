@@ -364,6 +364,7 @@ Index tnlGrid< 2, Real, Device, Index >::getCellNextToFace( const IndexType& fac
       result = faceIndex + ( nx - ( nx > 0 ) ) - faceIndex / ( this->getDimensions().x() + 1 );
    if( ny )
       result = faceIndex - this->numberOfNxFaces + ( ny - ( ny > 0 ) ) * this->getDimensions().x();
+   return result;
 }
 
 template< typename Real,
@@ -643,6 +644,8 @@ bool tnlGrid< 2, Real, Device, Index > :: isBoundaryFace( const CoordinatesType&
                       << " this->getName() = " << this->getName(); );
       if( faceCoordinates.x() == 0 || faceCoordinates.x() == this->getDimensions().x() )
          return true;
+	  if( faceCoordinates.y() == 0 || faceCoordinates.y() == this->getDimensions().y()-1 )
+		 return true;
       return false;
    }
    tnlAssert( faceCoordinates.x() >= 0 && faceCoordinates.x() < this->getDimensions().x(),
@@ -655,6 +658,8 @@ bool tnlGrid< 2, Real, Device, Index > :: isBoundaryFace( const CoordinatesType&
                    << " this->getName() = " << this->getName(); );
    if( faceCoordinates.y() == 0 || faceCoordinates.y() == this->getDimensions().y() )
       return true;
+   if( faceCoordinates.x() == 0 || faceCoordinates.x() == this->getDimensions().x()-1 )
+	   return true;
    return false;
 }
 

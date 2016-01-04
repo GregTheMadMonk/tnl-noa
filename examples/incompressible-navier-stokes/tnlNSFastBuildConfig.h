@@ -18,8 +18,6 @@
 #ifndef TNLNSFASTBUILDCONFIG_H_
 #define TNLNSFASTBUILDCONFIG_H_
 
-#include <solvers/tnlConfigTags.h>
-
 class tnlNSFastBuildConfig
 {
    public:
