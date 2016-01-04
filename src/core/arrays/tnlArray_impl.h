@@ -158,11 +158,12 @@ releaseData() const
       {
          tnlArrayOperations< Device >::freeMemory( this->allocationPointer );
          delete this->referenceCounter;
+         //std::cerr << "Deallocating reference counter " << this->referenceCounter << std::endl;
       }
    }
    else
-      if( allocationPointer )
-         tnlArrayOperations< Device >::freeMemory( this->allocationPointer );
+      if( allocationPointer )      
+         tnlArrayOperations< Device >::freeMemory( this->allocationPointer );   
    this->allocationPointer = 0;
    this->data = 0;
    this->size = 0;
@@ -247,12 +248,13 @@ bind( const tnlArray< Element, Device, Index >& array,
       if( array.referenceCounter )
       {
          this->referenceCounter = array.referenceCounter;
-         *this->referenceCounter++;
+         ( *this->referenceCounter )++;
       }
       else
       {
          this->referenceCounter = array.referenceCounter = new int;
-         *this->referenceCounter = 2;            
+         *this->referenceCounter = 2;
+         //std::cerr << "Allocating reference counter " << this->referenceCounter << std::endl;
       }
    }   
 }

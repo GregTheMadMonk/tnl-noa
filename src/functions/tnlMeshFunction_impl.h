@@ -229,6 +229,7 @@ operator = ( const Function& f )
       tnlMeshFunctionEvaluator< ThisType, Function >::assign( f, *this );
       return *this;
    }
+   return *this;
 }
 
 template< typename Mesh,

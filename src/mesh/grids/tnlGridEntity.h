@@ -224,10 +224,16 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Con
       Index getIndex() const;
             
       __cuda_callable__ inline
-      const EntityOrientationType getOrientation() const;     
+      const EntityOrientationType getOrientation() const;
+      
+      __cuda_callable__ inline
+      void setOrientation( const EntityOrientationType& orientation ){};
       
       __cuda_callable__ inline
       const EntityBasisType getBasis() const;
+      
+      __cuda_callable__ inline
+      void setBasis( const EntityBasisType& basis ){};
       
       template< int NeighbourEntityDimensions = Dimensions >
       __cuda_callable__ inline
@@ -339,7 +345,14 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
       const EntityOrientationType getOrientation() const;     
       
       __cuda_callable__ inline
+      void setOrientation( const EntityOrientationType& orientation ){};
+      
+      __cuda_callable__ inline
       const EntityBasisType getBasis() const;
+      
+      __cuda_callable__ inline
+      void setBasis( const EntityBasisType& basis ){};
+
       
       template< int NeighbourEntityDimensions = entityDimensions >
       __cuda_callable__ inline
