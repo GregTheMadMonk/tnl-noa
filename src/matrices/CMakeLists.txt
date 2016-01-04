@@ -47,3 +47,4 @@ if( BUILD_CUDA )
 endif()
 
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/matrices )
+source_group("matrices" FILES ${headers})

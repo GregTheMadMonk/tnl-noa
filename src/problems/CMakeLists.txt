@@ -9,3 +9,4 @@ SET( headers tnlProblem.h
    )
    
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/problems )
+source_group("problems" FILES ${headers})

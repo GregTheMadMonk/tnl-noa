@@ -1,3 +1,30 @@
+tnlLinearSystemAssembler< Mesh,
+                             DofVectorType,
+                             DifferentialOperator,
+                             BoundaryCondition,
+                             RightHandSide,
+                             tnlBackwardTimeDiscretisation,
+                             Matrix > systemAssembler;
+   systemAssembler
+
+tnlLinearDiffusion - je v i heat equation 
+tnlAnalyticNeumannBoundaryConditions - nastavi neumanna na kraji jako template bude funkce tnlConstantFunction
+tnlNoTimeDiscretization - nedela nic s pravou stranou a nemeni diagonalu
+
+jako pravou stranu pouzit opet tnlConstantFunction
+
+Pouzivej EllPack!!!
+
+
+2) Zatim resit se SOR, ale pak zkusit udelat Jacobiho
+bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b, v podstate je treba zmenit jen matrix->performSORIteration na nejakou vlastni 
+bool tnlEllpackMatrix< Real, Device, Index > :: performSORIteration( 
+
+
+
+
+
+
 TODO: v tnlMeshResolver se provadi preklad pro vsechny mozne sablonove parametry => prorezat
 
 TODO: napsat FunctionDiscretizer pro jednotne rozhrani RightHandSide

@@ -20,6 +20,7 @@
 
 #include <problems/tnlProblem.h>
 #include <matrices/tnlCSRMatrix.h>
+#include <mesh/tnlGrid2D.h>
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -34,7 +35,8 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
       using typename BaseType::DeviceType;
       using typename BaseType::IndexType;
 
-      typedef Mesh MeshType;
+	  //typedef tnlGrid<2,double, tnlHost, int> MeshType;
+	  typedef Mesh MeshType;
       typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
       typedef tnlVector< RealType, DeviceType, IndexType > MeshDependentDataType;
