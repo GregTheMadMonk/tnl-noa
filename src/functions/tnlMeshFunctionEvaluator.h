@@ -21,11 +21,47 @@
 #include <mesh/tnlGrid.h>
 #include <functions/tnlMeshFunction.h>
 
-template< typename MeshFunction1,
-          typename MeshFunction2 >
+template< typename OutMeshFunction,
+          typename InFunction >
 class tnlMeshFunctionEvaluator
-{   
-};
+{
+   public:
+      typedef typename OutMeshFunction::MeshType MeshType;
+      typedef typename MeshType::RealType MeshRealType;
+      typedef typename MeshType::DeviceType MeshDeviceType;
+      typedef typename MeshType::IndexType MeshIndexType;
+      typedef typename OutMeshFunction::Real RealType;
+      
+      const static int meshEntityDimensions = OutMeshFunction::entityDimensions;
+      
+      static_assert( MeshType::meshDimensions == InFunction::Dimensions, 
+         "Input function and the mesh of the mesh function have both different number of dimensions." );
+      
+      static void assign( OutMeshFunction& meshFunction,
+                          const InFunction& function,                          
+                          const RealType& time = 0.0,
+                          const RealType& outFunctionMultiplicator = 0.0,
+                          const RealType& inFunctionMultiplicator = 1.0 );
+      
+      class TraverserUserData
+      {
+         public:
+            TraverserUserData( const InFunction* function,
+                               const RealType* time,
+                               OutMeshFunction* meshFunction,
+                               const RealType* outFunctionMultiplicator,
+                               const RealType* inFunctionMultiplicator )
+            : meshFunction( meshFunction ), function( function ), time( time ), 
+              outFunctionMultiplicator( outFunctionMultiplicator ),
+              inFunctionMultiplicator( inFunctionMultiplicator ){}
+
+         protected:
+            OutMeshFunction* meshFunction;            
+            const InFunction* function;
+            const RealType *time, *outFunctionMultiplicator, *inFunctionMultiplicator;
+            
+      };
+}; 
 
 template< int Dimensions,
           typename MeshReal1,
@@ -43,14 +79,14 @@ class tnlMeshFunctionEvaluator< tnlMeshFunction< tnlGrid< Dimensions, MeshReal1,
       
       typedef tnlGrid< Dimensions, MeshReal1, MeshDevice1, MeshIndex1 > Mesh1;
       typedef tnlGrid< Dimensions, MeshReal2, MeshDevice2, MeshIndex2 > Mesh2;
-      typedef tnlMeshFunction< Mesh1, MeshEntityDimensions, Real > MeshFunction1;
-      typedef tnlMeshFunction< Mesh2, MeshEntityDimensions, Real > MeshFunction2;
+      typedef tnlMeshFunction< Mesh1, MeshEntityDimensions, Real > OutMeshFunction;
+      typedef tnlMeshFunction< Mesh2, MeshEntityDimensions, Real > InFunction;
       
-      static void assign( const MeshFunction1& f1,
-                          MeshFunction2& f2 )
+      static void assign( OutMeshFunction& f1,
+                          const InFunction& f2 )
       {
          if( f1.getMesh().getDimensions() == f2.getMesh().getDimensions() )
-            f2.getData() = f1.getData();
+            f1.getData() = f2.getData();
          else
          {
             //TODO: Interpolace
