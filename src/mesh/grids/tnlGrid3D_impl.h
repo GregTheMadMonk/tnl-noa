@@ -344,6 +344,17 @@ Real tnlGrid< 3, Real, Device, Index > :: getSmallestSpaceStep() const
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
+Real
+tnlGrid< 3, Real, Device, Index >::
+getCellMeasure() const
+{
+   return this->template getSpaceStepsProducts< 1, 1, 1 >();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename GridFunction >
 typename GridFunction::RealType
    tnlGrid< 3, Real, Device, Index >::getAbsMax( const GridFunction& f ) const

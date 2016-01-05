@@ -101,6 +101,8 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
 
+   __cuda_callable__
+   RealType getCellMeasure() const;
 
    template< typename GridFunction >
    typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,

@@ -22,28 +22,27 @@
 #include <core/tnlCuda.h>
 
 template< typename Operator,
-          typename MeshFunction,
-          typename BoundaryConditions >
+          typename Function,
+          typename BoundaryConditions = Operator >
 class tnlOperatorFunction
 {
-   static_assert( std::is_same< typename Operator::MeshType, typename MeshFunction::MeshType >::value,
-                  "Operator and MeshFunction have different mesh type." );
+   //static_assert( std::is_same< typename Operator::MeshType, typename MeshFunction::MeshType >::value,
+   //               "Operator and MeshFunction have different mesh type." );
    static_assert( std::is_same< typename Operator::MeshType, typename BoundaryConditions::MeshType >::value,
                   "Operator and BoundaryConditions have different mesh type." );
    
    public:
       
       typedef Operator OperatorType;
-      typedef MeshFunction MeshFunctionType;
+      typedef Function FunctionType;
       typedef BoundaryConditions BoundaryConditionsType;
-      typedef typename OperatorType::MeshType MeshType;
       typedef typename OperatorType::RealType RealType;
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;
       
       tnlOperatorFunction(
          const OperatorType& operator_,
-         const MeshFunctionType& function,
+         const FunctionType& function,
          const BoundaryConditionsType& boundaryConditions );
       
       template< typename MeshEntity >
@@ -56,7 +55,7 @@ class tnlOperatorFunction
       
       const Operator& operator_;
       
-      const MeshFunction& function;
+      const FunctionType& function;
       
       const BoundaryConditions& boundaryConditions;
          

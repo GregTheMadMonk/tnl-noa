@@ -99,6 +99,9 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
+      
+   __cuda_callable__
+   RealType getCellMeasure() const;
  
 
    template< typename GridFunction >

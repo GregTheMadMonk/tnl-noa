@@ -93,7 +93,15 @@ class tnlMeshFunction :
       template< typename Function >
       ThisType& operator = ( const Function& f );
       
-      RealType getLpNorm( const RealType& p );
+      template< typename Function >
+      ThisType& operator -= ( const Function& f );
+
+      template< typename Function >
+      ThisType& operator += ( const Function& f );
+      
+      RealType getLpNorm( const RealType& p ) const;
+      
+      RealType getMaxMorm() const;
       
       bool save( tnlFile& file ) const;
 

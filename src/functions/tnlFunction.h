@@ -24,7 +24,9 @@
 enum tnlFunctionType { GeneralFunction, 
                        MeshFunction,
                        AnalyticFunction,
-                       AnalyticConstantFunction };
+                       AnalyticConstantFunction,
+                       AnalyticOperator,
+                       MeshOperator };
 
 template< int Dimensions,
           tnlFunctionType FunctionType = GeneralFunction >

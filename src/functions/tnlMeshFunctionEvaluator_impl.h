@@ -22,11 +22,53 @@ template< typename OutMeshFunction,
           typename InFunction >
 void
 tnlMeshFunctionEvaluator< OutMeshFunction, InFunction >::
+evaluateAllEntities( OutMeshFunction& meshFunction,
+                     const InFunction& function,                          
+                     const RealType& time = 0.0,
+                     const RealType& outFunctionMultiplicator = 0.0,
+                     const RealType& inFunctionMultiplicator = 1.0 )
+{
+   return evaluateEntities( meshFunction, function, time, outFunctionMultiplicator, inFunctionMultiplicator, all );
+}
+
+template< typename OutMeshFunction,
+          typename InFunction >
+void
+tnlMeshFunctionEvaluator< OutMeshFunction, InFunction >::
+evaluateInteriorEntities( OutMeshFunction& meshFunction,
+                          const InFunction& function,                          
+                          const RealType& time = 0.0,
+                          const RealType& outFunctionMultiplicator = 0.0,
+                          const RealType& inFunctionMultiplicator = 1.0 )
+{
+   return evaluateEntities( meshFunction, function, time, outFunctionMultiplicator, inFunctionMultiplicator, interior );
+}
+
+template< typename OutMeshFunction,
+          typename InFunction >
+void 
+tnlMeshFunctionEvaluator< OutMeshFunction, InFunction >::
+evaluateBoundaryEntities( OutMeshFunction& meshFunction,
+                          const InFunction& function,                          
+                          const RealType& time = 0.0,
+                          const RealType& outFunctionMultiplicator = 0.0,
+                          const RealType& inFunctionMultiplicator = 1.0 )
+{
+   return evaluateEntities( meshFunction, function, time, outFunctionMultiplicator, inFunctionMultiplicator, boundary );
+}
+
+
+
+template< typename OutMeshFunction,
+          typename InFunction >
+void
+tnlMeshFunctionEvaluator< OutMeshFunction, InFunction >::
 assign( OutMeshFunction& meshFunction,
         const InFunction& function,
         const RealType& time,
         const RealType& outFunctionMultiplicator,
-        const RealType& inFunctionMultiplicator )
+        const RealType& inFunctionMultiplicator,
+        EntitisType entitiesType )
 {
    typedef typename MeshType::template MeshEntities< meshEntityDimensions > MeshEntityType;
    
@@ -51,10 +93,27 @@ assign( OutMeshFunction& meshFunction,
    {
       TraverserUserData userData( &meshFunction, &function, &time, &outFunctionMultiplicator, &inFunctionMultiplicator );
       tnlTraverser< MeshType, MeshEntityType > meshTraverser;
-      meshTraverser.template processAllEntities< TraverserUserData,
-                                                 AssignEntitiesProcessor >
-                                                ( meshFunction.getMesh(),
-                                                  userData );
+      switch( entitiesType )
+      {
+         case all:            
+            meshTraverser.template processAllEntities< TraverserUserData,
+                                                       AssignEntitiesProcessor >
+                                                     ( meshFunction.getMesh(),
+                                                       userData );
+            break;
+         case interior:
+            meshTraverser.template processInteriroEntities< TraverserUserData,
+                                                            AssignEntitiesProcessor >
+                                                          ( meshFunction.getMesh(),
+                                                            userData );
+            break;
+         case boundary:
+            meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                            AssignEntitiesProcessor >
+                                                          ( meshFunction.getMesh(),
+                                                            userData );
+            break;
+      }
    }
    if( std::is_same< MeshDeviceType, tnlCuda >::value )
    {      
@@ -67,11 +126,27 @@ assign( OutMeshFunction& meshFunction,
       TraverserUserData userData( kernelFunction, kernelTime, kernelMeshFunction, kernelOutFunctionMultiplicator, kernelInFunctionMultiplicator );
       checkCudaDevice;
       tnlTraverser< MeshType, MeshEntityType > meshTraverser;
-      meshTraverser.template processAllEntities< TraverserUserData,
-                                                 AssignEntitiesProcessor >
-                                                ( meshFunction.getMesh(),
-                                                  userData );
-      
+      switch( entitiesType )
+      {
+         case all:            
+            meshTraverser.template processAllEntities< TraverserUserData,
+                                                       AssignEntitiesProcessor >
+                                                     ( meshFunction.getMesh(),
+                                                       userData );
+            break;
+         case interior:
+            meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                            AssignEntitiesProcessor >
+                                                          ( meshFunction.getMesh(),
+                                                            userData );
+            break;
+         case boundary:
+            meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                            AssignEntitiesProcessor >
+                                                          ( meshFunction.getMesh(),
+                                                            userData );
+            break;
+      }      
 
       checkCudaDevice;      
       tnlCuda::freeFromDevice( kernelMeshFunction );

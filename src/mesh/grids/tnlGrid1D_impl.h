@@ -233,9 +233,21 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-Real tnlGrid< 1, Real, Device, Index > :: getSmallestSpaceStep() const
+Real tnlGrid< 1, Real, Device, Index >::
+getSmallestSpaceStep() const
 {
    return this->spaceSteps.x();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Real
+tnlGrid< 1, Real, Device, Index >::
+getCellMeasure() const
+{
+   
 }
 
 template< typename Real,

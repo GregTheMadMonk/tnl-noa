@@ -37,11 +37,35 @@ class tnlMeshFunctionEvaluator
       static_assert( MeshType::meshDimensions == InFunction::Dimensions, 
          "Input function and the mesh of the mesh function have both different number of dimensions." );
       
-      static void assign( OutMeshFunction& meshFunction,
-                          const InFunction& function,                          
-                          const RealType& time = 0.0,
-                          const RealType& outFunctionMultiplicator = 0.0,
-                          const RealType& inFunctionMultiplicator = 1.0 );
+      static void evaluateAllEntities( OutMeshFunction& meshFunction,
+                                       const InFunction& function,                          
+                                       const RealType& time = 0.0,
+                                       const RealType& outFunctionMultiplicator = 0.0,
+                                       const RealType& inFunctionMultiplicator = 1.0 );
+      
+      static void evaluateInteriorEntities( OutMeshFunction& meshFunction,
+                                            const InFunction& function,                          
+                                            const RealType& time = 0.0,
+                                            const RealType& outFunctionMultiplicator = 0.0,
+                                            const RealType& inFunctionMultiplicator = 1.0 );
+
+      static void evaluateBoundaryEntities( OutMeshFunction& meshFunction,
+                                            const InFunction& function,                          
+                                            const RealType& time = 0.0,
+                                            const RealType& outFunctionMultiplicator = 0.0,
+                                            const RealType& inFunctionMultiplicator = 1.0 );
+
+   protected:
+
+      enum EntitiesType { all, boundary, interior };
+      
+      static void evaluateEntities( OutMeshFunction& meshFunction,
+                                    const InFunction& function,                          
+                                    const RealType& time,
+                                    const RealType& outFunctionMultiplicator,
+                                    const RealType& inFunctionMultiplicator,
+                                    EntitiesType entitiesType );
+
       
       class TraverserUserData
       {
@@ -63,7 +87,7 @@ class tnlMeshFunctionEvaluator
       };
 }; 
 
-template< int Dimensions,
+/*template< int Dimensions,
           typename MeshReal1,
           typename MeshReal2,
           typename MeshDevice1,
@@ -92,7 +116,7 @@ class tnlMeshFunctionEvaluator< tnlMeshFunction< tnlGrid< Dimensions, MeshReal1,
             //TODO: Interpolace
          }
       };
-};
+};*/
 
 #endif	/* TNLMESHFUNCTIONEVALUATOR_H */
 

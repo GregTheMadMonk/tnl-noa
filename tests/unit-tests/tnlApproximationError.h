@@ -23,60 +23,31 @@
 #include <operators/tnlDirichletBoundaryConditions.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
 
-class tnlExplicitApproximation
-{
-   public:
-
-   static tnlString getType()
-   {
-      return tnlString( "tnlExplicitApproximation" );
-   };
-};
-
-class tnlImplicitApproximation
-{
-   public:
-
-   static tnlString getType()
-   {
-      return tnlString( "tnlImplicitApproximation" );
-   };
-};
-
-template< typename Mesh,
-          typename ExactOperator,
-          typename ApproximateOperator,
-          typename Function,
-          typename ApproximationMethod >
-class tnlApproximationError
-{
-};
-
-template< typename Mesh,
-          typename ExactOperator,
+template< typename ExactOperator,
           typename ApproximateOperator,
           typename Function >
-class tnlApproximationError< Mesh, ExactOperator, ApproximateOperator, Function, tnlExplicitApproximation >
+class tnlApproximationError
 {
-     public:
-
+   public:
+   
       typedef typename ApproximateOperator::RealType RealType;
-      typedef Mesh MeshType;
+      typedef typename ApproximateOperator::MeshType MeshType;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::VertexType VertexType;
       typedef tnlConstantFunction< MeshType::meshDimensions, RealType > ConstantFunctionType;
       typedef tnlDirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
 
-      static void getError( const Mesh& mesh,
-                            const ExactOperator& exactOperator,
+      static void getError( const ExactOperator& exactOperator,
                             const ApproximateOperator& approximateOperator,
                             const Function& function,
+                            const MeshType& mesh,
                             RealType& l1Err,
                             RealType& l2Err,
                             RealType& maxErr );
 };
 
+/*
 template< typename Mesh,
           typename ExactOperator,
           typename ApproximateOperator,
@@ -101,7 +72,7 @@ class tnlApproximationError< Mesh, ExactOperator, ApproximateOperator, Function,
                             RealType& l2Err,
                             RealType& maxErr );
 };
-
+*/
 #include "tnlApproximationError_impl.h"
 
 #endif /* TNLAPPROXIMATIONERROR_H_ */
