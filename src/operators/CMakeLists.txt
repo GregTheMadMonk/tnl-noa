@@ -9,10 +9,7 @@ SET( headers tnlFiniteDifferences.h
              tnlDirichletBoundaryConditions.h
              tnlDirichletBoundaryConditions_impl.h
              tnlNeumannBoundaryConditions.h
-             tnlNeumannBoundaryConditions_impl.h
-             tnlExactOperatorEvaluator.h
-             tnlOperatorEnumerator.h
-             tnlOperatorEnumerator_impl.h )
+             tnlNeumannBoundaryConditions_impl.h )
              
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/operators )
 

@@ -25,7 +25,7 @@
 #include <matrices/tnlMatrixSetter.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
 #include <solvers/pde/tnlNoTimeDiscretisation.h>
-#include <operators/tnlExactOperatorEvaluator.h>
+#include <functions/tnlExactOperatorFunction.h>
 #include <functions/tnlMeshFunction.h>
 #include <functions/tnlOperatorFunction.h>
 #include <functions/tnlExactOperatorFunction.h>

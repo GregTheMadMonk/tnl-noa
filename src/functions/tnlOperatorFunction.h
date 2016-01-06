@@ -22,8 +22,9 @@
 #include <core/tnlCuda.h>
 
 /***
- * This class evaluates given operator on given function. The image is defined only
- * for the interior mesh entities.
+ * This class evaluates given operator on given function.
+ * The main role of this type is that the mesh function evaluator
+ * evaluates this function only on the INTERIOR mesh entities.
  */
 template< typename Operator,
           typename Function >
@@ -39,13 +40,17 @@ class tnlOperatorFunction
       
       tnlOperatorFunction(
          const OperatorType& operator_,
-         const FunctionType& function );
+         const FunctionType& function )
+      :  operator_( &operator_ ), function( &function ){};
       
       template< typename MeshEntity >
       __cuda_callable__
       RealType operator()(
          const MeshEntity& meshEntity,
-         const RealType& time );
+         const RealType& time )
+      {
+         return operator_->getValue( meshEntity, function->getData(), time );
+      }
       
    protected:
       
@@ -53,5 +58,6 @@ class tnlOperatorFunction
       
       const FunctionType* function;         
 };
+
 #endif	/* TNLOPERATORFUNCTION_H */
 

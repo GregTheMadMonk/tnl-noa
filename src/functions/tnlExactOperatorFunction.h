@@ -49,7 +49,5 @@ class tnlExactOperatorFunction
       const FunctionType& function;               
 };
 
-
-
 #endif	/* TNLEXACTOPERATORFUNCTION_H */
 
