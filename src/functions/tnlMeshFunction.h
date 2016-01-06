@@ -101,7 +101,7 @@ class tnlMeshFunction :
       
       RealType getLpNorm( const RealType& p ) const;
       
-      RealType getMaxMorm() const;
+      RealType getMaxNorm() const;
       
       bool save( tnlFile& file ) const;
 
@@ -119,7 +119,9 @@ class tnlMeshFunction :
       
       const MeshType* mesh;
       
-      VectorType data;     
+      VectorType data;
+      
+      template< typename, typename > friend class tnlMeshFunctionEvaluator;
 };
 
 #include <functions/tnlMeshFunction_impl.h>

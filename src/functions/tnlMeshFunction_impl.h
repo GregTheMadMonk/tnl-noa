@@ -114,7 +114,7 @@ const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::MeshType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getMesh() const
 {
-   return this->mesh;
+   return *this->mesh;
 }
 
 template< typename Mesh,
@@ -218,7 +218,7 @@ tnlMeshFunction< Mesh, MeshEntityDimensions, Real >&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator = ( const Function& f )
 {
-   tnlMeshFunctionEvaluator< ThisType, Function >::evaluateAllEntities( *this, f );
+   tnlMeshFunctionEvaluator< ThisType, Function >::evaluate( *this, f );
    return *this;
 }
 
@@ -230,7 +230,7 @@ tnlMeshFunction< Mesh, MeshEntityDimensions, Real >&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator += ( const Function& f )
 {
-   tnlMeshFunctionEvaluator< ThisType, Function >::evaluateAllEntities( *this, f, 1.0, 1.0 );
+   tnlMeshFunctionEvaluator< ThisType, Function >::evaluate( *this, f, 1.0, 1.0 );
    return *this;
 }
 
@@ -242,7 +242,7 @@ tnlMeshFunction< Mesh, MeshEntityDimensions, Real >&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator -= ( const Function& f )
 {
-   tnlMeshFunctionEvaluator< ThisType, Function >::evaluateAllEntities( *this, f, 1.0, -1.0 );
+   tnlMeshFunctionEvaluator< ThisType, Function >::evaluate( *this, f, 1.0, -1.0 );
    return *this;
 }
 
@@ -261,7 +261,7 @@ template< typename Mesh,
           typename Real >
 Real
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
-getMaxMorm() const
+getMaxNorm() const
 {
    return this->data.absMax();
 }

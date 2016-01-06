@@ -29,6 +29,8 @@
 #include <functions/tnlMeshFunction.h>
 #include <functions/tnlOperatorFunction.h>
 #include <functions/tnlExactOperatorFunction.h>
+#include <functions/tnlBoundaryOperatorFunction.h>
+#include <solvers/pde/tnlBoundaryConditionsSetter.h>
 
 
 template< typename ExactOperator,
@@ -45,14 +47,16 @@ getError( const ExactOperator& exactOperator,
           RealType& maxErr )
 {
    typedef tnlMeshFunction< MeshType > MeshFunction;
-   typedef tnlDirichletBoundaryConditions< MeshType, tnlConstantFunction< MeshType::meshDimensions > > BoundaryConditions;
+   typedef tnlDirichletBoundaryConditions< MeshType, tnlConstantFunction< MeshType::meshDimensions > > DirichletBoundaryConditions;
+   typedef tnlBoundaryOperatorFunction< DirichletBoundaryConditions, MeshFunction > BoundaryOperatorFunction;
    typedef tnlOperatorFunction< ApproximateOperator, Function > OperatorFunction;
    typedef tnlExactOperatorFunction< ExactOperator, Function > ExactOperatorFunction;
    
    tnlMeshFunction< MeshType > exactU( mesh ), u( mesh ), v( mesh );
-   BoundaryConditions boundaryConditions;
    OperatorFunction operatorFunction( approximateOperator, function );
    ExactOperatorFunction exactOperatorFunction( exactOperator, function );
+   DirichletBoundaryConditions boundaryConditions;
+   BoundaryOperatorFunction boundaryOperatorFunction( boundaryConditions, u );
 
    exactU = exactOperatorFunction;
    u = function;
@@ -65,7 +69,8 @@ getError( const ExactOperator& exactOperator,
    u.save( "approximate-u" ) ;
 
    u -= exactU;   
-   boundaryConditions.apply( u );
+   tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::apply( boundaryConditions, 0.0, u );
+   u = boundaryOperatorFunction;
    u.save( "diff-u" ) ;
    l1Err = u.getLpNorm( 1.0 );
    l2Err = u.getLpNorm( 2.0 );   

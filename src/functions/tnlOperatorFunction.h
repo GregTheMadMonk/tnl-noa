@@ -28,12 +28,13 @@
  */
 template< typename Operator,
           typename Function >
-class tnlOperatorFunction
+class tnlOperatorFunction : public tnlFunction< Operator::getMeshEntityDimensions(), MeshFunction >
 {   
    public:
       
       typedef Operator OperatorType;
       typedef Function FunctionType;
+      typedef typename OperatorType::MeshType MeshType;
       typedef typename OperatorType::RealType RealType;
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;
@@ -56,7 +57,9 @@ class tnlOperatorFunction
       
       const Operator* operator_;
       
-      const FunctionType* function;         
+      const FunctionType* function;
+      
+      template< typename, typename > friend class tnlMeshFunctionEvaluator;
 };
 
 #endif	/* TNLOPERATORFUNCTION_H */

@@ -49,6 +49,7 @@ class tnlFunctionEvaluatorTraverserUserData
         functionCoefficient( &functionCoefficient ),
         dofVectorCoefficient( &dofVectorCoefficient )
       {};
+            
 };
 
 

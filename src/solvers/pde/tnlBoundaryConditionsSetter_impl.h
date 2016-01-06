@@ -18,37 +18,37 @@
 #ifndef TNLBOUNDARYCONDITIONSSETTER_IMPL_H
 #define	TNLBOUNDARYCONDITIONSSETTER_IMPL_H
 
-template< typename Mesh,
-          typename DofVector,
+#include <type_traits>
+
+template< typename MeshFunction,
           typename BoundaryConditions >
    template< typename EntityType >
 void
-tnlBoundaryConditionsSetter< Mesh, DofVector, BoundaryConditions >::
-apply( const RealType& time,
-        const Mesh& mesh,
-        const BoundaryConditions& boundaryConditions,
-        DofVector& u ) const
+tnlBoundaryConditionsSetter< MeshFunction, BoundaryConditions >::
+apply( const BoundaryConditions& boundaryConditions,
+       const RealType& time,
+       MeshFunction& u )
 {
-   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlHostDevice )
+   if( std::is_same< DeviceType, tnlHost >::value )
    {
       TraverserUserData userData( time, boundaryConditions, u );
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
-                                                    ( mesh,
+                                                    ( u.getMesh(),
                                                       userData );
    }
-   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlCudaDevice )
+   if( std::is_same< DeviceType, tnlCuda >::value )
    {
       RealType* kernelTime = tnlCuda::passToDevice( time );
       BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
-      DofVector* kernelU = tnlCuda::passToDevice( u );
+      MeshFunction* kernelU = tnlCuda::passToDevice( u );
       TraverserUserData userData( *kernelTime, *kernelBoundaryConditions, *kernelU );
       checkCudaDevice;
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
-                                                    ( mesh,
+                                                    ( u.getMesh(),
                                                       userData );
       tnlCuda::freeFromDevice( kernelTime );
       tnlCuda::freeFromDevice( kernelBoundaryConditions );

@@ -18,9 +18,11 @@
 #ifndef TNLEXACTOPERATORFUNCTION_H
 #define	TNLEXACTOPERATORFUNCTION_H
 
+#include <functions/tnlFunction.h>
+
 template< typename Operator,
           typename Function >
-class tnlExactOperatorFunction
+class tnlExactOperatorFunction : public tnlFunction< Operator::Dimensions, AnalyticFunction >
 {   
    public:
       

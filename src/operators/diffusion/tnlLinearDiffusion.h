@@ -45,7 +45,10 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;      
-      enum { Dimensions = MeshType::meshDimensions };
+      
+      static const int Dimensions = MeshType::meshDimensions;
+      
+      static constexpr int getMeshEntityDimensions() { return Dimensions; }
       
       template< int EntityDimensions = Dimensions >
       using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;
@@ -93,8 +96,12 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
-      typedef Index IndexType;
-      enum { Dimensions = MeshType::meshDimensions };
+      typedef Index IndexType;      
+      
+      static const int Dimensions = MeshType::meshDimensions;
+      
+      static constexpr int getMeshEntityDimensions() { return Dimensions; }
+
       
       template< int EntityDimensions = Dimensions >
       using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;      
@@ -142,7 +149,10 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      enum { Dimensions = MeshType::meshDimensions };
+
+      static const int Dimensions = MeshType::meshDimensions;
+      
+      static constexpr int getMeshEntityDimensions() { return Dimensions; }      
 
       template< int EntityDimensions = Dimensions >
       using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;

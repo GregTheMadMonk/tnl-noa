@@ -34,18 +34,18 @@
  */
 template< typename OutMeshFunction,
           typename InFunction >
-class tnlMeshFunctionEvaluator
+class tnlMeshFunctionEvaluator : public tnlFunction< OutMeshFunction::getMeshEntityDimensions(), MeshFunction >
 {
    public:
       typedef typename OutMeshFunction::MeshType MeshType;
       typedef typename MeshType::RealType MeshRealType;
       typedef typename MeshType::DeviceType MeshDeviceType;
       typedef typename MeshType::IndexType MeshIndexType;
-      typedef typename OutMeshFunction::Real RealType;
+      typedef typename OutMeshFunction::RealType RealType;
       
       const static int meshEntityDimensions = OutMeshFunction::entityDimensions;
       
-      static_assert( MeshType::meshDimensions == InFunction::Dimensions, 
+      static_assert( MeshType::meshDimensions == InFunction::getDimensions(), 
          "Input function and the mesh of the mesh function have both different number of dimensions." );
       
       static void evaluate( OutMeshFunction& meshFunction,
@@ -111,6 +111,7 @@ template< typename OutMeshFunction,
           typename Operator,
           typename Function >
 class tnlMeshFunctionEvaluator< OutMeshFunction, tnlOperatorFunction< Operator, Function > >
+ : public tnlFunction< OutMeshFunction::getMeshEntityDimensions(), MeshFunction >
 {
    public:
       
@@ -118,7 +119,7 @@ class tnlMeshFunctionEvaluator< OutMeshFunction, tnlOperatorFunction< Operator, 
       typedef typename MeshType::RealType MeshRealType;
       typedef typename MeshType::DeviceType MeshDeviceType;
       typedef typename MeshType::IndexType MeshIndexType;
-      typedef typename OutMeshFunction::Real RealType;
+      typedef typename OutMeshFunction::RealType RealType;
       typedef tnlOperatorFunction< Operator, Function > OperatorFunctionType;
       
       static_assert( std::is_same< MeshType, typename OperatorFunctionType::MeshType >::value, 
@@ -136,9 +137,10 @@ class tnlMeshFunctionEvaluator< OutMeshFunction, tnlOperatorFunction< Operator, 
             
       class TraverserUserData
       {
-         typedef OperatorFunctionType InFunctionType;
-         
          public:
+            
+            typedef OperatorFunctionType InFunctionType;
+         
             TraverserUserData( const OperatorFunctionType* operatorFunction,              
                                const RealType* time,
                                OutMeshFunction* meshFunction,
@@ -167,6 +169,7 @@ template< typename OutMeshFunction,
           typename BoundaryOperator,
           typename Function >
 class tnlMeshFunctionEvaluator< OutMeshFunction, tnlBoundaryOperatorFunction< BoundaryOperator, Function > >
+ : public tnlFunction< OutMeshFunction::getMeshEntityDimensions(), MeshFunction >
 {
    public:
       
@@ -174,7 +177,7 @@ class tnlMeshFunctionEvaluator< OutMeshFunction, tnlBoundaryOperatorFunction< Bo
       typedef typename MeshType::RealType MeshRealType;
       typedef typename MeshType::DeviceType MeshDeviceType;
       typedef typename MeshType::IndexType MeshIndexType;
-      typedef typename OutMeshFunction::Real RealType;
+      typedef typename OutMeshFunction::RealType RealType;
       typedef tnlBoundaryOperatorFunction< BoundaryOperator, Function > BoundaryOperatorFunctionType;
       
       static_assert( std::is_same < MeshType, typename BoundaryOperatorFunctionType::MeshType >::value, 
@@ -222,18 +225,20 @@ template< typename MeshType,
           typename UserData > 
 class tnlMeshFunctionEvaluatorEntitiesProcessor
 {
-   template< typename EntityType >
-   __cuda_callable__
-   static inline void processEntity( const MeshType& mesh,
-                                     UserData& userData,
-                                     const EntityType& entity )
-   {
-      typedef tnlFunctionAdapter< MeshType, typename UserData::InFunction > FunctionAdapter;
-      ( *userData.meshFunction )( entity ) = 
-         *userData.outFunctionMultiplicator * ( *userData.meshFunction )( entity ) +
-         *userData.inFunctionMultiplicator *
-         FunctionAdapter::getValue( *userData.function, entity, *userData.time );
-   }
+   public:
+
+      template< typename EntityType >
+      __cuda_callable__
+      static inline void processEntity( const MeshType& mesh,
+                                        UserData& userData,
+                                        const EntityType& entity )
+      {
+         typedef tnlFunctionAdapter< MeshType, typename UserData::InFunctionType > FunctionAdapter;
+         ( *userData.meshFunction )( entity ) = 
+            *userData.outFunctionMultiplicator * ( *userData.meshFunction )( entity ) +
+            *userData.inFunctionMultiplicator *
+            FunctionAdapter::getValue( *userData.function, entity, *userData.time );
+      }
 };
 
 

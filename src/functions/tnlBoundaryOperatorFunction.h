@@ -52,7 +52,9 @@ class tnlBoundaryOperatorFunction
       
       const BoundaryOperator* boundaryOperator;
       
-      const FunctionType* function;         
+      const FunctionType* function;
+      
+      template< typename, typename > friend class tnlMeshFunctionEvaluator;
 };
 
 

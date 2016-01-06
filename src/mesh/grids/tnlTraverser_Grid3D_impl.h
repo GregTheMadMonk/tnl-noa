@@ -91,7 +91,7 @@ processAllEntities( const GridType& grid,
       
    tnlGridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
       grid,
-      CoordinatesType( 0, 0 ),
+      CoordinatesType( 0, 0, 0 ),
       grid.getDimensions() - CoordinatesType( 1, 1, 1 ),
       CoordinatesType(),
       CoordinatesType(),

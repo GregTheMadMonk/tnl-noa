@@ -29,7 +29,9 @@ class tnlExactLinearDiffusion< 1 > : public tnlFunction< 1, AnalyticFunction >
 {
    public:
 
-      static tnlString getType();
+      static const int Dimensions = 1;
+      
+      static tnlString getType();      
    
       template< typename Function >
       __cuda_callable__ inline
@@ -43,7 +45,9 @@ class tnlExactLinearDiffusion< 2 > : public tnlFunction< 2, AnalyticFunction >
 {
    public:
       
-      static tnlString getType();
+      static const int Dimensions = 2;
+      
+      static tnlString getType();      
 
       template< typename Function >
       __cuda_callable__ inline
@@ -56,6 +60,8 @@ template<>
 class tnlExactLinearDiffusion< 3 > : public tnlFunction< 3 >
 {
    public:
+      
+      static const int Dimensions = 3;
       
       static tnlString getType();
 

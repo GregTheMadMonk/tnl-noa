@@ -73,12 +73,12 @@ evaluateEntities( OutMeshFunction& meshFunction,
                   const RealType& inFunctionMultiplicator,
                   EntitiesType entitiesType )
 {
-   typedef typename MeshType::template MeshEntities< OutMeshFunction::entityDimensions > MeshEntityType;
+   typedef typename MeshType::template MeshEntity< OutMeshFunction::getMeshEntityDimensions() > MeshEntityType;
    typedef tnlMeshFunctionEvaluatorEntitiesProcessor< MeshType, TraverserUserData > EntitiesProcessor;
   
    if( std::is_same< MeshDeviceType, tnlHost >::value )
    {
-      TraverserUserData userData( &meshFunction, &function, &time, &outFunctionMultiplicator, &inFunctionMultiplicator );
+      TraverserUserData userData( &function, &time, &meshFunction, &outFunctionMultiplicator, &inFunctionMultiplicator );
       tnlTraverser< MeshType, MeshEntityType > meshTraverser;
       switch( entitiesType )
       {
@@ -89,7 +89,7 @@ evaluateEntities( OutMeshFunction& meshFunction,
                                                        userData );
             break;
          case interior:
-            meshTraverser.template processInteriroEntities< TraverserUserData,
+            meshTraverser.template processInteriorEntities< TraverserUserData,
                                                             EntitiesProcessor >
                                                           ( meshFunction.getMesh(),
                                                             userData );
@@ -158,14 +158,14 @@ evaluate( OutMeshFunction& meshFunction,
           const RealType& outFunctionMultiplicator,
           const RealType& inFunctionMultiplicator )
 {
-   typedef typename MeshType::template MeshEntities< OutMeshFunction::entityDimensions > MeshEntityType;
+   typedef typename MeshType::template MeshEntity< OutMeshFunction::getMeshEntityDimensions() > MeshEntityType;
    typedef tnlMeshFunctionEvaluatorEntitiesProcessor< MeshType, TraverserUserData > EntitiesProcessor;
    
    if( std::is_same< MeshDeviceType, tnlHost >::value )
    {
       TraverserUserData userData( &operatorFunction, &time, &meshFunction, &outFunctionMultiplicator, &inFunctionMultiplicator );
       tnlTraverser< MeshType, MeshEntityType > meshTraverser;
-      meshTraverser.template processInterirorEntities< TraverserUserData, EntitiesProcessor >
+      meshTraverser.template processInteriorEntities< TraverserUserData, EntitiesProcessor >
          ( meshFunction.getMesh(),
            userData );
       
@@ -213,7 +213,7 @@ evaluate( OutMeshFunction& meshFunction,
           const RealType& outFunctionMultiplicator,
           const RealType& inFunctionMultiplicator )
 {
-   typedef typename MeshType::template MeshEntities< OutMeshFunction::entityDimensions > MeshEntityType;
+   typedef typename MeshType::template MeshEntity< OutMeshFunction::getMeshEntityDimensions() > MeshEntityType;
    typedef tnlMeshFunctionEvaluatorEntitiesProcessor< MeshType, TraverserUserData > EntitiesProcessor;
    
    if( std::is_same< MeshDeviceType, tnlHost >::value )
@@ -229,7 +229,7 @@ evaluate( OutMeshFunction& meshFunction,
    {      
       OutMeshFunction* kernelMeshFunction = tnlCuda::passToDevice( meshFunction );
       Function* kernelFunction = tnlCuda::passToDevice( *operatorFunction.function );
-      BoundaryOperator* kernelOperator = tnlCuda::passToDevice( *operatorFunction.operator_ );
+      BoundaryOperator* kernelOperator = tnlCuda::passToDevice( *operatorFunction.boundaryOperator );
       BoundaryOperatorFunctionType auxOperatorFunction( *kernelOperator, *kernelFunction );
       BoundaryOperatorFunctionType* kernelOperatorFunction = tnlCuda::passToDevice( auxOperatorFunction );
       RealType* kernelTime = tnlCuda::passToDevice( time );

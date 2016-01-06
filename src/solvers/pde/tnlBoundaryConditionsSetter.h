@@ -46,13 +46,12 @@ class tnlBoundaryConditionsSetterTraverserUserData
 };
 
 
-template< typename Mesh,
-          typename MeshFunction,
+template< typename MeshFunction,
           typename BoundaryConditions >
 class tnlBoundaryConditionsSetter
 {
    public:
-      typedef Mesh MeshType;
+      typedef typename MeshFunction::MeshType MeshType;
       typedef typename MeshFunction::RealType RealType;
       typedef typename MeshFunction::DeviceType DeviceType;
       typedef typename MeshFunction::IndexType IndexType;
@@ -61,11 +60,10 @@ class tnlBoundaryConditionsSetter
          MeshFunction,
          BoundaryConditions > TraverserUserData;
 
-      template< typename EntityType >
-      void apply( const RealType& time,
-                  const MeshType& mesh,
-                  const BoundaryConditions& boundaryConditions,
-                  MeshFunction& u ) const;      
+      template< typename EntityType = typename MeshType::Cell >
+      static void apply( const BoundaryConditions& boundaryConditions,
+                         const RealType& time,
+                         MeshFunction& u );      
      
       class TraverserBoundaryEntitiesProcessor
       {
