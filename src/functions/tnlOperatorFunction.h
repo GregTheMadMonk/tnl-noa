@@ -21,29 +21,25 @@
 #include <type_traits>
 #include <core/tnlCuda.h>
 
+/***
+ * This class evaluates given operator on given function. The image is defined only
+ * for the interior mesh entities.
+ */
 template< typename Operator,
-          typename Function,
-          typename BoundaryConditions = Operator >
+          typename Function >
 class tnlOperatorFunction
-{
-   //static_assert( std::is_same< typename Operator::MeshType, typename MeshFunction::MeshType >::value,
-   //               "Operator and MeshFunction have different mesh type." );
-   static_assert( std::is_same< typename Operator::MeshType, typename BoundaryConditions::MeshType >::value,
-                  "Operator and BoundaryConditions have different mesh type." );
-   
+{   
    public:
       
       typedef Operator OperatorType;
       typedef Function FunctionType;
-      typedef BoundaryConditions BoundaryConditionsType;
       typedef typename OperatorType::RealType RealType;
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;
       
       tnlOperatorFunction(
          const OperatorType& operator_,
-         const FunctionType& function,
-         const BoundaryConditionsType& boundaryConditions );
+         const FunctionType& function );
       
       template< typename MeshEntity >
       __cuda_callable__
@@ -53,14 +49,9 @@ class tnlOperatorFunction
       
    protected:
       
-      const Operator& operator_;
+      const Operator* operator_;
       
-      const FunctionType& function;
-      
-      const BoundaryConditions& boundaryConditions;
-         
+      const FunctionType* function;         
 };
-
-
 #endif	/* TNLOPERATORFUNCTION_H */
 

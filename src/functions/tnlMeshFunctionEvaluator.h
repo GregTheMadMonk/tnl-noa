@@ -20,6 +20,7 @@
 
 #include <mesh/tnlGrid.h>
 #include <functions/tnlMeshFunction.h>
+#include <functions/tnlOperatorFunction.h>
 
 template< typename OutMeshFunction,
           typename InFunction >
@@ -87,36 +88,54 @@ class tnlMeshFunctionEvaluator
       };
 }; 
 
-/*template< int Dimensions,
-          typename MeshReal1,
-          typename MeshReal2,
-          typename MeshDevice1,
-          typename MeshDevice2,
-          typename MeshIndex1,
-          typename MeshIndex2,
-          int MeshEntityDimensions,
-          typename Real >
-class tnlMeshFunctionEvaluator< tnlMeshFunction< tnlGrid< Dimensions, MeshReal1, MeshDevice1, MeshIndex1 >, MeshEntityDimensions, Real >,
-                                tnlMeshFunction< tnlGrid< Dimensions, MeshReal2, MeshDevice2, MeshIndex2 >, MeshEntityDimensions, Real > >
+template< typename OutMeshFunction,
+          typename Operator,
+          typename Function >
+class tnlMeshFunctionEvaluator< OutMeshFunction, tnlOperatorFunction< Operator, Function > >
 {
    public:
       
-      typedef tnlGrid< Dimensions, MeshReal1, MeshDevice1, MeshIndex1 > Mesh1;
-      typedef tnlGrid< Dimensions, MeshReal2, MeshDevice2, MeshIndex2 > Mesh2;
-      typedef tnlMeshFunction< Mesh1, MeshEntityDimensions, Real > OutMeshFunction;
-      typedef tnlMeshFunction< Mesh2, MeshEntityDimensions, Real > InFunction;
+      typedef typename OutMeshFunction::MeshType MeshType;
+      typedef typename MeshType::RealType MeshRealType;
+      typedef typename MeshType::DeviceType MeshDeviceType;
+      typedef typename MeshType::IndexType MeshIndexType;
+      typedef typename OutMeshFunction::Real RealType;
+      typedef tnlOperatorFunction< Operator, Function > OperatorFunctionType;
       
-      static void assign( OutMeshFunction& f1,
-                          const InFunction& f2 )
+      static void evaluateAllEntities( OutMeshFunction& meshFunction,
+                                       const OperatorFunctionType& function,                          
+                                       const RealType& time = 0.0,
+                                       const RealType& outFunctionMultiplicator = 0.0,
+                                       const RealType& inFunctionMultiplicator = 1.0 )
       {
-         if( f1.getMesh().getDimensions() == f2.getMesh().getDimensions() )
-            f1.getData() = f2.getData();
-         else
-         {
-            //TODO: Interpolace
-         }
+         evaluateInteriorEntities( meshFunction, function, time, outFunctionMultiplicator, inFunctionMultiplicator );
       };
-};*/
+      
+      static void evaluateInteriorEntities( OutMeshFunction& meshFunction,
+                                            const OperatorFunctionType& function,                          
+                                            const RealType& time = 0.0,
+                                            const RealType& outFunctionMultiplicator = 0.0,
+                                            const RealType& inFunctionMultiplicator = 1.0 );
+      
+      class TraverserUserData
+      {
+         public:
+            TraverserUserData( const OperatorFunctionType* operatorFunction,              
+                               const RealType* time,
+                               OutMeshFunction* meshFunction,
+                               const RealType* outFunctionMultiplicator,
+                               const RealType* inFunctionMultiplicator )
+            : meshFunction( meshFunction ), operatorFunction( operatorFunction ),time( time ), 
+              outFunctionMultiplicator( outFunctionMultiplicator ),
+              inFunctionMultiplicator( inFunctionMultiplicator ){}
 
+         protected:
+            OutMeshFunction* meshFunction;            
+            const OperatorFunctionType* operatorFunction;
+            const RealType *time, *outFunctionMultiplicator, *inFunctionMultiplicator;
+            
+      };
+
+};
 #endif	/* TNLMESHFUNCTIONEVALUATOR_H */
 

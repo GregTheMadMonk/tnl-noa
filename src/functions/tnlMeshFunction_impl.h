@@ -218,18 +218,7 @@ tnlMeshFunction< Mesh, MeshEntityDimensions, Real >&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator = ( const Function& f )
 {
-   if( std::is_void< typename Function::DeviceType >::value ||
-       std::is_same< typename Function::DeviceType, DeviceType >::value )
-   {
-      tnlFunctionEvaluator< ThisType, Function >  evaluator;
-      evaluator.assignment( f, *this );
-      return *this;
-   }
-   if( Function::getFunctionType() == MeshFunction )
-   {
-      tnlMeshFunctionEvaluator< ThisType, Function >::assign( f, *this );
-      return *this;
-   }
+   tnlMeshFunctionEvaluator< ThisType, Function >::evaluateAllEntities( *this, f );
    return *this;
 }
 
@@ -241,18 +230,7 @@ tnlMeshFunction< Mesh, MeshEntityDimensions, Real >&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator += ( const Function& f )
 {
-   if( std::is_void< typename Function::DeviceType >::value ||
-       std::is_same< typename Function::DeviceType, DeviceType >::value )
-   {
-      tnlFunctionEvaluator< ThisType, Function >  evaluator;
-      evaluator.assignment( f, *this, 1.0, 1.0 );
-      return *this;
-   }
-   if( Function::getFunctionType() == MeshFunction )
-   {
-      tnlMeshFunctionEvaluator< ThisType, Function >::assign( f, *this );
-      return *this;
-   }
+   tnlMeshFunctionEvaluator< ThisType, Function >::evaluateAllEntities( *this, f, 1.0, 1.0 );
    return *this;
 }
 
@@ -264,22 +242,9 @@ tnlMeshFunction< Mesh, MeshEntityDimensions, Real >&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator -= ( const Function& f )
 {
-   if( std::is_void< typename Function::DeviceType >::value ||
-       std::is_same< typename Function::DeviceType, DeviceType >::value )
-   {
-      tnlFunctionEvaluator< ThisType, Function >  evaluator;
-      evaluator.assignment( f, *this );
-      return *this;
-   }
-   if( Function::getFunctionType() == MeshFunction )
-   {
-      tnlMeshFunctionEvaluator< ThisType, Function >::assign( f, *this, 1.0, -1.0 );
-      return *this;
-   }
+   tnlMeshFunctionEvaluator< ThisType, Function >::evaluateAllEntities( *this, f, 1.0, -1.0 );
    return *this;
 }
-
-
 
 template< typename Mesh,
           int MeshEntityDimensions,

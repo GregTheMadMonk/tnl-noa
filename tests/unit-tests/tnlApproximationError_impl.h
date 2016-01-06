@@ -46,12 +46,12 @@ getError( const ExactOperator& exactOperator,
 {
    typedef tnlMeshFunction< MeshType > MeshFunction;
    typedef tnlDirichletBoundaryConditions< MeshType, tnlConstantFunction< MeshType::meshDimensions > > BoundaryConditions;
-   typedef tnlOperatorFunction< ApproximateOperator, Function, BoundaryConditions > OperatorFunction;
+   typedef tnlOperatorFunction< ApproximateOperator, Function > OperatorFunction;
    typedef tnlExactOperatorFunction< ExactOperator, Function > ExactOperatorFunction;
    
    tnlMeshFunction< MeshType > exactU( mesh ), u( mesh ), v( mesh );
    BoundaryConditions boundaryConditions;
-   OperatorFunction operatorFunction( approximateOperator, function, boundaryConditions );
+   OperatorFunction operatorFunction( approximateOperator, function );
    ExactOperatorFunction exactOperatorFunction( exactOperator, function );
 
    exactU = exactOperatorFunction;

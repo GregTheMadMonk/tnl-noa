@@ -24,11 +24,9 @@ template< typename Operator,
 tnlOperatorFunction< Operator, Function >::
 tnlOperatorFunction(
    const OperatorType& operator_,
-   const MeshFunctionType& function,
-   const BoundaryConditionsType& boundaryConditions )
-:  operator_( operator_ ),
-   function( function ),
-   boundaryConditions( boundaryConditions )
+   const FunctionType& function )
+:  operator_( &operator_ ),
+   function( &function )
 {   
 }
 
@@ -41,12 +39,11 @@ tnlOperatorFunction< Operator, Function >::operator()(
    const MeshEntity& meshEntity,
    const RealType& time )
 {
-   static_assert( MeshEntity::entityDimensions == Function::getMeshEntityDimensions(), "Wrong mesh entity dimensions." );
-   if( meshEntity.isBoundaryEntity() )
-      return boundaryConditions.getValue( meshEntity, function.getData(), time );
-   return operator_.getValue( meshEntity, function.getData(), time );
+   //static_assert( MeshEntity::entityDimensions == Operator::getMeshEntityDimensions(), "Wrong mesh entity dimensions." );
+   tnlAssert( ! meshEntity.isBoundaryEntity(), 
+      cerr << "Operator functions are defined only for interior mesh entities. Entity = " << meshEntity );
+   return operator_->getValue( meshEntity, function->getData(), time );
 }
-
 
 #endif	/* TNLOPERATORFUNCTION_IMPL_H */
 
