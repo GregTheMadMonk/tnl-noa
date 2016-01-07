@@ -49,19 +49,18 @@ getError( const ExactOperator& exactOperator,
    typedef tnlMeshFunction< MeshType > MeshFunction;
    typedef tnlDirichletBoundaryConditions< MeshType, tnlConstantFunction< MeshType::meshDimensions > > DirichletBoundaryConditions;
    typedef tnlBoundaryOperatorFunction< DirichletBoundaryConditions, MeshFunction > BoundaryOperatorFunction;
-   typedef tnlOperatorFunction< ApproximateOperator, Function > OperatorFunction;
+   typedef tnlOperatorFunction< ApproximateOperator, MeshFunction > OperatorFunction;
    typedef tnlExactOperatorFunction< ExactOperator, Function > ExactOperatorFunction;
    
    tnlMeshFunction< MeshType > exactU( mesh ), u( mesh ), v( mesh );
-   OperatorFunction operatorFunction( approximateOperator, function );
+   OperatorFunction operatorFunction( approximateOperator, v );
    ExactOperatorFunction exactOperatorFunction( exactOperator, function );
    DirichletBoundaryConditions boundaryConditions;
    BoundaryOperatorFunction boundaryOperatorFunction( boundaryConditions, u );
 
    exactU = exactOperatorFunction;
-   u = function;
-
-   u.save( "function" ) ;
+   v = function;
+   v.save( "function" ) ;
    
    u = operatorFunction;
 

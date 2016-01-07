@@ -23,6 +23,10 @@
 #include <functions/tnlOperatorFunction.h>
 #include <functions/tnlBoundaryOperatorFunction.h>
 
+template< typename OutMeshFunction,
+          typename InFunction,
+          typename Real >
+class tnlMeshFunctionEvaluatorTraverserUserData;
 
 /***
  * General mesh function evaluator. As an input function any type implementing
@@ -42,6 +46,8 @@ class tnlMeshFunctionEvaluator : public tnlFunction< OutMeshFunction::getMeshEnt
       typedef typename MeshType::DeviceType MeshDeviceType;
       typedef typename MeshType::IndexType MeshIndexType;
       typedef typename OutMeshFunction::RealType RealType;
+      typedef tnlMeshFunctionEvaluatorTraverserUserData< OutMeshFunction, InFunction, RealType > TraverserUserData;
+
       
       const static int meshEntityDimensions = OutMeshFunction::entityDimensions;
       
@@ -78,26 +84,6 @@ class tnlMeshFunctionEvaluator : public tnlFunction< OutMeshFunction::getMeshEnt
                                     EntitiesType entitiesType );
 
       
-      class TraverserUserData
-      {
-         public:
-            
-            typedef InFunction InFunctionType;
-            
-            TraverserUserData( const InFunction* function,
-                               const RealType* time,
-                               OutMeshFunction* meshFunction,
-                               const RealType* outFunctionMultiplicator,
-                               const RealType* inFunctionMultiplicator )
-            : meshFunction( meshFunction ), function( function ), time( time ), 
-              outFunctionMultiplicator( outFunctionMultiplicator ),
-              inFunctionMultiplicator( inFunctionMultiplicator ){}
-
-            OutMeshFunction* meshFunction;            
-            const InFunction* function;
-            const RealType *time, *outFunctionMultiplicator, *inFunctionMultiplicator;
-            
-      };
 }; 
 
 /****
@@ -120,6 +106,7 @@ class tnlMeshFunctionEvaluator< OutMeshFunction, tnlOperatorFunction< Operator, 
       typedef typename MeshType::IndexType MeshIndexType;
       typedef typename OutMeshFunction::RealType RealType;
       typedef tnlOperatorFunction< Operator, Function > OperatorFunctionType;
+      typedef tnlMeshFunctionEvaluatorTraverserUserData< OutMeshFunction, OperatorFunctionType, RealType > TraverserUserData;
       
       static_assert( std::is_same< MeshType, typename OperatorFunctionType::MeshType >::value, 
          "Input function and the mesh of the mesh function have both different number of dimensions." );
@@ -133,28 +120,6 @@ class tnlMeshFunctionEvaluator< OutMeshFunction, tnlOperatorFunction< Operator, 
                             const RealType& time = 0.0,
                             const RealType& outFunctionMultiplicator = 0.0,
                             const RealType& inFunctionMultiplicator = 1.0 );
-            
-      class TraverserUserData
-      {
-         public:
-            
-            typedef OperatorFunctionType InFunctionType;
-         
-            TraverserUserData( const OperatorFunctionType* operatorFunction,              
-                               const RealType* time,
-                               OutMeshFunction* meshFunction,
-                               const RealType* outFunctionMultiplicator,
-                               const RealType* inFunctionMultiplicator )
-            : meshFunction( meshFunction ), function( operatorFunction ),time( time ), 
-              outFunctionMultiplicator( outFunctionMultiplicator ),
-              inFunctionMultiplicator( inFunctionMultiplicator ){}
-
-            OutMeshFunction* meshFunction;            
-            const OperatorFunctionType* function;
-            const RealType *time, *outFunctionMultiplicator, *inFunctionMultiplicator;
-            
-      };
-
 };
 
 /****
@@ -177,6 +142,8 @@ class tnlMeshFunctionEvaluator< OutMeshFunction, tnlBoundaryOperatorFunction< Bo
       typedef typename MeshType::IndexType MeshIndexType;
       typedef typename OutMeshFunction::RealType RealType;
       typedef tnlBoundaryOperatorFunction< BoundaryOperator, Function > BoundaryOperatorFunctionType;
+      typedef tnlMeshFunctionEvaluatorTraverserUserData< OutMeshFunction, BoundaryOperatorFunctionType, RealType > TraverserUserData;
+
       
       static_assert( std::is_same < MeshType, typename BoundaryOperatorFunctionType::MeshType >::value, 
          "Input boundary operator mesh type and the output mesh function mesh are different types." );
@@ -195,27 +162,32 @@ class tnlMeshFunctionEvaluator< OutMeshFunction, tnlBoundaryOperatorFunction< Bo
                                             const RealType& time = 0.0,
                                             const RealType& outFunctionMultiplicator = 0.0,
                                             const RealType& inFunctionMultiplicator = 1.0 );
-      
-      class TraverserUserData
-      {
-         public:
-            typedef BoundaryOperatorFunctionType InFunctionType;
-            
-            TraverserUserData( const BoundaryOperatorFunctionType* operatorFunction,              
-                               const RealType* time,
-                               OutMeshFunction* meshFunction,
-                               const RealType* outFunctionMultiplicator,
-                               const RealType* inFunctionMultiplicator )
-            : meshFunction( meshFunction ), function( operatorFunction ), time( time ), 
-              outFunctionMultiplicator( outFunctionMultiplicator ),
-              inFunctionMultiplicator( inFunctionMultiplicator ){}
-
-            OutMeshFunction* meshFunction;            
-            const BoundaryOperatorFunctionType* function;
-            const RealType *time, *outFunctionMultiplicator, *inFunctionMultiplicator;
-            
-      };
 };
+
+template< typename OutMeshFunction,
+          typename InFunction,
+          typename Real >
+class tnlMeshFunctionEvaluatorTraverserUserData
+{
+   public:
+
+      typedef InFunction InFunctionType;
+
+      tnlMeshFunctionEvaluatorTraverserUserData( const InFunction* function,
+                                                 const Real* time,
+                                                 OutMeshFunction* meshFunction,
+                                                 const Real* outFunctionMultiplicator,
+                                                 const Real* inFunctionMultiplicator )
+      : meshFunction( meshFunction ), function( function ), time( time ), 
+        outFunctionMultiplicator( outFunctionMultiplicator ),
+        inFunctionMultiplicator( inFunctionMultiplicator ){}
+
+      OutMeshFunction* meshFunction;            
+      const InFunction* function;
+      const Real *time, *outFunctionMultiplicator, *inFunctionMultiplicator;
+
+};
+
 
 template< typename MeshType,
           typename UserData > 

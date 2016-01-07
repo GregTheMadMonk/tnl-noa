@@ -169,7 +169,8 @@ template< typename Mesh,
 __cuda_callable__
 typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType& 
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
-operator()( const EntityType& meshEntity )
+operator()( const EntityType& meshEntity,
+            const RealType& time )
 {
    static_assert( EntityType::entityDimensions == MeshEntityDimensions, "Calling with wrong EntityType -- entity dimensions do not match." );
    return this->data[ meshEntity.getIndex() ];
@@ -182,7 +183,8 @@ template< typename Mesh,
 __cuda_callable__
 const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType& 
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
-operator()( const EntityType& meshEntity ) const
+operator()( const EntityType& meshEntity,
+            const RealType& time ) const
 {
    static_assert( EntityType::entityDimensions == MeshEntityDimensions, "Calling with wrong EntityType -- entity dimensions do not match." );
    return this->data[ meshEntity.getIndex() ];

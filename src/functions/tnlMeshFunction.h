@@ -78,11 +78,13 @@ class tnlMeshFunction :
       
       template< typename EntityType >
       __cuda_callable__
-      RealType& operator()( const EntityType& meshEntity );
+      RealType& operator()( const EntityType& meshEntity,
+                            const RealType& time = 0.0 );
       
       template< typename EntityType >
       __cuda_callable__
-      const RealType& operator()( const EntityType& meshEntity ) const;
+      const RealType& operator()( const EntityType& meshEntity,
+                                  const RealType& time = 0.0 ) const;
       
       __cuda_callable__
       RealType& operator[]( const IndexType& meshEntityIndex );

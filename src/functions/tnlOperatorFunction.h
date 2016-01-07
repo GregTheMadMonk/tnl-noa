@@ -27,13 +27,18 @@
  * evaluates this function only on the INTERIOR mesh entities.
  */
 template< typename Operator,
-          typename Function >
-class tnlOperatorFunction : public tnlFunction< Operator::getMeshEntityDimensions(), MeshFunction >
+          typename MeshFunction >
+class tnlOperatorFunction : public tnlFunction< Operator::getMeshEntityDimensions(), ::MeshFunction >
 {   
    public:
       
+      static_assert( MeshFunction::getFunctionType() == ::MeshFunction,
+         "Only mesh functions may be used in the operator function." );
+      static_assert( std::is_same< typename Operator::MeshType, typename MeshFunction::MeshType >::value,
+          "Both, operator and mesh function must be defined on the same mesh." );
+      
       typedef Operator OperatorType;
-      typedef Function FunctionType;
+      typedef MeshFunction FunctionType;
       typedef typename OperatorType::MeshType MeshType;
       typedef typename OperatorType::RealType RealType;
       typedef typename OperatorType::DeviceType DeviceType;
