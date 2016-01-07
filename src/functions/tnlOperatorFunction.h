@@ -48,9 +48,9 @@ class tnlOperatorFunction : public tnlFunction< Operator::getMeshEntityDimension
       __cuda_callable__
       RealType operator()(
          const MeshEntity& meshEntity,
-         const RealType& time )
+         const RealType& time = 0 ) const
       {
-         return operator_->getValue( meshEntity, function->getData(), time );
+         return operator_->getValue( meshEntity, *function, time );
       }
       
    protected:

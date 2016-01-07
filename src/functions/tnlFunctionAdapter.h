@@ -29,7 +29,6 @@
  */
 template< typename Mesh,
           typename Function,
-          //tnlFunctionType functionType = Function::functionType >
           int functionType = Function::getFunctionType() >
 class tnlFunctionAdapter
 {
@@ -80,7 +79,7 @@ class tnlFunctionAdapter< Mesh, Function, MeshFunction >
                                 const EntityType& meshEntity,
                                 const RealType& time )
       {         
-         return function( meshEntity );
+         return function( meshEntity, time );
       }
 };
 

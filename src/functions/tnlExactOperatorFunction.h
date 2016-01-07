@@ -28,6 +28,8 @@ class tnlExactOperatorFunction : public tnlFunction< Operator::Dimensions, Analy
       
       typedef Operator OperatorType;
       typedef Function FunctionType;
+      typedef typename FunctionType::RealType RealType;
+      typedef typename FunctionType::VertexType VertexType;
       
       tnlExactOperatorFunction(
          const OperatorType& operator_,
@@ -37,7 +39,7 @@ class tnlExactOperatorFunction : public tnlFunction< Operator::Dimensions, Analy
       template< typename VertexType,
                 typename RealType = typename VertexType::RealType >
       __cuda_callable__
-      RealType operator()(
+      RealType getValue(
          const VertexType& vertex,
          const RealType& time ) const
       {

@@ -93,7 +93,6 @@ class tnlMeshFunctionEvaluator : public tnlFunction< OutMeshFunction::getMeshEnt
               outFunctionMultiplicator( outFunctionMultiplicator ),
               inFunctionMultiplicator( inFunctionMultiplicator ){}
 
-         protected:
             OutMeshFunction* meshFunction;            
             const InFunction* function;
             const RealType *time, *outFunctionMultiplicator, *inFunctionMultiplicator;
@@ -146,13 +145,12 @@ class tnlMeshFunctionEvaluator< OutMeshFunction, tnlOperatorFunction< Operator, 
                                OutMeshFunction* meshFunction,
                                const RealType* outFunctionMultiplicator,
                                const RealType* inFunctionMultiplicator )
-            : meshFunction( meshFunction ), operatorFunction( operatorFunction ),time( time ), 
+            : meshFunction( meshFunction ), function( operatorFunction ),time( time ), 
               outFunctionMultiplicator( outFunctionMultiplicator ),
               inFunctionMultiplicator( inFunctionMultiplicator ){}
 
-         protected:
             OutMeshFunction* meshFunction;            
-            const OperatorFunctionType* operatorFunction;
+            const OperatorFunctionType* function;
             const RealType *time, *outFunctionMultiplicator, *inFunctionMultiplicator;
             
       };
@@ -181,8 +179,7 @@ class tnlMeshFunctionEvaluator< OutMeshFunction, tnlBoundaryOperatorFunction< Bo
       typedef tnlBoundaryOperatorFunction< BoundaryOperator, Function > BoundaryOperatorFunctionType;
       
       static_assert( std::is_same < MeshType, typename BoundaryOperatorFunctionType::MeshType >::value, 
-         "Input function and the mesh of the mesh function have both different number of dimensions." );
-
+         "Input boundary operator mesh type and the output mesh function mesh are different types." );
       
       /***
        * Evaluate on boundary mesh entities
@@ -209,13 +206,12 @@ class tnlMeshFunctionEvaluator< OutMeshFunction, tnlBoundaryOperatorFunction< Bo
                                OutMeshFunction* meshFunction,
                                const RealType* outFunctionMultiplicator,
                                const RealType* inFunctionMultiplicator )
-            : meshFunction( meshFunction ), operatorFunction( operatorFunction ), time( time ), 
+            : meshFunction( meshFunction ), function( operatorFunction ), time( time ), 
               outFunctionMultiplicator( outFunctionMultiplicator ),
               inFunctionMultiplicator( inFunctionMultiplicator ){}
 
-         protected:
             OutMeshFunction* meshFunction;            
-            const BoundaryOperatorFunctionType* operatorFunction;
+            const BoundaryOperatorFunctionType* function;
             const RealType *time, *outFunctionMultiplicator, *inFunctionMultiplicator;
             
       };

@@ -18,6 +18,8 @@
 #ifndef TNLBOUNDARYOPERATORFUNCTION_H
 #define	TNLBOUNDARYOPERATORFUNCTION_H
 
+#include <functions/tnlFunction.h>
+
 /***
  * This class evaluates given operator on given function.
  * The main role of this type is that the mesh function evaluator
@@ -26,6 +28,7 @@
 template< typename BoundaryOperator,
           typename Function >
 class tnlBoundaryOperatorFunction
+: public tnlFunction< BoundaryOperator::MeshType::meshDimensions, MeshFunction >
 {
    public:
       
@@ -43,7 +46,7 @@ class tnlBoundaryOperatorFunction
       __cuda_callable__
       RealType operator()(
          const MeshEntity& meshEntity,
-         const RealType& time )
+         const RealType& time ) const
       {
          return boundaryOperator->getValue( meshEntity, function->getData(), time );
       }
