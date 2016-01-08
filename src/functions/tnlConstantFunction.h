@@ -20,11 +20,11 @@
 
 #include <iostream>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 template< int dimensions,
           typename Real = double >
-class tnlConstantFunction : public tnlFunction< dimensions, AnalyticConstantFunction >
+class tnlConstantFunction : public tnlDomain< dimensions, SpaceDomain >
 {
    public:
       

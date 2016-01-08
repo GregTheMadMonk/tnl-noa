@@ -18,11 +18,11 @@
 #ifndef TNLEXACTOPERATORFUNCTION_H
 #define	TNLEXACTOPERATORFUNCTION_H
 
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 template< typename Operator,
           typename Function >
-class tnlExactOperatorFunction : public tnlFunction< Operator::Dimensions, AnalyticFunction >
+class tnlExactOperatorFunction : public tnlDomain< Operator::Dimensions, SpaceDomain >
 {   
    public:
       

@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 #include <core/tnlObject.h>
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 #ifndef TNLMESHFUNCTION_H
 #define TNLMESHFUNCTION_H
@@ -26,7 +26,7 @@ template< typename Mesh,
           typename Real = typename Mesh::RealType >
 class tnlMeshFunction : 
    public tnlObject,
-   public tnlFunction< Mesh::meshDimensions, MeshFunction >
+   public tnlDomain< Mesh::meshDimensions, MeshDomain >
 {
    //static_assert( Mesh::DeviceType::DeviceType == Vector::DeviceType::DeviceType,
    //               "Both mesh and vector of a mesh function must reside on the same device.");

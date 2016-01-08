@@ -20,10 +20,10 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 template< typename Vertex >
-class tnlSinBumpsFunctionBase : public tnlFunction< Vertex::size, AnalyticFunction >
+class tnlSinBumpsFunctionBase : public tnlDomain< Vertex::size, SpaceDomain >
 {
    public:
       

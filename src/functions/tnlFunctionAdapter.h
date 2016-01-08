@@ -29,19 +29,10 @@
  */
 template< typename Mesh,
           typename Function,
-          int functionType = Function::getFunctionType() >
+          int domainType = Function::getDomainType() >
 class tnlFunctionAdapter
 {
-};
-
-/***
- * Specialization for general functions
- */
-template< typename Mesh,
-          typename Function >
-class tnlFunctionAdapter< Mesh, Function, GeneralFunction >
-{
-   public:
+      public:
       
       typedef Function FunctionType;
       typedef Mesh MeshType;
@@ -58,6 +49,58 @@ class tnlFunctionAdapter< Mesh, Function, GeneralFunction >
          return function.getValue( meshEntity, time );
       }
 };
+
+/***
+ * Specialization for analytic functions
+ */
+template< typename Mesh,
+          typename Function >
+class tnlFunctionAdapter< Mesh, Function, SpaceDomain >
+{
+   public:
+      
+      typedef Function FunctionType;
+      typedef Mesh MeshType;
+      typedef typename FunctionType::RealType  RealType;
+      typedef typename MeshType::IndexType     IndexType;      
+      typedef typename FunctionType::VertexType VertexType;
+      
+      template< typename EntityType >
+      __cuda_callable__ inline
+      static RealType getValue( const FunctionType& function,
+                                const EntityType& meshEntity,
+                                const RealType& time )
+      {         
+         return function.getValue( meshEntity.getCenter(), time );
+      }
+};
+
+/***
+ * Specialization for analytic space independent functions
+ */
+template< typename Mesh,
+          typename Function >
+class tnlFunctionAdapter< Mesh, Function, NonspaceDomain >
+{
+   public:
+      
+      typedef Function FunctionType;
+      typedef Mesh MeshType;
+      typedef typename FunctionType::RealType  RealType;
+      typedef typename MeshType::IndexType     IndexType;      
+      typedef typename FunctionType::VertexType VertexType;
+      
+      template< typename EntityType >
+      __cuda_callable__ inline
+      static RealType getValue( const FunctionType& function,
+                                const EntityType& meshEntity,
+                                const RealType& time )
+      {         
+         return function.getValue( time );
+      }
+};
+
+#ifdef UNDEF
 
 /***
  * Specialization for mesh functions
@@ -88,7 +131,7 @@ class tnlFunctionAdapter< Mesh, Function, MeshFunction >
  */
 template< typename Mesh,
           typename Function >
-class tnlFunctionAdapter< Mesh, Function, AnalyticFunction >
+class tnlFunctionAdapter< Mesh, Function, SpaceDomain >
 {
    public:
       
@@ -113,7 +156,7 @@ class tnlFunctionAdapter< Mesh, Function, AnalyticFunction >
  */
 template< typename Mesh,
           typename Function >
-class tnlFunctionAdapter< Mesh, Function, AnalyticConstantFunction >
+class tnlFunctionAdapter< Mesh, Function, SpaceDomain >
 {
    public:
       
@@ -132,7 +175,7 @@ class tnlFunctionAdapter< Mesh, Function, AnalyticConstantFunction >
          return function.getValue( time );
       }
 };
-
+#endif
 
 #endif	/* TNLFUNCTIONADAPTER_H */
 

@@ -18,7 +18,7 @@
 #ifndef TNLBOUNDARYOPERATORFUNCTION_H
 #define	TNLBOUNDARYOPERATORFUNCTION_H
 
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 /***
  * This class evaluates given operator on given function.
@@ -28,7 +28,7 @@
 template< typename BoundaryOperator,
           typename Function >
 class tnlBoundaryOperatorFunction
-: public tnlFunction< BoundaryOperator::MeshType::meshDimensions, MeshFunction >
+: public tnlDomain< BoundaryOperator::MeshType::meshDimensions, MeshBoundaryDomain >
 {
    public:
       

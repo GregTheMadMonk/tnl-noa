@@ -20,12 +20,12 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 #include <core/tnlCuda.h>
 
 template< typename Real,
           int Dimensions >
-class tnlFlowerpotFunctionBase : public tnlFunction< Dimensions, AnalyticFunction >
+class tnlFlowerpotFunctionBase : public tnlDomain< Dimensions, SpaceDomain >
 {
    public:
 

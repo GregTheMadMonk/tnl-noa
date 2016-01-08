@@ -23,7 +23,7 @@
 template< typename ExactOperator,
           typename TestFunction,
           int Dimensions >
-class tnlMeanCurvatureFlowEocRhs : public tnlFunction< Dimensions, AnalyticFunction >
+class tnlMeanCurvatureFlowEocRhs : public tnlFunction< Dimensions, SpaceDomain >
 {
    public:
 

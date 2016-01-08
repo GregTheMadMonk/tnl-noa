@@ -20,11 +20,11 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 template< int dimensions,
           typename Real = double >
-class tnlSinWaveFunctionBase : public tnlFunction< dimensions, AnalyticFunction >
+class tnlSinWaveFunctionBase : public tnlDomain< dimensions, SpaceDomain >
 {
    public:
       

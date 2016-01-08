@@ -20,11 +20,11 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 template< int dimensions,
           typename Real >
-class tnlExpBumpFunctionBase : public tnlFunction< dimensions, AnalyticFunction >
+class tnlExpBumpFunctionBase : public tnlDomain< dimensions, SpaceDomain >
 {
    public:
      

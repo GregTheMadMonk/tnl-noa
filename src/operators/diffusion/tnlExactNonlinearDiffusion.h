@@ -25,7 +25,7 @@ class tnlExactNonlinearDiffusion
 {};
 
 template< typename OperatorQ >
-class tnlExactNonlinearDiffusion< OperatorQ, 1 > : public tnlFunction< 1, AnalyticFunction >
+class tnlExactNonlinearDiffusion< OperatorQ, 1 > : public tnlFunction< 1, SpaceDomain >
 {
    public:
 
@@ -46,7 +46,7 @@ class tnlExactNonlinearDiffusion< OperatorQ, 1 > : public tnlFunction< 1, Analyt
 };
 
 template< typename OperatorQ >
-class tnlExactNonlinearDiffusion< OperatorQ, 2 > : public tnlFunction< 2, AnalyticFunction >
+class tnlExactNonlinearDiffusion< OperatorQ, 2 > : public tnlFunction< 2, SpaceDomain >
 {
    public:
 
@@ -67,7 +67,7 @@ class tnlExactNonlinearDiffusion< OperatorQ, 2 > : public tnlFunction< 2, Analyt
 };
 
 template< typename OperatorQ >
-class tnlExactNonlinearDiffusion< OperatorQ, 3 > : public tnlFunction< 3, AnalyticFunction >
+class tnlExactNonlinearDiffusion< OperatorQ, 3 > : public tnlFunction< 3, SpaceDomain >
 {
    public:
 

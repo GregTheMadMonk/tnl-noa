@@ -28,11 +28,11 @@
  */
 template< typename Operator,
           typename MeshFunction >
-class tnlOperatorFunction : public tnlFunction< Operator::getMeshEntityDimensions(), ::MeshFunction >
+class tnlOperatorFunction : public tnlDomain< Operator::getMeshEntityDimensions(), Operator::getDomainType() >
 {   
    public:
       
-      static_assert( MeshFunction::getFunctionType() == ::MeshFunction,
+      static_assert( MeshFunction::getDomainType() == MeshDomain,
          "Only mesh functions may be used in the operator function." );
       static_assert( std::is_same< typename Operator::MeshType, typename MeshFunction::MeshType >::value,
           "Both, operator and mesh function must be defined on the same mesh." );

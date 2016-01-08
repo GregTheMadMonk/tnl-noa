@@ -22,12 +22,12 @@
 #include <core/vectors/tnlStaticVector.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 template< int FunctionDimensions,
           typename Real = double,
           typename Device = tnlHost >
-class tnlTestFunction : public tnlFunction< FunctionDimensions, AnalyticFunction >
+class tnlTestFunction : public tnlDomain< FunctionDimensions, SpaceDomain >
 {
    protected:
 
