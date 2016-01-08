@@ -74,8 +74,13 @@ class tnlCylinderFunction< 1, Real > : public tnlCylinderFunctionBase< Real, 1 >
                 typename Vertex = VertexType >
 #endif   
       __cuda_callable__
-      RealType getValue( const Vertex& v,
-                         const Real& time = 0.0 ) const;
+      RealType getPartialDerivative( const Vertex& v,
+                                     const Real& time = 0.0 ) const;
+
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
+      
 };
 
 template< typename Real >
@@ -103,8 +108,13 @@ class tnlCylinderFunction< 2, Real > : public tnlCylinderFunctionBase< Real, 2 >
                 typename Vertex = VertexType >
 #endif
       __cuda_callable__
-      RealType getValue( const Vertex& v,
-                         const Real& time = 0.0 ) const;
+      RealType getPartialDerivative( const Vertex& v,
+                                     const Real& time = 0.0 ) const;
+      
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
+      
 };
 
 template< typename Real >
@@ -132,8 +142,13 @@ class tnlCylinderFunction< 3, Real > : public tnlCylinderFunctionBase< Real, 3 >
                 typename Vertex = VertexType >
 #endif   
       __cuda_callable__
-      RealType getValue( const Vertex& v,
-                         const Real& time = 0.0 ) const;
+      RealType getPartialDerivative( const Vertex& v,
+                                     const Real& time = 0.0 ) const;
+      
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
+      
 };
 
 template< int Dimensions,

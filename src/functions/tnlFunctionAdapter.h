@@ -19,13 +19,10 @@
 #define	TNLFUNCTIONADAPTER_H
 
 /***
- *  MeshType is a type of mesh on which we evaluate the function
- *  FunctionType is a type of function which we want to evaluate
- *  FunctionMeshType is a type mesh on which the function is "defined"
- *   - it can be void for analytic function given by a formula or
- *     MeshType for mesh functions
- *   - this adapter passes a vertex as a space variable to analytic functions
- *     and mesh entity index for mesh functions.
+ * MeshType is a type of mesh on which we evaluate the function.
+ * DomainType (defined in functions/tnlDomain.h) defines a domain of
+ * the function. In TNL, we mostly work with mesh functions. In this case
+ * mesh entity and time is passed to the function...
  */
 template< typename Mesh,
           typename Function,
@@ -38,7 +35,7 @@ class tnlFunctionAdapter
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
       typedef typename MeshType::IndexType     IndexType;      
-      typedef typename FunctionType::VertexType VertexType;
+      //typedef typename FunctionType::VertexType VertexType;
       
       template< typename EntityType >
       __cuda_callable__ inline
@@ -46,12 +43,13 @@ class tnlFunctionAdapter
                                 const EntityType& meshEntity,
                                 const RealType& time )
       {         
-         return function.getValue( meshEntity, time );
+         return function( meshEntity, time );
       }
 };
 
 /***
- * Specialization for analytic functions
+ * Specialization for analytic functions. In this case
+ * we pass vertex and time to the function ...
  */
 template< typename Mesh,
           typename Function >
@@ -71,12 +69,14 @@ class tnlFunctionAdapter< Mesh, Function, SpaceDomain >
                                 const EntityType& meshEntity,
                                 const RealType& time )
       {         
-         return function.getValue( meshEntity.getCenter(), time );
+         return function( meshEntity.getCenter(), time );
       }
 };
 
 /***
- * Specialization for analytic space independent functions
+ * Specialization for analytic space independent functions.
+ * Such function does not depend on any space variable and so
+ * we pass only time.
  */
 template< typename Mesh,
           typename Function >

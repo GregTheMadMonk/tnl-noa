@@ -21,7 +21,6 @@
 #include <mesh/tnlGrid.h>
 #include <functions/tnlMeshFunction.h>
 #include <functions/tnlOperatorFunction.h>
-#include <functions/tnlBoundaryOperatorFunction.h>
 
 template< typename OutMeshFunction,
           typename InFunction,
@@ -32,7 +31,8 @@ class tnlMeshFunctionEvaluatorTraverserUserData;
  * General mesh function evaluator. As an input function any type implementing
  * getValue( meshEntity, time ) may be substituted.
  * Methods:
- *  evaluate() -  evaluate the input function on ALL mesh entities of the mesh function
+ *  evaluate() -  evaluate the input function on its domain
+ *  evaluateAllEntities() - evaluate the input function on ALL mesh entities
  *  evaluateInteriorEntities() - evaluate the input function only on the INTERIOR mesh entities
  *  evaluateBoundaryEntities() - evaluate the input function only on the BOUNDARY mesh entities
  */
@@ -59,6 +59,12 @@ class tnlMeshFunctionEvaluator : public tnlDomain< OutMeshFunction::getMeshEntit
                             const RealType& time = 0.0,
                             const RealType& outFunctionMultiplicator = 0.0,
                             const RealType& inFunctionMultiplicator = 1.0 );
+
+      static void evaluateAllEntities( OutMeshFunction& meshFunction,
+                                       const InFunction& function,                          
+                                       const RealType& time = 0.0,
+                                       const RealType& outFunctionMultiplicator = 0.0,
+                                       const RealType& inFunctionMultiplicator = 1.0 );
       
       static void evaluateInteriorEntities( OutMeshFunction& meshFunction,
                                             const InFunction& function,                          
@@ -85,84 +91,6 @@ class tnlMeshFunctionEvaluator : public tnlDomain< OutMeshFunction::getMeshEntit
 
       
 }; 
-
-/****
- * Specialization of the mesh function evaluator for operator functions which are
- * defines only for the interior mesh entities. Therefore there is only one method
- *   evaluate()
- * which goes only over the interior mesh entities.
- */
-template< typename OutMeshFunction,
-          typename Operator,
-          typename Function >
-class tnlMeshFunctionEvaluator< OutMeshFunction, tnlOperatorFunction< Operator, Function > >
- : public tnlDomain< OutMeshFunction::getMeshEntityDimensions(), Operator::getDomainType() >
-{
-   public:
-      
-      typedef typename OutMeshFunction::MeshType MeshType;
-      typedef typename MeshType::RealType MeshRealType;
-      typedef typename MeshType::DeviceType MeshDeviceType;
-      typedef typename MeshType::IndexType MeshIndexType;
-      typedef typename OutMeshFunction::RealType RealType;
-      typedef tnlOperatorFunction< Operator, Function > OperatorFunctionType;
-      typedef tnlMeshFunctionEvaluatorTraverserUserData< OutMeshFunction, OperatorFunctionType, RealType > TraverserUserData;
-      
-      static_assert( std::is_same< MeshType, typename OperatorFunctionType::MeshType >::value, 
-         "Input function and the mesh of the mesh function have both different number of dimensions." );
-
-      
-      /****
-       * Evaluate on interior mesh entities
-       */
-      static void evaluate( OutMeshFunction& meshFunction,
-                            const OperatorFunctionType& function,                          
-                            const RealType& time = 0.0,
-                            const RealType& outFunctionMultiplicator = 0.0,
-                            const RealType& inFunctionMultiplicator = 1.0 );
-};
-
-/****
- * Specialization of the mesh function evaluator for boundary operator functions which are
- * defines only for the boundary mesh entities. Therefore there is only one method
- *   evaluate()
- * which goes only over the boundary mesh entities.
- */
-template< typename OutMeshFunction,
-          typename BoundaryOperator,
-          typename Function >
-class tnlMeshFunctionEvaluator< OutMeshFunction, tnlBoundaryOperatorFunction< BoundaryOperator, Function > >
- : public tnlDomain< OutMeshFunction::getMeshEntityDimensions(), MeshBoundaryDomain >
-{
-   public:
-      
-      typedef typename OutMeshFunction::MeshType MeshType;
-      typedef typename MeshType::RealType MeshRealType;
-      typedef typename MeshType::DeviceType MeshDeviceType;
-      typedef typename MeshType::IndexType MeshIndexType;
-      typedef typename OutMeshFunction::RealType RealType;
-      typedef tnlBoundaryOperatorFunction< BoundaryOperator, Function > BoundaryOperatorFunctionType;
-      typedef tnlMeshFunctionEvaluatorTraverserUserData< OutMeshFunction, BoundaryOperatorFunctionType, RealType > TraverserUserData;
-
-      
-      static_assert( std::is_same < MeshType, typename BoundaryOperatorFunctionType::MeshType >::value, 
-         "Input boundary operator mesh type and the output mesh function mesh are different types." );
-      
-      /***
-       * Evaluate on boundary mesh entities
-       */
-      static void evaluate( OutMeshFunction& meshFunction,
-                            const BoundaryOperatorFunctionType& function,                          
-                            const RealType& time = 0.0,
-                            const RealType& outFunctionMultiplicator = 0.0,
-                            const RealType& inFunctionMultiplicator = 1.0 );
-      
-      static void evaluateInteriorEntities( OutMeshFunction& meshFunction,
-                                            const BoundaryOperatorFunctionType& function,                          
-                                            const RealType& time = 0.0,
-                                            const RealType& outFunctionMultiplicator = 0.0,
-                                            const RealType& inFunctionMultiplicator = 1.0 );
-};
 
 template< typename OutMeshFunction,
           typename InFunction,

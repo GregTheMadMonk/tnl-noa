@@ -32,12 +32,12 @@ class tnlDomain
 {
    public:
       
-      typedef void DeviceType;
+      typedef void DeviceType;      
       
       static const int dimensions = Dimensions;
       static constexpr int getDimensions() { return Dimensions; }
       
-      static constexpr tnlDomainType getFunctionType() { return DomainType; }
+      static constexpr tnlDomainType getDomainType() { return DomainType; }
 };
 
 #endif	/* TNLFUNCTION_H */

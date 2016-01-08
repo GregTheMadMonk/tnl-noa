@@ -46,8 +46,8 @@ __cuda_callable__
 inline
 Real
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
-getValue( const MeshEntity& entity,
-          const MeshFunction< 1 >& u,
+getValue( const MeshFunction< 1 >& u,
+          const MeshEntity& entity,
           const Real& time ) const
 {
    static_assert( MeshEntity::entityDimensions == 1, "Wrong mesh entity dimensions." );
@@ -147,8 +147,8 @@ __cuda_callable__
 inline
 Real
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
-getValue( const EntityType& entity,
-          const MeshFunction< 2 >& u,
+getValue( const MeshFunction< 2 >& u,
+          const EntityType& entity,
           const Real& time ) const
 {
    const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
@@ -219,8 +219,8 @@ __cuda_callable__
 inline
 Real
 tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
-getValue( const EntityType& entity,
-          const MeshFunction< 3 >& u,
+getValue( const MeshFunction< 3 >& u,
+          const EntityType& entity,
           const Real& time ) const
 {
    const typename EntityType::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();

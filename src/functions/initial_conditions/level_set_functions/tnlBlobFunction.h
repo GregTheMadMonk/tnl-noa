@@ -61,17 +61,19 @@ class tnlBlobFunction< 1, Real > : public tnlBlobFunctionBase< Real, 1 >
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif   
       __cuda_callable__
-      RealType getValue( const Vertex& v,
-                         const Real& time = 0.0 ) const;
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
+      
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;      
 };
 
 template< typename Real >
@@ -90,17 +92,20 @@ class tnlBlobFunction< 2, Real > : public tnlBlobFunctionBase< Real, 2 >
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getValue( const Vertex& v,
-                         const Real& time = 0.0 ) const;
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
+
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
+      
 };
 
 template< typename Real >
@@ -119,17 +124,19 @@ class tnlBlobFunction< 3, Real > : public tnlBlobFunctionBase< Real, 3 >
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif   
       __cuda_callable__
-      RealType getValue( const Vertex& v,
-                         const Real& time = 0.0 ) const;
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
+      
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;      
 };
 
 template< int Dimensions,

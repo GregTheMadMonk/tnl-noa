@@ -28,8 +28,8 @@
 
 template< typename ExactOperator,
           typename TestFunction >
-class tnlHeatEquationEocRhs : public tnlDomain< TestFunction::Dimensions,
-                                                  SpaceDomain >
+class tnlHeatEquationEocRhs
+ : public tnlDomain< TestFunction::Dimensions, SpaceDomain >
 {
    public:
 
@@ -38,8 +38,6 @@ class tnlHeatEquationEocRhs : public tnlDomain< TestFunction::Dimensions,
       typedef typename TestFunction::RealType RealType;
       typedef typename TestFunction::VertexType VertexType;
 
-      static constexpr tnlFunctionType getFunctionType() { return SpaceDomain; }     
-      
       bool setup( const tnlParameterContainer& parameters,
                   const tnlString& prefix = "" )
       {
@@ -49,11 +47,11 @@ class tnlHeatEquationEocRhs : public tnlDomain< TestFunction::Dimensions,
       }
 
       __cuda_callable__
-      RealType getValue( const VertexType& vertex,
+      RealType operator()( const VertexType& vertex,
                          const RealType& time = 0.0 ) const
       {
          return testFunction.getTimeDerivative( vertex, time )
-                - exactOperator.getValue( testFunction, vertex, time );
+                - exactOperator( testFunction, vertex, time );
       }
 
    protected:
@@ -61,16 +59,5 @@ class tnlHeatEquationEocRhs : public tnlDomain< TestFunction::Dimensions,
 
       TestFunction testFunction;
 };
-
-/*
-template< typename ExactOperator,
-          typename TestFunction >
-class tnlFunctionType< tnlHeatEquationEocRhs< ExactOperator, TestFunction > >
-{
-   public:
-
-      enum { Type = tnlSpaceDomain };
-};
-*/
 
 #endif /* TNLHEATEQUATIONEOCRHS_H_ */

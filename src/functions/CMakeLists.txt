@@ -1,8 +1,6 @@
 ADD_SUBDIRECTORY( initial_conditions )
 
-SET( headers tnlFunctionDiscretizer.h
-             tnlFunctionDiscretizer_impl.h
-             tnlFunctionEvaluator.h
+SET( headers tnlFunctionEvaluator.h
              tnlFunctionEvaluator_impl.h
              tnlFunctionAdapter.h
              tnlConstantFunction.h
@@ -14,7 +12,7 @@ SET( headers tnlFunctionDiscretizer.h
              tnlSinWaveFunction.h
              tnlSinWaveFunction_impl.h
              tnlTestFunction.h
-             tnlFunction.h
+             tnlDomain.h
              tnlTestFunction_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/functions )

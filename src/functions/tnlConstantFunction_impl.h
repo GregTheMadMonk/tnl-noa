@@ -69,12 +69,11 @@ template< int Dimensions,
           typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 Real
 tnlConstantFunction< Dimensions, Real >::
-getValue( const Vertex& v,
-          const Real& time ) const
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    if( XDiffOrder || YDiffOrder || ZDiffOrder )
       return 0.0;

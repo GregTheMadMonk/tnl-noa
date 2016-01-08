@@ -85,8 +85,8 @@ template< typename Real >
 __cuda_callable__
 Real
 tnlSinWaveFunction< 1, Real >::
-getValue( const VertexType& v,
-          const Real& time ) const
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -109,6 +109,17 @@ getValue( const VertexType& v,
    return 0.0;
 }
 
+template< typename Real >
+__cuda_callable__
+Real
+tnlSinWaveFunction< 1, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
+
 
 template< typename Real >
    template< int XDiffOrder,
@@ -117,8 +128,8 @@ template< typename Real >
 __cuda_callable__
 Real
 tnlSinWaveFunction< 2, Real >::
-getValue( const VertexType& v,
-          const Real& time ) const
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -143,14 +154,25 @@ getValue( const VertexType& v,
 }
 
 template< typename Real >
+__cuda_callable__
+Real
+tnlSinWaveFunction< 2, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
+
+template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder >
 __cuda_callable__
 Real
 tnlSinWaveFunction< 3, Real >::
-getValue( const VertexType& v,
-          const Real& time ) const
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -182,5 +204,16 @@ getValue( const VertexType& v,
              - 2.0 * M_PI * this->amplitude * z * y * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
    return 0.0;
 }
+
+template< typename Real >
+__cuda_callable__
+Real
+tnlSinWaveFunction< 3, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
 
 #endif /* TNLSINWAVEFUNCTION_IMPL_H_ */

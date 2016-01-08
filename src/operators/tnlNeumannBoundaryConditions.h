@@ -48,7 +48,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >
-   : public tnlNeumannBoundaryConditionsBase< Function >
+   : public tnlNeumannBoundaryConditionsBase< Function >,
+     public tnlDomain< 1, MeshBoundaryDomain >
 {
    public:
 
@@ -100,7 +101,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >
-   : public tnlNeumannBoundaryConditionsBase< Function >
+   : public tnlNeumannBoundaryConditionsBase< Function >,
+     public tnlDomain< 2, MeshBoundaryDomain >
 {
    public:
 
@@ -151,7 +153,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >
-   : public tnlNeumannBoundaryConditionsBase< Function >
+   : public tnlNeumannBoundaryConditionsBase< Function >,
+     public tnlDomain< 3, MeshBoundaryDomain >
 {
    public:
 

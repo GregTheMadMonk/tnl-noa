@@ -40,7 +40,7 @@ class tnlExactNonlinearDiffusion< OperatorQ, 1 > : public tnlFunction< 1, SpaceD
 #endif      
       
       __cuda_callable__
-      static Real getValue( const Function& function,
+      static Real operator()( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
 };
@@ -61,7 +61,7 @@ class tnlExactNonlinearDiffusion< OperatorQ, 2 > : public tnlFunction< 2, SpaceD
 #endif 
 
       __cuda_callable__
-      static Real getValue( const Function& function,
+      static Real operator()( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
 };
@@ -82,7 +82,7 @@ class tnlExactNonlinearDiffusion< OperatorQ, 3 > : public tnlFunction< 3, SpaceD
 #endif 
 
       __cuda_callable__
-      static Real getValue( const Function& function,
+      static Real operator()( const Function& function,
                             const Vertex& v,
                             const Real& time = 0.0 );
 };

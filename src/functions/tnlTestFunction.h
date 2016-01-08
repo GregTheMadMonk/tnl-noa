@@ -72,17 +72,16 @@ class tnlTestFunction : public tnlDomain< FunctionDimensions, SpaceDomain >
              int ZDiffOrder = 0 >
 #endif
    __cuda_callable__
-   Real getValue( const VertexType& vertex,
-                  const Real& time = 0 ) const;
+   Real getPartialDerivative( const VertexType& vertex,
+                              const Real& time = 0 ) const;
 
-#ifdef HAVE_NOT_CXX11
    __cuda_callable__
-   Real getValue( const VertexType& vertex,
+   Real operator()( const VertexType& vertex,
                   const Real& time = 0 ) const
    {
-      return this->getValue< 0, 0, 0 >( vertex, time );
+      return this->getPartialDerivative< 0, 0, 0 >( vertex, time );
    }
-#endif                  
+
 
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,

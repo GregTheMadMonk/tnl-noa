@@ -24,26 +24,29 @@ template< typename Operator,
           typename Function >
 class tnlExactOperatorFunction : public tnlDomain< Operator::Dimensions, SpaceDomain >
 {   
-   public:
+   static_assert( Operator::getDimensions() == Function::getDimensions(),
+      "Operator and function have different number of domain dimensions." );
+   
+   public:      
       
       typedef Operator OperatorType;
       typedef Function FunctionType;
       typedef typename FunctionType::RealType RealType;
       typedef typename FunctionType::VertexType VertexType;
       
+      static constexpr int getDimensions(){ return Operator::Dimensions; };
+      
       tnlExactOperatorFunction(
          const OperatorType& operator_,
          const FunctionType& function )
       : operator_( operator_ ), function( function ) {};
       
-      template< typename VertexType,
-                typename RealType = typename VertexType::RealType >
       __cuda_callable__
-      RealType getValue(
+      RealType operator()(
          const VertexType& vertex,
          const RealType& time ) const
       {
-         return this->operator_.getValue( function, vertex, time );
+         return this->operator_( function, vertex, time );
       }
       
    protected:
