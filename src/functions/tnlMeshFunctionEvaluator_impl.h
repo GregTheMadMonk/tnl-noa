@@ -74,7 +74,8 @@ evaluateEntities( OutMeshFunction& meshFunction,
                   EntitiesType entitiesType )
 {
    typedef typename MeshType::template MeshEntity< OutMeshFunction::getMeshEntityDimensions() > MeshEntityType;
-   typedef tnlMeshFunctionEvaluatorEntitiesProcessor< MeshType, TraverserUserData > EntitiesProcessor;
+   typedef tnlMeshFunctionEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData > AssignmentEntitiesProcessor;
+   typedef tnlMeshFunctionEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData > AdditionEntitiesProcessor;
   
    if( std::is_same< MeshDeviceType, tnlHost >::value )
    {
@@ -83,22 +84,40 @@ evaluateEntities( OutMeshFunction& meshFunction,
       switch( entitiesType )
       {
          case all:            
-            meshTraverser.template processAllEntities< TraverserUserData,
-                                                       EntitiesProcessor >
-                                                     ( meshFunction.getMesh(),
-                                                       userData );
+            if( outFunctionMultiplicator )
+               meshTraverser.template processAllEntities< TraverserUserData,
+                                                          AdditionEntitiesProcessor >
+                                                        ( meshFunction.getMesh(),
+                                                          userData );
+            else
+               meshTraverser.template processAllEntities< TraverserUserData,
+                                                         AssignmentEntitiesProcessor >
+                                                       ( meshFunction.getMesh(),
+                                                         userData );
             break;
          case interior:
-            meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                            EntitiesProcessor >
-                                                          ( meshFunction.getMesh(),
-                                                            userData );
+            if( outFunctionMultiplicator )
+               meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                               AdditionEntitiesProcessor >
+                                                             ( meshFunction.getMesh(),
+                                                               userData );
+            else
+               meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                               AssignmentEntitiesProcessor >
+                                                             ( meshFunction.getMesh(),
+                                                               userData );            
             break;
          case boundary:
-            meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                            EntitiesProcessor >
-                                                          ( meshFunction.getMesh(),
-                                                            userData );
+            if( outFunctionMultiplicator )
+               meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                               AdditionEntitiesProcessor >
+                                                             ( meshFunction.getMesh(),
+                                                               userData );
+            else
+               meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                               AssignmentEntitiesProcessor >
+                                                             ( meshFunction.getMesh(),
+                                                               userData );
             break;
       }
    }
@@ -116,23 +135,41 @@ evaluateEntities( OutMeshFunction& meshFunction,
       switch( entitiesType )
       {
          case all:            
-            meshTraverser.template processAllEntities< TraverserUserData,
-                                                       EntitiesProcessor >
-                                                     ( meshFunction.getMesh(),
-                                                       userData );
+            if( outFunctionMultiplicator )
+               meshTraverser.template processAllEntities< TraverserUserData,
+                                                          AdditionEntitiesProcessor >
+                                                        ( meshFunction.getMesh(),
+                                                          userData );
+            else
+               meshTraverser.template processAllEntities< TraverserUserData,
+                                                         AssignmentEntitiesProcessor >
+                                                       ( meshFunction.getMesh(),
+                                                         userData );
             break;
          case interior:
-            meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                            EntitiesProcessor >
-                                                          ( meshFunction.getMesh(),
-                                                            userData );
+            if( outFunctionMultiplicator )
+               meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                               AdditionEntitiesProcessor >
+                                                             ( meshFunction.getMesh(),
+                                                               userData );
+            else
+               meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                               AssignmentEntitiesProcessor >
+                                                             ( meshFunction.getMesh(),
+                                                               userData );            
             break;
          case boundary:
-            meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                            EntitiesProcessor >
-                                                          ( meshFunction.getMesh(),
-                                                            userData );
-            break;
+            if( outFunctionMultiplicator )
+               meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                               AdditionEntitiesProcessor >
+                                                             ( meshFunction.getMesh(),
+                                                               userData );
+            else
+               meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                               AssignmentEntitiesProcessor >
+                                                             ( meshFunction.getMesh(),
+                                                               userData );
+            break;         
       }      
 
       checkCudaDevice;      
@@ -140,8 +177,7 @@ evaluateEntities( OutMeshFunction& meshFunction,
       tnlCuda::freeFromDevice( kernelFunction );
       tnlCuda::freeFromDevice( kernelTime );
       tnlCuda::freeFromDevice( kernelOutFunctionMultiplicator );
-      tnlCuda::freeFromDevice( kernelInFunctionMultiplicator );
-            
+      tnlCuda::freeFromDevice( kernelInFunctionMultiplicator );            
       checkCudaDevice;
    }
 }
@@ -159,16 +195,23 @@ evaluate( OutMeshFunction& meshFunction,
           const RealType& inFunctionMultiplicator )
 {
    typedef typename MeshType::template MeshEntity< OutMeshFunction::getMeshEntityDimensions() > MeshEntityType;
-   typedef tnlMeshFunctionEvaluatorEntitiesProcessor< MeshType, TraverserUserData > EntitiesProcessor;
+   typedef tnlMeshFunctionEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData > AssignmentEntitiesProcessor;
+   typedef tnlMeshFunctionEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData > AdditionEntitiesProcessor;
    
    if( std::is_same< MeshDeviceType, tnlHost >::value )
    {
       TraverserUserData userData( &operatorFunction, &time, &meshFunction, &outFunctionMultiplicator, &inFunctionMultiplicator );
       tnlTraverser< MeshType, MeshEntityType > meshTraverser;
-      meshTraverser.template processInteriorEntities< TraverserUserData, EntitiesProcessor >
-         ( meshFunction.getMesh(),
-           userData );
-      
+      if( outFunctionMultiplicator )
+         meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                         AdditionEntitiesProcessor >
+                                                       ( meshFunction.getMesh(),
+                                                         userData );
+      else
+         meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                         AssignmentEntitiesProcessor >
+                                                       ( meshFunction.getMesh(),
+                                                         userData );
    }
    if( std::is_same< MeshDeviceType, tnlCuda >::value )
    {      
@@ -184,10 +227,16 @@ evaluate( OutMeshFunction& meshFunction,
       TraverserUserData userData( kernelOperatorFunction, kernelTime, kernelMeshFunction, kernelOutFunctionMultiplicator, kernelInFunctionMultiplicator );
       checkCudaDevice;
       tnlTraverser< MeshType, MeshEntityType > meshTraverser;
-      meshTraverser.template processInteriorEntities< TraverserUserData, EntitiesProcessor >
-         ( meshFunction.getMesh(),
-           userData );
-
+      if( outFunctionMultiplicator )
+         meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                         AdditionEntitiesProcessor >
+                                                       ( meshFunction.getMesh(),
+                                                         userData );
+      else
+         meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                         AssignmentEntitiesProcessor >
+                                                       ( meshFunction.getMesh(),
+                                                         userData );
 
       checkCudaDevice;      
       tnlCuda::freeFromDevice( kernelMeshFunction );
@@ -214,16 +263,23 @@ evaluate( OutMeshFunction& meshFunction,
           const RealType& inFunctionMultiplicator )
 {
    typedef typename MeshType::template MeshEntity< OutMeshFunction::getMeshEntityDimensions() > MeshEntityType;
-   typedef tnlMeshFunctionEvaluatorEntitiesProcessor< MeshType, TraverserUserData > EntitiesProcessor;
+   typedef tnlMeshFunctionEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData > AssignmentEntitiesProcessor;
+   typedef tnlMeshFunctionEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData > AdditionEntitiesProcessor;
    
    if( std::is_same< MeshDeviceType, tnlHost >::value )
    {
       TraverserUserData userData( &operatorFunction, &time, &meshFunction, &outFunctionMultiplicator, &inFunctionMultiplicator );
       tnlTraverser< MeshType, MeshEntityType > meshTraverser;
-      meshTraverser.template processBoundaryEntities< TraverserUserData, EntitiesProcessor >
-         ( meshFunction.getMesh(),
-           userData );
-      
+      if( outFunctionMultiplicator )
+         meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                         AdditionEntitiesProcessor >
+                                                       ( meshFunction.getMesh(),
+                                                         userData );
+      else
+         meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                         AssignmentEntitiesProcessor >
+                                                       ( meshFunction.getMesh(),
+                                                         userData );
    }
    if( std::is_same< MeshDeviceType, tnlCuda >::value )
    {      
@@ -239,11 +295,18 @@ evaluate( OutMeshFunction& meshFunction,
       TraverserUserData userData( kernelOperatorFunction, kernelTime, kernelMeshFunction, kernelOutFunctionMultiplicator, kernelInFunctionMultiplicator );
       checkCudaDevice;
       tnlTraverser< MeshType, MeshEntityType > meshTraverser;
-      meshTraverser.template processInteriorEntities< TraverserUserData, EntitiesProcessor >
-         ( meshFunction.getMesh(),
-           userData );
 
-
+      if( outFunctionMultiplicator )
+         meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                         AdditionEntitiesProcessor >
+                                                       ( meshFunction.getMesh(),
+                                                         userData );
+      else
+         meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                         AssignmentEntitiesProcessor >
+                                                       ( meshFunction.getMesh(),
+                                                         userData );
+      
       checkCudaDevice;      
       tnlCuda::freeFromDevice( kernelMeshFunction );
       tnlCuda::freeFromDevice( kernelFunction );
@@ -251,13 +314,10 @@ evaluate( OutMeshFunction& meshFunction,
       tnlCuda::freeFromDevice( kernelOperatorFunction );
       tnlCuda::freeFromDevice( kernelTime );
       tnlCuda::freeFromDevice( kernelOutFunctionMultiplicator );
-      tnlCuda::freeFromDevice( kernelInFunctionMultiplicator );
-            
+      tnlCuda::freeFromDevice( kernelInFunctionMultiplicator );            
       checkCudaDevice;
    }
 }
-
-
 
 #endif	/* TNLMESHFUNCTIONEVALUATOR_IMPL_H */
 

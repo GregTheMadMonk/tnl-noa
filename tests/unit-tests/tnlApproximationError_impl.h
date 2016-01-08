@@ -58,22 +58,33 @@ getError( const ExactOperator& exactOperator,
    DirichletBoundaryConditions boundaryConditions;
    BoundaryOperatorFunction boundaryOperatorFunction( boundaryConditions, u );
 
-   exactU = exactOperatorFunction;
-   v = function;
-   v.save( "function" ) ;
+   mesh.save( "mesh.tnl" );
    
+   //cerr << "Evaluating exact u... " << endl;
+   exactU = exactOperatorFunction;
+   exactU.save( "exact-u.tnl" );
+   
+   //cerr << "Projecting test function ..." << endl;
+   v.getData().setValue( 1000.0 );
+   v = function;   
+   v.save( "function.tnl" ) ;
+   
+   //cerr << "Evaluating approximate u ... " << endl;
    u = operatorFunction;
-
-   exactU.save( "exact-u" );
-   u.save( "approximate-u" ) ;
-
-   u -= exactU;   
+   //cerr << " u = " << u.getData() << endl;
    tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::apply( boundaryConditions, 0.0, u );
-   u = boundaryOperatorFunction;
-   u.save( "diff-u" ) ;
+   u.save( "approximate-u.tnl" ) ;
+
+   //cerr << "Evaluate difference ... " << endl;
+   u -= exactU;   
+   //cerr << "Reseting boundary entities ..." << endl;
+   tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::apply( boundaryConditions, 0.0, u );
+   //cerr << " u = " << u.getData() << endl;
+   u.save( "diff-u.tnl" ) ;
    l1Err = u.getLpNorm( 1.0 );
    l2Err = u.getLpNorm( 2.0 );   
    maxErr = u.getMaxNorm();
+   cerr << "l1 = " << l1Err << " l2 = " << l2Err << " maxErr = " << maxErr << endl;
 }
 
 #endif /* TNLAPPROXIMATIONERROR_IMPL_H_ */

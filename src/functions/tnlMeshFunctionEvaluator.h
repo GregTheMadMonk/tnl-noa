@@ -191,7 +191,30 @@ class tnlMeshFunctionEvaluatorTraverserUserData
 
 template< typename MeshType,
           typename UserData > 
-class tnlMeshFunctionEvaluatorEntitiesProcessor
+class tnlMeshFunctionEvaluatorAssignmentEntitiesProcessor
+{
+   public:
+
+      template< typename EntityType >
+      __cuda_callable__
+      static inline void processEntity( const MeshType& mesh,
+                                        UserData& userData,
+                                        const EntityType& entity )
+      {
+         typedef tnlFunctionAdapter< MeshType, typename UserData::InFunctionType > FunctionAdapter;
+         ( *userData.meshFunction )( entity ) = 
+            *userData.inFunctionMultiplicator *
+            FunctionAdapter::getValue( *userData.function, entity, *userData.time );
+         /*cerr << "Idx = " << entity.getIndex() 
+            << " Value = " << FunctionAdapter::getValue( *userData.function, entity, *userData.time ) 
+            << " stored value = " << ( *userData.meshFunction )( entity )
+            << " multiplicators = " << endl;*/
+      }
+};
+
+template< typename MeshType,
+          typename UserData > 
+class tnlMeshFunctionEvaluatorAdditionEntitiesProcessor
 {
    public:
 
@@ -206,9 +229,12 @@ class tnlMeshFunctionEvaluatorEntitiesProcessor
             *userData.outFunctionMultiplicator * ( *userData.meshFunction )( entity ) +
             *userData.inFunctionMultiplicator *
             FunctionAdapter::getValue( *userData.function, entity, *userData.time );
+         /*cerr << "Idx = " << entity.getIndex() 
+            << " Value = " << FunctionAdapter::getValue( *userData.function, entity, *userData.time ) 
+            << " stored value = " << ( *userData.meshFunction )( entity )
+            << " multiplicators = " << endl;*/
       }
 };
-
 
 
 #include <functions/tnlMeshFunctionEvaluator_impl.h>

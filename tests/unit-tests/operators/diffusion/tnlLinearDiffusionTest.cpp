@@ -49,13 +49,12 @@ class tnlPDEOperatorEocTestResult< tnlLinearDiffusion< tnlGrid< Dimensions, Real
 
 int main( int argc, char* argv[] )
 {
-   const bool verbose( false );
-   const int MeshSize( 32 );
+   const bool verbose( true );
+   const int MeshSize( 128 );
 #ifdef HAVE_CPPUNIT
    /****
     * Explicit approximation
     */
-   cerr << "*****" << endl;
    if( ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 1, double, tnlHost, int >, double, int >,
                                                              tnlExactLinearDiffusion< 1 >,
                                                              tnlExpBumpFunction< 1, double >,

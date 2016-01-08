@@ -75,7 +75,7 @@ class tnlBoundaryConditionsSetter
                                               TraverserUserData& userData,
                                               const GridEntity& entity )
             {
-               userData.boundaryConditions->getValue
+               ( *userData.u )( entity ) = userData.boundaryConditions->getValue
                ( entity,
                  *userData.u,
                  *userData.time );

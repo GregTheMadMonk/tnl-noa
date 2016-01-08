@@ -54,8 +54,8 @@ class tnlPDEOperatorEocTestSetter< ApproximateOperator,
                         const IndexType& size )
    {
       VertexType origin, proportions;
-      origin.x() = -1.0;
-      proportions.x() = 2.0;
+      origin.x() = -2.0;
+      proportions.x() = 4.0;
       mesh.setDomain( origin, proportions );
 
       CoordinatesType dimensions;
@@ -65,7 +65,7 @@ class tnlPDEOperatorEocTestSetter< ApproximateOperator,
 
    static void setFunction( FunctionType& function )
    {
-      function.setAmplitude( 1.0 );
+      function.setAmplitude( 1.5 );
       function.setSigma( 0.5 );
    };
 };
