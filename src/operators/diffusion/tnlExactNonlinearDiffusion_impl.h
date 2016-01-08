@@ -33,7 +33,7 @@ Real
 tnlExactNonlinearDiffusion< OperatorQ, 1 >::
 operator()( const Function& function,
           const Vertex& v,
-          const Real& time )
+          const Real& time ) const
 {
    return function.template getPartialDerivative< 2, 0, 0 >( v, time ) - function.template getPartialDerivative< 1, 0, 0 >( v, time ) 
           * OperatorQ::template getPartialDerivative<1, 0, 0>(function, v, time ) / OperatorQ::template getPartialDerivative<0, 0, 0>(function, v, time );
@@ -54,7 +54,7 @@ Real
 tnlExactNonlinearDiffusion< OperatorQ, 2 >::
 operator()( const Function& function,
           const Vertex& v,
-          const Real& time )
+          const Real& time ) const
 {
    return  function.template getPartialDerivative< 2, 0, 0 >( v, time ) +  function.template getPartialDerivative< 0, 2, 0 >( v, time )
            -( OperatorQ::template getPartialDerivative<1, 0, 0> (function, v, time) * function.template getPartialDerivative< 1, 0, 0 >( v, time ) 
@@ -77,7 +77,7 @@ Real
 tnlExactNonlinearDiffusion< OperatorQ, 3 >::
 operator()( const Function& function,
           const Vertex& v,
-          const Real& time )
+          const Real& time ) const
 {
    return  function.template getPartialDerivative< 2, 0, 0 >( v, time ) +  function.template getPartialDerivative< 0, 2, 0 >( v, time )
            +  function.template getPartialDerivative< 0, 0, 2 >( v, time )

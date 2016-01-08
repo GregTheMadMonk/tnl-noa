@@ -4,14 +4,14 @@
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlSharedVector.h>
 #include <mesh/tnlGrid.h>
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 template< int Dimensions >
 class tnlExactOperatorQ
 {};
 
 template<>
-class tnlExactOperatorQ< 1 >
+class tnlExactOperatorQ< 1 > : public tnlDomain< 1, SpaceDomain >
 {
    public:
 
@@ -24,12 +24,11 @@ class tnlExactOperatorQ< 1 >
 #else   
       template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Vertex, typename Real = typename Vertex::RealType >
 #endif
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
-      static Real getValue( const Function& function,
-                            const Vertex& v,
-                            const Real& time = 0.0, const Real& eps = 1.0 );
+      __cuda_callable__
+      static Real getPartialDerivative( const Function& function,
+                                        const Vertex& v,
+                                        const Real& time = 0.0,
+                                        const Real& eps = 1.0 );
       
 };
 
@@ -47,12 +46,12 @@ class tnlExactOperatorQ< 2 >
 #else   
       template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Vertex, typename Real = typename Vertex::RealType >
 #endif
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif      
-      static Real getValue( const Function& function,
-                            const Vertex& v,
-                            const Real& time = 0.0, const Real& eps = 1.0 );
+
+      __cuda_callable__
+      static Real getPartialDerivative( const Function& function,
+                                        const Vertex& v,
+                                        const Real& time = 0.0,
+                                        const Real& eps = 1.0 );
 };
 
 template<>
@@ -69,12 +68,12 @@ class tnlExactOperatorQ< 3 >
 #else   
       template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Vertex, typename Real = typename Vertex::RealType >
 #endif
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
-      static Real getValue( const Function& function,
-                            const Vertex& v,
-                            const Real& time = 0.0, const Real& eps = 1.0 );
+
+      __cuda_callable__
+      static Real getPartialDerivative( const Function& function,
+                                        const Vertex& v,
+                                        const Real& time = 0.0,
+                                        const Real& eps = 1.0 );
 };
 
 #include <operators/operator-Q/tnlExactOperatorQ_impl.h>
