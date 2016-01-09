@@ -7,20 +7,17 @@
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType,
-          int Precomputation = 0 > 
+          typename Index = typename Mesh::IndexType > 
 class tnlOneSideDiffOperatorQ
 {
-
 };
-
 
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlOneSideDiffOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, 0 >
+class tnlOneSideDiffOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public: 
    
@@ -32,33 +29,23 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
 
    static tnlString getType();
 
-   template< typename Vector >
-   IndexType bind( Vector& u) 
-   { return 0; }
-
+   template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
-   void update( const MeshType& mesh, const RealType& time ) 
-   {}
-   
-   template< typename MeshEntity, typename Vector >
+   Real operator()( const MeshFunction& u,
+                    const MeshEntity& entity,
+                    const Real& time = 0.0 ) const;
+      
+   template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
-   Real getValue(
-          const MeshEntity& entity,
-          const Vector& u,
-          const Real& time ) const;
-   
-   template< typename MeshEntity, typename Vector >
-   __cuda_callable__
-   Real getValueStriped(
-          const MeshEntity& entity,
-          const Vector& u,
-          const Real& time )const;
+   Real getValueStriped( const MeshFunction& u,
+                         const MeshEntity& entity,   
+                         const Real& time = 0.0 ) const;
           
    bool setEps(const Real& eps);
       
    private:
    
-   RealType eps;
+   RealType eps, epsSquare;
 };
 
 
@@ -67,7 +54,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlOneSideDiffOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, 0 >
+class tnlOneSideDiffOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public: 
    
@@ -78,34 +65,25 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
    typedef Index IndexType;
 
    static tnlString getType(); 
+      
+   template< typename MeshFunction, typename MeshEntity >
+   __cuda_callable__
+   Real operator()( const MeshFunction& u,
+                    const MeshEntity& entity,
+                    const Real& time = 0.0 ) const;
 
-   template< typename Vector >
-   IndexType bind( Vector& u)
-   { return 0; }
-
-   __cuda_callable__
-   void update( const MeshType& mesh, const RealType& time )
-   {}   
    
-   template< typename MeshEntity, typename Vector >
+   template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
-   Real getValue(
-          const MeshEntity& entity,
-          const Vector& u,
-          const Real& time ) const;
-   
-   template< typename MeshEntity, typename Vector >
-   __cuda_callable__
-   Real getValueStriped(
-          const MeshEntity& entity,
-          const Vector& u,
-          const Real& time )const;
+   Real getValueStriped( const MeshFunction& u,
+                         const MeshEntity& entity,          
+                         const Real& time = 0.0 ) const;
         
-   bool setEps(const Real& eps);
+   void setEps( const Real& eps );
    
    private:
    
-   RealType eps;
+   RealType eps, epsSquare;
 };
 
 
@@ -114,7 +92,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlOneSideDiffOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, 0 >
+class tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >
 {
    public: 
    
@@ -126,178 +104,23 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, I
 
    static tnlString getType();
 
-   template< typename Vector >
-   IndexType bind( Vector& u)
-   { return 0; }
-
+   template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
-   void update( const MeshType& mesh, const RealType& time )
-   {}
+   Real operator()( const MeshFunction& u,
+                    const MeshEntity& entity,
+                    const Real& time = 0.0 ) const;
    
-   template< typename MeshEntity, typename Vector >
+   template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
-   Real getValue(
-          const MeshEntity& entity,
-          const Vector& u,
-          const Real& time ) const;
-   
-   template< typename MeshEntity, typename Vector >
-   __cuda_callable__
-   Real getValueStriped(
-          const MeshEntity& entity,
-          const Vector& u,
-          const Real& time ) const;
+   Real getValueStriped( const MeshFunction& u,
+                         const MeshEntity& entity,          
+                         const Real& time ) const;
         
-   bool setEps(const Real& eps);
+   void setEps(const Real& eps);
    
    private:
    
-   RealType eps;
-};
-
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-class tnlOneSideDiffOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, 1 >
-{
-   public: 
-   
-   typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-
-   static tnlString getType();
-
-   template< typename Vector >
-   Index bind( Vector& u);
-
-   __cuda_callable__
-   void update( const MeshType& mesh, const RealType& time );
-   
-   template< typename MeshEntity, typename Vector >
-   __cuda_callable__
-   Real getValue(
-          const MeshEntity& entity,
-          const Vector& u,
-          const Real& time ) const;
-   
-   template< typename MeshEntity, typename Vector >
-   __cuda_callable__
-   Real getValueStriped( 
-          const MeshEntity& entity,
-          const Vector& u,
-          const Real& time ) const;
-          
-   bool setEps(const Real& eps);
-   
-   private:
-   
-   tnlSharedVector< RealType, DeviceType, IndexType > u;
-   tnlVector< RealType, DeviceType, IndexType> q;
-   tnlVector< RealType, DeviceType, IndexType> qStriped;
-   RealType eps;
-};
-
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-class tnlOneSideDiffOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, 1 >
-{
-   public: 
-   
-   typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   typedef tnlSharedVector< RealType, DeviceType, IndexType > DofVectorType;
-   
-   static tnlString getType(); 
-
-   template< typename Vector >
-   Index bind( Vector& u);
-
-   __cuda_callable__
-   void update( const MeshType& mesh, const RealType& time ); 
-   
-   template< typename MeshEntity, typename Vector >
-   __cuda_callable__
-   Real getValue(
-          const MeshEntity& entity,
-          const Vector& u,
-          const Real& time ) const;
-   
-   template< typename MeshEntity, typename Vector >
-   __cuda_callable__
-   Real getValueStriped( const MeshType& mesh,
-          const MeshEntity& entity,
-          const Vector& u,
-          const Real& time )const;
-          
-   bool setEps(const Real& eps);
-   
-   private:
-   
-   tnlSharedVector< RealType, DeviceType, IndexType > u;
-   tnlVector< RealType, DeviceType, IndexType> q;
-   tnlVector< RealType, DeviceType, IndexType> qStriped;
-   RealType eps;
-};
-
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-class tnlOneSideDiffOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, 1 >
-{
-   public: 
-   
-   typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   
-   static tnlString getType();
-
-   template< typename Vector >
-   Index bind( Vector& u);
-
-   __cuda_callable__
-   void update( const MeshType& mesh, const RealType& time );
-   
-   template< typename MeshEntity, typename Vector >
-   __cuda_callable__
-   Real getValue(
-          const MeshEntity& entity,
-          const Vector& u,
-          const Real& time ) const;
-   
-   template< typename MeshEntity, typename Vector >
-   __cuda_callable__
-   Real getValueStriped(
-          const MeshEntity& entity,
-          const Vector& u,
-          const Real& time )const;
-          
-   bool setEps(const Real& eps);
-   
-   private:
-   
-   tnlSharedVector< RealType, DeviceType, IndexType > u;
-   tnlVector< RealType, DeviceType, IndexType> q;
-   tnlVector< RealType, DeviceType, IndexType> qStriped;
-   RealType eps;
+   RealType eps, epsSquare;
 };
 
 #include <operators/operator-Q/tnlOneSideDiffOperatorQ_impl.h>
