@@ -38,7 +38,7 @@ getValue( const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
-    return nonlinearDiffusionOperator.getValue( entity, u, time );
+    return nonlinearDiffusionOperator.getValue( u, entity, time );
 }
 
 template< typename MeshReal,
@@ -115,7 +115,7 @@ getValue( const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
-    return nonlinearDiffusionOperator.getValue( entity, u, time );
+    return nonlinearDiffusionOperator.getValue( u, entity, time );
 }
        
 template< typename MeshReal,
@@ -192,7 +192,7 @@ getValue( const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
 {
-    return nonlinearDiffusionOperator.getValue( entity, u, time );
+    return nonlinearDiffusionOperator.getValue( u, entity, time );
 }
 
 template< typename MeshReal,

@@ -20,7 +20,7 @@
 
 #include <core/arrays/tnlSharedArray.h>
 #include <core/vectors/tnlVector.h>
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 class tnlHost;
 

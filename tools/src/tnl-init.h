@@ -21,10 +21,10 @@
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
-#include <functions/tnlFunctionDiscretizer.h>
 #include <functions/tnlTestFunction.h>
 #include <operators/tnlFiniteDifferences.h>
 #include <core/mfilename.h>
+#include <functions/tnlMeshFunction.h>
 
 template< typename MeshType,
           typename RealType,
@@ -45,10 +45,10 @@ bool renderFunction( const tnlParameterContainer& parameters )
    if( ! function.setup( parameters, "" ) )
       return false;
    cout << "done." << endl;
-   typedef tnlVector< RealType, tnlHost, typename MeshType::IndexType > DiscreteFunctionType;
-   DiscreteFunctionType discreteFunction;
-   if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
-      return false;
+   typedef tnlMeshFunction< MeshType, MeshType::meshDimensions > MeshFunctionType;
+   MeshFunctionType meshFunction( mesh );
+   //if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
+   //   return false;
    
    double finalTime = parameters.getParameter< double >( "final-time" );
    double initialTime = parameters.getParameter< double >( "initial-time" );
@@ -64,15 +64,15 @@ bool renderFunction( const tnlParameterContainer& parameters )
       if( numericalDifferentiation )
       {
          cout << "+ -> Computing the finite differences ... " << endl;
-         DiscreteFunctionType auxDiscreteFunction;
-         if( ! auxDiscreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
-            return false;
-         tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< 0, 0, 0 >( mesh, function, auxDiscreteFunction, time );
-         tnlFiniteDifferences< MeshType >::template getDifference< DiscreteFunctionType, xDiff, yDiff, zDiff, 0, 0, 0 >( mesh, auxDiscreteFunction, discreteFunction );
+         MeshFunctionType auxDiscreteFunction;
+         //if( ! auxDiscreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
+         //   return false;
+         //tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< 0, 0, 0 >( mesh, function, auxDiscreteFunction, time );
+         //tnlFiniteDifferences< MeshType >::template getDifference< DiscreteFunctionType, xDiff, yDiff, zDiff, 0, 0, 0 >( mesh, auxDiscreteFunction, discreteFunction );
       }
       else
       {
-         tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< xDiff, yDiff, zDiff >( mesh, function, discreteFunction, time );
+         tnlMeshFunctionEvaluator< MeshFunctionType, FunctionType >::evaluate( meshFunction, function, time );
       }
 
       tnlString outputFile = parameters.getParameter< tnlString >( "output-file" );
@@ -92,7 +92,7 @@ bool renderFunction( const tnlParameterContainer& parameters )
       }
       else
          cout << "+ -> Writing the function to " << outputFile << " ... " << endl;
-      if( ! discreteFunction.save( outputFile) )
+      if( ! meshFunction.save( outputFile) )
          return false;
       time += tau;
       step ++;

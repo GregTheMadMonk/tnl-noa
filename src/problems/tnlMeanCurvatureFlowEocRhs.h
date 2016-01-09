@@ -18,12 +18,12 @@
 #ifndef TNLMEANCURVATUREFLOWEOCRHS_H_
 #define TNLMEANCURVATUREFLOWEOCRHS_H_
 
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 template< typename ExactOperator,
           typename TestFunction,
           int Dimensions >
-class tnlMeanCurvatureFlowEocRhs : public tnlFunction< Dimensions, AnalyticFunction >
+class tnlMeanCurvatureFlowEocRhs : public tnlDomain< Dimensions, SpaceDomain >
 {
    public:
 
@@ -43,11 +43,11 @@ class tnlMeanCurvatureFlowEocRhs : public tnlFunction< Dimensions, AnalyticFunct
       template< typename Vertex,
                 typename Real >
       __cuda_callable__
-      Real getValue( const Vertex& vertex,
-                     const Real& time ) const
+      Real operator()( const Vertex& vertex,
+                       const Real& time ) const
       {
          return testFunction.getTimeDerivative( vertex, time )
-                - exactOperator.getValue( testFunction, vertex, time );
+                - exactOperator( testFunction, vertex, time );
       };
 
    protected:

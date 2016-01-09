@@ -22,12 +22,12 @@
 #include <core/vectors/tnlStaticVector.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 template< int FunctionDimensions,
           typename Real = double,
           typename Device = tnlHost >
-class tnlTestFunction : public tnlFunction< FunctionDimensions, AnalyticFunction >
+class tnlTestFunction : public tnlDomain< FunctionDimensions, SpaceDomain >
 {
    protected:
 
@@ -72,17 +72,16 @@ class tnlTestFunction : public tnlFunction< FunctionDimensions, AnalyticFunction
              int ZDiffOrder = 0 >
 #endif
    __cuda_callable__
-   Real getValue( const VertexType& vertex,
-                  const Real& time = 0 ) const;
+   Real getPartialDerivative( const VertexType& vertex,
+                              const Real& time = 0 ) const;
 
-#ifdef HAVE_NOT_CXX11
    __cuda_callable__
-   Real getValue( const VertexType& vertex,
+   Real operator()( const VertexType& vertex,
                   const Real& time = 0 ) const
    {
-      return this->getValue< 0, 0, 0 >( vertex, time );
+      return this->getPartialDerivative< 0, 0, 0 >( vertex, time );
    }
-#endif                  
+
 
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,

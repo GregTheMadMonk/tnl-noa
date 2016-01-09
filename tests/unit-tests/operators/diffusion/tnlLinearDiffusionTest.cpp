@@ -50,7 +50,7 @@ class tnlPDEOperatorEocTestResult< tnlLinearDiffusion< tnlGrid< Dimensions, Real
 int main( int argc, char* argv[] )
 {
    const bool verbose( true );
-   const int MeshSize( 128 );
+   const int MeshSize( 16 );
 #ifdef HAVE_CPPUNIT
    /****
     * Explicit approximation

@@ -84,7 +84,7 @@ template< typename ExactOperatorQ, int Dimensions >
 class tnlFunctionType< tnlExactOperatorCurvature< ExactOperatorQ, Dimensions > >
 {
    public:
-      enum { Type = tnlAnalyticFunction };
+      enum { Type = tnlSpaceDomain };
 };
 
 #include <operators/operator-curvature/tnlExactOperatorCurvature_impl.h>

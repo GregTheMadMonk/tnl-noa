@@ -20,10 +20,10 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 template< typename Vertex >
-class tnlSinBumpsFunctionBase : public tnlFunction< Vertex::size, AnalyticFunction >
+class tnlSinBumpsFunctionBase : public tnlDomain< Vertex::size, SpaceDomain >
 {
    public:
       
@@ -79,8 +79,13 @@ class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStati
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getValue( const VertexType& v,
-                         const Real& time = 0.0 ) const;
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
+      
+   __cuda_callable__
+   RealType operator()( const VertexType& v,
+                        const Real& time = 0.0 ) const;
+      
 };
 
 template< typename Real >
@@ -107,8 +112,13 @@ class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStatic
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getValue( const VertexType& v,
-                         const Real& time = 0.0 ) const;
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
+      
+   __cuda_callable__
+   RealType operator()( const VertexType& v,
+                        const Real& time = 0.0 ) const;
+      
 };
 
 template< typename Real >
@@ -134,8 +144,13 @@ class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStatic
                 int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getValue( const VertexType& v,
+      RealType getPartialDerivative( const VertexType& v,
                          const Real& time = 0.0 ) const;
+      
+   __cuda_callable__
+   RealType operator()( const VertexType& v,
+                        const Real& time = 0.0 ) const;
+      
 };
 
 template< int Dimensions,

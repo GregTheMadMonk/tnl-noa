@@ -20,7 +20,6 @@
 
 #include <mesh/tnlTraverser.h>
 #include <core/vectors/tnlVector.h>
-#include <functions/tnlFunctionDiscretizer.h>
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlMatrixSetter.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
@@ -29,7 +28,6 @@
 #include <functions/tnlMeshFunction.h>
 #include <functions/tnlOperatorFunction.h>
 #include <functions/tnlExactOperatorFunction.h>
-#include <functions/tnlBoundaryOperatorFunction.h>
 #include <solvers/pde/tnlBoundaryConditionsSetter.h>
 
 
@@ -48,7 +46,7 @@ getError( const ExactOperator& exactOperator,
 {
    typedef tnlMeshFunction< MeshType > MeshFunction;
    typedef tnlDirichletBoundaryConditions< MeshType, tnlConstantFunction< MeshType::meshDimensions > > DirichletBoundaryConditions;
-   typedef tnlBoundaryOperatorFunction< DirichletBoundaryConditions, MeshFunction > BoundaryOperatorFunction;
+   typedef tnlOperatorFunction< DirichletBoundaryConditions, MeshFunction > BoundaryOperatorFunction;
    typedef tnlOperatorFunction< ApproximateOperator, MeshFunction > OperatorFunction;
    typedef tnlExactOperatorFunction< ExactOperator, Function > ExactOperatorFunction;
    

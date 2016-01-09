@@ -70,8 +70,8 @@ template< typename Real >
              typename Vertex >
 __cuda_callable__
 Real
-tnlCylinderFunction< 1, Real >::getValue( const Vertex& v,
-                                         const Real& time ) const
+tnlCylinderFunction< 1, Real >::getPartialDerivative( const Vertex& v,
+                                                      const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -79,6 +79,16 @@ tnlCylinderFunction< 1, Real >::getValue( const Vertex& v,
    if( XDiffOrder == 0 )
       return ( ( x*x - this->diameter ) < 0 ) - ( ( x*x - this->diameter ) > 0 ) + 1;
    return 0.0;
+}
+
+template< typename Real >
+__cuda_callable__
+Real
+tnlCylinderFunction< 1, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
 /****
@@ -105,8 +115,8 @@ template< typename Real >
 __cuda_callable__
 Real
 tnlCylinderFunction< 2, Real >::
-getValue( const Vertex& v,
-          const Real& time ) const
+getPartialDerivative( const Vertex& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -116,6 +126,17 @@ getValue( const Vertex& v,
       return ( ( x*x + y*y - this->diameter ) < 0 ) - ( ( x*x + y*y - this->diameter ) > 0 ) + 1;
    return 0.0;
 }
+
+template< typename Real >
+__cuda_callable__
+Real
+tnlCylinderFunction< 2, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
 
 /****
  * 3D
@@ -141,8 +162,8 @@ template< typename Real >
 __cuda_callable__
 Real
 tnlCylinderFunction< 3, Real >::
-getValue( const Vertex& v,
-          const Real& time ) const
+getPartialDerivative( const Vertex& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -150,6 +171,16 @@ getValue( const Vertex& v,
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
       return ( ( x*x + y*y + z*z - this->diameter ) < 0 ) - ( ( x*x + y*y + z*z - this->diameter ) > 0 ) + 1;
    return 0.0;
+}
+
+template< typename Real >
+__cuda_callable__
+Real
+tnlCylinderFunction< 3, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
 

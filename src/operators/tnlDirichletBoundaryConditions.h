@@ -23,6 +23,7 @@ template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class tnlDirichletBoundaryConditions
+: public tnlDomain< Mesh::meshDimensions, MeshBoundaryDomain >
 {
    public:
 
@@ -34,6 +35,8 @@ class tnlDirichletBoundaryConditions
   
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef typename MeshType::VertexType VertexType;
+   
+   static constexpr int getMeshDimensions() { return MeshType::meshDimensions; }
 
    static void configSetup( tnlConfigDescription& config,
                             const tnlString& prefix = "" );

@@ -31,12 +31,12 @@ template< typename Function, typename Vertex, typename Real >
 __cuda_callable__
 Real
 tnlExactNonlinearDiffusion< OperatorQ, 1 >::
-getValue( const Function& function,
+operator()( const Function& function,
           const Vertex& v,
-          const Real& time )
+          const Real& time ) const
 {
-   return function.template getValue< 2, 0, 0 >( v, time ) - function.template getValue< 1, 0, 0 >( v, time ) 
-          * OperatorQ::template getValue<1, 0, 0>(function, v, time ) / OperatorQ::template getValue<0, 0, 0>(function, v, time );
+   return function.template getPartialDerivative< 2, 0, 0 >( v, time ) - function.template getPartialDerivative< 1, 0, 0 >( v, time ) 
+          * OperatorQ::template getPartialDerivative<1, 0, 0>(function, v, time ) / OperatorQ::template getPartialDerivative<0, 0, 0>(function, v, time );
 }
 
 template< typename OperatorQ >
@@ -52,14 +52,14 @@ template< typename Function, typename Vertex, typename Real >
 __cuda_callable__
 Real
 tnlExactNonlinearDiffusion< OperatorQ, 2 >::
-getValue( const Function& function,
+operator()( const Function& function,
           const Vertex& v,
-          const Real& time )
+          const Real& time ) const
 {
-   return  function.template getValue< 2, 0, 0 >( v, time ) +  function.template getValue< 0, 2, 0 >( v, time )
-           -( OperatorQ::template getValue<1, 0, 0> (function, v, time) * function.template getValue< 1, 0, 0 >( v, time ) 
-           + OperatorQ::template getValue<0, 1, 0> (function, v, time) * function.template getValue< 0, 1, 0 >( v, time ) ) 
-           / OperatorQ::template getValue<0, 0, 0> (function, v, time);
+   return  function.template getPartialDerivative< 2, 0, 0 >( v, time ) +  function.template getPartialDerivative< 0, 2, 0 >( v, time )
+           -( OperatorQ::template getPartialDerivative<1, 0, 0> (function, v, time) * function.template getPartialDerivative< 1, 0, 0 >( v, time ) 
+           + OperatorQ::template getPartialDerivative<0, 1, 0> (function, v, time) * function.template getPartialDerivative< 0, 1, 0 >( v, time ) ) 
+           / OperatorQ::template getPartialDerivative<0, 0, 0> (function, v, time);
 }
 
 template< typename OperatorQ >
@@ -75,16 +75,16 @@ template< typename Function, typename Vertex, typename Real >
 __cuda_callable__
 Real
 tnlExactNonlinearDiffusion< OperatorQ, 3 >::
-getValue( const Function& function,
+operator()( const Function& function,
           const Vertex& v,
-          const Real& time )
+          const Real& time ) const
 {
-   return  function.template getValue< 2, 0, 0 >( v, time ) +  function.template getValue< 0, 2, 0 >( v, time )
-           +  function.template getValue< 0, 0, 2 >( v, time )
-           -( OperatorQ::template getValue<1, 0, 0> (function, v, time) * function.template getValue< 1, 0, 0 >( v, time ) 
-           + OperatorQ::template getValue<0, 1, 0> (function, v, time) * function.template getValue< 0, 1, 0 >( v, time )
-           + OperatorQ::template getValue<0, 0, 1> (function, v, time) * function.template getValue< 0, 0, 1 >( v, time ) )
-           / OperatorQ::template getValue<0, 0, 0> (function, v, time);
+   return  function.template getPartialDerivative< 2, 0, 0 >( v, time ) +  function.template getPartialDerivative< 0, 2, 0 >( v, time )
+           +  function.template getPartialDerivative< 0, 0, 2 >( v, time )
+           -( OperatorQ::template getPartialDerivative<1, 0, 0> (function, v, time) * function.template getPartialDerivative< 1, 0, 0 >( v, time ) 
+           + OperatorQ::template getPartialDerivative<0, 1, 0> (function, v, time) * function.template getPartialDerivative< 0, 1, 0 >( v, time )
+           + OperatorQ::template getPartialDerivative<0, 0, 1> (function, v, time) * function.template getPartialDerivative< 0, 0, 1 >( v, time ) )
+           / OperatorQ::template getPartialDerivative<0, 0, 0> (function, v, time);
 }
 
 #endif /* TNLEXACTNONLINEARDIFFUSION_IMPL_H_ */

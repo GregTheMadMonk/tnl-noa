@@ -21,23 +21,23 @@
 
 #include <core/vectors/tnlStaticVector.h>
 
-enum tnlFunctionType { GeneralFunction, 
-                       MeshFunction,
-                       AnalyticFunction,
-                       AnalyticConstantFunction };
+enum tnlDomainType { NonspaceDomain, SpaceDomain, MeshDomain, MeshInteriorDomain, MeshBoundaryDomain };
+   /*MeshFunction,
+                       SpaceDomain,
+                       SpaceDomain };*/
 
 template< int Dimensions,
-          tnlFunctionType FunctionType = GeneralFunction >
-class tnlFunction
+          tnlDomainType DomainType = SpaceDomain >
+class tnlDomain
 {
    public:
       
-      typedef void DeviceType;
+      typedef void DeviceType;      
       
       static const int dimensions = Dimensions;
       static constexpr int getDimensions() { return Dimensions; }
       
-      static constexpr tnlFunctionType getFunctionType() { return FunctionType; }
+      static constexpr tnlDomainType getDomainType() { return DomainType; }
 };
 
 #endif	/* TNLFUNCTION_H */

@@ -21,6 +21,7 @@
 #include <core/vectors/tnlVector.h>
 #include <functions/tnlMeshFunction.h>
 #include <mesh/tnlGrid.h>
+#include <functions/tnlDomain.h>
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -37,6 +38,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+: public tnlDomain< 1, MeshInteriorDomain >
 {
    public:    
    
@@ -48,7 +50,7 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
       
       static const int Dimensions = MeshType::meshDimensions;
       
-      static constexpr int getMeshEntityDimensions() { return Dimensions; }
+      static constexpr int getMeshDimensions() { return Dimensions; }
       
       template< int EntityDimensions = Dimensions >
       using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;
@@ -57,9 +59,9 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
 
       template< typename MeshEntity >
       __cuda_callable__
-      inline Real getValue( const MeshEntity& entity,
-                            const MeshFunction< 1 >& u,
-                            const RealType& time ) const;
+      inline Real getValue( const MeshFunction< 1 >& u,
+                            const MeshEntity& entity,
+                            const RealType& time = 0.0 ) const;
 
       template< typename MeshEntity >
       __cuda_callable__
@@ -89,6 +91,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >
+: public tnlDomain< 2, MeshInteriorDomain >
 {
    public: 
    
@@ -100,7 +103,7 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
       
       static const int Dimensions = MeshType::meshDimensions;
       
-      static constexpr int getMeshEntityDimensions() { return Dimensions; }
+      static constexpr int getMeshDimensions() { return Dimensions; }
 
       
       template< int EntityDimensions = Dimensions >
@@ -110,9 +113,9 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
 
       template< typename EntityType >
       __cuda_callable__
-      inline Real getValue( const EntityType& entity,
-                            const MeshFunction< 2 >& u,
-                            const Real& time ) const;
+      inline Real getValue( const MeshFunction< 2 >& u,
+                            const EntityType& entity,
+                            const Real& time = 0.0 ) const;
 
       template< typename EntityType >
       __cuda_callable__
@@ -141,6 +144,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >
+: public tnlDomain< 3, MeshInteriorDomain >
 {
    public: 
    
@@ -152,7 +156,7 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
 
       static const int Dimensions = MeshType::meshDimensions;
       
-      static constexpr int getMeshEntityDimensions() { return Dimensions; }      
+      static constexpr int getMeshDimensions() { return Dimensions; }      
 
       template< int EntityDimensions = Dimensions >
       using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;
@@ -162,9 +166,9 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
 
       template< typename EntityType >
       __cuda_callable__
-      inline Real getValue( const EntityType& entity,
-                            const MeshFunction< 3 >& u,
-                            const Real& time ) const;
+      inline Real getValue( const MeshFunction< 3 >& u,
+                            const EntityType& entity,
+                            const Real& time = 0.0 ) const;
 
       template< typename EntityType >
       __cuda_callable__

@@ -18,14 +18,14 @@
 #ifndef TNLEXACTNONLINEARDIFFUSION_H_
 #define TNLEXACTNONLINEARDIFFUSION_H_
 
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 template< typename OperatorQ, int Dimensions >
 class tnlExactNonlinearDiffusion
 {};
 
 template< typename OperatorQ >
-class tnlExactNonlinearDiffusion< OperatorQ, 1 > : public tnlFunction< 1, AnalyticFunction >
+class tnlExactNonlinearDiffusion< OperatorQ, 1 > : public tnlDomain< 1, SpaceDomain >
 {
    public:
 
@@ -40,13 +40,13 @@ class tnlExactNonlinearDiffusion< OperatorQ, 1 > : public tnlFunction< 1, Analyt
 #endif      
       
       __cuda_callable__
-      static Real getValue( const Function& function,
-                            const Vertex& v,
-                            const Real& time = 0.0 );
+      Real operator()( const Function& function,
+                       const Vertex& v,
+                       const Real& time = 0.0 ) const;
 };
 
 template< typename OperatorQ >
-class tnlExactNonlinearDiffusion< OperatorQ, 2 > : public tnlFunction< 2, AnalyticFunction >
+class tnlExactNonlinearDiffusion< OperatorQ, 2 > : public tnlDomain< 2, SpaceDomain >
 {
    public:
 
@@ -61,13 +61,13 @@ class tnlExactNonlinearDiffusion< OperatorQ, 2 > : public tnlFunction< 2, Analyt
 #endif 
 
       __cuda_callable__
-      static Real getValue( const Function& function,
-                            const Vertex& v,
-                            const Real& time = 0.0 );
+      Real operator()( const Function& function,
+                       const Vertex& v,
+                       const Real& time = 0.0 ) const;
 };
 
 template< typename OperatorQ >
-class tnlExactNonlinearDiffusion< OperatorQ, 3 > : public tnlFunction< 3, AnalyticFunction >
+class tnlExactNonlinearDiffusion< OperatorQ, 3 > : public tnlDomain< 3, SpaceDomain >
 {
    public:
 
@@ -82,9 +82,9 @@ class tnlExactNonlinearDiffusion< OperatorQ, 3 > : public tnlFunction< 3, Analyt
 #endif 
 
       __cuda_callable__
-      static Real getValue( const Function& function,
-                            const Vertex& v,
-                            const Real& time = 0.0 );
+      Real operator()( const Function& function,
+                       const Vertex& v,
+                       const Real& time = 0.0 ) const;
 };
 
 #include "tnlExactNonlinearDiffusion_impl.h"

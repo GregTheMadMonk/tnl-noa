@@ -18,14 +18,14 @@
 #ifndef TNLEXACTLINEARDIFFUSION_H_
 #define TNLEXACTLINEARDIFFUSION_H_
 
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 template< int Dimensions >
 class tnlExactLinearDiffusion
 {};
 
 template<>
-class tnlExactLinearDiffusion< 1 > : public tnlFunction< 1, AnalyticFunction >
+class tnlExactLinearDiffusion< 1 > : public tnlDomain< 1, SpaceDomain >
 {
    public:
 
@@ -35,13 +35,13 @@ class tnlExactLinearDiffusion< 1 > : public tnlFunction< 1, AnalyticFunction >
    
       template< typename Function >
       __cuda_callable__ inline
-      typename Function::RealType getValue( const Function& function,
-                                            const typename Function::VertexType& v,
-                                            const typename Function::RealType& time = 0.0 ) const;
+      typename Function::RealType operator()( const Function& function,
+                                              const typename Function::VertexType& v,
+                                              const typename Function::RealType& time = 0.0 ) const;
 };
 
 template<>
-class tnlExactLinearDiffusion< 2 > : public tnlFunction< 2, AnalyticFunction >
+class tnlExactLinearDiffusion< 2 > : public tnlDomain< 2, SpaceDomain >
 {
    public:
       
@@ -51,13 +51,13 @@ class tnlExactLinearDiffusion< 2 > : public tnlFunction< 2, AnalyticFunction >
 
       template< typename Function >
       __cuda_callable__ inline
-      typename Function::RealType getValue( const Function& function,
-                                            const typename Function::VertexType& v,
-                                            const typename Function::RealType& time = 0.0 ) const;
+      typename Function::RealType operator()( const Function& function,
+                                              const typename Function::VertexType& v,
+                                              const typename Function::RealType& time = 0.0 ) const;
 };
 
 template<>
-class tnlExactLinearDiffusion< 3 > : public tnlFunction< 3 >
+class tnlExactLinearDiffusion< 3 > : public tnlDomain< 3 >
 {
    public:
       
@@ -67,9 +67,9 @@ class tnlExactLinearDiffusion< 3 > : public tnlFunction< 3 >
 
       template< typename Function >
       __cuda_callable__ inline
-      typename Function::RealType getValue( const Function& function,
-                                            const typename Function::VertexType& v,
-                                            const typename Function::RealType& time = 0.0 ) const;
+      typename Function::RealType operator()( const Function& function,
+                                              const typename Function::VertexType& v,
+                                              const typename Function::RealType& time = 0.0 ) const;
 };
 
 #include <operators/diffusion/tnlExactLinearDiffusion_impl.h>

@@ -28,21 +28,19 @@ getType()
 }
 
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Function, typename Vertex, typename Real >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real
 tnlExactOperatorQ< 1 >::
-getValue( const Function& function,
-          const Vertex& v,
-          const Real& time, const Real& eps )
+getPartialDerivative( const Function& function,
+                      const Vertex& v,
+                      const Real& time, const Real& eps )
 {
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
         return 0.0;
    if (XDiffOrder == 0)
-        return sqrt(eps * eps + function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 1, 0, 0 >( v, time ) );
+        return sqrt(eps * eps + function.template getPartialDerivative< 1, 0, 0 >( v, time ) * function.template getPartialDerivative< 1, 0, 0 >( v, time ) );
    if (XDiffOrder == 1)
-        return (function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 2, 0, 0 >( v, time ) ) / getValue( function, v, time, eps);
+        return (function.template getPartialDerivative< 1, 0, 0 >( v, time ) * function.template getPartialDerivative< 2, 0, 0 >( v, time ) ) / getPartialDerivative( function, v, time, eps);
    return 0;
 }
 
@@ -54,26 +52,25 @@ getType()
 }
 
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Function, typename Vertex, typename Real >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
+__cuda_callable__
 Real
 tnlExactOperatorQ< 2 >::
-getValue( const Function& function,
-          const Vertex& v,
-          const Real& time, const Real& eps )
+getPartialDerivative( const Function& function,
+                      const Vertex& v,
+                      const Real& time, const Real& eps )
 {
    if( ZDiffOrder != 0 )
         return 0.0;
    if (XDiffOrder == 0 && YDiffOrder == 0 )
-        return sqrt(eps * eps + function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 1, 0, 0 >( v, time ) 
-                + function.template getValue< 0, 1, 0 >( v, time ) * function.template getValue< 0, 1, 0 >( v, time ) );
+        return sqrt(eps * eps + function.template getPartialDerivative< 1, 0, 0 >( v, time ) * function.template getPartialDerivative< 1, 0, 0 >( v, time ) 
+                + function.template getPartialDerivative< 0, 1, 0 >( v, time ) * function.template getPartialDerivative< 0, 1, 0 >( v, time ) );
    if (XDiffOrder == 1 && YDiffOrder == 0 )
-        return (function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 2, 0, 0 >( v, time ) + 
-                function.template getValue< 0, 1, 0 >( v, time ) * function.template getValue< 1, 1, 0 >( v, time )) / getValue( function, v, time, eps);
+        return (function.template getPartialDerivative< 1, 0, 0 >( v, time ) * function.template getPartialDerivative< 2, 0, 0 >( v, time ) + 
+                function.template getPartialDerivative< 0, 1, 0 >( v, time ) * function.template getPartialDerivative< 1, 1, 0 >( v, time )) / getPartialDerivative( function, v, time, eps);
    if (XDiffOrder == 0 && YDiffOrder == 1 )
-        return (function.template getValue< 0, 1, 0 >( v, time ) * function.template getValue< 0, 2, 0 >( v, time ) + 
-                function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 1, 1, 0 >( v, time )) / getValue( function, v, time, eps);
+        return (function.template getPartialDerivative< 0, 1, 0 >( v, time ) * function.template getPartialDerivative< 0, 2, 0 >( v, time ) + 
+                function.template getPartialDerivative< 1, 0, 0 >( v, time ) * function.template getPartialDerivative< 1, 1, 0 >( v, time )) / getPartialDerivative( function, v, time, eps);
    return 0;
 }
 
@@ -85,31 +82,30 @@ getType()
 }
 
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Function, typename Vertex, typename Real >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
+__cuda_callable__
 Real
 tnlExactOperatorQ< 3 >::
-getValue( const Function& function,
-          const Vertex& v,
-          const Real& time, const Real& eps )
+getPartialDerivative( const Function& function,
+                      const Vertex& v,
+                      const Real& time, const Real& eps )
 {
    if ( XDiffOrder == 0 && YDiffOrder == 0  && ZDiffOrder == 0 )
-        return sqrt(eps * eps + function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 1, 0, 0 >( v, time ) 
-                + function.template getValue< 0, 1, 0 >( v, time ) * function.template getValue< 0, 1, 0 >( v, time )
-                + function.template getValue< 0, 0, 1 >( v, time ) * function.template getValue< 0, 0, 1 >( v, time ) );
+        return sqrt(eps * eps + function.template getPartialDerivative< 1, 0, 0 >( v, time ) * function.template getPartialDerivative< 1, 0, 0 >( v, time ) 
+                + function.template getPartialDerivative< 0, 1, 0 >( v, time ) * function.template getPartialDerivative< 0, 1, 0 >( v, time )
+                + function.template getPartialDerivative< 0, 0, 1 >( v, time ) * function.template getPartialDerivative< 0, 0, 1 >( v, time ) );
    if (XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 0 )
-        return (function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 2, 0, 0 >( v, time ) + 
-                function.template getValue< 0, 1, 0 >( v, time ) * function.template getValue< 1, 1, 0 >( v, time ) + 
-                function.template getValue< 0, 0, 1 >( v, time ) * function.template getValue< 1, 0, 1 >( v, time )) / getValue( function, v, time, eps);
+        return (function.template getPartialDerivative< 1, 0, 0 >( v, time ) * function.template getPartialDerivative< 2, 0, 0 >( v, time ) + 
+                function.template getPartialDerivative< 0, 1, 0 >( v, time ) * function.template getPartialDerivative< 1, 1, 0 >( v, time ) + 
+                function.template getPartialDerivative< 0, 0, 1 >( v, time ) * function.template getPartialDerivative< 1, 0, 1 >( v, time )) / getPartialDerivative( function, v, time, eps);
    if (XDiffOrder == 0 && YDiffOrder == 1 && ZDiffOrder == 0 )
-        return (function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 1, 1, 0 >( v, time ) + 
-                function.template getValue< 0, 1, 0 >( v, time ) * function.template getValue< 0, 2, 0 >( v, time ) + 
-                function.template getValue< 0, 0, 1 >( v, time ) * function.template getValue< 0, 1, 1 >( v, time )) / getValue( function, v, time, eps);
+        return (function.template getPartialDerivative< 1, 0, 0 >( v, time ) * function.template getPartialDerivative< 1, 1, 0 >( v, time ) + 
+                function.template getPartialDerivative< 0, 1, 0 >( v, time ) * function.template getPartialDerivative< 0, 2, 0 >( v, time ) + 
+                function.template getPartialDerivative< 0, 0, 1 >( v, time ) * function.template getPartialDerivative< 0, 1, 1 >( v, time )) / getPartialDerivative( function, v, time, eps);
    if (XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 1 )
-        return (function.template getValue< 1, 0, 0 >( v, time ) * function.template getValue< 1, 0, 1 >( v, time ) + 
-                function.template getValue< 0, 1, 0 >( v, time ) * function.template getValue< 0, 1, 1 >( v, time ) + 
-                function.template getValue< 0, 0, 1 >( v, time ) * function.template getValue< 0, 0, 2 >( v, time )) / getValue( function, v, time, eps);
+        return (function.template getPartialDerivative< 1, 0, 0 >( v, time ) * function.template getPartialDerivative< 1, 0, 1 >( v, time ) + 
+                function.template getPartialDerivative< 0, 1, 0 >( v, time ) * function.template getPartialDerivative< 0, 1, 1 >( v, time ) + 
+                function.template getPartialDerivative< 0, 0, 1 >( v, time ) * function.template getPartialDerivative< 0, 0, 2 >( v, time )) / getPartialDerivative( function, v, time, eps);
    return 0;
 }
 

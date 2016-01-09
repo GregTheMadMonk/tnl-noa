@@ -218,11 +218,10 @@ getExplicitRHS( const RealType& time,
       u,
       fu );
    
-   tnlBoundaryConditionsSetter< Mesh, MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
+   tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
    boundaryConditionsSetter.template apply< typename Mesh::Cell >(
-      time,
-      mesh,
       this->boundaryCondition,
+      time,
       u );
 
    /*cout << "u = " << u << endl;

@@ -54,8 +54,8 @@ template< typename Real >
              typename Vertex >
 __cuda_callable__
 Real
-tnlTwinsFunction< 1, Real >::getValue( const Vertex& v,
-                                       const Real& time ) const
+tnlTwinsFunction< 1, Real >::getPartialDerivative( const Vertex& v,
+                                                   const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -65,10 +65,20 @@ tnlTwinsFunction< 1, Real >::getValue( const Vertex& v,
    return 0.0;
 }
 
+template< typename Real >
+__cuda_callable__
+Real
+tnlTwinsFunction< 1, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
+
 /****
  * 2D
  */
-
 template< typename Real >
 tnlString
 tnlTwinsFunction< 2, Real >::getType()
@@ -89,8 +99,8 @@ template< typename Real >
 __cuda_callable__
 Real
 tnlTwinsFunction< 2, Real >::
-getValue( const Vertex& v,
-          const Real& time ) const
+getPartialDerivative( const Vertex& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -100,6 +110,17 @@ getValue( const Vertex& v,
       return -0.5 * sin( M_PI * x) * sin( M_PI * x) * ( 1 - ( y - 2 ) * ( y - 2 ) ) * ( 1 - tanh ( 10 * ( sqrt( x * x + y * y ) - 0.6 ) ) );
    return 0.0;
 }
+
+template< typename Real >
+__cuda_callable__
+Real
+tnlTwinsFunction< 2, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
 
 /****
  * 3D
@@ -124,8 +145,8 @@ template< typename Real >
 __cuda_callable__
 Real
 tnlTwinsFunction< 3, Real >::
-getValue( const Vertex& v,
-          const Real& time ) const
+getPartialDerivative( const Vertex& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -135,5 +156,14 @@ getValue( const Vertex& v,
    return 0.0;
 }
 
+template< typename Real >
+__cuda_callable__
+Real
+tnlTwinsFunction< 3, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
 
 #endif /* TNLTWINSFUNCTION_IMPL_H_ */

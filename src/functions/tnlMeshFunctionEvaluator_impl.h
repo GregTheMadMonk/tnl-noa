@@ -31,6 +31,32 @@ evaluate( OutMeshFunction& meshFunction,
           const RealType& outFunctionMultiplicator,
           const RealType& inFunctionMultiplicator )
 {
+   switch( InFunction::getDomainType() )
+   {
+      case SpaceDomain:
+      case MeshDomain:   
+         return evaluateEntities( meshFunction, function, time, outFunctionMultiplicator, inFunctionMultiplicator, all );
+         break;
+      case MeshInteriorDomain:
+         return evaluateEntities( meshFunction, function, time, outFunctionMultiplicator, inFunctionMultiplicator, interior );
+         break;
+      case MeshBoundaryDomain:
+         return evaluateEntities( meshFunction, function, time, outFunctionMultiplicator, inFunctionMultiplicator, boundary );
+         break;
+   }         
+}
+
+
+template< typename OutMeshFunction,
+          typename InFunction >
+void
+tnlMeshFunctionEvaluator< OutMeshFunction, InFunction >::
+evaluateAllEntities( OutMeshFunction& meshFunction,
+                     const InFunction& function,                          
+                     const RealType& time,
+                     const RealType& outFunctionMultiplicator,
+                     const RealType& inFunctionMultiplicator )
+{
    return evaluateEntities( meshFunction, function, time, outFunctionMultiplicator, inFunctionMultiplicator, all );
 }
 
@@ -175,143 +201,6 @@ evaluateEntities( OutMeshFunction& meshFunction,
       checkCudaDevice;      
       tnlCuda::freeFromDevice( kernelMeshFunction );
       tnlCuda::freeFromDevice( kernelFunction );
-      tnlCuda::freeFromDevice( kernelTime );
-      tnlCuda::freeFromDevice( kernelOutFunctionMultiplicator );
-      tnlCuda::freeFromDevice( kernelInFunctionMultiplicator );            
-      checkCudaDevice;
-   }
-}
-
-
-template< typename OutMeshFunction,          
-          typename Operator,
-          typename Function >
-void
-tnlMeshFunctionEvaluator< OutMeshFunction, tnlOperatorFunction< Operator, Function> >::
-evaluate( OutMeshFunction& meshFunction,
-          const OperatorFunctionType& operatorFunction,
-          const RealType& time,
-          const RealType& outFunctionMultiplicator,
-          const RealType& inFunctionMultiplicator )
-{
-   typedef typename MeshType::template MeshEntity< OutMeshFunction::getMeshEntityDimensions() > MeshEntityType;
-   typedef tnlMeshFunctionEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData > AssignmentEntitiesProcessor;
-   typedef tnlMeshFunctionEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData > AdditionEntitiesProcessor;
-   
-   if( std::is_same< MeshDeviceType, tnlHost >::value )
-   {
-      TraverserUserData userData( &operatorFunction, &time, &meshFunction, &outFunctionMultiplicator, &inFunctionMultiplicator );
-      tnlTraverser< MeshType, MeshEntityType > meshTraverser;
-      if( outFunctionMultiplicator )
-         meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                         AdditionEntitiesProcessor >
-                                                       ( meshFunction.getMesh(),
-                                                         userData );
-      else
-         meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                         AssignmentEntitiesProcessor >
-                                                       ( meshFunction.getMesh(),
-                                                         userData );
-   }
-   if( std::is_same< MeshDeviceType, tnlCuda >::value )
-   {      
-      OutMeshFunction* kernelMeshFunction = tnlCuda::passToDevice( meshFunction );
-      Function* kernelFunction = tnlCuda::passToDevice( *operatorFunction.function );
-      Operator* kernelOperator = tnlCuda::passToDevice( *operatorFunction.operator_ );
-      OperatorFunctionType auxOperatorFunction( *kernelOperator, *kernelFunction );
-      OperatorFunctionType* kernelOperatorFunction = tnlCuda::passToDevice( auxOperatorFunction );
-      RealType* kernelTime = tnlCuda::passToDevice( time );
-      RealType* kernelOutFunctionMultiplicator = tnlCuda::passToDevice( outFunctionMultiplicator );
-      RealType* kernelInFunctionMultiplicator = tnlCuda::passToDevice( inFunctionMultiplicator );
-      
-      TraverserUserData userData( kernelOperatorFunction, kernelTime, kernelMeshFunction, kernelOutFunctionMultiplicator, kernelInFunctionMultiplicator );
-      checkCudaDevice;
-      tnlTraverser< MeshType, MeshEntityType > meshTraverser;
-      if( outFunctionMultiplicator )
-         meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                         AdditionEntitiesProcessor >
-                                                       ( meshFunction.getMesh(),
-                                                         userData );
-      else
-         meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                         AssignmentEntitiesProcessor >
-                                                       ( meshFunction.getMesh(),
-                                                         userData );
-
-      checkCudaDevice;      
-      tnlCuda::freeFromDevice( kernelMeshFunction );
-      tnlCuda::freeFromDevice( kernelFunction );
-      tnlCuda::freeFromDevice( kernelOperator );
-      tnlCuda::freeFromDevice( kernelOperatorFunction );
-      tnlCuda::freeFromDevice( kernelTime );
-      tnlCuda::freeFromDevice( kernelOutFunctionMultiplicator );
-      tnlCuda::freeFromDevice( kernelInFunctionMultiplicator );
-            
-      checkCudaDevice;
-   }
-}
-
-template< typename OutMeshFunction,          
-          typename BoundaryOperator,
-          typename Function >
-void
-tnlMeshFunctionEvaluator< OutMeshFunction, tnlBoundaryOperatorFunction< BoundaryOperator, Function> >::
-evaluate( OutMeshFunction& meshFunction,
-          const BoundaryOperatorFunctionType& operatorFunction,
-          const RealType& time,
-          const RealType& outFunctionMultiplicator,
-          const RealType& inFunctionMultiplicator )
-{
-   typedef typename MeshType::template MeshEntity< OutMeshFunction::getMeshEntityDimensions() > MeshEntityType;
-   typedef tnlMeshFunctionEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData > AssignmentEntitiesProcessor;
-   typedef tnlMeshFunctionEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData > AdditionEntitiesProcessor;
-   
-   if( std::is_same< MeshDeviceType, tnlHost >::value )
-   {
-      TraverserUserData userData( &operatorFunction, &time, &meshFunction, &outFunctionMultiplicator, &inFunctionMultiplicator );
-      tnlTraverser< MeshType, MeshEntityType > meshTraverser;
-      if( outFunctionMultiplicator )
-         meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                         AdditionEntitiesProcessor >
-                                                       ( meshFunction.getMesh(),
-                                                         userData );
-      else
-         meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                         AssignmentEntitiesProcessor >
-                                                       ( meshFunction.getMesh(),
-                                                         userData );
-   }
-   if( std::is_same< MeshDeviceType, tnlCuda >::value )
-   {      
-      OutMeshFunction* kernelMeshFunction = tnlCuda::passToDevice( meshFunction );
-      Function* kernelFunction = tnlCuda::passToDevice( *operatorFunction.function );
-      BoundaryOperator* kernelOperator = tnlCuda::passToDevice( *operatorFunction.boundaryOperator );
-      BoundaryOperatorFunctionType auxOperatorFunction( *kernelOperator, *kernelFunction );
-      BoundaryOperatorFunctionType* kernelOperatorFunction = tnlCuda::passToDevice( auxOperatorFunction );
-      RealType* kernelTime = tnlCuda::passToDevice( time );
-      RealType* kernelOutFunctionMultiplicator = tnlCuda::passToDevice( outFunctionMultiplicator );
-      RealType* kernelInFunctionMultiplicator = tnlCuda::passToDevice( inFunctionMultiplicator );
-      
-      TraverserUserData userData( kernelOperatorFunction, kernelTime, kernelMeshFunction, kernelOutFunctionMultiplicator, kernelInFunctionMultiplicator );
-      checkCudaDevice;
-      tnlTraverser< MeshType, MeshEntityType > meshTraverser;
-
-      if( outFunctionMultiplicator )
-         meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                         AdditionEntitiesProcessor >
-                                                       ( meshFunction.getMesh(),
-                                                         userData );
-      else
-         meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                         AssignmentEntitiesProcessor >
-                                                       ( meshFunction.getMesh(),
-                                                         userData );
-      
-      checkCudaDevice;      
-      tnlCuda::freeFromDevice( kernelMeshFunction );
-      tnlCuda::freeFromDevice( kernelFunction );
-      tnlCuda::freeFromDevice( kernelOperator );
-      tnlCuda::freeFromDevice( kernelOperatorFunction );
       tnlCuda::freeFromDevice( kernelTime );
       tnlCuda::freeFromDevice( kernelOutFunctionMultiplicator );
       tnlCuda::freeFromDevice( kernelInFunctionMultiplicator );            

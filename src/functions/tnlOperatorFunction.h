@@ -28,12 +28,14 @@
  */
 template< typename Operator,
           typename MeshFunction >
-class tnlOperatorFunction : public tnlFunction< Operator::getMeshEntityDimensions(), ::MeshFunction >
+class tnlOperatorFunction : public tnlDomain< Operator::getDimensions(), Operator::getDomainType() >
 {   
    public:
       
-      static_assert( MeshFunction::getFunctionType() == ::MeshFunction,
-         "Only mesh functions may be used in the operator function." );
+      static_assert( MeshFunction::getDomainType() == MeshDomain ||
+                     MeshFunction::getDomainType() == MeshInteriorDomain ||
+                     MeshFunction::getDomainType() == MeshBoundaryDomain,
+         "Only mesh functions may be used in the operator function. Use tnlExactOperatorFunction instead of tnlOperatorFunction." );
       static_assert( std::is_same< typename Operator::MeshType, typename MeshFunction::MeshType >::value,
           "Both, operator and mesh function must be defined on the same mesh." );
       
@@ -55,7 +57,7 @@ class tnlOperatorFunction : public tnlFunction< Operator::getMeshEntityDimension
          const MeshEntity& meshEntity,
          const RealType& time = 0 ) const
       {
-         return operator_->getValue( meshEntity, *function, time );
+         return operator_->getValue( *function, meshEntity, time );
       }
       
    protected:

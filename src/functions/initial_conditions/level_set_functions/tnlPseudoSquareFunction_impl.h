@@ -52,12 +52,12 @@ tnlPseudoSquareFunction< 1, Real >::tnlPseudoSquareFunction()
 template< typename Real >
    template< int XDiffOrder, 
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
-tnlPseudoSquareFunction< 1, Real >::getValue( const Vertex& v,
-                                         const Real& time ) const
+tnlPseudoSquareFunction< 1, Real >::
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -67,10 +67,19 @@ tnlPseudoSquareFunction< 1, Real >::getValue( const Vertex& v,
    return 0.0;
 }
 
+template< typename Real >
+__cuda_callable__
+Real
+tnlPseudoSquareFunction< 1, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
 /****
  * 2D
  */
-
 template< typename Real >
 tnlString
 tnlPseudoSquareFunction< 2, Real >::getType()
@@ -86,13 +95,12 @@ tnlPseudoSquareFunction< 2, Real >::tnlPseudoSquareFunction()
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
 tnlPseudoSquareFunction< 2, Real >::
-getValue( const Vertex& v,
-          const Real& time ) const
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -103,10 +111,19 @@ getValue( const Vertex& v,
    return 0.0;
 }
 
+template< typename Real >
+__cuda_callable__
+Real
+tnlPseudoSquareFunction< 2, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
 /****
  * 3D
  */
-
 template< typename Real >
 tnlString
 tnlPseudoSquareFunction< 3, Real >::getType()
@@ -122,13 +139,12 @@ tnlPseudoSquareFunction< 3, Real >::tnlPseudoSquareFunction()
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
 tnlPseudoSquareFunction< 3, Real >::
-getValue( const Vertex& v,
-          const Real& time ) const
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -138,5 +154,14 @@ getValue( const Vertex& v,
    return 0.0;
 }
 
+template< typename Real >
+__cuda_callable__
+Real
+tnlPseudoSquareFunction< 3, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
 
 #endif /* TNLPSEUDOSQUAREFUNCTION_IMPL_H_ */

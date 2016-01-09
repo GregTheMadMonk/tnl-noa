@@ -114,8 +114,8 @@ class tnlExplicitUpdater
             {
                ( *userData.fu)( entity ) = 
                   userData.differentialOperator->getValue(
-                     entity,
                      *userData.u,
+                     entity,
                      *userData.time );
 
                typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;

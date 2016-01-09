@@ -68,8 +68,8 @@ template< typename Real >
              typename Vertex >
 __cuda_callable__
 Real
-tnlFlowerpotFunction< 1, Real >::getValue( const Vertex& v,
-                                         const Real& time ) const
+tnlFlowerpotFunction< 1, Real >::getPartialDerivative( const Vertex& v,
+                                                       const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -79,10 +79,20 @@ tnlFlowerpotFunction< 1, Real >::getValue( const Vertex& v,
    return 0.0;
 }
 
+template< typename Real >
+__cuda_callable__
+Real
+tnlFlowerpotFunction< 1, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
+
 /****
  * 2D
  */
-
 template< typename Real >
 tnlString
 tnlFlowerpotFunction< 2, Real >::getType()
@@ -103,8 +113,8 @@ template< typename Real >
 __cuda_callable__
 Real
 tnlFlowerpotFunction< 2, Real >::
-getValue( const Vertex& v,
-          const Real& time ) const
+getPartialDerivative( const Vertex& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -114,6 +124,17 @@ getValue( const Vertex& v,
       return sin( M_PI * tanh( 5 * ( x * x + y * y - this->diameter ) ) );
    return 0.0;
 }
+
+template< typename Real >
+__cuda_callable__
+Real
+tnlFlowerpotFunction< 2, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
 
 /****
  * 3D
@@ -139,8 +160,8 @@ template< typename Real >
 __cuda_callable__
 Real
 tnlFlowerpotFunction< 3, Real >::
-getValue( const Vertex& v,
-          const Real& time ) const
+getPartialDerivative( const Vertex& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -150,5 +171,14 @@ getValue( const Vertex& v,
    return 0.0;
 }
 
+template< typename Real >
+__cuda_callable__
+Real
+tnlFlowerpotFunction< 3, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
 
 #endif /* TNLFLOWERPOTFUNCTION_IMPL_H_ */

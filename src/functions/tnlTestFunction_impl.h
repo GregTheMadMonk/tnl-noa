@@ -267,7 +267,7 @@ template< int FunctionDimensions,
 __cuda_callable__
 Real
 tnlTestFunction< FunctionDimensions, Real, Device >::
-getValue( const VertexType& vertex,
+getPartialDerivative( const VertexType& vertex,
           const Real& time ) const
 {
    Real scale( 1.0 );
@@ -291,31 +291,31 @@ getValue( const VertexType& vertex,
    {
       case constant:
          return scale * ( ( tnlConstantFunction< Dimensions, Real >* ) function )->
-                   getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case expBump:
          return scale * ( ( tnlExpBumpFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinBumps:
          return scale * ( ( tnlSinBumpsFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinWave:
          return scale * ( ( tnlSinWaveFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case cylinder:
          return scale * ( ( tnlCylinderFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case flowerpot:
          return scale * ( ( tnlFlowerpotFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case twins:
          return scale * ( ( tnlTwinsFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case pseudoSquare:
          return scale * ( ( tnlPseudoSquareFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case blob:
          return scale * ( ( tnlBlobFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       default:
          return 0.0;
    }
@@ -352,36 +352,36 @@ getTimeDerivative( const VertexType& vertex,
    {
       case constant:
          return scale * ( ( tnlConstantFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case expBump:
          return scale * ( ( tnlExpBumpFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinBumps:
          return scale * ( ( tnlSinBumpsFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinWave:
          return scale * ( ( tnlSinWaveFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       case cylinder:
          return scale * ( ( tnlCylinderFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       case flowerpot:
          return scale * ( ( tnlFlowerpotFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       case twins:
          return scale * ( ( tnlTwinsFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       case pseudoSquare:
          return scale * ( ( tnlPseudoSquareFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       case blob:
          return scale * ( ( tnlBlobFunction< Dimensions, Real >* ) function )->
-                  getValue< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       default:
          return 0.0;
