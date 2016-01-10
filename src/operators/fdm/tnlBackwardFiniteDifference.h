@@ -1,12 +1,24 @@
-/* 
- * File:   tnlBackwardFiniteDifference.h
- * Author: oberhuber
- *
- * Created on January 9, 2016, 11:17 AM
- */
+/***************************************************************************
+                          tnlBackwardFiniteDifference.h  -  description
+                             -------------------
+    begin                : Jan 9, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
 
 #ifndef TNLBACKWARDFINITEDIFFERENCE_H
 #define	TNLBACKWARDFINITEDIFFERENCE_H
+
+#include <operators/fdm/tnlFiniteDifferences.h>
 
 template< typename Mesh,
           int Xdifference = 0,
@@ -16,6 +28,41 @@ template< typename Mesh,
           typename IndexType = typename Mesh::IndexType >
 class tnlBackwardFiniteDifference
 {    
+};
+
+template< int Dimensions,
+          typename MeshReal,
+          typename MeshDevice,
+          typename MeshIndex,
+          int XDifference,
+          int YDifference,
+          int ZDifference,
+          typename Real,
+          typename Index >
+class tnlBackwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >, Real, Index >
+: tnlDomain< Dimensions, MeshInteriorDomain >
+{
+   public:
+      
+      typedef tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef MeshDevice DeviceType;
+      typedef Index IndexType;      
+      
+      static const int Dimensions = MeshType::meshDimensions;
+      
+      static constexpr int getMeshDimensions() { return Dimensions; }
+      
+      template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
+      inline Real operator()( const MeshFunction& u,
+                              const MeshEntity& entity,
+                              const RealType& time = 0.0 ) const
+      {
+         static_assert( MeshFunction::getMeshEntityDimensions() == Dimensions,
+            "Finite differences can be evaluate only on mesh cells, i.e. the dimensions count of the mesh entities of mesh function must be the same as mesh dimensions count." );
+         return tnlFiniteDifferences< MeshType, Real, Index, XDifference, YDifference, ZDifference, -1, -1, -1 >::getValue( u, entity );
+      };
 };
 
 #endif	/* TNLBACKWARDFINITEDIFFERENCE_H */
