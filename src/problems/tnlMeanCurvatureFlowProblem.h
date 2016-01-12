@@ -30,7 +30,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator = tnlNonlinearDiffusion< Mesh,
                                                           tnlOneSideDiffNonlinearOperator< Mesh, tnlOneSideDiffOperatorQ<Mesh, typename Mesh::RealType,
-                                                          typename Mesh::IndexType, 0>, typename Mesh::RealType, typename Mesh::IndexType >, 
+                                                          typename Mesh::IndexType >, typename Mesh::RealType, typename Mesh::IndexType >, 
                                                           typename Mesh::RealType, typename Mesh::IndexType > >
 class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
                                                      typename DifferentialOperator::RealType,

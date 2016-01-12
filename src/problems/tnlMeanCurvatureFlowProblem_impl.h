@@ -71,10 +71,9 @@ tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, Differentia
 setup( const tnlParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
-       ! this->rightHandSide.setup( parameters, "right-hand-side-" ) ||
-       ! this->differentialOperator.nonlinearDiffusionOperator.operatorQ.setEps( parameters.getParameter< double >( "eps" ) ) )
+       ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
       return false;
-   
+   this->differentialOperator.nonlinearDiffusionOperator.operatorQ.setEps( parameters.getParameter< double >( "eps" ) );
    return true;
 }
 
@@ -103,7 +102,7 @@ bindDofs( const MeshType& mesh,
 {
    const IndexType dofs = mesh.template getEntitiesCount< typename Mesh::Cell >();
    this->solution.bind( dofVector.getData(), dofs );
-   differentialOperator.nonlinearDiffusionOperator.operatorQ.bind(solution);
+   //differentialOperator.nonlinearDiffusionOperator.operatorQ.bind(solution);
 //   this->differentialOperator.setupDofs(mesh);
 }
 
@@ -207,7 +206,7 @@ getExplicitRHS( const RealType& time,
    //this->bindDofs( mesh, u );
    MeshFunctionType u( mesh, inDofs );
    MeshFunctionType fu( mesh, outDofs );
-   differentialOperator.nonlinearDiffusionOperator.operatorQ.update( mesh, time );
+   //differentialOperator.nonlinearDiffusionOperator.operatorQ.update( mesh, time );
    tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.template update< typename Mesh::Cell >(
       time,

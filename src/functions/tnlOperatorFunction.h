@@ -57,7 +57,7 @@ class tnlOperatorFunction : public tnlDomain< Operator::getDimensions(), Operato
          const MeshEntity& meshEntity,
          const RealType& time = 0 ) const
       {
-         return operator_->getValue( *function, meshEntity, time );
+         return operator_->operator()( *function, meshEntity, time );
       }
       
    protected:

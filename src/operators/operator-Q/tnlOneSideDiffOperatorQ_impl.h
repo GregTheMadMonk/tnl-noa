@@ -50,7 +50,7 @@ operator()( const MeshFunction& u,
    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();      
    const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const RealType& u_x = ( u[ neighbourEntities.template getEntityIndex< 1 >() ] - u[ cellIndex ] ) *
-                         mesh.template getSpaceStepsProducts< -1 >() );
+                         mesh.template getSpaceStepsProducts< -1 >();
    return sqrt( this->epsSquare + u_x * u_x );          
 }
 
@@ -75,7 +75,7 @@ getValueStriped( const MeshFunction& u,
                            mesh.template getSpaceStepsProducts< -1 >();
    const RealType& u_x_b = ( u_c - u[ neighbourEntities.template getEntityIndex< -1 >() ] ) * 
                            mesh.template getSpaceStepsProducts< -1 >();   
-   return sqrt( this->epsSquare + 0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b );
+   return sqrt( this->epsSquare + 0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b ) );
 }
 
 /***
@@ -141,7 +141,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getValueStriped( const MeshFunction& u,
                  const MeshEntity& entity,                 
                  const Real& time ) const
@@ -156,7 +156,7 @@ getValueStriped( const MeshFunction& u,
                           mesh.template getSpaceStepsProducts< 0, -1 >();
    const RealType u_x_b = ( u_c - u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] ) *
                           mesh.template getSpaceStepsProducts< -1, 0 >();
-   const RealType u_y_b = ( u_c - [ neighbourEntities.template getEntityIndex< 0, -1 >() ] ) *
+   const RealType u_y_b = ( u_c - u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] ) *
                           mesh.template getSpaceStepsProducts< 0, -1 >();
    
    return sqrt( this->epsSquare + 
@@ -203,7 +203,7 @@ template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
 tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
-operator()( const meshFunction& u,
+operator()( const MeshFunction& u,
             const MeshEntity& entity,            
             const Real& time ) const
 {
@@ -229,7 +229,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getValueStriped( const MeshFunction& u,
                  const MeshEntity& entity,                 
                  const Real& time ) const
@@ -247,9 +247,9 @@ getValueStriped( const MeshFunction& u,
                           mesh.template getSpaceStepsProducts< 0, 0, -1 >();   
    const RealType u_x_b = ( u_c - u[ neighbourEntities.template getEntityIndex< -1, 0, 0 >() ] ) *
                           mesh.template getSpaceStepsProducts< -1, 0, 0 >();
-   const RealType u_y_b = ( u_c - [ neighbourEntities.template getEntityIndex< 0, -1, 0 >() ] ) *
+   const RealType u_y_b = ( u_c - u[ neighbourEntities.template getEntityIndex< 0, -1, 0 >() ] ) *
                           mesh.template getSpaceStepsProducts< 0, -1, 0 >();
-   const RealType u_z_b = ( u_c - [ neighbourEntities.template getEntityIndex< 0, 0, -1 >() ] ) *
+   const RealType u_z_b = ( u_c - u[ neighbourEntities.template getEntityIndex< 0, 0, -1 >() ] ) *
                           mesh.template getSpaceStepsProducts< 0, 0, -1 >();
    
    return sqrt( this->epsSquare + 

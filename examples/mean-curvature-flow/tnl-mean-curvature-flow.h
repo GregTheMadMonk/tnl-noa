@@ -84,7 +84,7 @@ class meanCurvatureFlowSetter
       const tnlString& numericalScheme = parameters.getParameter< tnlString >( "numerical-scheme" );
       if( numericalScheme == "fdm" )
       {
-         typedef tnlOneSideDiffOperatorQ<MeshType, Real, Index, 0> QOperator;
+         typedef tnlOneSideDiffOperatorQ<MeshType, Real, Index > QOperator;
          typedef tnlOneSideDiffNonlinearOperator<MeshType, QOperator, Real, Index > NonlinearOperator;         
          return setBoundaryConditions< NonlinearOperator, QOperator >( parameters );
       }

@@ -57,7 +57,7 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
 
       static tnlString getType();
 
-      template< typename MeshFunction, typename MeshEntity >
+      template< typename MeshEntity >
       __cuda_callable__
       inline Real operator()( const MeshFunction< 1 >& u,
                               const MeshEntity& entity,

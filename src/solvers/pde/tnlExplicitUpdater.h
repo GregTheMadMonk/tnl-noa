@@ -113,7 +113,7 @@ class tnlExplicitUpdater
                                               const EntityType& entity )
             {
                ( *userData.fu)( entity ) = 
-                  userData.differentialOperator->getValue(
+                  userData.differentialOperator->operator()(
                      *userData.u,
                      entity,
                      *userData.time );

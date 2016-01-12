@@ -41,7 +41,7 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
                          const MeshEntity& entity,   
                          const Real& time = 0.0 ) const;
           
-   bool setEps(const Real& eps);
+   void setEps(const Real& eps);
       
    private:
    
