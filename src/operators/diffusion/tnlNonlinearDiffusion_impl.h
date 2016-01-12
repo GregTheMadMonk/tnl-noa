@@ -34,11 +34,11 @@ template< typename MeshEntity,
 __cuda_callable__
 Real
 tnlNonlinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
-getValue( const MeshEntity& entity,
-          const Vector& u,
-          const Real& time ) const
+operator()( const MeshEntity& entity,
+            const Vector& u,
+            const Real& time ) const
 {
-    return nonlinearDiffusionOperator.getValue( u, entity, time );
+    return nonlinearDiffusionOperator( u, entity, time );
 }
 
 template< typename MeshReal,
@@ -111,11 +111,11 @@ template< typename MeshEntity,
 __cuda_callable__
 Real
 tnlNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
-getValue( const MeshEntity& entity,
-          const Vector& u,
-          const Real& time ) const
+operator()( const MeshEntity& entity,
+            const Vector& u,
+            const Real& time ) const
 {
-    return nonlinearDiffusionOperator.getValue( u, entity, time );
+    return nonlinearDiffusionOperator( u, entity, time );
 }
        
 template< typename MeshReal,
@@ -188,11 +188,11 @@ template< typename MeshEntity,
 __cuda_callable__
 Real
 tnlNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
-getValue( const MeshEntity& entity,
-          const Vector& u,
-          const Real& time ) const
+operator()( const MeshEntity& entity,
+            const Vector& u,
+            const Real& time ) const
 {
-    return nonlinearDiffusionOperator.getValue( u, entity, time );
+    return nonlinearDiffusionOperator( u, entity, time );
 }
 
 template< typename MeshReal,

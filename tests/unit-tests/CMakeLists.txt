@@ -30,6 +30,7 @@ ADD_TEST( mesh/tnlMeshEntityTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/t
 ADD_TEST( mesh/tnlMeshTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMeshTest${mpiExt}${debugExt} )
 
 ADD_TEST( operators/diffusion/tnlLinearDiffusionTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlLinearDiffusionTest${mpiExt}${debugExt} )
+ADD_TEST( operators/diffusion/tnlFiniteDifferencesTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlFiniteDifferencesTest${mpiExt}${debugExt} )
 
 if( BUILD_CUDA )
    ADD_TEST( core/cuda/tnlCudaTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCudaTest${mpiExt}${debugExt} )

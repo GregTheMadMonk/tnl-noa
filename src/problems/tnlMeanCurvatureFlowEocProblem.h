@@ -26,7 +26,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator = tnlNonlinearDiffusion< Mesh,
                                                           tnlOneSideDiffNonlinearOperator< Mesh, tnlOneSideDiffOperatorQ<Mesh, typename BoundaryCondition::RealType,
-                                                          typename BoundaryCondition::IndexType, 0>, typename BoundaryCondition::RealType, typename BoundaryCondition::IndexType >, 
+                                                          typename BoundaryCondition::IndexType >, typename BoundaryCondition::RealType, typename BoundaryCondition::IndexType >, 
                                                           typename BoundaryCondition::RealType, typename BoundaryCondition::IndexType > >
 class tnlMeanCurvatureFlowEocProblem : public tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator > 
 {

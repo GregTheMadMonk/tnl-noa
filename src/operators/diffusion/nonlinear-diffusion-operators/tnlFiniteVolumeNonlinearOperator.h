@@ -37,9 +37,9 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >
    template< typename MeshEntity,
              typename Vector >
    __cuda_callable__
-   Real getValue( const MeshEntity& entity,
-                  const Vector& u,
-                  const RealType& time) const;
+   Real operator()( const MeshEntity& entity,
+                    const Vector& u,
+                    const RealType& time) const;
    
    template< typename MeshEntity >
    __cuda_callable__
@@ -90,9 +90,9 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex 
    template< typename MeshEntity,
              typename Vector >
    __cuda_callable__
-   Real getValue( const MeshEntity& entity,
-                  const Vector& u,
-                  const RealType& time) const;
+   Real operator()( const MeshEntity& entity,
+                    const Vector& u,
+                    const RealType& time) const;
    
    
    template< typename MeshEntity >
@@ -143,9 +143,9 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex 
    template< typename MeshEntity, 
              typename Vector >
    __cuda_callable__
-   Real getValue( const MeshEntity& entity,
-                  const Vector& u,
-                  const RealType& time) const;
+   Real operator()( const MeshEntity& entity,
+                    const Vector& u,
+                    const RealType& time) const;
    
    template< typename MeshEntity >
    __cuda_callable__

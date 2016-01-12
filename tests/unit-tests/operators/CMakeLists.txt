@@ -1,1 +1,2 @@
 ADD_SUBDIRECTORY( diffusion )
+ADD_SUBDIRECTORY( fdm )

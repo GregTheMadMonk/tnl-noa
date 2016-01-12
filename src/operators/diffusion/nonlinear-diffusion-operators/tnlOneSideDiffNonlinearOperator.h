@@ -37,9 +37,9 @@ class tnlOneSideDiffNonlinearOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >,
    template< typename Vector,
              typename MeshEntity >
    __cuda_callable__
-   Real getValue( const MeshEntity& entity,
-                  const Vector& u,
-                  const RealType& time) const;
+   Real operator()( const MeshEntity& entity,
+                    const Vector& u,
+                    const RealType& time) const;
    
    template< typename MeshEntity >
    __cuda_callable__
@@ -90,9 +90,9 @@ class tnlOneSideDiffNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >
    template< typename Vector,
              typename MeshEntity >
    __cuda_callable__
-   Real getValue( const MeshEntity& entity,
-                  const Vector& u,
-                  const RealType& time) const;
+   Real operator()( const MeshEntity& entity,
+                    const Vector& u,
+                    const RealType& time) const;
    
    template< typename MeshEntity >
    __cuda_callable__
@@ -142,9 +142,9 @@ class tnlOneSideDiffNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >
    template< typename Vector,
              typename MeshEntity >
    __cuda_callable__
-   Real getValue( const MeshEntity& entity,
-                  const Vector& u,
-                  const RealType& time) const;
+   Real operator()( const MeshEntity& entity,
+                    const Vector& u,
+                    const RealType& time) const;
    
    
    template< typename MeshEntity >

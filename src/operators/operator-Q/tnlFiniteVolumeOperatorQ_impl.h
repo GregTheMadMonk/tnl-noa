@@ -100,7 +100,7 @@ template< typename MeshEntity,
 __cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getValue( 
+operator()( 
    const MeshType& mesh,
    const MeshEntity& entity,
    const Vector& u,
@@ -142,7 +142,7 @@ template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
-getValue( 
+operator()( 
    const MeshType& mesh,
    const MeshEntity& entity,
    const Vector& u,
@@ -237,7 +237,7 @@ update( const MeshType& mesh, const RealType& time )
     for( coordinates.x()=1; coordinates.x() < dimensions.x()-1; coordinates.x()++ )
         for( coordinates.y()=1; coordinates.y() < dimensions.y()-1; coordinates.y()++  )
         {
-            q.setElement( mesh.getCellIndex(coordinates), getValue( mesh, mesh.getCellIndex(coordinates), coordinates, u, time ) ); 
+            q.setElement( mesh.getCellIndex(coordinates), operator()( mesh, mesh.getCellIndex(coordinates), coordinates, u, time ) ); 
         }
 }
 
@@ -303,7 +303,7 @@ template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getValue( const MeshEntity& entity,
+operator()( const MeshEntity& entity,
           const Vector& u,
           const Real& time,
           const IndexType& dx, 
@@ -350,7 +350,7 @@ template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
-getValue( const MeshType& mesh,
+operator()( const MeshType& mesh,
           const MeshEntity& entity,
           const Vector& u,
           const Real& time,
@@ -448,7 +448,7 @@ update( const MeshType& mesh, const RealType& time )
     for( coordinates.x()=1; coordinates.x() < dimensions.x()-1; coordinates.x()++ )
         for( coordinates.y()=1; coordinates.y() < dimensions.y()-1; coordinates.y()++ )
             for( coordinates.z()=1; coordinates.z() < dimensions.z()-1; coordinates.z()++ )
-                q.setElement( mesh.getCellIndex(coordinates), getValue( mesh, mesh.getCellIndex(coordinates), coordinates, u, time ) ); 
+                q.setElement( mesh.getCellIndex(coordinates), operator()( mesh, mesh.getCellIndex(coordinates), coordinates, u, time ) ); 
 }
 
 template< typename MeshReal,
@@ -552,7 +552,7 @@ template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
 tnlFiniteVolumeOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getValue( 
+operator()( 
    const MeshEntity& entity,
    const Vector& u,
    const Real& time,
