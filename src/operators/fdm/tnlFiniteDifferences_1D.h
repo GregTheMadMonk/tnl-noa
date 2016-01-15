@@ -69,8 +69,8 @@ class tnlFiniteDifferences<
                             const MeshEntity& entity,
                             const Real& time = 0 )
       {         
-         const typename EntityType::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
-         const Real& hxDiv = entity.getMesh().getSpaceStepsProducts< -1 >();
+         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+         const Real& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1 >();
          const Real& u_c = u[ entity.getIndex() ];
          return ( u[ neighbourEntities.template getEntityIndex< 1 >()] - u_c ) * hxDiv;
       }            
@@ -95,8 +95,8 @@ class tnlFiniteDifferences<
                             const MeshEntity& entity,
                             const Real& time = 0 )
       {         
-         const typename EntityType::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
-         const Real& hxDiv = entity.getMesh().getSpaceStepsProducts< -1 >();
+         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+         const Real& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1 >();
          const Real& u_c = u[ entity.getIndex() ];
          return ( u_c - u[ neighbourEntities.template getEntityIndex< -1 >()] ) * hxDiv;
       }            
@@ -121,8 +121,8 @@ class tnlFiniteDifferences<
                             const MeshEntity& entity,
                             const Real& time = 0 )
       {         
-         const typename EntityType::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
-         const Real& hxDiv = entity.getMesh().getSpaceStepsProducts< -1 >();
+         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+         const Real& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1 >();
          return ( u[ neighbourEntities.template getEntityIndex< 1 >() ] -
                   u[ neighbourEntities.template getEntityIndex< -1 >() ] ) * ( 0.5 * hxDiv );
       }            
@@ -147,8 +147,8 @@ class tnlFiniteDifferences<
                             const MeshEntity& entity,
                             const Real& time = 0 )
       {         
-         const typename EntityType::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
-         const Real& hxSquareDiv = entity.getMesh().getSpaceStepsProducts< -2 >();
+         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+         const Real& hxSquareDiv = entity.getMesh().template getSpaceStepsProducts< -2 >();
          const Real& u_c = u[ entity.getIndex() ];
          return ( u[ neighbourEntities.template getEntityIndex< 1 >() ] -
                   2.0 * u_c +

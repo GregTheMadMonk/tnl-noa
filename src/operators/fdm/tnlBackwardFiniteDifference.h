@@ -39,7 +39,7 @@ template< int Dimensions,
           int ZDifference,
           typename Real,
           typename Index >
-class tnlBackwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >, Real, Index >
+class tnlBackwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >, XDifference, YDifference, ZDifference, Real, Index >
 : tnlDomain< Dimensions, MeshInteriorDomain >
 {
    public:
@@ -48,8 +48,6 @@ class tnlBackwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Me
       typedef Real RealType;
       typedef MeshDevice DeviceType;
       typedef Index IndexType;      
-      
-      static const int Dimensions = MeshType::meshDimensions;
       
       static constexpr int getMeshDimensions() { return Dimensions; }
       

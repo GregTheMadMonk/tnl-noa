@@ -40,24 +40,24 @@ class tnlPDEOperatorEocTestResult<
    tnlForwardFiniteDifference< MeshType, XDifference, YDifference, ZDifference, RealType, IndexType >, TestFunction >
 {
    public:
-      static Real getL1Eoc() 
+      static RealType getL1Eoc() 
       {
          if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( Real ) 1.0;
+            return ( RealType ) 1.0;
       };
-      static Real getL1Tolerance() { return ( Real ) 0.05; };
+      static RealType getL1Tolerance() { return ( RealType ) 0.05; };
 
-      static Real getL2Eoc()
+      static RealType getL2Eoc()
       { 
          if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( Real ) 1.0;
+            return ( RealType ) 1.0;
       };
-      static Real getL2Tolerance() { return ( Real ) 0.05; };
+      static RealType getL2Tolerance() { return ( RealType ) 0.05; };
 
-      static Real getMaxEoc()
+      static RealType getMaxEoc()
       {
          if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( Real ) 1.0; 
+            return ( RealType ) 1.0; 
       };
       static Real getMaxTolerance() { return ( Real ) 0.05; };
 };
@@ -73,26 +73,26 @@ class tnlPDEOperatorEocTestResult<
    tnlBackwardFiniteDifference< MeshType, XDifference, YDifference, ZDifference, RealType, IndexType >, TestFunction >
 {
    public:
-      static Real getL1Eoc() 
+      static RealType getL1Eoc() 
       {
          if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( Real ) 1.0;
+            return ( RealType ) 1.0;
       };
-      static Real getL1Tolerance() { return ( Real ) 0.05; };
+      static RealType getL1Tolerance() { return ( Real ) 0.05; };
 
-      static Real getL2Eoc()
+      static RealType getL2Eoc()
       { 
          if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( Real ) 1.0;
+            return ( RealType ) 1.0;
       };
-      static Real getL2Tolerance() { return ( Real ) 0.05; };
+      static RealType getL2Tolerance() { return ( RealType ) 0.05; };
 
-      static Real getMaxEoc()
+      static RealType getMaxEoc()
       {
          if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( Real ) 1.0; 
+            return ( RealType ) 1.0; 
       };
-      static Real getMaxTolerance() { return ( Real ) 0.05; };
+      static Real getMaxTolerance() { return ( RealType ) 0.05; };
 
 };
 
@@ -107,26 +107,26 @@ class tnlPDEOperatorEocTestResult<
    tnlCentralFiniteDifference< MeshType, XDifference, YDifference, ZDifference, RealType, IndexType >, TestFunction >
 {
    public:
-      static Real getL1Eoc() 
+      static RealType getL1Eoc() 
       {
          if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( Real ) 2.0;
+            return ( RealType ) 2.0;
       };
-      static Real getL1Tolerance() { return ( Real ) 0.05; };
+      static RealType getL1Tolerance() { return ( RealType ) 0.05; };
 
-      static Real getL2Eoc()
+      static RealType getL2Eoc()
       { 
          if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( Real ) 2.0;
+            return ( RealType ) 2.0;
       };
-      static Real getL2Tolerance() { return ( Real ) 0.05; };
+      static RealType getL2Tolerance() { return ( RealType ) 0.05; };
 
-      static Real getMaxEoc()
+      static RealType getMaxEoc()
       {
          if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( Real ) 2.0; 
+            return ( RealType ) 2.0; 
       };
-      static Real getMaxTolerance() { return ( Real ) 0.05; };
+      static RealType getMaxTolerance() { return ( RealType ) 0.05; };
 
 };
 
