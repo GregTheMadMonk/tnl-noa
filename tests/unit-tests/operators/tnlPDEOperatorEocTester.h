@@ -60,7 +60,7 @@ class tnlPDEOperatorEocTester : public CppUnit :: TestCase
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( testName.getString() );
       CppUnit :: TestResult result;
 
-      suiteOfTests -> addTest( new TestCallerType( "approximationTest", &TesterType::approximationTest ) );
+      suiteOfTests -> addTest( new TestCallerType( testName.getString(), &TesterType::approximationTest ) );
 
       return suiteOfTests;
    }

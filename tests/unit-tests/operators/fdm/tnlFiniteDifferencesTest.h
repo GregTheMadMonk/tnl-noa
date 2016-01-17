@@ -59,7 +59,7 @@ class tnlPDEOperatorEocTestResult<
          if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
             return ( RealType ) 1.0; 
       };
-      static Real getMaxTolerance() { return ( Real ) 0.05; };
+      static RealType getMaxTolerance() { return ( RealType ) 0.05; };
 };
 
 template< typename MeshType,
@@ -78,7 +78,7 @@ class tnlPDEOperatorEocTestResult<
          if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
             return ( RealType ) 1.0;
       };
-      static RealType getL1Tolerance() { return ( Real ) 0.05; };
+      static RealType getL1Tolerance() { return ( RealType ) 0.05; };
 
       static RealType getL2Eoc()
       { 
@@ -92,7 +92,7 @@ class tnlPDEOperatorEocTestResult<
          if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
             return ( RealType ) 1.0; 
       };
-      static Real getMaxTolerance() { return ( RealType ) 0.05; };
+      static RealType getMaxTolerance() { return ( RealType ) 0.05; };
 
 };
 
@@ -109,21 +109,21 @@ class tnlPDEOperatorEocTestResult<
    public:
       static RealType getL1Eoc() 
       {
-         if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
+         //if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
             return ( RealType ) 2.0;
       };
       static RealType getL1Tolerance() { return ( RealType ) 0.05; };
 
       static RealType getL2Eoc()
       { 
-         if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
+         //if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
             return ( RealType ) 2.0;
       };
       static RealType getL2Tolerance() { return ( RealType ) 0.05; };
 
       static RealType getMaxEoc()
       {
-         if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
+         //if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
             return ( RealType ) 2.0; 
       };
       static RealType getMaxTolerance() { return ( RealType ) 0.05; };
@@ -162,10 +162,13 @@ bool setFiniteDifferenceOperator()
     typedef tnlForwardFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > ForwardFiniteDifference;
     typedef tnlBackwardFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > BackwardFiniteDifference;
     typedef tnlCentralFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > CentralFiniteDifference;
-    typedef tnlExactDifference< XDifference, YDifference, ZDifference > ExactOperator;
-    return ( testFiniteDifferenceOperator< ForwardFiniteDifference, ExactOperator, Function, MeshSize, Verbose >() &&
-             testFiniteDifferenceOperator< BackwardFiniteDifference, ExactOperator, Function, MeshSize, Verbose >() &&
-             testFiniteDifferenceOperator< CentralFiniteDifference, ExactOperator, Function, MeshSize, Verbose >() );
+    typedef tnlExactDifference< Function, XDifference, YDifference, ZDifference > ExactOperator;
+    if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
+      return ( testFiniteDifferenceOperator< ForwardFiniteDifference, ExactOperator, Function, MeshSize, Verbose >() &&
+               testFiniteDifferenceOperator< BackwardFiniteDifference, ExactOperator, Function, MeshSize, Verbose >() &&
+               testFiniteDifferenceOperator< CentralFiniteDifference, ExactOperator, Function, MeshSize, Verbose >() );
+    else
+      return ( testFiniteDifferenceOperator< CentralFiniteDifference, ExactOperator, Function, MeshSize, Verbose >() );
 }
 
 template< typename Mesh,
@@ -211,10 +214,11 @@ bool setDifferenceOrder()
 
 bool test()
 {
-    if( ! setDifferenceOrder< double, tnlHost, int, double, int, 128, true >() )
-       return false;
+   const bool verbose( false );
+   if( ! setDifferenceOrder< double, tnlHost, int, double, int, 64, verbose >() )
+      return false;
 #ifdef HAVE_CUDA
-   if( ! setDifferenceOrder< double, tnlCuda, int, double, int, 64, true >() )
+   if( ! setDifferenceOrder< double, tnlCuda, int, double, int, 64, verbose >() )
       return false;
 #endif    
     return true;    

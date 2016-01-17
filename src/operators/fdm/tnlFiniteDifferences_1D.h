@@ -43,8 +43,7 @@ class tnlFiniteDifferences<
    public:
       template< typename MeshFunction, typename MeshEntity >
       static Real getValue( const MeshFunction& u,
-                            const MeshEntity& entity,
-                            const Real& time = 0 )
+                            const MeshEntity& entity )
       {
          return 0.0;
       }            
@@ -66,8 +65,7 @@ class tnlFiniteDifferences<
    public:
       template< typename MeshFunction, typename MeshEntity >
       static Real getValue( const MeshFunction& u,
-                            const MeshEntity& entity,
-                            const Real& time = 0 )
+                            const MeshEntity& entity )
       {         
          const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
          const Real& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1 >();
@@ -92,8 +90,7 @@ class tnlFiniteDifferences<
    public:
       template< typename MeshFunction, typename MeshEntity >
       static Real getValue( const MeshFunction& u,
-                            const MeshEntity& entity,
-                            const Real& time = 0 )
+                            const MeshEntity& entity )
       {         
          const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
          const Real& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1 >();
@@ -118,8 +115,7 @@ class tnlFiniteDifferences<
    public:
       template< typename MeshFunction, typename MeshEntity >
       static Real getValue( const MeshFunction& u,
-                            const MeshEntity& entity,
-                            const Real& time = 0 )
+                            const MeshEntity& entity )
       {         
          const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
          const Real& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1 >();
@@ -139,13 +135,60 @@ template< typename MeshReal,
 class tnlFiniteDifferences< 
    tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index,
    2, 0, 0,
+   1, 0, 0 >
+{   
+   public:
+      template< typename MeshFunction, typename MeshEntity >
+      static Real getValue( const MeshFunction& u,
+                            const MeshEntity& entity )
+      {         
+         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+         const Real& hxSquareDiv = entity.getMesh().template getSpaceStepsProducts< -2 >();
+         const Real& u_c = u[ entity.getIndex() ];
+         return ( u[ neighbourEntities.template getEntityIndex< 2 >() ] -
+                  2.0 * u_c +
+                  u[ neighbourEntities.template getEntityIndex< 1 >() ] ) * hxSquareDiv;
+      }            
+};
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+class tnlFiniteDifferences< 
+   tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index,
+   2, 0, 0,
+   -1, 0, 0 >
+{   
+   public:
+      template< typename MeshFunction, typename MeshEntity >
+      static Real getValue( const MeshFunction& u,
+                            const MeshEntity& entity )
+      {         
+         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+         const Real& hxSquareDiv = entity.getMesh().template getSpaceStepsProducts< -2 >();
+         const Real& u_c = u[ entity.getIndex() ];
+         return ( u[ neighbourEntities.template getEntityIndex< -2 >() ] -
+                  2.0 * u_c +
+                  u[ neighbourEntities.template getEntityIndex< -1 >() ] ) * hxSquareDiv;
+      }            
+};
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+class tnlFiniteDifferences< 
+   tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index,
+   2, 0, 0,
    0, 0, 0 >
 {   
    public:
       template< typename MeshFunction, typename MeshEntity >
       static Real getValue( const MeshFunction& u,
-                            const MeshEntity& entity,
-                            const Real& time = 0 )
+                            const MeshEntity& entity )
       {         
          const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
          const Real& hxSquareDiv = entity.getMesh().template getSpaceStepsProducts< -2 >();
@@ -155,6 +198,7 @@ class tnlFiniteDifferences<
                   u[ neighbourEntities.template getEntityIndex< -1 >() ] ) * hxSquareDiv;
       }            
 };
+
 
 #endif	/* TNLFINITEDIFFERENCES_1D_H */
 

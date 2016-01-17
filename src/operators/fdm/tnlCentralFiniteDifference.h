@@ -40,16 +40,28 @@ template< int Dimensions,
           typename Real,
           typename Index >
 class tnlCentralFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >, XDifference, YDifference, ZDifference, Real, Index >
-: tnlDomain< Dimensions, MeshInteriorDomain >
+: public tnlDomain< Dimensions, MeshInteriorDomain >
 {
    public:
       
       typedef tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex > MeshType;
       typedef Real RealType;
       typedef MeshDevice DeviceType;
-      typedef Index IndexType;      
+      typedef Index IndexType;
+            
+      //static constexpr int getMeshDimensions() { return Dimensions; }
       
-      static constexpr int getMeshDimensions() { return Dimensions; }
+      static tnlString getType()
+      {
+         return tnlString( "tnlCentralFiniteDifference< " ) +
+            MeshType::getType() + ", " +
+            tnlString( XDifference ) + ", " +
+            tnlString( YDifference ) + ", " +
+            tnlString( ZDifference ) + ", " +
+            ::getType< RealType >() + ", " +
+            ::getType< IndexType >() + " >";
+      }
+
       
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__

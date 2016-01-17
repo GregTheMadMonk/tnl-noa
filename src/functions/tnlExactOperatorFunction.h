@@ -22,7 +22,7 @@
 
 template< typename Operator,
           typename Function >
-class tnlExactOperatorFunction : public tnlDomain< Operator::Dimensions, SpaceDomain >
+class tnlExactOperatorFunction : public tnlDomain< Operator::getDimensions(), SpaceDomain >
 {   
    static_assert( Operator::getDimensions() == Function::getDimensions(),
       "Operator and function have different number of domain dimensions." );
@@ -34,7 +34,7 @@ class tnlExactOperatorFunction : public tnlDomain< Operator::Dimensions, SpaceDo
       typedef typename FunctionType::RealType RealType;
       typedef typename FunctionType::VertexType VertexType;
       
-      static constexpr int getDimensions(){ return Operator::Dimensions; };
+      static constexpr int getDimensions(){ return Operator::getDimensions(); };
       
       tnlExactOperatorFunction(
          const OperatorType& operator_,

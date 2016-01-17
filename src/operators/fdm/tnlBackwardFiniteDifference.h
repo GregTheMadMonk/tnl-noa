@@ -40,7 +40,7 @@ template< int Dimensions,
           typename Real,
           typename Index >
 class tnlBackwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >, XDifference, YDifference, ZDifference, Real, Index >
-: tnlDomain< Dimensions, MeshInteriorDomain >
+: public tnlDomain< Dimensions, MeshInteriorDomain >
 {
    public:
       
@@ -51,6 +51,17 @@ class tnlBackwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Me
       
       static constexpr int getMeshDimensions() { return Dimensions; }
       
+      static tnlString getType()
+      {
+         return tnlString( "tnlBackwardFiniteDifference< " ) +
+            MeshType::getType() + ", " +
+            tnlString( XDifference ) + ", " +
+            tnlString( YDifference ) + ", " +
+            tnlString( ZDifference ) + ", " +
+            ::getType< RealType >() + ", " +
+            ::getType< IndexType >() + " >";
+      }
+      
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
       inline Real operator()( const MeshFunction& u,
@@ -59,7 +70,19 @@ class tnlBackwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Me
       {
          static_assert( MeshFunction::getMeshEntityDimensions() == Dimensions,
             "Finite differences can be evaluate only on mesh cells, i.e. the dimensions count of the mesh entities of mesh function must be the same as mesh dimensions count." );
-         return tnlFiniteDifferences< MeshType, Real, Index, XDifference, YDifference, ZDifference, -1, -1, -1 >::getValue( u, entity );
+         const int XDirection = -1 * ( XDifference != 0 );
+         const int YDirection = -1 * ( YDifference != 0 );
+         const int ZDirection = -1 * ( ZDifference != 0 );
+         return tnlFiniteDifferences<
+            MeshType,
+            Real,
+            Index,
+            XDifference,
+            YDifference,
+            ZDifference,
+            XDirection,
+            YDirection,
+            ZDirection >::getValue( u, entity );
       };
 };
 

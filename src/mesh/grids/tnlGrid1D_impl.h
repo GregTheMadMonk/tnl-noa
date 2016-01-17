@@ -32,7 +32,7 @@ using namespace std;
 template< typename Real,
           typename Device,
           typename Index >
-tnlGrid< 1, Real, Device, Index > :: tnlGrid()
+tnlGrid< 1, Real, Device, Index >::tnlGrid()
 : numberOfCells( 0 ),
   numberOfVertices( 0 )
 {
@@ -41,19 +41,19 @@ tnlGrid< 1, Real, Device, Index > :: tnlGrid()
 template< typename Real,
           typename Device,
           typename Index  >
-tnlString tnlGrid< 1, Real, Device, Index > :: getType()
+tnlString tnlGrid< 1, Real, Device, Index >::getType()
 {
    return tnlString( "tnlGrid< " ) +
           tnlString( getDimensionsCount() ) + ", " +
           tnlString( ::getType< RealType >() ) + ", " +
-          tnlString( Device :: getDeviceType() ) + ", " +
+          tnlString( Device::getDeviceType() ) + ", " +
           tnlString( ::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlGrid< 1, Real, Device, Index > :: getTypeVirtual() const
+tnlString tnlGrid< 1, Real, Device, Index >::getTypeVirtual() const
 {
    return this -> getType();
 }
@@ -61,7 +61,7 @@ tnlString tnlGrid< 1, Real, Device, Index > :: getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlGrid< 1, Real, Device, Index > :: getSerializationType()
+tnlString tnlGrid< 1, Real, Device, Index >::getSerializationType()
 {
    return HostType::getType();
 };
@@ -69,7 +69,7 @@ tnlString tnlGrid< 1, Real, Device, Index > :: getSerializationType()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlGrid< 1, Real, Device, Index > :: getSerializationTypeVirtual() const
+tnlString tnlGrid< 1, Real, Device, Index >::getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 };
@@ -77,7 +77,7 @@ tnlString tnlGrid< 1, Real, Device, Index > :: getSerializationTypeVirtual() con
 template< typename Real,
           typename Device,
           typename Index >
-void tnlGrid< 1, Real, Device, Index > :: computeSpaceSteps()
+void tnlGrid< 1, Real, Device, Index >::computeSpaceSteps()
 {
    if( this->getDimensions().x() != 0 )
    {
@@ -106,7 +106,7 @@ void tnlGrid< 1, Real, Device, Index >::setDimensions( const Index xSize )
 template< typename Real,
           typename Device,
           typename Index  >
-void tnlGrid< 1, Real, Device, Index > :: setDimensions( const CoordinatesType& dimensions )
+void tnlGrid< 1, Real, Device, Index >::setDimensions( const CoordinatesType& dimensions )
 {
    this -> setDimensions( dimensions. x() );
 }
@@ -116,7 +116,7 @@ template< typename Real,
           typename Index  >
 __cuda_callable__ inline
 const typename tnlGrid< 1, Real, Device, Index >::CoordinatesType&
-   tnlGrid< 1, Real, Device, Index > :: getDimensions() const
+   tnlGrid< 1, Real, Device, Index >::getDimensions() const
 {
    return this->dimensions;
 }
@@ -124,7 +124,7 @@ const typename tnlGrid< 1, Real, Device, Index >::CoordinatesType&
 template< typename Real,
           typename Device,
           typename Index >
-void tnlGrid< 1, Real, Device, Index > :: setDomain( const VertexType& origin,
+void tnlGrid< 1, Real, Device, Index >::setDomain( const VertexType& origin,
                                                      const VertexType& proportions )
 {
    this->origin = origin;
@@ -136,8 +136,8 @@ template< typename Real,
           typename Device,
           typename Index  >
 __cuda_callable__ inline
-const typename tnlGrid< 1, Real, Device, Index > :: VertexType& 
-  tnlGrid< 1, Real, Device, Index > :: getOrigin() const
+const typename tnlGrid< 1, Real, Device, Index >::VertexType& 
+  tnlGrid< 1, Real, Device, Index >::getOrigin() const
 {
    return this->origin;
 }
@@ -146,8 +146,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename tnlGrid< 1, Real, Device, Index > :: VertexType& 
-   tnlGrid< 1, Real, Device, Index > :: getProportions() const
+const typename tnlGrid< 1, Real, Device, Index >::VertexType& 
+   tnlGrid< 1, Real, Device, Index >::getProportions() const
 {
    return this->proportions;
 }
@@ -247,7 +247,7 @@ Real
 tnlGrid< 1, Real, Device, Index >::
 getCellMeasure() const
 {
-   
+   return this->template getSpaceStepsProducts< 1 >();
 }
 
 template< typename Real,
@@ -315,7 +315,7 @@ bool tnlGrid< 1, Real, Device, Index >::save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 1, Real, Device, Index > :: load( tnlFile& file )
+bool tnlGrid< 1, Real, Device, Index >::load( tnlFile& file )
 {
    if( ! tnlObject::load( file ) )
       return false;
@@ -334,7 +334,7 @@ bool tnlGrid< 1, Real, Device, Index > :: load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 1, Real, Device, Index > :: save( const tnlString& fileName ) const
+bool tnlGrid< 1, Real, Device, Index >::save( const tnlString& fileName ) const
 {
    return tnlObject::save( fileName );
 }
@@ -342,7 +342,7 @@ bool tnlGrid< 1, Real, Device, Index > :: save( const tnlString& fileName ) cons
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 1, Real, Device, Index > :: load( const tnlString& fileName )
+bool tnlGrid< 1, Real, Device, Index >::load( const tnlString& fileName )
 {
    return tnlObject::load( fileName );
 }
@@ -363,7 +363,7 @@ template< typename Real,
            typename Device,
            typename Index >
    template< typename MeshFunction >
-bool tnlGrid< 1, Real, Device, Index > :: write( const MeshFunction& function,
+bool tnlGrid< 1, Real, Device, Index >::write( const MeshFunction& function,
                                                  const tnlString& fileName,
                                                  const tnlString& format ) const
 {
@@ -375,7 +375,7 @@ bool tnlGrid< 1, Real, Device, Index > :: write( const MeshFunction& function,
       return false;
    }
    fstream file;
-   file. open( fileName. getString(), ios :: out );
+   file. open( fileName. getString(), ios::out );
    if( ! file )
    {
       cerr << "I am not able to open the file " << fileName << "." << endl;

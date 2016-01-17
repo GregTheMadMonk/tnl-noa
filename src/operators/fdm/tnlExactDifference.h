@@ -31,11 +31,19 @@ class tnlExactDifference
       typedef typename Function::RealType RealType;
       typedef typename Function::VertexType VertexType;
       
+      static tnlString getType()
+      {
+         return tnlString( "tnlExactDifference< " ) +
+            Function::getType() + ", " +
+            tnlString( XDerivative ) + ", " +
+            tnlString( YDerivative ) + ", " +
+            tnlString( ZDerivative ) + " >";
+      }
       
       RealType operator()( 
          const FunctionType& function,
          const VertexType& vertex,
-         const RealType& time = 0 )
+         const RealType& time = 0 ) const
       {
          return function.template getPartialDerivative<
             XDerivative,
