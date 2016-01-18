@@ -18,6 +18,8 @@
 #ifndef TNLFDMGRADIENTNORM_H
 #define	TNLFDMGRADIENTNORM_H
 
+#include<operators/fdm/tnlForwardFiniteDifference.h>
+
 template< typename Mesh,
           template< typename, int, int, int, typename, typename > class DifferenceOperatorTemplate = tnlForwardFiniteDifference,
           typename Real = typename Mesh::RealType,
@@ -32,7 +34,8 @@ template< typename MeshReal,
           template< typename, int, int, int, typename, typename > class DifferenceOperatorTemplate,
           typename Real,
           typename Index >
-class tnlFDMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+class tnlFDMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, DifferenceOperatorTemplate, Real, Index >
+   : public tnlDomain< 1, MeshInteriorDomain >
 {
    public: 
    
@@ -81,7 +84,8 @@ template< typename MeshReal,
           template< typename, int, int, int, typename, typename > class DifferenceOperatorTemplate,
           typename Real,
           typename Index >
-class tnlFDMGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+class tnlFDMGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, DifferenceOperatorTemplate, Real, Index >
+   : public tnlDomain< 2, MeshInteriorDomain >
 {
    public: 
    
@@ -136,7 +140,8 @@ template< typename MeshReal,
           template< typename, int, int, int, typename, typename > class DifferenceOperatorTemplate,
           typename Real,
           typename Index >
-class tnlFDMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >
+class tnlFDMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, DifferenceOperatorTemplate, Real, Index >
+   : public tnlDomain< 3, MeshInteriorDomain >
 {
    public: 
    

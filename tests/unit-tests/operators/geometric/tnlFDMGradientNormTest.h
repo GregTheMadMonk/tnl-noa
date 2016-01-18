@@ -20,13 +20,92 @@
 
 #include <operators/geometric/tnlFDMGradientNorm.h>
 #include <operators/geometric/tnlExactGradientNorm.h>
+#include <operators/fdm/tnlBackwardFiniteDifference.h>
+#include <operators/fdm/tnlForwardFiniteDifference.h>
+#include <operators/fdm/tnlCentralFiniteDifference.h>
+#include "../../tnlUnitTestStarter.h"
+#include "../tnlPDEOperatorEocTester.h"
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename TestFunction >
+class tnlPDEOperatorEocTestResult< 
+   tnlFDMGradientNorm< tnlGrid< Dimensions, Real, Device, Index >,
+                       tnlForwardFiniteDifference,
+                       Real,
+                       Index >,
+   TestFunction >
+{
+   public:
+      static Real getL1Eoc() { return ( Real ) 1.0; };
+      static Real getL1Tolerance() { return ( Real ) 0.05; };
+
+      static Real getL2Eoc() { return ( Real ) 1.0; };
+      static Real getL2Tolerance() { return ( Real ) 0.05; };
+
+      static Real getMaxEoc() { return ( Real ) 1.0; };
+      static Real getMaxTolerance() { return ( Real ) 0.05; };
+
+};
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename TestFunction >
+class tnlPDEOperatorEocTestResult< 
+   tnlFDMGradientNorm< tnlGrid< Dimensions, Real, Device, Index >,
+                       tnlBackwardFiniteDifference,
+                       Real,
+                       Index >,
+   TestFunction >
+{
+   public:
+      static Real getL1Eoc() { return ( Real ) 1.0; };
+      static Real getL1Tolerance() { return ( Real ) 0.05; };
+
+      static Real getL2Eoc() { return ( Real ) 1.0; };
+      static Real getL2Tolerance() { return ( Real ) 0.05; };
+
+      static Real getMaxEoc() { return ( Real ) 1.0; };
+      static Real getMaxTolerance() { return ( Real ) 0.05; };
+
+};
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename TestFunction >
+class tnlPDEOperatorEocTestResult< 
+   tnlFDMGradientNorm< tnlGrid< Dimensions, Real, Device, Index >,
+                       tnlCentralFiniteDifference,
+                       Real,
+                       Index >,
+   TestFunction >
+{
+   public:
+      static Real getL1Eoc() { return ( Real ) 2.0; };
+      static Real getL1Tolerance() { return ( Real ) 0.05; };
+
+      static Real getL2Eoc() { return ( Real ) 2.0; };
+      static Real getL2Tolerance() { return ( Real ) 0.05; };
+
+      static Real getMaxEoc() { return ( Real ) 2.0; };
+      static Real getMaxTolerance() { return ( Real ) 0.05; };
+
+};
+
+
 
 template< typename Mesh,
           typename Function,
           typename Operator,
           int MeshSize,
           bool Verbose >
-void testDifferenceOperator()
+bool testDifferenceOperator()
 {
    typedef tnlExactGradientNorm< Mesh::meshDimensions > ExactOperator;
    return tnlUnitTestStarter::run<
@@ -42,31 +121,34 @@ void testDifferenceOperator()
 template< typename Mesh,
           typename Function,
           int MeshSize,
-          boolVerbose >
-void setDifferenceOperator()
+          bool Verbose >
+bool setDifferenceOperator()
 {
    typedef tnlFDMGradientNorm< Mesh, tnlForwardFiniteDifference > ForwardGradientNorm;
    typedef tnlFDMGradientNorm< Mesh, tnlBackwardFiniteDifference > BackwardGradientNorm;
    typedef tnlFDMGradientNorm< Mesh, tnlCentralFiniteDifference > CentralGradientNorm;
-   return ( testDifferenceOperator< Mesh, Function, ForwardGradientNorm, MeshSize, Verboze >() &&
-            testDifferenceOperator< Mesh, Function, BackwardGradientNorm, MeshSize, Verboze >() &&
-            testDifferenceOperator< Mesh, Function, CentralGradientNorm, MeshSize, Verboze >() );
+   return ( testDifferenceOperator< Mesh, Function, ForwardGradientNorm, MeshSize, Verbose >() &&
+            testDifferenceOperator< Mesh, Function, BackwardGradientNorm, MeshSize, Verbose >() &&
+            testDifferenceOperator< Mesh, Function, CentralGradientNorm, MeshSize, Verbose >() );
 }
 
 template< typename Mesh,
           int MeshSize,
           bool Verbose >
-void setFunction()
+bool setFunction()
 {
    const int Dimensions = Mesh::meshDimensions;
-   typedef tnlExpBumpFunction< Dimensions, RealType >  Function;
-   return setDiferenceOperator< Mesh, Function, MeshSize, Verbose >();
+   typedef tnlExpBumpFunction< Dimensions, double >  Function;
+   return setDifferenceOperator< Mesh, Function, MeshSize, Verbose >();
 }
 
-template< int MeshSize,
+template< typename Device,
+          int MeshSize,
           bool Verbose >
-void setGrid()
+bool setGrid()
 {
+   typedef double MeshReal;
+   typedef int MeshIndex;
    typedef tnlGrid< 1, MeshReal, Device, MeshIndex > Grid1D;
    typedef tnlGrid< 2, MeshReal, Device, MeshIndex > Grid2D;
    typedef tnlGrid< 3, MeshReal, Device, MeshIndex > Grid3D;
@@ -80,7 +162,7 @@ int main( int argc, char* argv[] )
    const int meshSize( 32 );
    const bool verbose( false );
 #ifdef HAVE_CPPUNIT
-    return setGrid< MeshSize, Verbose >();
+    return setGrid< tnlHost, meshSize, verbose >();
 #else
    return EXIT_FAILURE;
 #endif

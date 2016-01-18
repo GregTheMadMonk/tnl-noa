@@ -33,7 +33,7 @@
 #include <operators/diffusion/tnlExactNonlinearDiffusion.h>
 #include <operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
 #include <operators/diffusion/nonlinear-diffusion-operators/tnlFiniteVolumeNonlinearOperator.h>
-#include <operators/operator-Q/tnlExactOperatorQ.h>
+#include <operators/geometric/tnlExactGradientNorm.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
@@ -78,7 +78,7 @@ class meanCurvatureFlowEocSetter
       typedef tnlFiniteVolumeOperatorQ<MeshType, Real, Index, 0> OperatorQ;
       typedef tnlFiniteVolumeNonlinearOperator<MeshType, OperatorQ, Real, Index > NonlinearOperator;
       typedef tnlNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
-      typedef tnlExactNonlinearDiffusion< tnlExactOperatorQ<Dimensions>, Dimensions > ExactOperator;
+      typedef tnlExactNonlinearDiffusion< tnlExactGradientNorm< Dimensions >, Dimensions > ExactOperator;
       typedef tnlTestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
       typedef tnlMeanCurvatureFlowEocRhs< ExactOperator, TestFunction, Dimensions > RightHandSide;
       typedef tnlStaticVector < MeshType::meshDimensions, Real > Vertex;

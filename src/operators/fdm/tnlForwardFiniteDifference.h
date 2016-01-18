@@ -18,6 +18,9 @@
 #ifndef TNLFORWARDFINITEDIFFERENCE_H
 #define	TNLFORWARDFINITEDIFFERENCE_H
 
+#include<mesh/tnlGrid.h>
+#include<operators/fdm/tnlFiniteDifferences.h>
+
 template< typename Mesh,
           int Xdifference = 0,
           int YDifference = 0,
