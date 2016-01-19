@@ -20,71 +20,97 @@
 
 #include <functions/tnlDomain.h>
 
-template< typename OperatorQ, int Dimensions >
+template< typename Nonlinearity, int Dimensions >
 class tnlExactNonlinearDiffusion
 {};
 
-template< typename OperatorQ >
-class tnlExactNonlinearDiffusion< OperatorQ, 1 > : public tnlDomain< 1, SpaceDomain >
+template< typename Nonlinearity >
+class tnlExactNonlinearDiffusion< Nonlinearity, 1 > 
+   : public tnlDomain< 1, SpaceDomain >
 {
    public:
 
-      enum { Dimensions = 1 };
-
-      static tnlString getType();
-   
-#ifdef HAVE_NOT_CXX11      
-      template< typename Function, typename Vertex, typename Real >
-#else   
-      template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
-#endif      
+      static tnlString getType()
+      {
+         return "tnlExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 1 >";
+      };
       
+      void setNonlinearity( const Nonlinearity& nonlinearity )
+      {
+         this->nonlinearity = nonlinearity;
+      }
+   
+      template< typename Function >
       __cuda_callable__
       Real operator()( const Function& function,
                        const Vertex& v,
-                       const Real& time = 0.0 ) const;
+                       const Real& time = 0.0 ) const
+      {         
+         const Real u_x = function.template getPartialDerivative< 1, 0, 0 >( v, time );
+         const Real u_xx = function.template getPartialDerivative< 2, 0, 0 >( v, time );
+         const Real g = nonlinearity( function, v, time ) 
+         const Real g_x = nonlinearity::template getPartialDerivative< Function, 1, 0, 0 >( function, v, time );
+         return u_xx - u_x * g_x / g;          
+      }
+   
+      protected:
+         
+         Nonlinearity nonlinearity;
 };
 
-template< typename OperatorQ >
-class tnlExactNonlinearDiffusion< OperatorQ, 2 > : public tnlDomain< 2, SpaceDomain >
+template< typename Nonlinearity >
+class tnlExactNonlinearDiffusion< Nonlinearity, 2 >
+   : public tnlDomain< 2, SpaceDomain >
 {
    public:
 
-      enum { Dimensions = 2 };
+      static tnlString getType()
+      {
+         return "tnlExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 2 >";
+      };
 
-      static tnlString getType();
+      void setNonlinearity( const Nonlinearity& nonlinearity )
+      {
+         this->nonlinearity = nonlinearity;
+      }
 
-#ifdef HAVE_NOT_CXX11      
-      template< typename Function, typename Vertex, typename Real >
-#else   
-      template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
-#endif 
-
+      template< typename Function >
       __cuda_callable__
       Real operator()( const Function& function,
-                       const Vertex& v,
+                       const VertexType& v,
                        const Real& time = 0.0 ) const;
+
+      protected:
+         
+         Nonlinearity nonlinearity;
+      
 };
 
-template< typename OperatorQ >
-class tnlExactNonlinearDiffusion< OperatorQ, 3 > : public tnlDomain< 3, SpaceDomain >
+template< typename Nonlinearity >
+class tnlExactNonlinearDiffusion< Nonlinearity, 3 >
+   : public tnlDomain< 3, SpaceDomain >
 {
    public:
 
-      enum { Dimensions = 3 };
+      static tnlString getType()
+      {
+         return "tnlExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 3 >";
+      }
 
-      static tnlString getType();
-
-#ifdef HAVE_NOT_CXX11      
-      template< typename Function, typename Vertex, typename Real >
-#else   
-      template< typename Function, typename Vertex, typename Real = typename Vertex::RealType >
-#endif 
-
+      void setNonlinearity( const Nonlinearity& nonlinearity )
+      {
+         this->nonlinearity = nonlinearity;
+      }      
+      
+      template< typename Function >
       __cuda_callable__
       Real operator()( const Function& function,
-                       const Vertex& v,
+                       const VertexType& v,
                        const Real& time = 0.0 ) const;
+      
+      protected:
+         
+         Nonlinearity nonlinearity;
 };
 
 #include "tnlExactNonlinearDiffusion_impl.h"

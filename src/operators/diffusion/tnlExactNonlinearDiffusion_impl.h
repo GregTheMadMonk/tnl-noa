@@ -18,73 +18,73 @@
 #ifndef TNLEXACTNONLINEARDIFFUSION_IMPL_H_
 #define TNLEXACTNONLINEARDIFFUSION_IMPL_H_
 
-template< typename OperatorQ >
+template< typename Nonlinearity >
 tnlString
-tnlExactNonlinearDiffusion< OperatorQ, 1 >::
+tnlExactNonlinearDiffusion< Nonlinearity, 1 >::
 getType()
 {
-   return "tnlExactNonlinearDiffusion< " + OperatorQ::getType() + ", 1 >";
+   return "tnlExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 1 >";
 }
 
-template< typename OperatorQ >
+template< typename Nonlinearity >
 template< typename Function, typename Vertex, typename Real >
 __cuda_callable__
 Real
-tnlExactNonlinearDiffusion< OperatorQ, 1 >::
+tnlExactNonlinearDiffusion< Nonlinearity, 1 >::
 operator()( const Function& function,
           const Vertex& v,
           const Real& time ) const
 {
    return function.template getPartialDerivative< 2, 0, 0 >( v, time ) - function.template getPartialDerivative< 1, 0, 0 >( v, time ) 
-          * OperatorQ::template getPartialDerivative<1, 0, 0>(function, v, time ) / OperatorQ::template getPartialDerivative<0, 0, 0>(function, v, time );
+          * Nonlinearity::template getPartialDerivative< Function, 1, 0, 0>(function, v, time ) / Nonlinearity( function, v, time );
 }
 
-template< typename OperatorQ >
+template< typename Nonlinearity >
 tnlString
-tnlExactNonlinearDiffusion< OperatorQ, 2 >::
+tnlExactNonlinearDiffusion< Nonlinearity, 2 >::
 getType()
 {
-   return "tnlExactNonlinearDiffusion< " + OperatorQ::getType() + ", 2 >";
+   return "tnlExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 2 >";
 }
 
-template< typename OperatorQ >
+template< typename Nonlinearity >
 template< typename Function, typename Vertex, typename Real >
 __cuda_callable__
 Real
-tnlExactNonlinearDiffusion< OperatorQ, 2 >::
+tnlExactNonlinearDiffusion< Nonlinearity, 2 >::
 operator()( const Function& function,
           const Vertex& v,
           const Real& time ) const
 {
    return  function.template getPartialDerivative< 2, 0, 0 >( v, time ) +  function.template getPartialDerivative< 0, 2, 0 >( v, time )
-           -( OperatorQ::template getPartialDerivative<1, 0, 0> (function, v, time) * function.template getPartialDerivative< 1, 0, 0 >( v, time ) 
-           + OperatorQ::template getPartialDerivative<0, 1, 0> (function, v, time) * function.template getPartialDerivative< 0, 1, 0 >( v, time ) ) 
-           / OperatorQ::template getPartialDerivative<0, 0, 0> (function, v, time);
+           -( Nonlinearity::template getPartialDerivative<1, 0, 0> (function, v, time) * function.template getPartialDerivative< 1, 0, 0 >( v, time ) 
+           + Nonlinearity::template getPartialDerivative<0, 1, 0> (function, v, time) * function.template getPartialDerivative< 0, 1, 0 >( v, time ) ) 
+           / Nonlinearity::template getPartialDerivative<0, 0, 0> (function, v, time);
 }
 
-template< typename OperatorQ >
+template< typename Nonlinearity >
 tnlString
-tnlExactNonlinearDiffusion< OperatorQ, 3 >::
+tnlExactNonlinearDiffusion< Nonlinearity, 3 >::
 getType()
 {
-   return "tnlExactNonlinearDiffusion< " + OperatorQ::getType() + ", 3 >";
+   return "tnlExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 3 >";
 }
 
-template< typename OperatorQ >
+template< typename Nonlinearity >
 template< typename Function, typename Vertex, typename Real >
 __cuda_callable__
 Real
-tnlExactNonlinearDiffusion< OperatorQ, 3 >::
+tnlExactNonlinearDiffusion< Nonlinearity, 3 >::
 operator()( const Function& function,
           const Vertex& v,
           const Real& time ) const
 {
    return  function.template getPartialDerivative< 2, 0, 0 >( v, time ) +  function.template getPartialDerivative< 0, 2, 0 >( v, time )
            +  function.template getPartialDerivative< 0, 0, 2 >( v, time )
-           -( OperatorQ::template getPartialDerivative<1, 0, 0> (function, v, time) * function.template getPartialDerivative< 1, 0, 0 >( v, time ) 
-           + OperatorQ::template getPartialDerivative<0, 1, 0> (function, v, time) * function.template getPartialDerivative< 0, 1, 0 >( v, time )
-           + OperatorQ::template getPartialDerivative<0, 0, 1> (function, v, time) * function.template getPartialDerivative< 0, 0, 1 >( v, time ) )
-           / OperatorQ::template getPartialDerivative<0, 0, 0> (function, v, time);
+           -( Nonlinearity::template getPartialDerivative<1, 0, 0> (function, v, time) * function.template getPartialDerivative< 1, 0, 0 >( v, time ) 
+           + Nonlinearity::template getPartialDerivative<0, 1, 0> (function, v, time) * function.template getPartialDerivative< 0, 1, 0 >( v, time )
+           + Nonlinearity::template getPartialDerivative<0, 0, 1> (function, v, time) * function.template getPartialDerivative< 0, 0, 1 >( v, time ) )
+           / Nonlinearity::template getPartialDerivative<0, 0, 0> (function, v, time);
 }
 
 #endif /* TNLEXACTNONLINEARDIFFUSION_IMPL_H_ */
