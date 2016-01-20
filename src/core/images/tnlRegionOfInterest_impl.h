@@ -56,7 +56,7 @@ setup( const tnlParameterContainer& parameters,
    {
       if( roiLeft >= image->getWidth() )
       {
-         cerr << "ROI left column is larger than image width ( " << image->getWidth() << ")." << cerr;
+         cerr << "ROI left column is larger than image width ( " << image->getWidth() << ")." << endl;
          return false;
       }
       this->left = roiLeft;
@@ -68,7 +68,7 @@ setup( const tnlParameterContainer& parameters,
    {
       if( roiRight >= image->getWidth() )
       {
-         cerr << "ROI right column is larger than image width ( " << image->getWidth() << ")." << cerr;
+         cerr << "ROI right column is larger than image width ( " << image->getWidth() << ")." << endl;
          return false;
       }
       this->right = roiRight;
@@ -80,7 +80,7 @@ setup( const tnlParameterContainer& parameters,
    {
       if( roiTop >= image->getHeight() )
       {
-         cerr << "ROI top line is larger than image height ( " << image->getHeight() << ")." << cerr;
+         cerr << "ROI top line is larger than image height ( " << image->getHeight() << ")." << endl;
          return false;
       }
       this->top = roiTop;
@@ -92,7 +92,7 @@ setup( const tnlParameterContainer& parameters,
    {
       if( roiBottom >= image->getHeight() )
       {
-         cerr << "ROI bottom line is larger than image height ( " << image->getHeight() << ")." << cerr;
+         cerr << "ROI bottom line is larger than image height ( " << image->getHeight() << ")." << endl;
          return false;
       }
       this->bottom = roiBottom;
