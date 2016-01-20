@@ -94,7 +94,7 @@ class tnlPDEOperatorEocTestResult<
       static Real getL2Tolerance() { return ( Real ) 0.05; };
 
       static Real getMaxEoc() { return ( Real ) 2.0; };
-      static Real getMaxTolerance() { return ( Real ) 0.05; };
+      static Real getMaxTolerance() { return ( Real ) 0.1; };
 
 };
 
@@ -160,7 +160,7 @@ bool setGrid()
 int main( int argc, char* argv[] )
 {
    const int meshSize( 32 );
-   const bool verbose( false );
+   const bool verbose( true );
 #ifdef HAVE_CPPUNIT
     return setGrid< tnlHost, meshSize, verbose >();
 #else
