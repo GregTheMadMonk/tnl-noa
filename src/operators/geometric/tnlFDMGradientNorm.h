@@ -178,6 +178,10 @@ class tnlFDMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, DifferenceO
       DifferenceOperatorTemplate< typename MeshEntity::MeshType, 1, 0, 0, Real, Index > XDifferenceOperator;
       DifferenceOperatorTemplate< typename MeshEntity::MeshType, 0, 1, 0, Real, Index > YDifferenceOperator;
       DifferenceOperatorTemplate< typename MeshEntity::MeshType, 0, 0, 1, Real, Index > ZDifferenceOperator;
+      //const IndexType& cellIndex = entity.getIndex();
+      //const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
+      //const typename MeshEntity::MeshType& mesh = entity.getMesh();
+      //const RealType& u_c = u[ cellIndex ];
       const RealType u_x = XDifferenceOperator( u, entity );
       const RealType u_y = YDifferenceOperator( u, entity );
       const RealType u_z = ZDifferenceOperator( u, entity );
