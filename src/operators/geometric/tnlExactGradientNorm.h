@@ -69,7 +69,7 @@ class tnlExactGradientNorm< 1, Real >
       __cuda_callable__
       typename Function::RealType
          getPartialDerivative( const Function& function,
-                               const typename Function::Vertex& v,
+                               const typename Function::VertexType& v,
                                const typename Function::RealType& time = 0.0 ) const
       {
          static_assert( XDerivative >= 0 && YDerivative >= 0 && ZDerivative >= 0,
@@ -138,8 +138,8 @@ class tnlExactGradientNorm< 2, Real >
       __cuda_callable__
       typename Function::RealType
          getPartialDerivative( const Function& function,
-                               const typename Function::Vertex& v,
-                               const Real& time = 0.0 ) const
+                               const typename Function::VertexType& v,
+                               const typename Function::RealType& time = 0.0 ) const
       {
          static_assert( XDerivative >= 0 && YDerivative >= 0 && ZDerivative >= 0,
             "Partial derivative must be non-negative integer." );
@@ -213,15 +213,15 @@ class tnlExactGradientNorm< 3, Real >
       __cuda_callable__
       typename Function::RealType
          getPartialDerivative( const Function& function,
-                               const typename Function::Vertex& v,
-                               const Real& time = 0.0 ) const
+                               const typename Function::VertexType& v,
+                               const typename Function::RealType& time = 0.0 ) const
       {
          static_assert( XDerivative >= 0 && YDerivative >= 0 && ZDerivative >= 0,
             "Partial derivative must be non-negative integer." );
          static_assert( XDerivative < 2 && YDerivative < 2 && ZDerivative < 2,
             "Partial derivative of higher order then 1 are not implemented yet." );
-         typedef typename Function::RealType RealType;
 
+         typedef typename Function::RealType RealType;
          if( XDerivative == 1 && YDerivative == 0 && ZDerivative == 0 )
          {
             const RealType f_x  = function.template getPartialDerivative< 1, 0, 0 >( v, time );            

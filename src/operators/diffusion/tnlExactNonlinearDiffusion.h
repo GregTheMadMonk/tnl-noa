@@ -42,14 +42,16 @@ class tnlExactNonlinearDiffusion< Nonlinearity, 1 >
    
       template< typename Function >
       __cuda_callable__
-      Real operator()( const Function& function,
-                       const Vertex& v,
-                       const Real& time = 0.0 ) const
-      {         
-         const Real u_x = function.template getPartialDerivative< 1, 0, 0 >( v, time );
-         const Real u_xx = function.template getPartialDerivative< 2, 0, 0 >( v, time );
-         const Real g = nonlinearity( function, v, time ) 
-         const Real g_x = nonlinearity::template getPartialDerivative< Function, 1, 0, 0 >( function, v, time );
+      typename Function::RealType
+      operator()( const Function& function,
+                  const typename Function::VertexType& v,
+                  const typename Function::RealType& time = 0.0 ) const
+      {
+         typedef typename Function::RealType RealType;         
+         const RealType u_x = function.template getPartialDerivative< 1, 0, 0 >( v, time );
+         const RealType u_xx = function.template getPartialDerivative< 2, 0, 0 >( v, time );
+         const RealType g = nonlinearity( function, v, time ); 
+         const RealType g_x = nonlinearity.template getPartialDerivative< Function, 1, 0, 0 >( function, v, time );
          return u_xx - u_x * g_x / g;          
       }
    
@@ -63,7 +65,7 @@ class tnlExactNonlinearDiffusion< Nonlinearity, 2 >
    : public tnlDomain< 2, SpaceDomain >
 {
    public:
-
+      
       static tnlString getType()
       {
          return "tnlExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 2 >";
@@ -76,9 +78,22 @@ class tnlExactNonlinearDiffusion< Nonlinearity, 2 >
 
       template< typename Function >
       __cuda_callable__
-      Real operator()( const Function& function,
-                       const VertexType& v,
-                       const Real& time = 0.0 ) const;
+      typename Function::RealType
+      operator()( const Function& function,
+                  const typename Function::VertexType& v,
+                  const typename Function::RealType& time = 0.0 ) const
+      {
+         typedef typename Function::RealType RealType;         
+         const RealType u_x = function.template getPartialDerivative< 1, 0, 0 >( v, time );
+         const RealType u_y = function.template getPartialDerivative< 0, 1, 0 >( v, time );
+         const RealType u_xx = function.template getPartialDerivative< 2, 0, 0 >( v, time );
+         const RealType u_yy = function.template getPartialDerivative< 0, 2, 0 >( v, time );
+         const RealType g = nonlinearity( function, v, time ); 
+         const RealType g_x = nonlinearity.template getPartialDerivative< Function, 1, 0, 0 >( function, v, time );
+         const RealType g_y = nonlinearity.template getPartialDerivative< Function, 0, 1, 0 >( function, v, time );
+
+         return  u_xx + u_yy - ( g_x * u_x + g_y * u_y ) / g; 
+      }
 
       protected:
          
@@ -91,7 +106,7 @@ class tnlExactNonlinearDiffusion< Nonlinearity, 3 >
    : public tnlDomain< 3, SpaceDomain >
 {
    public:
-
+      
       static tnlString getType()
       {
          return "tnlExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 3 >";
@@ -104,15 +119,29 @@ class tnlExactNonlinearDiffusion< Nonlinearity, 3 >
       
       template< typename Function >
       __cuda_callable__
-      Real operator()( const Function& function,
-                       const VertexType& v,
-                       const Real& time = 0.0 ) const;
+      typename Function::RealType 
+      operator()( const Function& function,
+                  const typename Function::VertexType& v,
+                  const typename Function::RealType& time = 0.0 ) const
+      {
+         typedef typename Function::RealType RealType;         
+         const RealType u_x  = function.template getPartialDerivative< 1, 0, 0 >( v, time );
+         const RealType u_y  = function.template getPartialDerivative< 0, 1, 0 >( v, time );
+         const RealType u_z  = function.template getPartialDerivative< 0, 0, 1 >( v, time );
+         const RealType u_xx = function.template getPartialDerivative< 2, 0, 0 >( v, time );
+         const RealType u_yy = function.template getPartialDerivative< 0, 2, 0 >( v, time );
+         const RealType u_zz = function.template getPartialDerivative< 0, 0, 2 >( v, time );
+         const RealType g = nonlinearity( function, v, time ) ;
+         const RealType g_x = nonlinearity.template getPartialDerivative< Function, 1, 0, 0 >( function, v, time );
+         const RealType g_y = nonlinearity.template getPartialDerivative< Function, 0, 1, 0 >( function, v, time );
+         const RealType g_z = nonlinearity.template getPartialDerivative< Function, 0, 0, 1 >( function, v, time );
+
+         return  u_xx + u_yy + u_zz - ( g_x * u_x + g_y * u_y + g_z * u_z ) / g; 
+      }
       
       protected:
          
          Nonlinearity nonlinearity;
 };
-
-#include "tnlExactNonlinearDiffusion_impl.h"
 
 #endif /* TNLEXACTNONLINEARDIFFUSION_H_ */

@@ -51,6 +51,7 @@ class tnlMeanCurvatureFlowEocRhs : public tnlDomain< Dimensions, SpaceDomain >
       };
 
    protected:
+      
       ExactOperator exactOperator;
 
       TestFunction testFunction;

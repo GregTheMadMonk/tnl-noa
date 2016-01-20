@@ -19,12 +19,7 @@
 #ifndef TNLFUNCTION_H
 #define	TNLFUNCTION_H
 
-#include <core/vectors/tnlStaticVector.h>
-
 enum tnlDomainType { NonspaceDomain, SpaceDomain, MeshDomain, MeshInteriorDomain, MeshBoundaryDomain };
-   /*MeshFunction,
-                       SpaceDomain,
-                       SpaceDomain };*/
 
 template< int Dimensions,
           tnlDomainType DomainType = SpaceDomain >
@@ -32,7 +27,7 @@ class tnlDomain
 {
    public:
       
-      typedef void DeviceType;      
+      typedef void DeviceType;
       
       static const int dimensions = Dimensions;
       static constexpr int getDimensions() { return Dimensions; }

@@ -1,6 +1,4 @@
-SET( headers tnlExactOperatorQ.h
-             tnlExactOperatorQ_impl.h
-             tnlOneSideDiffOperatorQ.h             
+SET( headers tnlOneSideDiffOperatorQ.h             
              tnlOneSideDiffOperatorQ_impl.h
 	     tnlFiniteVolumeOperatorQ.h             
              tnlFiniteVolumeOperatorQ_impl.h )
