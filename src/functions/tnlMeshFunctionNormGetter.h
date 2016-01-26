@@ -24,31 +24,83 @@ class tnlMeshFunctionNormGetter
 {
 };
 
-template< typename MeshFunction,
-          int Dimensions,
+/***
+ * Specialization for grids
+ * TODO: implement this even for other devices
+ */
+template< int Dimensions,
           typename MeshReal,
-          typename Device,
-          typename MeshIndex >
-class tnlMeshFunctionNormGetter< MeshFunction, tnlGrid< Dimensions, MeshReal, Device, MeshIndex > >
+          typename MeshIndex,
+          int EntityDimensions >
+class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex >, EntityDimensions >,
+                                 tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex > >
 {
    public:
       
-      typedef MeshFunction MeshFunctionType;
-      typedef tnlGrid< Dimensions, MeshReal, Device, MeshIndex > GridType;
+      typedef tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex >, EntityDimensions > MeshFunctionType;
+      typedef tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
-      typedef Device DeviceType;
+      typedef tnlHost DeviceType;
       typedef MeshIndex MeshIndexType;
       typedef typename MeshFunctionType::RealType RealType;
+      typedef typename MeshFunctionType::MeshType MeshType;
+      typedef typename MeshType::Face EntityType;
       
-      static RealType getNorm( const MeshFunction& function,
+      static RealType getNorm( const MeshFunctionType& function,
                                const RealType& p )
       {
+         if( EntityDimensions == Dimensions )
+         {
+            if( p == 1.0 )
+               return function.getMesh().getCellMeasure() * function.getData().lpNorm( 1.0 );
+            if( p == 2.0 )
+               return sqrt( function.getMesh().getCellMeasure() ) * function.getData().lpNorm( 2.0 );
+            return pow( function.getMesh().getCellMeasure(), 1.0 / p ) * function.getData().lpNorm( p );
+         }
+         if( EntityDimensions > 0 )
+         {
+            if( p == 1.0 )
+            {
+               RealType result( 0.0 );
+               for( MeshIndexType i = 0;
+                    i < function.getMesh().template getEntitiesCount< EntityType >();
+                    i++ )
+               {
+                  EntityType entity = function.getMesh().template getEntity< EntityType >( i );
+                  result += fabs( function[ i ] ) * entity.getMeasure();
+               }
+               return result;
+            }
+            if( p == 2.0 )
+            {
+               RealType result( 0.0 );
+               for( MeshIndexType i = 0;
+                    i < function.getMesh().template getEntitiesCount< EntityType >();
+                    i++ )
+               {
+                  EntityType entity = function.getMesh().template getEntity< EntityType >( i );
+                  result += function[ i ] * function[ i ] * entity.getMeasure();
+               }            
+               return sqrt( result );
+            }
+
+            RealType result( 0.0 );
+            for( MeshIndexType i = 0;
+                 i < function.getMesh().template getEntitiesCount< EntityType >();
+                 i++ )
+            {
+               EntityType entity = function.getMesh().template getEntity< EntityType >( i );
+               result += pow( fabs( function[ i ] ), p ) * entity.getMeasure();
+            }                     
+            return pow( result, 1.0 / p );
+         }
+         
          if( p == 1.0 )
-            return function.getMesh().getCellMeasure() * function.getData().lpNorm( 1.0 );
+            return function.getData().lpNorm( 1.0 );
          if( p == 2.0 )
-            return sqrt( function.getMesh().getCellMeasure() ) * function.getData().lpNorm( 2.0 );
-         return pow( function.getMesh().getCellMeasure(), 1.0 / p ) * function.getData().lpNorm( p );
-      }     
+            return function.getData().lpNorm( 2.0 );
+         return function.getData().lpNorm( p );
+      }
 };
 
 #endif	/* TNLMESHFUNCTIONNORMGETTER_H */

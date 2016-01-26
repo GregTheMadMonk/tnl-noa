@@ -12,6 +12,7 @@ SET( headers tnlBoundaryGridEntityChecker.h
              tnlGridEntityCenterGetter.h
              tnlGridEntityGetter.h
              tnlGridEntityGetter_impl.h
+             tnlGridEntityMeasureGetter.h
              tnlNeighbourGridEntityGetter.h
              tnlNeighbourGridEntityGetter1D_impl.h
              tnlNeighbourGridEntityGetter2D_impl.h

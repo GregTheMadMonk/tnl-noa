@@ -25,7 +25,9 @@
 
 template< typename ExactOperator,
           typename ApproximateOperator,
-          typename Function >
+          typename MeshEntity,
+          typename Function,
+          bool writeFunctions >
 class tnlApproximationError
 {
    public:

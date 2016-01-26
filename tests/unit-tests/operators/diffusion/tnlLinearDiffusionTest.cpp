@@ -49,6 +49,7 @@ class tnlPDEOperatorEocTestResult< tnlLinearDiffusion< tnlGrid< Dimensions, Real
 
 int main( int argc, char* argv[] )
 {
+   const bool writeFunctions( false );
    const bool verbose( false );
    const int MeshSize( 64 );
 #ifdef HAVE_CPPUNIT
@@ -58,17 +59,23 @@ int main( int argc, char* argv[] )
    if( ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 1, double, tnlHost, int >, double, int >,
                                                              tnlExactLinearDiffusion< 1 >,
                                                              tnlExpBumpFunction< 1, double >,
+                                                             typename tnlGrid< 1, double, tnlHost, int >::Cell,
                                                              MeshSize,
+                                                             writeFunctions,
                                                              verbose > >() ||
        ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 2, double, tnlHost, int >, double, int >,
                                                              tnlExactLinearDiffusion< 2 >,
                                                              tnlExpBumpFunction< 2, double >,
+                                                             typename tnlGrid< 2, double, tnlHost, int >::Cell,
                                                              MeshSize,
+                                                             writeFunctions,
                                                              verbose > >() ||
        ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 3, double, tnlHost, int >, double, int >,
                                                              tnlExactLinearDiffusion< 3 >,
                                                              tnlExpBumpFunction< 3, double >,
+                                                             typename tnlGrid< 3, double, tnlHost, int >::Cell,
                                                              MeshSize,
+                                                             writeFunctions,
                                                              verbose > >()
                                                               )
       return EXIT_FAILURE;
@@ -78,17 +85,23 @@ int main( int argc, char* argv[] )
    if( ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 1, double, tnlHost, int >, double, int >,
                                                              tnlExactLinearDiffusion< 1 >,
                                                              tnlExpBumpFunction< 1, double >,
+                                                             typename tnlGrid< 1, double, tnlHost, int >::Cell,
                                                              MeshSize,
+                                                             writeFunctions,
                                                              verbose > >() ||
        ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 2, double, tnlHost, int >, double, int >,
                                                              tnlExactLinearDiffusion< 2 >,
                                                              tnlExpBumpFunction< 2, double >,
+                                                             typename tnlGrid< 2, double, tnlHost, int >::Cell,
                                                              MeshSize,
+                                                             writeFunctions,
                                                              verbose > >() ||
        ! tnlUnitTestStarter :: run< tnlPDEOperatorEocTester< tnlLinearDiffusion< tnlGrid< 3, double, tnlHost, int >, double, int >,
                                                              tnlExactLinearDiffusion< 3 >,
                                                              tnlExpBumpFunction< 3, double >,
+                                                             typename tnlGrid< 3, double, tnlHost, int >::Cell,
                                                              MeshSize,
+                                                             writeFunctions,
                                                              verbose > >()
        )
      return EXIT_FAILURE;

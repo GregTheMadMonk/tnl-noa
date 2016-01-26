@@ -52,6 +52,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       
       typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
       typedef GridType MeshType;
+      typedef typename GridType::RealType RealType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef Config ConfigType;
@@ -59,6 +60,10 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       static const int meshDimensions = GridType::meshDimensions;
       
       static const int entityDimensions = EntityDimensions;
+            
+      constexpr static int getDimensions() { return EntityDimensions; };
+      
+      constexpr static int getMeshDimensions() { return meshDimensions; };
       
       typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
@@ -132,6 +137,9 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       VertexType getCenter() const;
       
       __cuda_callable__ inline
+      const RealType& getMeasure() const;
+      
+      __cuda_callable__ inline
       const GridType& getMesh() const;
       
    protected:
@@ -170,6 +178,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Con
       
       typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
       typedef GridType MeshType;
+      typedef typename GridType::RealType RealType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::VertexType VertexType;
@@ -178,6 +187,11 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Con
       static const int meshDimensions = GridType::meshDimensions;
       
       static const int entityDimensions = meshDimensions;
+
+      constexpr static int getDimensions() { return entityDimensions; };
+      
+      constexpr static int getMeshDimensions() { return meshDimensions; };
+      
       
       typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
@@ -247,6 +261,9 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Con
       VertexType getCenter() const;
       
       __cuda_callable__ inline
+      const RealType& getMeasure() const;      
+      
+      __cuda_callable__ inline
       const VertexType& getEntityProportions() const;      
       
       __cuda_callable__ inline
@@ -288,6 +305,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
       
       typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
       typedef GridType MeshType;
+      typedef typename GridType::RealType RealType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::VertexType VertexType;
@@ -296,6 +314,10 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
       static const int meshDimensions = GridType::meshDimensions;
       
       static const int entityDimensions = 0;
+      
+      constexpr static int getDimensions() { return entityDimensions; };
+      
+      constexpr static int getMeshDimensions() { return meshDimensions; };      
       
       typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
@@ -364,6 +386,9 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
       
       __cuda_callable__ inline
       VertexType getCenter() const;
+
+      __cuda_callable__ inline
+      const RealType& getMeasure() const;      
       
       __cuda_callable__ inline
       VertexType getEntityProportions() const;
@@ -384,10 +409,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
       EntityBasisType basis;
       
       NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
-      
-      //__cuda_callable__ inline
-      //tnlGridEntity();
-      
+            
       friend class tnlBoundaryGridEntityChecker< ThisType >;
       
       friend class tnlGridEntityCenterGetter< ThisType >;

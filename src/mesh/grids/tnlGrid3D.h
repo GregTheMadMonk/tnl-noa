@@ -88,6 +88,13 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    template< typename EntityType >
    __cuda_callable__
    inline Index getEntityIndex( const EntityType& entity ) const;
+   
+   template< typename EntityType >
+   __cuda_callable__
+   RealType getEntityMeasure( const EntityType& entity ) const;
+      
+   __cuda_callable__
+   RealType getCellMeasure() const;
 
    __cuda_callable__
    inline VertexType getSpaceSteps() const;
@@ -100,10 +107,6 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
       
-   __cuda_callable__
-   RealType getCellMeasure() const;
- 
-
    template< typename GridFunction >
    typename GridFunction::RealType getAbsMax( const GridFunction& f ) const;
 

@@ -134,6 +134,7 @@ template< typename FiniteDifferenceOperator,
           typename ExactOperator,
           typename Function,
           int MeshSize,
+          bool writeFunctions,
           bool verbose >
 bool testFiniteDifferenceOperator()
 {
@@ -142,7 +143,9 @@ bool testFiniteDifferenceOperator()
                 FiniteDifferenceOperator,
                 ExactOperator,
                 Function,
+                typename FiniteDifferenceOperator::MeshType::Cell,
                 MeshSize,
+                writeFunctions,
                 verbose > >() )
         return false;
     return true;
@@ -156,6 +159,7 @@ template< typename Mesh,
           int YDifference,
           int ZDifference,
           int MeshSize,
+          bool WriteFunctions,
           bool Verbose >
 bool setFiniteDifferenceOperator()
 {
@@ -164,11 +168,11 @@ bool setFiniteDifferenceOperator()
     typedef tnlCentralFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > CentralFiniteDifference;
     typedef tnlExactDifference< Function, XDifference, YDifference, ZDifference > ExactOperator;
     if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-      return ( testFiniteDifferenceOperator< ForwardFiniteDifference, ExactOperator, Function, MeshSize, Verbose >() &&
-               testFiniteDifferenceOperator< BackwardFiniteDifference, ExactOperator, Function, MeshSize, Verbose >() &&
-               testFiniteDifferenceOperator< CentralFiniteDifference, ExactOperator, Function, MeshSize, Verbose >() );
+      return ( testFiniteDifferenceOperator< ForwardFiniteDifference, ExactOperator, Function, MeshSize, WriteFunctions, Verbose >() &&
+               testFiniteDifferenceOperator< BackwardFiniteDifference, ExactOperator, Function, MeshSize, WriteFunctions, Verbose >() &&
+               testFiniteDifferenceOperator< CentralFiniteDifference, ExactOperator, Function, MeshSize, WriteFunctions, Verbose >() );
     else
-      return ( testFiniteDifferenceOperator< CentralFiniteDifference, ExactOperator, Function, MeshSize, Verbose >() );
+      return ( testFiniteDifferenceOperator< CentralFiniteDifference, ExactOperator, Function, MeshSize, WriteFunctions, Verbose >() );
 }
 
 template< typename Mesh,
@@ -178,12 +182,13 @@ template< typename Mesh,
           int YDifference,
           int ZDifference,        
           int MeshSize,
+          bool WriteFunctions,
           bool Verbose >
 bool setFunction()
 {
     const int Dimensions = Mesh::meshDimensions;
     typedef tnlExpBumpFunction< Dimensions, RealType >  Function;
-    return setFiniteDifferenceOperator< Mesh, Function, RealType, IndexType, XDifference, YDifference, ZDifference, MeshSize, Verbose  >();
+    return setFiniteDifferenceOperator< Mesh, Function, RealType, IndexType, XDifference, YDifference, ZDifference, MeshSize, WriteFunctions, Verbose  >();
 }
 
 template< typename MeshReal,
@@ -192,33 +197,35 @@ template< typename MeshReal,
           typename RealType,
           typename IndexType,
           int MeshSize,
+          bool WriteFunctions,
           bool Verbose >
 bool setDifferenceOrder()
 {
     typedef tnlGrid< 1, MeshReal, Device, MeshIndex > Grid1D;
     typedef tnlGrid< 2, MeshReal, Device, MeshIndex > Grid2D;
     typedef tnlGrid< 3, MeshReal, Device, MeshIndex > Grid3D;
-    return ( setFunction< Grid1D, RealType, IndexType, 1, 0, 0, MeshSize, Verbose >() &&
-             setFunction< Grid1D, RealType, IndexType, 2, 0, 0, MeshSize, Verbose >() &&
-             setFunction< Grid2D, RealType, IndexType, 1, 0, 0, MeshSize, Verbose >() &&
-             setFunction< Grid2D, RealType, IndexType, 0, 1, 0, MeshSize, Verbose >() &&
-             setFunction< Grid2D, RealType, IndexType, 2, 0, 0, MeshSize, Verbose >() &&            
-             setFunction< Grid2D, RealType, IndexType, 0, 2, 0, MeshSize, Verbose >() &&
-             setFunction< Grid3D, RealType, IndexType, 1, 0, 0, MeshSize, Verbose >() &&             
-             setFunction< Grid3D, RealType, IndexType, 0, 1, 0, MeshSize, Verbose >() &&
-             setFunction< Grid3D, RealType, IndexType, 0, 0, 1, MeshSize, Verbose >() &&
-             setFunction< Grid3D, RealType, IndexType, 2, 0, 0, MeshSize, Verbose >() &&
-             setFunction< Grid3D, RealType, IndexType, 0, 2, 0, MeshSize, Verbose >() &&             
-             setFunction< Grid3D, RealType, IndexType, 0, 0, 2, MeshSize, Verbose >() );            
+    return ( setFunction< Grid1D, RealType, IndexType, 1, 0, 0, MeshSize, WriteFunctions, Verbose >() &&
+             setFunction< Grid1D, RealType, IndexType, 2, 0, 0, MeshSize, WriteFunctions, Verbose >() &&
+             setFunction< Grid2D, RealType, IndexType, 1, 0, 0, MeshSize, WriteFunctions, Verbose >() &&
+             setFunction< Grid2D, RealType, IndexType, 0, 1, 0, MeshSize, WriteFunctions, Verbose >() &&
+             setFunction< Grid2D, RealType, IndexType, 2, 0, 0, MeshSize, WriteFunctions, Verbose >() &&            
+             setFunction< Grid2D, RealType, IndexType, 0, 2, 0, MeshSize, WriteFunctions, Verbose >() &&
+             setFunction< Grid3D, RealType, IndexType, 1, 0, 0, MeshSize, WriteFunctions, Verbose >() &&             
+             setFunction< Grid3D, RealType, IndexType, 0, 1, 0, MeshSize, WriteFunctions, Verbose >() &&
+             setFunction< Grid3D, RealType, IndexType, 0, 0, 1, MeshSize, WriteFunctions, Verbose >() &&
+             setFunction< Grid3D, RealType, IndexType, 2, 0, 0, MeshSize, WriteFunctions, Verbose >() &&
+             setFunction< Grid3D, RealType, IndexType, 0, 2, 0, MeshSize, WriteFunctions, Verbose >() &&             
+             setFunction< Grid3D, RealType, IndexType, 0, 0, 2, MeshSize, WriteFunctions, Verbose >() );            
 }
 
 bool test()
 {
+   const bool writeFunctions( false );
    const bool verbose( false );
-   if( ! setDifferenceOrder< double, tnlHost, int, double, int, 64, verbose >() )
+   if( ! setDifferenceOrder< double, tnlHost, int, double, int, 64, writeFunctions, verbose >() )
       return false;
 #ifdef HAVE_CUDA
-   if( ! setDifferenceOrder< double, tnlCuda, int, double, int, 64, verbose >() )
+   if( ! setDifferenceOrder< double, tnlCuda, int, double, int, 64, writeFunctions, verbose >() )
       return false;
 #endif    
     return true;    

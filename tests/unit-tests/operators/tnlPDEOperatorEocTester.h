@@ -31,18 +31,21 @@
 template< typename ApproximateOperator,
           typename ExactOperator,
           typename TestFunction,
+          typename MeshEntity,
           int MeshSize,
-          bool verbose = false >
+          bool writeFunctions,
+          bool verbose >
 class tnlPDEOperatorEocTester : public CppUnit :: TestCase
 {
    public:
-   typedef tnlPDEOperatorEocTester< ApproximateOperator, ExactOperator, TestFunction, MeshSize, verbose > TesterType;
+   typedef tnlPDEOperatorEocTester< ApproximateOperator, ExactOperator, TestFunction, MeshEntity, MeshSize, writeFunctions, verbose > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
    typedef typename ApproximateOperator::MeshType MeshType;
    typedef typename ApproximateOperator::RealType RealType;
    typedef typename ApproximateOperator::IndexType IndexType;
    typedef tnlPDEOperatorEocTestSetter< ApproximateOperator, ExactOperator, MeshType, TestFunction > TestSetter;
    typedef tnlPDEOperatorEocTestResult< ApproximateOperator, TestFunction > TestResult;
+   typedef MeshEntity MeshEntityType;
 
    tnlPDEOperatorEocTester(){};
 
@@ -79,7 +82,9 @@ class tnlPDEOperatorEocTester : public CppUnit :: TestCase
       RealType coarseL1Err, coarseL2Err, coarseMaxErr;
       tnlApproximationError< ExactOperator,
                              ApproximateOperator,
-                             TestFunction >
+                             MeshEntityType,
+                             TestFunction,
+                             writeFunctions >
          ::getError( exactOperator,
                      approximateOperator,
                      testFunction,
@@ -92,7 +97,9 @@ class tnlPDEOperatorEocTester : public CppUnit :: TestCase
       RealType fineL1Err, fineL2Err, fineMaxErr;
       tnlApproximationError< ExactOperator,
                              ApproximateOperator,
-                             TestFunction >
+                             MeshEntityType,
+                             TestFunction,
+                             writeFunctions >
          ::getError( exactOperator,
                      approximateOperator,
                      testFunction,

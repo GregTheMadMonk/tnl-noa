@@ -24,6 +24,7 @@
 #include <mesh/tnlGnuplotWriter.h>
 #include <mesh/grids/tnlGridEntityGetter_impl.h>
 #include <mesh/grids/tnlNeighbourGridEntityGetter2D_impl.h>
+#include <mesh/grids/tnlGridEntityMeasureGetter.h>
 
 using namespace std;
 
@@ -259,6 +260,30 @@ getEntityIndex( const EntityType& entity ) const
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename EntityType >
+__cuda_callable__
+Real
+tnlGrid< 2, Real, Device, Index >::
+getEntityMeasure( const EntityType& entity ) const
+{
+   return tnlGridEntityMeasureGetter< ThisType, EntityType::getDimensions() >::getMeasure( *this, entity );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Real
+tnlGrid< 2, Real, Device, Index >::
+getCellMeasure() const
+{
+   return this->template getSpaceStepsProducts< 1, 1 >();
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
 __cuda_callable__ inline
 typename tnlGrid< 2, Real, Device, Index >::VertexType
 tnlGrid< 2, Real, Device, Index >::
@@ -292,19 +317,6 @@ Real tnlGrid< 2, Real, Device, Index > :: getSmallestSpaceStep() const
 {
    return Min( this->spaceSteps.x(), this->spaceSteps.y() );
 }
- 
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__
-Real
-tnlGrid< 2, Real, Device, Index >::
-getCellMeasure() const
-{
-   return this->template getSpaceStepsProducts< 1, 1 >();
-}
-
-
 
 template< typename Real,
           typename Device,

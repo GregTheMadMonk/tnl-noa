@@ -23,6 +23,7 @@
 #include <mesh/grids/tnlGridEntityGetter_impl.h>
 #include <mesh/grids/tnlNeighbourGridEntityGetter3D_impl.h>
 #include <mesh/grids/tnlGrid3D.h>
+#include <mesh/grids/tnlGridEntityMeasureGetter.h>
 
 template< typename Real,
           typename Device,
@@ -305,6 +306,29 @@ getEntityIndex( const EntityType& entity ) const
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename EntityType >
+__cuda_callable__
+Real
+tnlGrid< 3, Real, Device, Index >::
+getEntityMeasure( const EntityType& entity ) const
+{
+   return tnlGridEntityMeasureGetter< ThisType, EntityType::getDimensions() >::getMeasure( *this, entity );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Real
+tnlGrid< 3, Real, Device, Index >::
+getCellMeasure() const
+{
+   return this->template getSpaceStepsProducts< 1, 1, 1 >();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 __cuda_callable__ inline
 typename tnlGrid< 3, Real, Device, Index >::VertexType
 tnlGrid< 3, Real, Device, Index >::
@@ -339,17 +363,6 @@ __cuda_callable__ inline
 Real tnlGrid< 3, Real, Device, Index > :: getSmallestSpaceStep() const
 {
    return Min( this->spaceSteps.x(), Min( this->spaceSteps.y(), this->spaceSteps.z() ) );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__
-Real
-tnlGrid< 3, Real, Device, Index >::
-getCellMeasure() const
-{
-   return this->template getSpaceStepsProducts< 1, 1, 1 >();
 }
 
 template< typename Real,

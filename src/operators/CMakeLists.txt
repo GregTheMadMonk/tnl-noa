@@ -1,6 +1,6 @@
-ADD_SUBDIRECTORY( gradient )
 ADD_SUBDIRECTORY( diffusion )
 ADD_SUBDIRECTORY( euler )
+ADD_SUBDIRECTORY( interpolants )
 ADD_SUBDIRECTORY( operator-Q )
 ADD_SUBDIRECTORY( operator-curvature )
 

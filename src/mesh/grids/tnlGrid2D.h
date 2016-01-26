@@ -42,11 +42,11 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    static const int meshDimensions = 2;
 
    template< int EntityDimensions, 
-             typename Config = tnlGridEntityCrossStencilStorage< 1 > >
+             typename Config = tnlGridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
    using MeshEntity = tnlGridEntity< ThisType, EntityDimensions, Config >;
    
    typedef MeshEntity< meshDimensions, tnlGridEntityCrossStencilStorage< 1 > > Cell;
-   typedef MeshEntity< meshDimensions - 1 > Face;
+   typedef MeshEntity< meshDimensions - 1, tnlGridEntityNoStencilStorage > Face;
    typedef MeshEntity< 0 > Vertex;
    
    static constexpr int getDimensionsCount() { return meshDimensions; };
@@ -87,6 +87,13 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    template< typename EntityType >
    __cuda_callable__
    inline Index getEntityIndex( const EntityType& entity ) const;
+
+   template< typename EntityType >
+   __cuda_callable__
+   RealType getEntityMeasure( const EntityType& entity ) const;
+      
+   __cuda_callable__
+   RealType getCellMeasure() const;
    
    __cuda_callable__
    inline VertexType getSpaceSteps() const;
@@ -97,9 +104,6 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
-
-   __cuda_callable__
-   RealType getCellMeasure() const;
 
    
    template< typename GridFunction >

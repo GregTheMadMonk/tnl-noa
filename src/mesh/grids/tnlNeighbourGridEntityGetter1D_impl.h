@@ -293,11 +293,89 @@ class tnlNeighbourGridEntityGetter<
 template< typename Real,
           typename Device,
           typename Index,
+          typename Config,
+          typename StencilStorage >
+class tnlNeighbourGridEntityGetter< 
+   tnlGridEntity< tnlGrid< 1, Real, Device, Index >, 0, Config >,
+   1,
+   StencilStorage > //tnlGridEntityStencilStorageTag< tnlGridEntityNoStencil > > 
+{
+   public:
+      
+      static const int EntityDimensions = 0;
+      static const int NeighbourEntityDimensions = 1;
+      typedef tnlGrid< 1, Real, Device, Index > GridType;
+      typedef tnlGridEntity< GridType, EntityDimensions, Config > GridEntityType;
+      typedef tnlGridEntity< GridType, NeighbourEntityDimensions, Config > NeighbourGridEntityType;
+      typedef Real RealType;
+      typedef Index IndexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      typedef tnlGridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
+      
+      __cuda_callable__ inline
+      tnlNeighbourGridEntityGetter( const GridEntityType& entity )
+      : entity( entity )
+      {}
+      
+      void test() const { cerr << "***" << endl; };
+      
+      template< int step >
+      __cuda_callable__ inline
+      NeighbourGridEntityType getEntity() const
+      {
+         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
+                    entity.getCoordinates() <= entity.getMesh().getDimensions(),
+              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
+                   << " EntityDimensions = " << EntityDimensions );
+         tnlAssert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
+                    entity.getCoordinates().x() + step < entity.getMesh().getDimensions(),
+              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
+                   << " EntityDimensions = " << EntityDimensions );
+         return NeighbourGridEntity( CoordinatesType( entity.getCoordinates().x() + step - ( step > 0 ) ) );
+      }
+      
+      template< int step >
+      __cuda_callable__ inline
+      IndexType getEntityIndex() const
+      {
+         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
+                    entity.getCoordinates() <= entity.getMesh().getDimensions(),
+              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
+                   << " EntityDimensions = " << EntityDimensions );
+         tnlAssert( entity.getCoordinates().x() + step - ( step > 0 ) >= 0 &&
+                    entity.getCoordinates().x() + step - ( step > 0 ) < entity.getMesh().getDimensions().x(),
+              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
+                   << " EntityDimensions = " << EntityDimensions );
+         return this->entity.getIndex() + step - ( step > 0 );
+      }
+      
+      __cuda_callable__
+      void refresh( const GridType& grid, const IndexType& entityIndex ){};
+
+   protected:
+
+      const GridEntityType& entity;
+};
+
+/****   TODO: Implement this, now it is only a copy of specialization for none stencil storage
+ * +-----------------+---------------------------+-------------------+
+ * | EntityDimenions | NeighbourEntityDimensions |  Stored Stencil   |       
+ * +-----------------+---------------------------+-------------------+
+ * |       0         |              1            |       Cross       |
+ * +-----------------+---------------------------+-------------------+
+ */
+template< typename Real,
+          typename Device,
+          typename Index,
           typename Config >
 class tnlNeighbourGridEntityGetter< 
    tnlGridEntity< tnlGrid< 1, Real, Device, Index >, 0, Config >,
    1,
-   tnlGridEntityStencilStorageTag< tnlGridEntityNoStencil > > 
+   tnlGridEntityStencilStorageTag< tnlGridEntityCrossStencil > > 
 {
    public:
       
@@ -357,10 +435,8 @@ class tnlNeighbourGridEntityGetter<
    protected:
 
       const GridEntityType& entity;
-      
-      //tnlNeighbourGridEntityGetter(){};
-      
 };
+
 
 /****
  * +-----------------+---------------------------+-------------------+
@@ -437,8 +513,6 @@ class tnlNeighbourGridEntityGetter<
    protected:
 
       const GridEntityType& entity;
-      
-      //tnlNeighbourGridEntityGetter(){};      
 };
 
 
