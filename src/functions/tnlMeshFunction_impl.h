@@ -352,6 +352,18 @@ boundLoad( tnlFile& file )
    return this->data.boundLoad( file );   
 }
 
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
+bool
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+write( const tnlString& fileName,
+       const tnlString& format ) const
+{
+   return true;
+}
+      
+
 
 #endif	/* TNLMESHFUNCTION_IMPL_H */
 

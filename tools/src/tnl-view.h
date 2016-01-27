@@ -25,30 +25,60 @@
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlMultiVector.h>
 #include <mesh/tnlGrid.h>
+#include <functions/tnlMeshFunction.h>
 
 using namespace std;
 
+bool getOutputFileName( const tnlString& inputFileName,
+                        const tnlString& outputFormat,
+                        tnlString& outputFileName )
+{
+   outputFileName = inputFileName;
+   RemoveFileExtension( outputFileName );
+   if( outputFormat == "gnuplot" )
+   {
+      outputFileName += ".gplt";
+      return true;
+   }
+   else
+   {
+      cerr << "Unknown file format " << outputFormat << ".";
+      return false;
+   }
+}
+
 
 template< typename MeshFunction >
-bool writeMeshFunctiony( const Mesh& mesh,
-                         const tnlString& inputFileName,
-                         const tnlParameterContainer& parameters  )
+bool writeMeshFunction( const typename MeshFunction::MeshType& mesh,
+                        const tnlString& inputFileName,
+                        const tnlParameterContainer& parameters  )
 {
    MeshFunction function( mesh );
-   if( ! funtion.load( inputFileName ) )
+   if( ! function.load( inputFileName ) )
    {
       std::cerr << "Unable to load mesh function from a file " << inputFileName << "." << std::endl;
       return false;
-   }      
-}
+   }
 
+   int verbose = parameters. getParameter< int >( "verbose");
+   tnlString outputFormat = parameters. getParameter< tnlString >( "output-format" );
+   tnlString outputFileName;
+   if( ! getOutputFileName( inputFileName,
+                            outputFormat,
+                            outputFileName ) )
+      return false;
+   if( verbose )
+      cout << " writing to " << outputFileName << " ... " << flush;
+
+   return function.write( outputFileName, outputFormat );
+}
 
 template< typename Mesh,
           int EntityDimensions,
           typename Real >
-bool setMeshFunctionyRealType( const Mesh& mesh,
-                               const tnlString& inputFileName,
-                               const tnlParameterContainer& parameters  )
+bool setMeshFunctionRealType( const Mesh& mesh,
+                              const tnlString& inputFileName,
+                              const tnlParameterContainer& parameters  )
 {
    return writeMeshFunction< tnlMeshFunction< Mesh, EntityDimensions, Real > >( mesh, inputFileName, parameters );
 }
@@ -76,7 +106,7 @@ bool setMeshFunction( const Mesh& mesh,
                       const tnlList< tnlString >& parsedObjectType,
                       const tnlParameterContainer& parameters )
 {
-   if( parsedObjectType[ 1 ] != mesh.getType() )
+   if( parsedObjectType[ 1 ] != mesh.getSerializationType() )
    {
       cerr << "Incompatible mesh type for the mesh function " << inputFileName << "." << endl;
       return false;
@@ -99,24 +129,6 @@ bool setMeshFunction( const Mesh& mesh,
    }
 }
 
-
-bool getOutputFileName( const tnlString& inputFileName,
-                        const tnlString& outputFormat,
-                        tnlString& outputFileName )
-{
-   outputFileName = inputFileName;
-   RemoveFileExtension( outputFileName );
-   if( outputFormat == "gnuplot" )
-   {
-      outputFileName += ".gplt";
-      return true;
-   }
-   else
-   {
-      cerr << "Unknown file format " << outputFormat << ".";
-      return false;
-   }
-}
 
 template< typename Mesh, typename Element, typename Real, typename Index, int Dimensions >
 bool convertObject( const Mesh& mesh,

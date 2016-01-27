@@ -119,6 +119,9 @@ class tnlMeshFunction :
       
       bool boundLoad( tnlFile& file );
       
+      bool write( const tnlString& fileName,
+                  const tnlString& format = "vtk" ) const;
+      
       using tnlObject::save;
       
       using tnlObject::load;
