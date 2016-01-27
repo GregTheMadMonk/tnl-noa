@@ -645,33 +645,36 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       NeighbourGridEntityType getEntity() const
       {
-         tnlAssert( ( ( !! stepX ) == ( !! entity.getOrientation().x() ) ) &&
+         /*tnlAssert( ( ( !! stepX ) == ( !! entity.getOrientation().x() ) ) &&
                     ( ( !! stepY ) == ( !! entity.getOrientation().y() ) ) &&
                     ( ( !! stepZ ) == ( !! entity.getOrientation().z() ) ),
                     cerr << "( stepX, stepY, stepZ ) cannot be perpendicular to entity coordinates: stepX = " << stepX
                          << " stepY = " << stepY << " stepZ = " << stepZ
-                         << " entity.getOrientation() = " << entity.getOrientation() );
+                         << " entity.getOrientation() = " << entity.getOrientation() );*/
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
                     entity.getCoordinates() < entity.getMesh().getDimensions() + entity.getOrientation(),
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() + entity.getOrientation() = " << entity.getMesh().getDimensions() + entity.getOrientation()
                    << " EntityDimensions = " << EntityDimensions );
          tnlAssert( entity.getCoordinates() + 
-                       CoordinatesType( stepX - ( stepX > 0 ),
-                                        stepY - ( stepY > 0 ),
-                                        stepZ - ( stepZ > 0 ) ) >= CoordinatesType( 0, 0, 0 ) &&
+                       CoordinatesType( stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ),
+                                        stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ),
+                                        stepZ - ( stepZ > 0 ) * ( entity.getOrientation().z() != 0.0 ) ) >= CoordinatesType( 0, 0, 0 ) &&
                     entity.getCoordinates() + 
-                       CoordinatesType( stepX - ( stepX > 0 ),
-                                        stepY - ( stepY > 0 ),
-                                        stepZ - ( stepZ > 0 ) ) < entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) ) = "
-                   << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) )
+                       CoordinatesType( stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ),
+                                        stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ),
+                                        stepZ - ( stepZ > 0 ) * ( entity.getOrientation().z() != 0.0 ) ) < entity.getMesh().getDimensions(),
+              cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ) * ( entity.getOrientation().x() != 0.0 ), stepY + ( stepY < 0 ) * ( entity.getOrientation().y() != 0.0 ), stepZ + ( stepZ < 0 ) * ( entity.getOrientation().z() != 0.0 ) ) = "
+                   << entity.getCoordinates()  + CoordinatesType( 
+                        stepX + ( stepX < 0 ) * ( entity.getOrientation().x() != 0.0 ),
+                        stepY + ( stepY < 0 ) * ( entity.getOrientation().y() != 0.0 ),
+                        stepZ + ( stepZ < 0 ) * ( entity.getOrientation().z() != 0.0 ) )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
          return NeighbourGridEntityType( entity.getMesh(),
-                                         CoordinatesType( entity.getCoordinates().x() + stepX - ( stepX > 0 ),
-                                                          entity.getCoordinates().y() + stepY - ( stepY > 0 ),
-                                                          entity.getCoordinates().z() + stepZ - ( stepZ > 0 ) ) );
+                                         CoordinatesType( entity.getCoordinates().x() + stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ),
+                                                          entity.getCoordinates().y() + stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ),
+                                                          entity.getCoordinates().z() + stepZ - ( stepZ > 0 ) * ( entity.getOrientation().z() != 0.0 ) ) );
       }
       
       template< int stepX, int stepY, int stepZ >

@@ -24,12 +24,6 @@
 #include <mesh/tnlDummyMesh.h>
 #include <mesh/tnlGrid.h>
 
-// TODO: Remove
-/*#include <mesh/tnlMesh.h>
-#include <mesh/tnlMeshWriterNetgen.h>
-#include <mesh/config/tnlMeshConfigBase.h>
-#include <mesh/topologies/tnlMeshTriangleTopology.h>*/
-
 void setupConfig( tnlConfigDescription& config )
 {
    config.addDelimiter                            ( "General settings:" );

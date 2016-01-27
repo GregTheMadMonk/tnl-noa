@@ -50,6 +50,14 @@ class tnlMeshFunction :
                        Vector& data,
                        const IndexType& offset = 0 );
       
+      static tnlString getType();
+      
+      tnlString getTypeVirtual() const;
+      
+      static tnlString getSerializationType();
+
+      virtual tnlString getSerializationTypeVirtual() const;      
+      
       static void configSetup( tnlConfigDescription& config,
                                const tnlString& prefix = "" );
 

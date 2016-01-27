@@ -58,6 +58,54 @@ tnlMeshFunction( const MeshType& mesh,
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
+tnlString 
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+getType()
+{
+   return tnlString( "tnlMeshFunction< " ) +
+                     Mesh::getType() + ", " +
+                     tnlString( MeshEntityDimensions ) + ", " +
+                     ::getType< Real >() +
+                     " >";
+};
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
+tnlString 
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+getTypeVirtual() const
+{
+   return this->getType();
+};
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
+tnlString 
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+getSerializationType()
+{
+   return tnlString( "tnlMeshFunction< " ) +
+                     Mesh::getSerializationType() + ", " +
+                     tnlString( MeshEntityDimensions ) + ", " +
+                     ::getType< Real >() +
+                     " >";
+};
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
+tnlString 
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+getSerializationTypeVirtual() const
+{
+   return this->getSerializationType();
+};
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
 void
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 configSetup( tnlConfigDescription& config,
@@ -275,8 +323,8 @@ bool
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 save( tnlFile& file ) const
 {
-   //if( ! tnlObject::save( file ) )
-   //   return false;
+   if( ! tnlObject::save( file ) )
+      return false;
    return this->data.save( file );
 }
 
@@ -287,8 +335,8 @@ bool
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 load( tnlFile& file )
 {
-   //if( ! tnlObject::load( file ) )
-   //   return false;
+   if( ! tnlObject::load( file ) )
+      return false;
    return this->data.load( file );   
 }
 
@@ -299,8 +347,8 @@ bool
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 boundLoad( tnlFile& file )
 {
-   //if( ! tnlObject::load( file ) )
-   //   return false;
+   if( ! tnlObject::load( file ) )
+      return false;
    return this->data.boundLoad( file );   
 }
 
