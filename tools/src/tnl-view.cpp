@@ -68,9 +68,9 @@ int main( int argc, char* argv[] )
    tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
    if( meshFile == "" )
    {
-      if( ! processFiles< tnlDummyMesh< double, tnlHost, int > >( parameters ) )
-         return EXIT_FAILURE;
-      return EXIT_SUCCESS;
+      //if( ! processFiles< tnlDummyMesh< double, tnlHost, int > >( parameters ) )
+      //   return EXIT_FAILURE;
+      //return EXIT_SUCCESS;
    }
    tnlString meshType;
    if( ! getObjectType( meshFile, meshType ) )

@@ -91,11 +91,11 @@ bool setMeshEntityType( const Mesh& mesh,
                         const tnlParameterContainer& parameters )
 {
    if( parsedObjectType[ 3 ] == "float" )
-      return setMeshFunctionRealType< Mesh, EntityDimensions, float >( mesh, inputFilename, parameters );
+      return setMeshFunctionRealType< Mesh, EntityDimensions, float >( mesh, inputFileName, parameters );
    if( parsedObjectType[ 3 ] == "double" )
-      return setMeshFunctionRealType< Mesh, EntityDimensions, double >( mesh, inputFilename, parameters );
+      return setMeshFunctionRealType< Mesh, EntityDimensions, double >( mesh, inputFileName, parameters );
    if( parsedObjectType[ 3 ] == "long double" )
-      return setMeshFunctionRealType< Mesh, EntityDimensions, long double >( mesh, inputFilename, parameters );
+      return setMeshFunctionRealType< Mesh, EntityDimensions, long double >( mesh, inputFileName, parameters );
    std::cerr << "Unsupported arithmetics " << parsedObjectType[ 3 ] << " in mesh function " << inputFileName << std::endl;
    return false;
 }
