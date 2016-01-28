@@ -14,7 +14,9 @@ SET( headers tnlConstantFunction.h
              tnlMeshFunctionEvaluator.h
              tnlMeshFunctionEvaluator_impl.h
              tnlMeshFunctionGnuplotWriter.h
+             tnlMeshFunctionGnuplotWriter_impl.h
              tnlMeshFunctionVTKWriter.h
+             tnlMeshFunctionVTKWriter_impl.h
              tnlMeshFunctionNormGetter.h
              tnlOperatorFunction.h
              tnlOperatorFunction_impl.h

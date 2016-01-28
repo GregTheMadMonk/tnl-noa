@@ -20,6 +20,8 @@
 #include <functions/tnlFunctionEvaluator.h>
 #include <functions/tnlMeshFunctionEvaluator.h>
 #include <functions/tnlMeshFunctionNormGetter.h>
+#include <functions/tnlMeshFunctionGnuplotWriter.h>
+#include <functions/tnlMeshFunctionVTKWriter.h>
 
 #ifndef TNLMESHFUNCTION_IMPL_H
 #define	TNLMESHFUNCTION_IMPL_H
@@ -361,9 +363,9 @@ write( const tnlString& fileName,
        const tnlString& format ) const
 {
    if( format == "vtk" )
-      return tnlMeshFunctionVTKWriter< ThisType >( *this );
+      return tnlMeshFunctionVTKWriter< ThisType >::write( *this, fileName );
    if( format == "gnuplot" )
-      return tnlMeshFunctionGnuplotWriter< ThisType >( *this );
+      return tnlMeshFunctionGnuplotWriter< ThisType >::write( *this, fileName );
    return true;
 }
       

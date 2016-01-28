@@ -15,40 +15,30 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMESHFUNCTIONGNUPLOTWRITER_H
-#define	TNLMESHFUNCTIONGNUPLOTWRITER_H
-
-#include<mesh/tnlGrid.h>
-
-template< typename, int, typename > class tnlMeshFunction;
+#ifndef TNLMESHFUNCTIONGNUPLOTWRITER_IMPL_H
+#define	TNLMESHFUNCTIONGNUPLOTWRITER_IMPL_H
 
 template< typename MeshFunction >
-class tnlMeshFunctionGnuplotWriter
+tnlMeshFunctionGnuplotWriter< MeshFunction >::
+bool
+write( const MeshFunction& function,
+       ostream& str )
 {
-   public:
+   std::cerr << "Gnuplot writer for mesh functions defined on mesh type " << MeshFunction::Mesh::getType() << " is not (yet) implmeneted." << std::endl;
+   return false;   
+}
 
-      static bool write( const MeshFunction& function,
-                         ostream& str );
-};
-
-/***
- * 1D grids cells
- */
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class tnlMeshFunctionGnuplotWriter< tnlMeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 1, Real >
+bool
+tnlMeshFunctionGnuplotWriter< tnlMeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 1, Real >::
+write( const MeshFunctionType& function,
+       ostream& str )
 {
-   public:
-      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
-      typedef Real RealType;
-      typedef tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
-
-      static bool write( const MeshFunctionType& function,
-                         ostream& str );
-};
+}
 
 
-#endif	/* TNLMESHFUNCTIONGNUPLOTWRITER_H */
+#endif	/* TNLMESHFUNCTIONGNUPLOTWRITER_IMPL_H */
 
