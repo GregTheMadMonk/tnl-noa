@@ -140,6 +140,9 @@ class tnlMeshFunction :
 };
 
 #include <functions/tnlMeshFunction_impl.h>
+#include <functions/tnlMeshFunctionGnuplotWriter_impl.h>
+#include <functions/tnlMeshFunctionVTKWriter_impl.h>
+
 
 #endif	/* TNLMESHFUNCTION_H */
 
