@@ -17,6 +17,8 @@
 
 #include <core/tnlObject.h>
 #include <functions/tnlDomain.h>
+#include <functions/tnlMeshFunctionGnuplotWriter.h>
+#include <functions/tnlMeshFunctionVTKWriter.h>
 
 #ifndef TNLMESHFUNCTION_H
 #define TNLMESHFUNCTION_H

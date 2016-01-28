@@ -1,18 +1,28 @@
 ADD_SUBDIRECTORY( initial_conditions )
 
-SET( headers tnlFunctionEvaluator.h
-             tnlFunctionEvaluator_impl.h
-             tnlFunctionAdapter.h
-             tnlConstantFunction.h
+SET( headers tnlConstantFunction.h
              tnlConstantFunction_impl.h
+             tnlDomain.h
+             tnlExactOperatorFunction.h
              tnlExpBumpFunction.h
              tnlExpBumpFunction_impl.h
+             tnlFunctionAdapter.h
+             tnlFunctionEvaluator.h
+             tnlFunctionEvaluator_impl.h
+             tnlMeshFunction.h
+             tnlMeshFunction_impl.h
+             tnlMeshFunctionEvaluator.h
+             tnlMeshFunctionEvaluator_impl.h
+             tnlMeshFunctionGnuplotWriter.h
+             tnlMeshFunctionVTKWriter.h
+             tnlMeshFunctionNormGetter.h
+             tnlOperatorFunction.h
+             tnlOperatorFunction_impl.h
              tnlSinBumpsFunction.h
              tnlSinBumpsFunction_impl.h
              tnlSinWaveFunction.h
              tnlSinWaveFunction_impl.h
-             tnlTestFunction.h
-             tnlDomain.h
+             tnlTestFunction.h             
              tnlTestFunction_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/functions )

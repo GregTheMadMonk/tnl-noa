@@ -360,6 +360,10 @@ tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 write( const tnlString& fileName,
        const tnlString& format ) const
 {
+   if( format == "vtk" )
+      return tnlMeshFunctionVTKWriter< ThisType >( *this );
+   if( format == "gnuplot" )
+      return tnlMeshFunctionGnuplotWriter< ThisType >( *this );
    return true;
 }
       

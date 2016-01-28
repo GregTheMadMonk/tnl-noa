@@ -100,17 +100,57 @@ bool setMeshEntityType( const Mesh& mesh,
    return false;
 }
 
-template< typename Mesh >
-bool setMeshFunction( const Mesh& mesh,
-                      const tnlString& inputFileName,
-                      const tnlList< tnlString >& parsedObjectType,
-                      const tnlParameterContainer& parameters )
+template< typename MeshReal,
+          typename MeshIndex >
+bool setMeshEntityDimensions( const tnlGrid< 1, MeshReal, tnlHost, MeshIndex >& mesh,
+                              const tnlString& inputFileName,
+                              const tnlList< tnlString >& parsedObjectType,
+                              const tnlParameterContainer& parameters )
 {
-   if( parsedObjectType[ 1 ] != mesh.getSerializationType() )
+   typedef tnlGrid< 1, MeshReal, tnlHost, MeshIndex > Mesh;
+   int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
+   switch( meshEntityDimensions )
    {
-      cerr << "Incompatible mesh type for the mesh function " << inputFileName << "." << endl;
-      return false;
+      case 1:
+         return setMeshEntityType< Mesh, 1 >( mesh, inputFileName, parsedObjectType, parameters );
+         break;
+      default:
+         cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << endl;
+         return false;
    }
+}
+
+template< typename MeshReal,
+          typename MeshIndex >
+bool setMeshEntityDimensions( const tnlGrid< 2, MeshReal, tnlHost, MeshIndex >& mesh,
+                              const tnlString& inputFileName,
+                              const tnlList< tnlString >& parsedObjectType,
+                              const tnlParameterContainer& parameters )
+{
+   typedef tnlGrid< 2, MeshReal, tnlHost, MeshIndex > Mesh;
+   int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
+   switch( meshEntityDimensions )
+   {
+      case 1:
+         return setMeshEntityType< Mesh, 1 >( mesh, inputFileName, parsedObjectType, parameters );
+         break;
+      case 2:
+         return setMeshEntityType< Mesh, 2 >( mesh, inputFileName, parsedObjectType, parameters );
+         break;
+      default:
+         cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << endl;
+         return false;
+   }
+}
+
+template< typename MeshReal,
+          typename MeshIndex >
+bool setMeshEntityDimensions( const tnlGrid< 3, MeshReal, tnlHost, MeshIndex >& mesh,
+                              const tnlString& inputFileName,
+                              const tnlList< tnlString >& parsedObjectType,
+                              const tnlParameterContainer& parameters )
+{
+   typedef tnlGrid< 3, MeshReal, tnlHost, MeshIndex > Mesh;
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
    {
@@ -127,6 +167,20 @@ bool setMeshFunction( const Mesh& mesh,
          cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << endl;
          return false;
    }
+}
+
+template< typename Mesh >
+bool setMeshFunction( const Mesh& mesh,
+                      const tnlString& inputFileName,
+                      const tnlList< tnlString >& parsedObjectType,
+                      const tnlParameterContainer& parameters )
+{
+   if( parsedObjectType[ 1 ] != mesh.getSerializationType() )
+   {
+      cerr << "Incompatible mesh type for the mesh function " << inputFileName << "." << endl;
+      return false;
+   }
+   return setMeshEntityDimensions( mesh, inputFileName, parsedObjectType, parameters );
 }
 
 
