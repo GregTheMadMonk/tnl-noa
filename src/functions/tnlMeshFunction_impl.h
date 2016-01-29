@@ -362,8 +362,9 @@ tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 write( const tnlString& fileName,
        const tnlString& format ) const
 {
-   fstream file;
-   if( file.open( fileName.getString(), ios::out ) )
+   std::fstream file;
+   file.open( fileName.getString(), std::ios::out );
+   if( ! file )
    {
       std::cerr << "Unbable to open a file " << fileName << "." << std::endl;
       return false;

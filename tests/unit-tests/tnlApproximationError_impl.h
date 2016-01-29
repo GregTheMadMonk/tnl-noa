@@ -59,30 +59,38 @@ getError( const ExactOperator& exactOperator,
    BoundaryOperatorFunction boundaryOperatorFunction( boundaryConditions, u );
    
    tnlString meshSizeString( mesh.getDimensions().x() );
-   if( writeFunctions )
-      mesh.save( "mesh-" + meshSizeString + ".tnl" );
+   tnlString dimensionsString;
+   if( MeshType::getDimensionsCount() == 1 )
+      dimensionsString = "1D-";
+   if( MeshType::getDimensionsCount() == 2 )
+      dimensionsString = "2D-";
+   if( MeshType::getDimensionsCount() == 3 )
+      dimensionsString = "3D-";
    
+   if( writeFunctions )
+      mesh.save( "mesh-" + dimensionsString + meshSizeString + ".tnl" );
+      
    //cerr << "Evaluating exact u... " << endl;
    exactU = exactOperatorFunction;
    if( writeFunctions )
-      exactU.save( "exact-result-" + meshSizeString + ".tnl" );
+      exactU.save( "exact-result-" + dimensionsString + meshSizeString + ".tnl" );
    
    //cerr << "Projecting test function ..." << endl;
    v = function;
    if( writeFunctions )
-      v.save( "test-function-" + meshSizeString + ".tnl" ) ;
+      v.save( "test-function-" + dimensionsString + meshSizeString + ".tnl" ) ;
    
    //cerr << "Evaluating approximate u ... " << endl;
    u = operatorFunction;
    tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
    if( writeFunctions )
-      u.save( "approximate-result-" + meshSizeString + ".tnl" ) ;
+      u.save( "approximate-result-" + dimensionsString + meshSizeString + ".tnl" ) ;
 
    //cerr << "Evaluate difference ... " << endl;
    u -= exactU;   
    tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
    if( writeFunctions )
-      u.save( "difference-" + meshSizeString + ".tnl" ) ;
+      u.save( "difference-" + dimensionsString + meshSizeString + ".tnl" ) ;
    l1Err = u.getLpNorm( 1.0 );
    l2Err = u.getLpNorm( 2.0 );   
    maxErr = u.getMaxNorm();

@@ -111,6 +111,9 @@ bool setMeshEntityDimensions( const tnlGrid< 1, MeshReal, tnlHost, MeshIndex >& 
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
    {
+      case 0:
+         return setMeshEntityType< Mesh, 0 >( mesh, inputFileName, parsedObjectType, parameters );
+         break;      
       case 1:
          return setMeshEntityType< Mesh, 1 >( mesh, inputFileName, parsedObjectType, parameters );
          break;
@@ -131,6 +134,9 @@ bool setMeshEntityDimensions( const tnlGrid< 2, MeshReal, tnlHost, MeshIndex >& 
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
    {
+      case 0:
+         return setMeshEntityType< Mesh, 0 >( mesh, inputFileName, parsedObjectType, parameters );
+         break;            
       case 1:
          return setMeshEntityType< Mesh, 1 >( mesh, inputFileName, parsedObjectType, parameters );
          break;
@@ -154,6 +160,9 @@ bool setMeshEntityDimensions( const tnlGrid< 3, MeshReal, tnlHost, MeshIndex >& 
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
    {
+      case 0:
+         return setMeshEntityType< Mesh, 0 >( mesh, inputFileName, parsedObjectType, parameters );
+         break;      
       case 1:
          return setMeshEntityType< Mesh, 1 >( mesh, inputFileName, parsedObjectType, parameters );
          break;

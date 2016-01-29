@@ -24,7 +24,7 @@ tnlMeshFunctionGnuplotWriter< MeshFunction >::
 write( const MeshFunction& function,
        ostream& str )
 {
-   std::cerr << "Gnuplot writer for mesh functions defined on mesh type " << MeshFunction::Mesh::getType() << " is not (yet) implmeneted." << std::endl;
+   std::cerr << "Gnuplot writer for mesh functions defined on mesh type " << MeshFunction::MeshType::getType() << " is not (yet) implemented." << std::endl;
    return false;   
 }
 
@@ -46,9 +46,10 @@ write( const MeshFunctionType& function,
         entity.getCoordinates().x() < mesh.getDimensions().x();
         entity.getCoordinates().x() ++ )
    {
+      entity.refresh();
       typename MeshType::VertexType v = entity.getCenter();
       str << v << " " 
-          << function.getElement( entity.getIndex() ) << std::endl;
+          << function.getData().getElement( entity.getIndex() ) << std::endl;
    }
 }
 
@@ -70,9 +71,10 @@ write( const MeshFunctionType& function,
         entity.getCoordinates().x() <= mesh.getDimensions().x();
         entity.getCoordinates().x() ++ )
    {
+      entity.refresh();
       typename MeshType::VertexType v = entity.getCenter();
       str << v << " " 
-          << function.getElement( entity.getIndex() ) << std::endl;      
+          << function.getData().getElement( entity.getIndex() ) << std::endl;      
    }
 }
 
@@ -99,9 +101,10 @@ write( const MeshFunctionType& function,
            entity.getCoordinates().x() < mesh.getDimensions().x();
            entity.getCoordinates().x() ++ )
       {
+         entity.refresh();
          typename MeshType::VertexType v = entity.getCenter();
          str << v.x() << " " << v.y() << " "
-             << function.getElement( entity.getIndex() ) << std::endl;      
+             << function.getData().getElement( entity.getIndex() ) << std::endl;      
       }
       str << std::endl;
    }
@@ -121,37 +124,41 @@ write( const MeshFunctionType& function,
 {
    const MeshType& mesh = function.getMesh();
    typedef typename MeshType::Face EntityType;
-   typedef typename EntityType::EntityOrientation EntityOrientation;
+   typedef typename EntityType::EntityOrientationType EntityOrientation;
    EntityType entity( mesh );
    
    entity.setOrientation( EntityOrientation( 1.0, 0.0 ) );
    for( entity.getCoordinates().y() = 0;
         entity.getCoordinates().y() < mesh.getDimensions().y();
-        entity.getCoordinates().y() ++ ) 
+        entity.getCoordinates().y() ++ )       
    {
       for( entity.getCoordinates().x() = 0;
            entity.getCoordinates().x() <= mesh.getDimensions().x();
            entity.getCoordinates().x() ++ )
       {
+         entity.refresh();
          typename MeshType::VertexType v = entity.getCenter();
          str << v.x() << " " << v.y() << " "
-             << function.getElement( entity.getIndex() ) << std::endl;      
+             << function.getData().getElement( entity.getIndex() ) << std::endl;      
       }
       str << std::endl;
    }
    
    entity.setOrientation( EntityOrientation( 0.0, 1.0 ) );
-   for( entity.getCoordinates().y() = 0;
-        entity.getCoordinates().y() <= mesh.getDimensions().y();
-        entity.getCoordinates().y() ++ ) 
-   {
-      for( entity.getCoordinates().x() = 0;
+         for( entity.getCoordinates().x() = 0;
            entity.getCoordinates().x() < mesh.getDimensions().x();
            entity.getCoordinates().x() ++ )
+
+   {
+            for( entity.getCoordinates().y() = 0;
+        entity.getCoordinates().y() <= mesh.getDimensions().y();
+        entity.getCoordinates().y() ++ ) 
+
       {
+         entity.refresh();
          typename MeshType::VertexType v = entity.getCenter();
          str << v.x() << " " << v.y() << " "
-             << function.getElement( entity.getIndex() ) << std::endl;      
+             << function.getData().getElement( entity.getIndex() ) << std::endl;      
       }
       str << std::endl;
    }   
@@ -180,9 +187,10 @@ write( const MeshFunctionType& function,
            entity.getCoordinates().x() <= mesh.getDimensions().x();
            entity.getCoordinates().x() ++ )
       {
+         entity.refresh();
          typename MeshType::VertexType v = entity.getCenter();
          str << v.x() << " " << v.y() << " "
-             << function.getElement( entity.getIndex() ) << std::endl;      
+             << function.getData().getElement( entity.getIndex() ) << std::endl;      
       }
       str << std::endl;
    }

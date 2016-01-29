@@ -19,7 +19,6 @@ SET( headers tnlConstantFunction.h
              tnlMeshFunctionVTKWriter_impl.h
              tnlMeshFunctionNormGetter.h
              tnlOperatorFunction.h
-             tnlOperatorFunction_impl.h
              tnlSinBumpsFunction.h
              tnlSinBumpsFunction_impl.h
              tnlSinWaveFunction.h
