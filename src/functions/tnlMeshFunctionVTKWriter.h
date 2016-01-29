@@ -23,7 +23,8 @@ class tnlMeshFunctionVTKWriter
 {
    public:
       
-      bool write( const MeshFunction& function )
+      bool write( const MeshFunction& function,
+                  ostream& str )
       {
          std::cerr << "VTK writer for mesh functions defined on mesh type " << MeshFunction::Mesh::getType() << " is not (yet) implmeneted." << std::endl;
          return false;

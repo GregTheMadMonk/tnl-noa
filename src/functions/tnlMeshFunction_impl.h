@@ -362,10 +362,16 @@ tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 write( const tnlString& fileName,
        const tnlString& format ) const
 {
+   fstream file;
+   if( file.open( fileName.getString(), ios::out ) )
+   {
+      std::cerr << "Unbable to open a file " << fileName << "." << std::endl;
+      return false;
+   }
    if( format == "vtk" )
-      return tnlMeshFunctionVTKWriter< ThisType >::write( *this, fileName );
+      return tnlMeshFunctionVTKWriter< ThisType >::write( *this, file );
    if( format == "gnuplot" )
-      return tnlMeshFunctionGnuplotWriter< ThisType >::write( *this, fileName );
+      return tnlMeshFunctionGnuplotWriter< ThisType >::write( *this, file );
    return true;
 }
       
