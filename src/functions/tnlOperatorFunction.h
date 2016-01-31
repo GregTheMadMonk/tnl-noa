@@ -49,7 +49,7 @@ class tnlOperatorFunction : public tnlDomain< Operator::getDimensions(), Operato
       tnlOperatorFunction(
          const OperatorType& operator_,
          const FunctionType& function )
-      :  operator_( &operator_ ), function( &function ){};
+      :  operator_( operator_ ), function( function ){};
       
       template< typename MeshEntity >
       __cuda_callable__
@@ -57,14 +57,14 @@ class tnlOperatorFunction : public tnlDomain< Operator::getDimensions(), Operato
          const MeshEntity& meshEntity,
          const RealType& time = 0 ) const
       {
-         return operator_->operator()( *function, meshEntity, time );
+         return operator_( function, meshEntity, time );
       }
       
    protected:
       
-      const Operator* operator_;
+      const Operator& operator_;
       
-      const FunctionType* function;
+      const FunctionType& function;
       
       template< typename, typename > friend class tnlMeshFunctionEvaluator;
 };

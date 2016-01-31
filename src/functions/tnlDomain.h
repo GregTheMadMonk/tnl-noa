@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFunction.h  -  description
+                          tnlDomain.h  -  description
                              -------------------
     begin                : Nov 8, 2015
     copyright            : (C) 2015 by oberhuber

@@ -20,6 +20,8 @@
 
 #include <operators/geometric/tnlCoFVMGradientNorm.h>
 #include <operators/geometric/tnlExactGradientNorm.h>
+#include <operators/interpolants/tnlMeshEntitiesInterpolants.h>
+#include <operators/tnlOperatorComposition.h>
 #include "../../tnlUnitTestStarter.h"
 #include "../tnlPDEOperatorEocTester.h"
 
@@ -75,8 +77,11 @@ template< typename Mesh,
           bool Verbose >
 bool setDifferenceOperator()
 {
-   typedef tnlCoFVMGradientNorm< Mesh > GradientNorm;
-   return ( testDifferenceOperator< Mesh, Function, GradientNorm, MeshSize, WriteFunctions, Verbose >() );
+   typedef tnlCoFVMGradientNorm< Mesh > GradientNormOnFaces;
+   typedef tnlMeshEntitiesInterpolants< Mesh, Mesh::getDimensionsCount() - 1, Mesh::getDimensionsCount() > Interpolant;
+   typedef tnlOperatorComposition< Interpolant, GradientNormOnFaces > GradientNormOnCells;
+   return ( testDifferenceOperator< Mesh, Function, GradientNormOnFaces, MeshSize, WriteFunctions, Verbose >() &&
+            testDifferenceOperator< Mesh, Function, GradientNormOnCells, MeshSize, WriteFunctions, Verbose >() );
 }
 
 template< typename Mesh,
