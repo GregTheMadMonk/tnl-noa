@@ -24,7 +24,7 @@
 #include <operators/fdm/tnlForwardFiniteDifference.h>
 #include <operators/fdm/tnlCentralFiniteDifference.h>
 #include "../../tnlUnitTestStarter.h"
-#include "../tnlPDEOperatorEocTester.h"
+#include "../tnlPDEOperatorEocUnitTest.h"
 
 template< int Dimensions,
           typename Real,

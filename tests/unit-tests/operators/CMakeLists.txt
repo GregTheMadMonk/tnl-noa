@@ -1,3 +1,3 @@
 ADD_SUBDIRECTORY( diffusion )
-ADD_SUBDIRECTORY( fdm )
-ADD_SUBDIRECTORY( geometric )
+#ADD_SUBDIRECTORY( fdm )
+#ADD_SUBDIRECTORY( geometric )

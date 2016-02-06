@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlPDEOperatorEocTester.h  -  description
+                          tnlPDEOperatorEocUnitTest.h  -  description
                              -------------------
     begin                : Aug 30, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,8 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLPDEOPERATOREOCTESTER_H_
-#define TNLPDEOPERATOREOCTESTER_H_
+#ifndef TNLPDEOPERATOREOCUNITTEST_H_
+#define TNLPDEOPERATOREOCUNITTEST_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -24,42 +24,22 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <unit-tests/tnlApproximationError.h>
-#include <unit-tests/operators/tnlPDEOperatorEocTestSetter.h>
-#include <unit-tests/operators/tnlPDEOperatorEocTestResult.h>
 
-template< typename ApproximateOperator,
-          typename ExactOperator,
-          typename TestFunction,
-          typename MeshEntity,
-          int MeshSize,
-          bool writeFunctions,
-          bool verbose >
-class tnlPDEOperatorEocTester : public CppUnit :: TestCase
+template< typename OperatorTest >
+class tnlPDEOperatorEocUnitTest : public CppUnit :: TestCase
 {
    public:
-   typedef tnlPDEOperatorEocTester< ApproximateOperator, ExactOperator, TestFunction, MeshEntity, MeshSize, writeFunctions, verbose > TesterType;
+   typedef tnlPDEOperatorEocUnitTest< OperatorTest > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
-   typedef typename ApproximateOperator::MeshType MeshType;
-   typedef typename ApproximateOperator::RealType RealType;
-   typedef typename ApproximateOperator::IndexType IndexType;
-   typedef tnlPDEOperatorEocTestSetter< ApproximateOperator, ExactOperator, MeshType, TestFunction > TestSetter;
-   typedef tnlPDEOperatorEocTestResult< ApproximateOperator, TestFunction > TestResult;
-   typedef MeshEntity MeshEntityType;
 
-   tnlPDEOperatorEocTester(){};
+   tnlPDEOperatorEocUnitTest(){};
 
    virtual
-   ~tnlPDEOperatorEocTester(){};
+   ~tnlPDEOperatorEocUnitTest(){};
 
    static CppUnit :: Test* suite()
    {
-      tnlString testName = tnlString( "tnlPDEOperatorEocTester< " ) +
-                           ApproximateOperator::getType() + ", " +
-                           ExactOperator::getType() + ", " +
-                           TestFunction::getType() + ", " +
-                           tnlString( MeshSize ) + ", " +
-                           tnlString( verbose ) + " >";
+      tnlString testName = OperatorTest::getType();
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( testName.getString() );
       CppUnit :: TestResult result;
 
@@ -70,6 +50,10 @@ class tnlPDEOperatorEocTester : public CppUnit :: TestCase
 
    void approximationTest()
    {
+      OperatorTest operatorTest;
+      operatorTest.setupTest();
+      operatorTest.runUnitTest();
+      /*
       TestFunction testFunction;
       TestSetter::setFunction( testFunction );
 
@@ -121,8 +105,9 @@ class tnlPDEOperatorEocTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( fabs( l1Eoc - TestResult::getL1Eoc() ) < TestResult::getL1Tolerance() );
       CPPUNIT_ASSERT( fabs( l2Eoc - TestResult::getL2Eoc() ) < TestResult::getL2Tolerance() );
       CPPUNIT_ASSERT( fabs( maxEoc - TestResult::getMaxEoc() ) < TestResult::getMaxTolerance() );
+      */
    }
 };
 
 #endif /* HAVE_CPPUNIT */
-#endif /* TNLPDEOPERATOREOCTESTER_H_ */
+#endif /* TNLPDEOPERATOREOCUNITTEST_H_ */

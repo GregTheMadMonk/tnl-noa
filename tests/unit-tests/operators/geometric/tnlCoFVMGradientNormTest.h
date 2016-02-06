@@ -80,8 +80,8 @@ bool setDifferenceOperator()
    typedef tnlCoFVMGradientNorm< Mesh > GradientNormOnFaces;
    typedef tnlMeshEntitiesInterpolants< Mesh, Mesh::getDimensionsCount() - 1, Mesh::getDimensionsCount() > Interpolant;
    typedef tnlOperatorComposition< Interpolant, GradientNormOnFaces > GradientNormOnCells;
-   return ( testDifferenceOperator< Mesh, Function, GradientNormOnFaces, MeshSize, WriteFunctions, Verbose >() &&
-            testDifferenceOperator< Mesh, Function, GradientNormOnCells, MeshSize, WriteFunctions, Verbose >() );
+   return ( testDifferenceOperator< Mesh, Function, GradientNormOnFaces, MeshSize, WriteFunctions, Verbose >() );//&&
+            //testDifferenceOperator< Mesh, Function, GradientNormOnCells, MeshSize, WriteFunctions, Verbose >() );
 }
 
 template< typename Mesh,
