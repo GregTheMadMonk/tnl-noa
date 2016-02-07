@@ -34,12 +34,12 @@ class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 1, Real, Device, Index > >
       
       typedef tnlGrid< 1, Real, Device, Index > MeshType;
       typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
-      typedef Device DevicType;
+      typedef Device DeviceType;
       typedef Index IndexType;
       
-      tnlPDEOperatorEocTestMeshSetter( MeshType& mesh,
-                                       IndexType& meshSize )
+      static bool setup( MeshType& mesh, const IndexType meshSize )
       {
          VertexType origin, proportions;
          origin.x() = -2.0;
@@ -47,7 +47,7 @@ class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 1, Real, Device, Index > >
          mesh.setDomain( origin, proportions );
 
          CoordinatesType dimensions;
-         dimensions.x() = size;
+         dimensions.x() = meshSize;
          mesh.setDimensions( dimensions );
       }
 };
@@ -61,12 +61,12 @@ class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 2, Real, Device, Index > >
       
       typedef tnlGrid< 2, Real, Device, Index > MeshType;
       typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
-      typedef Device DevicType;
+      typedef Device DeviceType;
       typedef Index IndexType;
       
-      tnlPDEOperatorEocTestMeshSetter( MeshType& mesh,
-                                       IndexType& meshSize )
+      static bool setup( MeshType& mesh, const IndexType meshSize )
       {
          VertexType origin, proportions;
          origin.x() = -1.0;
@@ -76,8 +76,8 @@ class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 2, Real, Device, Index > >
          mesh.setDomain( origin, proportions );
 
          CoordinatesType dimensions;
-         dimensions.x() = size;
-         dimensions.y() = size;
+         dimensions.x() = meshSize;
+         dimensions.y() = meshSize;
          mesh.setDimensions( dimensions );         
       }
 };
@@ -85,18 +85,18 @@ class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 2, Real, Device, Index > >
 template< typename Real,
           typename Device,
           typename Index >
-class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 1, Real, Device, Index > >
+class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 3, Real, Device, Index > >
 {
    public:
       
-      typedef tnlGrid< 1, Real, Device, Index > MeshType;
+      typedef tnlGrid< 3, Real, Device, Index > MeshType;
       typedef typename MeshType::VertexType VertexType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
-      typedef Device DevicType;
+      typedef Device DeviceType;
       typedef Index IndexType;
-      
-      tnlPDEOperatorEocTestMeshSetter( MeshType& mesh,
-                                       IndexType& meshSize )
+
+      static bool setup( MeshType& mesh, const IndexType meshSize )      
       {
          VertexType origin, proportions;
          origin.x() = -1.0;
@@ -108,9 +108,9 @@ class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 1, Real, Device, Index > >
          mesh.setDomain( origin, proportions );
 
          CoordinatesType dimensions;
-         dimensions.x() = size;
-         dimensions.y() = size;
-         dimensions.z() = size;
+         dimensions.x() = meshSize;
+         dimensions.y() = meshSize;
+         dimensions.z() = meshSize;
          mesh.setDimensions( dimensions );         
       }
 };

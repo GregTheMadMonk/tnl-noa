@@ -22,6 +22,7 @@
 #include <functions/tnlMeshFunction.h>
 #include <mesh/tnlGrid.h>
 #include <functions/tnlDomain.h>
+#include <operators/diffusion/tnlExactLinearDiffusion.h>
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -47,6 +48,7 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;      
+      typedef tnlExactLinearDiffusion< 1 > ExactOperatorType;
       
       static const int Dimensions = MeshType::meshDimensions;
       
@@ -100,6 +102,7 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;      
+      typedef tnlExactLinearDiffusion< 2 > ExactOperatorType;
       
       static const int Dimensions = MeshType::meshDimensions;
       
@@ -153,6 +156,7 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
+      typedef tnlExactLinearDiffusion< 3 > ExactOperatorType;
 
       static const int Dimensions = MeshType::meshDimensions;
       

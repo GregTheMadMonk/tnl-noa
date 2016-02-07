@@ -22,12 +22,14 @@
 #include <functions/tnlConstantFunction.h>
 #include <operators/tnlDirichletBoundaryConditions.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
+#include <functions/tnlExactOperatorFunction.h>
+#include <functions/tnlMeshFunction.h>
+#include <solvers/pde/tnlBoundaryConditionsSetter.h>
 
 template< typename ExactOperator,
           typename ApproximateOperator,
           typename MeshEntity,
-          typename Function,
-          bool writeFunctions >
+          typename Function >
 class tnlApproximationError
 {
    public:
@@ -44,9 +46,60 @@ class tnlApproximationError
                             const ApproximateOperator& approximateOperator,
                             const Function& function,
                             const MeshType& mesh,
-                            RealType& l1Err,
-                            RealType& l2Err,
-                            RealType& maxErr );
+                            RealType& l1Error,
+                            RealType& l2Error,
+                            RealType& maxError,
+                            bool writeFunctions )
+      {
+         typedef tnlMeshFunction< MeshType, MeshEntity::getDimensions() > MeshFunction;
+         typedef tnlDirichletBoundaryConditions< MeshType, tnlConstantFunction< MeshType::meshDimensions > > DirichletBoundaryConditions;
+         typedef tnlOperatorFunction< DirichletBoundaryConditions, MeshFunction > BoundaryOperatorFunction;
+         typedef tnlOperatorFunction< ApproximateOperator, MeshFunction > OperatorFunction;
+         typedef tnlExactOperatorFunction< ExactOperator, Function > ExactOperatorFunction;
+
+         tnlMeshFunction< MeshType, MeshEntity::getDimensions() > exactU( mesh ), u( mesh ), v( mesh );
+         OperatorFunction operatorFunction( approximateOperator, v );
+         ExactOperatorFunction exactOperatorFunction( exactOperator, function );
+         DirichletBoundaryConditions boundaryConditions;
+         BoundaryOperatorFunction boundaryOperatorFunction( boundaryConditions, u );
+
+         tnlString meshSizeString( mesh.getDimensions().x() );
+         tnlString dimensionsString;
+         if( MeshType::getDimensionsCount() == 1 )
+            dimensionsString = "1D-";
+         if( MeshType::getDimensionsCount() == 2 )
+            dimensionsString = "2D-";
+         if( MeshType::getDimensionsCount() == 3 )
+            dimensionsString = "3D-";
+
+         if( writeFunctions )
+            mesh.save( "mesh-" + dimensionsString + meshSizeString + ".tnl" );
+
+         //cerr << "Evaluating exact u... " << endl;
+         exactU = exactOperatorFunction;
+         if( writeFunctions )
+            exactU.save( "exact-result-" + dimensionsString + meshSizeString + ".tnl" );
+
+         //cerr << "Projecting test function ..." << endl;
+         v = function;
+         if( writeFunctions )
+            v.save( "test-function-" + dimensionsString + meshSizeString + ".tnl" ) ;
+
+         //cerr << "Evaluating approximate u ... " << endl;
+         u = operatorFunction;
+         tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
+         if( writeFunctions )
+            u.save( "approximate-result-" + dimensionsString + meshSizeString + ".tnl" ) ;
+
+         //cerr << "Evaluate difference ... " << endl;
+         u -= exactU;   
+         tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
+         if( writeFunctions )
+            u.save( "difference-" + dimensionsString + meshSizeString + ".tnl" ) ;
+         l1Error = u.getLpNorm( 1.0 );
+         l2Error = u.getLpNorm( 2.0 );   
+         maxError = u.getMaxNorm();
+      }
 };
 
 /*
@@ -75,6 +128,6 @@ class tnlApproximationError< Mesh, ExactOperator, ApproximateOperator, Function,
                             RealType& maxErr );
 };
 */
-#include "tnlApproximationError_impl.h"
+//#include "tnlApproximationError_impl.h"
 
 #endif /* TNLAPPROXIMATIONERROR_H_ */

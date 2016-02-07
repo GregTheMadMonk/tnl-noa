@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlUnitTestStarter.h  -  description
+                          terminal-colors.h  -  description
                              -------------------
-    begin                : Mar 30, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Feb 7, 2015
+    copyright            : (C) 2015 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,37 +15,16 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLUNITTESTSTARTER_H_
-#define TNLUNITTESTSTARTER_H_
+#ifndef TERMINAL_COLORS_H
+#define	TERMINAL_COLORS_H
 
-#include <tnlConfig.h>
+const std::string red( "\033[0;31m" );
+const std::string green( "\033[1;32m" );
+const std::string yellow( "\033[1;33m" );
+const std::string cyan( "\033[0;36m" );
+const std::string magenta( "\033[0;35m" );
+const std::string reset( "\033[0m" );
 
-#ifdef HAVE_CPPUNIT
-#include <cppunit/ui/text/TestRunner.h>
-#include <cppunit/CompilerOutputter.h>
-#endif
 
-#include <iostream>
+#endif	/* TERMINAL_COLORS_H */
 
-class tnlUnitTestStarter
-{
-   public:
-
-   template< typename Tester >
-   static bool run()
-   {
-#ifdef HAVE_CPPUNIT
-      CppUnit::TextTestRunner runner;
-      runner.addTest( Tester :: suite() );
-      runner.setOutputter( new CppUnit::CompilerOutputter(&runner.result(), std::cout) );
-      if( ! runner.run() )
-         return false;
-      return true;
-#else
-      std :: cerr << "Error: CPPUNIT is missing." << std :: endl;
-      return false;
-#endif
-   }
-};
-
-#endif /* TNLUNITTESTSTARTER_H_ */

@@ -20,9 +20,9 @@
 
 #include "tnlPDEOperatorEocTestMeshSetter.h"
 #include "tnlPDEOperatorEocTestFunctionSetter.h"
+#include "tnlApproximationError.h"
 
 template< typename ApproximateOperator,
-          typename ExactOperator,
           typename TestFunction >
 class tnlPDEOperatorEocTest
 {
@@ -30,19 +30,88 @@ class tnlPDEOperatorEocTest
       
       typedef ApproximateOperator ApproximateOperatorType;
       typedef TestFunction TestFunctionType;
+      typedef typename ApproximateOperator::ExactOperatorType ExactOperatorType;
       typedef typename ApproximateOperator::MeshType MeshType;
+      typedef typename ApproximateOperator::RealType RealType;
+      typedef typename ApproximateOperator::IndexType IndexType;
    
-      template< typename Mesh >
-      void setupMesh( Mesh& mesh )
+      void setupMesh( const IndexType meshSize )
       {
-         tnlPDEOperatorEocTestMeshSetter( mesh );
+         tnlPDEOperatorEocTestMeshSetter< MeshType >::setup( mesh, meshSize );
       }
       
-      template< typename Function >
-      void setupFunction( Function& function )
+      void setupFunction()
       {
-         tnlPDEOperatorEocTestFunctionSetter( function );
+         tnlPDEOperatorEocTestFunctionSetter< TestFunction >::setup( function );
       }
+     
+      template< typename MeshEntityType = typename MeshType::Cell > 
+      void performTest( ApproximateOperator& approximateOperator,
+                        ExactOperatorType& exactOperator,
+                        RealType errors[ 3 ],
+                        bool writeFunctions = false,
+                        bool verbose = false )
+      {
+         tnlApproximationError< ExactOperatorType,
+                                ApproximateOperator,
+                                MeshEntityType,
+                                TestFunction >
+         ::getError( exactOperator,
+                     approximateOperator,
+                     function,
+                     mesh,
+                     errors[ 1 ], //l1Error,
+                     errors[ 2 ], //l2Error,
+                     errors[ 0 ], //maxError,
+                     writeFunctions );
+         if( verbose )
+            std::cout << "L1 err. " << errors[ 1 ] << " L2 err. " << errors[ 2 ] << " Max. err. " << errors[ 0 ] << std::endl;
+      }
+      
+      void checkEoc( const RealType coarse[ 3 ],
+                     const RealType fine[ 3 ],
+                     const RealType eoc[ 3 ],
+                     const RealType tolerance[ 3 ],
+                     bool verbose = false)
+      {
+         /****
+          * Max error
+          */
+         RealType maxEoc = log( coarse[ 0 ] / fine[ 0 ] ) / log( 2.0 );
+         if( verbose )
+            std::cout << "Max error EOC = " << maxEoc << std::endl;
+#ifdef HAVE_CPPUNIT
+         CPPUNIT_ASSERT( fabs( maxEoc - eoc[ 0 ] ) < tolerance[ 0 ] );
+#endif
+         
+         /****
+          * Max error
+          */
+         RealType l1Eoc = log( coarse[ 1 ] / fine[ 1 ] ) / log( 2.0 );
+         if( verbose )
+            std::cout << "L1 error EOC = " << l1Eoc << std::endl;         
+#ifdef HAVE_CPPUNIT
+         CPPUNIT_ASSERT( fabs( l1Eoc - eoc[ 1 ] ) < tolerance[ 1 ] );
+#endif         
+         
+         /****
+          * L2 error
+          */
+         RealType l2Eoc = log( coarse[ 2 ] / fine[ 2 ] ) / log( 2.0 );
+         if( verbose )
+            std::cout << "L2 error EOC = " << l2Eoc << std::endl;
+#ifdef HAVE_CPPUNIT         
+         CPPUNIT_ASSERT( fabs( l2Eoc - eoc[ 2 ] ) < tolerance[ 2 ] );
+#endif         
+      }
+      
+   protected:
+      
+      MeshType mesh;
+      
+      TestFunction function;
+         
+      
 };
 
 

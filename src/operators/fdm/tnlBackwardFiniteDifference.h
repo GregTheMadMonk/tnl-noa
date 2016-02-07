@@ -18,7 +18,8 @@
 #ifndef TNLBACKWARDFINITEDIFFERENCE_H
 #define	TNLBACKWARDFINITEDIFFERENCE_H
 
-#include <operators/fdm/tnlFiniteDifferences.h>
+#include<operators/fdm/tnlFiniteDifferences.h>
+#include<operators/fdm/tnlExactDifference.h>
 
 template< typename Mesh,
           int Xdifference = 0,
@@ -47,7 +48,8 @@ class tnlBackwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Me
       typedef tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex > MeshType;
       typedef Real RealType;
       typedef MeshDevice DeviceType;
-      typedef Index IndexType;      
+      typedef Index IndexType;
+      typedef tnlExactDifference< Dimensions, XDifference, YDifference, ZDifference > ExactOperatorType;
       
       static constexpr int getMeshDimensions() { return Dimensions; }
       

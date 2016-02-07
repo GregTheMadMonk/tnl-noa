@@ -18,32 +18,29 @@
 #ifndef TNLEXACTDIFFERENCE_H
 #define	TNLEXACTDIFFERENCE_H
 
-template< typename Function,
+template< int Dimensions,
           int XDerivative,
           int YDerivative,
           int ZDerivative >
 class tnlExactDifference
-   : public tnlDomain< Function::getDimensions(), SpaceDomain >
+   : public tnlDomain< Dimensions, SpaceDomain >
 {
    public:
-      
-      typedef Function FunctionType;
-      typedef typename Function::RealType RealType;
-      typedef typename Function::VertexType VertexType;
       
       static tnlString getType()
       {
          return tnlString( "tnlExactDifference< " ) +
-            Function::getType() + ", " +
+            tnlString( Dimensions ) + ", " +
             tnlString( XDerivative ) + ", " +
             tnlString( YDerivative ) + ", " +
             tnlString( ZDerivative ) + " >";
       }
       
-      RealType operator()( 
-         const FunctionType& function,
-         const VertexType& vertex,
-         const RealType& time = 0 ) const
+      template< typename Function >
+      typename Function::RealType operator()( 
+         const Function& function,
+         const typename Function::VertexType& vertex,
+         const typename Function::RealType& time = 0 ) const
       {
          return function.template getPartialDerivative<
             XDerivative,

@@ -30,12 +30,12 @@ template< int Dimensions,
 class tnlPDEOperatorEocTestFunctionSetter< tnlExpBumpFunction< Dimensions, Real > >
 {
    static_assert( Dimensions >= 0 && Dimensions <= 3,
-      "Wrong parameter Dimensions.".)
+      "Wrong parameter Dimensions." );
    public:      
       
       typedef tnlExpBumpFunction< Dimensions, Real > FunctionType;
       
-      tnlPDEOperatorEocTestFunctionSetter( FunctionType& function )
+      static void setup( FunctionType& function )
       {
          function.setAmplitude( 1.5 );
          function.setSigma( 0.5 );
