@@ -20,6 +20,7 @@
 
 #include<operators/fdm/tnlForwardFiniteDifference.h>
 #include<operators/fdm/tnlBackwardFiniteDifference.h>
+#include<operators/geometric/tnlExactGradientNorm.h>
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -43,6 +44,7 @@ class tnlTwoSidedGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlExactGradientNorm< 1, RealType > ExactOperatorType;
    
    tnlTwoSidedGradientNorm()
    : epsSquare( 0.0 ){}
@@ -94,6 +96,7 @@ class tnlTwoSidedGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlExactGradientNorm< 2, RealType > ExactOperatorType;
    
    tnlTwoSidedGradientNorm()
    : epsSquare( 0.0 ){}
@@ -155,6 +158,7 @@ class tnlTwoSidedGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlExactGradientNorm< 3, RealType > ExactOperatorType;
    
    tnlTwoSidedGradientNorm()
    : epsSquare( 0.0 ){}   

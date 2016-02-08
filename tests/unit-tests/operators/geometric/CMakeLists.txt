@@ -2,9 +2,9 @@ ADD_EXECUTABLE( tnlFDMGradientNormTest${mpiExt}${debugExt} tnlFDMGradientNormTes
 TARGET_LINK_LIBRARIES( tnlFDMGradientNormTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                                  tnl${mpiExt}${debugExt}-0.1 )
 
-#ADD_EXECUTABLE( tnlTwoSidedGradientNormTest${mpiExt}${debugExt} tnlTwoSidedGradientNormTest.cpp )
-#TARGET_LINK_LIBRARIES( tnlTwoSidedGradientNormTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-#                                                                 tnl${mpiExt}${debugExt}-0.1 )
+ADD_EXECUTABLE( tnlTwoSidedGradientNormTest${mpiExt}${debugExt} tnlTwoSidedGradientNormTest.cpp )
+TARGET_LINK_LIBRARIES( tnlTwoSidedGradientNormTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                                 tnl${mpiExt}${debugExt}-0.1 )
 
 #ADD_EXECUTABLE( tnlCoFVMGradientNormTest${mpiExt}${debugExt} tnlCoFVMGradientNormTest.cpp )
 #TARGET_LINK_LIBRARIES( tnlCoFVMGradientNormTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}

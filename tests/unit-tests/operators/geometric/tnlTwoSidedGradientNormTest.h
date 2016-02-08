@@ -21,101 +21,124 @@
 #include <operators/geometric/tnlTwoSidedGradientNorm.h>
 #include <operators/geometric/tnlExactGradientNorm.h>
 #include "../../tnlUnitTestStarter.h"
-#include "../tnlPDEOperatorEocTester.h"
+#include "../tnlPDEOperatorEocTest.h"
+#include "../tnlPDEOperatorEocUnitTest.h"
 
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename TestFunction >
-class tnlPDEOperatorEocTestResult< 
-   tnlTwoSidedGradientNorm< tnlGrid< Dimensions, Real, Device, Index >,
-                            Real,
-                            Index >,
-   TestFunction >
+template< typename ApproximateOperator,
+          typename TestFunction,
+          bool write = false,
+          bool verbose = false >
+class tnlTwoSidedGradientNormTest
+   : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction >
 {
-   // TODO: Check this - EOC for 1D is only 1.5
    public:
-      static Real getL1Eoc() { return ( Real ) 2.0; };
-      static Real getL1Tolerance() { return ( Real ) 0.5; };
+      
+      typedef ApproximateOperator ApproximateOperatorType;
+      typedef typename ApproximateOperatorType::ExactOperatorType ExactOperatorType;
+      typedef typename ApproximateOperator::MeshType MeshType;
+      typedef typename ApproximateOperator::RealType RealType;
+      typedef typename ApproximateOperator::IndexType IndexType;
+      
+      const IndexType coarseMeshSize[ 3 ] = { 1024, 256, 64 };
 
-      static Real getL2Eoc() { return ( Real ) 2.0; };
-      static Real getL2Tolerance() { return ( Real ) 0.6; };
+      const RealType eoc[ 3 ] =       { 1.0,  1.9, 1.75 };
+      const RealType tolerance[ 3 ] = { 0.05, 0.1, 0.3 };      
+      
+      static tnlString getType()
+      { 
+         return tnlString( "tnlLinearDiffusionTest< " ) + 
+                ApproximateOperator::getType() + ", " +
+                TestFunction::getType() + " >";
+      }
+      
+      void setupTest()
+      {
+         this->setupFunction();
+      }
+            
+      void getApproximationError( const IndexType meshSize,
+                                  RealType errors[ 3 ] )
+      {
+         this->setupMesh( meshSize );
+         this->performTest( this->approximateOperator,
+                            this->exactOperator,
+                            errors,
+                            write,
+                            verbose );
 
-      static Real getMaxEoc() { return ( Real ) 1.0; };
-      static Real getMaxTolerance() { return ( Real ) 0.5; };
+      }
+      
+      void runUnitTest()
+      {  
+         RealType coarseErrors[ 3 ], fineErrors[ 3 ];
+         this->getApproximationError( coarseMeshSize[ MeshType::getDimensionsCount() - 1 ], coarseErrors );
+         this->getApproximationError( 2 * coarseMeshSize[ MeshType::getDimensionsCount() - 1 ], fineErrors );
+         this->checkEoc( coarseErrors, fineErrors, this->eoc, this->tolerance, verbose );                            
+      }
+      
+   protected:
+
+      ApproximateOperator approximateOperator;
+      
+      ExactOperatorType exactOperator;
 
 };
 
-template< typename Mesh,
-          typename Function,
-          typename Operator,
-          int MeshSize,
-          bool WriteFunctions,
-          bool Verbose >
-bool testDifferenceOperator()
+
+template< typename Operator,
+          typename Function, 
+          bool write,
+          bool verbose >
+bool runTest()
 {
-   typedef tnlExactGradientNorm< Mesh::meshDimensions > ExactOperator;
-   return tnlUnitTestStarter::run<
-            tnlPDEOperatorEocTester< 
-                Operator,
-                ExactOperator,
-                Function,
-                typename Mesh::Cell,
-                MeshSize,
-                WriteFunctions,
-                Verbose > >();
-   
+   typedef tnlTwoSidedGradientNormTest< Operator, Function, write, verbose > OperatorTest;
+#ifdef HAVE_CPPUNIT   
+   if( ! tnlUnitTestStarter::run< tnlPDEOperatorEocUnitTest< OperatorTest > >() )
+      return false;
+   return true;
+#endif      
 }
 
 template< typename Mesh,
           typename Function,
-          int MeshSize,
-          bool WriteFunctions,
-          bool Verbose >
+          bool write,
+          bool verbose >
 bool setDifferenceOperator()
 {
    typedef tnlTwoSidedGradientNorm< Mesh > GradientNorm;
-   return ( testDifferenceOperator< Mesh, Function, GradientNorm, MeshSize, WriteFunctions, Verbose >() );
+   return ( runTest< GradientNorm, Function, write, verbose >() );
 }
 
 template< typename Mesh,
-          int MeshSize,
-          bool WriteFunctions,
-          bool Verbose >
-bool setFunction()
+          bool write,
+          bool verbose >
+bool setTestFunction()
 {
-   const int Dimensions = Mesh::meshDimensions;
-   typedef tnlExpBumpFunction< Dimensions, double >  Function;
-   return setDifferenceOperator< Mesh, Function, MeshSize, WriteFunctions, Verbose >();
+   return setDifferenceOperator< Mesh, tnlExpBumpFunction< Mesh::getDimensionsCount(), double >, write, verbose >();
 }
 
 template< typename Device,
-          //int MeshSize,
-          bool WriteFunctions,
-          bool Verbose >
-bool setGrid()
+          bool write,
+          bool verbose >
+bool setMesh()
 {
-   typedef double MeshReal;
-   typedef int MeshIndex;
-   typedef tnlGrid< 1, MeshReal, Device, MeshIndex > Grid1D;
-   typedef tnlGrid< 2, MeshReal, Device, MeshIndex > Grid2D;
-   typedef tnlGrid< 3, MeshReal, Device, MeshIndex > Grid3D;
-   return ( setFunction< Grid1D, 65536, WriteFunctions, Verbose >() &&
-            setFunction< Grid2D, 512, WriteFunctions, Verbose >() &&
-            setFunction< Grid3D, 32, WriteFunctions, Verbose >() );
+   return ( setTestFunction< tnlGrid< 1, double, Device, int >, write, verbose >() &&
+            setTestFunction< tnlGrid< 2, double, Device, int >, write, verbose >() &&
+            setTestFunction< tnlGrid< 3, double, Device, int >, write, verbose >() );
 }
 
 int main( int argc, char* argv[] )
 {
-   //const int meshSize( 32 );
-   const bool writeFunctions( true );
    const bool verbose( true );
-#ifdef HAVE_CPPUNIT
-    return setGrid< tnlHost, writeFunctions, verbose >();
-#else
-   return EXIT_FAILURE;
-#endif
+   const bool write( false );
+   
+   if( ! setMesh< tnlHost, write, verbose  >() )
+      return EXIT_FAILURE;
+#ifdef HAVE_CUDA
+   if( ! setMesh< tnlCuda, write, verbose >() )
+      return EXIT_FAILURE;
+#endif   
+   return EXIT_SUCCESS;
 }
 
 #endif	/* TNLFDMGRADIENTNORMTEST_H */
