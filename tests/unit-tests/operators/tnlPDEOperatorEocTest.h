@@ -22,6 +22,14 @@
 #include "tnlPDEOperatorEocTestFunctionSetter.h"
 #include "tnlApproximationError.h"
 
+#ifdef HAVE_CPPUNIT
+#include <cppunit/TestSuite.h>
+#include <cppunit/TestResult.h>
+#include <cppunit/TestCaller.h>
+#include <cppunit/TestCase.h>
+#endif
+
+
 template< typename ApproximateOperator,
           typename TestFunction >
 class tnlPDEOperatorEocTest
@@ -79,7 +87,7 @@ class tnlPDEOperatorEocTest
           */
          RealType maxEoc = log( coarse[ 0 ] / fine[ 0 ] ) / log( 2.0 );
          if( verbose )
-            std::cout << "Max error EOC = " << maxEoc << std::endl;
+            std::cout << "Max error EOC = " << maxEoc << " expected " << eoc[ 0 ] << std::endl;
 #ifdef HAVE_CPPUNIT
          CPPUNIT_ASSERT( fabs( maxEoc - eoc[ 0 ] ) < tolerance[ 0 ] );
 #endif
@@ -89,7 +97,7 @@ class tnlPDEOperatorEocTest
           */
          RealType l1Eoc = log( coarse[ 1 ] / fine[ 1 ] ) / log( 2.0 );
          if( verbose )
-            std::cout << "L1 error EOC = " << l1Eoc << std::endl;         
+            std::cout << "L1 error EOC = " << l1Eoc << " expected " << eoc[ 1 ]  << std::endl;         
 #ifdef HAVE_CPPUNIT
          CPPUNIT_ASSERT( fabs( l1Eoc - eoc[ 1 ] ) < tolerance[ 1 ] );
 #endif         
@@ -99,7 +107,7 @@ class tnlPDEOperatorEocTest
           */
          RealType l2Eoc = log( coarse[ 2 ] / fine[ 2 ] ) / log( 2.0 );
          if( verbose )
-            std::cout << "L2 error EOC = " << l2Eoc << std::endl;
+            std::cout << "L2 error EOC = " << l2Eoc << " expected " << eoc[ 2 ] << std::endl;
 #ifdef HAVE_CPPUNIT         
          CPPUNIT_ASSERT( fabs( l2Eoc - eoc[ 2 ] ) < tolerance[ 2 ] );
 #endif         

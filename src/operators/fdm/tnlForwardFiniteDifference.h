@@ -50,7 +50,7 @@ class tnlForwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Mes
       typedef Real RealType;
       typedef MeshDevice DeviceType;
       typedef Index IndexType;
-      typedef tnlExactDifference< XDifference, YDifference, ZDifference > ExactOperatorType;
+      typedef tnlExactDifference< Dimensions, XDifference, YDifference, ZDifference > ExactOperatorType;
       
       static constexpr int getMeshDimensions() { return Dimensions; }
       

@@ -30,70 +30,15 @@
 #include "../tnlPDEOperatorEocTestResult.h"
 #include <functions/tnlExpBumpFunction.h>
 
-template< typename MeshType,
-          typename RealType,
-          int XDifference,
-          int YDifference,
-          int ZDifference,
-          typename IndexType,   
-          typename TestFunction >
-class tnlPDEOperatorEocTestResult< 
-   tnlForwardFiniteDifference< MeshType, XDifference, YDifference, ZDifference, RealType, IndexType >, TestFunction >
+template< typename ApproximateOperator >
+class tnlFinitDifferenceEocTestResults
 {
    public:
-      static RealType getL1Eoc() 
-      {
-         if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( RealType ) 1.0;
-      };
-      static RealType getL1Tolerance() { return ( RealType ) 0.05; };
-
-      static RealType getL2Eoc()
-      { 
-         if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( RealType ) 1.0;
-      };
-      static RealType getL2Tolerance() { return ( RealType ) 0.05; };
-
-      static RealType getMaxEoc()
-      {
-         if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( RealType ) 1.0; 
-      };
-      static RealType getMaxTolerance() { return ( RealType ) 0.05; };
-};
-
-template< typename MeshType,
-          typename RealType,
-          int XDifference,
-          int YDifference,
-          int ZDifference,
-          typename IndexType,   
-          typename TestFunction >
-class tnlPDEOperatorEocTestResult< 
-   tnlBackwardFiniteDifference< MeshType, XDifference, YDifference, ZDifference, RealType, IndexType >, TestFunction >
-{
-   public:
-      static RealType getL1Eoc() 
-      {
-         if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( RealType ) 1.0;
-      };
-      static RealType getL1Tolerance() { return ( RealType ) 0.05; };
-
-      static RealType getL2Eoc()
-      { 
-         if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( RealType ) 1.0;
-      };
-      static RealType getL2Tolerance() { return ( RealType ) 0.05; };
-
-      static RealType getMaxEoc()
-      {
-         if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( RealType ) 1.0; 
-      };
-      static RealType getMaxTolerance() { return ( RealType ) 0.05; };
+        
+      typedef typename ApproximateOperator::RealType RealType;
+      
+      const RealType  eoc[ 3 ] =       { 1.0,  1.0,  1.0 };
+      const RealType  tolerance[ 3 ] = { 0.05, 0.05, 0.05 };      
 
 };
 
@@ -102,42 +47,22 @@ template< typename MeshType,
           int XDifference,
           int YDifference,
           int ZDifference,
-          typename IndexType,   
-          typename TestFunction >
-class tnlPDEOperatorEocTestResult< 
-   tnlCentralFiniteDifference< MeshType, XDifference, YDifference, ZDifference, RealType, IndexType >, TestFunction >
+          typename IndexType >
+class tnlFinitDifferenceEocTestResults< tnlCentralFiniteDifference< MeshType, XDifference, YDifference, ZDifference, RealType, IndexType > >
 {
    public:
-      static RealType getL1Eoc() 
-      {
-         //if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( RealType ) 2.0;
-      };
-      static RealType getL1Tolerance() { return ( RealType ) 0.05; };
-
-      static RealType getL2Eoc()
-      { 
-         //if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( RealType ) 2.0;
-      };
-      static RealType getL2Tolerance() { return ( RealType ) 0.05; };
-
-      static RealType getMaxEoc()
-      {
-         //if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
-            return ( RealType ) 2.0; 
-      };
-      static RealType getMaxTolerance() { return ( RealType ) 0.05; };
-
+      
+      const RealType  eoc[ 3 ] =       { 2.0,  2.0,  2.0 };
+      const RealType  tolerance[ 3 ] = { 0.05, 0.05, 0.05 };         
 };
-
 
 template< typename ApproximateOperator,
           typename TestFunction,
           bool write = false,
           bool verbose = false >
 class tnlFiniteDifferenceTest
-   : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction > 
+   : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction >,
+     public tnlFinitDifferenceEocTestResults< ApproximateOperator >
 {
    public:
       
@@ -149,8 +74,6 @@ class tnlFiniteDifferenceTest
       
       const IndexType coarseMeshSize[ 3 ] = { 1024, 256, 64 };
       
-      const RealType  eoc[ 3 ] =       { 2.0,  2.0,  2.0 };
-      const RealType  tolerance[ 3 ] = { 0.05, 0.05, 0.05 };      
    
       static tnlString getType()
       { 
@@ -181,7 +104,7 @@ class tnlFiniteDifferenceTest
          RealType coarseErrors[ 3 ], fineErrors[ 3 ];
          this->getApproximationError( coarseMeshSize[ MeshType::getDimensionsCount() - 1 ], coarseErrors );
          this->getApproximationError( 2 * coarseMeshSize[ MeshType::getDimensionsCount() - 1 ], fineErrors );
-         this->checkEoc( coarseErrors, fineErrors, eoc, tolerance, verbose );                            
+         this->checkEoc( coarseErrors, fineErrors, this->eoc, this->tolerance, verbose );                            
       }
       
    protected:
@@ -278,7 +201,7 @@ bool setDifferenceOrder()
 bool test()
 {
    const bool writeFunctions( false );
-   const bool verbose( false );
+   const bool verbose( true );
    if( ! setDifferenceOrder< double, tnlHost, int, double, int, 64, writeFunctions, verbose >() )
       return false;
 #ifdef HAVE_CUDA
