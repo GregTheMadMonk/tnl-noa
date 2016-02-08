@@ -19,6 +19,7 @@
 #define	TNLFDMGRADIENTNORM_H
 
 #include<operators/fdm/tnlForwardFiniteDifference.h>
+#include<operators/geometric/tnlExactGradientNorm.h>
 
 template< typename Mesh,
           template< typename, int, int, int, typename, typename > class DifferenceOperatorTemplate = tnlForwardFiniteDifference,
@@ -44,6 +45,10 @@ class tnlFDMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, DifferenceOp
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlExactGradientNorm< 1, RealType > ExactOperatorType;
+   
+   template< typename MeshEntity = typename MeshType::Cell >
+   using XDifferenceOperatorType = DifferenceOperatorTemplate< typename MeshEntity::MeshType, 1, 0, 0, Real, Index >;
    
    tnlFDMGradientNorm()
    : epsSquare( 0.0 ){}
@@ -62,11 +67,8 @@ class tnlFDMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, DifferenceOp
                     const MeshEntity& entity,
                     const Real& time = 0.0 ) const
    {
-      DifferenceOperatorTemplate< typename MeshEntity::MeshType, 1, 0, 0, Real, Index > XDifferenceOperator;
-      //const IndexType& cellIndex = entity.getIndex();
-      //const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();      
-      //const typename MeshEntity::MeshType& mesh = entity.getMesh();
-      const RealType u_x = XDifferenceOperator( u, entity );
+      XDifferenceOperatorType< MeshEntity > XDifference;
+      const RealType u_x = XDifference( u, entity );
       return sqrt( this->epsSquare + u_x * u_x );          
    }
                 
@@ -92,52 +94,54 @@ class tnlFDMGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, DifferenceOp
 {
    public: 
    
-   typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   
-   tnlFDMGradientNorm()
-   : epsSquare( 0.0 ){}
-
-
-   static tnlString getType()
-   {
-      return tnlString( "tnlFDMGradientNorm< " ) +
-         MeshType::getType() + ", " +
-         ::getType< Real >() + ", " +
-         ::getType< Index >() + " >";
-
-   }
+      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
+      typedef Real RealType;
+      typedef Device DeviceType;
+      typedef Index IndexType;
+      typedef tnlExactGradientNorm< 2, RealType > ExactOperatorType;
       
-   template< typename MeshFunction, typename MeshEntity >
-   __cuda_callable__
-   Real operator()( const MeshFunction& u,
-                    const MeshEntity& entity,
-                    const Real& time = 0.0 ) const
-   {
-      DifferenceOperatorTemplate< typename MeshEntity::MeshType, 1, 0, 0, Real, Index > XDifferenceOperator;
-      DifferenceOperatorTemplate< typename MeshEntity::MeshType, 0, 1, 0, Real, Index > YDifferenceOperator;
-      //const IndexType& cellIndex = entity.getIndex();
-      //const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
-      //const typename MeshEntity::MeshType& mesh = entity.getMesh();
-      //const RealType& u_c = u[ cellIndex ];
-      const RealType u_x = XDifferenceOperator( u, entity );
-      const RealType u_y = YDifferenceOperator( u, entity );
-      return sqrt( this->epsSquare + u_x * u_x + u_y * u_y );       
-   }
+      template< typename MeshEntity >
+      using XDifferenceOperatorType = DifferenceOperatorTemplate< typename MeshEntity::MeshType, 1, 0, 0, Real, Index >;
+      template< typename MeshEntity >
+      using YDifferenceOperatorType = DifferenceOperatorTemplate< typename MeshEntity::MeshType, 0, 1, 0, Real, Index >;
 
-   
-        
-   void setEps( const Real& eps )
-   {
-      this->epsSquare = eps*eps;
-   }   
+      tnlFDMGradientNorm()
+      : epsSquare( 0.0 ){}
+
+
+      static tnlString getType()
+      {
+         return tnlString( "tnlFDMGradientNorm< " ) +
+            MeshType::getType() + ", " +
+            ::getType< Real >() + ", " +
+            ::getType< Index >() + " >";
+
+      }
+
+      template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
+      Real operator()( const MeshFunction& u,
+                       const MeshEntity& entity,
+                       const Real& time = 0.0 ) const
+      {
+         XDifferenceOperatorType< MeshEntity > XDifference;
+         YDifferenceOperatorType< MeshEntity > YDifference;
+         const RealType u_x = XDifference( u, entity );
+         const RealType u_y = YDifference( u, entity );
+         return sqrt( this->epsSquare + u_x * u_x + u_y * u_y );       
+      }
+
+
+
+      void setEps( const Real& eps )
+      {
+         this->epsSquare = eps*eps;
+      }   
    
    private:
    
-   RealType epsSquare;
+      RealType epsSquare;
 };
 
 
@@ -152,51 +156,57 @@ class tnlFDMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, DifferenceO
 {
    public: 
    
-   typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
+      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
+      typedef Real RealType;
+      typedef Device DeviceType;
+      typedef Index IndexType;
+      typedef tnlExactGradientNorm< 3, RealType > ExactOperatorType;
    
-   tnlFDMGradientNorm()
-   : epsSquare( 0.0 ){}   
+      template< typename MeshEntity >
+      using XDifferenceOperatorType = DifferenceOperatorTemplate< typename MeshEntity::MeshType, 1, 0, 0, Real, Index >;
+      template< typename MeshEntity >
+      using YDifferenceOperatorType = DifferenceOperatorTemplate< typename MeshEntity::MeshType, 0, 1, 0, Real, Index >;
+      template< typename MeshEntity >
+      using ZDifferenceOperatorType = DifferenceOperatorTemplate< typename MeshEntity::MeshType, 0, 0, 1, Real, Index >;
 
-   static tnlString getType()
-   {
-      return tnlString( "tnlFDMGradientNorm< " ) +
-         MeshType::getType() + ", " +
-         ::getType< Real >() + ", " +
-         ::getType< Index >() + " >";      
-   }
-
-   template< typename MeshFunction, typename MeshEntity >
-   __cuda_callable__
-   Real operator()( const MeshFunction& u,
-                    const MeshEntity& entity,
-                    const Real& time = 0.0 ) const
-   {
-      DifferenceOperatorTemplate< typename MeshEntity::MeshType, 1, 0, 0, Real, Index > XDifferenceOperator;
-      DifferenceOperatorTemplate< typename MeshEntity::MeshType, 0, 1, 0, Real, Index > YDifferenceOperator;
-      DifferenceOperatorTemplate< typename MeshEntity::MeshType, 0, 0, 1, Real, Index > ZDifferenceOperator;
-      //const IndexType& cellIndex = entity.getIndex();
-      //const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
-      //const typename MeshEntity::MeshType& mesh = entity.getMesh();
-      //const RealType& u_c = u[ cellIndex ];
-      const RealType u_x = XDifferenceOperator( u, entity );
-      const RealType u_y = YDifferenceOperator( u, entity );
-      const RealType u_z = ZDifferenceOperator( u, entity );
-      return sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );             
-   }
    
-        
-   void setEps(const Real& eps)
-   {
-      this->epsSquare = eps*eps;
-   }   
+      tnlFDMGradientNorm()
+      : epsSquare( 0.0 ){}   
+
+      static tnlString getType()
+      {
+         return tnlString( "tnlFDMGradientNorm< " ) +
+            MeshType::getType() + ", " +
+            ::getType< Real >() + ", " +
+            ::getType< Index >() + " >";      
+      }
+
+      template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
+      Real operator()( const MeshFunction& u,
+                       const MeshEntity& entity,
+                       const Real& time = 0.0 ) const
+      {
+         XDifferenceOperatorType< MeshEntity > XDifference;
+         YDifferenceOperatorType< MeshEntity > YDifference;
+         ZDifferenceOperatorType< MeshEntity > ZDifference;
+
+         const RealType u_x = XDifference( u, entity );
+         const RealType u_y = YDifference( u, entity );
+         const RealType u_z = ZDifference( u, entity );
+         return sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );             
+      }
+
+
+      void setEps(const Real& eps)
+      {
+         this->epsSquare = eps*eps;
+      }   
    
    private:
    
-   RealType epsSquare;
+      RealType epsSquare;
 };
 
 
