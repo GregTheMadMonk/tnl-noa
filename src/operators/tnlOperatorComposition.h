@@ -31,13 +31,13 @@ class tnlOperatorComposition
    public:
       
       typedef typename InnerOperator::MeshType MeshType;
-      typedef tnlOperatorFunction< InnerOperator, tnlMeshFunction< MeshType, InnerOperator::getImageMeshEntitiesDimensions() > > InnerOperatorFunction;
+      typedef tnlOperatorFunction< InnerOperator, tnlMeshFunction< MeshType, InnerOperator::getDomainEntitiesDimensions() > > InnerOperatorFunction;
       typedef typename InnerOperator::RealType RealType;
       typedef typename InnerOperator::IndexType IndexType;
       
       tnlOperatorComposition( const OuterOperator& outerOperator,
                               const InnerOperator& innerOperator )
-      : outerOperator( &outerOperator ), innerOperator( &innerOperator ) {};
+      : outerOperator( outerOperator ), innerOperator( innerOperator ) {};
       
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__

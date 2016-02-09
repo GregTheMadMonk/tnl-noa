@@ -31,14 +31,15 @@
 
 
 template< typename ApproximateOperator,
-          typename TestFunction >
+          typename TestFunction,
+          typename ExactOperator = typename ApproximateOperator::ExactOperatorType >
 class tnlPDEOperatorEocTest
 {
    public:      
       
       typedef ApproximateOperator ApproximateOperatorType;
       typedef TestFunction TestFunctionType;
-      typedef typename ApproximateOperator::ExactOperatorType ExactOperatorType;
+      typedef ExactOperator ExactOperatorType;
       typedef typename ApproximateOperator::MeshType MeshType;
       typedef typename ApproximateOperator::RealType RealType;
       typedef typename ApproximateOperator::IndexType IndexType;

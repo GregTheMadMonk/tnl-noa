@@ -46,7 +46,7 @@ class tnlTwoSidedGradientNormTest
       
       static tnlString getType()
       { 
-         return tnlString( "tnlLinearDiffusionTest< " ) + 
+         return tnlString( "tnlTwoSidedGradientNormTest< " ) + 
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }

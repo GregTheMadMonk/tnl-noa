@@ -19,8 +19,9 @@
 #define	TNLCOFVMGRADIENTNORM_H
 
 #include <mesh/tnlGrid.h>
+#include <operators/geometric/tnlExactGradientNorm.h>
 
-template< typename Mesh,          
+template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class tnlCoFVMGradientNorm
@@ -42,8 +43,10 @@ class tnlCoFVMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Inde
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlExactGradientNorm< 1, RealType > ExactOperatorType;
    
-   constexpr static int getImageMeshEntitiesDimensions() { return MeshType::getDimensionsCount() - 1; };
+   constexpr static int getDomainEntitiesDimensions() { return MeshType::getDimensionsCount(); };
+   constexpr static int getImageEntitiesDimensions() { return MeshType::getDimensionsCount() - 1; };
    
    tnlCoFVMGradientNorm()
    : epsSquare( 0.0 ){}
@@ -100,8 +103,10 @@ class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Ind
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlExactGradientNorm< 2, RealType > ExactOperatorType;
    
-   constexpr static int getImageMeshEntitiesDimensions() { return MeshType::getDimensionsCount() - 1; };
+   constexpr static int getDomainEntitiesDimensions() { return MeshType::getDimensionsCount(); };
+   constexpr static int getImageEntitiesDimensions() { return MeshType::getDimensionsCount() - 1; };
    
    tnlCoFVMGradientNorm()
    : epsSquare( 0.0 ){}
@@ -216,8 +221,10 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Ind
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
+   typedef tnlExactGradientNorm< 3, RealType > ExactOperatorType;
    
-   constexpr static int getImageMeshEntitiesDimensions() { return MeshType::getDimensionsCount() - 1; };
+   constexpr static int getDomainEntitiesDimensions() { return MeshType::getDimensionsCount(); };
+   constexpr static int getImageEntitiesDimensions() { return MeshType::getDimensionsCount() - 1; };
    
    tnlCoFVMGradientNorm()
    : epsSquare( 0.0 ){}   

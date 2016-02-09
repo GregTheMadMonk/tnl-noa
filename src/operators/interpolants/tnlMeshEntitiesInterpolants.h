@@ -288,13 +288,13 @@ class tnlMeshEntitiesInterpolants< tnlGrid< 3, Real, Device, Index >, 2, 3 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntityDimensions() == 3,
+         static_assert( MeshFunction::getEntitiesDimensions() == 2,
             "Mesh function must be defined on faces." );
 
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );         
          
-         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();      
+         const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.template getNeighbourEntities< 2 >();      
                   
          return 1.0 / 6.0 * ( u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] + 
                               u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] +

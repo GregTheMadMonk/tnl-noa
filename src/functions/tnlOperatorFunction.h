@@ -46,6 +46,8 @@ class tnlOperatorFunction : public tnlDomain< Operator::getDimensions(), Operato
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;
       
+      static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };
+      
       tnlOperatorFunction(
          const OperatorType& operator_,
          const FunctionType& function )

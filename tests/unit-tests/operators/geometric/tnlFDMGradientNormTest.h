@@ -70,7 +70,7 @@ class tnlFDMGradientNormTest
       
       static tnlString getType()
       { 
-         return tnlString( "tnlLinearDiffusionTest< " ) + 
+         return tnlString( "tnlFDMGradientNormTest< " ) + 
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }
