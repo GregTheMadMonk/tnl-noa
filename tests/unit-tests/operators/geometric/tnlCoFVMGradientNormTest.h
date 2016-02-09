@@ -85,6 +85,7 @@ class tnlCoFVMGradientNormTest
          typedef tnlMeshEntitiesInterpolants< MeshType, MeshType::getDimensionsCount() - 1 , MeshType::getDimensionsCount() > Interpolant;
          Interpolant interpolant;
          
+         // TODOL udelat implementaci iterpolace pro operatory a specializaci pro mesh functions
          
          this->performTest( testOperator,
                             this->exactOperator,
