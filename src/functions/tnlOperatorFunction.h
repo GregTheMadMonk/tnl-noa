@@ -26,6 +26,13 @@
  * The main role of this type is that the mesh function evaluator
  * evaluates this function only on the INTERIOR mesh entities.
  */
+
+/*template< typename Operator,
+          typename MeshFunction,
+          typename BoundaryConditions = void,
+          bool StorageFlag = true >
+class tnlOperatorFunction{};*/
+
 template< typename Operator,
           typename MeshFunction >
 class tnlOperatorFunction : public tnlDomain< Operator::getDimensions(), Operator::getDomainType() >
@@ -46,7 +53,7 @@ class tnlOperatorFunction : public tnlDomain< Operator::getDimensions(), Operato
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;
       
-      static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };
+      static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
       
       tnlOperatorFunction(
          const OperatorType& operator_,
