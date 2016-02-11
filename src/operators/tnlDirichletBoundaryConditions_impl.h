@@ -22,10 +22,11 @@
 
 template< typename Mesh,
           typename Function,
+          int MeshEntitiesDimensions,
           typename Real,
           typename Index >
 void
-tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
@@ -34,10 +35,11 @@ configSetup( tnlConfigDescription& config,
 
 template< typename Mesh,
           typename Function,
+          int MeshEntitiesDimensions,
           typename Real,
           typename Index >
 bool
-tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
@@ -46,10 +48,11 @@ setup( const tnlParameterContainer& parameters,
 
 template< typename Mesh,
           typename Function,
+          int MeshEntitiesDimensions,
           typename Real,
           typename Index >
 void
-tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
 setFunction( const Function& function )
 {
    this->function = function;
@@ -57,10 +60,11 @@ setFunction( const Function& function )
 
 template< typename Mesh,
           typename Function,
+          int MeshEntitiesDimensions,
           typename Real,
           typename Index >
 Function&
-tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
 getFunction()
 {
    return this->function;
@@ -68,10 +72,11 @@ getFunction()
 
 template< typename Mesh,
           typename Function,
+          int MeshEntitiesDimensions,
           typename Real,
           typename Index >
 const Function&
-tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
 getFunction() const
 {
    return *this->function;
@@ -80,28 +85,31 @@ getFunction() const
 
 template< typename Mesh,
           typename Function,
+          int MeshEntitiesDimensions,
           typename Real,
           typename Index >
 template< typename EntityType,
           typename MeshFunction >
 __cuda_callable__
 const Real
-tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
 getValue( const EntityType& entity,
           const MeshFunction& u,
           const RealType& time ) const
 {
+   //static_assert( EntityType::getDimensions() == MeshEntitiesDimensions, "Wrong mesh entity dimensions." );
    return tnlFunctionAdapter< MeshType, Function >::template getValue( this->function, entity, time );
 }
 
 template< typename Mesh,
           typename Function,
+          int MeshEntitiesDimensions,
           typename Real,
           typename Index >
    template< typename EntityType >
 __cuda_callable__
 Index
-tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const EntityType& entity ) const
@@ -111,6 +119,7 @@ getLinearSystemRowLength( const MeshType& mesh,
 
 template< typename Mesh,
           typename Function,
+          int MeshEntitiesDimensions,
           typename Real,
           typename Index >
    template< typename Matrix,
@@ -118,7 +127,7 @@ template< typename Mesh,
              typename MeshFunction >
 __cuda_callable__
 void
-tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >::
+tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,

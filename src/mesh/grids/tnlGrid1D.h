@@ -52,7 +52,7 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    typedef MeshEntity< 0 > Face;
    typedef MeshEntity< 0 > Vertex;
 
-   static constexpr int getDimensionsCount() { return meshDimensions; };
+   static constexpr int getMeshDimensions() { return meshDimensions; };
    
    tnlGrid();
 

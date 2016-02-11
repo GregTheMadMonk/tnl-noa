@@ -18,9 +18,10 @@
 #ifndef TNLTWOSIDEDGRADIENTNORM_H
 #define	TNLTWOSIDEDGRADIENTNORM_H
 
-#include<operators/fdm/tnlForwardFiniteDifference.h>
-#include<operators/fdm/tnlBackwardFiniteDifference.h>
-#include<operators/geometric/tnlExactGradientNorm.h>
+#include <operators/fdm/tnlForwardFiniteDifference.h>
+#include <operators/fdm/tnlBackwardFiniteDifference.h>
+#include <operators/geometric/tnlExactGradientNorm.h>
+#include <operators/tnlOperator.h>
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -35,7 +36,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlTwoSidedGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
-   : public tnlDomain< 1, MeshInteriorDomain >
+   : public tnlOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >,
+                         MeshInteriorDomain, 1, 1, Real, Index >
 {
    public: 
    
@@ -87,7 +89,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlTwoSidedGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
-   : public tnlDomain< 2, MeshInteriorDomain >
+   : public tnlOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >,
+                         MeshInteriorDomain, 2, 2, Real, Index >
 {
    public: 
    
@@ -149,7 +152,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlTwoSidedGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >
-   : public tnlDomain< 3, MeshInteriorDomain >
+   : public tnlOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >,
+                         MeshInteriorDomain, 3, 3, Real, Index >
 {
    public: 
    

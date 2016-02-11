@@ -102,8 +102,8 @@ class tnlFiniteDifferenceTest
       void runUnitTest()
       {  
          RealType coarseErrors[ 3 ], fineErrors[ 3 ];
-         this->getApproximationError( coarseMeshSize[ MeshType::getDimensionsCount() - 1 ], coarseErrors );
-         this->getApproximationError( 2 * coarseMeshSize[ MeshType::getDimensionsCount() - 1 ], fineErrors );
+         this->getApproximationError( coarseMeshSize[ MeshType::getMeshDimensions() - 1 ], coarseErrors );
+         this->getApproximationError( 2 * coarseMeshSize[ MeshType::getMeshDimensions() - 1 ], fineErrors );
          this->checkEoc( coarseErrors, fineErrors, this->eoc, this->tolerance, verbose );                            
       }
       

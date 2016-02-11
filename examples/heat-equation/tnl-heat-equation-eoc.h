@@ -67,7 +67,7 @@ class heatEquationSetter
       typedef tnlTestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
       typedef tnlHeatEquationEocRhs< ExactOperator, TestFunction > RightHandSide;
       typedef tnlStaticVector < MeshType::meshDimensions, Real > Vertex;
-      typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Real, Index > BoundaryConditions;
+      typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Dimensions, Real, Index > BoundaryConditions;
       typedef tnlHeatEquationEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );

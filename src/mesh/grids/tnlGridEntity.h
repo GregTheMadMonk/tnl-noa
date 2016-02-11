@@ -388,7 +388,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
       VertexType getCenter() const;
 
       __cuda_callable__ inline
-      const RealType& getMeasure() const;      
+      const RealType getMeasure() const;      
       
       __cuda_callable__ inline
       VertexType getEntityProportions() const;

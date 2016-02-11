@@ -18,9 +18,10 @@
 #ifndef TNLFORWARDFINITEDIFFERENCE_H
 #define	TNLFORWARDFINITEDIFFERENCE_H
 
-#include<mesh/tnlGrid.h>
-#include<operators/fdm/tnlFiniteDifferences.h>
-#include<operators/fdm/tnlExactDifference.h>
+#include <mesh/tnlGrid.h>
+#include <operators/fdm/tnlFiniteDifferences.h>
+#include <operators/fdm/tnlExactDifference.h>
+#include <operators/tnlOperator.h>
 
 template< typename Mesh,
           int Xdifference = 0,
@@ -42,7 +43,8 @@ template< int Dimensions,
           typename Real,
           typename Index >
 class tnlForwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >, XDifference, YDifference, ZDifference, Real, Index >
-: public tnlDomain< Dimensions, MeshInteriorDomain >
+: public tnlOperator< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >,
+                      MeshInteriorDomain, Dimensions, Dimensions, Real, Index >
 {
    public:
       

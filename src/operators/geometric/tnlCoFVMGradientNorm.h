@@ -45,8 +45,8 @@ class tnlCoFVMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Inde
    typedef Index IndexType;
    typedef tnlExactGradientNorm< 1, RealType > ExactOperatorType;
    
-   constexpr static int getDomainEntitiesDimensions() { return MeshType::getDimensionsCount(); };
-   constexpr static int getImageEntitiesDimensions() { return MeshType::getDimensionsCount() - 1; };
+   constexpr static int getDomainEntitiesDimensions() { return MeshType::getMeshDimensions(); };
+   constexpr static int getImageEntitiesDimensions() { return MeshType::getMeshDimensions() - 1; };
    
    tnlCoFVMGradientNorm()
    : epsSquare( 0.0 ){}
@@ -105,8 +105,8 @@ class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Ind
    typedef Index IndexType;
    typedef tnlExactGradientNorm< 2, RealType > ExactOperatorType;
    
-   constexpr static int getDomainEntitiesDimensions() { return MeshType::getDimensionsCount(); };
-   constexpr static int getImageEntitiesDimensions() { return MeshType::getDimensionsCount() - 1; };
+   constexpr static int getDomainEntitiesDimensions() { return MeshType::getMeshDimensions(); };
+   constexpr static int getImageEntitiesDimensions() { return MeshType::getMeshDimensions() - 1; };
    
    tnlCoFVMGradientNorm()
    : epsSquare( 0.0 ){}
@@ -223,8 +223,8 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Ind
    typedef Index IndexType;
    typedef tnlExactGradientNorm< 3, RealType > ExactOperatorType;
    
-   constexpr static int getDomainEntitiesDimensions() { return MeshType::getDimensionsCount(); };
-   constexpr static int getImageEntitiesDimensions() { return MeshType::getDimensionsCount() - 1; };
+   constexpr static int getDomainEntitiesDimensions() { return MeshType::getMeshDimensions(); };
+   constexpr static int getImageEntitiesDimensions() { return MeshType::getMeshDimensions() - 1; };
    
    tnlCoFVMGradientNorm()
    : epsSquare( 0.0 ){}   

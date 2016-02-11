@@ -82,7 +82,7 @@ class meanCurvatureFlowEocSetter
       typedef tnlTestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
       typedef tnlMeanCurvatureFlowEocRhs< ExactOperator, TestFunction, Dimensions > RightHandSide;
       typedef tnlStaticVector < MeshType::meshDimensions, Real > Vertex;
-      typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Real, Index > BoundaryConditions;
+      typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Dimensions, Real, Index > BoundaryConditions;
       typedef tnlMeanCurvatureFlowEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );

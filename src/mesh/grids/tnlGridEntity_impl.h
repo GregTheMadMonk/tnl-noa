@@ -517,16 +517,6 @@ getMesh() const
 /****
  * Specialization for vertices
  */
-/*template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
-tnlGridEntity()
-{
-}*/
-
 template< int Dimensions,
           typename Real,
           typename Device,
@@ -709,7 +699,7 @@ template< int Dimensions,
           typename Index,
           typename Config >
 __cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::RealType&
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::RealType
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
 getMeasure() const
 {

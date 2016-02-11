@@ -18,8 +18,9 @@
 #ifndef TNLCENTRALFINITEDIFFERENCE_H
 #define	TNLCENTRALFINITEDIFFERENCE_H
 
-#include<operators/fdm/tnlFiniteDifferences.h>
-#include<operators/fdm/tnlExactDifference.h>
+#include <operators/fdm/tnlFiniteDifferences.h>
+#include <operators/fdm/tnlExactDifference.h>
+#include <operators/tnlOperator.h>
 
 template< typename Mesh,
           int Xdifference = 0,
@@ -41,7 +42,8 @@ template< int Dimensions,
           typename Real,
           typename Index >
 class tnlCentralFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >, XDifference, YDifference, ZDifference, Real, Index >
-: public tnlDomain< Dimensions, MeshInteriorDomain >
+: public tnlOperator< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >,
+                      MeshInteriorDomain, Dimensions, Dimensions, Real, Index >
 {
    public:
       

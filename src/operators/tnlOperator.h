@@ -21,11 +21,11 @@
 
 template< typename Mesh,
           tnlDomainType DomainType = MeshInteriorDomain,
-          int DomainEntytiesDimensions = Mesh::getDimensionsCount(),
-          int ImageEntytiesDimensions = Mesh::getDimensionsCount()
+          int DomainEntitiesDimensions = Mesh::getMeshDimensions(),
+          int ImageEntitiesDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class tnlOperator : public tnlDomain< Mesh::getDimensionsCount(), DomainType >
+class tnlOperator : public tnlDomain< Mesh::getMeshDimensions(), DomainType >
 {
    public:
       

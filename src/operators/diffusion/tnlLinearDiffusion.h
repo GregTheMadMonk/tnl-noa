@@ -21,7 +21,7 @@
 #include <core/vectors/tnlVector.h>
 #include <functions/tnlMeshFunction.h>
 #include <mesh/tnlGrid.h>
-#include <functions/tnlDomain.h>
+#include <operators/tnlOperator.h>
 #include <operators/diffusion/tnlExactLinearDiffusion.h>
 
 template< typename Mesh,
@@ -39,7 +39,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
-: public tnlDomain< 1, MeshInteriorDomain >
+: public tnlOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >,
+                      MeshInteriorDomain, 1, 1, Real, Index >
 {
    public:    
    
@@ -93,7 +94,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >
-: public tnlDomain< 2, MeshInteriorDomain >
+: public tnlOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >,
+                      MeshInteriorDomain, 2, 2, Real, Index >
 {
    public: 
    
@@ -147,7 +149,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >
-: public tnlDomain< 3, MeshInteriorDomain >
+: public tnlOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >,
+                      MeshInteriorDomain, 3, 3, Real, Index >
 {
    public: 
    

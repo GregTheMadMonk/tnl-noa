@@ -46,7 +46,7 @@ template< typename Real,
 tnlString tnlGrid< 2, Real, Device, Index > :: getType()
 {
    return tnlString( "tnlGrid< " ) +
-          tnlString( getDimensionsCount() ) + ", " +
+          tnlString( getMeshDimensions() ) + ", " +
           tnlString( ::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
           tnlString( ::getType< IndexType >() ) + " >";
@@ -615,7 +615,7 @@ void
 tnlGrid< 2, Real, Device, Index >::
 writeProlog( tnlLogger& logger )
 {
-   logger.writeParameter( "Dimensions:", getDimensionsCount() );
+   logger.writeParameter( "Dimensions:", getMeshDimensions() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

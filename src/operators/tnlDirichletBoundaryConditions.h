@@ -18,12 +18,20 @@
 #ifndef TNLDIRICHLETBOUNDARYCONDITIONS_H_
 #define TNLDIRICHLETBOUNDARYCONDITIONS_H_
 
+#include <operators/tnlOperator.h>
+
 template< typename Mesh,
           typename Function,
+          int MeshEntitiesDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class tnlDirichletBoundaryConditions
-: public tnlDomain< Mesh::meshDimensions, MeshBoundaryDomain >
+: public tnlOperator< Mesh,
+                      MeshBoundaryDomain,
+                      MeshEntitiesDimensions,
+                      MeshEntitiesDimensions,
+                      Real,
+                      Index >
 {
    public:
 
