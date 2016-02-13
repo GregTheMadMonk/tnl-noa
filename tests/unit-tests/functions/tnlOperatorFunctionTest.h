@@ -22,6 +22,7 @@
 #include <mesh/tnlGrid.h>
 #include <functions/tnlExpBumpFunction.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
+#include <operators/tnlDirichletBoundaryConditions.h>
 #include "../tnlUnitTestStarter.h"
 
 #ifdef HAVE_CPPUNIT
@@ -65,7 +66,7 @@ class tnlOperatorFunctionTest
    }
    
    void testWithNoBoundaryConditions()
-   {      
+   {
       MeshType mesh;
       typedef tnlOperatorFunction< Operator, MeshFunctionType, void, EvaluateOnFly > OperatorFunctionType;
       mesh.setDimensions( CoordinatesType( 25 ) );
@@ -77,7 +78,8 @@ class tnlOperatorFunctionTest
       f1 = testFunction;
       OperatorType operator_;
       OperatorFunctionType operatorFunction( operator_, f1 );
-      cerr << f1.getData() << endl;
+      operatorFunction.refresh();
+      //cerr << f1.getData() << endl;
       for( IndexType i = 0; i < mesh.template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
          auto entity = mesh.template getEntity< typename MeshType::Cell >( i );
@@ -85,7 +87,7 @@ class tnlOperatorFunctionTest
          
          if( ! entity.isBoundaryEntity() )
          {
-            cerr << entity.getIndex() << " " << operator_( f1, entity ) << " " << operatorFunction( entity ) << endl;
+            //cerr << entity.getIndex() << " " << operator_( f1, entity ) << " " << operatorFunction( entity ) << endl;
             CPPUNIT_ASSERT( operator_( f1, entity ) == operatorFunction( entity ) );
          }
       }            
@@ -94,18 +96,31 @@ class tnlOperatorFunctionTest
    void testWithBoundaryConditions()
    {
       MeshType mesh;
-      typedef tnlOperatorFunction< Operator, MeshFunctionType, void, EvaluateOnFly > OperatorFunctionType;
+      typedef tnlDirichletBoundaryConditions< MeshType > BoundaryConditionsType;
+      typedef tnlOperatorFunction< Operator, MeshFunctionType, BoundaryConditionsType, EvaluateOnFly > OperatorFunctionType;
       mesh.setDimensions( CoordinatesType( 25 ) );
+      mesh.setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
       TestFunctionType testFunction;
+      testFunction.setAmplitude( 1.0 );
+      testFunction.setSigma( 1.0 );      
       MeshFunctionType f1( mesh );
       f1 = testFunction;
       OperatorType operator_;
-      OperatorFunctionType operatorFunction( operator_, f1 );
+      BoundaryConditionsType boundaryConditions;      
+      OperatorFunctionType operatorFunction( operator_, boundaryConditions, f1 );
+      operatorFunction.refresh();
+      //cerr << f1.getData() << endl;
       for( IndexType i = 0; i < mesh.template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
-         //auto entity = mesh.template getEntity< typename MeshType::Cell >( i );
-         // entity.refresh();
-         //   CPPUNIT_ASSERT( operator_( f1, entity ) == operatorFunction( entity ) );
+         auto entity = mesh.template getEntity< typename MeshType::Cell >( i );
+         entity.refresh();
+         if( entity.isBoundaryEntity() )
+            CPPUNIT_ASSERT( boundaryConditions( f1, entity ) == operatorFunction( entity ) );
+         else
+         {
+            //cerr << entity.getIndex() << " " << operator_( f1, entity ) << " " << operatorFunction( entity ) << endl;
+            CPPUNIT_ASSERT( operator_( f1, entity ) == operatorFunction( entity ) );
+         }
       }            
    }   
 };
@@ -115,10 +130,10 @@ template< typename MeshType >
 bool runTest()
 {
    typedef tnlLinearDiffusion< MeshType > OperatorType;
-   tnlOperatorFunctionTest< OperatorType, true > test;
-   test.testWithNoBoundaryConditions();
+   tnlOperatorFunctionTest< OperatorType, false > test;
+   //test.testWithBoundaryConditions();
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter::run< tnlOperatorFunctionTest< OperatorType, true > >() ||
+   if( //! tnlUnitTestStarter::run< tnlOperatorFunctionTest< OperatorType, true > >() ||
        ! tnlUnitTestStarter::run< tnlOperatorFunctionTest< OperatorType, false > >() )
      return false;
    return true;

@@ -38,7 +38,7 @@ class tnlMeshFunctionEvaluatorTraverserUserData;
  */
 template< typename OutMeshFunction,
           typename InFunction >
-class tnlMeshFunctionEvaluator : public tnlDomain< OutMeshFunction::getMeshEntityDimensions(), MeshDomain >
+class tnlMeshFunctionEvaluator : public tnlDomain< OutMeshFunction::getEntitiesDimensions(), MeshDomain >
 {
    public:
       typedef typename OutMeshFunction::MeshType MeshType;

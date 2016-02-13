@@ -19,9 +19,10 @@
 #define TNLDIRICHLETBOUNDARYCONDITIONS_H_
 
 #include <operators/tnlOperator.h>
+#include <functions/tnlConstantFunction.h>
 
 template< typename Mesh,
-          typename Function,
+          typename Function = tnlConstantFunction< Mesh::getMeshDimensions(), typename Mesh::RealType >,
           int MeshEntitiesDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
@@ -61,9 +62,9 @@ class tnlDirichletBoundaryConditions
    template< typename EntityType,
              typename MeshFunction >
    __cuda_callable__
-   const RealType getValue( const EntityType& entity,                            
-                            const MeshFunction& u,
-                            const RealType& time = 0 ) const;
+   const RealType operator()( const MeshFunction& u,
+                              const EntityType& entity,                            
+                              const RealType& time = 0 ) const;
    
    template< typename EntityType >
    __cuda_callable__

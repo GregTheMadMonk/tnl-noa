@@ -30,6 +30,8 @@ class tnlExpBumpFunctionBase : public tnlDomain< dimensions, SpaceDomain >
      
       typedef Real RealType;
       
+      tnlExpBumpFunctionBase();
+      
       bool setup( const tnlParameterContainer& parameters,
                  const tnlString& prefix = "" );
 

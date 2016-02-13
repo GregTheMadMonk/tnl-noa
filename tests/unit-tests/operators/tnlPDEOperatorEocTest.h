@@ -118,9 +118,7 @@ class tnlPDEOperatorEocTest
       
       MeshType mesh;
       
-      TestFunction function;
-         
-      
+      TestFunction function;               
 };
 
 

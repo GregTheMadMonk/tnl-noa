@@ -99,7 +99,7 @@ evaluateEntities( OutMeshFunction& meshFunction,
                   const RealType& inFunctionMultiplicator,
                   EntitiesType entitiesType )
 {
-   typedef typename MeshType::template MeshEntity< OutMeshFunction::getMeshEntityDimensions() > MeshEntityType;
+   typedef typename MeshType::template MeshEntity< OutMeshFunction::getEntitiesDimensions() > MeshEntityType;
    typedef tnlMeshFunctionEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData > AssignmentEntitiesProcessor;
    typedef tnlMeshFunctionEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData > AdditionEntitiesProcessor;
   

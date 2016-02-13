@@ -41,16 +41,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename MeshEntity >
+template< typename PreimageFunction,
+          typename MeshEntity >
 __cuda_callable__
 inline
 Real
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
-operator()( const MeshFunction< 1 >& u,
+operator()( const PreimageFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
 {
    static_assert( MeshEntity::entityDimensions == 1, "Wrong mesh entity dimensions." );
+   static_assert( PreimageFunction::getEntitiesDimensions() == 1, "Wrong preimage function" );
    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< - 2 >();
    return ( u[ neighbourEntities.template getEntityIndex< -1 >() ]
@@ -142,15 +144,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename EntityType >
+template< typename PreimageFunction,
+          typename EntityType >
 __cuda_callable__
 inline
 Real
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
-operator()( const MeshFunction< 2 >& u,
+operator()( const PreimageFunction& u,
             const EntityType& entity,
             const Real& time ) const
 {
+   static_assert( EntityType::entityDimensions == 2, "Wrong mesh entity dimensions." );
+   static_assert( PreimageFunction::getEntitiesDimensions() == 2, "Wrong preimage function" );
    const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >();
    const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts< 0, -2 >();
@@ -214,15 +219,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename EntityType >
+template< typename PreimageFunction,
+          typename EntityType >
 __cuda_callable__
 inline
 Real
 tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
-operator()( const MeshFunction< 3 >& u,
+operator()( const PreimageFunction& u,
             const EntityType& entity,
             const Real& time ) const
 {
+   static_assert( EntityType::entityDimensions == 3, "Wrong mesh entity dimensions." );
+   static_assert( PreimageFunction::getEntitiesDimensions() == 3, "Wrong preimage function" );
    const typename EntityType::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >();
    const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts<  0, -2,  0 >();

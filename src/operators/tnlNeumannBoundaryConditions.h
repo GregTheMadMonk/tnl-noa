@@ -59,7 +59,6 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, F
    typedef Index IndexType;
 
    typedef Function FunctionType;
-   typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< 1, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
@@ -67,9 +66,9 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, F
    template< typename EntityType,
              typename MeshFunction >
    __cuda_callable__
-   const RealType getValue( const EntityType& entity,
-                            const MeshFunction& u,
-                            const RealType& time = 0 ) const;
+   const RealType operator()( const MeshFunction& u,
+                              const EntityType& entity,   
+                              const RealType& time = 0 ) const;
 
 
    template< typename EntityType >
@@ -112,7 +111,6 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, F
    typedef Index IndexType;
 
    typedef Function FunctionType;
-   typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< 2, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
@@ -120,9 +118,9 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, F
    template< typename EntityType,
              typename MeshFunction >
    __cuda_callable__
-   const RealType getValue( const EntityType& entity,                            
-                            const MeshFunction& u,
-                            const RealType& time = 0 ) const;
+   const RealType operator()( const MeshFunction& u,
+                              const EntityType& entity,                            
+                              const RealType& time = 0 ) const;
       
    template< typename EntityType >
    __cuda_callable__
@@ -164,7 +162,6 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, F
    typedef Index IndexType;
 
    typedef Function FunctionType;
-   typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< 3, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
@@ -172,9 +169,9 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, F
    template< typename EntityType,
              typename MeshFunction >
    __cuda_callable__
-   const RealType getValue( const EntityType& entity,                            
-                            const MeshFunction& u,
-                            const RealType& time = 0 ) const;
+   const RealType operator()( const MeshFunction& u,
+                              const EntityType& entity,
+                              const RealType& time = 0 ) const;
    
 
    template< typename EntityType >

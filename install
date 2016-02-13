@@ -35,12 +35,12 @@ then
        mkdir Debug
     fi
     cd Debug
-    ../build --root-dir=.. --build=Debug ${OPTIONS}
-    if test $? != 0;
+    if ../build --root-dir=.. --build=Debug ${OPTIONS};
     then
+        make install
+    else    
        exit 1
     fi
-    make install
     cd ..
 fi
 
@@ -51,12 +51,12 @@ then
        mkdir Release
     fi
     cd Release
-    ../build --root-dir=.. --build=Release ${OPTIONS}
-    if test $? != 0;
+    if ../build --root-dir=.. --build=Release ${OPTIONS};
     then
+        make install
+    else
         exit 1
     fi
-    make install
     cd ..
 fi
 

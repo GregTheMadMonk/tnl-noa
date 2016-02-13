@@ -93,9 +93,9 @@ template< typename EntityType,
 __cuda_callable__
 const Real
 tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, Index >::
-getValue( const EntityType& entity,
-          const MeshFunction& u,
-          const RealType& time ) const
+operator()( const MeshFunction& u,
+            const EntityType& entity,            
+            const RealType& time ) const
 {
    //static_assert( EntityType::getDimensions() == MeshEntitiesDimensions, "Wrong mesh entity dimensions." );
    return tnlFunctionAdapter< MeshType, Function >::template getValue( this->function, entity, time );

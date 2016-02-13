@@ -190,6 +190,26 @@ getData()
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
+bool
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+refresh( const RealType& time ) const
+{  
+   return true;
+}
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
+bool
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+deepRefresh( const RealType& time ) const
+{
+   return true;
+}
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
    template< typename EntityType >          
 typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::

@@ -41,7 +41,7 @@ class tnlMeshFunction :
       typedef tnlVector< RealType, DeviceType, IndexType > VectorType;
       typedef tnlMeshFunction< Mesh, MeshEntityDimensions, Real > ThisType;
       
-      static constexpr int getMeshEntityDimensions() { return  MeshEntityDimensions; };
+      static constexpr int getEntitiesDimensions() { return MeshEntityDimensions; };
       
       tnlMeshFunction();
       
@@ -73,11 +73,15 @@ class tnlMeshFunction :
       
       void setMesh( const MeshType& mesh ) const;      
       
-      const MeshType& getMesh() const;      
+      const MeshType& getMesh() const;
       
       const VectorType& getData() const;      
       
-      VectorType& getData();      
+      VectorType& getData();
+      
+      bool refresh( const RealType& time = 0.0 ) const;
+      
+      bool deepRefresh( const RealType& time = 0.0 ) const;
       
       template< typename EntityType >
       RealType getValue( const EntityType& meshEntity ) const;

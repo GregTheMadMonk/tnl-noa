@@ -21,6 +21,13 @@
 #include <functions/tnlExpBumpFunction.h>
 
 template< int dimensions, typename Real >
+tnlExpBumpFunctionBase< dimensions, Real >::
+tnlExpBumpFunctionBase()
+   : amplitude( 1.0 ), sigma( 1.0 )
+{
+}
+
+template< int dimensions, typename Real >
 bool
 tnlExpBumpFunctionBase< dimensions, Real >::
 setup( const tnlParameterContainer& parameters,

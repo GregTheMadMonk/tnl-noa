@@ -60,9 +60,9 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
 
       static tnlString getType();
 
-      template< typename MeshEntity >
+      template< typename PreimageFunction, typename MeshEntity >
       __cuda_callable__
-      inline Real operator()( const MeshFunction< 1 >& u,
+      inline Real operator()( const PreimageFunction& u,
                               const MeshEntity& entity,
                               const RealType& time = 0.0 ) const;
 
@@ -116,9 +116,9 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
 
       static tnlString getType();
 
-      template< typename EntityType >
+      template< typename PreimageFunction, typename EntityType >
       __cuda_callable__
-      inline Real operator()( const MeshFunction< 2 >& u,
+      inline Real operator()( const PreimageFunction& u,
                               const EntityType& entity,
                               const Real& time = 0.0 ) const;
 
@@ -171,9 +171,10 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
       
       static tnlString getType();
 
-      template< typename EntityType >
+      template< typename PreimageFunction, 
+                typename EntityType >
       __cuda_callable__
-      inline Real operator()( const MeshFunction< 3 >& u,
+      inline Real operator()( const PreimageFunction& u,
                               const EntityType& entity,
                               const Real& time = 0.0 ) const;
 

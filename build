@@ -93,6 +93,11 @@ ${CMAKE} ${ROOT_DIR} \
          -DINSTANTIATE_INT=${INSTANTIATE_INT} \
          -DINSTANTIATE_LONG_INT=${INSTANTIATE_LONG_INT}
 
+if test $? != 0; then
+    echo "Error: cmake exited with error code."
+    exit 1
+fi
+
 if test ${CMAKE_ONLY} = "yes";
 then
     exit 1
@@ -101,10 +106,18 @@ fi
 echo "Building ${BUILD} $TARGET using $BUILD_JOBS processors ..."
 
 make -j${BUILD_JOBS} ${VERBOSE}
+if test $? != 0; then
+    echo "Error: Build process failed."
+    exit 1
+fi
+
 
 if test WITH_TESTS = "yes";
 then
     make -j${BUILD_JOBS} test
+    if test $? != 0; then
+        echo "Error: Some test did not pass successfuly."
+    fi
 fi
 
 exit 0
