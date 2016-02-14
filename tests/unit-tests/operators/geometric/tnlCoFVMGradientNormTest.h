@@ -87,11 +87,11 @@ class tnlCoFVMGradientNormTest
          
          // TODOL udelat implementaci iterpolace pro operatory a specializaci pro mesh functions
          
-         this->performTest( testOperator,
+         /*this->performTest( testOperator,
                             this->exactOperator,
                             errors,
                             write,
-                            verbose );
+                            verbose );*/
       }
       
       void runUnitTest()

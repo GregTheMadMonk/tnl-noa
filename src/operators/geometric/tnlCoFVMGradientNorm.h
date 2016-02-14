@@ -20,6 +20,8 @@
 
 #include <mesh/tnlGrid.h>
 #include <operators/geometric/tnlExactGradientNorm.h>
+#include <operators/interpolants/tnlMeshEntitiesInterpolants.h>
+#include <operators/tnlOperatorComposition.h>
 
 template< typename Mesh,
           int MeshEntityDimensions = Mesh::getMeshDimensions(),
@@ -37,16 +39,11 @@ template< int MeshDimensions,
           typename Index >
 class tnlCoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex >, MeshDimensions, Real, Index >
 : public tnlOperatorComposition< 
-   tnlMeshEntitiesInterpolants< >
-
-tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex >,
-                      MeshInteriorDomain,
-                      MeshDimensions,
-                      MeshDimensions,
-                      Real,
-                      Index >
-{
-   public:
+   tnlMeshEntitiesInterpolants< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex >,
+                                MeshDimensions - 1,
+                                MeshDimensions >,
+   tnlCoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex >, MeshDimensions - 1, Real, Index > >
+{   
 };
 
 template< typename MeshReal,
