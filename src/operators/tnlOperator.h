@@ -30,14 +30,18 @@ class tnlOperator : public tnlDomain< Mesh::getMeshDimensions(), DomainType >
    public:
       
       typedef Mesh MeshType;
-      typedef typename MeshType::RealType RealType;
+      typedef typename MeshType::RealType MeshRealType;
       typedef typename MeshType::DeviceType DeviceType;
-      typedef typename MeshType::IndexType IndexType;
+      typedef typename MeshType::IndexType MeshIndexType;
+      typedef Real RealType;
+      typedef Index IndexType;
       
       constexpr static int getDomainEntitiesDimensions() { return DomainEntitiesDimensions; }
       constexpr static int getImageEntitiesDimensions() { return ImageEntitiesDimensions; }
       
-      void refresh() {}
+      bool refresh( const RealType& time = 0.0 ) { return true; }
+      
+      bool deepRefresh( const RealType& time = 0.0 ) { return true; }
 };
 #endif	/* TNLOPERATOR_H */
 

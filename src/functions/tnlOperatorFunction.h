@@ -221,7 +221,7 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
       static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
       
       tnlOperatorFunction(
-         const OperatorType& operator_,
+         OperatorType& operator_,
          const BoundaryConditionsType& boundaryConditions,
          PreimageFunctionType& preimageFunction )
       :  operator_( operator_ ), boundaryConditions( boundaryConditions ), preimageFunction( preimageFunction ), imageFunction( preimageFunction.getMesh() )
@@ -240,7 +240,7 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
       bool refresh( const RealType& time = 0.0 )
       {
          OperatorFunction operatorFunction( this->operator_, this->preimageFunction );
-         if( ! this->operator_.refresh() ||
+         if( ! this->operator_.refresh( time ) ||
              ! operatorFunction.refresh( time )  )
              return false;
          this->imageFunction = operatorFunction;
@@ -278,7 +278,7 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
       
    protected:
       
-      const Operator& operator_;
+      Operator& operator_;
       
       PreimageFunctionType& preimageFunction;
       
