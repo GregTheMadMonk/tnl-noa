@@ -85,28 +85,28 @@ class tnlOperatorCompositionTest
       OperatorFunction2 operatorFunction2( operator_, boundaryConditions, operatorFunction1 );
       operatorFunction2.deepRefresh();
       
-      f1 = testFunction;
+      //f1 = testFunction;
       OperatorComposition operatorComposition( operator_, operator_, boundaryConditions, f1 );
       //operatorComposition.refresh();
       tnlOperatorFunction< OperatorComposition, MeshFunctionType, BoundaryConditions > operatorFunction3( operatorComposition, boundaryConditions, f1 );
       operatorFunction3.deepRefresh();
       
-      f1 = testFunction;
-      f1.write( "f0", "gnuplot" );
+      /*f1 = testFunction;
+      f1.write( "testFunction", "gnuplot" );
       f1 = operatorFunction1;
-      f1.write( "f1", "gnuplot" );
+      f1.write( "operator1", "gnuplot" );
       f1 = operatorFunction2;
-      f1.write( "f2", "gnuplot" );
+      f1.write( "operator2", "gnuplot" );
       
       f1 = operatorFunction3;
-      f1.write( "f3", "gnuplot" );      
+      f1.write( "operatorComposition", "gnuplot" );      */
       
       //CPPUNIT_ASSERT( operatorFunction2 == operatorFunction3 );
       for( IndexType i = 0; i < mesh.template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
          auto entity = mesh.template getEntity< typename MeshType::Cell >( i );
          entity.refresh();
-         cerr << entity.getIndex() << " " << operatorFunction2( entity ) << " " << operatorFunction3( entity ) << endl;
+         //cerr << entity.getIndex() << " " << operatorFunction2( entity ) << " " << operatorFunction3( entity ) << endl;
          CPPUNIT_ASSERT( operatorFunction2( entity ) == operatorFunction3( entity ) );
          /*if( entity.isBoundaryEntity() )
             CPPUNIT_ASSERT( boundaryConditions( f1, entity ) == operatorFunction( entity ) );

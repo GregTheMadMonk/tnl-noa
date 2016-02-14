@@ -71,7 +71,7 @@ class tnlCoFVMGradientNormTest
       {
          this->setupMesh( meshSize );
          
-         typedef tnlMeshFunction< MeshType, MeshType::getMeshDimensions()> DiscreteTestFunction;
+         /*typedef tnlMeshFunction< MeshType, MeshType::getMeshDimensions()> DiscreteTestFunction;
          DiscreteTestFunction discreteTestFunction( this->mesh );
          discreteTestFunction = this->function;
          
@@ -83,15 +83,15 @@ class tnlCoFVMGradientNormTest
          gradientNormOnFacesFunction = gradientNormOnFacesOperator;
                   
          typedef tnlMeshEntitiesInterpolants< MeshType, MeshType::getMeshDimensions() - 1 , MeshType::getMeshDimensions() > Interpolant;
-         Interpolant interpolant;
+         Interpolant interpolant;*/
          
          // TODOL udelat implementaci iterpolace pro operatory a specializaci pro mesh functions
          
-         /*this->performTest( testOperator,
+         this->performTest( testOperator,
                             this->exactOperator,
                             errors,
                             write,
-                            verbose );*/
+                            verbose );
       }
       
       void runUnitTest()

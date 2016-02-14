@@ -22,10 +22,31 @@
 #include <operators/geometric/tnlExactGradientNorm.h>
 
 template< typename Mesh,
+          int MeshEntityDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class tnlCoFVMGradientNorm
 {   
+};
+
+template< int MeshDimensions,
+          typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+class tnlCoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex >, MeshDimensions, Real, Index >
+: public tnlOperatorComposition< 
+   tnlMeshEntitiesInterpolants< >
+
+tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex >,
+                      MeshInteriorDomain,
+                      MeshDimensions,
+                      MeshDimensions,
+                      Real,
+                      Index >
+{
+   public:
 };
 
 template< typename MeshReal,
@@ -33,7 +54,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlCoFVMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+class tnlCoFVMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, 0, Real, Index >
    : public tnlDomain< 1, MeshInteriorDomain >
 {
    public: 
@@ -93,7 +114,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >
+class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, Index >
    : public tnlDomain< 2, MeshInteriorDomain >
 {
    public: 
@@ -211,7 +232,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >
+class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, Index >
    : public tnlDomain< 3, MeshInteriorDomain >
 {
    public: 

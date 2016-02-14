@@ -68,22 +68,12 @@ class tnlOperatorComposition
       
       bool refresh( const RealType& time = 0.0 )
       {
-         if( ! this->innerOperatorFunction.refresh( time ) )
-            return false;
-         typename InnerOperatorFunction::ImageFunctionType imageFunction( this->innerOperatorFunction.getMesh() );
-         imageFunction = this->innerOperatorFunction;
-         imageFunction.write( "innerFunction" );         
-         return true;
+         return this->innerOperatorFunction.refresh( time );
       }
       
       bool deepRefresh( const RealType& time = 0.0 )
       {
-         if( ! this->innerOperatorFunction.deepRefresh( time ) )
-            return false;
-         typename InnerOperatorFunction::ImageFunctionType imageFunction( this->innerOperatorFunction.getMesh() );
-         imageFunction = this->innerOperatorFunction;
-         imageFunction.write( "innerFunction" );
-         return true;
+         return this->innerOperatorFunction.deepRefresh( time );
       }
         
       template< typename MeshFunction, typename MeshEntity >

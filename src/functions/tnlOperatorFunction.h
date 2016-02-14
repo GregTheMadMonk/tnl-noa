@@ -250,15 +250,8 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
       
       bool deepRefresh( const RealType& time = 0.0 )
       {
-         //if( ! this->preimageFunction.deepRefresh( time ) )
-         //   return false;
-         OperatorFunction operatorFunction( this->operator_, this->preimageFunction );
-         if( !this->operator_.deepRefresh() ||
-             !operatorFunction.refresh( time ) )
-             return false;
-         this->imageFunction = operatorFunction;
-         tnlBoundaryConditionsSetter< ImageFunctionType, BoundaryConditionsType >::apply( this->boundaryConditions, time, this->imageFunction );
-         return true;
+         return this->preimageFunction.deepRefresh( time ) && 
+                this->refresh( time );
       };
       
       template< typename MeshEntity >
