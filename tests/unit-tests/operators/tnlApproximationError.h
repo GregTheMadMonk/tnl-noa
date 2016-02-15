@@ -59,6 +59,7 @@ class tnlApproximationError
 
          tnlMeshFunction< MeshType, MeshEntity::getDimensions() > exactU( mesh ), u( mesh ), v( mesh );
          OperatorFunction operatorFunction( approximateOperator, v );
+         operatorFunction.deepRefresh();
          ExactOperatorFunction exactOperatorFunction( exactOperator, function );
          DirichletBoundaryConditions boundaryConditions;
          BoundaryOperatorFunction boundaryOperatorFunction( boundaryConditions, u );

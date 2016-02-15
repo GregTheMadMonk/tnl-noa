@@ -82,14 +82,15 @@ class tnlOperatorCompositionTest
       OperatorType operator_;
       BoundaryConditions boundaryConditions;
       OperatorFunction operatorFunction1( operator_, boundaryConditions, f1 );
+      operatorFunction1.refresh();
       OperatorFunction2 operatorFunction2( operator_, boundaryConditions, operatorFunction1 );
-      operatorFunction2.deepRefresh();
+      operatorFunction2.refresh();
       
       //f1 = testFunction;
-      OperatorComposition operatorComposition( operator_, operator_, boundaryConditions, f1 );
+      OperatorComposition operatorComposition( operator_, operator_, boundaryConditions, mesh );
       //operatorComposition.refresh();
       tnlOperatorFunction< OperatorComposition, MeshFunctionType, BoundaryConditions > operatorFunction3( operatorComposition, boundaryConditions, f1 );
-      operatorFunction3.deepRefresh();
+      operatorFunction3.refresh();
       
       /*f1 = testFunction;
       f1.write( "testFunction", "gnuplot" );

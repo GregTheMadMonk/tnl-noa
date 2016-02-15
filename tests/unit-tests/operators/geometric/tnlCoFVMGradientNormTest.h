@@ -31,15 +31,7 @@ template< typename ApproximateOperator,
           bool write = false,
           bool verbose = false >
 class tnlCoFVMGradientNormTest
-   : public tnlPDEOperatorEocTest< 
-      tnlOperatorComposition<
-         tnlMeshEntitiesInterpolants< 
-            typename ApproximateOperator::MeshType,
-            ApproximateOperator::MeshType::getMeshDimensions() - 1,
-            ApproximateOperator::MeshType::getMeshDimensions() >,
-         ApproximateOperator >,
-      TestFunction,
-      typename ApproximateOperator::ExactOperatorType >
+   : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction >
 {
    public:
       
@@ -53,6 +45,8 @@ class tnlCoFVMGradientNormTest
 
       const RealType eoc[ 3 ] =       { 1.0,  1.9, 1.75 };
       const RealType tolerance[ 3 ] = { 0.05, 0.1, 0.3 };      
+      
+      tnlCoFVMGradientNormTest()      
       
       static tnlString getType()
       { 
@@ -71,27 +65,16 @@ class tnlCoFVMGradientNormTest
       {
          this->setupMesh( meshSize );
          
-         /*typedef tnlMeshFunction< MeshType, MeshType::getMeshDimensions()> DiscreteTestFunction;
-         DiscreteTestFunction discreteTestFunction( this->mesh );
-         discreteTestFunction = this->function;
-         
-         typedef tnlOperatorFunction< ApproximateOperator, DiscreteTestFunction > GradientNormOnFacesOperator;
-         GradientNormOnFacesOperator gradientNormOnFacesOperator( this->approximateOperator, discreteTestFunction );
-         
-         typedef tnlMeshFunction< MeshType, MeshType::getMeshDimensions() - 1 > GradientNormOnFacesFunction;
-         GradientNormOnFacesFunction gradientNormOnFacesFunction( this->mesh );
-         gradientNormOnFacesFunction = gradientNormOnFacesOperator;
-                  
-         typedef tnlMeshEntitiesInterpolants< MeshType, MeshType::getMeshDimensions() - 1 , MeshType::getMeshDimensions() > Interpolant;
-         Interpolant interpolant;*/
-         
-         // TODOL udelat implementaci iterpolace pro operatory a specializaci pro mesh functions
-         
-         /*this->performTest( testOperator,
+         tnlMeshFunction< MeshType > u;
+
+         ApproximateOperator approximateOperator;      
+         ExactOperatorType exactOperator;
+
+         this->performTest( this->approximateOperator,
                             this->exactOperator,
                             errors,
                             write,
-                            verbose );*/
+                            verbose );
       }
       
       void runUnitTest()
@@ -104,9 +87,6 @@ class tnlCoFVMGradientNormTest
       
    protected:
 
-      ApproximateOperator approximateOperator;
-      
-      ExactOperatorType exactOperator;
 
 };
 

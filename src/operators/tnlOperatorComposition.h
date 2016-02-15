@@ -40,21 +40,22 @@ class tnlOperatorComposition
    public:
       
       typedef typename InnerOperator::MeshType MeshType;
-      typedef tnlMeshFunction< MeshType, InnerOperator::getDomainEntitiesDimensions() > PreimageFunctionType;
+      typedef tnlMeshFunction< MeshType, InnerOperator::getPreimageEntitiesDimensions() > PreimageFunctionType;
       typedef tnlMeshFunction< MeshType, InnerOperator::getImageEntitiesDimensions() > ImageFunctionType;
       typedef tnlOperatorFunction< InnerOperator, PreimageFunctionType, InnerBoundaryConditions > InnerOperatorFunction;
       typedef tnlOperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
       typedef typename InnerOperator::RealType RealType;
       typedef typename InnerOperator::IndexType IndexType;
       
+      static constexpr int getPreimageEntitiesDimensions() { return InnerOperator::getImageEntitiesDimensions(); };
       static constexpr int getImageEntitiesDimensions() { return OuterOperator::getImageEntitiesDimensions(); };
       
       tnlOperatorComposition( const OuterOperator& outerOperator,
                               InnerOperator& innerOperator,
                               const InnerBoundaryConditions& innerBoundaryConditions,
-                              PreimageFunctionType& preimageFunction )
+                              const MeshType& mesh )
       : outerOperator( outerOperator ),
-        innerOperatorFunction( innerOperator, innerBoundaryConditions, preimageFunction ){};
+        innerOperatorFunction( innerOperator, innerBoundaryConditions, mesh ){};
         
       PreimageFunctionType& getPreimageFunction()
       {
@@ -66,14 +67,16 @@ class tnlOperatorComposition
          return this->innerOperatorFunction.getPreimageFunction();
       }      
       
-      bool refresh( const RealType& time = 0.0 )
+      bool refresh( PreimageFunctionType& preimageFunction,
+                    const RealType& time = 0.0 )
       {
-         return this->innerOperatorFunction.refresh( time );
+         return this->innerOperatorFunction.refresh( preimageFunction, time );
       }
       
-      bool deepRefresh( const RealType& time = 0.0 )
+      bool deepRefresh( PreimageFunctionType& preimageFunction,
+                        const RealType& time = 0.0 )
       {
-         return this->innerOperatorFunction.deepRefresh( time );
+         return this->innerOperatorFunction.deepRefresh( preimageFunction, time );
       }
         
       template< typename MeshFunction, typename MeshEntity >
@@ -106,7 +109,7 @@ class tnlOperatorComposition< OuterOperator, InnerOperator, void >
    public:
       
       typedef typename InnerOperator::MeshType MeshType;
-      typedef tnlMeshFunction< MeshType, InnerOperator::getDomainEntitiesDimensions() > PreimageFunctionType;
+      typedef tnlMeshFunction< MeshType, InnerOperator::getPreimageEntitiesDimensions() > PreimageFunctionType;
       typedef tnlMeshFunction< MeshType, InnerOperator::getImageEntitiesDimensions() > ImageFunctionType;
       typedef tnlOperatorFunction< InnerOperator, PreimageFunctionType, void > InnerOperatorFunction;
       typedef tnlOperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
@@ -114,10 +117,9 @@ class tnlOperatorComposition< OuterOperator, InnerOperator, void >
       typedef typename InnerOperator::IndexType IndexType;
       
       tnlOperatorComposition( const OuterOperator& outerOperator,
-                              const InnerOperator& innerOperator,
-                              PreimageFunctionType& preimageFunction )
+                              const InnerOperator& innerOperator )
       : outerOperator( outerOperator ),
-        innerOperatorFunction( innerOperator, preimageFunction ){};
+        innerOperatorFunction( innerOperator ){};
         
       PreimageFunctionType& getPreimageFunction()
       {
@@ -129,14 +131,14 @@ class tnlOperatorComposition< OuterOperator, InnerOperator, void >
          return this->innerOperatorFunction.getPreimageFunction();
       }      
       
-      bool refresh( const RealType& time = 0.0 )
+      bool refresh( PreimageFunctionType& preimageFunction, const RealType& time = 0.0 )
       {
-         return this->innerOperatorFunction.refresh( time );
+         return this->innerOperatorFunction.refresh( preimageFunction, time );
       }
       
-      bool deepRefresh( const RealType& time = 0.0 )
+      bool deepRefresh( PreimageFunctionType& preimageFunction, const RealType& time = 0.0 )
       {
-         return this->innerOperatorFunction.deepRefresh( time );
+         return this->innerOperatorFunction.deepRefresh( preimageFunction, time );
       }
         
       template< typename MeshFunction, typename MeshEntity >

@@ -36,12 +36,15 @@ class tnlOperator : public tnlDomain< Mesh::getMeshDimensions(), DomainType >
       typedef Real RealType;
       typedef Index IndexType;
       
-      constexpr static int getDomainEntitiesDimensions() { return DomainEntitiesDimensions; }
+      constexpr static int getPreimageEntitiesDimensions() { return DomainEntitiesDimensions; }
       constexpr static int getImageEntitiesDimensions() { return ImageEntitiesDimensions; }
       
       bool refresh( const RealType& time = 0.0 ) { return true; }
       
       bool deepRefresh( const RealType& time = 0.0 ) { return true; }
+    
+      template< typename MeshFunction > 
+      void setPreimageFunction( const MeshFunction& f ){};
 };
 #endif	/* TNLOPERATOR_H */
 

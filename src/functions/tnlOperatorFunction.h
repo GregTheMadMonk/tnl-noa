@@ -77,12 +77,20 @@ class tnlOperatorFunction< Operator, MeshFunction, void, true >
       
       static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
       
-      tnlOperatorFunction(
-         const OperatorType& operator_,
-         const FunctionType& preimageFunction )
-      :  operator_( operator_ ), preimageFunction( preimageFunction ){};
+      tnlOperatorFunction( const OperatorType& operator_ )
+      :  operator_( operator_ ), preimageFunction( 0 ){};
       
-      const MeshType& getMesh() const { return preimageFunction.getMesh(); };
+      tnlOperatorFunction( const OperatorType& operator_,
+                           const FunctionType& preimageFunction )
+      :  operator_( operator_ ), preimageFunction( &preimageFunction ){};
+      
+      const MeshType& getMesh() const
+      { 
+         tnlAssert( this->preimageFunction, std::cerr << "The preimage function was not set." << std::endl );
+         return this->preimageFunction->getMesh(); 
+      };
+      
+      void setPreimageFunction( const FunctionType& preimageFunction ) { this->preimageFunction = &preimageFunction; }
       
       bool refresh( const RealType& time = 0.0 ) { return true; };
       
@@ -94,14 +102,15 @@ class tnlOperatorFunction< Operator, MeshFunction, void, true >
          const MeshEntity& meshEntity,
          const RealType& time = 0.0 ) const
       {
-         return operator_( preimageFunction, meshEntity, time );
+         tnlAssert( this->preimageFunction, std::cerr << "The preimage function was not set." << std::endl );
+         return operator_( *preimageFunction, meshEntity, time );
       }
       
    protected:
       
       const Operator& operator_;
       
-      const FunctionType& preimageFunction;
+      const FunctionType* preimageFunction;
       
       template< typename, typename > friend class tnlMeshFunctionEvaluator;
 };
@@ -134,30 +143,40 @@ class tnlOperatorFunction< Operator, PreimageFunction, void, false >
       
       static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
       
-      tnlOperatorFunction(
-         const OperatorType& operator_,
-         PreimageFunctionType& preimageFunction )
-      :  operator_( operator_ ), preimageFunction( preimageFunction ), imageFunction( preimageFunction.getMesh() )
+      tnlOperatorFunction( const OperatorType& operator_,
+                           const MeshType& mesh )
+      :  operator_( operator_ ), imageFunction( mesh )
       {};
       
-      const MeshType& getMesh() const { return preimageFunction.getMesh(); };
+      tnlOperatorFunction( const OperatorType& operator_,
+                           PreimageFunctionType& preimageFunction )
+      :  operator_( operator_ ), imageFunction( preimageFunction.getMesh() ), preimageFunction( &preimageFunction )
+      {};
+      
+      const MeshType& getMesh() const { return this->imageFunction.getMesh(); };
       
       ImageFunctionType& getImageFunction() { return this->imageFunction; };
       
       const ImageFunctionType& getImageFunction() const { return this->imageFunction; };
+      
+      void setPreimageFunction( const PreimageFunction& preimageFunction )
+      { 
+         this->preimageFunction = &preimageFunction;
+         this->imageFunction.setMesh( preimageFunction.getMesh() );
+      };         
 
       bool refresh( const RealType& time = 0.0 )
       {
-         OperatorFunction operatorFunction( this->operator_, this->preimageFunction );
+         OperatorFunction operatorFunction( this->operator_, *preimageFunction );
          this->imageFunction = operatorFunction;
          return true;
       };
       
       bool deepRefresh( const RealType& time = 0.0 )
       {
-         if( ! this->preimageFunction.deepRefresh( time ) )
+         if( ! this->preimageFunction->deepRefresh( time ) )
             return false;
-         OperatorFunction operatorFunction( this->operator_, this->preimageFunction );
+         OperatorFunction operatorFunction( this->operator_, preimageFunction );
          this->imageFunction = operatorFunction;
          return true;
       };
@@ -181,7 +200,7 @@ class tnlOperatorFunction< Operator, PreimageFunction, void, false >
       
       const Operator& operator_;
       
-      PreimageFunctionType& preimageFunction;
+      PreimageFunctionType* preimageFunction;
       
       ImageFunctionType imageFunction;
       
@@ -220,18 +239,43 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
       
       static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
       
-      tnlOperatorFunction(
-         OperatorType& operator_,
-         const BoundaryConditionsType& boundaryConditions,
-         PreimageFunctionType& preimageFunction )
-      :  operator_( operator_ ), boundaryConditions( boundaryConditions ), preimageFunction( preimageFunction ), imageFunction( preimageFunction.getMesh() )
+      tnlOperatorFunction( OperatorType& operator_,
+                           const BoundaryConditionsType& boundaryConditions,
+                           const MeshType& mesh )
+      :  operator_( operator_ ),
+         boundaryConditions( boundaryConditions ),
+         imageFunction( mesh ),
+         preimageFunction( 0 )
       {};
       
-      const MeshType& getMesh() const { return preimageFunction.getMesh(); };
+      tnlOperatorFunction( OperatorType& operator_,
+                           const BoundaryConditionsType& boundaryConditions,
+                           const PreimageFunctionType& preimageFunction )
+      :  operator_( operator_ ),
+         boundaryConditions( boundaryConditions ),
+         imageFunction( preimageFunction.getMesh() ),
+         preimageFunction( &preimageFunction )
+      {};
       
-      const PreimageFunctionType& getPreimageFunction() const { return this->imageFunction; };
+      const MeshType& getMesh() const { return imageFunction.getMesh(); };
       
-      PreimageFunctionType& getPreimageFunction() { return this->imageFunction; };      
+      void setPreimageFunction( const PreimageFunction& preimageFunction )
+      { 
+         tnlAssert( this->preimageFunction, );
+         this->preimageFunction = &preimageFunction;
+      }
+      
+      const PreimageFunctionType& getPreimageFunction() const
+      { 
+         tnlAssert( this->preimageFunction, );
+         return *this->preimageFunction;
+      };
+      
+      PreimageFunctionType& getPreimageFunction()
+      { 
+         tnlAssert( this->preimageFunction, );
+         return *this->preimageFunction; 
+      };      
       
       const ImageFunctionType& getImageFunction() const { return this->imageFunction; };
       
@@ -239,7 +283,8 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
 
       bool refresh( const RealType& time = 0.0 )
       {
-         OperatorFunction operatorFunction( this->operator_, this->preimageFunction );
+         OperatorFunction operatorFunction( this->operator_, *this->preimageFunction );
+         this->operator_.setPreimageFunction( *this->preimageFunction );
          if( ! this->operator_.refresh( time ) ||
              ! operatorFunction.refresh( time )  )
              return false;
@@ -250,7 +295,7 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
       
       bool deepRefresh( const RealType& time = 0.0 )
       {
-         return this->preimageFunction.deepRefresh( time ) && 
+         return preimageFunction->deepRefresh( time ) && 
                 this->refresh( time );
       };
       
@@ -273,7 +318,7 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
       
       Operator& operator_;
       
-      PreimageFunctionType& preimageFunction;
+      const PreimageFunctionType* preimageFunction;
       
       ImageFunctionType imageFunction;
       

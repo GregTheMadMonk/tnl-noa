@@ -43,7 +43,30 @@ class tnlCoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex
                                 MeshDimensions - 1,
                                 MeshDimensions >,
    tnlCoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex >, MeshDimensions - 1, Real, Index > >
-{   
+{  
+   public:
+      typedef tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex > MeshType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
+      typedef Real RealType;
+      typedef Device DeviceType;
+      typedef Index IndexType;
+      typedef tnlCoFVMGradientNorm< MeshType, MeshDimensions - 1, Real, Index > InnerOperator;
+      typedef tnlMeshEntitiesInterpolants< MeshType, MeshDimensions - 1, MeshDimensions > OuterOperator;
+      typedef tnlOperatorComposition< OuterOperator, InnerOperator > BaseType;
+      typedef tnlExactGradientNorm< MeshDimensions, RealType > ExactOperatorType;
+   
+      static tnlString getType()
+      {
+         return tnlString( "tnlCoFVMGradientNorm< " ) +
+            MeshType::getType() + ", " +
+            tnlString( MeshDimensions ) + ", " +
+            ::getType< Real >() + ", " +
+            ::getType< Index >() + " >";
+      }
+      
+      static constexpr int getPreimageEntitiesDimensions() { return MeshDimensions; };
+      static constexpr int getImageEntitiesDimensions() { return MeshDimensions; };
+
 };
 
 template< typename MeshReal,
@@ -63,7 +86,7 @@ class tnlCoFVMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, 0, Real, I
    typedef Index IndexType;
    typedef tnlExactGradientNorm< 1, RealType > ExactOperatorType;
    
-   constexpr static int getDomainEntitiesDimensions() { return MeshType::getMeshDimensions(); };
+   constexpr static int getPreimageEntitiesDimensions() { return MeshType::getMeshDimensions(); };
    constexpr static int getImageEntitiesDimensions() { return MeshType::getMeshDimensions() - 1; };
    
    tnlCoFVMGradientNorm()
@@ -72,7 +95,7 @@ class tnlCoFVMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, 0, Real, I
    static tnlString getType()
    {
       return tnlString( "tnlCoFVMGradientNorm< " ) +
-         MeshType::getType() + ", " +
+         MeshType::getType() + ", 0, " +
          ::getType< Real >() + ", " +
          ::getType< Index >() + " >";
    }
@@ -123,7 +146,7 @@ class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, 
    typedef Index IndexType;
    typedef tnlExactGradientNorm< 2, RealType > ExactOperatorType;
    
-   constexpr static int getDomainEntitiesDimensions() { return MeshType::getMeshDimensions(); };
+   constexpr static int getPreimageEntitiesDimensions() { return MeshType::getMeshDimensions(); };
    constexpr static int getImageEntitiesDimensions() { return MeshType::getMeshDimensions() - 1; };
    
    tnlCoFVMGradientNorm()
@@ -133,7 +156,7 @@ class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, 
    static tnlString getType()
    {
       return tnlString( "tnlCoFVMGradientNorm< " ) +
-         MeshType::getType() + ", " +
+         MeshType::getType() + ", 1, " +
          ::getType< Real >() + ", " +
          ::getType< Index >() + " >";
 
@@ -241,7 +264,7 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
    typedef Index IndexType;
    typedef tnlExactGradientNorm< 3, RealType > ExactOperatorType;
    
-   constexpr static int getDomainEntitiesDimensions() { return MeshType::getMeshDimensions(); };
+   constexpr static int getPreimageEntitiesDimensions() { return MeshType::getMeshDimensions(); };
    constexpr static int getImageEntitiesDimensions() { return MeshType::getMeshDimensions() - 1; };
    
    tnlCoFVMGradientNorm()
@@ -250,7 +273,7 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
    static tnlString getType()
    {
       return tnlString( "tnlCoFVMGradientNorm< " ) +
-         MeshType::getType() + ", " +
+         MeshType::getType() + ", 2, " +
          ::getType< Real >() + ", " +
          ::getType< Index >() + " >";      
    }
