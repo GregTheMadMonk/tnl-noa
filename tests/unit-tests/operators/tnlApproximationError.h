@@ -43,7 +43,7 @@ class tnlApproximationError
       typedef tnlDirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
 
       static void getError( const ExactOperator& exactOperator,
-                            const ApproximateOperator& approximateOperator,
+                            ApproximateOperator& approximateOperator,
                             const Function& function,
                             const MeshType& mesh,
                             RealType& l1Error,
@@ -58,8 +58,7 @@ class tnlApproximationError
          typedef tnlExactOperatorFunction< ExactOperator, Function > ExactOperatorFunction;
 
          tnlMeshFunction< MeshType, MeshEntity::getDimensions() > exactU( mesh ), u( mesh ), v( mesh );
-         OperatorFunction operatorFunction( approximateOperator, v );
-         operatorFunction.deepRefresh();
+         OperatorFunction operatorFunction( approximateOperator, v );         
          ExactOperatorFunction exactOperatorFunction( exactOperator, function );
          DirichletBoundaryConditions boundaryConditions;
          BoundaryOperatorFunction boundaryOperatorFunction( boundaryConditions, u );
@@ -73,30 +72,36 @@ class tnlApproximationError
          if( MeshType::getMeshDimensions() == 3 )
             dimensionsString = "3D-";
 
-         if( writeFunctions )
-            mesh.save( "mesh-" + dimensionsString + meshSizeString + ".tnl" );
+         //if( writeFunctions )
+         //   mesh.save( "mesh-" + dimensionsString + meshSizeString + ".tnl" );
 
          //cerr << "Evaluating exact u... " << endl;
          exactU = exactOperatorFunction;
          if( writeFunctions )
-            exactU.save( "exact-result-" + dimensionsString + meshSizeString + ".tnl" );
+            exactU.write( "exact-result-" + dimensionsString + meshSizeString, "gnuplot" );
 
          //cerr << "Projecting test function ..." << endl;
          v = function;
          if( writeFunctions )
-            v.save( "test-function-" + dimensionsString + meshSizeString + ".tnl" ) ;
+            v.write( "test-function-" + dimensionsString + meshSizeString, "gnuplot" ) ;
 
          //cerr << "Evaluating approximate u ... " << endl;
+         operatorFunction.setPreimageFunction( v );
+         if( ! operatorFunction.deepRefresh() )
+         {
+            cerr << "Error in operator refreshing." << endl;
+            return;
+         }         
          u = operatorFunction;
          tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
          if( writeFunctions )
-            u.save( "approximate-result-" + dimensionsString + meshSizeString + ".tnl" ) ;
+            u.write( "approximate-result-" + dimensionsString + meshSizeString, "gnuplot" ) ;
 
          //cerr << "Evaluate difference ... " << endl;
          u -= exactU;   
          tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
          if( writeFunctions )
-            u.save( "difference-" + dimensionsString + meshSizeString + ".tnl" ) ;
+            u.write( "difference-" + dimensionsString + meshSizeString, "gnuplot" ) ;
          l1Error = u.getLpNorm( 1.0 );
          l2Error = u.getLpNorm( 2.0 );   
          maxError = u.getMaxNorm();

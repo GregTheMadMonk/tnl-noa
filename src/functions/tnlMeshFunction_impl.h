@@ -152,7 +152,7 @@ template< typename Mesh,
           typename Real >
 void
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
-setMesh( const MeshType& mesh ) const
+setMesh( const MeshType& mesh )
 {
    this->mesh = &mesh;
 }

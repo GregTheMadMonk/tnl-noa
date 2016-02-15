@@ -264,8 +264,8 @@ class tnlNeighbourGridEntityGetter<
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates().x() + step <= entity.getMesh().getDimensions(),
+         tnlAssert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ).x() &&
+                    entity.getCoordinates().x() + step <= entity.getMesh().getDimensions().x(),
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );

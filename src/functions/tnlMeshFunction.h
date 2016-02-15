@@ -71,7 +71,7 @@ class tnlMeshFunction :
                  const Vector& data,
                  const IndexType& offset = 0 );
       
-      void setMesh( const MeshType& mesh ) const;      
+      void setMesh( const MeshType& mesh );
       
       const MeshType& getMesh() const;
       

@@ -143,12 +143,12 @@ class tnlOperatorFunction< Operator, PreimageFunction, void, false >
       
       static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
       
-      tnlOperatorFunction( const OperatorType& operator_,
+      tnlOperatorFunction( OperatorType& operator_,
                            const MeshType& mesh )
       :  operator_( operator_ ), imageFunction( mesh )
       {};
       
-      tnlOperatorFunction( const OperatorType& operator_,
+      tnlOperatorFunction( OperatorType& operator_,
                            PreimageFunctionType& preimageFunction )
       :  operator_( operator_ ), imageFunction( preimageFunction.getMesh() ), preimageFunction( &preimageFunction )
       {};
@@ -159,15 +159,21 @@ class tnlOperatorFunction< Operator, PreimageFunction, void, false >
       
       const ImageFunctionType& getImageFunction() const { return this->imageFunction; };
       
-      void setPreimageFunction( const PreimageFunction& preimageFunction )
+      void setPreimageFunction( PreimageFunction& preimageFunction )
       { 
          this->preimageFunction = &preimageFunction;
          this->imageFunction.setMesh( preimageFunction.getMesh() );
-      };         
+      };
+      
+      const PreimageFunctionType& getPreimageFunction() const { return *this->preimageFunction; };
 
       bool refresh( const RealType& time = 0.0 )
       {
-         OperatorFunction operatorFunction( this->operator_, *preimageFunction );
+         OperatorFunction operatorFunction( this->operator_, *preimageFunction );         
+         this->operator_.setPreimageFunction( *this->preimageFunction );
+         if( ! this->operator_.refresh( time ) ||
+             ! operatorFunction.refresh( time )  )
+             return false;
          this->imageFunction = operatorFunction;
          return true;
       };
@@ -176,9 +182,7 @@ class tnlOperatorFunction< Operator, PreimageFunction, void, false >
       {
          if( ! this->preimageFunction->deepRefresh( time ) )
             return false;
-         OperatorFunction operatorFunction( this->operator_, preimageFunction );
-         this->imageFunction = operatorFunction;
-         return true;
+         return this->refresh( time );
       };
       
       template< typename MeshEntity >
@@ -191,14 +195,14 @@ class tnlOperatorFunction< Operator, PreimageFunction, void, false >
       }
       
       __cuda_callable__
-      RealType operator[]( const IndexType& index )
+      RealType operator[]( const IndexType& index ) const
       {
          return imageFunction[ index ];
       }
       
    protected:
       
-      const Operator& operator_;
+      Operator& operator_;
       
       PreimageFunctionType* preimageFunction;
       

@@ -74,7 +74,7 @@ class tnlForwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Mes
                               const MeshEntity& entity,
                               const RealType& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getMeshEntityDimensions() == Dimensions,
+         static_assert( MeshFunction::getEntitiesDimensions() == Dimensions,
             "Finite differences can be evaluate only on mesh cells, i.e. the dimensions count of the mesh entities of mesh function must be the same as mesh dimensions count." );
          const int XDirection = 1 * ( XDifference != 0 );
          const int YDirection = 1 * ( YDifference != 0 );

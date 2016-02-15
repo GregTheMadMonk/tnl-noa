@@ -43,10 +43,8 @@ class tnlCoFVMGradientNormTest
       
       const IndexType coarseMeshSize[ 3 ] = { 1024, 256, 64 };
 
-      const RealType eoc[ 3 ] =       { 1.0,  1.9, 1.75 };
-      const RealType tolerance[ 3 ] = { 0.05, 0.1, 0.3 };      
-      
-      tnlCoFVMGradientNormTest()      
+      const RealType eoc[ 3 ] =       { 2.0,  2.0, 2.0 };
+      const RealType tolerance[ 3 ] = { 1.05, 1.1, 1.3 };      
       
       static tnlString getType()
       { 
@@ -66,12 +64,14 @@ class tnlCoFVMGradientNormTest
          this->setupMesh( meshSize );
          
          tnlMeshFunction< MeshType > u;
+      
+         typename ApproximateOperator::InnerOperator gradientNorm;
+         typename ApproximateOperator::OuterOperator interpolant;
+         ApproximateOperator approximateOperator( interpolant, gradientNorm, this->mesh );      
+         typename ApproximateOperator::InnerOperator::ExactOperatorType exactOperator;
 
-         ApproximateOperator approximateOperator;      
-         ExactOperatorType exactOperator;
-
-         this->performTest( this->approximateOperator,
-                            this->exactOperator,
+         this->performTest( approximateOperator,
+                            exactOperator,
                             errors,
                             write,
                             verbose );

@@ -79,13 +79,13 @@ class tnlMeshEntitiesInterpolants< tnlGrid< 1, Real, Device, Index >, 0, 1 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntityDimensions() == 0,
+         static_assert( MeshFunction::getEntitiesDimensions() == 0,
             "Mesh function must be defined on vertices (or faces in case on 1D grid)." );
          
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );         
          
-         const typename MeshEntity::template NeighbourEntities< 0 >& neighbourEntities = entity.getNeighbourEntities();      
+         const typename MeshEntity::template NeighbourEntities< 0 >& neighbourEntities = entity.template getNeighbourEntities< 0 >();      
          
          return 0.5 * ( u[ neighbourEntities.template getEntityIndex< -1 >() ] + 
                         u[ neighbourEntities.template getEntityIndex<  1 >() ] );
@@ -181,13 +181,13 @@ class tnlMeshEntitiesInterpolants< tnlGrid< 2, Real, Device, Index >, 1, 2 >
                        const MeshEntity& entity,
                        const Real& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getEntityDimensions() == 1,
+         static_assert( MeshFunction::getEntitiesDimensions() == 1,
             "Mesh function must be defined on faces." );
          
          static_assert( std::is_same< typename MeshEntity::MeshType, MeshType >::value,
             "The mesh entity belongs to other mesh type then the interpolants." );         
          
-         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();      
+         const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.template getNeighbourEntities< 1 >();      
                   
          return 0.25 * ( u[ neighbourEntities.template getEntityIndex< -1,  0 >() ] + 
                          u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] +

@@ -73,7 +73,7 @@ class tnlCentralFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Mes
                               const MeshEntity& entity,
                               const RealType& time = 0.0 ) const
       {
-         static_assert( MeshFunction::getMeshEntityDimensions() == Dimensions,
+         static_assert( MeshFunction::getEntitiesDimensions() == Dimensions,
             "Finite differences can be evaluate only on mesh cells, i.e. the dimensions count of the mesh entities of mesh function must be the same as mesh dimensions count." );
          return tnlFiniteDifferences< MeshType, Real, Index, XDifference, YDifference, ZDifference, 0, 0, 0 >::getValue( u, entity );
       };

@@ -57,6 +57,11 @@ class tnlOperatorComposition
       : outerOperator( outerOperator ),
         innerOperatorFunction( innerOperator, innerBoundaryConditions, mesh ){};
         
+      void setPreimageFunction( const PreimageFunctionType& preimageFunction )
+      {
+         this->innerOperatorFunction.setPreimageFunction( preimageFunction );
+      }
+        
       PreimageFunctionType& getPreimageFunction()
       {
          return this->innerOperatorFunction.getPreimageFunction();
@@ -67,16 +72,14 @@ class tnlOperatorComposition
          return this->innerOperatorFunction.getPreimageFunction();
       }      
       
-      bool refresh( PreimageFunctionType& preimageFunction,
-                    const RealType& time = 0.0 )
+      bool refresh( const RealType& time = 0.0 )
       {
-         return this->innerOperatorFunction.refresh( preimageFunction, time );
+         return this->innerOperatorFunction.refresh( time );
       }
       
-      bool deepRefresh( PreimageFunctionType& preimageFunction,
-                        const RealType& time = 0.0 )
+      bool deepRefresh( const RealType& time = 0.0 )
       {
-         return this->innerOperatorFunction.deepRefresh( preimageFunction, time );
+         return this->innerOperatorFunction.deepRefresh( time );
       }
         
       template< typename MeshFunction, typename MeshEntity >
@@ -117,9 +120,15 @@ class tnlOperatorComposition< OuterOperator, InnerOperator, void >
       typedef typename InnerOperator::IndexType IndexType;
       
       tnlOperatorComposition( const OuterOperator& outerOperator,
-                              const InnerOperator& innerOperator )
+                              InnerOperator& innerOperator,
+                              const MeshType& mesh )
       : outerOperator( outerOperator ),
-        innerOperatorFunction( innerOperator ){};
+        innerOperatorFunction( innerOperator, mesh ){};
+        
+      void setPreimageFunction( PreimageFunctionType& preimageFunction )
+      {
+         this->innerOperatorFunction.setPreimageFunction( preimageFunction );
+      }        
         
       PreimageFunctionType& getPreimageFunction()
       {
@@ -131,14 +140,21 @@ class tnlOperatorComposition< OuterOperator, InnerOperator, void >
          return this->innerOperatorFunction.getPreimageFunction();
       }      
       
-      bool refresh( PreimageFunctionType& preimageFunction, const RealType& time = 0.0 )
+      bool refresh( const RealType& time = 0.0 )
       {
-         return this->innerOperatorFunction.refresh( preimageFunction, time );
+         return this->innerOperatorFunction.refresh( time );
+         /*tnlMeshFunction< MeshType, MeshType::getMeshDimensions() - 1 > f( this->innerOperatorFunction.getMesh() );
+         f = this->innerOperatorFunction;
+         this->innerOperatorFunction.getPreimageFunction().write( "preimageFunction", "gnuplot" );
+         f.write( "innerFunction", "gnuplot" );
+         return true;*/
       }
       
-      bool deepRefresh( PreimageFunctionType& preimageFunction, const RealType& time = 0.0 )
+      bool deepRefresh( const RealType& time = 0.0 )
       {
-         return this->innerOperatorFunction.deepRefresh( preimageFunction, time );
+         return this->innerOperatorFunction.deepRefresh( time );
+         /*this->innerOperatorFunction.write( "innerFunction", "gnuplot" );
+          return true;*/
       }
         
       template< typename MeshFunction, typename MeshEntity >
@@ -158,7 +174,7 @@ class tnlOperatorComposition< OuterOperator, InnerOperator, void >
       
       const OuterOperator& outerOperator;
       
-      const InnerOperatorFunction& innerOperatorFunction;      
+      InnerOperatorFunction innerOperatorFunction;      
 };
 
 

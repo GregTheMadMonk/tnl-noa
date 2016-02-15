@@ -21,6 +21,7 @@
 #include <mesh/tnlGrid.h>
 #include <operators/geometric/tnlExactGradientNorm.h>
 #include <operators/interpolants/tnlMeshEntitiesInterpolants.h>
+#include <operators/tnlOperator.h>
 #include <operators/tnlOperatorComposition.h>
 
 template< typename Mesh,
@@ -54,7 +55,13 @@ class tnlCoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex
       typedef tnlMeshEntitiesInterpolants< MeshType, MeshDimensions - 1, MeshDimensions > OuterOperator;
       typedef tnlOperatorComposition< OuterOperator, InnerOperator > BaseType;
       typedef tnlExactGradientNorm< MeshDimensions, RealType > ExactOperatorType;
-   
+         
+      tnlCoFVMGradientNorm( const OuterOperator& outerOperator,
+                            InnerOperator& innerOperator,
+                            const MeshType& mesh )
+      : BaseType( outerOperator, innerOperator, mesh )
+      {}
+      
       static tnlString getType()
       {
          return tnlString( "tnlCoFVMGradientNorm< " ) +
@@ -75,7 +82,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlCoFVMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, 0, Real, Index >
-   : public tnlDomain< 1, MeshInteriorDomain >
+   : public tnlOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >, MeshInteriorDomain, 1, 0, Real, Index >
 {
    public: 
    
@@ -135,7 +142,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, Index >
-   : public tnlDomain< 2, MeshInteriorDomain >
+   : public tnlOperator< tnlGrid< 2,MeshReal, Device, MeshIndex >, MeshInteriorDomain, 2, 1, Real, Index >
 {
    public: 
    
@@ -253,7 +260,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, Index >
-   : public tnlDomain< 3, MeshInteriorDomain >
+   : public tnlOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, MeshInteriorDomain, 3, 2, Real, Index >
 {
    public: 
    
