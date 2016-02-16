@@ -71,6 +71,11 @@ class tnlCoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex
             ::getType< Index >() + " >";
       }
       
+      void setEps( const RealType& eps )
+      {
+         this->getInnerOperator().setEps( eps );
+      }
+      
       static constexpr int getPreimageEntitiesDimensions() { return MeshDimensions; };
       static constexpr int getImageEntitiesDimensions() { return MeshDimensions; };
 

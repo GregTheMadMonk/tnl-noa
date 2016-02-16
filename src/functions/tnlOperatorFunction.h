@@ -92,6 +92,10 @@ class tnlOperatorFunction< Operator, MeshFunction, void, true >
       
       void setPreimageFunction( const FunctionType& preimageFunction ) { this->preimageFunction = &preimageFunction; }
       
+      Operator& getOperator() { return this->operator_; }
+      
+      const Operator& getOperator() const { return this->operator_; }
+      
       bool refresh( const RealType& time = 0.0 ) { return true; };
       
       bool deepRefresh( const RealType& time = 0.0 ) { return true; };
@@ -166,6 +170,10 @@ class tnlOperatorFunction< Operator, PreimageFunction, void, false >
       };
       
       const PreimageFunctionType& getPreimageFunction() const { return *this->preimageFunction; };
+      
+      Operator& getOperator() { return this->operator_; }
+      
+      const Operator& getOperator() const { return this->operator_; }
 
       bool refresh( const RealType& time = 0.0 )
       {
@@ -284,6 +292,10 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
       const ImageFunctionType& getImageFunction() const { return this->imageFunction; };
       
       ImageFunctionType& getImageFunction() { return this->imageFunction; };
+      
+      Operator& getOperator() { return this->operator_; }
+      
+      const Operator& getOperator() const { return this->operator_; }
 
       bool refresh( const RealType& time = 0.0 )
       {

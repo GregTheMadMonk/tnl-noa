@@ -50,7 +50,7 @@ class tnlOperatorComposition
       static constexpr int getPreimageEntitiesDimensions() { return InnerOperator::getImageEntitiesDimensions(); };
       static constexpr int getImageEntitiesDimensions() { return OuterOperator::getImageEntitiesDimensions(); };
       
-      tnlOperatorComposition( const OuterOperator& outerOperator,
+      tnlOperatorComposition( OuterOperator& outerOperator,
                               InnerOperator& innerOperator,
                               const InnerBoundaryConditions& innerBoundaryConditions,
                               const MeshType& mesh )
@@ -71,6 +71,14 @@ class tnlOperatorComposition
       {
          return this->innerOperatorFunction.getPreimageFunction();
       }      
+      
+      InnerOperator& getInnerOperator() { return this->innerOperatorFunction.getOperator(); }
+      
+      const InnerOperator& getInnerOperator() const { return this->innerOperatorFunction.getOperator(); }
+      
+      OuterOperator& getOuterOperator() { return this->outerOperator(); };
+      
+      const OuterOperator& getOuterOperator() const { return this->outerOperator(); };
       
       bool refresh( const RealType& time = 0.0 )
       {
@@ -97,7 +105,7 @@ class tnlOperatorComposition
    
    protected:
       
-      const OuterOperator& outerOperator;
+      OuterOperator& outerOperator;
       
       InnerOperatorFunction innerOperatorFunction;      
 };
