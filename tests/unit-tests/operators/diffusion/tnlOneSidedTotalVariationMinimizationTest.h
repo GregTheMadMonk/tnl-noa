@@ -38,12 +38,14 @@ class tnlOneSidedTotalVariationMinimizationTest
       typedef typename ApproximateOperatorType::ExactOperatorType ExactOperatorType;
       typedef typename ApproximateOperator::MeshType MeshType;
       typedef typename ApproximateOperator::RealType RealType;
-      typedef typename ApproximateOperator::IndexType IndexType;
+      typedef typename ApproximateOperator::IndexType IndexType;   
       
       const IndexType coarseMeshSize[ 3 ] = { 1024, 256, 64 };
       
       const RealType  eoc[ 3 ] =       { 2.0,  2.0,  2.0 };
-      const RealType  tolerance[ 3 ] = { 0.05, 0.05, 0.05 };      
+      const RealType  tolerance[ 3 ] = { 0.05, 0.05, 0.05 };
+      
+      tnlOneSidedTotalVariationMinimizationTest(){};
    
       static tnlString getType()
       { 

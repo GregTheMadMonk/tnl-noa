@@ -1,6 +1,8 @@
 #ifndef TNLNEUMANNBOUNDARYCONDITIONS_IMPL_H
 #define	TNLNEUMANNBOUNDARYCONDITIONS_IMPL_H
 
+#include <functions/tnlFunctionAdapter.h>
+
 template< typename Function >
 void
 tnlNeumannBoundaryConditionsBase< Function >::

@@ -43,6 +43,9 @@ class tnlPDEOperatorEocTest
       typedef typename ApproximateOperator::MeshType MeshType;
       typedef typename ApproximateOperator::RealType RealType;
       typedef typename ApproximateOperator::IndexType IndexType;
+      
+      //static_assert( std::is_same< ExactOperatorType, void >::value,
+      //   "Exact operator type is not defined (it is void in fact)." );
    
       void setupMesh( const IndexType meshSize )
       {

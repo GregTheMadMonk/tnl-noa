@@ -1,8 +1,8 @@
 ADD_EXECUTABLE( tnlLinearDiffusionTest${mpiExt}${debugExt} tnlLinearDiffusionTest.cpp )
 TARGET_LINK_LIBRARIES( tnlLinearDiffusionTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                                  tnl${mpiExt}${debugExt}-0.1 )
-ADD_EXECUTABLE( tnlOneSidedNonlinearDiffusionTest${mpiExt}${debugExt} tnlOneSidedNonlinearDiffusionTest.cpp )
-TARGET_LINK_LIBRARIES( tnlOneSidedNonlinearDiffusionTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+ADD_EXECUTABLE( tnlOneSidedTotalVariationMinimizationTest${mpiExt}${debugExt} tnlOneSidedTotalVariationMinimizationTest.cpp )
+TARGET_LINK_LIBRARIES( tnlOneSidedTotalVariationMinimizationTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                                              tnl${mpiExt}${debugExt}-0.1 )
 
 

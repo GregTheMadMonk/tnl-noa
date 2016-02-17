@@ -45,6 +45,7 @@ class tnlOneSidedTotalVariationMinimization
       typedef tnlNeumannBoundaryConditions< MeshType, NonlinearityBoundaryConditionsFunction > NonlinearityBoundaryConditions;
       typedef tnlOperatorFunction< NonlinearityOperator, NonlinearityMeshFunction, NonlinearityBoundaryConditions, EvaluateNonlinearityOnFly > Nonlinearity;
       typedef tnlOneSidedNonlinearDiffusion< Mesh, Nonlinearity, RealType, IndexType > NonlinearDiffusion;
+      typedef typename NonlinearDiffusion::ExactOperatorType ExactOperatorType;
       
       tnlOneSidedTotalVariationMinimization()
       : nonlinearity( gradientNorm, nonlinearityBoundaryConditions ),
