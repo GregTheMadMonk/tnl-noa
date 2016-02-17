@@ -49,8 +49,7 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, N
       typedef Index IndexType;
       typedef Nonlinearity NonlinearityType;
       typedef typename MeshType::template MeshEntity< MeshType::getMeshDimensions() > CellType;
-      template< typename NonlinearityFunction >
-      using ExactOperatorType = tnlExactNonlinearDiffusion< NonlinearityFunction, MeshType::getMeshDimensions() > ExactOperatorType;
+      typedef tnlExactNonlinearDiffusion< typename Nonlinearity::ExactOperatorType, MeshType::getMeshDimensions() > ExactOperatorType;
 
       tnlOneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
@@ -59,17 +58,17 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, N
       {
          return tnlString( "tnlOneSidedNonlinearDiffusion< " ) +
             MeshType::getType() + ", " +
-            NonlinearDiffusionOperator::getType() + "," +
+            Nonlinearity::getType() + "," +
             ::getType< Real >() + ", " +
             ::getType< Index >() + " >";         
       }     
 
-      template< typename MeshEntity,
-                typename Vector >
+      template< typename MeshFunction,
+                typename MeshEntity >
       __cuda_callable__
-      Real operator()( const MeshEntity& entity,
-                       const Vector& u,
-                       const RealType& time) const
+      Real operator()( const MeshFunction& u,
+                       const MeshEntity& entity,
+                       const RealType& time = 0.0 ) const
       {
          const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
          const typename MeshEntity::MeshType& mesh = entity.getMesh();
@@ -146,9 +145,7 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, 
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Nonlinearity NonlinearityType;
-      template< typename NonlinearityFunction >
-      using ExactOperatorType = tnlExactNonlinearDiffusion< NonlinearityFunction, MeshType::getMeshDimensions() > ExactOperatorType;
-      
+      typedef tnlExactNonlinearDiffusion< typename Nonlinearity::ExactOperatorType, MeshType::getMeshDimensions() > ExactOperatorType;      
 
       tnlOneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}      
@@ -157,17 +154,17 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, 
       {
          return tnlString( "tnlOneSidedNonlinearDiffusion< " ) +
             MeshType::getType() + ", " +
-            NonlinearDiffusionOperator::getType() + "," +
+            Nonlinearity::getType() + "," +
             ::getType< Real >() + ", " +
             ::getType< Index >() + " >";         
       }      
 
-      template< typename MeshEntity,
-                typename Vector >
+      template< typename MeshFunction,
+                typename MeshEntity >
       __cuda_callable__
-      Real operator()( const MeshEntity& entity,
-                       const Vector& u,
-                       const RealType& time) const
+      Real operator()( const MeshFunction& u,
+                       const MeshEntity& entity,
+                       const RealType& time = 0.0 ) const
       {
          const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
          const typename MeshEntity::MeshType& mesh = entity.getMesh();
@@ -259,8 +256,7 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Nonlinearity NonlinearityType;
-      template< typename NonlinearityFunction >
-      using ExactOperatorType = tnlExactNonlinearDiffusion< NonlinearityFunction, MeshType::getMeshDimensions() > ExactOperatorType;      
+      typedef tnlExactNonlinearDiffusion< typename Nonlinearity::ExactOperatorType, MeshType::getMeshDimensions() > ExactOperatorType;
 
       tnlOneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
@@ -269,17 +265,17 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
       {
          return tnlString( "tnlOneSidedNonlinearDiffusion< " ) +
             MeshType::getType() + ", " +
-            NonlinearDiffusionOperator::getType() + "," +
+            Nonlinearity::getType() + "," +
             ::getType< Real >() + ", " +
             ::getType< Index >() + " >";         
       }
 
-      template< typename MeshEntity,
-                typename MeshFunction >
+      template< typename MeshFunction,
+                typename MeshEntity >
       __cuda_callable__
-      Real operator()( const MeshEntity& entity,
-                       const MeshFunction& u,
-                       const RealType& time) const
+      Real operator()( const MeshFunction& u,
+                       const MeshEntity& entity,
+                       const RealType& time = 0.0 ) const
       {
          const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
          const typename MeshEntity::MeshType& mesh = entity.getMesh();
@@ -372,9 +368,5 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
        
       Nonlinearity& nonlinearity;
 };
-
-
-#include "tnlOneSidedNonlinearDiffusion_impl.h"
-
 
 #endif	/* TNLONESIDEDNONLINEARDIFFUSION_H */

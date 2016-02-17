@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlOneSidedNonlinearDiffusionTest.h  -  description
+                          tnlOneSidedTotalVariationMinimizationTest.h  -  description
                              -------------------
     begin                : Feb 1, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -18,7 +18,7 @@
 #ifndef TNLLINEARDIFFUSIONTEST_H
 #define	TNLLINEARDIFFUSIONTEST_H
 
-#include <operators/diffusion/tnlOneSidedNonlinearDiffusion.h>
+#include <operators/diffusion/tnlOneSidedTotalVariationMinimization.h>
 #include <operators/diffusion/tnlExactLinearDiffusion.h>
 #include <mesh/tnlGrid.h>
 #include "../tnlPDEOperatorEocUnitTest.h"
@@ -29,7 +29,7 @@ template< typename ApproximateOperator,
           typename TestFunction,
           bool write = false,
           bool verbose = false >
-class tnlOneSidedNonlinearDiffusionTest
+class tnlOneSidedTotalVariationMinimizationTest
    : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction > 
 {
    public:
@@ -47,7 +47,7 @@ class tnlOneSidedNonlinearDiffusionTest
    
       static tnlString getType()
       { 
-         return tnlString( "tnlOneSidedNonlinearDiffusionTest< " ) + 
+         return tnlString( "tnlOneSidedTotalVariationMinimizationTest< " ) + 
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }
@@ -92,8 +92,8 @@ template< typename Mesh,
           bool verbose >
 bool runTest()
 {
-   typedef tnlOneSidedNonlinearDiffusion< Mesh > ApproximateOperator;
-   typedef tnlOneSidedNonlinearDiffusionTest< ApproximateOperator, Function, write, verbose > OperatorTest;
+   typedef tnlOneSidedTotalVariationMinimization< Mesh > ApproximateOperator;
+   typedef tnlOneSidedTotalVariationMinimizationTest< ApproximateOperator, Function, write, verbose > OperatorTest;
 #ifdef HAVE_CPPUNIT   
    if( ! tnlUnitTestStarter::run< tnlPDEOperatorEocUnitTest< OperatorTest > >() )
       return false;

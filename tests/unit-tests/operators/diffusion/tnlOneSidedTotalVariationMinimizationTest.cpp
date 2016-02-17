@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlOneSidedNonlinearDiffusionTest.cpp  -  description
+                          tnlOneSidedTotalVariationMinimizationTest.cpp  -  description
                              -------------------
     begin                : Jan 16, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -15,4 +15,4 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnlOneSidedNonlinearDiffusionTest.h"
+#include "tnlOneSidedTotalVariationMinimizationTest.h"
