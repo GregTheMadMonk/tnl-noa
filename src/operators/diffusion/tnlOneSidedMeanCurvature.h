@@ -25,6 +25,8 @@
 #include <operators/diffusion/tnlOneSidedNonlinearDiffusion.h>
 #include <functions/tnlOperatorFunction.h>
 #include <functions/tnlConstantFunction.h>
+#include <operators/diffusion/tnlExactMeanCurvature.h>
+
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -45,6 +47,7 @@ class tnlOneSidedMeanCurvature
       typedef tnlNeumannBoundaryConditions< MeshType, NonlinearityBoundaryConditionsFunction > NonlinearityBoundaryConditions;
       typedef tnlOperatorFunction< NonlinearityOperator, NonlinearityMeshFunction, NonlinearityBoundaryConditions, EvaluateNonlinearityOnFly > Nonlinearity;
       typedef tnlOneSidedNonlinearDiffusion< Mesh, Nonlinearity, RealType, IndexType > NonlinearDiffusion;
+      typedef tnlExactMeanCurvature< Mesh::getMeshDimensions(), RealType > ExactOperatorType;
       
       tnlOneSidedMeanCurvature()
       : nonlinearity( gradientNorm, nonlinearityBoundaryConditions ),

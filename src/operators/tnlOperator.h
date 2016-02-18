@@ -37,6 +37,7 @@ class tnlOperator : public tnlDomain< Mesh::getMeshDimensions(), DomainType >
       typedef typename MeshType::IndexType MeshIndexType;
       typedef Real RealType;
       typedef Index IndexType;
+      typedef void ExactOperatorType;
       
       constexpr static int getMeshDimensions() { return MeshType::getMeshDimensions(); }
       constexpr static int getPreimageEntitiesDimensions() { return PreimageEntitiesDimensions; }

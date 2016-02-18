@@ -21,6 +21,7 @@
 #include<functions/tnlOperatorFunction.h>
 #include<functions/tnlMeshFunction.h>
 #include<operators/tnlOperator.h>
+#include<operators/tnlExactOperatorComposition.h>
 
 /****
  * This object serves for composition of two operators F and G into an operator F( G( u ) ).
@@ -52,6 +53,8 @@ class tnlOperatorComposition
       typedef tnlOperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
       typedef typename InnerOperator::RealType RealType;
       typedef typename InnerOperator::IndexType IndexType;
+      typedef tnlExactOperatorComposition< typename OuterOperator::ExactOperatorType,
+                                           typename InnerOperator::ExactOperatorType > ExactOperatorType;
       
       static constexpr int getPreimageEntitiesDimensions() { return InnerOperator::getImageEntitiesDimensions(); };
       static constexpr int getImageEntitiesDimensions() { return OuterOperator::getImageEntitiesDimensions(); };

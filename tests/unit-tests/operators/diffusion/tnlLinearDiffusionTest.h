@@ -35,7 +35,7 @@ class tnlLinearDiffusionTest
    public:
       
       typedef ApproximateOperator ApproximateOperatorType;
-      typedef typename ApproximateOperatorType::ExactOperatorType ExactOperatorType;
+      typedef typename ApproximateOperator::ExactOperatorType ExactOperatorType;
       typedef typename ApproximateOperator::MeshType MeshType;
       typedef typename ApproximateOperator::RealType RealType;
       typedef typename ApproximateOperator::IndexType IndexType;
