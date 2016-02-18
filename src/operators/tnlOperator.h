@@ -19,9 +19,11 @@
 #ifndef TNLOPERATOR_H
 #define	TNLOPERATOR_H
 
+#include <functions/tnlDomain.h>
+
 template< typename Mesh,
           tnlDomainType DomainType = MeshInteriorDomain,
-          int DomainEntitiesDimensions = Mesh::getMeshDimensions(),
+          int PreimageEntitiesDimensions = Mesh::getMeshDimensions(),
           int ImageEntitiesDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
@@ -36,7 +38,8 @@ class tnlOperator : public tnlDomain< Mesh::getMeshDimensions(), DomainType >
       typedef Real RealType;
       typedef Index IndexType;
       
-      constexpr static int getPreimageEntitiesDimensions() { return DomainEntitiesDimensions; }
+      constexpr static int getMeshDimensions() { return MeshType::getMeshDimensions(); }
+      constexpr static int getPreimageEntitiesDimensions() { return PreimageEntitiesDimensions; }
       constexpr static int getImageEntitiesDimensions() { return ImageEntitiesDimensions; }
       
       bool refresh( const RealType& time = 0.0 ) { return true; }

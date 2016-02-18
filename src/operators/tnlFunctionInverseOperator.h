@@ -18,8 +18,18 @@
 #ifndef TNLFUNCTIONINVERSEOPERATOR_H
 #define	TNLFUNCTIONINVERSEOPERATOR_H
 
+#include <core/tnlString.h>
+#include <core/tnlCuda.h>
+#include <operators/tnlOperator.h>
+
 template< typename Operator >
 class tnlFunctionInverseOperator
+: public tnlOperator< typename Operator::MeshType,
+                      Operator::getDomainType(),
+                      Operator::getPreimageEntitiesDimensions(),
+                      Operator::getImageEntitiesDimensions(),
+                      typename Operator::RealType,
+                      typename Operator::IndexType >
 {
    public:
       

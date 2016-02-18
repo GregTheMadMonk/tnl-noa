@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlOneSidedTotalVariationMinimizationTest.h  -  description
+                          tnlOneSidedMeanCurvatureTest.h  -  description
                              -------------------
     begin                : Feb 1, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -15,10 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLLINEARDIFFUSIONTEST_H
-#define	TNLLINEARDIFFUSIONTEST_H
+#ifndef TNLMEANCURVATURETEST_H
+#define	TNLMEANCURVATURETEST_H
 
-#include <operators/diffusion/tnlOneSidedTotalVariationMinimization.h>
+#include <operators/diffusion/tnlOneSidedMeanCurvature.h>
 #include <operators/diffusion/tnlExactLinearDiffusion.h>
 #include <mesh/tnlGrid.h>
 #include "../tnlPDEOperatorEocUnitTest.h"
@@ -29,7 +29,7 @@ template< typename ApproximateOperator,
           typename TestFunction,
           bool write = false,
           bool verbose = false >
-class tnlOneSidedTotalVariationMinimizationTest
+class tnlOneSidedMeanCurvatureTest
    : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction > 
 {
    public:
@@ -47,7 +47,7 @@ class tnlOneSidedTotalVariationMinimizationTest
    
       static tnlString getType()
       { 
-         return tnlString( "tnlOneSidedTotalVariationMinimizationTest< " ) + 
+         return tnlString( "tnlOneSidedMeanCurvatureTest< " ) + 
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }
@@ -92,8 +92,8 @@ template< typename Mesh,
           bool verbose >
 bool runTest()
 {
-   typedef tnlOneSidedTotalVariationMinimization< Mesh > ApproximateOperator;
-   typedef tnlOneSidedTotalVariationMinimizationTest< ApproximateOperator, Function, write, verbose > OperatorTest;
+   typedef tnlOneSidedMeanCurvature< Mesh > ApproximateOperator;
+   typedef tnlOneSidedMeanCurvatureTest< ApproximateOperator, Function, write, verbose > OperatorTest;
 #ifdef HAVE_CPPUNIT   
    if( ! tnlUnitTestStarter::run< tnlPDEOperatorEocUnitTest< OperatorTest > >() )
       return false;
@@ -133,5 +133,5 @@ int main( int argc, char* argv[] )
    return EXIT_SUCCESS;
 }
 
-#endif	/* TNLLINEARDIFFUSIONTEST_H */
+#endif	/* TNLMEANCURVATURETEST_H */
 

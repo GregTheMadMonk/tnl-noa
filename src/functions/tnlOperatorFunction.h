@@ -47,7 +47,7 @@ template< typename Operator,
           typename MeshFunction,
           typename BoundaryConditions >
 class tnlOperatorFunction< Operator, MeshFunction, BoundaryConditions, true >
- : public tnlDomain< Operator::getDimensions(), MeshDomain >
+ : public tnlDomain< Operator::getMeshDimensions(), MeshDomain >
 {   
 };
 
@@ -74,6 +74,7 @@ class tnlOperatorFunction< Operator, MeshFunction, void, true >
       typedef typename OperatorType::RealType RealType;
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;
+      typedef typename OperatorType::ExactOperatorType ExactOperatorType;
       
       static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
       
@@ -144,6 +145,7 @@ class tnlOperatorFunction< Operator, PreimageFunction, void, false >
       typedef typename OperatorType::IndexType IndexType;
       typedef tnlMeshFunction< MeshType, Operator::getImageEntitiesDimensions() > ImageFunctionType;
       typedef tnlOperatorFunction< Operator, PreimageFunction, void, true > OperatorFunction;
+      typedef typename OperatorType::ExactOperatorType ExactOperatorType;
       
       static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
       
@@ -226,7 +228,7 @@ template< typename Operator,
           typename PreimageFunction,
           typename BoundaryConditions >
 class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false >
-  : public tnlDomain< Operator::getDimensions(), MeshDomain >
+  : public tnlDomain< Operator::getMeshDimensions(), MeshDomain >
 {   
    public:
       
@@ -248,6 +250,7 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
       typedef tnlMeshFunction< MeshType, Operator::getImageEntitiesDimensions() > ImageFunctionType;
       typedef BoundaryConditions BoundaryConditionsType;
       typedef tnlOperatorFunction< Operator, PreimageFunction, void, true > OperatorFunction;
+      typedef typename OperatorType::ExactOperatorType ExactOperatorType;
       
       static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
       

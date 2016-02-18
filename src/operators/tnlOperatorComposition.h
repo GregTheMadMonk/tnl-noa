@@ -20,6 +20,7 @@
 
 #include<functions/tnlOperatorFunction.h>
 #include<functions/tnlMeshFunction.h>
+#include<operators/tnlOperator.h>
 
 /****
  * This object serves for composition of two operators F and G into an operator F( G( u ) ).
@@ -33,7 +34,12 @@ template< typename OuterOperator,
           typename InnerOperator,
           typename InnerBoundaryConditions = void >
 class tnlOperatorComposition
-   : public tnlDomain< InnerOperator::getDimensions(), InnerOperator::getDomainType() >   
+   : public tnlOperator< typename InnerOperator::MeshType,
+                         InnerOperator::getDomainType(),
+                         InnerOperator::getPreimageEntitiesDimensions(),
+                         OuterOperator::getImageEntitiesDimensions(),
+                         typename InnerOperator::RealType,
+                         typename OuterOperator::IndexType >   
 {
       static_assert( is_same< typename OuterOperator::MeshType, typename InnerOperator::MeshType >::value,
          "Both operators have different mesh types." );

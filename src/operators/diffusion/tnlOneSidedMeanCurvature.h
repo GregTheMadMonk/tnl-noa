@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlOneSidedTotalVariationMinimization.h  -  description
+                          tnlOneSidedMeanCurvature.h  -  description
                              -------------------
     begin                : Feb 17, 2016
     copyright            : (C) 2016 by oberhuber
@@ -30,7 +30,7 @@ template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType,
           bool EvaluateNonlinearityOnFly = false >
-class tnlOneSidedTotalVariationMinimization
+class tnlOneSidedMeanCurvature
    : public tnlOperator< Mesh, MeshInteriorDomain, Mesh::getMeshDimensions(), Mesh::getMeshDimensions(), Real, Index >
 {
    public:
@@ -46,13 +46,13 @@ class tnlOneSidedTotalVariationMinimization
       typedef tnlOperatorFunction< NonlinearityOperator, NonlinearityMeshFunction, NonlinearityBoundaryConditions, EvaluateNonlinearityOnFly > Nonlinearity;
       typedef tnlOneSidedNonlinearDiffusion< Mesh, Nonlinearity, RealType, IndexType > NonlinearDiffusion;
       
-      tnlOneSidedTotalVariationMinimization()
+      tnlOneSidedMeanCurvature()
       : nonlinearity( gradientNorm, nonlinearityBoundaryConditions ),
         nonlinearDiffusion( nonlinearity ){}
       
       static tnlString getType()
       {
-         return tnlString( "tnlOneSidedTotalVariationMinimization< " ) +
+         return tnlString( "tnlOneSidedMeanCurvature< " ) +
             MeshType::getType() + ", " +
             ::getType< Real >() + ", " +
             ::getType< Index >() + " >";         
