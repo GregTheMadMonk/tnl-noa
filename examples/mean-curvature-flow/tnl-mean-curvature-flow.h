@@ -25,10 +25,9 @@
 #include <operators/tnlNeumannBoundaryConditions.h>
 #include <functions/tnlConstantFunction.h>
 #include <problems/tnlMeanCurvatureFlowProblem.h>
-#include <operators/diffusion/tnlNonlinearDiffusion.h>
+#include <operators/diffusion/tnlOneSidedNonlinearDiffusion.h>
 #include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
-#include <operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
 #include <operators/diffusion/nonlinear-diffusion-operators/tnlFiniteVolumeNonlinearOperator.h>
 #include <functions/tnlMeshFunction.h>
 
@@ -85,7 +84,7 @@ class meanCurvatureFlowSetter
       if( numericalScheme == "fdm" )
       {
          typedef tnlOneSideDiffOperatorQ<MeshType, Real, Index > QOperator;
-         typedef tnlOneSideDiffNonlinearOperator<MeshType, QOperator, Real, Index > NonlinearOperator;         
+         typedef tnlOneSideNonlinearDiffusion<MeshType, QOperator, Real, Index > NonlinearOperator;         
          return setBoundaryConditions< NonlinearOperator, QOperator >( parameters );
       }
       if( numericalScheme == "fvm" )
@@ -101,7 +100,7 @@ class meanCurvatureFlowSetter
              typename QOperator >
    static bool setBoundaryConditions( const tnlParameterContainer& parameters )
    {
-      typedef tnlNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
+      typedef tnlOneSidedNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
       typedef tnlConstantFunction< Dimensions, Real > RightHandSide;
       typedef tnlStaticVector< MeshType::meshDimensions, Real > Vertex;
 

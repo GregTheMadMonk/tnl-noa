@@ -17,7 +17,7 @@
 
 
 #ifndef TNLONESIDEDNONLINEARDIFFUSION_H
-#define	TNLNESIDEDNONLINEARDIFFUSION_H
+#define	TNLONESIDEDNONLINEARDIFFUSION_H
 
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
@@ -29,7 +29,6 @@ template< typename Mesh,
           typename Index = typename Mesh::IndexType >
 class tnlOneSidedNonlinearDiffusion
 {
- 
 };
 
 template< typename MeshReal,
@@ -49,7 +48,7 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, N
       typedef Index IndexType;
       typedef Nonlinearity NonlinearityType;
       typedef typename MeshType::template MeshEntity< MeshType::getMeshDimensions() > CellType;
-      typedef tnlExactNonlinearDiffusion< typename Nonlinearity::ExactOperatorType, MeshType::getMeshDimensions() > ExactOperatorType;
+      typedef tnlExactNonlinearDiffusion< MeshType::getMeshDimensions(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
 
       tnlOneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
@@ -145,7 +144,7 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, 
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Nonlinearity NonlinearityType;
-      typedef tnlExactNonlinearDiffusion< typename Nonlinearity::ExactOperatorType, MeshType::getMeshDimensions() > ExactOperatorType;      
+      typedef tnlExactNonlinearDiffusion< MeshType::getMeshDimensions(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;      
 
       tnlOneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}      
@@ -236,7 +235,7 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, 
    
    public:
        
-      Nonlinearity& nonlinearity;
+      const Nonlinearity& nonlinearity;
 };
 
 
@@ -256,7 +255,7 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Nonlinearity NonlinearityType;
-      typedef tnlExactNonlinearDiffusion< typename Nonlinearity::ExactOperatorType, MeshType::getMeshDimensions() > ExactOperatorType;
+      typedef tnlExactNonlinearDiffusion< MeshType::getMeshDimensions(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
 
       tnlOneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
@@ -366,7 +365,7 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
      
    public:
        
-      Nonlinearity& nonlinearity;
+      const Nonlinearity& nonlinearity;
 };
 
 #endif	/* TNLONESIDEDNONLINEARDIFFUSION_H */

@@ -60,7 +60,7 @@ class tnlConstantFunction : public tnlDomain< dimensions, NonspaceDomain >
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const
       {
-         return getValue< 0, 0, 0 >( v, time );
+         return constant;
       }
       
        __cuda_callable__ inline

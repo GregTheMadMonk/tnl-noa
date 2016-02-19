@@ -129,10 +129,10 @@ class tnlOperatorFunctionTest
 template< typename MeshType >
 bool runTest()
 {
+#ifdef HAVE_CPPUNIT
    typedef tnlLinearDiffusion< MeshType > OperatorType;
    tnlOperatorFunctionTest< OperatorType, false > test;
    //test.testWithBoundaryConditions();
-#ifdef HAVE_CPPUNIT
    if( //! tnlUnitTestStarter::run< tnlOperatorFunctionTest< OperatorType, true > >() ||
        ! tnlUnitTestStarter::run< tnlOperatorFunctionTest< OperatorType, false > >() )
      return false;

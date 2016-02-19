@@ -1,8 +1,8 @@
 /***************************************************************************
-                          tnlExactFunctionInverseOperator.h  -  description
+                          tnlExactIdentityOperator.h  -  description
                              -------------------
-    begin                : Feb 17, 2016
-    copyright            : (C) 2016 by oberhuber
+    begin                : Feb 18, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,37 +15,25 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLEXACTFUNCTIONINVERSEOPERATOR_H
-#define	TNLEXACTFUNCTIONINVERSEOPERATOR_H
+#ifndef TNLEXACTIDENTITYOPERATOR_H
+#define TNLEXACTIDENTITYOPERATOR_H
 
 #include <core/tnlString.h>
 #include <core/tnlCuda.h>
 #include <operators/tnlOperator.h>
-#include <operators/tnlExactIdentityOperator.h>
 
-template< int Dimensions,
-          typename InnerOperator= tnlExactIdentityOperator< Dimensions > >
-class tnlExactFunctionInverseOperator
+template< int Dimensions >
+class tnlExactIdentityOperator
    : public tnlDomain< Dimensions, SpaceDomain >
 {
    public:
-           
+     
       static tnlString getType()
       {
-         return tnlString( "tnlExactFunctionInverseOperator< " ) + 
+         return tnlString( "tnlExactIdentityOperator< " ) + 
                 tnlString( Dimensions) + " >";         
       }
-                        
-      InnerOperator& getInnerOperator()
-      {
-         return this->innerOperator;
-      }
       
-      const InnerOperator& getInnerOperator() const
-      {
-         return this->innerOperator;
-      }      
-
       template< typename Function >
       __cuda_callable__
       typename Function::RealType 
@@ -53,8 +41,7 @@ class tnlExactFunctionInverseOperator
                      const typename Function::VertexType& v, 
                      const typename Function::RealType& time = 0.0 ) const
       {
-         typedef typename Function::RealType RealType;
-         return 1.0 / innerOperator( function, v, time );
+         return function( v, time );
       }
       
       template< typename Function, 
@@ -69,33 +56,12 @@ class tnlExactFunctionInverseOperator
       {
          static_assert( XDerivative >= 0 && YDerivative >= 0 && ZDerivative >= 0,
             "Partial derivative must be non-negative integer." );
-         static_assert( XDerivative + YDerivative + ZDerivative < 2, "Partial derivative of higher order then 1 are not implemented yet." );
-         typedef typename Function::RealType RealType;
          
-         if( XDerivative == 1 )
-         {
-            const RealType f = innerOperator( function, v, time );
-            const RealType f_x = innerOperator.template getPartialDerivative< Function, 1, 0, 0 >( function, v, time );
-            return -f_x / ( f * f );
-         }
-         if( YDerivative == 1 )
-         {
-            const RealType f = innerOperator( function, v, time );
-            const RealType f_y = innerOperator.template getPartialDerivative< Function, 0, 1, 0 >( function, v, time );
-            return -f_y / ( f * f );            
-         }
-         if( ZDerivative == 1 )
-         {
-            const RealType f = innerOperator( function, v, time );
-            const RealType f_z = innerOperator.template getPartialDerivative< Function, 0, 0, 1 >( function, v, time );
-            return -f_z / ( f * f );            
-         }         
+         return function.template getPartialDerivative< XDerivative, YDerivative, ZDerivative >( v, time );         
       }
-      
-   protected:
-      
-      InnerOperator innerOperator;           
 };
 
-#endif	/* TNLEXACTFUNCTIONINVERSEOPERATOR_H */
+
+
+#endif /* TNLEXACTIDENTITYOPERATOR_H */
 

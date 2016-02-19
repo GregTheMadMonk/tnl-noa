@@ -24,22 +24,27 @@
 #include<operators/geometric/tnlExactGradientNorm.h>
 
 template< int Dimensions,
-          typename Real >
+          typename InnerOperator = tnlExactIdentityOperator< Dimensions > >
 class tnlExactMeanCurvature
+: public tnlDomain< Dimensions, SpaceDomain >
 {
    public:
-      
-      typedef tnlExactGradientNorm< Dimensions, Real > ExactGradientNorm;
-      typedef tnlExactFunctionInverseOperator< Dimensions, Real > FunctionInverse;
-      typedef tnlExactNonlinearDiffusion< Dimensions, Real > NonlinearDiffusion;
-      
-      typedef typename OperatorType::RealType RealType;
+     
+      typedef tnlExactGradientNorm< Dimensions > ExactGradientNorm;
+      typedef tnlExactFunctionInverseOperator< Dimensions, ExactGradientNorm > FunctionInverse;
+      typedef tnlExactNonlinearDiffusion< Dimensions, FunctionInverse > NonlinearDiffusion;
       
       static tnlString getType()
       {
          return tnlString( "tnlExactMeanCurvature< " ) + 
                 tnlString( Dimensions) + ", " +
-                RealType::getType() + " >";         
+                InnerOperator::getType() + " >";         
+      }
+      
+      template< typename Real >
+      void setRegularizationEpsilon( const Real& eps)
+      {
+         nonlinearDiffusion.getNonlinearity().getInnerOperator().setRegularizationEpislon( eps );
       }
       
       template< typename Function >
@@ -49,7 +54,7 @@ class tnlExactMeanCurvature
                      const typename Function::VertexType& v, 
                      const typename Function::RealType& time = 0.0 ) const
       {
-         return this->nonlinearDiffusion( this->functionInverse( this->gradientNorm( function( v, time ) ) ) );
+         return this->nonlinearDiffusion( function, v, time );
       }
       
       template< typename Function, 

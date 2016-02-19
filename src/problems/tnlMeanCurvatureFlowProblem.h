@@ -18,8 +18,7 @@
 #ifndef TNLMEANCURVATUREFLOWPROBLEM_H_
 #define TNLMEANCURVATUREFLOWPROBLEM_H_
 
-#include <operators/diffusion/tnlNonlinearDiffusion.h>
-#include <operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
+#include <operators/diffusion/tnlOneSidedMeanCurvature.h>
 #include <problems/tnlPDEProblem.h>
 #include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <matrices/tnlCSRMatrix.h>
@@ -28,10 +27,11 @@
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator = tnlNonlinearDiffusion< Mesh,
-                                                          tnlOneSideDiffNonlinearOperator< Mesh, tnlOneSideDiffOperatorQ<Mesh, typename Mesh::RealType,
-                                                          typename Mesh::IndexType >, typename Mesh::RealType, typename Mesh::IndexType >, 
-                                                          typename Mesh::RealType, typename Mesh::IndexType > >
+          typename DifferentialOperator = 
+            tnlOneSidedMeanCurvature< Mesh,
+                                      typename Mesh::RealType,
+                                      typename Mesh::IndexType,
+                                      false > >
 class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
                                                      typename DifferentialOperator::RealType,
                                                      typename Mesh::DeviceType,

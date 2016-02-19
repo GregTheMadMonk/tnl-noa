@@ -91,7 +91,7 @@ class tnlForwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Mes
             YDirection,
             ZDirection >::getValue( u, entity );
 
-      };
+      }
 };
 
 #endif	/* TNLFORWARDFINITEDIFFERENCE_H */

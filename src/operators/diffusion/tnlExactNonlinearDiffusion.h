@@ -19,26 +19,47 @@
 #define TNLEXACTNONLINEARDIFFUSION_H_
 
 #include <functions/tnlDomain.h>
+#include <operators/tnlExactIdentityOperator.h>
 
-template< typename Nonlinearity, int Dimensions >
+
+template<  int Dimensions, 
+           typename Nonlinearity,
+           typename InnerOperator = tnlExactIdentityOperator< Dimensions > >
 class tnlExactNonlinearDiffusion
 {};
 
-template< typename Nonlinearity >
-class tnlExactNonlinearDiffusion< Nonlinearity, 1 > 
+
+template< typename Nonlinearity,
+          typename InnerOperator >
+class tnlExactNonlinearDiffusion< 1, Nonlinearity, InnerOperator > 
    : public tnlDomain< 1, SpaceDomain >
 {
    public:
 
       static tnlString getType()
       {
-         return "tnlExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 1 >";
+         return "tnlExactNonlinearDiffusion< 1, " + Nonlinearity::getType() + " >";
       };
       
-      void setNonlinearity( const Nonlinearity& nonlinearity )
+      Nonlinearity& getNonlinearity()
       {
-         this->nonlinearity = nonlinearity;
+         return this->nonlinearity;
       }
+      
+      const Nonlinearity& getNonlinearity() const
+      {
+         return this->nonlinearity;
+      }
+      
+      InnerOperator& getInnerOperator()
+      {
+         return this->innerOperator;
+      }
+      
+      const InnerOperator& getInnerOperator() const
+      {
+         return this->innerOperator;
+      }      
    
       template< typename Function >
       __cuda_callable__
@@ -48,8 +69,8 @@ class tnlExactNonlinearDiffusion< Nonlinearity, 1 >
                   const typename Function::RealType& time = 0.0 ) const
       {
          typedef typename Function::RealType RealType;         
-         const RealType u_x = function.template getPartialDerivative< 1, 0, 0 >( v, time );
-         const RealType u_xx = function.template getPartialDerivative< 2, 0, 0 >( v, time );
+         const RealType u_x = innerOperator.template getPartialDerivative< Function, 1, 0, 0 >( function, v, time );
+         const RealType u_xx = innerOperator.template getPartialDerivative< Function, 2, 0, 0 >( function, v, time );
          const RealType g = nonlinearity( function, v, time ); 
          const RealType g_x = nonlinearity.template getPartialDerivative< Function, 1, 0, 0 >( function, v, time );
          return u_xx - u_x * g_x / g;          
@@ -58,10 +79,13 @@ class tnlExactNonlinearDiffusion< Nonlinearity, 1 >
       protected:
          
          Nonlinearity nonlinearity;
+
+         InnerOperator innerOperator;
 };
 
-template< typename Nonlinearity >
-class tnlExactNonlinearDiffusion< Nonlinearity, 2 >
+template< typename Nonlinearity,
+          typename InnerOperator >
+class tnlExactNonlinearDiffusion< 2, Nonlinearity, InnerOperator >
    : public tnlDomain< 2, SpaceDomain >
 {
    public:
@@ -70,11 +94,26 @@ class tnlExactNonlinearDiffusion< Nonlinearity, 2 >
       {
          return "tnlExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 2 >";
       };
-
-      void setNonlinearity( const Nonlinearity& nonlinearity )
+      
+      Nonlinearity& getNonlinearity()
       {
-         this->nonlinearity = nonlinearity;
+         return this->nonlinearity;
       }
+      
+      const Nonlinearity& getNonlinearity() const
+      {
+         return this->nonlinearity;
+      }
+      
+      InnerOperator& getInnerOperator()
+      {
+         return this->innerOperator;
+      }
+      
+      const InnerOperator& getInnerOperator() const
+      {
+         return this->innerOperator;
+      }      
 
       template< typename Function >
       __cuda_callable__
@@ -84,11 +123,11 @@ class tnlExactNonlinearDiffusion< Nonlinearity, 2 >
                   const typename Function::RealType& time = 0.0 ) const
       {
          typedef typename Function::RealType RealType;         
-         const RealType u_x = function.template getPartialDerivative< 1, 0, 0 >( v, time );
-         const RealType u_y = function.template getPartialDerivative< 0, 1, 0 >( v, time );
-         const RealType u_xx = function.template getPartialDerivative< 2, 0, 0 >( v, time );
-         const RealType u_yy = function.template getPartialDerivative< 0, 2, 0 >( v, time );
-         const RealType g = nonlinearity( function, v, time ); 
+         const RealType u_x  = innerOperator.template getPartialDerivative< Function, 1, 0, 0 >( function, v, time );
+         const RealType u_y  = innerOperator.template getPartialDerivative< Function, 0, 1, 0 >( function, v, time );
+         const RealType u_xx = innerOperator.template getPartialDerivative< Function, 2, 0, 0 >( function, v, time );
+         const RealType u_yy = innerOperator.template getPartialDerivative< Function, 0, 2, 0 >( function, v, time );
+         const RealType g   = nonlinearity( function, v, time ); 
          const RealType g_x = nonlinearity.template getPartialDerivative< Function, 1, 0, 0 >( function, v, time );
          const RealType g_y = nonlinearity.template getPartialDerivative< Function, 0, 1, 0 >( function, v, time );
 
@@ -98,11 +137,14 @@ class tnlExactNonlinearDiffusion< Nonlinearity, 2 >
       protected:
          
          Nonlinearity nonlinearity;
+         
+         InnerOperator innerOperator;
       
 };
 
-template< typename Nonlinearity >
-class tnlExactNonlinearDiffusion< Nonlinearity, 3 >
+template< typename Nonlinearity,
+          typename InnerOperator  >
+class tnlExactNonlinearDiffusion< 3, Nonlinearity, InnerOperator >
    : public tnlDomain< 3, SpaceDomain >
 {
    public:
@@ -111,10 +153,25 @@ class tnlExactNonlinearDiffusion< Nonlinearity, 3 >
       {
          return "tnlExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 3 >";
       }
-
-      void setNonlinearity( const Nonlinearity& nonlinearity )
+      
+      Nonlinearity& getNonlinearity()
       {
-         this->nonlinearity = nonlinearity;
+         return this->nonlinearity;
+      }
+      
+      const Nonlinearity& getNonlinearity() const
+      {
+         return this->nonlinearity;
+      }
+      
+      InnerOperator& getInnerOperator()
+      {
+         return this->innerOperator;
+      }
+      
+      const InnerOperator& getInnerOperator() const
+      {
+         return this->innerOperator;
       }      
       
       template< typename Function >
@@ -125,13 +182,13 @@ class tnlExactNonlinearDiffusion< Nonlinearity, 3 >
                   const typename Function::RealType& time = 0.0 ) const
       {
          typedef typename Function::RealType RealType;         
-         const RealType u_x  = function.template getPartialDerivative< 1, 0, 0 >( v, time );
-         const RealType u_y  = function.template getPartialDerivative< 0, 1, 0 >( v, time );
-         const RealType u_z  = function.template getPartialDerivative< 0, 0, 1 >( v, time );
-         const RealType u_xx = function.template getPartialDerivative< 2, 0, 0 >( v, time );
-         const RealType u_yy = function.template getPartialDerivative< 0, 2, 0 >( v, time );
-         const RealType u_zz = function.template getPartialDerivative< 0, 0, 2 >( v, time );
-         const RealType g = nonlinearity( function, v, time ) ;
+         const RealType u_x  = innerOperator.template getPartialDerivative< Function, 1, 0, 0 >( function, v, time );
+         const RealType u_y  = innerOperator.template getPartialDerivative< Function, 0, 1, 0 >( function, v, time );
+         const RealType u_z  = innerOperator.template getPartialDerivative< Function, 0, 0, 1 >( function, v, time );
+         const RealType u_xx = innerOperator.template getPartialDerivative< Function, 2, 0, 0 >( function, v, time );
+         const RealType u_yy = innerOperator.template getPartialDerivative< Function, 0, 2, 0 >( function, v, time );
+         const RealType u_zz = innerOperator.template getPartialDerivative< Function, 0, 0, 2 >( function, v, time );
+         const RealType g   = nonlinearity( function, v, time ) ;
          const RealType g_x = nonlinearity.template getPartialDerivative< Function, 1, 0, 0 >( function, v, time );
          const RealType g_y = nonlinearity.template getPartialDerivative< Function, 0, 1, 0 >( function, v, time );
          const RealType g_z = nonlinearity.template getPartialDerivative< Function, 0, 0, 1 >( function, v, time );
@@ -142,6 +199,9 @@ class tnlExactNonlinearDiffusion< Nonlinearity, 3 >
       protected:
          
          Nonlinearity nonlinearity;
+         
+         InnerOperator innerOperator;
 };
+
 
 #endif /* TNLEXACTNONLINEARDIFFUSION_H_ */

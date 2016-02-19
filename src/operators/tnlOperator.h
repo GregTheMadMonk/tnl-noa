@@ -48,7 +48,7 @@ class tnlOperator : public tnlDomain< Mesh::getMeshDimensions(), DomainType >
       bool deepRefresh( const RealType& time = 0.0 ) { return true; }
     
       template< typename MeshFunction > 
-      void setPreimageFunction( const MeshFunction& f ){};
+      void setPreimageFunction( const MeshFunction& f ){}
 };
 #endif	/* TNLOPERATOR_H */
 

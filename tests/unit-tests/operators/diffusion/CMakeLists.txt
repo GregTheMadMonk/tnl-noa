@@ -11,9 +11,9 @@ if( BUILD_CUDA )
                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
    TARGET_LINK_LIBRARIES( tnlLinearDiffusionTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                                           tnl${mpiExt}${debugExt}-0.1 )
-   CUDA_ADD_EXECUTABLE( tnlOneSidedNonlinearDiffusionTest-cuda${mpiExt}${debugExt} ${headers} tnlOneSidedNonlinearDiffusionTest.cu
+   CUDA_ADD_EXECUTABLE( tnlOneSidedMeanCurvatureTest-cuda${mpiExt}${debugExt} ${headers} tnlOneSidedMeanCurvatureTest.cu
                         OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
-   TARGET_LINK_LIBRARIES( tnlOneSidedNonlinearDiffusionTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+   TARGET_LINK_LIBRARIES( tnlOneSidedMeanCurvatureTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                                           tnl${mpiExt}${debugExt}-0.1 )
 
 endif()                                                                      

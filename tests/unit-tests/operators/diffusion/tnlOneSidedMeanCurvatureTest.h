@@ -63,8 +63,10 @@ class tnlOneSidedMeanCurvatureTest
                                   RealType errors[ 3 ] )
       {
          this->setupMesh( meshSize );
-         this->performTest( this->approximateOperator,
-                            this->exactOperator,
+         ApproximateOperator approximateOperator( this->mesh );
+         ExactOperatorType exactOperator;
+         this->performTest( approximateOperator,
+                            exactOperator,
                             errors,
                             write,
                             verbose );
@@ -81,9 +83,7 @@ class tnlOneSidedMeanCurvatureTest
       
    protected:
 
-      ApproximateOperator approximateOperator;
       
-      ExactOperatorType exactOperator;
 
 };
 
@@ -96,10 +96,14 @@ bool runTest()
 {
    typedef tnlOneSidedMeanCurvature< Mesh > ApproximateOperator;
    typedef tnlOneSidedMeanCurvatureTest< ApproximateOperator, Function, write, verbose > OperatorTest;
+   OperatorTest test;
+   test.runUnitTest();
 #ifdef HAVE_CPPUNIT   
    if( ! tnlUnitTestStarter::run< tnlPDEOperatorEocUnitTest< OperatorTest > >() )
       return false;
    return true;
+#else
+   return false;   
 #endif      
 }
 
@@ -123,7 +127,7 @@ bool setMesh()
 
 int main( int argc, char* argv[] )
 {
-   const bool verbose( false );
+   const bool verbose( true );
    const bool write( false );
    
    if( ! setMesh< tnlHost, write, verbose  >() )

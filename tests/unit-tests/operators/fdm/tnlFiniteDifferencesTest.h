@@ -210,3 +210,12 @@ bool test()
 #endif    
     return true;    
 }
+
+int main( int argc, char* argv[] )
+{
+#ifdef HAVE_CPPUNIT
+    return test();
+#else
+   return EXIT_FAILURE;
+#endif
+}

@@ -51,6 +51,7 @@ write( const MeshFunctionType& function,
       str << v << " " 
           << function.getData().getElement( entity.getIndex() ) << std::endl;
    }
+   return true;
 }
 
 /****
@@ -76,6 +77,7 @@ write( const MeshFunctionType& function,
       str << v << " " 
           << function.getData().getElement( entity.getIndex() ) << std::endl;      
    }
+   return true;
 }
 
 
@@ -108,6 +110,7 @@ write( const MeshFunctionType& function,
       }
       str << std::endl;
    }
+   return true;
 }
 
 /****
@@ -162,6 +165,7 @@ write( const MeshFunctionType& function,
       }
       str << std::endl;
    }   
+   return true;
 }
 
 
@@ -194,6 +198,7 @@ write( const MeshFunctionType& function,
       }
       str << std::endl;
    }
+   return true;
 }
 
 #endif	/* TNLMESHFUNCTIONGNUPLOTWRITER_IMPL_H */

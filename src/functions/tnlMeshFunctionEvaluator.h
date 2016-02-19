@@ -49,7 +49,7 @@ class tnlMeshFunctionEvaluator : public tnlDomain< OutMeshFunction::getEntitiesD
       typedef tnlMeshFunctionEvaluatorTraverserUserData< OutMeshFunction, InFunction, RealType > TraverserUserData;
 
       
-      const static int meshEntityDimensions = OutMeshFunction::entityDimensions;
+      const static int meshEntityDimensions = OutMeshFunction::getEntitiesDimensions();
       
       static_assert( MeshType::meshDimensions == InFunction::getDimensions(), 
          "Input function and the mesh of the mesh function have both different number of dimensions." );

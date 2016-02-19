@@ -49,6 +49,8 @@ class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 1, Real, Device, Index > >
          CoordinatesType dimensions;
          dimensions.x() = meshSize;
          mesh.setDimensions( dimensions );
+
+         return true;
       }
 };
 
@@ -79,6 +81,8 @@ class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 2, Real, Device, Index > >
          dimensions.x() = meshSize;
          dimensions.y() = meshSize;
          mesh.setDimensions( dimensions );         
+
+         return true;
       }
 };
 
@@ -112,6 +116,8 @@ class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 3, Real, Device, Index > >
          dimensions.y() = meshSize;
          dimensions.z() = meshSize;
          mesh.setDimensions( dimensions );         
+         
+         return true;
       }
 };
 

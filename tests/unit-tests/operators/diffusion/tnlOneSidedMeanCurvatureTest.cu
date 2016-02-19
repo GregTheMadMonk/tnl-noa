@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlOneSidedTotalVariationMinimizationTest.cu  -  description
+                          tnlOneSidedMeanCurvatureTest.cu  -  description
                              -------------------
     begin                : Nov 15, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,4 +15,4 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "tnlOneSidedTotalVariationMinimizationTest.h"
+#include "tnlOneSidedMeanCurvatureTest.h"

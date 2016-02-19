@@ -48,7 +48,7 @@ class tnlExactDifference
             ZDerivative >(
             vertex, 
             time );
-      };
+      }
 };
 
 

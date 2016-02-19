@@ -98,6 +98,8 @@ bool runTest()
    if( ! tnlUnitTestStarter::run< tnlPDEOperatorEocUnitTest< OperatorTest > >() )
       return false;
    return true;
+#else
+   return false;
 #endif      
 }
 

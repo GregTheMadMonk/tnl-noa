@@ -49,8 +49,9 @@ class tnlOneSidedMeanCurvature
       typedef tnlOneSidedNonlinearDiffusion< Mesh, Nonlinearity, RealType, IndexType > NonlinearDiffusion;
       typedef tnlExactMeanCurvature< Mesh::getMeshDimensions(), RealType > ExactOperatorType;
       
-      tnlOneSidedMeanCurvature()
-      : nonlinearity( gradientNorm, nonlinearityBoundaryConditions ),
+      tnlOneSidedMeanCurvature( const MeshType& mesh )
+      : nonlinearityOperator( gradientNorm ),
+        nonlinearity( nonlinearityOperator, nonlinearityBoundaryConditions, mesh ),
         nonlinearDiffusion( nonlinearity ){}
       
       static tnlString getType()
@@ -59,6 +60,16 @@ class tnlOneSidedMeanCurvature
             MeshType::getType() + ", " +
             ::getType< Real >() + ", " +
             ::getType< Index >() + " >";         
+      }
+      
+      void setRegularizationEpsilon( const RealType& eps )
+      {
+         this->gradientNorm.setEps( eps );
+      }
+      
+      void setPreimageFunction( typename Nonlinearity::PreimageFunctionType& preimageFunction )
+      {
+         this->nonlinearity.setPreimageFunction( preimageFunction );
       }
       
       bool refresh( const RealType& time = 0.0 )
@@ -112,6 +123,8 @@ class tnlOneSidedMeanCurvature
       NonlinearityBoundaryConditions nonlinearityBoundaryConditions;
       
       GradientNorm gradientNorm;
+
+      NonlinearityOperator nonlinearityOperator;
       
       Nonlinearity nonlinearity;
       
