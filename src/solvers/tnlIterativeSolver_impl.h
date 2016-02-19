@@ -103,7 +103,7 @@ bool tnlIterativeSolver< Real, Index> :: nextIteration()
 
    if( std::isnan( this->getResidue() ) || 
        this->getIterations() > this->getMaxIterations()  ||
-       ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() > this->minIterations ) ||
+       ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() > this->getMinIterations() ) ||
        ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() > this->minIterations ) ) 
       return false;
    return true;
@@ -196,14 +196,14 @@ void tnlIterativeSolver< Real, Index> :: setSolverMonitor( tnlIterativeSolverMon
 }
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: refreshSolverMonitor()
+void tnlIterativeSolver< Real, Index> :: refreshSolverMonitor( bool force )
 {
    if( this -> solverMonitor )
    {
       this -> solverMonitor -> setIterations( this -> getIterations() );
       this -> solverMonitor -> setResidue( this -> getResidue() );
       this -> solverMonitor -> setRefreshRate( this-> refreshRate );
-      this -> solverMonitor -> refresh();
+      this -> solverMonitor -> refresh( force );
    }
 }
 

@@ -19,7 +19,6 @@
 #define TNLPDEOPERATOREOCTESTRESULT_H_
 
 template< typename ApproximateOperator,
-          typename ApproximationMethod,
           typename TestFunction >
 class tnlPDEOperatorEocTestResult
 {

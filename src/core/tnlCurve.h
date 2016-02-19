@@ -82,7 +82,9 @@ template< class T > class tnlCurve : public tnlObject, public tnlList< tnlCurveE
    public:
    //! Basic contructor
    tnlCurve( const char* name )
-   : tnlObject( name )
+   : tnlObject()
+// FIXME: name property has been removed from tnlObject
+//   : tnlObject( name )
    {
    };
 

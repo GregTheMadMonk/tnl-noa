@@ -24,6 +24,7 @@
 #include <mesh/tnlGnuplotWriter.h>
 #include <mesh/grids/tnlGridEntityGetter_impl.h>
 #include <mesh/grids/tnlNeighbourGridEntityGetter2D_impl.h>
+#include <mesh/grids/tnlGridEntityMeasureGetter.h>
 
 using namespace std;
 
@@ -45,7 +46,7 @@ template< typename Real,
 tnlString tnlGrid< 2, Real, Device, Index > :: getType()
 {
    return tnlString( "tnlGrid< " ) +
-          tnlString( getDimensionsCount() ) + ", " +
+          tnlString( getMeshDimensions() ) + ", " +
           tnlString( ::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
           tnlString( ::getType< IndexType >() ) + " >";
@@ -259,6 +260,30 @@ getEntityIndex( const EntityType& entity ) const
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename EntityType >
+__cuda_callable__
+Real
+tnlGrid< 2, Real, Device, Index >::
+getEntityMeasure( const EntityType& entity ) const
+{
+   return tnlGridEntityMeasureGetter< ThisType, EntityType::getDimensions() >::getMeasure( *this, entity );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Real
+tnlGrid< 2, Real, Device, Index >::
+getCellMeasure() const
+{
+   return this->template getSpaceStepsProducts< 1, 1 >();
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
 __cuda_callable__ inline
 typename tnlGrid< 2, Real, Device, Index >::VertexType
 tnlGrid< 2, Real, Device, Index >::
@@ -292,7 +317,7 @@ Real tnlGrid< 2, Real, Device, Index > :: getSmallestSpaceStep() const
 {
    return Min( this->spaceSteps.x(), this->spaceSteps.y() );
 }
- 
+
 template< typename Real,
           typename Device,
           typename Index >
@@ -434,7 +459,7 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
            << this -> getProportions(). x() << "cm , "
            << this -> getProportions(). y() << "cm );"
            << endl << endl;
-      GridEntity< 0 > vertex( *this );
+      MeshEntity< 0 > vertex( *this );
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();
       VertexType v;
       for( Index j = 0; j < this -> dimensions. y(); j ++ )
@@ -472,7 +497,7 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
       }
       file << endl;
 
-      GridEntity< 2 > cell( *this );
+      MeshEntity< 2 > cell( *this );
       CoordinatesType& cellCoordinates = cell.getCoordinates();
       const RealType cellMeasure = this->getSpaceSteps().x() * this->getSpaceSteps().y();
       for( Index i = 0; i < this -> dimensions. x(); i ++ )
@@ -590,7 +615,7 @@ void
 tnlGrid< 2, Real, Device, Index >::
 writeProlog( tnlLogger& logger )
 {
-   logger.writeParameter( "Dimensions:", getDimensionsCount() );
+   logger.writeParameter( "Dimensions:", getMeshDimensions() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

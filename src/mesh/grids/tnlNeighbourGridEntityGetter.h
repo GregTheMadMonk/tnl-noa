@@ -48,14 +48,14 @@ class tnlNeighbourGridEntityGetter
       __cuda_callable__
       tnlNeighbourGridEntityGetter( const GridEntity& entity )
       {
-         tnlAssert( false, );
+         //tnlAssert( false, );
       };
       
       __cuda_callable__
       void refresh( const typename GridEntity::GridType& grid,
                     const typename GridEntity::IndexType& entityIndex )
       {
-         tnlAssert( false, );
+         //tnlAssert( false, );
       };
 
 };

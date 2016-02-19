@@ -148,7 +148,7 @@ bool tnlArrayOperations< tnlCuda >::copyMemory( DestinationElement* destination,
    tnlAssert( destination, );
    tnlAssert( source, );
    #ifdef HAVE_CUDA
-      if( tnlFastArrayOperations< DestinationElement, SourceElement >::enabled )
+      if( std::is_same< DestinationElement, SourceElement >::value )
       {
          if( cudaMemcpy( destination,
                          source,
@@ -201,7 +201,7 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory( DestinationElement* des
    tnlAssert( destination, );
    tnlAssert( source, );
    #ifdef HAVE_CUDA
-   if( tnlFastArrayOperations< DestinationElement, SourceElement >::enabled )
+   if( std::is_same< DestinationElement, SourceElement >::value )
    {
       cudaMemcpy( destination,
                   source,
@@ -312,7 +312,7 @@ bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory( DestinationElement* des
    tnlAssert( source, );
    tnlAssert( size >= 0, cerr << "size = " << size );
    #ifdef HAVE_CUDA
-   if( tnlFastArrayOperations< DestinationElement, SourceElement >::enabled )
+   if( std::is_same< DestinationElement, SourceElement >::value )
    {
       cudaMemcpy( destination,
                   source,

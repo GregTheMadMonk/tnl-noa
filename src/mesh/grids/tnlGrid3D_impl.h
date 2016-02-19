@@ -23,6 +23,7 @@
 #include <mesh/grids/tnlGridEntityGetter_impl.h>
 #include <mesh/grids/tnlNeighbourGridEntityGetter3D_impl.h>
 #include <mesh/grids/tnlGrid3D.h>
+#include <mesh/grids/tnlGridEntityMeasureGetter.h>
 
 template< typename Real,
           typename Device,
@@ -305,6 +306,29 @@ getEntityIndex( const EntityType& entity ) const
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename EntityType >
+__cuda_callable__
+Real
+tnlGrid< 3, Real, Device, Index >::
+getEntityMeasure( const EntityType& entity ) const
+{
+   return tnlGridEntityMeasureGetter< ThisType, EntityType::getDimensions() >::getMeasure( *this, entity );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Real
+tnlGrid< 3, Real, Device, Index >::
+getCellMeasure() const
+{
+   return this->template getSpaceStepsProducts< 1, 1, 1 >();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 __cuda_callable__ inline
 typename tnlGrid< 3, Real, Device, Index >::VertexType
 tnlGrid< 3, Real, Device, Index >::
@@ -360,7 +384,7 @@ typename GridFunction::RealType
                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   GridEntity< getDimensionsCount() > cell;
+   MeshEntity< getMeshDimensions() > cell;
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -388,7 +412,7 @@ template< typename Real,
                                                                            const GridFunction& f2 ) const
 {
    typename GridFunction::RealType maxDiff( -1.0 );
-   GridEntity< getDimensionsCount() > cell( *this );
+   MeshEntity< getMeshDimensions() > cell( *this );
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
         cell.getCoordinates().z()++ )
@@ -415,7 +439,7 @@ template< typename Real,
                                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
-   GridEntity< getDimensionsCount() > cell( *this );
+   MeshEntity< getMeshDimensions() > cell( *this );
 
    for( cell.getCoordinates().z() = 0;
         cell.getCoordinates().z() < getDimensions().z();
@@ -554,7 +578,7 @@ void
 tnlGrid< 3, Real, Device, Index >::
 writeProlog( tnlLogger& logger )
 {
-   logger.writeParameter( "Dimensions:", getDimensionsCount() );
+   logger.writeParameter( "Dimensions:", getMeshDimensions() );
    logger.writeParameter( "Domain origin:", this->origin );
    logger.writeParameter( "Domain proportions:", this->proportions );
    logger.writeParameter( "Domain dimensions:", this->dimensions );

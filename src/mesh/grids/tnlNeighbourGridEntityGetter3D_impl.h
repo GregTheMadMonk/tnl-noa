@@ -63,14 +63,14 @@ class tnlNeighbourGridEntityGetter<
       NeighbourGridEntityType getEntity() const
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() < entity.getGrid().getDimensions(),
+                    entity.getCoordinates() < entity.getMesh().getDimensions(),
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
          tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() + CoordinatesType( stepX, stepY ) < entity.getGrid().getDimensions(),
+                    entity.getCoordinates() + CoordinatesType( stepX, stepY ) < entity.getMesh().getDimensions(),
               cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
          return NeighbourGridEntity( CoordinatesType( entity.getCoordinates().x() + stepX,
                                                       entity.getCoordinates().y() + stepY,
@@ -82,17 +82,17 @@ class tnlNeighbourGridEntityGetter<
       IndexType getEntityIndex() const
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() < entity.getGrid().getDimensions(),
+                    entity.getCoordinates() < entity.getMesh().getDimensions(),
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
          tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) < entity.getGrid().getDimensions(),
+                    entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) < entity.getMesh().getDimensions(),
               cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ ) = " 
                    << entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ )
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         return this->entity.getIndex() + ( stepZ * entity.getGrid().getDimensions().y() + stepY ) * entity.getGrid().getDimensions().x() + stepX;
+         return this->entity.getIndex() + ( stepZ * entity.getMesh().getDimensions().y() + stepY ) * entity.getMesh().getDimensions().x() + stepX;
       }
       
       __cuda_callable__
@@ -149,16 +149,16 @@ class tnlNeighbourGridEntityGetter<
       NeighbourGridEntityType getEntity() const
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() < entity.getGrid().getDimensions(),
+                    entity.getCoordinates() < entity.getMesh().getDimensions(),
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() + CoordinatesType( stepX, stepY ) < entity.getGrid().getDimensions(),
-              cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+         tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) >= CoordinatesType( 0, 0, 0 ) &&
+                    entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) < entity.getMesh().getDimensions(),
+              cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ )
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         return NeighbourGridEntity( CoordinatesType( entity.getCoordinates().x() + stepX,
+         return NeighbourGridEntityType( this->entity.getMesh(), CoordinatesType( entity.getCoordinates().x() + stepX,
                                                       entity.getCoordinates().y() + stepY,
                                                       entity.getCoordinates().z() + stepZ ) );
       }
@@ -168,29 +168,29 @@ class tnlNeighbourGridEntityGetter<
       IndexType getEntityIndex() const
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() < entity.getGrid().getDimensions(),
+                    entity.getCoordinates() < entity.getMesh().getDimensions(),
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
          tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) < entity.getGrid().getDimensions(),
+                    entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) < entity.getMesh().getDimensions(),
               cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ ) = " 
                    << entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ )
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
 #ifndef HAVE_CUDA // TODO: fix this to work with CUDA         
          if( ( stepX != 0 && stepY != 0 && stepZ != 0 ) ||
              ( stepX < -stencilSize || stepX > stencilSize ||
                stepY < -stencilSize || stepY > stencilSize ||
                stepZ < -stencilSize || stepZ > stencilSize ) )                  
-            return this->entity.getIndex() + ( stepZ * entity.getGrid().getDimensions().y() + stepY ) * entity.getGrid().getDimensions().x() + stepX;
+            return this->entity.getIndex() + ( stepZ * entity.getMesh().getDimensions().y() + stepY ) * entity.getMesh().getDimensions().x() + stepX;
          if( stepY == 0 && stepZ == 0 )
             return stencilX[ stepX + stencilSize ];
          if( stepZ == 0 )
             return stencilY[ stepY + stencilSize ];
          return stencilZ[ stepZ + stencilSize ];
 #else
-         return this->entity.getIndex() + ( stepZ * entity.getGrid().getDimensions().y() + stepY ) * entity.getGrid().getDimensions().x() + stepX;
+         return this->entity.getIndex() + ( stepZ * entity.getMesh().getDimensions().y() + stepY ) * entity.getMesh().getDimensions().x() + stepX;
 #endif         
 
       }
@@ -216,7 +216,7 @@ class tnlNeighbourGridEntityGetter<
             static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
             {
                neighbourEntityGetter.stencilY[ index + stencilSize ] = 
-                  entityIndex + index * neighbourEntityGetter.entity.getGrid().getDimensions().x();
+                  entityIndex + index * neighbourEntityGetter.entity.getMesh().getDimensions().x();
             }
       };
       
@@ -229,7 +229,7 @@ class tnlNeighbourGridEntityGetter<
             static void exec( ThisType& neighbourEntityGetter, const IndexType& entityIndex )
             {
                neighbourEntityGetter.stencilZ[ index + stencilSize ] = 
-                  entityIndex + index * neighbourEntityGetter.entity.getGrid().cellZNeighboursStep;
+                  entityIndex + index * neighbourEntityGetter.entity.getMesh().cellZNeighboursStep;
             }
       };
 
@@ -301,9 +301,9 @@ class tnlNeighbourGridEntityGetter<
                          << " stepY = " << stepY
                          << " stepZ = " << stepZ );
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() < entity.getGrid().getDimensions(),
+                    entity.getCoordinates() < entity.getMesh().getDimensions(),
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
          tnlAssert( entity.getCoordinates() + 
                        CoordinatesType( stepX + ( stepX < 0 ), 
@@ -313,13 +313,13 @@ class tnlNeighbourGridEntityGetter<
                        CoordinatesType( stepX + ( stepX < 0 ),
                                         stepY + ( stepY < 0 ),
                                         stepZ + ( stepZ < 0 ) ) 
-                       < entity.getGrid().getDimensions() + 
+                       < entity.getMesh().getDimensions() + 
                         CoordinatesType( Sign( stepX ), Sign( stepY ), Sign(  stepZ ) ),
               cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) ) = "
                    << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) )
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         return NeighbourGridEntityType( this->entity.getGrid(),
+         return NeighbourGridEntityType( this->entity.getMesh(),
                                          CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
                                                           entity.getCoordinates().y() + stepY + ( stepY < 0 ),
                                                           entity.getCoordinates().z() + stepZ + ( stepZ < 0 ) ),
@@ -333,7 +333,7 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         return GridEntityGetter::getEntityIndex( this->entity.getGrid(), getEntity< stepX, stepY, stepZ >() );
+         return GridEntityGetter::getEntityIndex( this->entity.getMesh(), getEntity< stepX, stepY, stepZ >() );
       }
       
       __cuda_callable__
@@ -345,6 +345,96 @@ class tnlNeighbourGridEntityGetter<
       
       //tnlNeighbourGridEntityGetter(){};            
 };
+
+/****      TODO: Finish it, knonw it is only a copy of specialization for none stored stencil
+ * +-----------------+---------------------------+-------------------+
+ * | EntityDimenions | NeighbourEntityDimensions |  Stored Stencil   |       
+ * +-----------------+---------------------------+-------------------+
+ * |       3         |              2            |       Cross       |
+ * +-----------------+---------------------------+-------------------+
+ */
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Config >
+class tnlNeighbourGridEntityGetter< 
+   tnlGridEntity< tnlGrid< 3, Real, Device, Index >, 3, Config >,
+   2,
+   tnlGridEntityStencilStorageTag< tnlGridEntityCrossStencil > >
+{
+   public:
+      
+      static const int EntityDimensions = 3;
+      static const int NeighbourEntityDimensions = 2;
+      typedef tnlGrid< 3, Real, Device, Index > GridType;
+      typedef tnlGridEntity< GridType, EntityDimensions, Config > GridEntityType;
+      typedef tnlGridEntity< GridType, NeighbourEntityDimensions, Config > NeighbourGridEntityType;
+      typedef Real RealType;
+      typedef Index IndexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      typedef tnlGridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
+      typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
+      typedef typename GridEntityType::EntityBasisType EntityBasisType;
+
+      __cuda_callable__ inline
+      tnlNeighbourGridEntityGetter( const GridEntityType& entity )
+      : entity( entity )
+      {}
+      
+      template< int stepX, int stepY, int stepZ >
+      __cuda_callable__ inline
+      NeighbourGridEntityType getEntity() const
+      {
+         tnlAssert( ! stepX + ! stepY + ! stepZ == 2,
+                    cerr << "Only one of the steps can be non-zero: stepX = " << stepX 
+                         << " stepY = " << stepY
+                         << " stepZ = " << stepZ );
+         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
+                    entity.getCoordinates() < entity.getMesh().getDimensions(),
+              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
+                   << " EntityDimensions = " << EntityDimensions );
+         tnlAssert( entity.getCoordinates() + 
+                       CoordinatesType( stepX + ( stepX < 0 ), 
+                                        stepY + ( stepY < 0 ),
+                                        stepZ + ( stepZ < 0 ) ) >= CoordinatesType( 0, 0, 0 ) &&
+                    entity.getCoordinates() + 
+                       CoordinatesType( stepX + ( stepX < 0 ),
+                                        stepY + ( stepY < 0 ),
+                                        stepZ + ( stepZ < 0 ) ) 
+                       < entity.getMesh().getDimensions() + 
+                        CoordinatesType( Sign( stepX ), Sign( stepY ), Sign(  stepZ ) ),
+              cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) ) = "
+                   << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) )
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
+                   << " EntityDimensions = " << EntityDimensions );
+         return NeighbourGridEntityType( this->entity.getMesh(),
+                                         CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
+                                                          entity.getCoordinates().y() + stepY + ( stepY < 0 ),
+                                                          entity.getCoordinates().z() + stepZ + ( stepZ < 0 ) ),
+                                         EntityOrientationType( stepX > 0 ? 1 : -1,
+                                                                stepY > 0 ? 1 : -1,
+                                                                stepZ > 0 ? 1 : -1 ),
+                                         EntityBasisType( ! stepX, !stepY, !stepZ ) );
+      }
+      
+      template< int stepX, int stepY, int stepZ >
+      __cuda_callable__ inline
+      IndexType getEntityIndex() const
+      {
+         return GridEntityGetter::getEntityIndex( this->entity.getMesh(), getEntity< stepX, stepY, stepZ >() );
+      }
+      
+      __cuda_callable__
+      void refresh( const GridType& grid, const IndexType& entityIndex ){};
+      
+   protected:
+
+      const GridEntityType& entity;
+      
+      //tnlNeighbourGridEntityGetter(){};            
+};
+
 
 /****
  * +-----------------+---------------------------+-------------------+
@@ -390,9 +480,9 @@ class tnlNeighbourGridEntityGetter<
                          << " stepY = " << stepY
                          << " stepZ = " << stepZ );
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() < entity.getGrid().getDimensions(),
+                    entity.getCoordinates() < entity.getMesh().getDimensions(),
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
          tnlAssert( entity.getCoordinates() + 
                        CoordinatesType( stepX + ( stepX < 0 ), 
@@ -402,11 +492,11 @@ class tnlNeighbourGridEntityGetter<
                        CoordinatesType( stepX + ( stepX < 0 ),
                                         stepY + ( stepY < 0 ),
                                         stepZ + ( stepZ < 0 ) ) 
-                       < entity.getGrid().getDimensions() + 
+                       < entity.getMesh().getDimensions() + 
                         CoordinatesType( Sign( stepX ), Sign( stepY ), Sign(  stepZ ) ),
               cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) ) = "
                    << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) )
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
          return NeighbourGridEntity( CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
                                                       entity.getCoordinates().y() + stepY + ( stepY < 0 ),
@@ -419,7 +509,7 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         return GridEntityGetter::getEntityIndex( this->entity.getGrid(), getEntity< stepX, stepY, stepZ >( entity ) );
+         return GridEntityGetter::getEntityIndex( this->entity.getMesh(), getEntity< stepX, stepY, stepZ >( entity ) );
       }
       
       __cuda_callable__
@@ -476,9 +566,9 @@ class tnlNeighbourGridEntityGetter<
                          << " stepY = " << stepY
                          << " stepZ = " << stepZ );
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() < entity.getGrid().getDimensions(),
+                    entity.getCoordinates() < entity.getMesh().getDimensions(),
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
          tnlAssert( entity.getCoordinates() + 
                        CoordinatesType( stepX + ( stepX < 0 ),
@@ -488,12 +578,12 @@ class tnlNeighbourGridEntityGetter<
                        CoordinatesType( stepX + ( stepX < 0 ),
                                         stepY + ( stepY < 0 ),
                                         stepZ + ( stepZ < 0 ) ) 
-                       < entity.getGrid().getDimensions() + 
+                       < entity.getMesh().getDimensions() + 
                             CoordinatesType( Sign( stepX ), Sign( stepY ), Sign( stepZ ) ),
               cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 )  ) = "
                    << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) )
-                   << " entity.getGrid().getDimensions() + CoordinatesType( Sign( stepX ), Sign( stepY ), Sign( stepZ ) ) = " 
-                   << entity.getGrid().getDimensions()  + CoordinatesType( Sign( stepX ), Sign( stepY ), Sign( stepZ ) )
+                   << " entity.getMesh().getDimensions() + CoordinatesType( Sign( stepX ), Sign( stepY ), Sign( stepZ ) ) = " 
+                   << entity.getMesh().getDimensions()  + CoordinatesType( Sign( stepX ), Sign( stepY ), Sign( stepZ ) )
                    << " EntityDimensions = " << EntityDimensions );
          return NeighbourGridEntity( CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
                                                       entity.getCoordinates().y() + stepY + ( stepY < 0 ),
@@ -504,7 +594,7 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         return GridEntityGetter::getEntityIndex( entity.getGrid(), getEntity< stepX, stepY, stepZ >( entity ) );
+         return GridEntityGetter::getEntityIndex( entity.getMesh(), getEntity< stepX, stepY, stepZ >( entity ) );
       }
       
       __cuda_callable__
@@ -555,40 +645,43 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       NeighbourGridEntityType getEntity() const
       {
-         tnlAssert( ( ( !! stepX ) == ( !! entity.getOrientation().x() ) ) &&
+         /*tnlAssert( ( ( !! stepX ) == ( !! entity.getOrientation().x() ) ) &&
                     ( ( !! stepY ) == ( !! entity.getOrientation().y() ) ) &&
                     ( ( !! stepZ ) == ( !! entity.getOrientation().z() ) ),
                     cerr << "( stepX, stepY, stepZ ) cannot be perpendicular to entity coordinates: stepX = " << stepX
                          << " stepY = " << stepY << " stepZ = " << stepZ
-                         << " entity.getOrientation() = " << entity.getOrientation() );
+                         << " entity.getOrientation() = " << entity.getOrientation() );*/
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() < entity.getGrid().getDimensions() + entity.getOrientation(),
+                    entity.getCoordinates() < entity.getMesh().getDimensions() + entity.getOrientation(),
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getGrid().getDimensions() + entity.getOrientation() = " << entity.getGrid().getDimensions() + entity.getOrientation()
+                   << " entity.getMesh().getDimensions() + entity.getOrientation() = " << entity.getMesh().getDimensions() + entity.getOrientation()
                    << " EntityDimensions = " << EntityDimensions );
          tnlAssert( entity.getCoordinates() + 
-                       CoordinatesType( stepX - ( stepX > 0 ),
-                                        stepY - ( stepY > 0 ),
-                                        stepZ - ( stepZ > 0 ) ) >= CoordinatesType( 0, 0, 0 ) &&
+                       CoordinatesType( stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ),
+                                        stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ),
+                                        stepZ - ( stepZ > 0 ) * ( entity.getOrientation().z() != 0.0 ) ) >= CoordinatesType( 0, 0, 0 ) &&
                     entity.getCoordinates() + 
-                       CoordinatesType( stepX - ( stepX > 0 ),
-                                        stepY - ( stepY > 0 ),
-                                        stepZ - ( stepZ > 0 ) ) < entity.getGrid().getDimensions(),
-              cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) ) = "
-                   << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ), stepZ + ( stepZ < 0 ) )
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                       CoordinatesType( stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ),
+                                        stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ),
+                                        stepZ - ( stepZ > 0 ) * ( entity.getOrientation().z() != 0.0 ) ) < entity.getMesh().getDimensions(),
+              cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ) * ( entity.getOrientation().x() != 0.0 ), stepY + ( stepY < 0 ) * ( entity.getOrientation().y() != 0.0 ), stepZ + ( stepZ < 0 ) * ( entity.getOrientation().z() != 0.0 ) ) = "
+                   << entity.getCoordinates()  + CoordinatesType( 
+                        stepX + ( stepX < 0 ) * ( entity.getOrientation().x() != 0.0 ),
+                        stepY + ( stepY < 0 ) * ( entity.getOrientation().y() != 0.0 ),
+                        stepZ + ( stepZ < 0 ) * ( entity.getOrientation().z() != 0.0 ) )
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         return NeighbourGridEntityType( entity.getGrid(),
-                                         CoordinatesType( entity.getCoordinates().x() + stepX - ( stepX > 0 ),
-                                                          entity.getCoordinates().y() + stepY - ( stepY > 0 ),
-                                                          entity.getCoordinates().z() + stepZ - ( stepZ > 0 ) ) );
+         return NeighbourGridEntityType( entity.getMesh(),
+                                         CoordinatesType( entity.getCoordinates().x() + stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ),
+                                                          entity.getCoordinates().y() + stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ),
+                                                          entity.getCoordinates().z() + stepZ - ( stepZ > 0 ) * ( entity.getOrientation().z() != 0.0 ) ) );
       }
       
       template< int stepX, int stepY, int stepZ >
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         return GridEntityGetter::getEntityIndex( entity.getGrid(), getEntity< stepX, stepY, stepZ >() );
+         return GridEntityGetter::getEntityIndex( entity.getMesh(), getEntity< stepX, stepY, stepZ >() );
       }
       
       __cuda_callable__
@@ -639,15 +732,15 @@ class tnlNeighbourGridEntityGetter<
       NeighbourGridEntityType getEntity() const
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() <= entity.getGrid().getDimensions(),
+                    entity.getCoordinates() <= entity.getMesh().getDimensions(),
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
          tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) <= entity.getGrid().getDimensions(),
+                    entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) <= entity.getMesh().getDimensions(),
               cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ ) = " 
                    << entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ )
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
          return NeighbourGridEntity( CoordinatesType( entity.getCoordinates().x() + stepX,
                                                       entity.getCoordinates().y() + stepY,
@@ -659,17 +752,17 @@ class tnlNeighbourGridEntityGetter<
       IndexType getEntityIndex() const
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() <= entity.getGrid().getDimensions(),
+                    entity.getCoordinates() <= entity.getMesh().getDimensions(),
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
          tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) <= entity.getGrid().getDimensions(),
+                    entity.getCoordinates() + CoordinatesType( stepX, stepY, stepZ ) <= entity.getMesh().getDimensions(),
               cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ ) = "
                    << entity.getCoordinates()  + CoordinatesType( stepX, stepY, stepZ )
-                   << " entity.getGrid().getDimensions() = " << entity.getGrid().getDimensions()
+                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         return this->entity.getIndex() + stepZ * ( entity.getGrid().getDimensions().y() + 1 + stepY ) * ( entity.getGrid().getDimensions().x() + 1 ) + stepX;
+         return this->entity.getIndex() + stepZ * ( entity.getMesh().getDimensions().y() + 1 + stepY ) * ( entity.getMesh().getDimensions().x() + 1 ) + stepX;
       }
       
       __cuda_callable__

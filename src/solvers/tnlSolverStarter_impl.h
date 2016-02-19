@@ -27,6 +27,9 @@
 #include <solvers/linear/krylov/tnlCGSolver.h>
 #include <solvers/linear/krylov/tnlBICGStabSolver.h>
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
+#include <solvers/linear/krylov/tnlTFQMRSolver.h>
+#include <solvers/preconditioners/tnlDummyPreconditioner.h>
+#include <solvers/preconditioners/tnlDiagonalPreconditioner.h>
 #include <solvers/pde/tnlExplicitTimeStepper.h>
 #include <solvers/pde/tnlSemiImplicitTimeStepper.h>
 #include <solvers/pde/tnlPDESolver.h>
@@ -52,10 +55,16 @@ class tnlSolverStarterExplicitSolverSetter{};
 
 template< typename Problem,
           typename SemiImplicitSolver,
+          template<typename, typename, typename> class Preconditioner,
           typename MeshConfig,
           bool enabled = tnlMeshConfigSemiImplicitSolver< MeshConfig, SemiImplicitSolver >::enabled >
 class tnlSolverStarterSemiImplicitSolverSetter{};
 
+
+template< typename Problem,
+          typename SemiImplicitSolverTag,
+          typename MeshConfig >
+class tnlSolverStarterPreconditionerSetter;
 
 template< typename Problem,
           typename ExplicitSolver,
@@ -187,20 +196,23 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
          if( discreteSolver != "sor" &&
              discreteSolver != "cg" &&
              discreteSolver != "bicgstab" &&
-             discreteSolver != "gmres" )
+             discreteSolver != "gmres" &&
+             discreteSolver != "tfqmr" )
          {
-            cerr << "Unknown explicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab or gmres." << endl;
+            cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres or tfqmr." << endl;
             return false;
          }
 
          if( discreteSolver == "sor" )
-            return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitSORSolverTag, MeshConfig >::run( problem, parameters );
+            return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitSORSolverTag, MeshConfig >::run( problem, parameters );
          if( discreteSolver == "cg" )
-            return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitCGSolverTag, MeshConfig >::run( problem, parameters );
+            return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitCGSolverTag, MeshConfig >::run( problem, parameters );
          if( discreteSolver == "bicgstab" )
-            return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitBICGStabSolverTag, MeshConfig >::run( problem, parameters );
+            return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitBICGStabSolverTag, MeshConfig >::run( problem, parameters );
          if( discreteSolver == "gmres" )
-            return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitGMRESSolverTag, MeshConfig >::run( problem, parameters );
+            return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitGMRESSolverTag, MeshConfig >::run( problem, parameters );
+         if( discreteSolver == "tfqmr" )
+            return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitTFQMRSolverTag, MeshConfig >::run( problem, parameters );
          return false;
       }
 };
@@ -223,9 +235,9 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlImplicitTimeDiscreti
  */
 
 template< typename Problem,
-          typename ExplicitSolver,
+          typename ExplicitSolverTag,
           typename MeshConfig >
-class tnlSolverStarterExplicitSolverSetter< Problem, ExplicitSolver, MeshConfig, false >
+class tnlSolverStarterExplicitSolverSetter< Problem, ExplicitSolverTag, MeshConfig, false >
 {
    public:
       static bool run( Problem& problem,
@@ -237,32 +249,16 @@ class tnlSolverStarterExplicitSolverSetter< Problem, ExplicitSolver, MeshConfig,
 };
 
 template< typename Problem,
+          typename ExplicitSolverTag,
           typename MeshConfig >
-class tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitEulerSolverTag, MeshConfig, true >
+class tnlSolverStarterExplicitSolverSetter< Problem, ExplicitSolverTag, MeshConfig, true >
 {
    public:
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
-         typedef tnlExplicitTimeStepper< Problem, tnlEulerSolver > TimeStepper;
-         typedef tnlEulerSolver< TimeStepper > ExplicitSolver;
-         return tnlSolverStarterExplicitTimeStepperSetter< Problem,
-                                                           ExplicitSolver,
-                                                           TimeStepper,
-                                                           MeshConfig >::run( problem, parameters );
-      }
-};
-
-template< typename Problem,
-          typename MeshConfig >
-class tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitMersonSolverTag, MeshConfig, true >
-{
-   public:
-      static bool run( Problem& problem,
-                       const tnlParameterContainer& parameters )
-      {
-         typedef tnlExplicitTimeStepper< Problem, tnlMersonSolver > TimeStepper;
-         typedef tnlMersonSolver< TimeStepper > ExplicitSolver;
+         typedef tnlExplicitTimeStepper< Problem, ExplicitSolverTag::template Template > TimeStepper;
+         typedef typename ExplicitSolverTag::template Template< TimeStepper > ExplicitSolver;
          return tnlSolverStarterExplicitTimeStepperSetter< Problem,
                                                            ExplicitSolver,
                                                            TimeStepper,
@@ -275,9 +271,31 @@ class tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitMersonSolverTag,
  */
 
 template< typename Problem,
-          typename SemiImplicitSolver,
+          typename SemiImplicitSolverTag,
           typename MeshConfig >
-class tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolver, MeshConfig, false >
+class tnlSolverStarterPreconditionerSetter
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         const tnlString& preconditioner = parameters.getParameter< tnlString>( "preconditioner" );
+
+         if( preconditioner == "none" )
+            return tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, tnlDummyPreconditioner, MeshConfig >::run( problem, parameters );
+         if( preconditioner == "diagonal" )
+            return tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, tnlDiagonalPreconditioner, MeshConfig >::run( problem, parameters );
+
+         cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal." << endl;
+         return false;
+      }
+};
+
+template< typename Problem,
+          typename SemiImplicitSolverTag,
+          template<typename, typename, typename> class Preconditioner,
+          typename MeshConfig >
+class tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, MeshConfig, false >
 {
    public:
       static bool run( Problem& problem,
@@ -289,66 +307,20 @@ class tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolver, Mes
 };
 
 template< typename Problem,
+          typename SemiImplicitSolverTag,
+          template<typename, typename, typename> class Preconditioner,
           typename MeshConfig >
-class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitSORSolverTag, MeshConfig, true >
+class tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, MeshConfig, true >
 {
    public:
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
          typedef typename Problem::MatrixType MatrixType;
-         typedef tnlSORSolver< MatrixType > LinearSystemSolver;
-         typedef tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
-         return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
-                                                               TimeStepper,
-                                                               MeshConfig >::run( problem, parameters );
-      }
-};
-
-template< typename Problem,
-          typename MeshConfig >
-class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitCGSolverTag, MeshConfig, true >
-{
-   public:
-      static bool run( Problem& problem,
-                       const tnlParameterContainer& parameters )
-      {
-         typedef typename Problem::MatrixType MatrixType;
-         typedef tnlCGSolver< MatrixType > LinearSystemSolver;
-         typedef tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
-         return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
-                                                               TimeStepper,
-                                                               MeshConfig >::run( problem, parameters );
-      }
-};
-
-template< typename Problem,
-          typename MeshConfig >
-class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitBICGStabSolverTag, MeshConfig, true >
-{
-   public:
-      static bool run( Problem& problem,
-                       const tnlParameterContainer& parameters )
-      {
-         typedef typename Problem::MatrixType MatrixType;
-         typedef tnlBICGStabSolver< MatrixType > LinearSystemSolver;
-         typedef tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
-         return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
-                                                               TimeStepper,
-                                                               MeshConfig >::run( problem, parameters );
-      }
-};
-
-template< typename Problem,
-          typename MeshConfig >
-class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitGMRESSolverTag, MeshConfig, true >
-{
-   public:
-      static bool run( Problem& problem,
-                       const tnlParameterContainer& parameters )
-      {
-         typedef typename Problem::MatrixType MatrixType;
-         typedef tnlGMRESSolver< MatrixType > LinearSystemSolver;
+         typedef typename MatrixType::RealType RealType;
+         typedef typename MatrixType::DeviceType DeviceType;
+         typedef typename MatrixType::IndexType IndexType;
+         typedef typename SemiImplicitSolverTag::template Template< MatrixType, Preconditioner< RealType, DeviceType, IndexType > > LinearSystemSolver;
          typedef tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
          return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
                                                                TimeStepper,
@@ -412,6 +384,7 @@ class tnlSolverStarterSemiImplicitTimeStepperSetter
                        const tnlParameterContainer& parameters)
       {
          typedef typename TimeStepper::LinearSystemSolverType LinearSystemSolverType;
+         typedef typename LinearSystemSolverType::PreconditionerType PreconditionerType;
          typedef typename LinearSystemSolverType::MatrixType MatrixType;
          typedef typename Problem::RealType RealType;
          typedef typename Problem::IndexType IndexType;

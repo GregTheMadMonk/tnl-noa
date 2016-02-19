@@ -1,16 +1,15 @@
-ADD_SUBDIRECTORY( gradient )
 ADD_SUBDIRECTORY( diffusion )
 ADD_SUBDIRECTORY( euler )
+ADD_SUBDIRECTORY( interpolants )
+ADD_SUBDIRECTORY( operator-Q )
+ADD_SUBDIRECTORY( operator-curvature )
 
 SET( headers tnlFiniteDifferences.h
              tnlFiniteDifferences_impl.h
              tnlDirichletBoundaryConditions.h
              tnlDirichletBoundaryConditions_impl.h
              tnlNeumannBoundaryConditions.h
-             tnlNeumannBoundaryConditions_impl.h
-             tnlExactOperatorEvaluator.h
-             tnlOperatorEnumerator.h
-             tnlOperatorEnumerator_impl.h )
+             tnlNeumannBoundaryConditions_impl.h )
              
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/operators )
 

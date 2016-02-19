@@ -21,14 +21,15 @@
 #include <mesh/tnlTraverser.h>
 
 template< typename Real,
+          typename Device,
           typename Index,
           typename GridEntity >
-class tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, GridEntity, 1 >
+class tnlTraverser< tnlGrid< 1, Real, Device, Index >, GridEntity, 1 >
 {
    public:
-      typedef tnlGrid< 1, Real, tnlHost, Index > GridType;
+      typedef tnlGrid< 1, Real, Device, Index > GridType;
       typedef Real RealType;
-      typedef tnlHost DeviceType;
+      typedef Device DeviceType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
 
@@ -41,19 +42,25 @@ class tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, GridEntity, 1 >
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridType& grid,
                                     UserData& userData ) const;
-
+      
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processAllEntities( const GridType& grid,
+                               UserData& userData ) const;
+      
 };
 
 
 template< typename Real,
+          typename Device,
           typename Index,
           typename GridEntity >
-class tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, GridEntity, 0 >
+class tnlTraverser< tnlGrid< 1, Real, Device, Index >, GridEntity, 0 >
 {
    public:
-      typedef tnlGrid< 1, Real, tnlHost, Index > GridType;
+      typedef tnlGrid< 1, Real, Device, Index > GridType;
       typedef Real RealType;
-      typedef tnlHost DeviceType;
+      typedef Device DeviceType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
 
@@ -66,7 +73,14 @@ class tnlTraverser< tnlGrid< 1, Real, tnlHost, Index >, GridEntity, 0 >
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridType& grid,
                                     UserData& userData ) const;
+      
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processAllEntities( const GridType& grid,
+                               UserData& userData ) const;
 };
+
+#ifdef UNDEF
 
 /****
  * CUDA traversals
@@ -93,6 +107,24 @@ class tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, GridEntity, 1 >
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridType& grid,
                                     UserData& userData ) const;
+      
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processAllEntities( const GridType& grid,
+                               UserData& userData ) const;
+      
+   protected:
+
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processSubgridEntities(
+         const GridType& grid,
+         const CoordinatesType& begin,
+         const CoordinatesType& end,
+         GridEntity& entity,
+         UserData& userData ) const;
+      
+
 
 };
 
@@ -118,8 +150,25 @@ class tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, GridEntity, 0 >
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridType& grid,
                                     UserData& userData ) const;
+      
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processAllEntities( const GridType& grid,
+                               UserData& userData ) const;
+      
+   protected:
 
+      template< typename UserData,
+                typename EntitiesProcessor >
+      void processSubgridEntities(
+         const GridType& grid,
+         const CoordinatesType& begin,
+         const CoordinatesType& end,
+         GridEntity& entity,
+         UserData& userData ) const;      
 };
+
+#endif
 
 #include <mesh/grids/tnlTraverser_Grid1D_impl.h>
 

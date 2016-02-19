@@ -63,16 +63,19 @@ T tnlAbs( const T& n )
    return n;
 };
 
+__cuda_callable__
 inline int tnlAbs( const int& n )
 {
    return abs( n );
 };
 
+__cuda_callable__
 inline float tnlAbs( const float& f )
 {
    return fabs( f );
 };
 
+__cuda_callable__
 inline double tnlAbs( const double& d )
 {
    return fabs( d );
@@ -101,13 +104,13 @@ inline int roundToMultiple( int number, int multiple )
 __cuda_callable__
 inline bool isPow2( int x )
 {
-   return ( x & ( x - 1 ) == 0 );
+   return ( ( x & ( x - 1 ) ) == 0 );
 }
 
 __cuda_callable__
 inline bool isPow2( long int x )
 {
-   return ( x & ( x - 1 ) == 0 );
+   return ( ( x & ( x - 1 ) ) == 0 );
 }
 
 

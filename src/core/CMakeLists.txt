@@ -8,10 +8,10 @@ ADD_SUBDIRECTORY( multimaps )
 set (headers tnlAssert.h               
              tnlConstants.h
              tnlCurve.h
-      	     tnlCuda.h
+             tnlCuda.h
              tnlCudaDeviceInfo.h
              tnlDataElement.h
-  	     tnlDevice.h
+             tnlDevice.h
              tnlDynamicTypeTag.h
              tnlFeature.h
              tnlFile.h 
@@ -42,7 +42,7 @@ set( common_SOURCES
      ${CURRENT_DIR}/tnlFile.cpp
      ${CURRENT_DIR}/tnlFlopsCounter.cpp 
      ${CURRENT_DIR}/tnlLogger.cpp 
-     ${CURRENT_DIR}/tnlObject.cpp 
+     ${CURRENT_DIR}/tnlObject.cpp
      ${CURRENT_DIR}/tnlStatistics.cpp
      ${CURRENT_DIR}/tnlString.cpp 
      ${CURRENT_DIR}/tnlTimerCPU.cpp      

@@ -137,30 +137,6 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
                      userData.boundaryConditions->getLinearSystemRowLength( mesh, entity.getIndex(), entity );
          }
 
-         
-         /*
-         __cuda_callable__
-         static void processCell( const MeshType& mesh,
-                                  TraversalUserData& userData,
-                                  const IndexType index,
-                                  const CoordinatesType& coordinates )
-         {
-            ( *userData.rowLengths )[ index ] =
-                     userData.boundaryConditions->getLinearSystemRowLength( mesh, index, coordinates );
-         }
-
-         __cuda_callable__
-         static void processFace( const MeshType& mesh,
-                                  TraversalUserData& userData,
-                                  const IndexType index,
-                                  const CoordinatesType& coordinates )
-         {
-             //printf("Matrix setter: Index = %d \n", index );
-            ( *userData.rowLengths )[ index ] =
-                     userData.boundaryConditions->getLinearSystemRowLength( mesh, index, coordinates );
-         }*/
-         
-
    };
 
    class TraversalInteriorEntitiesProcessor
@@ -176,30 +152,6 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
             ( *userData.rowLengths )[ entity.getIndex() ] =
                      userData.differentialOperator->getLinearSystemRowLength( mesh, entity.getIndex(), entity );
          }
-
-
-         /*__cuda_callable__
-         static void processCell( const MeshType& mesh,
-                                  TraversalUserData& userData,
-                                  const IndexType index,
-                                  const CoordinatesType& coordinates )
-         {
-            ( *userData.rowLengths )[ index ] =
-                     userData.differentialOperator->getLinearSystemRowLength( mesh, index, coordinates );
-         }
-         
-         __cuda_callable__
-         static void processFace( const MeshType& mesh,
-                                  TraversalUserData& userData,
-                                  const IndexType index,
-                                  const CoordinatesType& coordinates )
-         {
-            // printf("Matrix setter: Index = %d \n", index );
-            ( *userData.rowLengths )[ index ] =
-                     userData.differentialOperator->getLinearSystemRowLength( mesh, index, coordinates );
-         }*/
-         
-
    };
 
 };

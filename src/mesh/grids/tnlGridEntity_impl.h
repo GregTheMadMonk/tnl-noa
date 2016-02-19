@@ -21,6 +21,7 @@
 
 #include <mesh/grids/tnlBoundaryGridEntityChecker.h>
 #include <mesh/grids/tnlGridEntityCenterGetter.h>
+#include <mesh/grids/tnlGridEntityMeasureGetter.h>
 #include <mesh/grids/tnlGridEntity.h>
 
 
@@ -142,10 +143,12 @@ Index
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
 getIndex() const
 {
+   typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
+   typedef typename GridType::template MeshEntity< EntityDimensions > EntityType;
    tnlAssert( this->entityIndex >= 0 &&
-              this-> entityIndex < grid.template getEntitiesCount< EntityDimensions >(),
+              this-> entityIndex < grid.template getEntitiesCount< EntityType >(),
               cerr << "this->entityIndex = " << this->entityIndex
-                   << " grid.template getEntitiesCount< EntityDimensions >() = " << grid.template getEntitiesCount< EntityDimensions >() );
+                   << " grid.template getEntitiesCount< EntityDimensions >() = " << grid.template getEntitiesCount< EntityType >() );
    tnlAssert( this->entityIndex == grid.getEntityIndex( *this ),
               cerr << "this->entityIndex = " << this->entityIndex
                    << " grid.getEntityIndex( *this ) = " << grid.getEntityIndex( *this ) );
@@ -260,9 +263,23 @@ template< int Dimensions,
           int EntityDimensions,
           typename Config >
 __cuda_callable__ inline
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::RealType&
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
+getMeasure() const
+{
+   return tnlGridEntityMeasureGetter< GridType, EntityDimensions >::getMeasure( this->getMesh(), *this );
+}
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          int EntityDimensions,
+          typename Config >
+__cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::GridType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-getGrid() const
+getMesh() const
 {
    return this->grid;
 }
@@ -462,6 +479,20 @@ template< int Dimensions,
           typename Index,
           typename Config >
 __cuda_callable__ inline
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::RealType&
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
+getMeasure() const
+{
+   return this->getMesh().getCellMeasure();
+}
+
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename Config >
+__cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::VertexType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
 getEntityProportions() const
@@ -477,7 +508,7 @@ template< int Dimensions,
 __cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::GridType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
-getGrid() const
+getMesh() const
 {
    return this->grid;
 }
@@ -486,16 +517,6 @@ getGrid() const
 /****
  * Specialization for vertices
  */
-/*template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0 >::
-tnlGridEntity()
-{
-}*/
-
 template< int Dimensions,
           typename Real,
           typename Device,
@@ -594,10 +615,12 @@ Index
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
 getIndex() const
 {
+   typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
+   typedef typename GridType::Vertex Vertex;
    tnlAssert( this->entityIndex >= 0 &&
-              this-> entityIndex < grid.template getEntitiesCount< 0 >(),
+              this-> entityIndex < grid.template getEntitiesCount< Vertex >(),
               cerr << "this->entityIndex = " << this->entityIndex
-                   << " grid.template getEntitiesCount< 0 >() = " << grid.template getEntitiesCount< 0 >() );
+                   << " grid.template getEntitiesCount< 0 >() = " << grid.template getEntitiesCount< Vertex >() );
    tnlAssert( this->entityIndex == grid.getEntityIndex( *this ),
               cerr << "this->entityIndex = " << this->entityIndex
                    << " grid.getEntityIndex( *this ) = " << grid.getEntityIndex( *this ) );
@@ -676,6 +699,20 @@ template< int Dimensions,
           typename Index,
           typename Config >
 __cuda_callable__ inline
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::RealType
+tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
+getMeasure() const
+{
+   return 0.0;
+}
+
+
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename Config >
+__cuda_callable__ inline
 typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::VertexType
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
 getEntityProportions() const
@@ -691,9 +728,9 @@ template< int Dimensions,
 __cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::GridType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-getGrid() const
+getMesh() const
 {
-   return this->gridType;
+   return this->grid;
 }
 
 #endif	/* TNLGRIDENTITY_IMPL_H */

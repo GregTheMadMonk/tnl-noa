@@ -75,7 +75,7 @@ class tnlTFQMRSolver : public tnlObject,
 
    bool setSize( IndexType size );
 
-   tnlVector< RealType, Device, IndexType >  d, r, w, u, v, r_ast, u_new, Au, Au_new;
+   tnlVector< RealType, Device, IndexType >  d, r, w, u, v, r_ast, Au;
 
    const MatrixType* matrix;
    const PreconditionerType* preconditioner;

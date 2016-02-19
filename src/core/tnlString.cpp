@@ -446,6 +446,11 @@ int tnlString :: parse( tnlList< tnlString >& list, const char separator ) const
    return list. getSize();
 }
 
+tnlString operator + ( const char* string1, const tnlString& string2 )
+{
+   return tnlString( string1 ) + string2;
+}
+
 ostream& operator << ( ostream& stream, const tnlString& str )
 {
    stream << str. getString();

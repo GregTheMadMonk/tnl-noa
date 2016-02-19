@@ -77,4 +77,17 @@ setElement( const Index& elementIndex,
    this->values[ elementIndex * step ] = value;
 }
 
+template< typename Real, typename Index >
+void
+tnlSparseMatrixRow< Real, Index >::
+print( ostream& str ) const
+{
+   Index pos( 0 );
+   for( Index i = 0; i < length; i++ )
+   {
+      str << " [ " << columns[ pos ] << " ] = " << values[ pos ] << ", ";
+      pos += step;   
+   }
+}
+
 #endif /* TNLSPARSEMATRIXROW_IMPL_H_ */

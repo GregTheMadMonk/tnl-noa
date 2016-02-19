@@ -19,7 +19,7 @@
 #define TNLVECTOR_H_
 
 #include <core/arrays/tnlArray.h>
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 class tnlHost;
 

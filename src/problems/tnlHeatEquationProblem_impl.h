@@ -28,9 +28,12 @@
 #include <matrices/tnlMatrixSetter.h>
 #include <matrices/tnlMultidiagonalMatrixSetter.h>
 #include <core/tnlLogger.h>
+#include <solvers/pde/tnlBoundaryConditionsSetter.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
 #include <solvers/pde/tnlBackwardTimeDiscretisation.h>
+
+#include "tnlHeatEquationProblem.h"
 
 
 template< typename Mesh,
@@ -100,10 +103,10 @@ template< typename Mesh,
 void
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 bindDofs( const MeshType& mesh,
-          DofVectorType& dofVector )
+          const DofVectorType& dofVector )
 {
    const IndexType dofs = mesh.template getEntitiesCount< typename MeshType::Cell >();
-   this->solution.bind( dofVector.getData(), dofs );
+   this->u.bind( mesh, dofVector );
 }
 
 template< typename Mesh,
@@ -119,7 +122,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
 {
    this->bindDofs( mesh, dofs );
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
-   if( ! this->solution.load( initialConditionFile ) )
+   if( ! this->u.boundLoad( initialConditionFile ) )
    {
       cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
       return false;
@@ -173,7 +176,7 @@ makeSnapshot( const RealType& time,
    //cout << "dofs = " << dofs << endl;
    tnlString fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! this->solution.save( fileName ) )
+   if( ! this->u.save( fileName ) )
       return false;
    return true;
 }
@@ -187,8 +190,8 @@ tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOper
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshType& mesh,
-                DofVectorType& u,
-		DofVectorType& fu,
+                DofVectorType& uDofs,
+		          DofVectorType& fuDofs,
                 MeshDependentDataType& meshDependentData )
 {
    /****
@@ -199,18 +202,24 @@ getExplicitRHS( const RealType& time,
     *
     * You may use supporting vectors again if you need.
     */
-
+   
    //cout << "u = " << u << endl;
-   this->bindDofs( mesh, u );
-   tnlExplicitUpdater< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+   this->bindDofs( mesh, uDofs );
+   MeshFunctionType fu( mesh, fuDofs );
+   tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.template update< typename Mesh::Cell >( 
       time,
       mesh,
       this->differentialOperator,
       this->boundaryCondition,
       this->rightHandSide,
-      u,
+      this->u,
       fu );
+   tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
+   boundaryConditionsSetter.template apply< typename Mesh::Cell >(
+      this->boundaryCondition,
+      time + tau,
+      this->u );
    /*cout << "u = " << u << endl;
    cout << "fu = " << fu << endl;
    u.save( "u.tnl" );
@@ -228,18 +237,20 @@ tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOper
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshType& mesh,
-                      DofVectorType& u,                      
+                      const DofVectorType& dofs,                      
                       Matrix& matrix,
                       DofVectorType& b,
 		      MeshDependentDataType& meshDependentData )
 {
+   this->bindDofs( mesh, dofs );
    tnlLinearSystemAssembler< Mesh,
-                             DofVectorType,
+                             MeshFunctionType,
                              DifferentialOperator,
                              BoundaryCondition,
                              RightHandSide,
                              tnlBackwardTimeDiscretisation,
-                             Matrix > systemAssembler;
+                             Matrix,
+                             DofVectorType > systemAssembler;
    systemAssembler.template assembly< typename Mesh::Cell >(
       time,
       tau,
@@ -247,7 +258,7 @@ assemblyLinearSystem( const RealType& time,
       this->differentialOperator,
       this->boundaryCondition,
       this->rightHandSide,
-      u,
+      this->u,
       matrix,
       b );
    /*matrix.print( cout );

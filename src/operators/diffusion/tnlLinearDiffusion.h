@@ -19,7 +19,10 @@
 #define	TNLLINEARDIFFUSION_H
 
 #include <core/vectors/tnlVector.h>
+#include <functions/tnlMeshFunction.h>
 #include <mesh/tnlGrid.h>
+#include <operators/tnlOperator.h>
+#include <operators/diffusion/tnlExactLinearDiffusion.h>
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -36,6 +39,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+: public tnlOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >,
+                      MeshInteriorDomain, 1, 1, Real, Index >
 {
    public:    
    
@@ -43,32 +48,40 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef typename MeshType::template GridEntity< MeshType::meshDimensions > CellType;
-      enum { Dimensions = MeshType::meshDimensions };
+      typedef Index IndexType;      
+      typedef tnlExactLinearDiffusion< 1 > ExactOperatorType;
+      
+      static const int Dimensions = MeshType::meshDimensions;
+      
+      static constexpr int getMeshDimensions() { return Dimensions; }
+      
+      template< int EntityDimensions = Dimensions >
+      using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;
 
       static tnlString getType();
 
-      template< typename Vector >
+      template< typename PreimageFunction, typename MeshEntity >
       __cuda_callable__
-      inline Real getValue( const MeshType& mesh,
-                            const CellType& cell,
-                            const Vector& u,
-                            const RealType& time ) const;
+      inline Real operator()( const PreimageFunction& u,
+                              const MeshEntity& entity,
+                              const RealType& time = 0.0 ) const;
 
+      template< typename MeshEntity >
       __cuda_callable__
       inline Index getLinearSystemRowLength( const MeshType& mesh,
                                              const IndexType& index,
-                                             const CellType& cell ) const;
+                                             const MeshEntity& entity ) const;
 
-      template< typename Vector, typename MatrixRow >
+      template< typename MeshEntity,
+                typename Vector,
+                typename MatrixRow >
       __cuda_callable__
       inline void updateLinearSystem( const RealType& time,
                                       const RealType& tau,
                                       const MeshType& mesh,
                                       const IndexType& index,
-                                      const CellType& cell,
-                                      Vector& u,
+                                      const MeshEntity& entity,
+                                      const MeshFunction< 1 >& u,
                                       Vector& b,
                                       MatrixRow& matrixRow ) const;
 
@@ -81,6 +94,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >
+: public tnlOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >,
+                      MeshInteriorDomain, 2, 2, Real, Index >
 {
    public: 
    
@@ -88,18 +103,24 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
-      typedef Index IndexType;
-      enum { Dimensions = MeshType::meshDimensions };
+      typedef Index IndexType;      
+      typedef tnlExactLinearDiffusion< 2 > ExactOperatorType;
+      
+      static const int Dimensions = MeshType::meshDimensions;
+      
+      static constexpr int getMeshDimensions() { return Dimensions; }
+
+      
+      template< int EntityDimensions = Dimensions >
+      using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;      
 
       static tnlString getType();
 
-      template< typename Vector,
-                typename EntityType >
+      template< typename PreimageFunction, typename EntityType >
       __cuda_callable__
-      inline Real getValue( const MeshType& mesh,
-                            const EntityType& entity,
-                            const Vector& u,
-                            const Real& time ) const;
+      inline Real operator()( const PreimageFunction& u,
+                              const EntityType& entity,
+                              const Real& time = 0.0 ) const;
 
       template< typename EntityType >
       __cuda_callable__
@@ -116,7 +137,7 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
                                       const MeshType& mesh,
                                       const IndexType& index,
                                       const EntityType& entity,
-                                      Vector& u,
+                                      const MeshFunction< 2 >& u,
                                       Vector& b,
                                       MatrixRow& matrixRow ) const;
 };
@@ -128,6 +149,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >
+: public tnlOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >,
+                      MeshInteriorDomain, 3, 3, Real, Index >
 {
    public: 
    
@@ -136,17 +159,24 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      enum { Dimensions = MeshType::meshDimensions };
+      typedef tnlExactLinearDiffusion< 3 > ExactOperatorType;
 
+      static const int Dimensions = MeshType::meshDimensions;
+      
+      static constexpr int getMeshDimensions() { return Dimensions; }      
+
+      template< int EntityDimensions = Dimensions >
+      using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;
+
+      
       static tnlString getType();
 
-      template< typename Vector,
+      template< typename PreimageFunction, 
                 typename EntityType >
       __cuda_callable__
-      inline Real getValue( const MeshType& mesh,
-                            const EntityType& entity,
-                            const Vector& u,
-                            const Real& time ) const;
+      inline Real operator()( const PreimageFunction& u,
+                              const EntityType& entity,
+                              const Real& time = 0.0 ) const;
 
       template< typename EntityType >
       __cuda_callable__
@@ -163,7 +193,7 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
                                       const MeshType& mesh,
                                       const IndexType& index,
                                       const EntityType& entity,
-                                      Vector& u,
+                                      const MeshFunction< 3 >& u,
                                       Vector& b,
                                       MatrixRow& matrixRow ) const;
 

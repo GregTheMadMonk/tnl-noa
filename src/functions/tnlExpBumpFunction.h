@@ -20,15 +20,17 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 template< int dimensions,
           typename Real >
-class tnlExpBumpFunctionBase : public tnlFunction< dimensions, AnalyticFunction >
+class tnlExpBumpFunctionBase : public tnlDomain< dimensions, SpaceDomain >
 {
    public:
      
       typedef Real RealType;
+      
+      tnlExpBumpFunctionBase();
       
       bool setup( const tnlParameterContainer& parameters,
                  const tnlString& prefix = "" );
@@ -73,8 +75,13 @@ class tnlExpBumpFunction< 1, Real > : public tnlExpBumpFunctionBase< 1, Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
 #endif   
-   __cuda_callable__ RealType getValue( const VertexType& v,
-                                        const Real& time = 0.0 ) const;
+   __cuda_callable__ 
+   RealType getPartialDerivative( const VertexType& v,
+                                  const Real& time = 0.0 ) const;
+      
+   __cuda_callable__
+   RealType operator()( const VertexType& v,
+                        const RealType& time = 0.0 ) const;
 };
 
 template< typename Real >
@@ -99,8 +106,12 @@ class tnlExpBumpFunction< 2, Real > : public tnlExpBumpFunctionBase< 2, Real >
                 int ZDiffOrder = 0 >
 #endif
    __cuda_callable__ inline
-   RealType getValue( const VertexType& v,
-                      const Real& time = 0.0 ) const;
+   RealType getPartialDerivative( const VertexType& v,
+                                  const Real& time = 0.0 ) const;
+      
+   __cuda_callable__
+   RealType operator()( const VertexType& v,
+                        const Real& time = 0.0 ) const;                            
 };
 
 template< typename Real >
@@ -125,8 +136,14 @@ class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< 3, Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
 #endif   
-   __cuda_callable__    RealType getValue( const VertexType& v,
-                                           const Real& time = 0.0 ) const;
+   __cuda_callable__
+   RealType getPartialDerivative( const VertexType& v,
+                                  const Real& time = 0.0 ) const;
+      
+   __cuda_callable__
+   RealType operator()( const VertexType& v,
+                        const Real& time = 0.0 ) const;
+      
 };
 
 template< int Dimensions,

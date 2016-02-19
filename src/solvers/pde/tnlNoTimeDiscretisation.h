@@ -35,7 +35,7 @@ class tnlNoTimeDiscretisation
                                                                const RealType& rhs )
         {
             b += rhs;
-        };
+        }
 };
 
 #endif	/* TNLNOTIMEDISCRETISATION_H */

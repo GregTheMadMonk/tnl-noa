@@ -32,6 +32,8 @@ class tnlDummyMesh
    static const int meshDimensions = 1;
 
    const Real& getParametricStep(){ return 0.0; }
+   
+   tnlString getSerializationType() const { return tnlString( "tnlDummyMesh" ); }
 
    template< typename GridFunction >
    typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,

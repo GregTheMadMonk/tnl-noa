@@ -20,11 +20,11 @@
 
 #include <iostream>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunction.h>
+#include <functions/tnlDomain.h>
 
 template< int dimensions,
           typename Real = double >
-class tnlConstantFunction : public tnlFunction< dimensions, AnalyticConstantFunction >
+class tnlConstantFunction : public tnlDomain< dimensions, NonspaceDomain >
 {
    public:
       
@@ -46,24 +46,21 @@ class tnlConstantFunction : public tnlFunction< dimensions, AnalyticConstantFunc
    #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
    #else
       template< int XDiffOrder,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
    #endif
       __cuda_callable__ inline
-      RealType getValue( const Vertex& v,
-                         const Real& time = 0.0 ) const;
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
 
-      template< typename Vertex >
       __cuda_callable__ inline
-      RealType getValue( const Vertex& v,
-                         const Real& time = 0.0 ) const
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const
       {
-         return getValue< 0, 0, 0, Vertex >( v, time );
+         return constant;
       }
       
        __cuda_callable__ inline

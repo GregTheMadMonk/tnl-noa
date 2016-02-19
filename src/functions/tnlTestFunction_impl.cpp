@@ -20,17 +20,21 @@
 
 #include <functions/tnlTestFunction.h>
 
+#ifdef INSTANTIATE_FLOAT
 template class tnlTestFunction< 1, float, tnlHost >;
 template class tnlTestFunction< 2, float, tnlHost >;
 template class tnlTestFunction< 3, float, tnlHost >;
+#endif
 
 template class tnlTestFunction< 1, double, tnlHost >;
 template class tnlTestFunction< 2, double, tnlHost >;
 template class tnlTestFunction< 3, double, tnlHost >;
 
+#ifdef INSTANTIATE_LONG_DOUBLE
 template class tnlTestFunction< 1, long double, tnlHost >;
 template class tnlTestFunction< 2, long double, tnlHost >;
 template class tnlTestFunction< 3, long double, tnlHost >;
+#endif
 
 #endif
 

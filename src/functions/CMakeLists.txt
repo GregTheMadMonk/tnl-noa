@@ -1,18 +1,29 @@
-SET( headers tnlFunctionDiscretizer.h
-             tnlFunctionDiscretizer_impl.h
-             tnlFunctionEnumerator.h
-             tnlFunctionEnumerator_impl.h
-             tnlFunctionAdapter.h
-             tnlConstantFunction.h
+ADD_SUBDIRECTORY( initial_conditions )
+
+SET( headers tnlConstantFunction.h
              tnlConstantFunction_impl.h
+             tnlDomain.h
+             tnlExactOperatorFunction.h
              tnlExpBumpFunction.h
              tnlExpBumpFunction_impl.h
+             tnlFunctionAdapter.h
+             tnlFunctionEvaluator.h
+             tnlFunctionEvaluator_impl.h
+             tnlMeshFunction.h
+             tnlMeshFunction_impl.h
+             tnlMeshFunctionEvaluator.h
+             tnlMeshFunctionEvaluator_impl.h
+             tnlMeshFunctionGnuplotWriter.h
+             tnlMeshFunctionGnuplotWriter_impl.h
+             tnlMeshFunctionNormGetter.h
+             tnlMeshFunctionVTKWriter.h
+             tnlMeshFunctionVTKWriter_impl.h             
+             tnlOperatorFunction.h
              tnlSinBumpsFunction.h
              tnlSinBumpsFunction_impl.h
              tnlSinWaveFunction.h
              tnlSinWaveFunction_impl.h
-             tnlTestFunction.h
-             tnlFunction.h
+             tnlTestFunction.h             
              tnlTestFunction_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/functions )

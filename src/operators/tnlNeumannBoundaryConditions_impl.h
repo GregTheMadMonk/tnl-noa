@@ -1,6 +1,8 @@
 #ifndef TNLNEUMANNBOUNDARYCONDITIONS_IMPL_H
 #define	TNLNEUMANNBOUNDARYCONDITIONS_IMPL_H
 
+#include <functions/tnlFunctionAdapter.h>
+
 template< typename Function >
 void
 tnlNeumannBoundaryConditionsBase< Function >::
@@ -47,32 +49,33 @@ getFunction() const
 /****
  * 1D grid
  */
+
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Function,
           typename Real,
           typename Index >
-   template< typename EntityType >          
+   template< typename EntityType,
+             typename MeshFunction >
 __cuda_callable__
-void
+const Real
 tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
-setBoundaryConditions( const RealType& time,
-                       const MeshType& mesh,
-                       const EntityType& entity,
-                       DofVectorType& u,
-                       DofVectorType& fu ) const
+operator()( const MeshFunction& u,
+            const EntityType& entity,
+            const RealType& time ) const
 {
+   const MeshType& mesh = entity.getMesh();
    auto neighbourEntities = entity.getNeighbourEntities();
    const IndexType& index = entity.getIndex();
-   fu[ index ] = 0;
    if( entity.getCoordinates().x() == 0 )
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1 >() ] - mesh.getSpaceSteps().x() * 
+      return u[ neighbourEntities.template getEntityIndex< 1 >() ] - mesh.getSpaceSteps().x() * 
          tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
    else
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1 >() ] + mesh.getSpaceSteps().x() * 
-         tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
+      return u[ neighbourEntities.template getEntityIndex< -1 >() ] + mesh.getSpaceSteps().x() * 
+         tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );   
 }
+
 
 template< typename MeshReal,
           typename Device,
@@ -98,7 +101,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
    template< typename Matrix,
-             typename EntityType >
+             typename EntityType,
+             typename MeshFunction >
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
@@ -106,7 +110,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const EntityType& entity,
-                    DofVectorType& u,
+                    const MeshFunction& u,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {
@@ -137,43 +141,38 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-   template< typename EntityType >          
+   template< typename EntityType,
+             typename MeshFunction >
 __cuda_callable__
-void
+const Real
 tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
-setBoundaryConditions( const RealType& time,
-                       const MeshType& mesh,
-                       const EntityType& entity,
-                       DofVectorType& u,
-                       DofVectorType& fu ) const
+operator()( const MeshFunction& u,
+            const EntityType& entity,
+            const RealType& time ) const
 {
+   const MeshType& mesh = entity.getMesh();
    auto neighbourEntities = entity.getNeighbourEntities();
    const IndexType& index = entity.getIndex();
-   fu[ index ] = 0;
    if( entity.getCoordinates().x() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] - mesh.getSpaceSteps().x() *
+      return u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] - mesh.getSpaceSteps().x() *
          tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
-      return;
    }
    if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] + mesh.getSpaceSteps().x() *
+      return u[ neighbourEntities.template getEntityIndex< -1, 0 >() ] + mesh.getSpaceSteps().x() *
          tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
-      return;
    }
    if( entity.getCoordinates().y() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - mesh.getSpaceSteps().y() *
+      return u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - mesh.getSpaceSteps().y() *
          tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
-      return;
    }
    if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] + mesh.getSpaceSteps().y() *
+      return u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] + mesh.getSpaceSteps().y() *
          tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
-      return;
-   }
+   }   
 }
 
 template< typename MeshReal,
@@ -200,7 +199,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
    template< typename Matrix,
-             typename EntityType >
+             typename EntityType,
+             typename MeshFunction >
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
@@ -208,7 +208,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const EntityType& entity,
-                    DofVectorType& u,
+                    const MeshFunction& u,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {
@@ -253,55 +253,48 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-   template< typename EntityType >          
+   template< typename EntityType,
+             typename MeshFunction >
 __cuda_callable__
-void
+const Real
 tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
-setBoundaryConditions( const RealType& time,
-                       const MeshType& mesh,
-                       const EntityType& entity,
-                       DofVectorType& u,
-                       DofVectorType& fu ) const
+operator()( const MeshFunction& u,
+            const EntityType& entity,            
+            const RealType& time ) const
 {
+   const MeshType& mesh = entity.getMesh();
    auto neighbourEntities = entity.getNeighbourEntities();
    const IndexType& index = entity.getIndex();
-   fu[ index ] = 0;
    if( entity.getCoordinates().x() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] - mesh.getSpaceSteps().x() *
+      return u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] - mesh.getSpaceSteps().x() *
          tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
-      return;
    }
    if( entity.getCoordinates().x() == mesh.getDimensions().x() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< -1, 0, 0 >() ] + mesh.getSpaceSteps().x() *
+      return u[ neighbourEntities.template getEntityIndex< -1, 0, 0 >() ] + mesh.getSpaceSteps().x() *
          tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
-      return;
    }
    if( entity.getCoordinates().y() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] - mesh.getSpaceSteps().y() *
+      return u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] - mesh.getSpaceSteps().y() *
          tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
-      return;
    }
    if( entity.getCoordinates().y() == mesh.getDimensions().y() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, -1, 0 >() ] + mesh.getSpaceSteps().y() *
+      return u[ neighbourEntities.template getEntityIndex< 0, -1, 0 >() ] + mesh.getSpaceSteps().y() *
          tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
-      return;
    }
    if( entity.getCoordinates().z() == 0 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] - mesh.getSpaceSteps().z() *
+      return u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] - mesh.getSpaceSteps().z() *
          tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
-      return;
    }
    if( entity.getCoordinates().z() == mesh.getDimensions().z() - 1 )
    {
-      u[ index ] = u[ neighbourEntities.template getEntityIndex< 0, 0, -1 >() ] + mesh.getSpaceSteps().z() *
+      return u[ neighbourEntities.template getEntityIndex< 0, 0, -1 >() ] + mesh.getSpaceSteps().z() *
          tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
-      return;
-   }
+   }   
 }
 
 template< typename MeshReal,
@@ -328,7 +321,8 @@ template< typename MeshReal,
           typename Real,
           typename Index >
    template< typename Matrix,
-             typename EntityType >
+             typename EntityType,
+             typename MeshFunction >
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
@@ -336,7 +330,7 @@ updateLinearSystem( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const EntityType& entity,                    
-                    DofVectorType& u,
+                    const MeshFunction& u,
                     DofVectorType& b,
                     Matrix& matrix ) const
 {

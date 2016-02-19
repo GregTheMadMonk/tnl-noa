@@ -35,9 +35,9 @@ class tnlUnitTestStarter
    static bool run()
    {
 #ifdef HAVE_CPPUNIT
-      CppUnit :: TextTestRunner runner;
-      runner. addTest( Tester :: suite() );
-      runner. setOutputter( new CppUnit::CompilerOutputter(&runner.result(), std::cout) );
+      CppUnit::TextTestRunner runner;
+      runner.addTest( Tester :: suite() );
+      runner.setOutputter( new CppUnit::CompilerOutputter(&runner.result(), std::cout) );
       if( ! runner.run() )
          return false;
       return true;

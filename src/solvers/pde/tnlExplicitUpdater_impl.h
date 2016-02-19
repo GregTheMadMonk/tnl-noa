@@ -18,27 +18,28 @@
 #ifndef TNLEXPLICITUPDATER_IMPL_H_
 #define TNLEXPLICITUPDATER_IMPL_H_
 
+#include <type_traits>
 #include <mesh/grids/tnlTraverser_Grid1D.h>
 #include <mesh/grids/tnlTraverser_Grid2D.h>
 #include <mesh/grids/tnlTraverser_Grid3D.h>
 
 template< typename Mesh,
-          typename DofVector,
+          typename MeshFunction,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename RightHandSide >
    template< typename EntityType >
 void
-tnlExplicitUpdater< Mesh, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide >::
+tnlExplicitUpdater< Mesh, MeshFunction, DifferentialOperator, BoundaryConditions, RightHandSide >::
 update( const RealType& time,
         const Mesh& mesh,
         const DifferentialOperator& differentialOperator,        
         const BoundaryConditions& boundaryConditions,
         const RightHandSide& rightHandSide,
-        DofVector& u,
-        DofVector& fu ) const
+        MeshFunction& u,
+        MeshFunction& fu ) const
 {
-   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlHostDevice )
+   if( std::is_same< DeviceType, tnlHost >::value )
    {
       TraverserUserData userData( time, differentialOperator, boundaryConditions, rightHandSide, u, fu );
       tnlTraverser< MeshType, EntityType > meshTraverser;
@@ -52,14 +53,14 @@ update( const RealType& time,
                                                       userData );
 
    }
-   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlCudaDevice )
+   if( std::is_same< DeviceType, tnlCuda >::value )
    {
       RealType* kernelTime = tnlCuda::passToDevice( time );
       DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
       BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
       RightHandSide* kernelRightHandSide = tnlCuda::passToDevice( rightHandSide );
-      DofVector* kernelU = tnlCuda::passToDevice( u );
-      DofVector* kernelFu = tnlCuda::passToDevice( fu );
+      MeshFunction* kernelU = tnlCuda::passToDevice( u );
+      MeshFunction* kernelFu = tnlCuda::passToDevice( fu );
       TraverserUserData userData( *kernelTime, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelFu );
       checkCudaDevice;
       tnlTraverser< MeshType, EntityType > meshTraverser;
