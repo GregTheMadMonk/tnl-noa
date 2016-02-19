@@ -41,7 +41,9 @@ class tnlFiniteDifferences<
    static_assert( YDifference != 0 || ZDifference != 0,
       "You try to use default finite difference with 'wrong' template parameters. It means that required finite difference was not implmented yet." );
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {
@@ -63,7 +65,9 @@ class tnlFiniteDifferences<
    1, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -88,7 +92,9 @@ class tnlFiniteDifferences<
    -1, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -113,7 +119,9 @@ class tnlFiniteDifferences<
    0, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -138,7 +146,9 @@ class tnlFiniteDifferences<
    1, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -162,7 +172,9 @@ class tnlFiniteDifferences<
    -1, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -186,7 +198,9 @@ class tnlFiniteDifferences<
    0, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         

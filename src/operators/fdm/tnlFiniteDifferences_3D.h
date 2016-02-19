@@ -32,7 +32,9 @@ class tnlFiniteDifferences<
    1, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -54,7 +56,9 @@ class tnlFiniteDifferences<
    0, 1, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -76,7 +80,9 @@ class tnlFiniteDifferences<
    0, 0, 1 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -101,7 +107,9 @@ class tnlFiniteDifferences<
    -1, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -123,7 +131,9 @@ class tnlFiniteDifferences<
    0, -1, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__      
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -145,7 +155,9 @@ class tnlFiniteDifferences<
    0, 0, -1 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -170,7 +182,9 @@ class tnlFiniteDifferences<
    0, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -192,7 +206,9 @@ class tnlFiniteDifferences<
    0, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -214,7 +230,9 @@ class tnlFiniteDifferences<
    0, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -239,7 +257,9 @@ class tnlFiniteDifferences<
    1, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -263,7 +283,9 @@ class tnlFiniteDifferences<
    -1, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -287,7 +309,9 @@ class tnlFiniteDifferences<
    0, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -311,7 +335,9 @@ class tnlFiniteDifferences<
    0, 1, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -335,7 +361,9 @@ class tnlFiniteDifferences<
    0, -1, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -359,7 +387,9 @@ class tnlFiniteDifferences<
    0, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -383,7 +413,9 @@ class tnlFiniteDifferences<
    0, 0 ,1 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -407,7 +439,9 @@ class tnlFiniteDifferences<
    0, 0, -1 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         
@@ -431,7 +465,9 @@ class tnlFiniteDifferences<
    0, 0, 0 >
 {   
    public:
+      
       template< typename MeshFunction, typename MeshEntity >
+      __cuda_callable__
       static Real getValue( const MeshFunction& u,
                             const MeshEntity& entity )
       {         

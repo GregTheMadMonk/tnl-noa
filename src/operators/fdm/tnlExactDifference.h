@@ -37,6 +37,7 @@ class tnlExactDifference
       }
       
       template< typename Function >
+      __cuda_callable__
       typename Function::RealType operator()( 
          const Function& function,
          const typename Function::VertexType& vertex,
