@@ -30,24 +30,24 @@ class tnlFastBuildConfig
 /****
  * Turn off support for float and long double.
  */
-template<> struct tnlMeshConfigReal< tnlFastBuildConfig, float > { enum { enabled = false }; };
-template<> struct tnlMeshConfigReal< tnlFastBuildConfig, long double > { enum { enabled = false }; };
+template<> struct tnlConfigTagReal< tnlFastBuildConfig, float > { enum { enabled = false }; };
+template<> struct tnlConfigTagReal< tnlFastBuildConfig, long double > { enum { enabled = false }; };
 
 /****
  * Turn off support for short int and long int indexing.
  */
-template<> struct tnlMeshConfigIndex< tnlFastBuildConfig, short int >{ enum { enabled = false }; };
-template<> struct tnlMeshConfigIndex< tnlFastBuildConfig, long int >{ enum { enabled = false }; };
+template<> struct tnlConfigTagIndex< tnlFastBuildConfig, short int >{ enum { enabled = false }; };
+template<> struct tnlConfigTagIndex< tnlFastBuildConfig, long int >{ enum { enabled = false }; };
 
 /****
  * Use of tnlGrid is enabled for allowed dimensions and Real, Device and Index types.
  */
 template< int Dimensions, typename Real, typename Device, typename Index >
-   struct tnlMeshConfigMesh< tnlFastBuildConfig, tnlGrid< Dimensions, Real, Device, Index > >
-      { enum { enabled = tnlMeshConfigDimensions< tnlFastBuildConfig, Dimensions >::enabled  &&
-                         tnlMeshConfigReal< tnlFastBuildConfig, Real >::enabled &&
-                         tnlMeshConfigDevice< tnlFastBuildConfig, Device >::enabled &&
-                         tnlMeshConfigIndex< tnlFastBuildConfig, Index >::enabled }; };
+   struct tnlConfigTagMesh< tnlFastBuildConfig, tnlGrid< Dimensions, Real, Device, Index > >
+      { enum { enabled = tnlConfigTagDimensions< tnlFastBuildConfig, Dimensions >::enabled  &&
+                         tnlConfigTagReal< tnlFastBuildConfig, Real >::enabled &&
+                         tnlConfigTagDevice< tnlFastBuildConfig, Device >::enabled &&
+                         tnlConfigTagIndex< tnlFastBuildConfig, Index >::enabled }; };
 
 /****
  * Please, chose your preferred time discretisation  here.
@@ -59,6 +59,6 @@ template<> struct tnlConfigTagTimeDiscretisation< tnlFastBuildConfig, tnlImplici
 /****
  * Only the Runge-Kutta-Merson solver is enabled by default.
  */
-//template<> struct tnlMeshConfigExplicitSolver< tnlFastBuildConfig, tnlExplicitEulerSolverTag >{ enum { enabled = false }; };
+//template<> struct tnlConfigTagExplicitSolver< tnlFastBuildConfig, tnlExplicitEulerSolverTag >{ enum { enabled = false }; };
 
 #endif /* TNLFASTBUILDCONFIGTAG_H_ */

@@ -20,9 +20,9 @@
 
 #include <solvers/tnlBuildConfigTags.h>
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           template< typename ConfTag > class ProblemConfig,
-          typename MeshConfig = tnlDefaultBuildMeshConfig >
+          typename ConfigTag = tnlDefaultBuildConfigTag >
 class tnlSolver
 {
    public:

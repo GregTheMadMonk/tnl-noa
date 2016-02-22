@@ -20,34 +20,34 @@
 
 #include <config/tnlParameterContainer.h>
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
-          typename MeshConfig,
-          bool ResolveMesh = tnlMeshConfigMeshResolve< MeshConfig >::enabled >
+          typename ConfigTag,
+          bool ResolveMesh = tnlConfigTagMeshResolve< ConfigTag >::enabled >
 class tnlMeshTypeResolver
 {
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
-          typename MeshConfig >
-class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, false >
+          typename ConfigTag >
+class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >
 {
    public:
 
    static bool run( const tnlParameterContainer& parameters );
 };
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
-          typename MeshConfig  >
-class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, true >
+          typename ConfigTag  >
+class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
 {
    public:
 
@@ -60,21 +60,21 @@ class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, true 
 
    // Overload for disabled dimensions
    template< int MeshDimensions,
-             typename = typename std::enable_if< ! tnlMeshConfigDimensions<MeshConfig,MeshDimensions>::enabled >::type,
+             typename = typename std::enable_if< ! tnlConfigTagDimensions<ConfigTag,MeshDimensions>::enabled >::type,
              typename = void >
    static bool resolveMeshRealType( const tnlParameterContainer& parameters,
                                     const tnlList< tnlString >& parsedMeshType );
 
    // Overload for enabled dimensions
    template< int MeshDimensions,
-             typename = typename std::enable_if< tnlMeshConfigDimensions<MeshConfig,MeshDimensions>::enabled >::type >
+             typename = typename std::enable_if< tnlConfigTagDimensions<ConfigTag,MeshDimensions>::enabled >::type >
    static bool resolveMeshRealType( const tnlParameterContainer& parameters,
                                     const tnlList< tnlString >& parsedMeshType );
 
    // Overload for disabled real types
    template< int MeshDimensions,
              typename MeshRealType,
-             typename = typename std::enable_if< ! tnlMeshConfigReal<MeshConfig, MeshRealType>::enabled >::type,
+             typename = typename std::enable_if< ! tnlConfigTagReal<ConfigTag, MeshRealType>::enabled >::type,
              typename = void >
    static bool resolveMeshIndexType( const tnlParameterContainer& parameters,
                                      const tnlList< tnlString >& parsedMeshType );
@@ -82,7 +82,7 @@ class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, true 
    // Overload for enabled real types
    template< int MeshDimensions,
              typename MeshRealType,
-             typename = typename std::enable_if< tnlMeshConfigReal<MeshConfig, MeshRealType>::enabled >::type >
+             typename = typename std::enable_if< tnlConfigTagReal<ConfigTag, MeshRealType>::enabled >::type >
    static bool resolveMeshIndexType( const tnlParameterContainer& parameters,
                                      const tnlList< tnlString >& parsedMeshType );
 
@@ -90,7 +90,7 @@ class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, true 
    template< int MeshDimensions,
              typename MeshRealType,
              typename MeshIndexType,
-             typename = typename std::enable_if< ! tnlMeshConfigIndex<MeshConfig, MeshIndexType>::enabled >::type,
+             typename = typename std::enable_if< ! tnlConfigTagIndex<ConfigTag, MeshIndexType>::enabled >::type,
              typename = void >
    static bool resolveMeshType( const tnlParameterContainer& parameters,
                                 const tnlList< tnlString >& parsedMeshType );
@@ -99,7 +99,7 @@ class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, MeshConfig, true 
    template< int MeshDimensions,
              typename MeshRealType,
              typename MeshIndexType,
-             typename = typename std::enable_if< tnlMeshConfigIndex<MeshConfig, MeshIndexType>::enabled >::type >
+             typename = typename std::enable_if< tnlConfigTagIndex<ConfigTag, MeshIndexType>::enabled >::type >
    static bool resolveMeshType( const tnlParameterContainer& parameters,
                                 const tnlList< tnlString >& parsedMeshType );
 

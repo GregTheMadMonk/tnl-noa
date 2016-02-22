@@ -4,12 +4,19 @@ ADD_SUBDIRECTORY( interpolants )
 ADD_SUBDIRECTORY( operator-Q )
 ADD_SUBDIRECTORY( operator-curvature )
 
-SET( headers tnlFiniteDifferences.h
-             tnlFiniteDifferences_impl.h
-             tnlDirichletBoundaryConditions.h
+SET( headers tnlDirichletBoundaryConditions.h
              tnlDirichletBoundaryConditions_impl.h
+             tnlExactFunctionInverseOperator.h
+             tnlExactIdentityOperator.h
+             tnlExactOperatorComposition.h
+             tnlFiniteDifferences.h
+             tnlFiniteDifferences_impl.h
+             tnlFunctionInverseOperator.h
+             tnlIdentityOperator.h
              tnlNeumannBoundaryConditions.h
-             tnlNeumannBoundaryConditions_impl.h )
+             tnlNeumannBoundaryConditions_impl.h
+             tnlOperatorComposition.h
+             tnlOperator.h )
              
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/operators )
 

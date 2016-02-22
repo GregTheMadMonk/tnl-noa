@@ -1,14 +1,17 @@
-SET( headers tnlPDESolver.h
-             tnlPDESolver_impl.h
+SET( headers tnlBackwardTimeDiscretisation.h
+             tnlBoundaryConditionsSetter.h
+             tnlBoundaryConditionsSetter_impl.h
              tnlExplicitTimeStepper.h
-             tnlExplicitTimeStepper_impl.h             
+             tnlExplicitTimeStepper_impl.h
              tnlExplicitUpdater.h
              tnlExplicitUpdater_impl.h
-             tnlSemiImplicitTimeStepper.h
-             tnlSemiImplicitTimeStepper_impl.h
              tnlLinearSystemAssembler.h
              tnlLinearSystemAssembler_impl.h
-             tnlBackwardTimeDiscretisation.h
-             tnlNoTimeDiscretisation.h  )
+             tnlNoTimeDiscretisation.h
+             tnlPDESolver.h
+             tnlPDESolver_impl.h
+             tnlSemiImplicitTimeStepper.h
+             tnlSemiImplicitTimeStepper_impl.h )
+
              
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/solvers/pde )
