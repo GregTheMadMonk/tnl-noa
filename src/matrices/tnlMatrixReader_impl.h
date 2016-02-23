@@ -293,17 +293,17 @@ bool tnlMatrixReader< Matrix >::computeCompressedRowsLengthsFromMtxFile( std::is
       if( verbose )
          cout << " Counting the matrix elements ... " << numberOfElements / 1000 << " thousands      \r" << flush;
       rowLengths[ row - 1 ]++;
-      if( rowLengths[ row - 1 ] >= columns )
+      if( rowLengths[ row - 1 ] > columns )
       {
-         cerr << "There are more elements than the matrix columns at the row " << row << "." << endl;
+         cerr << "There are more elements ( " << rowLengths[ row - 1 ] << " ) than the matrix columns ( " << columns << " ) at the row " << row << "." << endl;
          return false;
       }
       if( symmetricMatrix && row != column )
       {
          rowLengths[ column - 1 ]++;
-         if( rowLengths[ column - 1 ] >= columns )
+         if( rowLengths[ column - 1 ] > columns )
          {
-            cerr << "There are more elements than the matrix columns at the row " << column << " ." << endl;
+            cerr << "There are more elements ( " << rowLengths[ row - 1 ] << " ) than the matrix columns ( " << columns << " ) at the row " << column << " ." << endl;
             return false;
          }
       }
