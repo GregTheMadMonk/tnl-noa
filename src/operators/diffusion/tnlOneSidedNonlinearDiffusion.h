@@ -182,7 +182,7 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, 
          
          const RealType& nonlinearity_center = this->nonlinearity[ center ];
          return ( u_x_f * nonlinearity_center - u_x_b * this->nonlinearity[ west ] ) * hx_div +
-                ( u_y_f * nonlinearity_center - u_y_b * this->nonlinearity[ south ] ) * hx_div;
+                ( u_y_f * nonlinearity_center - u_y_b * this->nonlinearity[ south ] ) * hy_div;
       }
 
       template< typename MeshEntity >

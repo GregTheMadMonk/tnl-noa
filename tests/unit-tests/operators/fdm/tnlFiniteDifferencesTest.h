@@ -127,8 +127,7 @@ bool testFiniteDifferenceOperator()
    if( ! tnlUnitTestStarter::run< tnlPDEOperatorEocUnitTest< OperatorTest > >() )
       return false;
    return true;
-#endif      
-    
+#endif
 }
 
 template< typename Mesh,

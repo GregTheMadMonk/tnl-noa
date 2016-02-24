@@ -1,7 +1,5 @@
 SET( headers tnlExactGradientNorm.h
-             tnlExactGradientNormInverse.h
-             tnlFDMGradientNorm.h
-             tnlGradientNormInverse.h
+             tnlFDMGradientNorm.h             
              tnlTwoSidedGradientNorm.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/operators/geometric )
