@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef HAVE_NOT_CXX11
+#ifndef HAVE_ICPC
 #include "tnl-mesh-convert.h"
 #endif
 #include "tnlConfig.h"
@@ -43,7 +43,7 @@ int main( int argc, char* argv[] )
       conf_desc.printUsage( argv[ 0 ] );
       return EXIT_FAILURE;
    }
-#ifndef HAVE_NOT_CXX11
+#ifndef HAVE_ICPC
    if( ! convertMesh( parameters ) )
       return EXIT_FAILURE;
 #endif

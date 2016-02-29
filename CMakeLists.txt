@@ -45,6 +45,12 @@ else()
     AddCompilerFlag( "-O3 -march=native -DNDEBUG -g" )
 endif()
 
+get_filename_component( CXX_COMPILER_NAME ${CMAKE_CXX_COMPILER} NAME )
+if( CXX_COMPILER_NAME MATCHES "icpc" )
+   message( "Intel compiler detected..."    )
+   AddCompilerFlag( "-DHAVE_ICPC" )
+endif()
+
 #####
 # Check for CUDA
 #

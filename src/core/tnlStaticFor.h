@@ -129,20 +129,28 @@ class tnlStaticFor
    __cuda_callable__
    static void exec()
    {
+#ifndef HAVE_ICPC
       StaticFor< IndexType,
                  tnlStaticForIndexTag< IndexType, begin >,
                  tnlStaticForIndexTag< IndexType, end - begin >,
                  LoopBody >::exec();
+#else
+     tnlAssert( false, );
+#endif
    }
 
    template< typename T >
    __cuda_callable__
    static void exec( T &p )
    {
+#ifndef HAVE_ICPC
       StaticFor< IndexType,
                  tnlStaticForIndexTag< IndexType, begin >,
                  tnlStaticForIndexTag< IndexType, end - begin >,
                  LoopBody >::exec( p );
+#else
+     tnlAssert( false, );
+#endif
    }
 
    template< typename T0,
@@ -150,10 +158,14 @@ class tnlStaticFor
    __cuda_callable__
    static void exec( T0& p0, T1& p1 )
    {
+#ifndef HAVE_ICPC
       StaticFor< IndexType,
                  tnlStaticForIndexTag< IndexType, begin >,
                  tnlStaticForIndexTag< IndexType, end - begin >,
                  LoopBody >::exec( p0, p1 );
+#else
+     tnlAssert( false, );
+#endif
    }
 
    template< typename T0,
@@ -162,10 +174,14 @@ class tnlStaticFor
    __cuda_callable__
    static void exec( T0& p0, T1& p1, T2& p2 )
    {
+#ifndef HAVE_ICPC
       StaticFor< IndexType,
                  tnlStaticForIndexTag< IndexType, begin >,
                  tnlStaticForIndexTag< IndexType, end - begin >,
                  LoopBody >::exec( p0, p1, p2 );
+#else
+     tnlAssert( false, );
+#endif
    }
 
    template< typename T0,
@@ -175,10 +191,14 @@ class tnlStaticFor
    __cuda_callable__
    static void exec( T0& p0, T1& p1, T2& p2, T3& p3 )
    {
+#ifndef HAVE_ICPC
       StaticFor< IndexType,
                  tnlStaticForIndexTag< IndexType, begin >,
                  tnlStaticForIndexTag< IndexType, end - begin >,
                  LoopBody >::exec( p0, p1, p2, p3 );
+#else
+     tnlAssert( false, );
+#endif
    }
 };
 

@@ -580,6 +580,7 @@ void tnlVectorOperations< tnlCuda >::computePrefixSum( Vector& v,
                                                        typename Vector::IndexType begin,
                                                        typename Vector::IndexType end )
 {
+   #ifdef HAVE_CUDA
    typedef tnlParallelReductionSum< typename Vector::RealType,
                                     typename Vector::IndexType > OperationType;
 
@@ -592,6 +593,9 @@ void tnlVectorOperations< tnlCuda >::computePrefixSum( Vector& v,
                                                 &v.getData()[ begin ],
                                                 operation,
                                                 inclusivePrefixSum );
+   #else
+      tnlCudaSupportMissingMessage;;
+   #endif
 }
 
 template< typename Vector >
