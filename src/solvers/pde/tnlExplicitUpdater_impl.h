@@ -39,6 +39,11 @@ update( const RealType& time,
         MeshFunction& u,
         MeshFunction& fu ) const
 {
+   static_assert( std::is_same< MeshFunction, 
+                                tnlVector< typename MeshFunction::RealType,
+                                           typename MeshFunction::DeviceType,
+                                           typename MeshFunction::IndexType > >::value != true,
+      "Error: I am getting tnlVector instead of tnlMeshFunction or similar object. You might forget to bind DofVector into tnlMeshFunction in you method getExplicitRHS."  );
    if( std::is_same< DeviceType, tnlHost >::value )
    {
       TraverserUserData userData( time, differentialOperator, boundaryConditions, rightHandSide, u, fu );

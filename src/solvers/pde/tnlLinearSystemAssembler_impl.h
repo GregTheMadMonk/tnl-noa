@@ -44,6 +44,12 @@ assembly( const RealType& time,
           MatrixType& matrix,
           DofVector& b ) const
 {
+      static_assert( std::is_same< MeshFunction, 
+                                tnlVector< typename MeshFunction::RealType,
+                                           typename MeshFunction::DeviceType,
+                                           typename MeshFunction::IndexType > >::value != true,
+      "Error: I am getting tnlVector instead of tnlMeshFunction or similar object. You might forget to bind DofVector into tnlMeshFunction in you method getExplicitRHS."  );
+
    const IndexType maxRowLength = matrix.getMaxRowLength();
    tnlAssert( maxRowLength > 0, );
 
