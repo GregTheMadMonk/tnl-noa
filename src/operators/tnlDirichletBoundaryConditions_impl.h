@@ -30,7 +30,7 @@ tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, In
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   Function::configSetup( config );
+   Function::configSetup( config, prefix );
 }
 
 template< typename Mesh,
@@ -43,7 +43,7 @@ tnlDirichletBoundaryConditions< Mesh, Function, MeshEntitiesDimensions, Real, In
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
-   return this->function.setup( parameters );
+   return this->function.setup( parameters, prefix );
 }
 
 template< typename Mesh,

@@ -9,7 +9,7 @@ tnlNeumannBoundaryConditionsBase< Function >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   Function::configSetup( config );
+   Function::configSetup( config, prefix );
 }
 
 template< typename Function >
@@ -18,7 +18,7 @@ tnlNeumannBoundaryConditionsBase< Function >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
-   return this->function.setup( parameters );
+   return this->function.setup( parameters, prefix );
 }
 
 template< typename Function >
