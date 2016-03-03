@@ -12,7 +12,7 @@
 # Vladimir Klement
 # Jakub Klinkovsky
 
-cmake_minimum_required( VERSION 3.2.0 )
+cmake_minimum_required( VERSION 3.0 )
 
 project( tnl )
 
@@ -34,21 +34,26 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( debugExt -dbg )
     set( CMAKE_CXX_FLAGS "${CXXFLAGS} -g ")
-    #AddCompilerFlag( "-g" )
 else()
     set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
     set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Release/tests )
     set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Release/tools )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
-    #OptimizeForArchitecture()
-    AddCompilerFlag( "-O3 -march=native -DNDEBUG -g" )
 endif()
+# set Debug/Release options
+set( CMAKE_CXX_FLAGS "-std=c++11" )
+set( CMAKE_CXX_FLAGS_DEBUG "-g" )
+set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG -g" )
+# pass -rdynamic only in Debug mode
+set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "" )
+set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG "-rdynamic" )
+set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE "" )
 
 get_filename_component( CXX_COMPILER_NAME ${CMAKE_CXX_COMPILER} NAME )
 if( CXX_COMPILER_NAME MATCHES "icpc" )
    message( "Intel compiler detected..."    )
-   AddCompilerFlag( "-DHAVE_ICPC" )
+   set( CMAKE_CXX_FLAGS "${CXXFLAGS} -DHAVE_ICPC ")
 endif()
 
 #####
@@ -102,9 +107,9 @@ if( WITH_CUDA STREQUAL "yes" )
                 set( CUDA_ARCH -gencode arch=compute_${WITH_CUDA_ARCH},code=sm_${WITH_CUDA_ARCH} )
             endif()
         endif()
-        set( CUDA_ADD_EXECUTABLE_OPTIONS ${CUDA_ARCH} )
-        set( CUDA_ADD_LIBRARY_OPTIONS ${CUDA_ARCH} -shared )
-        set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared" )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} )
+        # TODO: this is necessary only due to a bug in cmake
+        set( CUDA_ADD_LIBRARY_OPTIONS -shared )
 
         ####
         # Check for cuBLAS
@@ -148,15 +153,8 @@ if( WITH_CUDA STREQUAL "yes" )
                set( CUSPARSE_LIBRARY "${CUDA_cusparse_LIBRARY}" )
            endif()            
         endif( NOT WITH_CUSPARSE STREQUAL "no" )
-   
-    #else( CUDA_FOUND )
-    #  AddCompilerFlag( "-std=c++11" )         
     endif( CUDA_FOUND )
-#else( WITH_CUDA STREQUAL "yes" )
-   #AddCompilerFlag( "-std=gnu++0x -ftree-vectorizer-verbose=1" )       
-   #AddCompilerFlag( "-std=c++11" )       
 endif( WITH_CUDA STREQUAL "yes" )
-AddCompilerFlag( "-std=c++11" )       
 
 ####
 # Check for OpenMP
@@ -164,7 +162,7 @@ AddCompilerFlag( "-std=c++11" )
 find_package( OpenMP ) 
 if( OPENMP_FOUND )
    message( "Compiler supports OpenMP." )
-   #set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp")
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp" )
 endif()
 
 ####
@@ -318,27 +316,27 @@ endif( WITH_TESTS STREQUAL "yes" )
 #
 if( WITH_TEMPLATE_INSTANTIATION STREQUAL "yes" )
    AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION " )
-endif()   
 
-if( INSTANTIATE_INT STREQUAL "yes" )
-   AddCompilerFlag( "-DINSTANTIATE_INT " )
-endif()   
+   if( INSTANTIATE_INT STREQUAL "yes" )
+      AddCompilerFlag( "-DINSTANTIATE_INT " )
+   endif()
 
-if( INSTANTIATE_LONG_INT STREQUAL "yes" )
-   AddCompilerFlag( "-DINSTANTIATE_LONG_INT " )
-endif()   
+   if( INSTANTIATE_LONG_INT STREQUAL "yes" )
+      AddCompilerFlag( "-DINSTANTIATE_LONG_INT " )
+   endif()
 
-if( INSTANTIATE_FLOAT STREQUAL "yes" )
-   AddCompilerFlag( "-DINSTANTIATE_FLOAT " )
-endif()   
+   if( INSTANTIATE_FLOAT STREQUAL "yes" )
+      AddCompilerFlag( "-DINSTANTIATE_FLOAT " )
+   endif()
 
-if( INSTANTIATE_DOUBLE STREQUAL "yes" )
-   AddCompilerFlag( "-DINSTANTIATE_DOUBLE " )
-endif()   
+   if( INSTANTIATE_DOUBLE STREQUAL "yes" )
+      AddCompilerFlag( "-DINSTANTIATE_DOUBLE " )
+   endif()
 
-if( INSTANTIATE_LONG_DOUBLE STREQUAL "yes" )
-   AddCompilerFlag( "-DINSTANTIATE_LONG_DOUBLE " )
-endif()   
+   if( INSTANTIATE_LONG_DOUBLE STREQUAL "yes" )
+      AddCompilerFlag( "-DINSTANTIATE_LONG_DOUBLE " )
+   endif()
+endif()
 
 set( CXX_TEST_FLAGS "-fprofile-arcs -ftest-coverage" )
 set( LD_TEST_FLAGS "-lgcov -coverage" )
@@ -388,3 +386,13 @@ set(CPACK_SOURCE_STRIP_FILES "Release")
 
 #set(CPACK_PACKAGE_EXECUTABLES "MyExecutable" "My Executable")
 INCLUDE( CPack )
+
+# Print compiler options
+message( "-- Compiler options:" )
+message( "   CMAKE_CXX_FLAGS = ${CMAKE_CXX_FLAGS}" )
+message( "   CMAKE_CXX_FLAGS_DEBUG = ${CMAKE_CXX_FLAGS_DEBUG}" )
+message( "   CMAKE_CXX_FLAGS_RELEASE = ${CMAKE_CXX_FLAGS_RELEASE}" )
+message( "   CMAKE_SHARED_LIBRARY_LINK_C_FLAGS = ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS}" )
+message( "   CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG = ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG}" )
+message( "   CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE = ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE}" )
+message( "   CUDA_NVCC_FLAGS = ${CUDA_NVCC_FLAGS}" )

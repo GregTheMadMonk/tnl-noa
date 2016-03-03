@@ -110,7 +110,7 @@ class tnlVector : public tnlArray< Real, Device, Index >
 
    //! Computes scalar dot product
    template< typename Vector >
-   Real scalarProduct( const Vector& v );
+   Real scalarProduct( const Vector& v ) const;
 
    //! Computes this = thisMultiplicator * this + multiplicator * v.
    template< typename Vector >

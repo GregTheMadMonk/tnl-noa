@@ -6,9 +6,8 @@ TARGET_LINK_LIBRARIES( tnlOneSidedMeanCurvatureTest${mpiExt}${debugExt} ${CPPUNI
                                                                              tnl${mpiExt}${debugExt}-0.1 )
 
 
-if( BUILD_CUDA )                                                           
-   CUDA_ADD_EXECUTABLE( tnlLinearDiffusionTest-cuda${mpiExt}${debugExt} ${headers} tnlLinearDiffusionTest.cu
-                        OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
+if( BUILD_CUDA )
+   CUDA_ADD_EXECUTABLE( tnlLinearDiffusionTest-cuda${mpiExt}${debugExt} ${headers} tnlLinearDiffusionTest.cu )
    TARGET_LINK_LIBRARIES( tnlLinearDiffusionTest-cuda${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                                           tnl${mpiExt}${debugExt}-0.1 )
    CUDA_ADD_EXECUTABLE( tnlOneSidedMeanCurvatureTest-cuda${mpiExt}${debugExt} ${headers} tnlOneSidedMeanCurvatureTest.cu

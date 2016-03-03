@@ -13,6 +13,7 @@ INSTALL( FILES matrix-market
                DESTINATION share/tnl-${tnlVersion}/benchmark-scripts )
 
 INSTALL( FILES tnl-run-spmv-benchmark
+               tnl-log-to-html.py
          DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
                                                                    

@@ -34,16 +34,9 @@ tnlTimerRT::tnlTimerRT()
 
 void tnlTimerRT::reset()
 {
-#ifdef HAVE_TIME
-   struct timeval tp;
-   int rtn = gettimeofday( &tp, NULL );
-   initial_time = ( double ) tp. tv_sec + 1.0e-6 * ( double ) tp. tv_usec;
-   total_time = 0.0;
-   stop_state = false;
-#else
    initial_time = 0.0;
-#endif
-
+   total_time = 0.0;
+   stop_state = true;
 }
 
 void tnlTimerRT::stop()
@@ -72,9 +65,11 @@ void tnlTimerRT::start()
 double tnlTimerRT::getTime()
 {
 #ifdef HAVE_TIME
-	stop();
-	start();
-	return total_time;
+   if( ! stop_state ) {
+      stop();
+      start();
+   }
+   return total_time;
 #endif
- return -1;
+   return -1;
 }

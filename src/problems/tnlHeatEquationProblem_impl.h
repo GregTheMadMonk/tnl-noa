@@ -220,6 +220,10 @@ getExplicitRHS( const RealType& time,
       this->boundaryCondition,
       time + tau,
       this->u );
+   
+   //fu.write( "fu.txt", "gnuplot" );
+   //this->u.write( "u.txt", "gnuplot");
+   //getchar();
    /*cout << "u = " << u << endl;
    cout << "fu = " << fu << endl;
    u.save( "u.tnl" );

@@ -82,7 +82,7 @@ class tnlExplicitUpdater
                    MeshFunction& u,
                    MeshFunction& fu ) const;      
       
-            class TraverserBoundaryEntitiesProcessor
+      class TraverserBoundaryEntitiesProcessor
       {
          public:
             

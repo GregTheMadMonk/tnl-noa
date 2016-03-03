@@ -302,7 +302,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
    const Real hy_inv = 1.0 / ( hy * hy );
    if( ! tau )
    {
-      tau = hx * hx < hy * hy ? hx * hx : hy * hy;
+      tau = hx < hy ? hx * hx : hy * hy;
       if( verbose )
          cout << "Setting tau to " << tau << "." << endl;
    }
@@ -461,7 +461,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
    const Real hy_inv = 1.0 / ( hy * hy );
    if( ! tau )
    {
-      tau = hx * hx < hy * hy ? hx * hx : hy * hy;
+      tau = hx < hy ? hx * hx : hy * hy;
       if( verbose )
          cout << "Setting tau to " << tau << "." << endl;
    }

@@ -60,7 +60,7 @@ def generateMain( problemName, problemBaseName, operatorName ):
     file.write( "#include <solvers/tnlBuildConfigTags.h>\n" )
     file.write( "#include <operators/tnlDirichletBoundaryConditions.h>\n" )
     file.write( "#include <operators/tnlNeumannBoundaryConditions.h>\n" )
-    file.write( "#include <functors/tnlConstantFunction.h>\n" )
+    file.write( "#include <functions/tnlConstantFunction.h>\n" )
     file.write( "#include \"" + problemBaseName + "Problem.h\"\n" )
     file.write( "#include \"" + operatorName + ".h\"\n" )
     file.write( "#include \"" + problemBaseName + "Rhs.h\"\n" )

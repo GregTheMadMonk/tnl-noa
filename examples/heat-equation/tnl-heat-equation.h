@@ -50,7 +50,7 @@ class heatEquationConfig
          config.addEntry< tnlString >( "boundary-conditions-file", "File with the values of the boundary conditions.", "boundary.tnl" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< double >( "right-hand-side-constant", "This sets a constant value for the right-hand side.", 0.0 );
-         config.addEntry< tnlString >( "initial-condition", "File with the initial condition.", "initial.tnl");
+         //config.addEntry< tnlString >( "initial-condition", "File with the initial condition.", "initial.tnl");
       };
 };
 
