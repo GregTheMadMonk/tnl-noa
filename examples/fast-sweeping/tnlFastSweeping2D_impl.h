@@ -93,6 +93,7 @@ template< typename MeshReal,
 bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: initGrid()
 {
 
+	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
 	for(int i=0; i< Mesh.getDimensions().x()*Mesh.getDimensions().x();i++)
 	{
 		dofVector2[i]=INT_MAX*Sign(dofVector[i]);
@@ -104,7 +105,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 			{
 			this->Entity.setCoordinates(CoordinatesType(i,j));
 			this->Entity.refresh();
-			auto neighbourEntities =  Entity.getNeighbourEntities();
+			neighbourEntities.refresh(Mesh,Entity.getIndex());
 
 				if(dofVector[this->Entity.getIndex()] > 0)
 				{
@@ -395,8 +396,12 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 {
 
 	this->Entity.setCoordinates(CoordinatesType(i,j));
+
+		//cout << Entity.getIndex()  << endl;
+
 	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
+//	cout << "No. = " << dofVector2[i+j*Mesh.getDimensions().x()] << " i = " << i << ", " << Entity.getCoordinates().x() << " j = " << j << ", " << Entity.getCoordinates().y()<< " i+j*n = " <<i+j*Mesh.getDimensions().x()<< " index = "<<Entity.getIndex() << endl;
+	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
 
 	Real value = dofVector2[Entity.getIndex()];
 	Real a,b, tmp;
@@ -428,7 +433,10 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 		tmp = 0.5 * (a + b + Sign(value)*sqrt(2.0 * h * h - (a - b) * (a - b) ) );
 
 
-	dofVector2[Entity.getIndex()]  = fabsMin(value, tmp);
+	dofVector2[Entity.getIndex()] = fabsMin(value, tmp);
+
+//	if(dofVector2[Entity.getIndex()] > 1.0)
+//		cout << value << "    " << tmp << " " << dofVector2[Entity.getIndex()] << endl;
 }
 
 
@@ -460,13 +468,13 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1111( Index i, Index j)
 {
-	this->Entity.setCoordinates(CoordinatesType(i,j));
-	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
-	dofVector2[Entity.getIndex()]=fabsMin(INT_MAX,dofVector2[Entity.getIndex()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+//	this->Entity.setCoordinates(CoordinatesType(i,j));
+//	this->Entity.refresh();
+//	auto neighbourEntities =  Entity.getNeighbourEntities();
+//	dofVector2[Entity.getIndex()]=fabsMin(INT_MAX,dofVector2[Entity.getIndex()]);
+//	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+//	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+//	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -478,13 +486,13 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0000( Index i, Index j)
 {
-	this->Entity.setCoordinates(CoordinatesType(i,j));
-	this->Entity.refresh();
-	auto neighbourEntities =  Entity.getNeighbourEntities();
-	dofVector2[Entity.getIndex()]=fabsMin(-INT_MAX,dofVector2[(Entity.getIndex())]);
-	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
-	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
+//	this->Entity.setCoordinates(CoordinatesType(i,j));
+//	this->Entity.refresh();
+//	auto neighbourEntities =  Entity.getNeighbourEntities();
+//	dofVector2[Entity.getIndex()]=fabsMin(-INT_MAX,dofVector2[(Entity.getIndex())]);
+//	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+//	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+//	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 

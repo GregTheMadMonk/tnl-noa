@@ -104,7 +104,7 @@ protected:
 
 	RealType h;
 
-	tnlGridEntity< MeshType, 0, tnlGridEntityNoStencilStorage > Entity;
+	tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage > Entity;
 
 
 #ifdef HAVE_OPENMP
