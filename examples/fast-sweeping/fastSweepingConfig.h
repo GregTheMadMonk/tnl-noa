@@ -29,6 +29,7 @@ class fastSweepingConfig
          config.addDelimiter( "Parallel Eikonal solver settings:" );
          config.addEntry        < tnlString > ( "problem-name", "This defines particular problem.", "fast-sweeping" );
          config.addRequiredEntry        < tnlString > ( "initial-condition", "Initial condition for solver");
+         config.addRequiredEntry        < tnlString > ( "dim", "Dimension of problem.");
          config.addEntry       < tnlString > ( "mesh", "Name of mesh.", "mesh.tnl" );
          config.addEntry       < tnlString > ( "exact-input", "Are the function values near the curve equal to the SDF? (yes/no)", "no" );
       }
