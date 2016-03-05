@@ -48,10 +48,10 @@ class tnlObjectTester : public CppUnit :: TestCase
 
    void testObjectSave()
    {
-      tnlObject obj( "testing-object" );
+      tnlObject obj;
       tnlFile file;
       file. open( "test-file.tnl", tnlWriteMode );
-      obj. save( file );
+      obj.save( file );
    };
 
 };

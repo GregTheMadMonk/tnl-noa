@@ -23,57 +23,67 @@ template bool cudaPrefixSum( const int size,
                              const int blockSize,
                              const int *deviceInput,
                              int* deviceOutput,
-                             const tnlParallelReductionSum< int, int >& operation,
+                             tnlParallelReductionSum< int, int >& operation,
                              const enumPrefixSumType prefixSumType );
 
 
+#ifdef INSTANTIATE_FLOAT
 template bool cudaPrefixSum( const int size,
                              const int blockSize,
                              const float *deviceInput,
                              float* deviceOutput,
-                             const tnlParallelReductionSum< float, int >& operation,
+                             tnlParallelReductionSum< float, int >& operation,
                              const enumPrefixSumType prefixSumType );
+#endif
 
 template bool cudaPrefixSum( const int size,
                              const int blockSize,
                              const double *deviceInput,
                              double* deviceOutput,
-                             const tnlParallelReductionSum< double, int >& operation,
+                             tnlParallelReductionSum< double, int >& operation,
                              const enumPrefixSumType prefixSumType );
 
+#ifdef INSTANTIATE_LONG_DOUBLE
 template bool cudaPrefixSum( const int size,
                              const int blockSize,
                              const long double *deviceInput,
                              long double* deviceOutput,
-                             const tnlParallelReductionSum< long double, int >& operation,
+                             tnlParallelReductionSum< long double, int >& operation,
                              const enumPrefixSumType prefixSumType );
+#endif
 
+#ifdef INSTANTIATE_LONG_INT
 template bool cudaPrefixSum( const long int size,
                              const long int blockSize,
                              const int *deviceInput,
                              int* deviceOutput,
-                             const tnlParallelReductionSum< int, long int >& operation,
+                             tnlParallelReductionSum< int, long int >& operation,
                              const enumPrefixSumType prefixSumType );
 
 
+#ifdef INSTANTIATE_FLOAT
 template bool cudaPrefixSum( const long int size,
                              const long int blockSize,
                              const float *deviceInput,
                              float* deviceOutput,
-                             const tnlParallelReductionSum< float, long int >& operation,
+                             tnlParallelReductionSum< float, long int >& operation,
                              const enumPrefixSumType prefixSumType );
+#endif
 
 template bool cudaPrefixSum( const long int size,
                              const long int blockSize,
                              const double *deviceInput,
                              double* deviceOutput,
-                             const tnlParallelReductionSum< double, long int >& operation,
+                             tnlParallelReductionSum< double, long int >& operation,
                              const enumPrefixSumType prefixSumType );
 
-/*template bool cudaPrefixSum( const long int size,
+#ifdef INSTANTIATE_LONG_DOUBLE
+template bool cudaPrefixSum( const long int size,
                              const long int blockSize,
                              const long double *deviceInput,
                              long double* deviceOutput,
-                             const tnlParallelReductionSum< long double, long int >& operation,
-                             const enumPrefixSumType prefixSumType );*/   
+                             tnlParallelReductionSum< long double, long int >& operation,
+                             const enumPrefixSumType prefixSumType );
+#endif
+#endif 
 #endif

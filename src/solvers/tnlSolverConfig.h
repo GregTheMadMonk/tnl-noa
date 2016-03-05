@@ -20,7 +20,7 @@
 
 #include <config/tnlConfigDescription.h>
 
-template< typename ConfigTag,
+template< typename MeshConfig,
           typename ProblemConfig >
 class tnlSolverConfig
 {

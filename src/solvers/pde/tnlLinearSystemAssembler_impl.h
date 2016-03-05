@@ -18,121 +18,52 @@
 #ifndef TNLLINEARSYSTEMASSEMBLER_IMPL_H_
 #define TNLLINEARSYSTEMASSEMBLER_IMPL_H_
 
-#include <mesh/tnlTraverser_Grid1D.h>
-#include <mesh/tnlTraverser_Grid2D.h>
-#include <mesh/tnlTraverser_Grid3D.h>
+#include <type_traits>
+#include <mesh/grids/tnlTraverser_Grid1D.h>
+#include <mesh/grids/tnlTraverser_Grid2D.h>
+#include <mesh/grids/tnlTraverser_Grid3D.h>
 
 template< typename Mesh,
-          typename DofVector,
+          typename MeshFunction,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename RightHandSide,
-          typename Matrix >
-   template< int EntityDimensions >
+          typename TimeDiscretisation,
+          typename Matrix,
+          typename DofVector >
+   template< typename EntityType >
 void
-tnlLinearSystemAssembler< Mesh, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide, Matrix >::
+tnlLinearSystemAssembler< Mesh, MeshFunction, DifferentialOperator, BoundaryConditions, RightHandSide, TimeDiscretisation, Matrix, DofVector >::
 assembly( const RealType& time,
           const RealType& tau,
           const Mesh& mesh,
           const DifferentialOperator& differentialOperator,
           const BoundaryConditions& boundaryConditions,
           const RightHandSide& rightHandSide,
-          DofVector& u,
+          const MeshFunction& u,
           MatrixType& matrix,
           DofVector& b ) const
 {
-   const IndexType maxRowLength = matrix.getMaxRowLength();
-   tnlAssert( maxRowLength > 0, );
-   typedef typename TraverserUserData::RowValuesType RowValuesType;
-   typedef typename TraverserUserData::RowColumnsType RowColumnsType;
-   RowValuesType values;
-   RowColumnsType columns;
+      static_assert( std::is_same< MeshFunction, 
+                                tnlVector< typename MeshFunction::RealType,
+                                           typename MeshFunction::DeviceType,
+                                           typename MeshFunction::IndexType > >::value != true,
+      "Error: I am getting tnlVector instead of tnlMeshFunction or similar object. You might forget to bind DofVector into tnlMeshFunction in you method getExplicitRHS."  );
 
-   if( DeviceType::DeviceType == tnlHostDevice )
-   {
-      TraverserUserData userData( time, tau, differentialOperator, boundaryConditions, rightHandSide, u, matrix, b );
-      tnlTraverser< MeshType, EntityDimensions > meshTraverser;
-      meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                      TraverserBoundaryEntitiesProcessor >
-                                                    ( mesh,
-                                                      userData );
-      meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                      TraverserInteriorEntitiesProcessor >
-                                                    ( mesh,
-                                                      userData );
-   }
-   if( DeviceType::DeviceType == tnlCudaDevice )
-   {
-      RealType* kernelTime = tnlCuda::passToDevice( time );
-      RealType* kernelTau = tnlCuda::passToDevice( tau );
-      DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
-      BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
-      RightHandSide* kernelRightHandSide = tnlCuda::passToDevice( rightHandSide );
-      DofVector* kernelU = tnlCuda::passToDevice( u );
-      DofVector* kernelB = tnlCuda::passToDevice( b );
-      MatrixType* kernelMatrix = tnlCuda::passToDevice( matrix );
-      TraverserUserData userData( *kernelTime, *kernelTau, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelMatrix, *kernelB );
-      checkCudaDevice;
-      tnlTraverser< MeshType, EntityDimensions > meshTraverser;
-      meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                      TraverserBoundaryEntitiesProcessor >
-                                                    ( mesh,
-                                                      userData );
-      meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                      TraverserInteriorEntitiesProcessor >
-                                                    ( mesh,
-                                                      userData );
-
-      checkCudaDevice;
-      tnlCuda::freeFromDevice( kernelTime );
-      tnlCuda::freeFromDevice( kernelTau );
-      tnlCuda::freeFromDevice( kernelDifferentialOperator );
-      tnlCuda::freeFromDevice( kernelBoundaryConditions );
-      tnlCuda::freeFromDevice( kernelRightHandSide );
-      tnlCuda::freeFromDevice( kernelU );
-      tnlCuda::freeFromDevice( kernelB );
-      tnlCuda::freeFromDevice( kernelMatrix );
-      checkCudaDevice;
-   }
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename DofVector,
-          typename DifferentialOperator,
-          typename BoundaryConditions,
-          typename RightHandSide,
-          typename Matrix >
-   template< int EntityDimensions >
-void
-tnlLinearSystemAssembler< tnlGrid< Dimensions, Real, Device, Index >, DofVector, DifferentialOperator, BoundaryConditions, RightHandSide, Matrix >::
-assembly( const RealType& time,
-          const RealType& tau,
-          const tnlGrid< Dimensions, Real, Device, Index >& mesh,
-          const DifferentialOperator& differentialOperator,
-          const BoundaryConditions& boundaryConditions,
-          const RightHandSide& rightHandSide,
-          DofVector& u,
-          MatrixType& matrix,
-          DofVector& b ) const
-{
    const IndexType maxRowLength = matrix.getMaxRowLength();
    tnlAssert( maxRowLength > 0, );
 
-   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlHostDevice )
+   if( std::is_same< DeviceType, tnlHost >::value )
    {
       TraverserUserData userData( time,
                                   tau,
-                                  this->timeDiscretisationCoefficient,
                                   differentialOperator,
                                   boundaryConditions,
                                   rightHandSide,
                                   u,
                                   matrix,
                                   b );
-      tnlTraverser< MeshType, EntityDimensions > meshTraverser;
+      tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
                                                     ( mesh,
@@ -142,21 +73,18 @@ assembly( const RealType& time,
                                                     ( mesh,
                                                       userData );
    }
-   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlCudaDevice )
+   if( std::is_same< DeviceType, tnlCuda >::value )
    {
       RealType* kernelTime = tnlCuda::passToDevice( time );
       RealType* kernelTau = tnlCuda::passToDevice( tau );
-      RealType timeDiscretisationCoefficient = this->timeDiscretisationCoefficient; // retyping between different floating point types, TODO check it
-      RealType* kernelTimeDiscretisationCoefficient = tnlCuda::passToDevice( timeDiscretisationCoefficient );
       DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
       BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
       RightHandSide* kernelRightHandSide = tnlCuda::passToDevice( rightHandSide );
-      DofVector* kernelU = tnlCuda::passToDevice( u );
+      MeshFunction* kernelU = tnlCuda::passToDevice( u );
       DofVector* kernelB = tnlCuda::passToDevice( b );
       MatrixType* kernelMatrix = tnlCuda::passToDevice( matrix );
       TraverserUserData userData( *kernelTime,
                                   *kernelTau,
-                                  *kernelTimeDiscretisationCoefficient,
                                   *kernelDifferentialOperator,
                                   *kernelBoundaryConditions,
                                   *kernelRightHandSide,
@@ -164,7 +92,7 @@ assembly( const RealType& time,
                                   *kernelMatrix,
                                   *kernelB );
       checkCudaDevice;
-      tnlTraverser< MeshType, EntityDimensions > meshTraverser;
+      tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
                                                     ( mesh,
@@ -186,6 +114,5 @@ assembly( const RealType& time,
       checkCudaDevice;
    }
 }
-
 
 #endif /* TNLLINEARSYSTEMASSEMBLER_IMPL_H_ */

@@ -36,7 +36,6 @@ tnlSpmvBenchmarkBase< Matrix >::tnlSpmvBenchmarkBase()
      benchmarkStatusColumnWidth( 12 ),
      infoColumnWidth( 20 )
 {
-   matrix.setName( "spmvBenchmark::matrix" );
 }
 
 template< typename  Matrix >
@@ -115,7 +114,7 @@ void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const tnlVector< RealType, De
       iterations ++;
    }
 
-   this -> time = rt_timer. GetTime();
+   this -> time = rt_timer. getTime();
 
    firstErrorOccurence = 0;
    tnlVector< RealType, tnlHost, IndexType > resB( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );

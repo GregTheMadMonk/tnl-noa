@@ -24,12 +24,6 @@
 #include <mesh/tnlDummyMesh.h>
 #include <mesh/tnlGrid.h>
 
-// TODO: Remove
-/*#include <mesh/tnlMesh.h>
-#include <mesh/tnlMeshWriterNetgen.h>
-#include <mesh/config/tnlMeshConfigBase.h>
-#include <mesh/topologies/tnlMeshTriangleTag.h>*/
-
 void setupConfig( tnlConfigDescription& config )
 {
    config.addDelimiter                            ( "General settings:" );
@@ -74,9 +68,9 @@ int main( int argc, char* argv[] )
    tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
    if( meshFile == "" )
    {
-      if( ! processFiles< tnlDummyMesh< double, tnlHost, int > >( parameters ) )
-         return EXIT_FAILURE;
-      return EXIT_SUCCESS;
+      //if( ! processFiles< tnlDummyMesh< double, tnlHost, int > >( parameters ) )
+      //   return EXIT_FAILURE;
+      //return EXIT_SUCCESS;
    }
    tnlString meshType;
    if( ! getObjectType( meshFile, meshType ) )
@@ -119,7 +113,7 @@ int main( int argc, char* argv[] )
       /*tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
       struct MeshConfig : public tnlMeshConfigBase< 2 >
       {
-         typedef tnlMeshTriangleTag CellTag;
+         typedef tnlMeshTriangleTopology CellType;
       };
       tnlMesh< MeshConfig > mesh;
       if( ! mesh.load( meshFile ) )

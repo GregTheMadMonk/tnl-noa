@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSDFParaboloidSDF.h  -  description
+                          tnlSDFParaboloidSDFSDF.h  -  description
                              -------------------
     begin                : Oct 13, 2014
     copyright            : (C) 2014 by Tomas Sobotik
@@ -20,16 +20,18 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
+#include <functions/tnlDomain.h>
 
-template< typename Real = double >
-class tnlSDFParaboloidSDFBase
+template< int dimensions,
+          typename Real = double >
+class tnlSDFParaboloidSDFBase : public tnlDomain< dimensions, SpaceDomain >
 {
    public:
 
    tnlSDFParaboloidSDFBase();
 
    bool setup( const tnlParameterContainer& parameters,
-           const tnlString& prefix = ""  );
+              const tnlString& prefix = "" );
 
    void setXCentre( const Real& waveLength );
 
@@ -43,7 +45,7 @@ class tnlSDFParaboloidSDFBase
 
    Real getZCentre() const;
 
-   void setCoefficient( const Real& amplitude );
+   void setCoefficient( const Real& coefficient );
 
    Real getCoefficient() const;
 
@@ -62,104 +64,99 @@ class tnlSDFParaboloidSDF
 };
 
 template< typename Real >
-class tnlSDFParaboloidSDF< 1, Real > : public tnlSDFParaboloidSDFBase< Real >
-{
-public:
-
-enum { Dimensions = 1 };
-typedef tnlStaticVector< 1, Real > VertexType;
-typedef Real RealType;
-
-#ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
-#else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0,
-             typename Vertex = VertexType >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
-#endif
-};
-
-template< typename Real >
-class tnlSDFParaboloidSDF< 2, Real > : public tnlSDFParaboloidSDFBase< Real >
-{
-public:
-
-enum { Dimensions = 2 };
-typedef tnlStaticVector< 2, Real > VertexType;
-typedef Real RealType;
-
-#ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
-#else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0,
-             typename Vertex = VertexType >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
-#endif
-};
-
-template< typename Real >
-class tnlSDFParaboloidSDF< 3, Real > : public tnlSDFParaboloidSDFBase< Real >
-{
-public:
-
-enum { Dimensions = 3 };
-typedef tnlStaticVector< 3, Real > VertexType;
-typedef Real RealType;
-
-#ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
-#else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0,
-             typename Vertex = VertexType >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
-#endif
-
-
-
-};
-
-template< int Dimensions,
-          typename Real >
-std::ostream& operator << ( std::ostream& str, const tnlSDFParaboloidSDF < Dimensions, Real >& f )
-{
-   str << "tnlSDFParaboloidSDF";
-   return str;
-};
-
-template< int Dimensions,
-          typename Real >
-class tnlFunctionType< tnlSDFParaboloidSDF< Dimensions, Real > >
+class tnlSDFParaboloidSDF< 1, Real > : public tnlSDFParaboloidSDFBase< 1, Real >
 {
    public:
 
-      enum { Type = tnlAnalyticFunction };
+      typedef Real RealType;
+      typedef tnlStaticVector< 1, RealType > VertexType;
+
+#ifdef HAVE_NOT_CXX11
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+#else
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+#endif
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
+
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
+
 };
 
+template< typename Real >
+class tnlSDFParaboloidSDF< 2, Real > : public tnlSDFParaboloidSDFBase< 2, Real >
+{
+   public:
+
+      typedef Real RealType;
+      typedef tnlStaticVector< 2, RealType > VertexType;
+
+#ifdef HAVE_NOT_CXX11
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+#else
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+#endif
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
+
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
+
+};
+
+template< typename Real >
+class tnlSDFParaboloidSDF< 3, Real > : public tnlSDFParaboloidSDFBase< 3, Real >
+{
+   public:
+
+      typedef Real RealType;
+      typedef tnlStaticVector< 3, RealType > VertexType;
+
+
+
+#ifdef HAVE_NOT_CXX11
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+#else
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+#endif
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
+                         const Real& time = 0.0 ) const;
+
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
+
+};
+
+template< int Dimensions,
+          typename Real >
+ostream& operator << ( ostream& str, const tnlSDFParaboloidSDF< Dimensions, Real >& f )
+{
+   str << "SDF Paraboloid SDF function: amplitude = " << f.getCoefficient()
+       << " offset = " << f.getOffset();
+   return str;
+}
+
 #include <functions/tnlSDFParaboloidSDF_impl.h>
+
 
 #endif /* TNLSDFPARABOLOIDSDF_H_ */
 

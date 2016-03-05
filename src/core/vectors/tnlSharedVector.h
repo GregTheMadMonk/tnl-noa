@@ -20,7 +20,7 @@
 
 #include <core/arrays/tnlSharedArray.h>
 #include <core/vectors/tnlVector.h>
-#include <functions/tnlFunctionType.h>
+#include <functions/tnlDomain.h>
 
 class tnlHost;
 
@@ -38,13 +38,17 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
    typedef tnlSharedVector< Real, tnlCuda, Index > CudaType;
 
 
+   __cuda_callable__
    tnlSharedVector();
 
+   __cuda_callable__
    tnlSharedVector( Real* data,
                     const Index size );
 
+   __cuda_callable__
    tnlSharedVector( tnlVector< Real, Device, Index >& vector );
 
+   __cuda_callable__
    tnlSharedVector( tnlSharedVector< Real, Device, Index >& vector );
 
    static tnlString getType();
@@ -78,6 +82,10 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
    template< typename Vector >
    tnlSharedVector< Real, Device, Index >& operator += ( const Vector& vector );
+   
+   tnlSharedVector< Real, Device, Index >& operator *= ( const RealType& c );
+   
+   tnlSharedVector< Real, Device, Index >& operator /= ( const RealType& c );
 
    //bool save( tnlFile& file ) const;
 
@@ -125,25 +133,13 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
                    const Real& alpha = 1.0,
                    const Real& thisMultiplicator = 1.0 );
 
-   //! Computes Y = alpha * X + beta * Y.
+   //! Computes this = thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
    template< typename Vector >
-   void alphaXPlusBetaY( const Real& alpha,
-                         const Vector& x,
-                         const Real& beta );
-
-   //! Computes Y = alpha * X + beta * Z
-   template< typename Vector >
-   void alphaXPlusBetaZ( const Real& alpha,
-                         const Vector& x,
-                         const Real& beta,
-                         const Vector& z );
-
-   //! Computes Y = Scalar Alpha X Plus Scalar Beta Z Plus Y
-   template< typename Vector >
-   void alphaXPlusBetaZPlusY( const Real& alpha,
-                              const Vector& x,
-                              const Real& beta,
-                              const Vector& z );
+   void addVectors( const Vector& v1,
+                    const Real& multiplicator1,
+                    const Vector& v2,
+                    const Real& multiplicator2,
+                    const Real& thisMultiplicator = 1.0 );
 
    void computePrefixSum();
 
@@ -153,16 +149,6 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
    void computeExclusivePrefixSum( const IndexType begin, const IndexType end );
 
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-class tnlFunctionType< tnlSharedVector< Real, Device, Index > >
-{
-   public:
-
-      enum { Type = tnlDiscreteFunction };
 };
 
 #include <core/vectors/tnlSharedVector_impl.h>

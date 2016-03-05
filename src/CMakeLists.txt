@@ -35,6 +35,9 @@ set( tnl_CUDA__SOURCES ${tnl_functions_CUDA__SOURCES}
 if( BUILD_CUDA )
    CUDA_ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED ${tnl_CUDA__SOURCES}
                                                   OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
+    if( HAVE_CUBLAS )
+       CUDA_ADD_CUBLAS_TO_TARGET( tnl${debugExt}-${tnlVersion} )
+    endif( HAVE_CUBLAS )
 else( BUILD_CUDA )
    ADD_LIBRARY( tnl${debugExt}-${tnlVersion} SHARED 
                 ${tnl_SOURCES} )
@@ -43,6 +46,9 @@ endif( BUILD_CUDA )
 SET_TARGET_PROPERTIES( tnl${debugExt}-${tnlVersion} PROPERTIES 
                        SOVERSION 0 
                        VERSION ${tnlVersion} )
+TARGET_LINK_LIBRARIES( tnl${debugExt}-${tnlVersion} 
+                       ${DCMTK_LIBRARIES})
+
 
 INSTALL( TARGETS tnl${debugExt}-${tnlVersion} DESTINATION lib )
 
@@ -51,6 +57,9 @@ IF( BUILD_MPI )
    if( BUILD_CUDA )
       CUDA_ADD_LIBRARY( tnl-mpi${debugExt}-${tnlVersion} SHARED ${tnl_CUDA__SOURCES} 
                                                          OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
+      if( HAVE_CUBLAS )
+         CUDA_ADD_CUBLAS_TO_TARGET( tnl-mpi${debugExt}-${tnlVersion} )
+      endif( HAVE_CUBLAS )
    else( BUILD_CUDA )
          ADD_LIBRARY( tnl-mpi${debugExt}-${tnlVersion} SHARED
                       ${tnl_SOURCES} )  
@@ -59,10 +68,12 @@ IF( BUILD_MPI )
    SET_TARGET_PROPERTIES( tnl-mpi${debugExt}-${tnlVersion} PROPERTIES
                           SOVERSION 0 
                           VERSION ${tnlVersion} ) 
+#   SET_TARGET_PROPERTIES( tnl-mpi${debugExt}-${tnlVersion} 
+#                          LINK_INTERFACE_LIBRARIES "")
+
    
    TARGET_LINK_LIBRARIES( tnl-mpi${debugExt}-${tnlVersion} 
-                            ${MPI_LIBRARIES} )
-   
+                          ${MPI_LIBRARIES} )
    INSTALL( TARGETS tnl-mpi${debugExt}-${tnlVersion} DESTINATION lib )
                                                                 
 ENDIF()

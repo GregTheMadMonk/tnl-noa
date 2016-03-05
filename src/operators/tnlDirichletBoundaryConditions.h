@@ -18,86 +18,82 @@
 #ifndef TNLDIRICHLETBOUNDARYCONDITIONS_H_
 #define TNLDIRICHLETBOUNDARYCONDITIONS_H_
 
+#include <operators/tnlOperator.h>
+#include <functions/tnlConstantFunction.h>
+
 template< typename Mesh,
-          typename Vector,
+          typename Function = tnlConstantFunction< Mesh::getMeshDimensions(), typename Mesh::RealType >,
+          int MeshEntitiesDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class tnlDirichletBoundaryConditions
-{
-
-};
-
-template< int Dimensions,
-          typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Vector,
-          typename Real,
-          typename Index >
-class tnlDirichletBoundaryConditions< tnlGrid< Dimensions, MeshReal, Device, MeshIndex >, Vector, Real, Index >
+: public tnlOperator< Mesh,
+                      MeshBoundaryDomain,
+                      MeshEntitiesDimensions,
+                      MeshEntitiesDimensions,
+                      Real,
+                      Index >
 {
    public:
 
-   typedef tnlGrid< Dimensions, MeshReal, Device, MeshIndex > MeshType;
+   typedef Mesh MeshType;
+   typedef Function FunctionType;
    typedef Real RealType;
-   typedef Device DeviceType;
+   typedef typename MeshType::DeviceType DeviceType;
    typedef Index IndexType;
-
-   typedef Vector VectorType;
-   typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
+  
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef tnlStaticVector< Dimensions, RealType > VertexType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
+   typedef typename MeshType::VertexType VertexType;
+   
+   static constexpr int getMeshDimensions() { return MeshType::meshDimensions; }
 
-   void configSetup( tnlConfigDescription& config,
-                     const tnlString& prefix );
+   static void configSetup( tnlConfigDescription& config,
+                            const tnlString& prefix = "" );
 
    bool setup( const tnlParameterContainer& parameters,
                const tnlString& prefix = "" );
 
-   Vector& getVector();
+   void setFunction( const Function& function );
+   
+   Function& getFunction();
 
-   const Vector& getVector() const;
+   const Function& getFunction() const;
+   
+   template< typename EntityType,
+             typename MeshFunction >
+   __cuda_callable__
+   const RealType operator()( const MeshFunction& u,
+                              const EntityType& entity,                            
+                              const RealType& time = 0 ) const;
+   
+   template< typename EntityType >
+   __cuda_callable__
+   IndexType getLinearSystemRowLength( const MeshType& mesh,
+                                       const IndexType& index,
+                                       const EntityType& entity ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void setBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
-                               const IndexType index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
-                               DofVectorType& fu ) const;
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getLinearSystemRowLength( const MeshType& mesh,
-                                   const IndexType& index,
-                                   const CoordinatesType& coordinates ) const;
-
-   template< typename MatrixRow >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   template< typename MatrixRow,
+             typename EntityType,
+             typename MeshFunction >
+   __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
+                               const EntityType& entity,
+                               const MeshFunction& u,
                                DofVectorType& b,
                                MatrixRow& matrixRow ) const;
 
    protected:
 
-   Vector vector;
+   Function function;
+   
+   //static_assert( Device::DeviceType == Function::Device::DeviceType );
 };
 
 template< typename Mesh,
-          typename Function,
-          typename Real,
-          typename Index >
-ostream& operator << ( ostream& str, const tnlDirichletBoundaryConditions< Mesh, Function, Real, Index >& bc )
+          typename Function >
+ostream& operator << ( ostream& str, const tnlDirichletBoundaryConditions< Mesh, Function >& bc )
 {
    str << "Dirichlet boundary conditions: vector = " << bc.getVector();
    return str;

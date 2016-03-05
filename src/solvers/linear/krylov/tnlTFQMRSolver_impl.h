@@ -36,10 +36,9 @@ template< typename Matrix,
           typename Preconditioner >
 tnlString tnlTFQMRSolver< Matrix, Preconditioner > :: getType() const
 {
-   /*return tnlString( "tnlTFQMRSolver< " ) +
-          tnlString( getType< RealType >() + ", " +
-          Device :: getDeviceType() + ", " +
-          tnlString( getType< RealType >() + " >";*/
+   return tnlString( "tnlTFQMRSolver< " ) +
+          this->matrix -> getType() + ", " +
+          this->preconditioner -> getType() + " >";
 }
 
 template< typename Matrix,
@@ -49,7 +48,7 @@ tnlTFQMRSolver< Matrix, Preconditioner >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
+   //tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
 }
 
 template< typename Matrix,
@@ -59,7 +58,7 @@ tnlTFQMRSolver< Matrix, Preconditioner >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
-   tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
+   return tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }
 
 template< typename Matrix,
@@ -84,79 +83,76 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    dbgFunctionName( "tnlTFQMRSolver", "Solve" );
    if( ! this -> setSize( matrix -> getRows() ) ) return false;
 
-   this -> resetIterations();
-   this -> setResidue( this -> getConvergenceResidue() + 1.0 );
+   RealType tau, theta, eta, rho, alpha, w_norm;
+   RealType b_norm = b. lpNorm( 2.0 );
+   if( b_norm == 0.0 )
+       b_norm = 1.0;
 
-   RealType tau, theta, eta, rho, alpha;
-   const RealType bNorm = b. lpNorm( 2.0 );
-   this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
-
-   dbgCout( "Computing Ax" );
    this -> matrix -> vectorProduct( x, r );
+   r. addVector( b, 1.0, -1.0 );
+   w = u = r;
+   matrix -> vectorProduct( u, Au );
+   v = Au;
+   d. setValue( 0.0 );
+   tau = r. lpNorm( 2.0 );
+   theta = eta = 0.0;
+   r_ast = r;
+   rho = r_ast. scalarProduct( r );
+   // only to avoid compiler warning; alpha is initialized inside the loop
+   alpha = 0.0;
 
-   /*if( M )
-   {
-   }
-   else*/
-   {
-      r. alphaXPlusBetaY( -1.0, b, -1.0 );
-      w = u = r;
-      matrix -> vectorProduct( u, v );
-      d. setValue( 0.0 );
-      tau = r. lpNorm( 2.0 );
-      theta = 0.0;
-      eta = 0.0;
-      r_ast = r;
-      //cerr << "r_ast = " << r_ast << endl;
-      rho = this -> r_ast. scalarProduct( this -> r_ast );
-   }
+   this->resetIterations();
+   this->setResidue( tau / b_norm );
 
-   while( this -> getIterations() < this -> getMaxIterations() &&
-          this -> getResidue() > this -> getConvergenceResidue() )
+   while( this->nextIteration() )
    {
-      //dbgCout( "Starting TFQMR iteration " << iter + 1 );
+      const IndexType iter = this->getIterations();
 
-      if( this -> getIterations() % 2 == 0 )
-      {
-         //cerr << "rho = " << rho << endl;
+      if( iter % 2 == 1 ) {
          alpha = rho / v. scalarProduct( this -> r_ast );
-         //cerr << "new alpha = " << alpha << endl;
-         u_new.addVector( v, -alpha );
       }
-      matrix -> vectorProduct( u, Au );
+      else {
+         // not necessary in odd iter since the previous iteration
+         // already computed v_{m+1} = A*u_{m+1}
+         matrix -> vectorProduct( u, Au );
+      }
       w.addVector( Au, -alpha );
-      //cerr << "alpha = " << alpha << endl;
-      //cerr << "theta * theta / alpha * eta = " << theta * theta / alpha * eta << endl;
-      d. alphaXPlusBetaY( 1.0, u, theta * theta / alpha * eta );
-      theta = w. lpNorm( 2.0 ) / tau;
-      const RealType c = sqrt( 1.0 + theta * theta );
+      d.addVector( u, 1.0, theta * theta * eta / alpha );
+      w_norm = w. lpNorm( 2.0 );
+      theta = w_norm / tau;
+      const RealType c = 1.0 / sqrt( 1.0 + theta * theta );
       tau = tau * theta * c;
       eta = c * c  * alpha;
-      //cerr << "eta = " << eta << endl;
       x.addVector( d, eta );
-      if( this -> getIterations() % 2 == 1 )
-      {
+
+      this->setResidue( tau * sqrt(iter+1) / b_norm );
+      if( iter > this->getMinIterations() && this->getResidue() < this->getConvergenceResidue() ) {
+          break;
+      }
+
+      if( iter % 2 == 0 ) {
          const RealType rho_new  = w. scalarProduct( this -> r_ast );
          const RealType beta = rho_new / rho;
          rho = rho_new;
-         matrix -> vectorProduct( u, Au );
-         Au.addVector( v, beta );
+
          u.addVector( w, 1.0, beta );
-         matrix -> vectorProduct( u, Au_new );
-         v.alphaXPlusBetaZ( 1.0, Au_new, beta, Au );
+         v.addVector( Au, beta, beta * beta );
+         matrix -> vectorProduct( u, Au );
+         v.addVector( Au, 1.0 );
+      }
+      else {
+         u.addVector( v, -alpha );
       }
       
-      //this -> setResidue( residue );
-      //if( this -> getIterations() % 10 == 0 )
-         this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
-      if( ! this -> nextIteration() )
-         return false;
       this -> refreshSolverMonitor();
    }
-   this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
-   this -> refreshSolverMonitor();
-      if( this -> getResidue() > this -> getConvergenceResidue() ) return false;
-   return true;
+
+//   this->matrix->vectorProduct( x, r );
+//   r.addVector( b, 1.0, -1.0 );
+//   this->setResidue( r.lpNorm( 2.0 ) / b_norm );
+
+   this->refreshSolverMonitor( true );
+   return this->checkConvergence();
 };
 
 template< typename Matrix,
@@ -175,9 +171,7 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: setSize( IndexType size )
        ! u. setSize( size ) ||
        ! v. setSize( size ) ||
        ! r_ast. setSize( size ) ||
-       ! u_new. setSize( size ) ||
-       ! Au. setSize( size ) ||
-       ! Au_new. setSize( size ) )
+       ! Au. setSize( size ) )
    {
       cerr << "I am not able to allocate all supporting vectors for the TFQMR solver." << endl;
       return false;

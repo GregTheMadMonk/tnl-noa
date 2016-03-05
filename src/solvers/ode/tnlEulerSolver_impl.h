@@ -30,10 +30,8 @@ __global__ void updateUEuler( const Index size,
 
 template< typename Problem >
 tnlEulerSolver< Problem > :: tnlEulerSolver()
-: k1( "tnlEulerSolver:k1" ),
-  cflCondition( 0.0 )
+: cflCondition( 0.0 )
 {
-   //this->setName( "EulerSolver" );
 };
 
 template< typename Problem >
@@ -48,7 +46,7 @@ template< typename Problem >
 void tnlEulerSolver< Problem > :: configSetup( tnlConfigDescription& config,
                                                const tnlString& prefix )
 {
-   tnlExplicitSolver< Problem >::configSetup( config, prefix );
+   //tnlExplicitSolver< Problem >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "euler-cfl", "Coefficient C in the Courant–Friedrichs–Lewy condition.", 0.0 );
 };
 
@@ -59,6 +57,7 @@ bool tnlEulerSolver< Problem > :: setup( const tnlParameterContainer& parameters
    tnlExplicitSolver< Problem >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "euler-cfl" ) )
       this->setCFLCondition( parameters.getParameter< double >( prefix + "euler-cfl" ) );
+   return true;
 }
 
 template< typename Problem >
@@ -236,7 +235,7 @@ __global__ void updateUEuler( const Index size,
 
    computeBlockResidue( du,
                         cudaBlockResidue,
-                        n );
+                        n );   
 }
 #endif
 

@@ -33,7 +33,7 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
+   typedef typename tnlMatrix< Real, Device, Index >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef tnlMultidiagonalMatrix< Real, Device, Index > ThisType;
    typedef tnlMultidiagonalMatrix< Real, tnlHost, Index > HostType;
    typedef tnlMultidiagonalMatrix< Real, tnlCuda, Index > CudaType;
@@ -50,7 +50,7 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setRowLengths( const RowLengthsVector& rowLengths );
+   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
@@ -80,9 +80,7 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    void setValue( const RealType& v );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value );
@@ -91,9 +89,7 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
                     const IndexType column,
                     const RealType& value );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value,
@@ -105,9 +101,7 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
                     const RealType& thisElementMultiplicator = 1.0 );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setRowFast( const IndexType row,
                     const IndexType* columns,
                     const RealType* values,
@@ -119,9 +113,7 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
                 const IndexType numberOfElements );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addRowFast( const IndexType row,
                     const IndexType* columns,
                     const RealType* values,
@@ -134,18 +126,14 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
                 const IndexType numberOfElements,
                 const RealType& thisElementMultiplicator = 1.0 );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    RealType getElementFast( const IndexType row,
                             const IndexType column ) const;
 
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void getRowFast( const IndexType row,
                     IndexType* columns,
                     RealType* values ) const;
@@ -154,20 +142,14 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
                 IndexType* columns,
                 RealType* values ) const;*/
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    MatrixRow getRow( const IndexType rowIndex );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const MatrixRow getRow( const IndexType rowIndex ) const;
 
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
@@ -207,9 +189,7 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
                          const IndexType column,
                          IndexType& index ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool getElementIndexFast( const IndexType row,
                              const IndexType column,
                              IndexType& index ) const;

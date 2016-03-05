@@ -10,8 +10,8 @@ TARGET_LINK_LIBRARIES( tnlGridTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
 #TARGET_LINK_LIBRARIES( tnlMeshEntityTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
 #                                                              tnl${mpiExt}${debugExt}-0.1 )
 
-#ADD_EXECUTABLE( tnlMeshTest${mpiExt}${debugExt} ${headers} tnlMeshTest.cpp )
-#TARGET_LINK_LIBRARIES( tnlMeshTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
-#                                                              tnl${mpiExt}${debugExt}-0.1 )
+ADD_EXECUTABLE( tnlMeshTest${mpiExt}${debugExt} ${headers} tnlMeshTest.cpp )
+TARGET_LINK_LIBRARIES( tnlMeshTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                              tnl${mpiExt}${debugExt}-0.1 )
 
                                                               

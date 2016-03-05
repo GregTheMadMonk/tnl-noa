@@ -2,7 +2,7 @@
 #define	TNLNEUMANNBOUNDARYCONDITIONS_H
 
 template< typename Mesh,
-          typename Vector,
+          typename Function,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class tnlNeumannBoundaryConditions
@@ -13,10 +13,12 @@ class tnlNeumannBoundaryConditions
 /****
  * Base
  */
-template< typename Vector >
+template< typename Function >
 class tnlNeumannBoundaryConditionsBase
 {
    public:
+      
+      typedef Function FunctionType;
 
       static void configSetup( tnlConfigDescription& config,
                                const tnlString& prefix = "" );
@@ -24,13 +26,15 @@ class tnlNeumannBoundaryConditionsBase
       bool setup( const tnlParameterContainer& parameters,
                   const tnlString& prefix = "" );
 
-      Vector& getVector();
+      void setFunction( const FunctionType& function );
+      
+      FunctionType& getFunction();
 
-      const Vector& getVector() const;
+      const FunctionType& getFunction() const;
 
    protected:
 
-      Vector vector;
+      FunctionType function;
 
 };
 
@@ -40,11 +44,12 @@ class tnlNeumannBoundaryConditionsBase
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
-class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Vector, Real, Index >
-   : public tnlNeumannBoundaryConditionsBase< Vector >
+class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >
+   : public tnlNeumannBoundaryConditionsBase< Function >,
+     public tnlDomain< 1, MeshBoundaryDomain >
 {
    public:
 
@@ -53,38 +58,34 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, V
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef Vector VectorType;
-   typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
+   typedef Function FunctionType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< 1, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void setBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
-                               const IndexType index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
-                               DofVectorType& fu ) const;
+   template< typename EntityType,
+             typename MeshFunction >
+   __cuda_callable__
+   const RealType operator()( const MeshFunction& u,
+                              const EntityType& entity,   
+                              const RealType& time = 0 ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
+   template< typename EntityType >
+   __cuda_callable__
    Index getLinearSystemRowLength( const MeshType& mesh,
                                    const IndexType& index,
-                                   const CoordinatesType& coordinates ) const;
+                                   const EntityType& entity ) const;
 
-   template< typename MatrixRow >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   template< typename MatrixRow,
+             typename EntityType,
+             typename MeshFunction >
+   __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
+                               const EntityType& entity,
+                               const MeshFunction& u,
                                DofVectorType& b,
                                MatrixRow& matrixRow ) const;
 };
@@ -95,11 +96,12 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, V
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
-class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Vector, Real, Index >
-   : public tnlNeumannBoundaryConditionsBase< Vector >
+class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >
+   : public tnlNeumannBoundaryConditionsBase< Function >,
+     public tnlDomain< 2, MeshBoundaryDomain >
 {
    public:
 
@@ -108,38 +110,33 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, V
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef Vector VectorType;
-   typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
+   typedef Function FunctionType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< 2, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void setBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
-                               const IndexType index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
-                               DofVectorType& fu ) const;
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   template< typename EntityType,
+             typename MeshFunction >
+   __cuda_callable__
+   const RealType operator()( const MeshFunction& u,
+                              const EntityType& entity,                            
+                              const RealType& time = 0 ) const;
+      
+   template< typename EntityType >
+   __cuda_callable__
    Index getLinearSystemRowLength( const MeshType& mesh,
                                    const IndexType& index,
-                                   const CoordinatesType& coordinates ) const;
+                                   const EntityType& entity ) const;
 
-   template< typename MatrixRow >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   template< typename MatrixRow,
+             typename EntityType,
+             typename MeshFunction >
+   __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
+                               const EntityType& entity,
+                               const MeshFunction& u,
                                DofVectorType& b,
                                MatrixRow& matrixRow ) const;
 };
@@ -150,11 +147,12 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, V
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
-          typename Vector,
+          typename Function,
           typename Real,
           typename Index >
-class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Vector, Real, Index >
-   : public tnlNeumannBoundaryConditionsBase< Vector >
+class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >
+   : public tnlNeumannBoundaryConditionsBase< Function >,
+     public tnlDomain< 3, MeshBoundaryDomain >
 {
    public:
 
@@ -163,38 +161,34 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, V
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef Vector VectorType;
-   typedef tnlSharedVector< RealType, DeviceType, IndexType > SharedVector;
+   typedef Function FunctionType;
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< 3, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void setBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
-                               const IndexType index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
-                               DofVectorType& fu ) const;
+   template< typename EntityType,
+             typename MeshFunction >
+   __cuda_callable__
+   const RealType operator()( const MeshFunction& u,
+                              const EntityType& entity,
+                              const RealType& time = 0 ) const;
+   
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   template< typename EntityType >
+   __cuda_callable__
    Index getLinearSystemRowLength( const MeshType& mesh,
                                    const IndexType& index,
-                                   const CoordinatesType& coordinates ) const;
+                                   const EntityType& entity ) const;
 
-   template< typename MatrixRow >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   template< typename MatrixRow,
+             typename EntityType,
+             typename MeshFunction >
+   __cuda_callable__
       void updateLinearSystem( const RealType& time,
                                const MeshType& mesh,
                                const IndexType& index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
+                               const EntityType& entity,
+                               const MeshFunction& u,
                                DofVectorType& b,
                                MatrixRow& matrixRow ) const;
 };
@@ -205,7 +199,7 @@ template< typename Mesh,
           typename Index >
 ostream& operator << ( ostream& str, const tnlNeumannBoundaryConditions< Mesh, Function, Real, Index >& bc )
 {
-   str << "Dirichlet boundary conditions: vector = " << bc.getVector();
+   str << "Neumann boundary conditions: function = " << bc.getFunction();
    return str;
 }
 

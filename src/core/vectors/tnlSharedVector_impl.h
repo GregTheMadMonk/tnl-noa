@@ -23,6 +23,7 @@
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 tnlSharedVector< Real, Device, Index >::tnlSharedVector()
 {
 }
@@ -30,6 +31,7 @@ tnlSharedVector< Real, Device, Index >::tnlSharedVector()
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 tnlSharedVector< Real, Device, Index >::tnlSharedVector( Real* data,
                                                          const Index size )
 : tnlSharedArray< Real, Device, Index >( data, size )
@@ -39,6 +41,7 @@ tnlSharedVector< Real, Device, Index >::tnlSharedVector( Real* data,
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 tnlSharedVector< Real, Device, Index >::tnlSharedVector( tnlVector< Real, Device, Index >& vector )
 : tnlSharedArray< Real, Device, Index >( vector )
 {
@@ -47,6 +50,7 @@ tnlSharedVector< Real, Device, Index >::tnlSharedVector( tnlVector< Real, Device
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 tnlSharedVector< Real, Device, Index >::tnlSharedVector( tnlSharedVector< Real, Device, Index >& vector )
 : tnlSharedArray< Real, Device, Index >( vector )
 {
@@ -142,7 +146,7 @@ template< typename Real,
    template< typename Vector >
 bool tnlSharedVector< Real, Device, Index > :: operator != ( const Vector& vector ) const
 {
-   return tnlSharedArray< Real, Device, Index > :: operator == ( vector );
+   return tnlSharedArray< Real, Device, Index > :: operator != ( vector );
 }
 
 template< typename Real,
@@ -151,7 +155,7 @@ template< typename Real,
    template< typename Vector >
 tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :: operator -= ( const Vector& vector )
 {
-   alphaXPlusBetaY( -1.0, vector, 1.0 );
+   this->addVector( vector, -1.0 );
    return ( *this );
 }
 
@@ -161,8 +165,26 @@ template< typename Real,
    template< typename Vector >
 tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :: operator += ( const Vector& vector )
 {
-   alphaXPlusBetaY( 1.0, vector, 1.0 );
+   this->addVector( vector );
    return ( *this );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :: operator *= ( const RealType& c )
+{
+   tnlVectorOperations< Device >::vectorScalarMultiplication( *this, c );
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :: operator /= ( const RealType& c )
+{
+   tnlVectorOperations< Device >::vectorScalarMultiplication( *this, 1.0/ c );
+   return *this;
 }
 
 template< typename Real,
@@ -307,36 +329,17 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: alphaXPlusBetaY( const Real& alpha,
-                                                                const Vector& x,
-                                                                const Real& beta )
+void
+tnlSharedVector< Real, Device, Index >::
+addVectors( const Vector& v1,
+            const Real& multiplicator1,
+            const Vector& v2,
+            const Real& multiplicator2,
+            const Real& thisMultiplicator )
 {
-   tnlVectorOperations< Device > :: alphaXPlusBetaY( *this, x, alpha, beta );
+   tnlVectorOperations< Device >::addVectors( *this, v1, multiplicator1, v2, multiplicator2, thisMultiplicator );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: alphaXPlusBetaZ( const Real& alpha,
-                                                                const Vector& x,
-                                                                const Real& beta,
-                                                                const Vector& z )
-{
-   tnlVectorOperations< Device > :: alphaXPlusBetaZ( *this, x, alpha, z, beta );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: alphaXPlusBetaZPlusY( const Real& alpha,
-                                                                     const Vector& x,
-                                                                     const Real& beta,
-                                                                     const Vector& z )
-{
-   tnlVectorOperations< Device > :: alphaXPlusBetaZPlusY( *this, x, alpha, z, beta );
-}
 template< typename Real,
           typename Device,
           typename Index >
@@ -374,17 +377,43 @@ void tnlSharedVector< Real, Device, Index > :: computeExclusivePrefixSum( const 
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlSharedVector< float, tnlHost, int >;
+#endif
 extern template class tnlSharedVector< double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlSharedVector< long double, tnlHost, int >;
+#endif
+#ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlSharedVector< float, tnlHost, long int >;
+#endif
 extern template class tnlSharedVector< double, tnlHost, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlSharedVector< long double, tnlHost, long int >;
+#endif
+#endif
 
 #ifdef HAVE_CUDA
 // TODO: fix this - it does not work with CUDA 5.5
-/*extern template class tnlSharedVector< float, tnlCuda, int >;
+/*
+#ifdef INSTANTIATE_FLOAT
+extern template class tnlSharedVector< float, tnlCuda, int >;
+#endif
 extern template class tnlSharedVector< double, tnlCuda, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlSharedVector< long double, tnlCuda, int >;
+#endif
+#ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlSharedVector< float, tnlCuda, long int >;
-extern template class tnlSharedVector< double, tnlCuda, long int >;*/
+#endif
+extern template class tnlSharedVector< double, tnlCuda, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlSharedVector< long double, tnlCuda, long int >;
+#endif
+ #endif 
+ */
 #endif
 
 #endif

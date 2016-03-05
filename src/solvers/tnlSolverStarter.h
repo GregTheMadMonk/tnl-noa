@@ -23,7 +23,7 @@
 #include <core/tnlTimerCPU.h>
 #include <ostream>
 
-template< typename ConfigTag >
+template< typename MeshConfig >
 class tnlSolverStarter
 {
    public:
@@ -33,7 +33,8 @@ class tnlSolverStarter
    template< typename Problem >
    static bool run( const tnlParameterContainer& parameters );
 
-   bool writeEpilog( ostream& str );
+   template< typename Solver >
+   bool writeEpilog( ostream& str, const Solver& solver );
 
    template< typename Problem, typename TimeStepper >
    bool runPDESolver( Problem& problem,

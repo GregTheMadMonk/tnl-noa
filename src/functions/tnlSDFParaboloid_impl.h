@@ -20,15 +20,15 @@
 
 #include <functions/tnlSDFParaboloid.h>
 
-template< typename Real >
-tnlSDFParaboloidBase< Real >::tnlSDFParaboloidBase()
+template< int dimensions, typename Real >
+tnlSDFParaboloidBase< dimensions, Real >::tnlSDFParaboloidBase()
 : xCentre( 0 ), yCentre( 0 ), zCentre( 0 ),
   coefficient( 1 ), offset ( 0 )
 {
 }
 
-template< typename Real >
-bool tnlSDFParaboloidBase< Real >::setup( const tnlParameterContainer& parameters,
+template< int dimensions, typename Real >
+bool tnlSDFParaboloidBase< dimensions, Real >::setup( const tnlParameterContainer& parameters,
         								 const tnlString& prefix)
 {
    this->xCentre = parameters.getParameter< double >( "x-centre" );
@@ -40,61 +40,61 @@ bool tnlSDFParaboloidBase< Real >::setup( const tnlParameterContainer& parameter
    return true;
 }
 
-template< typename Real >
-void tnlSDFParaboloidBase< Real >::setXCentre( const Real& xCentre )
+template< int dimensions, typename Real >
+void tnlSDFParaboloidBase< dimensions, Real >::setXCentre( const Real& xCentre )
 {
    this->xCentre = xCentre;
 }
 
-template< typename Real >
-Real tnlSDFParaboloidBase< Real >::getXCentre() const
+template< int dimensions, typename Real >
+Real tnlSDFParaboloidBase< dimensions, Real >::getXCentre() const
 {
    return this->xCentre;
 }
 
-template< typename Real >
-void tnlSDFParaboloidBase< Real >::setYCentre( const Real& yCentre )
+template< int dimensions, typename Real >
+void tnlSDFParaboloidBase< dimensions, Real >::setYCentre( const Real& yCentre )
 {
    this->yCentre = yCentre;
 }
 
-template< typename Real >
-Real tnlSDFParaboloidBase< Real >::getYCentre() const
+template< int dimensions, typename Real >
+Real tnlSDFParaboloidBase< dimensions, Real >::getYCentre() const
 {
    return this->yCentre;
 }
-template< typename Real >
-void tnlSDFParaboloidBase< Real >::setZCentre( const Real& zCentre )
+template< int dimensions, typename Real >
+void tnlSDFParaboloidBase< dimensions, Real >::setZCentre( const Real& zCentre )
 {
    this->zCentre = zCentre;
 }
 
-template< typename Real >
-Real tnlSDFParaboloidBase< Real >::getZCentre() const
+template< int dimensions, typename Real >
+Real tnlSDFParaboloidBase< dimensions, Real >::getZCentre() const
 {
    return this->zCentre;
 }
 
-template< typename Real >
-void tnlSDFParaboloidBase< Real >::setCoefficient( const Real& amplitude )
+template< int dimensions, typename Real >
+void tnlSDFParaboloidBase< dimensions, Real >::setCoefficient( const Real& amplitude )
 {
    this->coefficient = coefficient;
 }
 
-template< typename Real >
-Real tnlSDFParaboloidBase< Real >::getCoefficient() const
+template< int dimensions, typename Real >
+Real tnlSDFParaboloidBase< dimensions, Real >::getCoefficient() const
 {
    return this->coefficient;
 }
 
-template< typename Real >
-void tnlSDFParaboloidBase< Real >::setOffset( const Real& offset )
+template< int dimensions, typename Real >
+void tnlSDFParaboloidBase< dimensions, Real >::setOffset( const Real& offset )
 {
    this->offset = offset;
 }
 
-template< typename Real >
-Real tnlSDFParaboloidBase< Real >::getOffset() const
+template< int dimensions, typename Real >
+Real tnlSDFParaboloidBase< dimensions, Real >::getOffset() const
 {
    return this->offset;
 }
@@ -102,10 +102,12 @@ Real tnlSDFParaboloidBase< Real >::getOffset() const
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-Real tnlSDFParaboloid< 1, Real >::getValue( const Vertex& v,
-        									const Real& time) const
+             int ZDiffOrder>
+__cuda_callable__
+Real
+tnlSDFParaboloid< 1, Real >::
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const Real& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -121,10 +123,12 @@ Real tnlSDFParaboloid< 1, Real >::getValue( const Vertex& v,
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-Real tnlSDFParaboloid< 2, Real >::getValue( const Vertex& v,
-        									const Real& time) const
+             int ZDiffOrder>
+__cuda_callable__
+Real
+tnlSDFParaboloid< 2, Real >::
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const Real& x = v.x();
    const Real& y = v.y();
@@ -149,10 +153,12 @@ Real tnlSDFParaboloid< 2, Real >::getValue( const Vertex& v,
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-Real tnlSDFParaboloid< 3, Real >::getValue( const Vertex& v,
-        									const Real& time) const
+             int ZDiffOrder>
+__cuda_callable__
+Real
+tnlSDFParaboloid< 3, Real >::
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const Real& x = v.x();
    const Real& y = v.y();

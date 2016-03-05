@@ -22,11 +22,12 @@
 #include <core/vectors/tnlStaticVector.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
+#include <functions/tnlDomain.h>
 
 template< int FunctionDimensions,
           typename Real = double,
           typename Device = tnlHost >
-class tnlTestFunction
+class tnlTestFunction : public tnlDomain< FunctionDimensions, SpaceDomain >
 {
    protected:
 
@@ -34,12 +35,17 @@ class tnlTestFunction
                        expBump,
                        sinBumps,
                        sinWave,
-    	   	   	sdfParaboloid,
-   	   	   	sdfParaboloidSDF,
-   	   	   	sdfSinBumps,
-   	   	   	sdfSinBumpsSDF,
-   	   	   	sdfSinWave,
-   	   	   	sdfSinWaveSDF  };
+		       cylinder,
+		       flowerpot,
+		       twins,
+           pseudoSquare,
+           blob,
+   	   	   sdfParaboloid,
+   	   	   sdfSinWave,
+   	   	   sdfSinBumps,
+   	   	   sdfParaboloidSDF,
+   	   	   sdfSinWaveSDF,
+   	   	   sdfSinBumpsSDF};
 
    enum TimeDependence { none,
                          linear,
@@ -65,48 +71,40 @@ class tnlTestFunction
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 #else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
-             int ZDiffOrder = 0,
-             typename Vertex = VertexType >
+             int ZDiffOrder = 0 >
 #endif
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Real getValue( const Vertex& vertex,
-                  const Real& time = 0 ) const;
+   __cuda_callable__
+   Real getPartialDerivative( const VertexType& vertex,
+                              const Real& time = 0 ) const;
 
-#ifdef HAVE_NOT_CXX11
-   template< typename Vertex >
-   Real getValue( const Vertex& vertex,
+   __cuda_callable__
+   Real operator()( const VertexType& vertex,
                   const Real& time = 0 ) const
    {
-      return this->getValue< 0, 0, 0, Vertex >( vertex, time );
+      return this->getPartialDerivative< 0, 0, 0 >( vertex, time );
    }
-#endif                  
+
 
 #ifdef HAVE_NOT_CXX11
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 #else
    template< int XDiffOrder = 0,
              int YDiffOrder = 0,
-             int ZDiffOrder = 0,
-             typename Vertex = VertexType >
+             int ZDiffOrder = 0 >
 #endif
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Real getTimeDerivative( const Vertex& vertex,
+   __cuda_callable__
+   Real getTimeDerivative( const VertexType& vertex,
                            const Real& time = 0 ) const;
 
 #ifdef HAVE_NOT_CXX11
    template< typename Vertex >
+   __cuda_callable__
    Real getTimeDerivative( const Vertex& vertex,
                            const Real& time = 0 ) const
    {

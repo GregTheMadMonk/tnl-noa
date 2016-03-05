@@ -20,13 +20,13 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunctionType.h>
+#include <functions/tnlDomain.h>
 
 template< typename Vertex >
-class tnlSinBumpsFunctionBase
+class tnlSinBumpsFunctionBase : public tnlDomain< Vertex::size, SpaceDomain >
 {
    public:
-
+      
       typedef Vertex VertexType;
       typedef typename Vertex::RealType RealType;
       enum { Dimensions = VertexType::size };
@@ -59,33 +59,33 @@ template< typename Real >
 class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStaticVector< 1, Real > >
 {
    public:
-
-      enum { Dimensions = 1 };
-      typedef tnlSinBumpsFunctionBase< tnlStaticVector< 1, Real > > BaseType;
-      typedef typename BaseType::VertexType VertexType;
+      
       typedef Real RealType;
+      typedef tnlStaticVector< 1, RealType > VertexType;      
+
 
       tnlSinBumpsFunction();
 
       bool setup( const tnlParameterContainer& parameters,
-                const tnlString& prefix = "" );
+                  const tnlString& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
-      RealType getValue( const Vertex& v,
-                         const Real& time = 0.0 ) const;
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
+      
+   __cuda_callable__
+   RealType operator()( const VertexType& v,
+                        const Real& time = 0.0 ) const;
+      
 };
 
 template< typename Real >
@@ -93,10 +93,9 @@ class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStatic
 {
    public:
 
-      enum { Dimensions = 2 };
-      typedef tnlSinBumpsFunctionBase< tnlStaticVector< 2, Real > > BaseType;
-      typedef typename BaseType::VertexType VertexType;
       typedef Real RealType;
+      typedef tnlStaticVector< 2, RealType > VertexType;      
+      
 
       tnlSinBumpsFunction();
 
@@ -106,19 +105,20 @@ class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStatic
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
-      RealType getValue( const Vertex& v,
-                         const Real& time = 0.0 ) const;
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
+      
+   __cuda_callable__
+   RealType operator()( const VertexType& v,
+                        const Real& time = 0.0 ) const;
+      
 };
 
 template< typename Real >
@@ -126,32 +126,31 @@ class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStatic
 {
    public:
 
-      enum { Dimensions = 3 };
-      typedef tnlSinBumpsFunctionBase< tnlStaticVector< 3, Real > > BaseType;
-      typedef typename BaseType::VertexType VertexType;
       typedef Real RealType;
+      typedef tnlStaticVector< 3, RealType > VertexType;
 
       tnlSinBumpsFunction();
 
       bool setup( const tnlParameterContainer& parameters,
-                 const tnlString& prefix = "" );
+                  const tnlString& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
-      RealType getValue( const Vertex& v,
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
                          const Real& time = 0.0 ) const;
+      
+   __cuda_callable__
+   RealType operator()( const VertexType& v,
+                        const Real& time = 0.0 ) const;
+      
 };
 
 template< int Dimensions,
@@ -163,15 +162,6 @@ ostream& operator << ( ostream& str, const tnlSinBumpsFunction< Dimensions, Real
        << " phase = " << f.getPhase();
    return str;
 }
-
-template< int FunctionDimensions,
-          typename Real >
-class tnlFunctionType< tnlSinBumpsFunction< FunctionDimensions, Real > >
-{
-   public:
-
-      enum { Type = tnlAnalyticFunction };
-};
 
 #include <functions/tnlSinBumpsFunction_impl.h>
 

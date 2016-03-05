@@ -41,7 +41,7 @@ tnlExplicitSolver< Problem >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   tnlIterativeSolver< typename Problem::RealType, typename Problem::IndexType >::configSetup( config, prefix );
+   //tnlIterativeSolver< typename Problem::RealType, typename Problem::IndexType >::configSetup( config, prefix );
 }
 
 template< typename Problem >
@@ -173,13 +173,14 @@ void
 tnlExplicitSolver< Problem >::
 refreshSolverMonitor()
 {
-   if( this -> solverMonitor )
+   if( this->solverMonitor )
    {
-      this -> solverMonitor -> setIterations( this -> getIterations() );
-      this -> solverMonitor -> setResidue( this -> getResidue() );
-      this -> solverMonitor -> setTimeStep( this -> getTau() );
-      this -> solverMonitor -> setTime( this -> getTime() );
-      this -> solverMonitor -> refresh();
+      this->solverMonitor->setIterations( this->getIterations() );
+      this->solverMonitor->setResidue( this->getResidue() );
+      this->solverMonitor->setTimeStep( this->getTau() );
+      this->solverMonitor->setTime( this->getTime() );
+      this->solverMonitor->setRefreshRate( this->refreshRate );
+      this->solverMonitor->refresh();
    }
 }
 

@@ -1,8 +1,28 @@
+/***************************************************************************
+                          tnlLinearDiffusion.h  -  description
+                             -------------------
+    begin                : Aug 8, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/***************************************************************************
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ ***************************************************************************/
+
 #ifndef TNLLINEARDIFFUSION_H
 #define	TNLLINEARDIFFUSION_H
 
 #include <core/vectors/tnlVector.h>
+#include <functions/tnlMeshFunction.h>
 #include <mesh/tnlGrid.h>
+#include <operators/tnlOperator.h>
+#include <operators/diffusion/tnlExactLinearDiffusion.h>
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -19,46 +39,51 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+: public tnlOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >,
+                      MeshInteriorDomain, 1, 1, Real, Index >
 {
-   public: 
+   public:    
    
-   typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
+      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
+      typedef Real RealType;
+      typedef Device DeviceType;
+      typedef Index IndexType;      
+      typedef tnlExactLinearDiffusion< 1 > ExactOperatorType;
+      
+      static const int Dimensions = MeshType::meshDimensions;
+      
+      static constexpr int getMeshDimensions() { return Dimensions; }
+      
+      template< int EntityDimensions = Dimensions >
+      using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;
 
-   static tnlString getType();
-   
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Real getValue( const MeshType& mesh,
-                  const IndexType cellIndex,
-                  const CoordinatesType& coordinates,
-                  const Vector& u,
-                  const RealType& time ) const;
+      static tnlString getType();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getLinearSystemRowLength( const MeshType& mesh,
-                                   const IndexType& index,
-                                   const CoordinatesType& coordinates ) const;
+      template< typename PreimageFunction, typename MeshEntity >
+      __cuda_callable__
+      inline Real operator()( const PreimageFunction& u,
+                              const MeshEntity& entity,
+                              const RealType& time = 0.0 ) const;
 
-   template< typename Vector, typename MatrixRow >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const CoordinatesType& coordinates,
-                               Vector& u,
-                               Vector& b,
-                               MatrixRow& matrixRow ) const;
+      template< typename MeshEntity >
+      __cuda_callable__
+      inline Index getLinearSystemRowLength( const MeshType& mesh,
+                                             const IndexType& index,
+                                             const MeshEntity& entity ) const;
+
+      template< typename MeshEntity,
+                typename Vector,
+                typename MatrixRow >
+      __cuda_callable__
+      inline void updateLinearSystem( const RealType& time,
+                                      const RealType& tau,
+                                      const MeshType& mesh,
+                                      const IndexType& index,
+                                      const MeshEntity& entity,
+                                      const MeshFunction< 1 >& u,
+                                      Vector& b,
+                                      MatrixRow& matrixRow ) const;
 
 };
 
@@ -69,46 +94,52 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >
+: public tnlOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >,
+                      MeshInteriorDomain, 2, 2, Real, Index >
 {
    public: 
    
-   typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
+      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
+      typedef Real RealType;
+      typedef Device DeviceType;
+      typedef Index IndexType;      
+      typedef tnlExactLinearDiffusion< 2 > ExactOperatorType;
+      
+      static const int Dimensions = MeshType::meshDimensions;
+      
+      static constexpr int getMeshDimensions() { return Dimensions; }
 
-   static tnlString getType();
-   
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Real getValue( const MeshType& mesh,
-                  const IndexType cellIndex,
-                  const CoordinatesType& coordinates,
-                  const Vector& u,
-                  const Real& time ) const;
+      
+      template< int EntityDimensions = Dimensions >
+      using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;      
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getLinearSystemRowLength( const MeshType& mesh,
-                                   const IndexType& index,
-                                   const CoordinatesType& coordinates ) const;
+      static tnlString getType();
 
-   template< typename Vector, typename MatrixRow >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const CoordinatesType& coordinates,
-                               Vector& u,
-                               Vector& b,
-                               MatrixRow& matrixRow ) const;
+      template< typename PreimageFunction, typename EntityType >
+      __cuda_callable__
+      inline Real operator()( const PreimageFunction& u,
+                              const EntityType& entity,
+                              const Real& time = 0.0 ) const;
+
+      template< typename EntityType >
+      __cuda_callable__
+      inline Index getLinearSystemRowLength( const MeshType& mesh,
+                                             const IndexType& index,
+                                             const EntityType& entity ) const;
+
+      template< typename Vector,
+                typename MatrixRow,
+                typename EntityType >
+      __cuda_callable__
+      inline void updateLinearSystem( const RealType& time,
+                                      const RealType& tau,
+                                      const MeshType& mesh,
+                                      const IndexType& index,
+                                      const EntityType& entity,
+                                      const MeshFunction< 2 >& u,
+                                      Vector& b,
+                                      MatrixRow& matrixRow ) const;
 };
 
 
@@ -118,46 +149,53 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >
+: public tnlOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >,
+                      MeshInteriorDomain, 3, 3, Real, Index >
 {
    public: 
    
-   typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
-   typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
+      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
+      typedef Real RealType;
+      typedef Device DeviceType;
+      typedef Index IndexType;
+      typedef tnlExactLinearDiffusion< 3 > ExactOperatorType;
 
-   static tnlString getType();
-   
-   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Real getValue( const MeshType& mesh,
-                  const IndexType cellIndex,
-                  const CoordinatesType& coordinates,
-                  const Vector& u,
-                  const Real& time ) const;
+      static const int Dimensions = MeshType::meshDimensions;
+      
+      static constexpr int getMeshDimensions() { return Dimensions; }      
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getLinearSystemRowLength( const MeshType& mesh,
-                                   const IndexType& index,
-                                   const CoordinatesType& coordinates ) const;
+      template< int EntityDimensions = Dimensions >
+      using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;
 
-   template< typename Vector, typename MatrixRow >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const CoordinatesType& coordinates,
-                               Vector& u,
-                               Vector& b,
-                               MatrixRow& matrixRow ) const;
+      
+      static tnlString getType();
+
+      template< typename PreimageFunction, 
+                typename EntityType >
+      __cuda_callable__
+      inline Real operator()( const PreimageFunction& u,
+                              const EntityType& entity,
+                              const Real& time = 0.0 ) const;
+
+      template< typename EntityType >
+      __cuda_callable__
+      inline Index getLinearSystemRowLength( const MeshType& mesh,
+                                             const IndexType& index,
+                                             const EntityType& entity ) const;
+
+      template< typename Vector,
+                typename MatrixRow,
+                typename EntityType >
+      __cuda_callable__
+      inline void updateLinearSystem( const RealType& time,
+                                      const RealType& tau,
+                                      const MeshType& mesh,
+                                      const IndexType& index,
+                                      const EntityType& entity,
+                                      const MeshFunction< 3 >& u,
+                                      Vector& b,
+                                      MatrixRow& matrixRow ) const;
 
 };
 

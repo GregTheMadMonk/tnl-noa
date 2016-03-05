@@ -24,73 +24,78 @@
  * Equalities
  */
 template bool reductionOnCudaDevice< tnlParallelReductionEqualities< char, int > >
-                                   ( const tnlParallelReductionEqualities< char, int >& operation,
+                                   ( tnlParallelReductionEqualities< char, int >& operation,
                                      const typename tnlParallelReductionEqualities< char, int > :: IndexType size,
                                      const typename tnlParallelReductionEqualities< char, int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionEqualities< char, int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionEqualities< char, int > :: ResultType& result );
 
 template bool reductionOnCudaDevice< tnlParallelReductionEqualities< int, int > >
-                                   ( const tnlParallelReductionEqualities< int, int >& operation,
+                                   ( tnlParallelReductionEqualities< int, int >& operation,
                                      const typename tnlParallelReductionEqualities< int, int > :: IndexType size,
                                      const typename tnlParallelReductionEqualities< int, int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionEqualities< int, int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionEqualities< int, int > :: ResultType& result );
 
 template bool reductionOnCudaDevice< tnlParallelReductionEqualities< float, int > >
-                                   ( const tnlParallelReductionEqualities< float, int >& operation,
+                                   ( tnlParallelReductionEqualities< float, int >& operation,
                                      const typename tnlParallelReductionEqualities< float, int > :: IndexType size,
                                      const typename tnlParallelReductionEqualities< float, int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionEqualities< float, int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionEqualities< float, int> :: ResultType& result );
 
 template bool reductionOnCudaDevice< tnlParallelReductionEqualities< double, int > >
-                                   ( const tnlParallelReductionEqualities< double, int>& operation,
+                                   ( tnlParallelReductionEqualities< double, int>& operation,
                                      const typename tnlParallelReductionEqualities< double, int > :: IndexType size,
                                      const typename tnlParallelReductionEqualities< double, int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionEqualities< double, int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionEqualities< double, int> :: ResultType& result );
 
+#ifdef INSTANTIATE_LONG_DOUBLE
 template bool reductionOnCudaDevice< tnlParallelReductionEqualities< long double, int > >
-                                   ( const tnlParallelReductionEqualities< long double, int>& operation,
+                                   ( tnlParallelReductionEqualities< long double, int>& operation,
                                      const typename tnlParallelReductionEqualities< long double, int > :: IndexType size,
                                      const typename tnlParallelReductionEqualities< long double, int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionEqualities< long double, int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionEqualities< long double, int> :: ResultType& result );
+#endif
 
+#ifdef INSTANTIATE_LONG_INT
 template bool reductionOnCudaDevice< tnlParallelReductionEqualities< char, long int > >
-                                   ( const tnlParallelReductionEqualities< char, long int >& operation,
+                                   ( tnlParallelReductionEqualities< char, long int >& operation,
                                      const typename tnlParallelReductionEqualities< char, long int > :: IndexType size,
                                      const typename tnlParallelReductionEqualities< char, long int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionEqualities< char, long int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionEqualities< char, long int > :: ResultType& result );
 
 template bool reductionOnCudaDevice< tnlParallelReductionEqualities< int, long int > >
-                                   ( const tnlParallelReductionEqualities< int, long int >& operation,
+                                   ( tnlParallelReductionEqualities< int, long int >& operation,
                                      const typename tnlParallelReductionEqualities< int, long int > :: IndexType size,
                                      const typename tnlParallelReductionEqualities< int, long int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionEqualities< int, long int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionEqualities< int, long int > :: ResultType& result );
 
 template bool reductionOnCudaDevice< tnlParallelReductionEqualities< float, long int > >
-                                   ( const tnlParallelReductionEqualities< float, long int >& operation,
+                                   ( tnlParallelReductionEqualities< float, long int >& operation,
                                      const typename tnlParallelReductionEqualities< float, long int > :: IndexType size,
                                      const typename tnlParallelReductionEqualities< float, long int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionEqualities< float, long int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionEqualities< float, long int> :: ResultType& result );
 
 template bool reductionOnCudaDevice< tnlParallelReductionEqualities< double, long int > >
-                                   ( const tnlParallelReductionEqualities< double, long int>& operation,
+                                   ( tnlParallelReductionEqualities< double, long int>& operation,
                                      const typename tnlParallelReductionEqualities< double, long int > :: IndexType size,
                                      const typename tnlParallelReductionEqualities< double, long int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionEqualities< double, long int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionEqualities< double, long int> :: ResultType& result );
 
-/*template bool reductionOnCudaDevice< tnlParallelReductionEqualities< long double, long int > >
-                                   ( const tnlParallelReductionEqualities< long double, long int>& operation,
+#ifdef INSTANTIATE_LONG_DOUBLE
+template bool reductionOnCudaDevice< tnlParallelReductionEqualities< long double, long int > >
+                                   ( tnlParallelReductionEqualities< long double, long int>& operation,
                                      const typename tnlParallelReductionEqualities< long double, long int > :: IndexType size,
                                      const typename tnlParallelReductionEqualities< long double, long int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionEqualities< long double, long int > :: RealType* deviceInput2,
-                                     typename tnlParallelReductionEqualities< long double, long int> :: ResultType& result );*/
-
+                                     typename tnlParallelReductionEqualities< long double, long int> :: ResultType& result );
+#endif
 #endif                                     
+#endif

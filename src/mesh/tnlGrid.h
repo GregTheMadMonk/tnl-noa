@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlExplicitTimeStepper.h  -  description
+                          tnlGrid.h  -  description
                              -------------------
     begin                : Jan 16, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -22,7 +22,6 @@
 #include <core/tnlHost.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <core/vectors/tnlVector.h>
-#include <core/tnlLogger.h>
 
 template< int Dimensions,
           typename Real = double,
@@ -32,8 +31,8 @@ class tnlGrid : public tnlObject
 {
 };
 
-#include <mesh/tnlGrid1D.h>
-#include <mesh/tnlGrid2D.h>
-#include <mesh/tnlGrid3D.h>
+#include <mesh/grids/tnlGrid1D.h>
+#include <mesh/grids/tnlGrid2D.h>
+#include <mesh/grids/tnlGrid3D.h>
 
 #endif /* TNLGRID_H_ */

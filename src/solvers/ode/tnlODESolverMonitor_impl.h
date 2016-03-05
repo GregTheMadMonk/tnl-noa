@@ -28,7 +28,7 @@ tnlODESolverMonitor< RealType, IndexType> :: tnlODESolverMonitor()
 template< typename RealType, typename IndexType >
 void tnlODESolverMonitor< RealType, IndexType> :: refresh()
 {
-   if( this -> verbose > 0 && this -> refreshing % this -> outputPeriod == 0 )
+   if( this -> verbose > 0 && this -> getIterations() % this -> refreshRate == 0 )
    {
       // TODO: add EST
       //cout << " EST: " << estimated;
@@ -41,7 +41,7 @@ void tnlODESolverMonitor< RealType, IndexType> :: refresh()
        /*double flops = ( double ) tnl_flops_counter. getFlops();
        if( flops )
        {
-         cout << " GFLOPS:  " << setw( 8 ) << 1.0e-9 * flops / rt_timer -> GetTime();
+         cout << " GFLOPS:  " << setw( 8 ) << 1.0e-9 * flops / rt_timer -> getTime();
        }*/
        cout << "   \r" << flush;
     }

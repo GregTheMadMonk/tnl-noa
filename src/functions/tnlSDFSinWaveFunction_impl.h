@@ -15,88 +15,93 @@
  *                                                                         *
  ***************************************************************************/
 
+
+
 #ifndef TNLSDFSINWAVEFUNCTION_IMPL_H_
 #define TNLSDFSINWAVEFUNCTION_IMPL_H_
 
 #include <functions/tnlSDFSinWaveFunction.h>
 
-template< typename Real >
-tnlSDFSinWaveFunctionBase< Real >::tnlSDFSinWaveFunctionBase()
-: waveLength( 0.0 ),
-  amplitude( 1.0 ),
-  phase( 0.0 ),
-  wavesNumber( 0 )
-{
-}
+   template< int dimensions, typename Real >
+   tnlSDFSinWaveFunctionBase< dimensions, Real >::tnlSDFSinWaveFunctionBase()
+   : waveLength( 1.0 ),
+     amplitude( 1.0 ),
+     phase( 0 ),
+     wavesNumber( 0 )
+   {
+   }
 
-template< typename Real >
-bool tnlSDFSinWaveFunctionBase< Real >::setup( const tnlParameterContainer& parameters,
-        const tnlString& prefix )
-{
-   this->waveLength = parameters.getParameter< double >( prefix + "wave-length" );
-   this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
-   this->phase = parameters.getParameter< double >( prefix + "phase" );
-   while(this->phase >2.0*M_PI)
-	   this->phase -= 2.0*M_PI;
-   this->wavesNumber = ceil( parameters.getParameter< double >( prefix + "waves-number" ) );
-   return true;
-}
+   template< int dimensions, typename Real >
+   bool tnlSDFSinWaveFunctionBase< dimensions, Real >::setup( const tnlParameterContainer& parameters,
+                                              const tnlString& prefix )
+   {
+      this->waveLength = parameters.getParameter< double >( prefix + "wave-length" );
+      this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
+      this->phase = parameters.getParameter< double >( prefix + "phase" );
+      while(this->phase >2.0*M_PI)
+   	   this->phase -= 2.0*M_PI;
+      this->wavesNumber = ceil( parameters.getParameter< double >( prefix + "waves-number" ) );
+      return true;
+   }
 
-template< typename Real >
-void tnlSDFSinWaveFunctionBase< Real >::setWaveLength( const Real& waveLength )
-{
-   this->waveLength = waveLength;
-}
+   template< int dimensions, typename Real >
+   void tnlSDFSinWaveFunctionBase< dimensions, Real >::setWaveLength( const Real& waveLength )
+   {
+      this->waveLength = waveLength;
+   }
 
-template< typename Real >
-Real tnlSDFSinWaveFunctionBase< Real >::getWaveLength() const
-{
-   return this->waveLength;
-}
+   template< int dimensions, typename Real >
+   Real tnlSDFSinWaveFunctionBase< dimensions, Real >::getWaveLength() const
+   {
+      return this->waveLength;
+   }
 
-template< typename Real >
-void tnlSDFSinWaveFunctionBase< Real >::setAmplitude( const Real& amplitude )
-{
-   this->amplitude = amplitude;
-}
+   template< int dimensions, typename Real >
+   void tnlSDFSinWaveFunctionBase< dimensions, Real >::setAmplitude( const Real& amplitude )
+   {
+      this->amplitude = amplitude;
+   }
 
-template< typename Real >
-Real tnlSDFSinWaveFunctionBase< Real >::getAmplitude() const
-{
-   return this->amplitude;
-}
+   template< int dimensions, typename Real >
+   Real tnlSDFSinWaveFunctionBase< dimensions, Real >::getAmplitude() const
+   {
+      return this->amplitude;
+   }
 
-template< typename Real >
-void tnlSDFSinWaveFunctionBase< Real >::setWavesNumber( const Real& wavesNumber )
-{
-   this->wavesNumber = wavesNumber;
-}
+   template< int dimensions, typename Real >
+   void tnlSDFSinWaveFunctionBase< dimensions, Real >::setPhase( const Real& phase )
+   {
+      this->phase = phase;
+   }
 
-template< typename Real >
-Real tnlSDFSinWaveFunctionBase< Real >::getWavesNumber() const
-{
-   return this->wavesNumber;
-}
+   template< int dimensions, typename Real >
+   Real tnlSDFSinWaveFunctionBase< dimensions, Real >::getPhase() const
+   {
+      return this->phase;
+   }
 
-template< typename Real >
-void tnlSDFSinWaveFunctionBase< Real >::setPhase( const Real& phase )
-{
-   this->phase = phase;
-}
+   template< int dimensions, typename Real >
+   void tnlSDFSinWaveFunctionBase< dimensions, Real >::setWavesNumber( const Real& wavesNumber )
+   {
+      this->wavesNumber = wavesNumber;
+   }
 
-template< typename Real >
-Real tnlSDFSinWaveFunctionBase< Real >::getPhase() const
-{
-   return this->phase;
-}
+   template< int dimensions, typename Real >
+   Real tnlSDFSinWaveFunctionBase< dimensions, Real >::getWavesNumber() const
+   {
+      return this->wavesNumber;
+   }
+
 
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-Real tnlSDFSinWaveFunction< 1, Real >::getValue( const Vertex& v,
-		const Real& time ) const
+             int ZDiffOrder>
+__cuda_callable__
+Real
+tnlSDFSinWaveFunction< 1, Real >::
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    RealType distance = sqrt(x*x);;
@@ -122,10 +127,12 @@ Real tnlSDFSinWaveFunction< 1, Real >::getValue( const Vertex& v,
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-Real tnlSDFSinWaveFunction< 2, Real >::getValue( const Vertex& v,
-		const Real& time ) const
+             int ZDiffOrder>
+__cuda_callable__
+Real
+tnlSDFSinWaveFunction< 2, Real >::
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -158,10 +165,12 @@ Real tnlSDFSinWaveFunction< 2, Real >::getValue( const Vertex& v,
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-Real tnlSDFSinWaveFunction< 3, Real >::getValue( const Vertex& v,
-		const Real& time ) const
+             int ZDiffOrder>
+__cuda_callable__
+Real
+tnlSDFSinWaveFunction< 3, Real >::
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();

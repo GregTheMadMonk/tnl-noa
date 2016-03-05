@@ -54,6 +54,7 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    typedef tnlArrayTester< ElementType, Device, IndexType > ArrayTester;
    typedef CppUnit :: TestCaller< ArrayTester > TestCaller;
+   typedef tnlArray< ElementType, Device, IndexType > Array;
 
    tnlArrayTester(){};
 
@@ -66,6 +67,7 @@ class tnlArrayTester : public CppUnit :: TestCase
       CppUnit :: TestResult result;
       suiteOfTests -> addTest( new TestCaller( "testConstructorDestructor", &ArrayTester::testConstructorDestructor ) );
       suiteOfTests -> addTest( new TestCaller( "testSetSize", &ArrayTester::testSetSize ) );
+      suiteOfTests -> addTest( new TestCaller( "testBind", &ArrayTester::testBind ) );
       suiteOfTests -> addTest( new TestCaller( "testSetGetElement", &ArrayTester::testSetGetElement ) );
       suiteOfTests -> addTest( new TestCaller( "testComparisonOperator", &ArrayTester::testComparisonOperator ) );
       suiteOfTests -> addTest( new TestCaller( "testAssignmentOperator", &ArrayTester::testAssignmentOperator ) );
@@ -79,19 +81,47 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testConstructorDestructor()
    {
-      tnlArray< ElementType, Device, IndexType > u;
+      Array u;
+      Array v( 10 );
+      CPPUNIT_ASSERT( v.getSize() == 10 );
    }
 
    void testSetSize()
    {
-      tnlArray< ElementType, Device, IndexType > u, v;
-      u. setSize( 10 );
-      v. setSize( 10 );
+      Array u, v;
+      u.setSize( 10 );
+      v.setSize( 10 );
+      CPPUNIT_ASSERT( u.getSize() == 10 );
+      CPPUNIT_ASSERT( v.getSize() == 10 );
+   }
+   
+   void testBind()
+   {
+      Array u( 10 ), v;
+      u.setValue( 27 );
+      v.bind( u );
+      CPPUNIT_ASSERT( v.getSize() == u.getSize() );
+      CPPUNIT_ASSERT( u.getElement( 0 ) == 27 );
+      v.setValue( 50 );
+      CPPUNIT_ASSERT( u.getElement( 0 ) == 50 );
+      u.reset();
+      CPPUNIT_ASSERT( u.getSize() == 0 );
+      CPPUNIT_ASSERT( v.getElement( 0 ) == 50 );
+      
+      ElementType data[ 10 ] = { 1, 2, 3, 4, 5, 6, 7, 8, 10 };
+      u.bind( data, 10 );
+      CPPUNIT_ASSERT( u.getElement( 1 ) == 2 );
+      v.bind( u );
+      CPPUNIT_ASSERT( v.getElement( 1 ) == 2 );
+      u.reset();
+      v.setElement( 1, 3 );      
+      v.reset();
+      CPPUNIT_ASSERT( data[ 1 ] == 3 );
    }
 
    void testSetGetElement()
    {
-      tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: u" );
+      tnlArray< ElementType, Device, IndexType > u;
       u. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          u. setElement( i, i );
@@ -120,9 +150,9 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testComparisonOperator()
    {
-      tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: u" );
-      tnlArray< ElementType, Device, IndexType > v( "tnlArrayTester :: v" );
-      tnlArray< ElementType, Device, IndexType > w( "tnlArrayTester :: w" );
+      tnlArray< ElementType, Device, IndexType > u;
+      tnlArray< ElementType, Device, IndexType > v;
+      tnlArray< ElementType, Device, IndexType > w;
       u. setSize( 10 );
       v. setSize( 10 );
       w. setSize( 10 );
@@ -142,8 +172,6 @@ class tnlArrayTester : public CppUnit :: TestCase
    {
       tnlArray< ElementType, Device, IndexType > u;
       tnlArray< ElementType, Device, IndexType > v;
-      u. setName( "tnlArrayTester :: testAssignmentOperator :: u" );
-      v. setName( "tnlArrayTester :: testAssignmentOperator :: v" );
       u. setSize( 10 );
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -170,7 +198,7 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testGetSize()
    {
-      tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: testSetSize - u" );
+      tnlArray< ElementType, Device, IndexType > u;
       const int maxSize = 10;
       for( int i = 0; i < maxSize; i ++ )
          u. setSize( i );
@@ -180,7 +208,7 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testReset()
    {
-      tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: testReset - u" );
+      tnlArray< ElementType, Device, IndexType > u;
       u. setSize( 100 );
       CPPUNIT_ASSERT( u. getSize() == 100 );
       u. reset();
@@ -196,14 +224,14 @@ class tnlArrayTester : public CppUnit :: TestCase
    {
       for( int i = 0; i < 100; i ++ )
       {
-         tnlArray< ElementType, Device, IndexType > u( "tnlArrayTester :: testSetSizeAndDestructor - u" );
+         tnlArray< ElementType, Device, IndexType > u;
          u. setSize( i );
       }
    }
 
    void testSaveAndLoad()
    {
-      tnlArray< ElementType, Device, IndexType > v( "test-array-v" );
+      tnlArray< ElementType, Device, IndexType > v;
       v. setSize( 100 );
       for( int i = 0; i < 100; i ++ )
          v. setElement( i, 3.14147 );
@@ -211,7 +239,7 @@ class tnlArrayTester : public CppUnit :: TestCase
       file. open( "test-file.tnl", tnlWriteMode );
       v. save( file );
       file. close();
-      tnlArray< ElementType, Device, IndexType > u( "test-array-u" );
+      tnlArray< ElementType, Device, IndexType > u;
       file. open( "test-file.tnl", tnlReadMode );
       u. load( file );
       file. close();
@@ -220,7 +248,7 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testUnusualStructures()
    {
-      tnlArray< testingClassForArrayTester >u ( "test-array" );
+      tnlArray< testingClassForArrayTester >u;
    };
 
 };

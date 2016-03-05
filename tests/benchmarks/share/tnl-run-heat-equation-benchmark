@@ -1,0 +1,63 @@
+#!/bin/bash
+
+device="cuda"
+dofSize=2000
+dimension=2;
+proportions=2
+finalTime=10.e-3
+timeStep=1.0e-6
+
+analyticFunction="exp-bump"
+sigma=1.0
+
+#tnl-heat-equation --device cuda --time-discretisation explicit --boundary-conditions-type neumann --boundary-conditions-constant 0 --discrete-solver euler --snapshot-period 1.0e-2 --final-time 1.0e-2 --time-step 1.0e-5 --refresh-rate 1000
+
+#tnl-benchmark-simple-heat-equation --device cuda --domain-x-size 2 --domain-y-size 2 --grid-x-size 100 --grid-y-size 100 --sigma 1.0 --time-step 1.0e-5 --final-time 1.0e-2
+
+
+#nvcc -std=c++11 -O3 $(tnl-compile --cuda) $(tnl-link --cuda) -lcusparse ~/workspace/tnl/examples/heat-equation/tnl-heat-equation.cu
+
+tnl-grid-setup --dimensions ${dimension} \
+               --proportions-x ${proportions} \
+               --proportions-y ${proportions} \
+               --proportions-z ${proportions} \
+               --origin-x -1 \
+               --origin-y -1 \
+               --origin-z -1 \
+               --size-x ${dofSize} \
+               --size-y ${dofSize} \
+               --size-z ${dofSize} \
+               
+tnl-init --mesh mesh.tnl \
+         --test-function ${analyticFunction} \
+         --output-file initial.tnl \
+         --sigma ${sigma}
+
+tnl-heat-equation --device ${device} \
+                  --time-discretisation explicit \
+                  --boundary-conditions-type neumann \
+                  --boundary-conditions-constant 0 \
+                  --discrete-solver euler \
+                  --snapshot-period ${finalTime} \
+                  --final-time ${finalTime} \
+                  --time-step ${timeStep} \
+                  --refresh-rate 1000
+
+./a.out --device ${device} \
+                  --time-discretisation explicit \
+                  --boundary-conditions-type neumann \
+                  --boundary-conditions-constant 0 \
+                  --discrete-solver euler \
+                  --snapshot-period ${finalTime} \
+                  --final-time ${finalTime} \
+                  --time-step ${timeStep} \
+                  --refresh-rate 1000
+              
+tnl-benchmark-simple-heat-equation --device ${device} \
+                                   --domain-x-size 2 \
+                                   --domain-y-size 2 \
+                                   --grid-x-size ${dofSize} \
+                                   --grid-y-size ${dofSize} \
+                                   --sigma ${sigma} \
+                                   --time-step ${timeStep} \
+                                   --final-time ${finalTime}             

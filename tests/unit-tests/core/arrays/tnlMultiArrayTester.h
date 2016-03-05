@@ -138,7 +138,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testSetGetElement()
    {
-      tnlMultiArray< Dimensions, ElementType, Device, IndexType > u( "tnlMultiArrayTester :: u" );
+      tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
       u. setDimensions( 10 );
       if( Device::getDevice() == tnlHostDevice )
       {
@@ -161,9 +161,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testComparisonOperator()
    {
-      tnlMultiArray< Dimensions, ElementType, Device, IndexType > u( "tnlMultiArrayTester :: u" );
-      tnlMultiArray< Dimensions, ElementType, Device, IndexType > v( "tnlMultiArrayTester :: v" );
-      tnlMultiArray< Dimensions, ElementType, Device, IndexType > w( "tnlMultiArrayTester :: w" );
+      tnlMultiArray< Dimensions, ElementType, Device, IndexType > u, v, w;
       u.setDimensions( 10 );
       v.setDimensions( 10 );
       w.setDimensions( 10 );
@@ -186,8 +184,6 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
    {
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > v;
-      u. setName( "tnlMultiArrayTester :: testEquivalenceOperator :: u" );
-      v. setName( "tnlMultiArrayTester :: testEquivalenceOperator :: v" );
       u. setDimensions( 10 );
       v. setDimensions( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -199,7 +195,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testGetSize()
    {
-      tnlMultiArray< Dimensions, ElementType, Device, IndexType > u( "tnlMultiArrayTester :: testSetSize - u" );
+      tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
       const int maxSize = 10;
       for( int i = 1; i < maxSize; i ++ )
          u. setDimensions( i );
@@ -209,7 +205,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testReset()
    {
-      tnlMultiArray< Dimensions, ElementType, Device, IndexType > u( "tnlMultiArrayTester :: testReset - u" );
+      tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
       u.setDimensions( 100 );
       CPPUNIT_ASSERT( u. getDimensions().x() == 100 );
       u.reset();
@@ -225,14 +221,14 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
    {
       for( int i = 1; i < 100; i ++ )
       {
-         tnlMultiArray< Dimensions, ElementType, Device, IndexType > u( "tnlMultiArrayTester :: testSetSizeAndDestructor - u" );
+         tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
          u. setDimensions( i );
       }
    }
 
    void testSaveAndLoad()
    {
-      tnlMultiArray< Dimensions, ElementType, Device, IndexType > v( "test-multi-array-v" );
+      tnlMultiArray< Dimensions, ElementType, Device, IndexType > v;
       const int size( 10 );
       CPPUNIT_ASSERT( v. setDimensions( size ) );
       for( int i = 0; i < size; i ++ )
@@ -241,7 +237,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
       file. open( "test-file.tnl", tnlWriteMode );
       CPPUNIT_ASSERT( v. save( file ) );
       file. close();
-      tnlMultiArray< Dimensions, ElementType, Device, IndexType > u( "test-multi-array-u" );
+      tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
       file. open( "test-file.tnl", tnlReadMode );
       CPPUNIT_ASSERT( u. load( file ) );
       file. close();

@@ -42,12 +42,6 @@ tnlChunkedEllpackMatrix< Real, Device, Index >::tnlChunkedEllpackMatrix()
   desiredChunkSize( 16 ),
   numberOfSlices( 0 )
 {
-   this->values.setName( "tnlChunkedEllpackMatrix::values" );
-   this->columnIndexes.setName( "tnlChunkedEllpackMatrix::columnIndexes" );
-   rowToChunkMapping.setName( "tnlChunkedEllpackMatrix::rowToChunkMapping" );
-   rowToSliceMapping.setName( "tnlChunkedEllpackMatrix::rowToSliceMapping" );
-   rowPointers.setName( "tnlChunkedEllpackMatrix::rowPointers" );
-   slices.setName( "tnlChunkedEllpackMatrix::slices" );
 };
 
 template< typename Real,
@@ -134,7 +128,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::resolveSliceSizes( const tn
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlChunkedEllpackMatrix< Real, Device, Index >::setSlice( const RowLengthsVector& rowLengths,
+bool tnlChunkedEllpackMatrix< Real, Device, Index >::setSlice( const CompressedRowsLengthsVector& rowLengths,
                                                                const IndexType sliceIndex,
                                                                IndexType& elementsToAllocation )
 {
@@ -217,7 +211,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setSlice( const RowLengthsV
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
+bool tnlChunkedEllpackMatrix< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
    tnlAssert( this->getRows() > 0, );
    tnlAssert( this->getColumns() > 0, );
@@ -236,12 +230,12 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowLengths( const RowLen
    {
       tnlChunkedEllpackMatrix< RealType, tnlHost, IndexType > hostMatrix;
       hostMatrix.setDimensions( this->getRows(), this->getColumns() );
-      tnlVector< IndexType, tnlHost, IndexType > hostRowLengths;
-      hostRowLengths.setLike( rowLengths);
-      hostRowLengths = rowLengths;
+      tnlVector< IndexType, tnlHost, IndexType > hostCompressedRowsLengths;
+      hostCompressedRowsLengths.setLike( rowLengths);
+      hostCompressedRowsLengths = rowLengths;
       hostMatrix.setNumberOfChunksInSlice( this->chunksInSlice );
       hostMatrix.setDesiredChunkSize( this->desiredChunkSize );
-      hostMatrix.setRowLengths( hostRowLengths );
+      hostMatrix.setCompressedRowsLengths( hostCompressedRowsLengths );
 
       this->rowToChunkMapping.setLike( hostMatrix.rowToChunkMapping );
       this->rowToChunkMapping = hostMatrix.rowToChunkMapping;
@@ -309,9 +303,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::setNumberOfChunksInSlice( c
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlChunkedEllpackMatrix< Real, Device, Index >::getNumberOfChunksInSlice() const
 {
    return this->chunksInSlice;
@@ -336,9 +328,7 @@ Index tnlChunkedEllpackMatrix< Real, Device, Index >::getDesiredChunkSize() cons
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlChunkedEllpackMatrix< Real, Device, Index >::getNumberOfSlices() const
 {
    return this->numberOfSlices;
@@ -357,9 +347,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::operator == ( const tnlChun
               cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
                    << " this->getColumns() = " << this->getColumns()
-                   << " matrix.getColumns() = " << matrix.getColumns()
-                   << " this->getName() = " << this->getName()
-                   << " matrix.getName() = " << matrix.getName() );
+                   << " matrix.getColumns() = " << matrix.getColumns() );
    // TODO: implement this
    return false;
 }
@@ -378,9 +366,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::operator != ( const tnlChun
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::setElementFast( const IndexType row,
                                                                      const IndexType column,
                                                                      const Real& value )
@@ -401,9 +387,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setElement( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementFast( const IndexType row,
                                                                      const IndexType _column,
                                                                      const RealType& _value,
@@ -438,9 +422,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementFast( const Index
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementToChunkFast( const IndexType sliceOffset,
                                                                             const IndexType chunkIndex,
                                                                             const IndexType chunkSize,
@@ -601,9 +583,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementToChunk( const In
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowFast( const IndexType row,
                                                                  const IndexType* columnIndexes,
                                                                  const RealType* values,
@@ -645,9 +625,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowFast( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlChunkedEllpackMatrix< Real, Device, Index >::setChunkFast( const IndexType sliceOffset,
                                                                    const IndexType chunkIndex,
                                                                    const IndexType chunkSize,
@@ -757,9 +735,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::setChunk( const IndexType s
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlChunkedEllpackMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
                                                                    const IndexType* columns,
                                                                    const RealType* values,
@@ -785,9 +761,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index > :: addRow( const IndexType r
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElementFast( const IndexType row,
                                                                      const IndexType column ) const
 {
@@ -809,9 +783,7 @@ Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElementFast( const Index
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::getElementInChunkFast( const IndexType sliceOffset,
                                                                             const IndexType chunkIndex,
                                                                             const IndexType chunkSize,
@@ -889,9 +861,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::getElementInChunk( const In
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlChunkedEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType row,
                                                                  IndexType* columns,
                                                                  RealType* values ) const
@@ -921,9 +891,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlChunkedEllpackMatrix< Real, Device, Index >::getChunkFast( const IndexType sliceOffset,
                                                                    const IndexType chunkIndex,
                                                                    const IndexType chunkSize,
@@ -945,9 +913,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::getChunkFast( const IndexTy
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename tnlChunkedEllpackMatrix< Real, Device, Index >::MatrixRow
 tnlChunkedEllpackMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex )
@@ -963,9 +929,7 @@ getRow( const IndexType rowIndex )
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const typename tnlChunkedEllpackMatrix< Real, Device, Index >::MatrixRow
 tnlChunkedEllpackMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
@@ -1039,9 +1003,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename Vector::RealType tnlChunkedEllpackMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                             const Vector& vector ) const
 {
@@ -1072,9 +1034,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename Vector::RealType tnlChunkedEllpackMatrix< Real, Device, Index >::chunkVectorProduct( const IndexType sliceOffset,
                                                                                               const IndexType chunkIndex,
                                                                                               const IndexType chunkSize,
@@ -1110,7 +1070,7 @@ __device__ void tnlChunkedEllpackMatrix< Real, Device, Index >::computeSliceVect
                                                                                            OutVector* outVector,
                                                                                            int sliceIdx  ) const
 {
-   tnlStaticAssert( DeviceType::DeviceType == tnlCudaDevice, );
+   static_assert( DeviceType::DeviceType == tnlCudaDevice, "" );
 
    RealType* chunkProducts = getSharedMemory< RealType >();
    ChunkedEllpackSliceInfo* sliceInfo = ( ChunkedEllpackSliceInfo* ) & chunkProducts[ blockDim.x ];
@@ -1186,8 +1146,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::performSORIteration( const 
 {
    tnlAssert( row >=0 && row < this->getRows(),
               cerr << "row = " << row
-                   << " this->getRows() = " << this->getRows()
-                   << " this->getName() = " << this->getName() << endl );
+                   << " this->getRows() = " << this->getRows() << endl );
 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
@@ -1208,7 +1167,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::performSORIteration( const 
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-      cerr << "There is zero on the diagonal in " << row << "-th row of thge matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
+      cerr << "There is zero on the diagonal in " << row << "-th row of a matrix. I cannot perform SOR iteration." << endl;
       return false;
    }
    x. setElement( row, x[ row ] + omega / diagonalValue * ( b[ row ] - sum ) );
@@ -1290,11 +1249,12 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::print( ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index >
-void tnlChunkedEllpackMatrix< Real, Device, Index >::printStructure( ostream& str ) const
+void tnlChunkedEllpackMatrix< Real, Device, Index >::printStructure( ostream& str,
+                                                                     const tnlString& name ) const
 {
    const IndexType numberOfSlices = this->getNumberOfSlices();
    str << "Matrix type: " << getType() << endl
-       << "Marix name: " << this->getName() << endl
+       << "Marix name: " << name << endl
        << "Rows: " << this->getRows() << endl
        << "Columns: " << this->getColumns() << endl
        << "Slices: " << numberOfSlices << endl;
@@ -1320,12 +1280,13 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlHost >
       template< typename Real,
                 typename Index >
       static void resolveSliceSizes( tnlChunkedEllpackMatrix< Real, Device, Index >& matrix,
-                                     const typename tnlChunkedEllpackMatrix< Real, Device, Index >::RowLengthsVector& rowLengths )
+                                     const typename tnlChunkedEllpackMatrix< Real, Device, Index >::CompressedRowsLengthsVector& rowLengths )
       {
          matrix.resolveSliceSizes( rowLengths );
       }
 
       template< typename Index >
+      __cuda_callable__
       static void initChunkTraverse( const Index sliceOffset,
                                      const Index chunkIndex,
                                      const Index chunkSize,
@@ -1380,14 +1341,12 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlCuda >
       template< typename Real,
                 typename Index >
       static void resolveSliceSizes( tnlChunkedEllpackMatrix< Real, Device, Index >& matrix,
-                                     const typename tnlChunkedEllpackMatrix< Real, Device, Index >::RowLengthsVector& rowLengths )
+                                     const typename tnlChunkedEllpackMatrix< Real, Device, Index >::CompressedRowsLengthsVector& rowLengths )
       {
       }
       
       template< typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+      __cuda_callable__
       static void initChunkTraverse( const Index sliceOffset,
                                      const Index chunkIndex,
                                      const Index chunkSize,

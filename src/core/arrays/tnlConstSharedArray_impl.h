@@ -78,11 +78,9 @@ void tnlConstSharedArray< Element, Device, Index > :: bind( const Element* data,
 {
    tnlAssert( size >= 0,
               cerr << "You try to set size of tnlConstSharedArray to negative value."
-                   << "Name: " << this -> getName() << endl
                    << "New size: " << size << endl );
    tnlAssert( data != 0,
-              cerr << "You try to use null pointer to data for tnlConstSharedArray."
-                   << "Name: " << this -> getName() );
+              cerr << "You try to use null pointer to data for tnlConstSharedArray." );
 
    this -> size = size;
    this -> data = data;
@@ -92,10 +90,19 @@ template< typename Element,
           typename Device,
           typename Index >
    template< typename Array >
-void tnlConstSharedArray< Element, Device, Index > :: bind( const Array& array )
+void tnlConstSharedArray< Element, Device, Index > :: bind( const Array& array,
+                                                            IndexType index,
+                                                            IndexType size )
 {
-   this -> size = array. getSize();
-   this -> data = array. getData();
+   // TODO: This does not work for static arrays.
+   //tnlStaticAssert( Array::DeviceType::DeviceType == DeviceType::DeviceType,
+   //                 "Attempt to bind arrays between different devices." );
+   this->data = &( array. getData()[ index ] );
+   if( ! size )
+      this->size = array. getSize();
+   else
+      this->size = size;
+   
 };
 
 template< typename Element,
@@ -119,9 +126,7 @@ void tnlConstSharedArray< Element, Device, Index > :: reset()
 template< typename Element,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlConstSharedArray< Element, Device, Index > :: getSize() const
 {
    return this -> size;
@@ -134,7 +139,6 @@ Element tnlConstSharedArray< Element, Device, Index > :: getElement( Index i ) c
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for getElement method in tnlConstSharedArray with name "
-                   << this -> getName()
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    return tnlArrayOperations< Device >::getMemoryElement( &( this -> data[ i ] ) );
@@ -143,14 +147,11 @@ Element tnlConstSharedArray< Element, Device, Index > :: getElement( Index i ) c
 template< typename Element,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const Element& tnlConstSharedArray< Element, Device, Index > :: operator[] ( Index i ) const
 {
    tnlAssert( 0 <= i && i < this -> getSize(),
               cerr << "Wrong index for operator[] in tnlConstSharedArray with name "
-                   << this -> getName()
                    << " index is " << i
                    << " and array size is " << this -> getSize() );
    // TODO: add static assert - this does not make sense for tnlCudaDevice
@@ -236,7 +237,7 @@ template< typename Element,
 bool tnlConstSharedArray< Element, Device, Index > :: save( tnlFile& file ) const
 {
    tnlAssert( this -> size != 0,
-              cerr << "You try to save empty array. Its name is " << this -> getName() );
+              cerr << "You try to save empty array." );
    if( ! tnlObject :: save( file ) )
       return false;
 #ifdef HAVE_NOT_CXX11
@@ -247,7 +248,7 @@ bool tnlConstSharedArray< Element, Device, Index > :: save( tnlFile& file ) cons
       return false;
    if( ! file. write< Element, Device, Index >( this -> data, this -> size ) )
    {
-      cerr << "I was not able to WRITE tnlConstSharedArray " << this -> getName()
+      cerr << "I was not able to WRITE tnlConstSharedArray " 
            << " with size " << this -> getSize() << endl;
       return false;
    }
@@ -281,16 +282,43 @@ ostream& operator << ( ostream& str, const tnlConstSharedArray< Element, Device,
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlConstSharedArray< float, tnlHost, int >;
+#endif
 extern template class tnlConstSharedArray< double, tnlHost, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlConstSharedArray< long double, tnlHost, int >;
+#endif
+
+#ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlConstSharedArray< float, tnlHost, long int >;
+#endif
 extern template class tnlConstSharedArray< double, tnlHost, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlConstSharedArray< long double, tnlHost, long int >;
+#endif
+#endif
 
 #ifdef HAVE_CUDA
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlConstSharedArray< float, tnlCuda, int >;
+#endif
 extern template class tnlConstSharedArray< double, tnlCuda, int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlConstSharedArray< long double, tnlCuda, int >;
+#endif
+
+#ifdef INSTANTIATE_LONG_INT
+#ifdef INSTANTIATE_FLOAT
 extern template class tnlConstSharedArray< float, tnlCuda, long int >;
+#endif
 extern template class tnlConstSharedArray< double, tnlCuda, long int >;
+#ifdef INSTANTIATE_LONG_DOUBLE
+extern template class tnlConstSharedArray< long double, tnlCuda, long int >;
+#endif
+
+#endif
 #endif
 
 #endif

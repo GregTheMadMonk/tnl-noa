@@ -58,14 +58,15 @@ template< typename Mesh,
           typename Real,
           typename Device,
           typename Index >
-typename tnlPDEProblem< Mesh, Real, Device, Index >::IndexType
+bool
 tnlPDEProblem< Mesh, Real, Device, Index >::
-getAuxiliaryDofs( const MeshType& mesh ) const
+setMeshDependentData( const MeshType& mesh,
+                      MeshDependentDataType& meshDependentData )
 {
    /****
-    * Set-up DOFs and supporting grid functions which will not appear in the discrete solver
+    * Set-up auxiliary data depending on the numerical mesh
     */
-   return 0;
+   return true;
 }
 
 template< typename Mesh,
@@ -74,8 +75,8 @@ template< typename Mesh,
           typename Index >
 void
 tnlPDEProblem< Mesh, Real, Device, Index >::
-bindAuxiliaryDofs( const MeshType& mesh,
-                   DofVectorType& auxiliaryDofs )
+bindMeshDependentData( const MeshType& mesh,
+                       MeshDependentDataType& meshDependentData )
 {
 }
 

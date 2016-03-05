@@ -65,7 +65,6 @@ class tnlString
    tnlString( double number );
 
    //! Destructor
-
    ~tnlString();
 
    //! Set string from given char pointer
@@ -157,6 +156,8 @@ class tnlString
 
    friend ostream& operator << ( ostream& stream, const tnlString& str );
 };
+
+tnlString operator + ( const char* string1, const tnlString& string2 );
 
 ostream& operator << ( ostream& stream, const tnlString& str );
 

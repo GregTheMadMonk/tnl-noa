@@ -51,9 +51,6 @@ navierStokesSolver< Mesh, EulerScheme > :: navierStokesSolver()
   T( 0.0 ),
   rhsIndex( 0 )
 {
-
-   this -> mesh. setName( "navier-stokes-mesh" );
-   this -> dofVector. setName( "navier-stokes-dof-vector" );
 }
 
 template< typename Mesh, typename EulerScheme >

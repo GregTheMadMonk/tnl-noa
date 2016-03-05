@@ -460,7 +460,6 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: CreateMesh( const tnlGridOld< 2, Re
       ay = u. GetAy();
       hx = u. GetHx();
       hy = u. GetHy();
-      name. setString( u. getName(). getString() );  
    }
    :: MPIBcast< double >( ax, 1, root, original_comm );
    :: MPIBcast< double >( ay, 1, root, original_comm );
@@ -483,7 +482,6 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: CreateMesh( const tnlGridOld< 2, Re
                         hx, hy );
    //cout << "Node " << MPIGetRank() << " mesh size " 
    //     << sub_u -> GetXSize() << "x" << sub_u -> GetYSize() << endl;
-   sub_u. setName( name. getString() );
    MPI_Allreduce( &err, &all_err, 1, MPI_INT,MPI_SUM, mesh_comm );
    if( all_err != 0 ) return false;
 #else

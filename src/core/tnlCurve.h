@@ -82,7 +82,9 @@ template< class T > class tnlCurve : public tnlObject, public tnlList< tnlCurveE
    public:
    //! Basic contructor
    tnlCurve( const char* name )
-   : tnlObject( name )
+   : tnlObject()
+// FIXME: name property has been removed from tnlObject
+//   : tnlObject( name )
    {
    };
 
@@ -184,14 +186,12 @@ template< class T > bool Write( const tnlCurve< T >& curve,
       tnlFile file;
       if( ! file. open( tnlString( file_name ) + tnlString( ".tnl" ), tnlWriteMode ) )
       {
-         cerr << "I am not able to open the file " << file_name << " for drawing curve "
-              << curve. getName() <<"." << endl;
+         cerr << "I am not able to open the file " << file_name << " for drawing curve." << endl;
          return false;
       }
       if( ! curve. save( file ) )
       {
-         cerr << "I am not able to write to the file " << file_name << " for drawing grid "
-              << curve. getName() <<"." << endl;
+         cerr << "I am not able to write to the file " << file_name << " for drawing grid." << endl;
          return false;
       }
       file. close();
@@ -202,8 +202,7 @@ template< class T > bool Write( const tnlCurve< T >& curve,
       file. open( file_name, ios :: out );
       if( ! file )
       {
-         cerr << "I am not able to to open the file " << file_name << " for drawing curve "
-              << curve. getName() <<"." << endl;
+         cerr << "I am not able to to open the file " << file_name << " for drawing curve." << endl;
          return false;
       }
       bool result = Write( curve, file, format, step );

@@ -24,33 +24,27 @@ class tnlSparseMatrixRow
 {
    public:
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       tnlSparseMatrixRow();
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       tnlSparseMatrixRow( Index* columns,
                           Real* values,
                           const Index length,
                           const Index step );
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       void bind( Index* columns,
                  Real* values,
                  const Index length,
                  const Index step );
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       void setElement( const Index& elementIndex,
                        const Index& column,
                        const Real& value );
+      
+      void print( ostream& str ) const;
 
    protected:
 
@@ -60,6 +54,13 @@ class tnlSparseMatrixRow
 
       Index length, step;
 };
+
+template< typename Real, typename Index >
+ostream& operator << ( ostream& str, const tnlSparseMatrixRow< Real, Index >& row )
+{
+   row.print( str );
+   return str;
+}
 
 #include <matrices/tnlSparseMatrixRow_impl.h>
 

@@ -25,13 +25,36 @@ class tnlDummyPreconditioner
 {
    public:
 
+   template< typename Matrix >
+   void update( const Matrix& matrix ) {}
+
    template< typename Vector1, typename Vector2 >
-      bool solve( const Vector1& b, Vector2& x ) const { return true; }
+   bool solve( const Vector1& b, Vector2& x ) const { return true; }
 
    tnlString getType() const
    {
       return tnlString( "tnlDummyPreconditioner" );
    }
+};
+
+template< typename LinearSolver, typename Preconditioner >
+class tnlSolverStarterSolverPreconditionerSetter
+{
+    public:
+        static void run( LinearSolver& solver, Preconditioner& preconditioner )
+        {
+            solver.setPreconditioner( preconditioner );
+        }
+};
+
+template< typename LinearSolver, typename Real, typename Device, typename Index >
+class tnlSolverStarterSolverPreconditionerSetter< LinearSolver, tnlDummyPreconditioner< Real, Device, Index > >
+{
+    public:
+        static void run( LinearSolver& solver, tnlDummyPreconditioner< Real, Device, Index >& preconditioner )
+        {
+            // do nothing
+        }
 };
 
 

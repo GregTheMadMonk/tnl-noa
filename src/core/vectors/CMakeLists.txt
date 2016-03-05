@@ -18,7 +18,7 @@ set( headers tnlVector.h
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/core/vectors )
 set( common_SOURCES
-     ${CURRENT_DIR}/tnlVectorOperations_impl.cpp
+     ${CURRENT_DIR}/tnlVectorOperationsHost_impl.cpp
      ${CURRENT_DIR}/tnlMultiVector_impl.cpp
      ${CURRENT_DIR}/tnlSharedVector_impl.cpp
      ${CURRENT_DIR}/tnlVector_impl.cpp
@@ -27,14 +27,19 @@ set( common_SOURCES
 IF( BUILD_CUDA )
    set( tnl_core_vectors_CUDA__SOURCES
         ${common_SOURCES}
-        ${CURRENT_DIR}/tnlVectorOperations_impl.cu
+        ${CURRENT_DIR}/tnlVectorOperationsCuda_impl.cu
         ${CURRENT_DIR}/tnlVector_impl.cu
         ${CURRENT_DIR}/tnlStaticVector_impl.cu 
         PARENT_SCOPE )
+   set( tnl_core_vectors_SOURCES     
+        ${common_SOURCES}
+        PARENT_SCOPE )
+else()
+   set( tnl_core_vectors_SOURCES     
+        ${common_SOURCES}
+        ${CURRENT_DIR}/tnlVectorOperationsCuda_impl.cpp
+        PARENT_SCOPE )
 ENDIF()    
 
-set( tnl_core_vectors_SOURCES     
-     ${common_SOURCES}
-     PARENT_SCOPE )
 
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/core/vectors )

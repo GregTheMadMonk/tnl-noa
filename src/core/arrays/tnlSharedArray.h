@@ -19,6 +19,7 @@
 #define TNLSHAREDARRAY_H_
 
 #include <core/tnlObject.h>
+#include <core/tnlCuda.h>
 
 class tnlFile;
 class tnlHost;
@@ -43,13 +44,17 @@ class tnlSharedArray : public tnlObject
    typedef tnlSharedArray< Element, tnlHost, Index > HostType;
    typedef tnlSharedArray< Element, tnlCuda, Index > CudaType;
 
+   __cuda_callable__
    tnlSharedArray();
 
+   __cuda_callable__
    tnlSharedArray( Element* _data,
                    const Index _size );
 
+   __cuda_callable__
    tnlSharedArray( tnlArray< Element, Device, Index >& array );
 
+   __cuda_callable__
    tnlSharedArray( tnlSharedArray< Element, Device, Index >& array );
 
    static tnlString getType();
@@ -60,38 +65,36 @@ class tnlSharedArray : public tnlObject
 
    virtual tnlString getSerializationTypeVirtual() const;
 
+   __cuda_callable__
    void bind( Element* _data,
               const Index _size );
 
-   void bind( tnlArray< Element, Device, Index >& array );
+   template< typename Array >
+   __cuda_callable__
+   void bind( Array& array,
+              IndexType index = 0,
+              IndexType size = 0 );
 
    template< int Size >
+   __cuda_callable__
    void bind( tnlStaticArray< Size, Element >& array );
 
+   __cuda_callable__
    void bind( tnlSharedArray< Element, Device, Index >& array );
 
    void swap( tnlSharedArray< Element, Device, Index >& array );
 
    void reset();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Index getSize() const;
+   __cuda_callable__ Index getSize() const;
 
-   void setElement( const Index i, const Element& x );
+   void setElement( const Index& i, const Element& x );
 
-   Element getElement( Index i ) const;
+   Element getElement( const Index& i ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Element& operator[] ( Index i );
+   __cuda_callable__ Element& operator[] ( const Index& i );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const Element& operator[] ( Index i ) const;
+   __cuda_callable__ const Element& operator[] ( const Index& i ) const;
 
    tnlSharedArray< Element, Device, Index >& operator = ( const tnlSharedArray< Element, Device, Index >& array );
 
@@ -106,15 +109,9 @@ class tnlSharedArray : public tnlObject
 
    void setValue( const Element& e );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   const Element* getData() const;
+   __cuda_callable__ const Element* getData() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   Element* getData();
+   __cuda_callable__ Element* getData();
 
    /*!
     * Returns true if non-zero size is set.

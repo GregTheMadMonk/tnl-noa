@@ -50,7 +50,7 @@ class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCas
       grid.setDomain( VertexType( 0.0 ), VertexType( 1.0 ) );
       grid.setDimensions( 10 );
 
-      CPPUNIT_ASSERT( grid.getCellProportions().x() == 0.1 );
+      CPPUNIT_ASSERT( grid.getSpaceSteps().x() == 0.1 );
    }
 
    void cellIndexingTest()
@@ -58,12 +58,15 @@ class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCas
       const IndexType xSize( 13 );
       GridType grid;
       grid.setDimensions( xSize );
-      for( IndexType i = 0; i < xSize; i++ )
+      
+      typename GridType::Cell cell( grid );
+      for( cell.getCoordinates().x() = 0;
+           cell.getCoordinates().x() < xSize;
+           cell.getCoordinates().x()++ )
       {
-         CoordinatesType cellCoordinates( i );
-         CPPUNIT_ASSERT( grid.getCellIndex( cellCoordinates ) >= 0 );
-         CPPUNIT_ASSERT( grid.getCellIndex( cellCoordinates ) < grid.getNumberOfCells() );
-         CPPUNIT_ASSERT( grid.getCellCoordinates( grid.getCellIndex( cellCoordinates ) ) == cellCoordinates );
+         CPPUNIT_ASSERT( grid.getEntityIndex( cell ) >= 0 );
+         CPPUNIT_ASSERT( grid.getEntityIndex( cell ) < grid.template getEntitiesCount< typename GridType::Cell >() );
+         CPPUNIT_ASSERT( grid.template getEntity< typename GridType::Cell >( grid.getEntityIndex( cell ) ).getCoordinates() == cell.getCoordinates() );
       }
    }
 
@@ -72,12 +75,15 @@ class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCas
       const IndexType xSize( 13 );
       GridType grid;
       grid.setDimensions( xSize );
-      for( IndexType i = 0; i < xSize + 1; i++ )
+
+      typename GridType::Vertex vertex( grid );      
+      for( vertex.getCoordinates().x() = 0;
+           vertex.getCoordinates().x() < xSize;
+           vertex.getCoordinates().x()++ )
       {
-         CoordinatesType vertexCoordinates( i );
-         CPPUNIT_ASSERT( grid.getVertexIndex( vertexCoordinates ) >= 0 );
-         CPPUNIT_ASSERT( grid.getVertexIndex( vertexCoordinates ) < grid.getNumberOfVertices() );
-         CPPUNIT_ASSERT( grid.getVertexCoordinates( grid.getVertexIndex( vertexCoordinates ) ) == vertexCoordinates );
+         CPPUNIT_ASSERT( grid.getEntityIndex( vertex ) >= 0 );
+         CPPUNIT_ASSERT( grid.getEntityIndex( vertex ) < grid.template getEntitiesCount< typename GridType::Vertex >() );
+         CPPUNIT_ASSERT( grid.template getEntity< typename GridType::Vertex >( grid.getEntityIndex( vertex ) ).getCoordinates() == vertex.getCoordinates() );
       }
    }
 

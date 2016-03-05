@@ -2,7 +2,7 @@
                           tnlChunkedEllpackMatrix.h  -  description
                              -------------------
     begin                : Dec 12, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    copyright            : (C) 2013 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -14,6 +14,18 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
+/***
+ * Authors:
+ * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
+ * Heller Martin
+ * 
+ * The algorithm/method was published in:
+ * Heller M., Oberhuber T., Improved Row-grouped CSR Format for Storing of
+ * Sparse Matrices on GPU, Proceedings of Algoritmy 2012, 2012, Handlovičová A.,
+ * Minarechová Z. and Ševčovič D. (ed.), pages 282-290.
+ */
+
 
 #ifndef TNLCHUNKEDELLPACKMATRIX_H_
 #define TNLCHUNKEDELLPACKMATRIX_H_
@@ -61,7 +73,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlChunkedEllpackSliceInfo< IndexType > ChunkedEllpackSliceInfo;
-   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef tnlChunkedEllpackMatrix< Real, Device, Index > ThisType;
    typedef tnlChunkedEllpackMatrix< Real, tnlHost, Index > HostType;
    typedef tnlChunkedEllpackMatrix< Real, tnlCuda, Index > CudaType;
@@ -77,7 +89,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setRowLengths( const RowLengthsVector& rowLengths );
+   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
@@ -94,23 +106,17 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    void setNumberOfChunksInSlice( const IndexType chunksInSlice );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    IndexType getNumberOfChunksInSlice() const;
 
    void setDesiredChunkSize( const IndexType desiredChunkSize );
 
    IndexType getDesiredChunkSize() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    IndexType getNumberOfSlices() const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value );
@@ -119,9 +125,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                     const IndexType column,
                     const RealType& value );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value,
@@ -133,9 +137,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                     const RealType& thisElementMultiplicator = 1.0 );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setRowFast( const IndexType row,
                     const IndexType* columnIndexes,
                     const RealType* values,
@@ -147,9 +149,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                 const IndexType elements );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addRowFast( const IndexType row,
                     const IndexType* columns,
                     const RealType* values,
@@ -163,18 +163,14 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                 const RealType& thisElementMultiplicator = 1.0 );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    RealType getElementFast( const IndexType row,
                             const IndexType column ) const;
 
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void getRowFast( const IndexType row,
                     IndexType* columns,
                     RealType* values ) const;
@@ -183,20 +179,14 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                 IndexType* columns,
                 RealType* values ) const;*/
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    MatrixRow getRow( const IndexType rowIndex );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const MatrixRow getRow( const IndexType rowIndex ) const;
 
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
@@ -239,14 +229,15 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    void print( ostream& str ) const;
 
-   void printStructure( ostream& str ) const;
+   void printStructure( ostream& str,
+                        const tnlString& = "" ) const;
 
    protected:
 
 
    void resolveSliceSizes( const tnlVector< Index, tnlHost, Index >& rowLengths );
 
-   bool setSlice( const RowLengthsVector& rowLengths,
+   bool setSlice( const CompressedRowsLengthsVector& rowLengths,
                   const IndexType sliceIdx,
                   IndexType& elementsToAllocation );
 
@@ -257,9 +248,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                            RealType& value,
                            RealType& thisElementMultiplicator );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addElementToChunkFast( const IndexType sliceOffset,
                                const IndexType chunkIndex,
                                const IndexType chunkSize,
@@ -267,9 +256,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                                RealType& value,
                                RealType& thisElementMultiplicator );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void setChunkFast( const IndexType sliceOffset,
                       const IndexType chunkIndex,
                       const IndexType chunkSize,
@@ -290,9 +277,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                            const IndexType column,
                            RealType& value ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool getElementInChunkFast( const IndexType sliceOffset,
                                const IndexType chunkIndex,
                                const IndexType chunkSize,
@@ -305,9 +290,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                   IndexType* columns,
                   RealType* values ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void getChunkFast( const IndexType sliceOffset,
                       const IndexType chunkIndex,
                       const IndexType chunkSize,
@@ -315,9 +298,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                       RealType* values ) const;
 
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    typename Vector::RealType chunkVectorProduct( const IndexType sliceOffset,
                                                  const IndexType chunkIndex,
                                                  const IndexType chunkSize,

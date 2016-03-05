@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSDFSinWaveFunctionSDF.h  -  description
+                          tnlSDFSinWaveFunctionSDFSDF.h  -  description
                              -------------------
     begin                : Oct 13, 2014
     copyright            : (C) 2014 by Tomas Sobotik
@@ -20,16 +20,18 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
+#include <functions/tnlDomain.h>
 
-template< typename Real = double >
-class tnlSDFSinWaveFunctionSDFBase
+template< int dimensions,
+          typename Real = double >
+class tnlSDFSinWaveFunctionSDFBase : public tnlDomain< dimensions, SpaceDomain >
 {
    public:
 
    tnlSDFSinWaveFunctionSDFBase();
 
    bool setup( const tnlParameterContainer& parameters,
-           const tnlString& prefix = "" );
+              const tnlString& prefix = "" );
 
    void setWaveLength( const Real& waveLength );
 
@@ -39,17 +41,17 @@ class tnlSDFSinWaveFunctionSDFBase
 
    Real getAmplitude() const;
 
-   void setWavesNumber( const Real& wavesNumber );
-
-   Real getWavesNumber() const;
-
    void setPhase( const Real& phase );
 
    Real getPhase() const;
 
+   void setWavesNumber( const Real& wavesNumber );
+
+   Real getWavesNumber() const;
+
    protected:
 
-   Real waveLength, amplitude, phase, wavesNumber; // phase is currently being ignored
+   Real waveLength, amplitude, phase, wavesNumber;
 };
 
 template< int Dimensions, typename Real >
@@ -58,105 +60,98 @@ class tnlSDFSinWaveFunctionSDF
 };
 
 template< typename Real >
-class tnlSDFSinWaveFunctionSDF< 1, Real > : public tnlSDFSinWaveFunctionSDFBase< Real >
+class tnlSDFSinWaveFunctionSDF< 1, Real > : public tnlSDFSinWaveFunctionSDFBase< 1, Real >
 {
    public:
 
-      enum { Dimensions = 1 };
-      typedef tnlStaticVector< 1, Real > VertexType;
       typedef Real RealType;
+      typedef tnlStaticVector< 1, RealType > VertexType;
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0,
-             typename Vertex = VertexType >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
 #endif
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
+
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
 
 };
 
 template< typename Real >
-class tnlSDFSinWaveFunctionSDF< 2, Real > : public tnlSDFSinWaveFunctionSDFBase< Real >
+class tnlSDFSinWaveFunctionSDF< 2, Real > : public tnlSDFSinWaveFunctionSDFBase< 2, Real >
 {
    public:
 
-         enum { Dimensions = 2 };
-         typedef tnlStaticVector< 2, Real > VertexType;
-         typedef Real RealType;
+      typedef Real RealType;
+      typedef tnlStaticVector< 2, RealType > VertexType;
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0,
-             typename Vertex = VertexType >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
 #endif
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
 
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
 
 };
 
 template< typename Real >
-class tnlSDFSinWaveFunctionSDF< 3, Real > : public tnlSDFSinWaveFunctionSDFBase< Real >
+class tnlSDFSinWaveFunctionSDF< 3, Real > : public tnlSDFSinWaveFunctionSDFBase< 3, Real >
 {
    public:
 
-      enum { Dimensions = 3 };
-      typedef tnlStaticVector< 3, Real > VertexType;
       typedef Real RealType;
+      typedef tnlStaticVector< 3, RealType > VertexType;
+
 
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0,
-             typename Vertex = VertexType >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
 #endif
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
+                         const Real& time = 0.0 ) const;
 
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
 
 };
 
 template< int Dimensions,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const tnlSDFSinWaveFunctionSDF< Dimensions, Real >& f )
+ostream& operator << ( ostream& str, const tnlSDFSinWaveFunctionSDF< Dimensions, Real >& f )
 {
-   str << "tnlSDFSinWaveFunctionSDF";
+   str << "SDF Sin Wave SDF. function: amplitude = " << f.getAmplitude()
+       << " wavelength = " << f.getWaveLength()
+       << " phase = " << f.getPhase()
+       << " # of waves = " << f.getWavesNumber();
    return str;
-};
-
-template< int Dimensions,
-          typename Real >
-class tnlFunctionType< tnlSDFSinWaveFunctionSDF< Dimensions, Real > >
-{
-   public:
-
-      enum { Type = tnlAnalyticFunction };
-};
+}
 
 #include <functions/tnlSDFSinWaveFunctionSDF_impl.h>
 

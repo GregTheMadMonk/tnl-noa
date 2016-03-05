@@ -44,7 +44,7 @@ class tnlMatrixReader
 
    static bool readMtxFileHostMatrix( std::istream& file,
                                       Matrix& matrix,
-                                      typename Matrix::RowLengthsVector& rowLengths,
+                                      typename Matrix::CompressedRowsLengthsVector& rowLengths,
                                       bool verbose );
 
 
@@ -68,7 +68,7 @@ class tnlMatrixReader
                               bool& symmetricMatrix,
                               bool verbose );
 
-   static bool computeRowLengthsFromMtxFile( std::istream& file,
+   static bool computeCompressedRowsLengthsFromMtxFile( std::istream& file,
                                              tnlVector< int, tnlHost, int >& rowLengths,
                                              const int columns,
                                              const int rows,

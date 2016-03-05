@@ -610,10 +610,11 @@ void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVecto
 
 template< typename Real, typename Index >
 void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: printOut( ostream& str,
-		                                                     const Index lines ) const
+                                                             const tnlString& name, 
+		                                                       const Index lines ) const
 {
    str << "Structure of tnlFastRgCSRMatrix" << endl;
-   str << "Matrix name:" << this -> getName() << endl;
+   str << "Matrix name:" << name << endl;
    str << "Matrix size:" << this -> getSize() << endl;
    str << "Allocated elements:" << nonzero_elements. getSize() << endl;
    str << "Matrix blocks: " << block_offsets. getSize() << endl;

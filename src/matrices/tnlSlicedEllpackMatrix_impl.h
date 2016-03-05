@@ -69,12 +69,12 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setRowLengths( const RowLengthsVector& rowLengths )
+bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
    tnlAssert( this->getRows() > 0, );
    tnlAssert( this->getColumns() > 0, );
    const IndexType slices = roundUpDivision( this->rows, SliceSize );
-   if( ! this->sliceRowLengths.setSize( slices ) ||
+   if( ! this->sliceCompressedRowsLengths.setSize( slices ) ||
        ! this->slicePointers.setSize( slices + 1 ) )
       return false;
 
@@ -92,8 +92,8 @@ template< typename Real,
           int SliceSize >
 Index tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRowLength( const IndexType row ) const
 {
-   const IndexType slice = roundUpDivision( row, SliceSize );
-   return this->sliceRowLengths.getElement( slice );
+   const IndexType slice = row / SliceSize;
+   return this->sliceCompressedRowsLengths.getElement( slice );
 }
 
 template< typename Real,
@@ -107,7 +107,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setLike( const tn
 {
    if( !tnlSparseMatrix< Real, Device, Index >::setLike( matrix ) ||
        ! this->slicePointers.setLike( matrix.slicePointers ) ||
-       ! this->sliceRowLengths.setLike( matrix.sliceRowLengths ) )
+       ! this->sliceCompressedRowsLengths.setLike( matrix.sliceCompressedRowsLengths ) )
       return false;
    return true;
 }
@@ -120,7 +120,7 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::reset()
 {
    tnlSparseMatrix< Real, Device, Index >::reset();
    this->slicePointers.reset();
-   this->sliceRowLengths.reset();
+   this->sliceCompressedRowsLengths.reset();
 }
 
 template< typename Real,
@@ -137,9 +137,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::operator == ( con
               cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
                    << " this->getColumns() = " << this->getColumns()
-                   << " matrix.getColumns() = " << matrix.getColumns()
-                   << " this->getName() = " << this->getName()
-                   << " matrix.getName() = " << matrix.getName() );
+                   << " matrix.getColumns() = " << matrix.getColumns() );
    // TODO: implement this
    return false;
 }
@@ -160,9 +158,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setElementFast( const IndexType row,
                                                                                const IndexType column,
                                                                                const Real& value )
@@ -186,9 +182,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElementFast( const IndexType row,
                                                                                const IndexType column,
                                                                                const RealType& value,
@@ -285,16 +279,14 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > :: setRowFast( const IndexType row,
                                                                              const IndexType* columnIndexes,
                                                                              const RealType* values,
                                                                              const IndexType elements )
 {
    const IndexType sliceIdx = row / SliceSize;
-   const IndexType rowLength = this->sliceRowLengths[ sliceIdx ];
+   const IndexType rowLength = this->sliceCompressedRowsLengths[ sliceIdx ];
    if( elements > rowLength )
       return false;
 
@@ -328,7 +320,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > :: setRow( const I
                                                                          const IndexType elements )
 {
    const IndexType sliceIdx = row / SliceSize;
-   const IndexType rowLength = this->sliceRowLengths.getElement( sliceIdx );
+   const IndexType rowLength = this->sliceCompressedRowsLengths.getElement( sliceIdx );
    if( elements > rowLength )
       return false;
 
@@ -356,9 +348,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > :: addRowFast( const IndexType row,
                                                                              const IndexType* columns,
                                                                              const RealType* values,
@@ -387,9 +377,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getElementFast( const IndexType row,
                                                                                const IndexType column ) const
 {
@@ -431,9 +419,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRowFast( const IndexType row,
                                                                            IndexType* columns,
                                                                            RealType* values ) const
@@ -454,19 +440,17 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::MatrixRow
 tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::
 getRow( const IndexType rowIndex )
 {
    Index rowBegin, rowEnd, step;
    DeviceDependentCode::initRowTraverseFast( *this, rowIndex, rowBegin, rowEnd, step );
-   const IndexType slice = roundUpDivision( rowIndex, SliceSize );
+   const IndexType slice = rowIndex / SliceSize;
    return MatrixRow( &this->columnIndexes[ rowBegin ],
                      &this->values[ rowBegin ],
-                     this->sliceRowLengths[ slice ],
+                     this->sliceCompressedRowsLengths[ slice ],
                      step );
 }
 
@@ -474,19 +458,17 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const typename tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::MatrixRow
 tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::
 getRow( const IndexType rowIndex ) const
 {
    Index rowBegin, rowEnd, step;
    DeviceDependentCode::initRowTraverseFast( *this, rowIndex, rowBegin, rowEnd, step );
-   const IndexType slice = roundUpDivision( rowIndex, SliceSize );
+   const IndexType slice = rowIndex / SliceSize;
    return MatrixRow( &this->columnIndexes[ rowBegin ],
                      &this->values[ rowBegin ],
-                     this->sliceRowLengths[ slice ],
+                     this->sliceCompressedRowsLengths[ slice ],
                      step );
 }
 
@@ -495,9 +477,7 @@ template< typename Real,
           typename Index,
           int SliceSize >
   template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename Vector::RealType tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::rowVectorProduct( const IndexType row,
                                                                                                       const Vector& vector ) const
 {
@@ -567,14 +547,13 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::performSORIterati
 {
    tnlAssert( row >=0 && row < this->getRows(),
               cerr << "row = " << row
-                   << " this->getRows() = " << this->getRows()
-                   << " this->getName() = " << this->getName() << endl );
+                   << " this->getRows() = " << this->getRows() << endl );
 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
 
    /*const IndexType sliceIdx = row / SliceSize;
-   const IndexType rowLength = this->sliceRowLengths[ sliceIdx ];
+   const IndexType rowLength = this->sliceCompressedRowsLengths[ sliceIdx ];
    IndexType elementPtr = this->slicePointers[ sliceIdx ] +
                           rowLength * ( row - sliceIdx * SliceSize );
    const IndexType rowEnd( elementPtr + rowLength );*/
@@ -591,7 +570,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::performSORIterati
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-      cerr << "There is zero on the diagonal in " << row << "-th row of the matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
+      cerr << "There is zero on the diagonal in " << row << "-th row of a matrix. I cannot perform SOR iteration." << endl;
       return false;
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
@@ -607,7 +586,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::save( tnlFile& fi
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::save( file ) ||
        ! this->slicePointers.save( file ) ||
-       ! this->sliceRowLengths.save( file ) )
+       ! this->sliceCompressedRowsLengths.save( file ) )
       return false;
    return true;
 }
@@ -620,7 +599,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::load( tnlFile& fi
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::load( file ) ||
        ! this->slicePointers.load( file ) ||
-       ! this->sliceRowLengths.load( file ) )
+       ! this->sliceCompressedRowsLengths.load( file ) )
       return false;
    return true;
 }
@@ -653,7 +632,7 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::print( ostream& s
    {
       str <<"Row: " << row << " -> ";
       const IndexType sliceIdx = row / SliceSize;
-      const IndexType rowLength = this->sliceRowLengths.getElement( sliceIdx );
+      const IndexType rowLength = this->sliceCompressedRowsLengths.getElement( sliceIdx );
       IndexType elementPtr = this->slicePointers.getElement( sliceIdx ) +
                              rowLength * ( row - sliceIdx * SliceSize );
       const IndexType rowEnd( elementPtr + rowLength );
@@ -674,7 +653,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-__device__ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::computeMaximalRowLengthInSlicesCuda( const RowLengthsVector& rowLengths,
+__device__ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::computeMaximalRowLengthInSlicesCuda( const CompressedRowsLengthsVector& rowLengths,
                                                                                                                const IndexType sliceIdx )
 {
    Index rowIdx = sliceIdx * SliceSize;
@@ -688,7 +667,7 @@ __device__ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::comput
       rowIdx++;
       rowInSliceIdx++;
    }
-   this->sliceRowLengths[ sliceIdx ] = maxRowLength;
+   this->sliceCompressedRowsLengths[ sliceIdx ] = maxRowLength;
    this->slicePointers[ sliceIdx ] = maxRowLength * SliceSize;
    if( threadIdx.x == 0 )
       this->slicePointers[ this->slicePointers.getSize() - 1 ] = 0;
@@ -714,7 +693,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
       {
          const Index sliceIdx = row / SliceSize;
          const Index slicePointer = matrix.slicePointers.getElement( sliceIdx );
-         const Index rowLength = matrix.sliceRowLengths.getElement( sliceIdx );
+         const Index rowLength = matrix.sliceCompressedRowsLengths.getElement( sliceIdx );
 
          rowBegin = slicePointer + rowLength * ( row - sliceIdx * SliceSize );
          rowEnd = rowBegin + rowLength;
@@ -724,6 +703,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
       template< typename Real,
                 typename Index,
                 int SliceSize >
+      __cuda_callable__
       static void initRowTraverseFast( const tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
                                        const Index row,
                                        Index& rowBegin,
@@ -732,7 +712,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
       {
          const Index sliceIdx = row / SliceSize;
          const Index slicePointer = matrix.slicePointers[ sliceIdx ];
-         const Index rowLength = matrix.sliceRowLengths[ sliceIdx ];
+         const Index rowLength = matrix.sliceCompressedRowsLengths[ sliceIdx ];
 
          rowBegin = slicePointer + rowLength * ( row - sliceIdx * SliceSize );
          rowEnd = rowBegin + rowLength;
@@ -744,7 +724,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
                 typename Index,
                 int SliceSize >
       static bool computeMaximalRowLengthInSlices( tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
-                                                   const typename tnlSlicedEllpackMatrix< Real, Device, Index >::RowLengthsVector& rowLengths )
+                                                   const typename tnlSlicedEllpackMatrix< Real, Device, Index >::CompressedRowsLengthsVector& rowLengths )
       {
          Index row( 0 ), slice( 0 ), sliceRowLength( 0 );
          while( row < matrix.getRows() )
@@ -752,14 +732,14 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
             sliceRowLength = Max( rowLengths.getElement( row++ ), sliceRowLength );
             if( row % SliceSize == 0 )
             {
-               matrix.sliceRowLengths.setElement( slice, sliceRowLength );
+               matrix.sliceCompressedRowsLengths.setElement( slice, sliceRowLength );
                matrix.slicePointers.setElement( slice++, sliceRowLength * SliceSize );
                sliceRowLength = 0;
             }
          }
          if( row % SliceSize != 0 )
          {
-            matrix.sliceRowLengths.setElement( slice, sliceRowLength );
+            matrix.sliceCompressedRowsLengths.setElement( slice, sliceRowLength );
             matrix.slicePointers.setElement( slice++, sliceRowLength * SliceSize );
          }
          matrix.slicePointers.setElement( matrix.slicePointers.getSize() - 1, 0 );
@@ -775,6 +755,9 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
+#ifdef HAVE_OPENMP
+#pragma omp parallel for
+#endif           
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
       }
@@ -786,13 +769,52 @@ template< typename Real,
           typename Index,
           int SliceSize >
 __global__ void tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel( tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >* matrix,
-                                                                                   const typename tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >::RowLengthsVector* rowLengths,
+                                                                                   const typename tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >::CompressedRowsLengthsVector* rowLengths,
                                                                                    int gridIdx )
 {
    const Index sliceIdx = gridIdx * tnlCuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
    matrix->computeMaximalRowLengthInSlicesCuda( *rowLengths, sliceIdx );
 }
 #endif
+
+#ifdef HAVE_CUDA    
+template< 
+   typename Real,
+   typename Index,
+   int SliceSize >
+__global__ void tnlSlicedEllpackMatrixVectorProductCudaKernel(
+   const Index rows,
+   const Index columns,
+   const Index* slicePointers,
+   const Index* sliceCompressedRowsLengths,
+   const Index paddingIndex,
+   const Index* columnIndexes,
+   const Real* values,
+   const Real* inVector,
+   Real* outVector,
+   const Index gridIdx )
+{
+   const Index rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   if( rowIdx >= rows )
+      return;
+   const Index sliceIdx = rowIdx / SliceSize;
+   const Index slicePointer = slicePointers[ sliceIdx ];
+   const Index rowLength = sliceCompressedRowsLengths[ sliceIdx ];   
+   Index i = slicePointer + rowIdx - sliceIdx * SliceSize;
+   const Index rowEnd = i + rowLength * SliceSize;
+   Real result( 0.0 );
+   Index columnIndex;
+   while( i < rowEnd &&
+         ( columnIndex = columnIndexes[ i ] ) < columns &&
+         columnIndex < paddingIndex )
+   {
+      result += values[ i ] * inVector[ columnIndex ];
+      i += SliceSize;
+   }
+   outVector[ rowIdx ] = result;   
+}
+#endif
+
 
 template<>
 class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
@@ -812,7 +834,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
       {
          const Index sliceIdx = row / SliceSize;
          const Index slicePointer = matrix.slicePointers.getElement( sliceIdx );
-         const Index rowLength = matrix.sliceRowLengths.getElement( sliceIdx );
+         const Index rowLength = matrix.sliceCompressedRowsLengths.getElement( sliceIdx );
 
          rowBegin = slicePointer + row - sliceIdx * SliceSize;
          rowEnd = rowBegin + rowLength * SliceSize;
@@ -822,9 +844,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
       template< typename Real,
                 typename Index,
                 int SliceSize >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       static void initRowTraverseFast( const tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
                                        const Index row,
                                        Index& rowBegin,
@@ -833,7 +853,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
       {
          const Index sliceIdx = row / SliceSize;
          const Index slicePointer = matrix.slicePointers[ sliceIdx ];
-         const Index rowLength = matrix.sliceRowLengths[ sliceIdx ];
+         const Index rowLength = matrix.sliceCompressedRowsLengths[ sliceIdx ];
 
          rowBegin = slicePointer + row - sliceIdx * SliceSize;
          rowEnd = rowBegin + rowLength * SliceSize;
@@ -845,13 +865,13 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
                 typename Index,
                 int SliceSize >
       static bool computeMaximalRowLengthInSlices( tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
-                                                   const typename tnlSlicedEllpackMatrix< Real, Device, Index >::RowLengthsVector& rowLengths )
+                                                   const typename tnlSlicedEllpackMatrix< Real, Device, Index >::CompressedRowsLengthsVector& rowLengths )
       {
 #ifdef HAVE_CUDA
          typedef tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > Matrix;
-         typedef typename Matrix::RowLengthsVector RowLengthsVector;
+         typedef typename Matrix::CompressedRowsLengthsVector CompressedRowsLengthsVector;
          Matrix* kernel_matrix = tnlCuda::passToDevice( matrix );
-         RowLengthsVector* kernel_rowLengths = tnlCuda::passToDevice( rowLengths );
+         CompressedRowsLengthsVector* kernel_rowLengths = tnlCuda::passToDevice( rowLengths );
          const Index numberOfSlices = roundUpDivision( matrix.getRows(), SliceSize );
          dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
          const Index cudaBlocks = roundUpDivision( numberOfSlices, cudaBlockSize.x );
@@ -881,11 +901,43 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
-         tnlMatrixVectorProductCuda( matrix, inVector, outVector );
+         //tnlMatrixVectorProductCuda( matrix, inVector, outVector );
+         #ifdef HAVE_CUDA    
+            typedef tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > Matrix;
+            typedef typename Matrix::IndexType IndexType;
+            //Matrix* kernel_this = tnlCuda::passToDevice( matrix );
+            //InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
+            //OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
+            dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+            const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
+            const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+            for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+            {
+               if( gridIdx == cudaGrids - 1 )
+                  cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+               tnlSlicedEllpackMatrixVectorProductCudaKernel
+               < Real, Index, SliceSize >
+                <<< cudaGridSize, cudaBlockSize >>>
+                ( matrix.getRows(),
+                  matrix.getColumns(),
+                  matrix.slicePointers.getData(),
+                  matrix.sliceCompressedRowsLengths.getData(),
+                  matrix.getPaddingIndex(),
+                  matrix.columnIndexes.getData(),
+                  matrix.values.getData(),
+                  inVector.getData(),
+                  outVector.getData(),
+                  gridIdx );
+               checkCudaDevice;
+            }
+            //tnlCuda::freeFromDevice( kernel_this );
+            //tnlCuda::freeFromDevice( kernel_inVector );
+            //tnlCuda::freeFromDevice( kernel_outVector );
+            checkCudaDevice;
+            cudaThreadSynchronize();
+         #endif
       }
 
 };
-
-
 
 #endif /* TNLSLICEDELLPACKMATRIX_IMPL_H_ */

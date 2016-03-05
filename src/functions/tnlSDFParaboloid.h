@@ -20,16 +20,18 @@
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
+#include <functions/tnlDomain.h>
 
-template< typename Real = double >
-class tnlSDFParaboloidBase
+template< int dimensions,
+          typename Real = double >
+class tnlSDFParaboloidBase : public tnlDomain< dimensions, SpaceDomain >
 {
    public:
 
    tnlSDFParaboloidBase();
 
    bool setup( const tnlParameterContainer& parameters,
-           const tnlString& prefix = ""  );
+              const tnlString& prefix = "" );
 
    void setXCentre( const Real& waveLength );
 
@@ -62,102 +64,96 @@ class tnlSDFParaboloid
 };
 
 template< typename Real >
-class tnlSDFParaboloid< 1, Real > : public tnlSDFParaboloidBase< Real >
+class tnlSDFParaboloid< 1, Real > : public tnlSDFParaboloidBase< 1, Real >
 {
    public:
 
-   enum { Dimensions = 1 };
-   typedef tnlStaticVector< 1, Real > VertexType;
-   typedef Real RealType;
+      typedef Real RealType;
+      typedef tnlStaticVector< 1, RealType > VertexType;
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0,
-             typename Vertex = VertexType >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
 #endif
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
+
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
+
 };
 
 template< typename Real >
-class tnlSDFParaboloid< 2, Real > : public tnlSDFParaboloidBase< Real >
+class tnlSDFParaboloid< 2, Real > : public tnlSDFParaboloidBase< 2, Real >
 {
    public:
 
-   enum { Dimensions = 2 };
-   typedef tnlStaticVector< 2, Real > VertexType;
-   typedef Real RealType;
+      typedef Real RealType;
+      typedef tnlStaticVector< 2, RealType > VertexType;
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0,
-             typename Vertex = VertexType >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
 #endif
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
+
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
+
 };
 
 template< typename Real >
-class tnlSDFParaboloid< 3, Real > : public tnlSDFParaboloidBase< Real >
+class tnlSDFParaboloid< 3, Real > : public tnlSDFParaboloidBase< 3, Real >
 {
    public:
 
-   enum { Dimensions = 3 };
-   typedef tnlStaticVector< 3, Real > VertexType;
-   typedef Real RealType;
+      typedef Real RealType;
+      typedef tnlStaticVector< 3, RealType > VertexType;
+
+
 
 #ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
 #else
-   template< int XDiffOrder = 0,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0,
-             typename Vertex = VertexType >
-   RealType getValue( const Vertex& v,
-           const Real& time = 0.0  ) const;
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
 #endif
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
+                         const Real& time = 0.0 ) const;
 
-
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
 
 };
 
 template< int Dimensions,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const tnlSDFParaboloid < Dimensions, Real >& f )
+ostream& operator << ( ostream& str, const tnlSDFParaboloid< Dimensions, Real >& f )
 {
-   str << "tnlSDFParaboloid";
+   str << "SDF Paraboloid function: amplitude = " << f.getCoefficient()
+       << " offset = " << f.getOffset();
    return str;
-};
-
-template< int Dimensions,
-          typename Real >
-class tnlFunctionType< tnlSDFParaboloid< Dimensions, Real > >
-{
-   public:
-
-      enum { Type = tnlAnalyticFunction };
-};
+}
 
 #include <functions/tnlSDFParaboloid_impl.h>
 

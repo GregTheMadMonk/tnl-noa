@@ -20,9 +20,16 @@
 
 #include <functions/tnlExpBumpFunction.h>
 
-template< typename Real >
+template< int dimensions, typename Real >
+tnlExpBumpFunctionBase< dimensions, Real >::
+tnlExpBumpFunctionBase()
+   : amplitude( 1.0 ), sigma( 1.0 )
+{
+}
+
+template< int dimensions, typename Real >
 bool
-tnlExpBumpFunctionBase< Real >::
+tnlExpBumpFunctionBase< dimensions, Real >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
@@ -31,26 +38,26 @@ setup( const tnlParameterContainer& parameters,
    return true;
 }
 
-template< typename Real >
-void tnlExpBumpFunctionBase< Real >::setAmplitude( const Real& amplitude )
+template< int dimensions, typename Real >
+void tnlExpBumpFunctionBase< dimensions, Real >::setAmplitude( const Real& amplitude )
 {
    this->amplitude = amplitude;
 }
 
-template< typename Real >
-const Real& tnlExpBumpFunctionBase< Real >::getAmplitude() const
+template< int dimensions, typename Real >
+const Real& tnlExpBumpFunctionBase< dimensions, Real >::getAmplitude() const
 {
    return this->amplitude;
 }
 
-template< typename Real >
-void tnlExpBumpFunctionBase< Real >::setSigma( const Real& sigma )
+template< int dimensions, typename Real >
+void tnlExpBumpFunctionBase< dimensions, Real >::setSigma( const Real& sigma )
 {
    this->sigma = sigma;
 }
 
-template< typename Real >
-const Real& tnlExpBumpFunctionBase< Real >::getSigma() const
+template< int dimensions, typename Real >
+const Real& tnlExpBumpFunctionBase< dimensions, Real >::getSigma() const
 {
    return this->sigma;
 }
@@ -74,14 +81,12 @@ tnlExpBumpFunction< 1, Real >::tnlExpBumpFunction()
 template< typename Real >
    template< int XDiffOrder, 
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+             int ZDiffOrder >
+__cuda_callable__
 Real
-tnlExpBumpFunction< 1, Real >::getValue( const Vertex& v,
-                                         const Real& time ) const
+tnlExpBumpFunction< 1, Real >::
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -94,6 +99,17 @@ tnlExpBumpFunction< 1, Real >::getValue( const Vertex& v,
       return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( -x*x / ( this->sigma * this->sigma ) ) + 4.0 * x * x / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( -x*x / ( this->sigma * this->sigma ) );
    return 0.0;
 }
+
+template< typename Real >
+__cuda_callable__
+Real
+tnlExpBumpFunction< 1, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
 
 /****
  * 2D
@@ -114,15 +130,12 @@ tnlExpBumpFunction< 2, Real >::tnlExpBumpFunction()
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+             int ZDiffOrder >
+__cuda_callable__ inline
 Real
 tnlExpBumpFunction< 2, Real >::
-getValue( const Vertex& v,
-          const Real& time ) const
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -138,7 +151,19 @@ getValue( const Vertex& v,
       return -2.0 * y / ( this->sigma * this->sigma ) * this->amplitude * exp( (-x * x - y * y)/ ( this->sigma * this->sigma ) );
    if( XDiffOrder == 0 && YDiffOrder == 2 )
       return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( (-x*x - y*y) / ( this->sigma * this->sigma ) ) + 4.0 * y * y / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( (-x*x - y*y) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 1 && YDiffOrder == 1 )
+      return 4.0 * x * y / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * exp( (-x * x - y * y)/ ( this->sigma * this->sigma ) );
    return 0.0;
+}
+
+template< typename Real >
+__cuda_callable__
+Real
+tnlExpBumpFunction< 2, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
 /****
@@ -160,15 +185,12 @@ tnlExpBumpFunction< 3, Real >::tnlExpBumpFunction()
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+             int ZDiffOrder >
+__cuda_callable__
 Real
 tnlExpBumpFunction< 3, Real >::
-getValue( const Vertex& v,
-          const Real& time ) const
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -187,8 +209,25 @@ getValue( const Vertex& v,
       return -2.0 * z / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 2 )
       return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) ) + 4.0 * z * z / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 1 && YDiffOrder == 1 && ZDiffOrder == 0 )
+      return 4.0 * x * y / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 1 )
+      return 4.0 * x * z / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+   if( XDiffOrder == 0 && YDiffOrder == 1 && ZDiffOrder == 1 )
+      return 4.0 * y * z / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    return 0.0;
 }
+
+template< typename Real >
+__cuda_callable__
+Real
+tnlExpBumpFunction< 3, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
 
 
 #endif /* TNLEXPBUMPFUNCTION_IMPL_H_ */

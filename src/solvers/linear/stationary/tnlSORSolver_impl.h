@@ -39,7 +39,7 @@ tnlSORSolver< Matrix, Preconditioner >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
+   //tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "sor-omega", "Relaxation parameter of the SOR method.", 1.0 );
 }
 
@@ -107,9 +107,10 @@ bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b,
                                       x,
                                       this->getOmega() );
       this -> setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
+      this -> refreshSolverMonitor();
    }
    this -> setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
-   this -> refreshSolverMonitor();
+   this -> refreshSolverMonitor( true );
    return this->checkConvergence();
 };
 

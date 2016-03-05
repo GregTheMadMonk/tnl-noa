@@ -73,6 +73,8 @@ init( const MeshType& mesh )
    }
    if( ! this->rightHandSide.setSize( this->matrix.getRows() ) )
       return false;
+   this->linearSystemAssemblerTimer.reset();
+   this->linearSystemSolverTimer.reset();
    return true;
 }
 
@@ -134,53 +136,88 @@ solve( const RealType& time,
        const RealType& stopTime,
        const MeshType& mesh,
        DofVectorType& dofVector,
-       DofVectorType& auxiliaryDofVector )
+       MeshDependentDataType& meshDependentData )
 {
    tnlAssert( this->problem != 0, );
    RealType t = time;
    this->linearSystemSolver->setMatrix( this->matrix );
+   PreconditionerType preconditioner;
+   tnlSolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerType >
+       ::run( *(this->linearSystemSolver), preconditioner );
+
    while( t < stopTime )
    {
       RealType currentTau = Min( this->timeStep, stopTime - t );
 
+      this->preIterateTimer.start();
       if( ! this->problem->preIterate( t,
                                        currentTau,
                                        mesh,
                                        dofVector,
-                                       auxiliaryDofVector ) )
+                                       meshDependentData ) )
       {
          cerr << endl << "Preiteration failed." << endl;
          return false;
       }
+      this->preIterateTimer.stop();
+
       if( verbose )
          cout << "                                                                  Assembling the linear system ... \r" << flush;
+
+      this->linearSystemAssemblerTimer.start();
       this->problem->assemblyLinearSystem( t,
                                            currentTau,
                                            mesh,
                                            dofVector,
-                                           auxiliaryDofVector,
                                            this->matrix,
-                                           this->rightHandSide );
+                                           this->rightHandSide,
+                                           meshDependentData );
+      this->linearSystemAssemblerTimer.stop();
+
       if( verbose )
-         cout << "                                                                  Solving the linear system for time " << t << "             \r" << flush;
+         cout << "                                                                  Solving the linear system for time " << t + currentTau << "             \r" << flush;
+
+      // TODO: add timer
+      preconditioner.update( this->matrix );
+
+      this->linearSystemSolverTimer.start();
       if( ! this->linearSystemSolver->template solve< DofVectorType, tnlLinearResidueGetter< MatrixType, DofVectorType > >( this->rightHandSide, dofVector ) )
       {
          cerr << endl << "The linear system solver did not converge." << endl;
          return false;
       }
+      this->linearSystemSolverTimer.stop();
+
       //if( verbose )
       //   cout << endl;
+
+      this->postIterateTimer.start();
       if( ! this->problem->postIterate( t,
                                         currentTau,
                                         mesh,
                                         dofVector,
-                                        auxiliaryDofVector ) )
+                                        meshDependentData ) )
       {
          cerr << endl << "Postiteration failed." << endl;
          return false;
       }
+      this->postIterateTimer.stop();
+
       t += currentTau;
    }
+   return true;
+}
+
+template< typename Problem,
+          typename LinearSystemSolver >
+bool
+tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
+writeEpilog( tnlLogger& logger )
+{
+   logger.writeParameter< double >( "Pre-iterate time:", this->preIterateTimer.getTime() );
+   logger.writeParameter< double >( "Linear system assembler time:", this->linearSystemAssemblerTimer.getTime() );
+   logger.writeParameter< double >( "Linear system solver time:", this->linearSystemSolverTimer.getTime() );
+   logger.writeParameter< double >( "Post-iterate time:", this->postIterateTimer.getTime() );
    return true;
 }
 

@@ -88,8 +88,7 @@ bool tnlContainer< Element, Device, Index >::save( tnlFile& file ) const
    if( ! tnlObject::save( file ) ||
        ! this->data.save( file ) )
    {
-      cerr << "I am no able to save " << this->getType()
-           << " " << this->getName() << "." << endl;
+      cerr << "I am no able to save " << this->getType() << "." << endl;
       return false;
    }
    return true;
@@ -101,8 +100,7 @@ bool tnlContainer< Element, Device, Index >::load( tnlFile& file )
    if( ! tnlObject::load( file ) ||
        ! this->data.load( file ) )
    {
-      cerr << "I am no able to load " << this->getType()
-           << " " << this->getName() << "." << endl;
+      cerr << "I am no able to load " << this->getType() << "." << endl;
       return false;
    }
    return true;

@@ -27,12 +27,12 @@
 
 tnlTimerRT defaultRTTimer;
 
-tnlTimerRT :: tnlTimerRT()
+tnlTimerRT::tnlTimerRT()
 {
-   Reset();
+   reset();
 }
 
-void tnlTimerRT :: Reset()
+void tnlTimerRT::reset()
 {
 #ifdef HAVE_TIME
    struct timeval tp;
@@ -46,7 +46,7 @@ void tnlTimerRT :: Reset()
 
 }
 
-void tnlTimerRT :: Stop()
+void tnlTimerRT::stop()
 {
 #ifdef HAVE_TIME
    if( ! stop_state )
@@ -59,7 +59,7 @@ void tnlTimerRT :: Stop()
 #endif
 }
 
-void tnlTimerRT :: Continue()
+void tnlTimerRT::start()
 {
 #ifdef HAVE_TIME
    struct timeval tp;
@@ -69,11 +69,11 @@ void tnlTimerRT :: Continue()
 #endif
 }
 
-double tnlTimerRT :: GetTime()
+double tnlTimerRT::getTime()
 {
 #ifdef HAVE_TIME
-	Stop();
-	Continue();
+	stop();
+	start();
 	return total_time;
 #endif
  return -1;

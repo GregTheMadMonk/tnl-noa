@@ -25,17 +25,15 @@ getType()
    return "tnlExactLinearDiffusion< 1 >";
 }
 
-template< typename Function, typename Vertex, typename Real >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-Real
+template< typename Function >
+__cuda_callable__ inline
+typename Function::RealType
 tnlExactLinearDiffusion< 1 >::
-getValue( const Function& function,
-          const Vertex& v,
-          const Real& time )
+operator()( const Function& function,
+            const typename Function::VertexType& v,
+            const typename Function::RealType& time ) const
 {
-   return function.template getValue< 2, 0, 0, Vertex >( v, time );
+   return function.template getPartialDerivative< 2, 0, 0 >( v, time );
 }
 
 tnlString
@@ -45,18 +43,16 @@ getType()
    return "tnlExactLinearDiffusion< 2 >";
 }
 
-template< typename Function, typename Vertex, typename Real >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-Real
+template< typename Function >
+__cuda_callable__ inline
+typename Function::RealType
 tnlExactLinearDiffusion< 2 >::
-getValue( const Function& function,
-          const Vertex& v,
-          const Real& time )
+operator()( const Function& function,
+            const typename Function::VertexType& v,
+          const typename Function::RealType& time ) const
 {
-   return function.template getValue< 2, 0, 0, Vertex >( v, time ) +
-          function.template getValue< 0, 2, 0, Vertex >( v, time );
+   return function.template getPartialDerivative< 2, 0, 0 >( v, time ) +
+          function.template getPartialDerivative< 0, 2, 0 >( v, time );
 }
 
 tnlString
@@ -66,19 +62,17 @@ getType()
    return "tnlExactLinearDiffusion< 3 >";
 }
 
-template< typename Function, typename Vertex, typename Real >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-Real
+template< typename Function >
+__cuda_callable__ inline
+typename Function::RealType
 tnlExactLinearDiffusion< 3 >::
-getValue( const Function& function,
-          const Vertex& v,
-          const Real& time )
+operator()( const Function& function,
+            const typename Function::VertexType& v,
+            const typename Function::RealType& time ) const
 {
-   return function.template getValue< 2, 0, 0, Vertex >( v, time ) +
-          function.template getValue< 0, 2, 0, Vertex >( v, time ) +
-          function.template getValue< 0, 0, 2, Vertex >( v, time );
+   return function.template getPartialDerivative< 2, 0, 0 >( v, time ) +
+          function.template getPartialDerivative< 0, 2, 0 >( v, time ) +
+          function.template getPartialDerivative< 0, 0, 2 >( v, time );
 
 }
 

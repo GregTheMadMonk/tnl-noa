@@ -18,7 +18,9 @@
 #ifndef TNLDUMMYMESH_H_
 #define TNLDUMMYMESH_H_
 
-template< typename Real, typename Device, typename Index >
+template< typename Real = double,
+          typename Device = tnlHost,
+          typename Index = int >
 class tnlDummyMesh
 {
    public:
@@ -27,8 +29,11 @@ class tnlDummyMesh
    typedef Device DeviceType;
    typedef Index IndexType;
 
+   static const int meshDimensions = 1;
 
-   const Real& getParametricStep(){};
+   const Real& getParametricStep(){ return 0.0; }
+   
+   tnlString getSerializationType() const { return tnlString( "tnlDummyMesh" ); }
 
    template< typename GridFunction >
    typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
@@ -39,23 +44,23 @@ class tnlDummyMesh
                                                         const GridFunction& f2,
                                                         const typename GridFunction::RealType& p ) const { return 0.0; }
 
-   bool save( tnlFile& file ) const{};
+   bool save( tnlFile& file ) const { return true; }
 
    //! Method for restoring the object from a file
-   bool load( tnlFile& file ){};
+   bool load( tnlFile& file ) { return true; }
 
-   bool save( const tnlString& fileName ) const{};
+   bool save( const tnlString& fileName ) const { return true; }
 
-   bool load( const tnlString& fileName ){};
+   bool load( const tnlString& fileName ) { return true; }
 
    bool writeMesh( const tnlString& fileName,
-                   const tnlString& format ) const{};
+                   const tnlString& format ) const { return true; }
 
 
    template< typename MeshFunction >
    bool write( const MeshFunction& function,
                 const tnlString& fileName,
-                const tnlString& format ) const{}
+                const tnlString& format ) const { return true; }
 };
 
 

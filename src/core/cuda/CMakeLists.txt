@@ -2,7 +2,11 @@ set( headers cuda-prefix-sum.h
              cuda-prefix-sum_impl.h
              cuda-reduction.h             
              cuda-reduction_impl.h
-             reduction-operations.h )
+             reduction-operations.h
+             tnlCudaReduction.h
+             tnlCudaReduction_impl.h
+             tnlCudaReductionBuffer.h
+             tnlCublasWrapper.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/core/cuda ) 
 IF( BUILD_CUDA )
@@ -16,6 +20,7 @@ IF( BUILD_CUDA )
         ${CURRENT_DIR}/cuda-reduction-abs-max_impl.cu
         ${CURRENT_DIR}/cuda-reduction-and_impl.cu
         ${CURRENT_DIR}/cuda-reduction-or_impl.cu
+        ${CURRENT_DIR}/cuda-reduction-l2-norm_impl.cu
         ${CURRENT_DIR}/cuda-reduction-lp-norm_impl.cu
         ${CURRENT_DIR}/cuda-reduction-equalities_impl.cu
         ${CURRENT_DIR}/cuda-reduction-inequalities_impl.cu
@@ -26,9 +31,10 @@ IF( BUILD_CUDA )
         ${CURRENT_DIR}/cuda-reduction-diff-abs-sum_impl.cu
         ${CURRENT_DIR}/cuda-reduction-diff-abs-min_impl.cu
         ${CURRENT_DIR}/cuda-reduction-diff-abs-max_impl.cu
+        ${CURRENT_DIR}/cuda-reduction-diff-l2-norm_impl.cu        
         ${CURRENT_DIR}/cuda-reduction-diff-lp-norm_impl.cu        
         ${CURRENT_DIR}/cuda-prefix-sum_impl.cu
-        PARENT_SCOPE )        
+        PARENT_SCOPE ) 
 endif() 
 
 set( tnl_core_cuda_SOURCES

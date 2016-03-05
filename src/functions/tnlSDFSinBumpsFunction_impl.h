@@ -33,18 +33,6 @@ const Vertex& tnlSDFSinBumpsFunctionBase< Vertex >::getWaveLength() const
 }
 
 template< typename Vertex >
-void tnlSDFSinBumpsFunctionBase< Vertex >::setWavesNumber( const Vertex& waveLength )
-{
-   this->wavesNumber = wavesNumber;
-}
-
-template< typename Vertex >
-const Vertex& tnlSDFSinBumpsFunctionBase< Vertex >::getWavesNumber() const
-{
-   return this->wavesNumber;
-}
-
-template< typename Vertex >
 void tnlSDFSinBumpsFunctionBase< Vertex >::setAmplitude( const typename Vertex::RealType& amplitude )
 {
    this->amplitude = amplitude;
@@ -94,10 +82,12 @@ bool tnlSDFSinBumpsFunction< 1, Real >::setup( const tnlParameterContainer& para
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-Real tnlSDFSinBumpsFunction< 1, Real >::getValue( const Vertex& v,
-              const Real& time ) const
+             int ZDiffOrder >
+__cuda_callable__
+Real
+tnlSDFSinBumpsFunction< 1, Real >::
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    if (sqrt(x*x) + Sign(x)*(this->phase.x())*(this->waveLength.x())/(2.0*M_PI) > this->wavesNumber.x()*this->waveLength.x() && this->wavesNumber.x() != 0.0 )
@@ -142,10 +132,12 @@ bool tnlSDFSinBumpsFunction< 2, Real >::setup( const tnlParameterContainer& para
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-Real tnlSDFSinBumpsFunction< 2, Real >::getValue( const Vertex& v,
-              const Real& time ) const
+             int ZDiffOrder >
+__cuda_callable__
+Real
+tnlSDFSinBumpsFunction< 2, Real >::
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -208,10 +200,12 @@ bool tnlSDFSinBumpsFunction< 3, Real >::setup( const tnlParameterContainer& para
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-Real tnlSDFSinBumpsFunction< 3, Real >::getValue( const Vertex& v,
-              const Real& time ) const
+             int ZDiffOrder >
+__cuda_callable__
+Real
+tnlSDFSinBumpsFunction< 3, Real >::
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();

@@ -23,14 +23,10 @@ class tnlMultidiagonalMatrixRow
 {
    public:
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       tnlMultidiagonalMatrixRow();
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       tnlMultidiagonalMatrixRow( Real* values,
                                  Index* diagonals,
                                  const Index maxRowLength,
@@ -38,9 +34,7 @@ class tnlMultidiagonalMatrixRow
                                  const Index columns,
                                  const Index step );
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       void bind( Real* values,
                  Index* diagonals,
                  const Index maxRowLength,
@@ -48,9 +42,7 @@ class tnlMultidiagonalMatrixRow
                  const Index columns,
                  const Index step );
 
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+      __cuda_callable__
       void setElement( const Index& elementIndex,
                        const Index& column,
                        const Real& value );

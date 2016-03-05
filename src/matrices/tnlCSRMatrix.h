@@ -35,7 +35,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: RowLengthsVector RowLengthsVector;
+   typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef tnlCSRMatrix< Real, Device, Index > ThisType;
    typedef tnlCSRMatrix< Real, tnlHost, Index > HostType;
    typedef tnlCSRMatrix< Real, tnlCuda, Index > CudaType;
@@ -54,7 +54,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   bool setRowLengths( const RowLengthsVector& rowLengths );
+   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
@@ -63,9 +63,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    void reset();
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__ 
    bool setElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value );
@@ -73,9 +71,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    bool setElement( const IndexType row,
                     const IndexType column,
                     const RealType& value );
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value,
@@ -87,9 +83,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
                     const RealType& thisElementMultiplicator = 1.0 );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setRowFast( const IndexType row,
                     const IndexType* columnIndexes,
                     const RealType* values,
@@ -101,9 +95,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
                 const IndexType elements );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addRowFast( const IndexType row,
                     const IndexType* columns,
                     const RealType* values,
@@ -117,36 +109,26 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
                 const RealType& thisElementMultiplicator = 1.0 );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    RealType getElementFast( const IndexType row,
                             const IndexType column ) const;
 
    RealType getElement( const IndexType row,
                         const IndexType column ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void getRowFast( const IndexType row,
                     IndexType* columns,
                     RealType* values ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    MatrixRow getRow( const IndexType rowIndex );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const MatrixRow getRow( const IndexType rowIndex ) const;
 
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
@@ -183,9 +165,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    void setCudaKernelType( const SPMVCudaKernel kernel );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    SPMVCudaKernel getCudaKernelType() const;
 
    void setCudaWarpSize( const int warpSize );
@@ -194,9 +174,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    void setHybridModeSplit( const IndexType hybridModeSplit );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    IndexType getHybridModeSplit() const;
 
 #ifdef HAVE_CUDA

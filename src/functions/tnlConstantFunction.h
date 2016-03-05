@@ -20,78 +20,67 @@
 
 #include <iostream>
 #include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlFunctionType.h>
+#include <functions/tnlDomain.h>
 
-template< int FunctionDimensions,
+template< int dimensions,
           typename Real = double >
-class tnlConstantFunction
+class tnlConstantFunction : public tnlDomain< dimensions, NonspaceDomain >
 {
    public:
+      
+      typedef Real RealType;
+      typedef tnlStaticVector< dimensions, RealType > VertexType;      
+      
+      tnlConstantFunction();
 
-   enum { Dimensions = FunctionDimensions };
-   typedef Real RealType;
-   typedef tnlStaticVector< Dimensions, Real > VertexType;
+      static void configSetup( tnlConfigDescription& config,
+                               const tnlString& prefix = "" );
 
-   tnlConstantFunction();
+      bool setup( const tnlParameterContainer& parameters,
+                 const tnlString& prefix = "" );
 
-   static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix = "" );
+      void setConstant( const RealType& constant );
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+      const RealType& getConstant() const;
 
-   void setConstant( const RealType& constant );
+   #ifdef HAVE_NOT_CXX11
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+   #else
+      template< int XDiffOrder,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+   #endif
+      __cuda_callable__ inline
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
 
-   const RealType& getConstant() const;
-
-#ifdef HAVE_NOT_CXX11
-   template< int XDiffOrder,
-             int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-#else
-   template< int XDiffOrder,
-             int YDiffOrder = 0,
-             int ZDiffOrder = 0,
-             typename Vertex = VertexType >
-#endif
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   RealType getValue( const Vertex& v,
-                      const Real& time = 0.0 ) const;
-
-   template< typename Vertex >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   RealType getValue( const Vertex& v,
-                      const Real& time = 0.0 ) const
-   {
-      return getValue< 0, 0, 0, Vertex >( v, time );
-   }
+      __cuda_callable__ inline
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const
+      {
+         return constant;
+      }
+      
+       __cuda_callable__ inline
+      RealType getValue( const Real& time = 0.0 ) const
+      {
+          return constant;
+      }
 
    protected:
 
-   RealType constant;
+      RealType constant;
 };
 
-template< int FunctionDimensions,
+template< int dimensions,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const tnlConstantFunction< FunctionDimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const tnlConstantFunction< dimensions, Real >& f )
 {
    str << "Constant function: constant = " << f.getConstant();
    return str;
 }
-
-template< int FunctionDimensions,
-          typename Real >
-class tnlFunctionType< tnlConstantFunction< FunctionDimensions, Real > >
-{
-   public:
-
-      enum { Type = tnlAnalyticFunction };
-};
 
 #include <functions/tnlConstantFunction_impl.h>
 

@@ -72,7 +72,7 @@ class tnlEllpackMatrixTester : public CppUnit :: TestCase
    {
       MatrixType m1, m2;
       m1.setDimensions( 10, 10 );
-      m1.setConstantRowLengths( 5 );
+      m1.setConstantCompressedRowsLengths( 5 );
       m2.setLike( m1 );
       CPPUNIT_ASSERT( m1.getRows() == m2.getRows() );
    }
@@ -81,7 +81,7 @@ class tnlEllpackMatrixTester : public CppUnit :: TestCase
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
-      m.setConstantRowLengths( 7 );
+      m.setConstantCompressedRowsLengths( 7 );
 
       for( int i = 0; i < 7; i++ )
          CPPUNIT_ASSERT( m.setElement( 0, i, i ) );
@@ -92,7 +92,7 @@ class tnlEllpackMatrixTester : public CppUnit :: TestCase
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
-      m.setConstantRowLengths( 7 );
+      m.setConstantCompressedRowsLengths( 7 );
 
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
@@ -108,7 +108,7 @@ class tnlEllpackMatrixTester : public CppUnit :: TestCase
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
-      m.setConstantRowLengths( 10 );
+      m.setConstantCompressedRowsLengths( 10 );
 
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
@@ -125,7 +125,7 @@ class tnlEllpackMatrixTester : public CppUnit :: TestCase
 
       m.reset();
       m.setDimensions( 10, 10 );
-      m.setConstantRowLengths( 10 );
+      m.setConstantCompressedRowsLengths( 10 );
       for( int i = 9; i >= 0; i-- )
          for( int j = 9; j >= 0; j-- )
             m.setElement( i, j, i+j );
@@ -139,7 +139,7 @@ class tnlEllpackMatrixTester : public CppUnit :: TestCase
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
-      m.setConstantRowLengths( 7 );
+      m.setConstantCompressedRowsLengths( 7 );
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
@@ -166,7 +166,7 @@ class tnlEllpackMatrixTester : public CppUnit :: TestCase
       w.setSize( size );
       MatrixType m;
       m.setDimensions( size, size );
-      m.setConstantRowLengths( 7 );
+      m.setConstantCompressedRowsLengths( 7 );
       for( int i = 0; i < size; i++ )
       {
          v.setElement( i, i );

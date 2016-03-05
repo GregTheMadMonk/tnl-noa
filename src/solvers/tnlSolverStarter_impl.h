@@ -27,6 +27,9 @@
 #include <solvers/linear/krylov/tnlCGSolver.h>
 #include <solvers/linear/krylov/tnlBICGStabSolver.h>
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
+#include <solvers/linear/krylov/tnlTFQMRSolver.h>
+#include <solvers/preconditioners/tnlDummyPreconditioner.h>
+#include <solvers/preconditioners/tnlDiagonalPreconditioner.h>
 #include <solvers/pde/tnlExplicitTimeStepper.h>
 #include <solvers/pde/tnlSemiImplicitTimeStepper.h>
 #include <solvers/pde/tnlPDESolver.h>
@@ -52,10 +55,16 @@ class tnlSolverStarterExplicitSolverSetter{};
 
 template< typename Problem,
           typename SemiImplicitSolver,
+          template<typename, typename, typename> class Preconditioner,
           typename ConfigTag,
           bool enabled = tnlConfigTagSemiImplicitSolver< ConfigTag, SemiImplicitSolver >::enabled >
 class tnlSolverStarterSemiImplicitSolverSetter{};
 
+
+template< typename Problem,
+          typename SemiImplicitSolverTag,
+          typename ConfigTag >
+class tnlSolverStarterPreconditionerSetter;
 
 template< typename Problem,
           typename ExplicitSolver,
@@ -187,20 +196,23 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
          if( discreteSolver != "sor" &&
              discreteSolver != "cg" &&
              discreteSolver != "bicgstab" &&
-             discreteSolver != "gmres" )
+             discreteSolver != "gmres" &&
+             discreteSolver != "tfqmr" )
          {
-            cerr << "Unknown explicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab or gmres." << endl;
+            cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres or tfqmr." << endl;
             return false;
          }
 
          if( discreteSolver == "sor" )
-            return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitSORSolverTag, ConfigTag >::run( problem, parameters );
+            return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitSORSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "cg" )
-            return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitCGSolverTag, ConfigTag >::run( problem, parameters );
+            return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitCGSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "bicgstab" )
-            return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitBICGStabSolverTag, ConfigTag >::run( problem, parameters );
+            return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitBICGStabSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "gmres" )
-            return tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
+            return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
+         if( discreteSolver == "tfqmr" )
+            return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitTFQMRSolverTag, ConfigTag >::run( problem, parameters );
          return false;
       }
 };
@@ -223,9 +235,9 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlImplicitTimeDiscreti
  */
 
 template< typename Problem,
-          typename ExplicitSolver,
+          typename ExplicitSolverTag,
           typename ConfigTag >
-class tnlSolverStarterExplicitSolverSetter< Problem, ExplicitSolver, ConfigTag, false >
+class tnlSolverStarterExplicitSolverSetter< Problem, ExplicitSolverTag, ConfigTag, false >
 {
    public:
       static bool run( Problem& problem,
@@ -237,32 +249,16 @@ class tnlSolverStarterExplicitSolverSetter< Problem, ExplicitSolver, ConfigTag, 
 };
 
 template< typename Problem,
+          typename ExplicitSolverTag,
           typename ConfigTag >
-class tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitEulerSolverTag, ConfigTag, true >
+class tnlSolverStarterExplicitSolverSetter< Problem, ExplicitSolverTag, ConfigTag, true >
 {
    public:
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
-         typedef tnlExplicitTimeStepper< Problem, tnlEulerSolver > TimeStepper;
-         typedef tnlEulerSolver< TimeStepper > ExplicitSolver;
-         return tnlSolverStarterExplicitTimeStepperSetter< Problem,
-                                                           ExplicitSolver,
-                                                           TimeStepper,
-                                                           ConfigTag >::run( problem, parameters );
-      }
-};
-
-template< typename Problem,
-          typename ConfigTag >
-class tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitMersonSolverTag, ConfigTag, true >
-{
-   public:
-      static bool run( Problem& problem,
-                       const tnlParameterContainer& parameters )
-      {
-         typedef tnlExplicitTimeStepper< Problem, tnlMersonSolver > TimeStepper;
-         typedef tnlMersonSolver< TimeStepper > ExplicitSolver;
+         typedef tnlExplicitTimeStepper< Problem, ExplicitSolverTag::template Template > TimeStepper;
+         typedef typename ExplicitSolverTag::template Template< TimeStepper > ExplicitSolver;
          return tnlSolverStarterExplicitTimeStepperSetter< Problem,
                                                            ExplicitSolver,
                                                            TimeStepper,
@@ -275,9 +271,31 @@ class tnlSolverStarterExplicitSolverSetter< Problem, tnlExplicitMersonSolverTag,
  */
 
 template< typename Problem,
-          typename SemiImplicitSolver,
+          typename SemiImplicitSolverTag,
           typename ConfigTag >
-class tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolver, ConfigTag, false >
+class tnlSolverStarterPreconditionerSetter
+{
+   public:
+      static bool run( Problem& problem,
+                       const tnlParameterContainer& parameters )
+      {
+         const tnlString& preconditioner = parameters.getParameter< tnlString>( "preconditioner" );
+
+         if( preconditioner == "none" )
+            return tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, tnlDummyPreconditioner, ConfigTag >::run( problem, parameters );
+         if( preconditioner == "diagonal" )
+            return tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, tnlDiagonalPreconditioner, ConfigTag >::run( problem, parameters );
+
+         cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal." << endl;
+         return false;
+      }
+};
+
+template< typename Problem,
+          typename SemiImplicitSolverTag,
+          template<typename, typename, typename> class Preconditioner,
+          typename ConfigTag >
+class tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, ConfigTag, false >
 {
    public:
       static bool run( Problem& problem,
@@ -289,66 +307,20 @@ class tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolver, Con
 };
 
 template< typename Problem,
+          typename SemiImplicitSolverTag,
+          template<typename, typename, typename> class Preconditioner,
           typename ConfigTag >
-class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitSORSolverTag, ConfigTag, true >
+class tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Preconditioner, ConfigTag, true >
 {
    public:
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
          typedef typename Problem::MatrixType MatrixType;
-         typedef tnlSORSolver< MatrixType > LinearSystemSolver;
-         typedef tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
-         return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
-                                                               TimeStepper,
-                                                               ConfigTag >::run( problem, parameters );
-      }
-};
-
-template< typename Problem,
-          typename ConfigTag >
-class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitCGSolverTag, ConfigTag, true >
-{
-   public:
-      static bool run( Problem& problem,
-                       const tnlParameterContainer& parameters )
-      {
-         typedef typename Problem::MatrixType MatrixType;
-         typedef tnlCGSolver< MatrixType > LinearSystemSolver;
-         typedef tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
-         return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
-                                                               TimeStepper,
-                                                               ConfigTag >::run( problem, parameters );
-      }
-};
-
-template< typename Problem,
-          typename ConfigTag >
-class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitBICGStabSolverTag, ConfigTag, true >
-{
-   public:
-      static bool run( Problem& problem,
-                       const tnlParameterContainer& parameters )
-      {
-         typedef typename Problem::MatrixType MatrixType;
-         typedef tnlBICGStabSolver< MatrixType > LinearSystemSolver;
-         typedef tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
-         return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
-                                                               TimeStepper,
-                                                               ConfigTag >::run( problem, parameters );
-      }
-};
-
-template< typename Problem,
-          typename ConfigTag >
-class tnlSolverStarterSemiImplicitSolverSetter< Problem, tnlSemiImplicitGMRESSolverTag, ConfigTag, true >
-{
-   public:
-      static bool run( Problem& problem,
-                       const tnlParameterContainer& parameters )
-      {
-         typedef typename Problem::MatrixType MatrixType;
-         typedef tnlGMRESSolver< MatrixType > LinearSystemSolver;
+         typedef typename MatrixType::RealType RealType;
+         typedef typename MatrixType::DeviceType DeviceType;
+         typedef typename MatrixType::IndexType IndexType;
+         typedef typename SemiImplicitSolverTag::template Template< MatrixType, Preconditioner< RealType, DeviceType, IndexType > > LinearSystemSolver;
          typedef tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
          return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
                                                                TimeStepper,
@@ -412,6 +384,7 @@ class tnlSolverStarterSemiImplicitTimeStepperSetter
                        const tnlParameterContainer& parameters)
       {
          typedef typename TimeStepper::LinearSystemSolverType LinearSystemSolverType;
+         typedef typename LinearSystemSolverType::PreconditionerType PreconditionerType;
          typedef typename LinearSystemSolverType::MatrixType MatrixType;
          typedef typename Problem::RealType RealType;
          typedef typename Problem::IndexType IndexType;
@@ -467,7 +440,6 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
                             typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
       double omega = parameters. getParameter< double >( "sor-omega" );
-      solver. setName( "sor-solver" );
       solver. setOmega( omega );
       //solver. setVerbose( this -> verbose );
       return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
@@ -478,7 +450,6 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
       typedef tnlCGSolver< typename Problem :: DiscreteSolverMatrixType,
                            typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
-      solver. setName( "cg-solver" );
       //solver. setVerbose( this -> verbose );
       return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
    }
@@ -488,7 +459,6 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
       typedef tnlBICGStabSolver< typename Problem :: DiscreteSolverMatrixType,
                                  typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
-      solver. setName( "bicg-solver" );
       //solver. setVerbose( this -> verbose );
       return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
    }
@@ -499,7 +469,6 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
                               typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
       int restarting = parameters. getParameter< int >( "gmres-restarting" );
-      solver. setName( "gmres-solver" );
       solver. setRestarting( restarting );
       //solver. setVerbose( this -> verbose );
       return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
@@ -516,17 +485,17 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
                                                     const tnlParameterContainer& parameters,
                                                     TimeStepper& timeStepper )
 {
-   this->totalCpuTimer. Reset();
-   this->totalRtTimer. Reset();
+   this->totalCpuTimer.reset();
+   this->totalRtTimer.reset();
 
    /****
     * Set-up the PDE solver
     */
    tnlPDESolver< Problem, TimeStepper > solver;
    solver.setProblem( problem );
+   solver.setTimeStepper( timeStepper );
    if( ! solver.setup( parameters ) )
       return false;
-   solver.setTimeStepper( timeStepper );
 
    /****
     * Write a prolog
@@ -560,16 +529,16 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Set-up timers
     */
-   this->computeRtTimer. Reset();
-   this->computeCpuTimer. Reset();
-   this->ioRtTimer. Reset();
-   this->ioRtTimer. Stop();
-   this->ioCpuTimer. Reset();
-   this->ioCpuTimer. Stop();
-   solver.setComputeRtTimer( this -> computeRtTimer );
-   solver.setComputeCpuTimer( this -> computeCpuTimer );
-   solver.setIoRtTimer( this -> ioRtTimer );
-   solver.setIoCpuTimer( this -> ioCpuTimer );
+   this->computeRtTimer.reset();
+   this->computeCpuTimer.reset();
+   this->ioRtTimer.reset();
+   this->ioRtTimer.stop();
+   this->ioCpuTimer.reset();
+   this->ioCpuTimer.stop();
+   solver.setComputeRtTimer( this->computeRtTimer );
+   solver.setComputeCpuTimer( this->computeCpuTimer );
+   solver.setIoRtTimer( this->ioRtTimer );
+   solver.setIoCpuTimer( this->ioCpuTimer );
 
    /****
     * Start the solver
@@ -597,16 +566,16 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Stop timers
     */
-   this->computeRtTimer.Stop();
-   this->computeCpuTimer.Stop();
-   this->totalCpuTimer.Stop();
-   this->totalRtTimer.Stop();
+   this->computeRtTimer.stop();
+   this->computeCpuTimer.stop();
+   this->totalCpuTimer.stop();
+   this->totalRtTimer.stop();
 
    /****
     * Write an epilog
     */
    if( verbose )
-      writeEpilog( cout );
+      writeEpilog( cout, solver );
    if( haveLogFile )
    {
       fstream logFile;
@@ -618,7 +587,7 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
       }
       else
       {
-         writeEpilog( logFile );
+         writeEpilog( logFile, solver );
          logFile.close();
       }
    }
@@ -626,18 +595,21 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
 }
 
 template< typename ConfigTag >
-bool tnlSolverStarter< ConfigTag > :: writeEpilog( ostream& str )
+   template< typename Solver >
+bool tnlSolverStarter< ConfigTag > :: writeEpilog( ostream& str, const Solver& solver  )
 {
    tnlLogger logger( logWidth, str );
    logger.writeCurrentTime( "Finished at:" );
-   logger.writeParameter< double >( "IO Real Time:", this -> ioRtTimer. GetTime() );
-   logger.writeParameter< double >( "IO CPU Time:", this -> ioCpuTimer. GetTime() );
-   logger.writeParameter< double >( "Compute Real Time:", this -> computeRtTimer. GetTime() );
-   logger.writeParameter< double >( "Compute CPU Time:", this -> computeCpuTimer. GetTime() );
-   logger.writeParameter< double >( "Total Real Time:", this -> totalRtTimer. GetTime() );
-   logger.writeParameter< double >( "Total CPU Time:", this -> totalCpuTimer. GetTime() );
+   if( ! solver.writeEpilog( logger ) )
+      return false;
+   logger.writeParameter< double >( "IO Real Time:", this -> ioRtTimer. getTime() );
+   logger.writeParameter< double >( "IO CPU Time:", this -> ioCpuTimer. getTime() );
+   logger.writeParameter< double >( "Compute Real Time:", this -> computeRtTimer. getTime() );
+   logger.writeParameter< double >( "Compute CPU Time:", this -> computeCpuTimer. getTime() );
+   logger.writeParameter< double >( "Total Real Time:", this -> totalRtTimer. getTime() );
+   logger.writeParameter< double >( "Total CPU Time:", this -> totalCpuTimer. getTime() );
    char buf[ 256 ];
-   sprintf( buf, "%f %%", 100 * ( ( double ) this -> totalCpuTimer. GetTime() ) / this -> totalRtTimer. GetTime() );
+   sprintf( buf, "%f %%", 100 * ( ( double ) this -> totalCpuTimer. getTime() ) / this -> totalRtTimer. getTime() );
    logger.writeParameter< char* >( "CPU usage:", buf );
    logger.writeSeparator();
    return true;

@@ -23,6 +23,14 @@
 #include <core/vectors/tnlSharedVector.h>
 #include <core/mfuncs.h>
 
+#ifdef HAVE_CUSPARSE
+#include <cusparse.h>
+
+template< typename Real, typename Index >
+class tnlCusparseCSRWrapper {};
+#endif
+
+
 template< typename Real,
           typename Device,
           typename Index >
@@ -69,7 +77,7 @@ bool tnlCSRMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlCSRMatrix< Real, Device, Index >::setRowLengths( const RowLengthsVector& rowLengths )
+bool tnlCSRMatrix< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
    /****
     * Compute the rows pointers. The last one is
@@ -130,9 +138,7 @@ void tnlCSRMatrix< Real, Device, Index >::reset()
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlCSRMatrix< Real, Device, Index >::setElementFast( const IndexType row,
                                                           const IndexType column,
                                                           const Real& value )
@@ -154,9 +160,7 @@ bool tnlCSRMatrix< Real, Device, Index >::setElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlCSRMatrix< Real, Device, Index >::addElementFast( const IndexType row,
                                                           const IndexType column,
                                                           const RealType& value,
@@ -202,7 +206,6 @@ bool tnlCSRMatrix< Real, Device, Index >::addElementFast( const IndexType row,
          this->values[ elementPtr ] = value;
          return true;
       }
-   return false;
 }
 
 template< typename Real,
@@ -258,9 +261,7 @@ bool tnlCSRMatrix< Real, Device, Index >::addElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlCSRMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
                                                         const IndexType* columnIndexes,
                                                         const RealType* values,
@@ -310,9 +311,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: setRow( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 bool tnlCSRMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
                                                         const IndexType* columns,
                                                         const RealType* values,
@@ -338,9 +337,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: addRow( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Real tnlCSRMatrix< Real, Device, Index >::getElementFast( const IndexType row,
                                                           const IndexType column ) const
 {
@@ -377,9 +374,7 @@ Real tnlCSRMatrix< Real, Device, Index >::getElement( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 void tnlCSRMatrix< Real, Device, Index >::getRowFast( const IndexType row,
                                                       IndexType* columns,
                                                       RealType* values ) const
@@ -397,9 +392,7 @@ void tnlCSRMatrix< Real, Device, Index >::getRowFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename tnlCSRMatrix< Real, Device, Index >::MatrixRow
 tnlCSRMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex )
@@ -415,9 +408,7 @@ getRow( const IndexType rowIndex )
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 const typename tnlCSRMatrix< Real, Device, Index >::MatrixRow
 tnlCSRMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
@@ -434,9 +425,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename Vector::RealType tnlCSRMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                  const Vector& vector ) const
 {
@@ -496,8 +485,7 @@ bool tnlCSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
 {
    tnlAssert( row >=0 && row < this->getRows(),
               cerr << "row = " << row
-                   << " this->getRows() = " << this->getRows()
-                   << " this->getName() = " << this->getName() << endl );
+                   << " this->getRows() = " << this->getRows() << endl );
 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
@@ -515,7 +503,7 @@ bool tnlCSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-      cerr << "There is zero on the diagonal in " << row << "-th row of the matrix " << this->getName() << ". I cannot perform SOR iteration." << endl;
+      cerr << "There is zero on the diagonal in " << row << "-th row of the matrix. I cannot perform SOR iteration." << endl;
       return false;
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
@@ -591,9 +579,7 @@ void tnlCSRMatrix< Real, Device, Index >::setCudaKernelType( const SPMVCudaKerne
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 typename tnlCSRMatrix< Real, Device, Index >::SPMVCudaKernel tnlCSRMatrix< Real, Device, Index >::getCudaKernelType() const
 {
    return this->spmvCudaKernel;
@@ -626,9 +612,7 @@ void tnlCSRMatrix< Real, Device, Index >::setHybridModeSplit( const IndexType hy
 template< typename Real,
           typename Device,
           typename Index >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+__cuda_callable__
 Index tnlCSRMatrix< Real, Device, Index >::getHybridModeSplit() const
 {
    return this->hybridModeSplit;
@@ -648,7 +632,7 @@ void tnlCSRMatrix< Real, Device, Index >::spmvCudaVectorized( const InVector& in
                                                               const IndexType warpEnd,
                                                               const IndexType inWarpIdx ) const
 {
-   Real* aux = getSharedMemory< Real >();
+   volatile Real* aux = getSharedMemory< Real >();
    for( IndexType row = warpStart; row < warpEnd; row++ )
    {
       aux[ threadIdx.x ] = 0.0;
@@ -672,8 +656,6 @@ void tnlCSRMatrix< Real, Device, Index >::spmvCudaVectorized( const InVector& in
          if( inWarpIdx < 2 ) aux[ threadIdx.x ] += aux[ threadIdx.x + 2 ];
       if( warpSize >= 2 )
          if( inWarpIdx < 1 ) aux[ threadIdx.x ] += aux[ threadIdx.x + 1 ];
-      __syncthreads(); // TODO: I am not sure why - aux must be volatile
-
       if( inWarpIdx == 0 )
          outVector[ row ] = aux[ threadIdx.x ];
    }
@@ -739,8 +721,15 @@ class tnlCSRMatrixDeviceDependentCode< tnlHost >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
-         for( Index row = 0; row < matrix.getRows(); row ++ )
-            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+         const Index rows = matrix.getRows();
+         const tnlCSRMatrix< Real, Device, Index >* matrixPtr = &matrix;
+         const InVector* inVectorPtr = &inVector;
+         OutVector* outVectorPtr = &outVector;
+#ifdef HAVE_OPENMP
+#pragma omp parallel for private( matrixPtr, inVectorPtr, outVectorPtr ), schedule(static )
+#endif         
+         for( Index row = 0; row < rows; row ++ )
+            ( *outVectorPtr )[ row ] = matrixPtr->rowVectorProduct( row, *inVectorPtr );
       }
 
 };
@@ -757,7 +746,7 @@ __global__ void tnlCSRMatrixVectorProductCudaKernel( const tnlCSRMatrix< Real, t
                                                      int gridIdx )
 {
    typedef tnlCSRMatrix< Real, tnlCuda, Index > Matrix;
-   tnlStaticAssert( Matrix::DeviceType::DeviceType == tnlCudaDevice, );
+   static_assert( Matrix::DeviceType::DeviceType == tnlCudaDevice, "" );
    const typename Matrix::IndexType rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( matrix->getCudaKernelType() == Matrix::scalar )
    {
@@ -849,6 +838,89 @@ void tnlCSRMatrixVectorProductCuda( const tnlCSRMatrix< Real, tnlCuda, Index >& 
 }
 
 
+#ifdef HAVE_CUSPARSE
+template<>
+class tnlCusparseCSRWrapper< float, int >
+{
+   public:
+      
+      typedef float Real;
+      typedef int Index;
+      
+      static void vectorProduct( const Index rows,
+                                 const Index columns,
+                                 const Index nnz,
+                                 const Real* values,
+                                 const Index* columnIndexes,
+                                 const Index* rowPointers,
+                                 const Real* x,
+                                 Real* y )
+      {
+         cusparseHandle_t   cusparseHandle;
+         cusparseMatDescr_t cusparseMatDescr;         
+         cusparseCreate( &cusparseHandle );
+         cusparseCreateMatDescr( &cusparseMatDescr );
+         cusparseSetMatType( cusparseMatDescr, CUSPARSE_MATRIX_TYPE_GENERAL );
+         cusparseSetMatIndexBase( cusparseMatDescr, CUSPARSE_INDEX_BASE_ZERO );
+         Real alpha( 1.0 ), beta( 0.0 );
+         cusparseScsrmv( cusparseHandle,
+                         CUSPARSE_OPERATION_NON_TRANSPOSE,
+                         rows,
+                         columns,
+                         nnz,
+                         &alpha,
+                         cusparseMatDescr,
+                         values,
+                         rowPointers,
+                         columnIndexes,
+                         x,
+                         &beta,
+                         y );
+      };
+};
+
+template<>
+class tnlCusparseCSRWrapper< double, int >
+{
+   public:
+      
+      typedef double Real;
+      typedef int Index;
+      
+      static void vectorProduct( const Index rows,
+                                 const Index columns,
+                                 const Index nnz,
+                                 const Real* values,
+                                 const Index* columnIndexes,
+                                 const Index* rowPointers,
+                                 const Real* x,
+                                 Real* y )
+      {
+         cusparseHandle_t   cusparseHandle;
+         cusparseMatDescr_t cusparseMatDescr;         
+         cusparseCreate( &cusparseHandle );
+         cusparseCreateMatDescr( &cusparseMatDescr );
+         cusparseSetMatType( cusparseMatDescr, CUSPARSE_MATRIX_TYPE_GENERAL );
+         cusparseSetMatIndexBase( cusparseMatDescr, CUSPARSE_INDEX_BASE_ZERO );
+         Real alpha( 1.0 ), beta( 0.0 );
+         cusparseDcsrmv( cusparseHandle,
+                         CUSPARSE_OPERATION_NON_TRANSPOSE,
+                         rows,
+                         columns,
+                         nnz,
+                         &alpha,
+                         cusparseMatDescr,
+                         values,
+                         rowPointers,
+                         columnIndexes,
+                         x,
+                         &beta,
+                         y );
+      };
+};
+
+#endif
+
 template<>
 class tnlCSRMatrixDeviceDependentCode< tnlCuda >
 {
@@ -864,10 +936,22 @@ class tnlCSRMatrixDeviceDependentCode< tnlCuda >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
+#ifdef HAVE_CUSPARSE         
+         tnlCusparseCSRWrapper< Real, Index >::vectorProduct( matrix.getRows(),
+                                                              matrix.getColumns(),
+                                                              matrix.values.getSize(),
+                                                              matrix.values.getData(),
+                                                              matrix.columnIndexes.getData(),
+                                                              matrix.rowPointers.getData(),
+                                                              inVector.getData(),
+                                                              outVector.getData() );
+#else
          tnlCSRMatrixVectorProductCuda( matrix, inVector, outVector );
+#endif         
       }
 
 };
+
 
 
 #endif /* TNLCSRMATRIX_IMPL_H_ */

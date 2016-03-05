@@ -19,19 +19,19 @@
 #define TNL_HEAT_EQUATION_EOC_H_
 
 #include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfig.h>
-#include <solvers/tnlConfigTags.h>
+#include <solvers/tnlFastBuildConfigTag.h>
+#include <solvers/tnlBuildConfigTags.h>
 #include <functions/tnlTestFunction.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include <operators/diffusion/tnlExactLinearDiffusion.h>
-#include <operators/tnlAnalyticDirichletBoundaryConditions.h>
 #include <problems/tnlHeatEquationEocRhs.h>
 #include <problems/tnlHeatEquationEocProblem.h>
+#include <operators/tnlDirichletBoundaryConditions.h>
 
-//typedef tnlDefaultConfigTag BuildConfig;
+//typedef tnlDefaultBuildMeshConfig BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
 
-template< typename ConfigTag >
+template< typename MeshConfig >
 class heatEquationEocConfig
 {
    public:
@@ -47,7 +47,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename MeshType,
-          typename ConfigTag,
+          typename MeshConfig,
           typename SolverStarter >
 class heatEquationSetter
 {
@@ -57,17 +57,17 @@ class heatEquationSetter
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef tnlStaticVector< MeshType::Dimensions, Real > Vertex;
+   typedef tnlStaticVector< MeshType::meshDimensions, Real > Vertex;
 
    static bool run( const tnlParameterContainer& parameters )
    {
-      enum { Dimensions = MeshType::Dimensions };
+      enum { Dimensions = MeshType::meshDimensions };
       typedef tnlLinearDiffusion< MeshType, Real, Index > ApproximateOperator;
       typedef tnlExactLinearDiffusion< Dimensions > ExactOperator;
-      typedef tnlTestFunction< MeshType::Dimensions, Real, Device > TestFunction;
+      typedef tnlTestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
       typedef tnlHeatEquationEocRhs< ExactOperator, TestFunction > RightHandSide;
-      typedef tnlStaticVector < MeshType::Dimensions, Real > Vertex;
-      typedef tnlAnalyticDirichletBoundaryConditions< MeshType, TestFunction, Real, Index > BoundaryConditions;
+      typedef tnlStaticVector < MeshType::meshDimensions, Real > Vertex;
+      typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Dimensions, Real, Index > BoundaryConditions;
       typedef tnlHeatEquationEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );

@@ -40,7 +40,7 @@ tnlCGSolver< Matrix, Preconditioner >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
+   //tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
 }
 
 template< typename Matrix,
@@ -142,7 +142,7 @@ solve( const Vector& b, Vector& x )
          this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    }
    this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
-   this -> refreshSolverMonitor();
+   this -> refreshSolverMonitor( true );
    return this->checkConvergence();
 };
 

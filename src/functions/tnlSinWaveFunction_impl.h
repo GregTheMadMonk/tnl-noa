@@ -20,8 +20,8 @@
 
 #include <functions/tnlSinWaveFunction.h>
 
-template< typename Real >
-tnlSinWaveFunctionBase< Real >::tnlSinWaveFunctionBase()
+template< int dimensions, typename Real >
+tnlSinWaveFunctionBase< dimensions, Real >::tnlSinWaveFunctionBase()
 : waveLength( 1.0 ),
   amplitude( 1.0 ),
   phase( 0 ),
@@ -29,8 +29,8 @@ tnlSinWaveFunctionBase< Real >::tnlSinWaveFunctionBase()
 {
 }
 
-template< typename Real >
-bool tnlSinWaveFunctionBase< Real >::setup( const tnlParameterContainer& parameters,
+template< int dimensions, typename Real >
+bool tnlSinWaveFunctionBase< dimensions, Real >::setup( const tnlParameterContainer& parameters,
                                            const tnlString& prefix )
 {
    this->waveLength = parameters.getParameter< double >( prefix + "wave-length" );
@@ -40,54 +40,53 @@ bool tnlSinWaveFunctionBase< Real >::setup( const tnlParameterContainer& paramet
    return true;
 }
 
-template< typename Real >
-void tnlSinWaveFunctionBase< Real >::setWaveLength( const Real& waveLength )
+template< int dimensions, typename Real >
+void tnlSinWaveFunctionBase< dimensions, Real >::setWaveLength( const Real& waveLength )
 {
    this->waveLength = waveLength;
 }
 
-template< typename Real >
-Real tnlSinWaveFunctionBase< Real >::getWaveLength() const
+template< int dimensions, typename Real >
+Real tnlSinWaveFunctionBase< dimensions, Real >::getWaveLength() const
 {
    return this->waveLength;
 }
 
-template< typename Real >
-void tnlSinWaveFunctionBase< Real >::setAmplitude( const Real& amplitude )
+template< int dimensions, typename Real >
+void tnlSinWaveFunctionBase< dimensions, Real >::setAmplitude( const Real& amplitude )
 {
    this->amplitude = amplitude;
 }
 
-template< typename Real >
-Real tnlSinWaveFunctionBase< Real >::getAmplitude() const
+template< int dimensions, typename Real >
+Real tnlSinWaveFunctionBase< dimensions, Real >::getAmplitude() const
 {
    return this->amplitude;
 }
 
-template< typename Real >
-void tnlSinWaveFunctionBase< Real >::setPhase( const Real& phase )
+template< int dimensions, typename Real >
+void tnlSinWaveFunctionBase< dimensions, Real >::setPhase( const Real& phase )
 {
    this->phase = phase;
 }
 
-template< typename Real >
-Real tnlSinWaveFunctionBase< Real >::getPhase() const
+template< int dimensions, typename Real >
+Real tnlSinWaveFunctionBase< dimensions, Real >::getPhase() const
 {
    return this->phase;
 }
 
+
+
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+             int ZDiffOrder >
+__cuda_callable__
 Real
 tnlSinWaveFunction< 1, Real >::
-getValue( const Vertex& v,
-          const Real& time ) const
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
@@ -110,19 +109,27 @@ getValue( const Vertex& v,
    return 0.0;
 }
 
+template< typename Real >
+__cuda_callable__
+Real
+tnlSinWaveFunction< 1, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
+
 
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+             int ZDiffOrder >
+__cuda_callable__
 Real
 tnlSinWaveFunction< 2, Real >::
-getValue( const Vertex& v,
-          const Real& time ) const
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -140,21 +147,32 @@ getValue( const Vertex& v,
       return 2.0 * M_PI * y / ( this->waveLength * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
    if( XDiffOrder == 0 && YDiffOrder == 2 )
       return 2.0 * M_PI * y * y / ( this->waveLength * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength ) - 4.0 * M_PI * M_PI * y * y / ( this->waveLength * this->waveLength * ( x * x + y * y ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
+   if( XDiffOrder == 1 && YDiffOrder == 1 )
+      return -4.0 * M_PI * M_PI * x * y / ( this->waveLength * this->waveLength * (x * x + y * y ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength ) 
+             - 2.0 * M_PI * this->amplitude * x * y * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y )  * (x * x + y * y ) * (x * x + y * y ) ) );
    return 0.0;
 }
 
 template< typename Real >
+__cuda_callable__
+Real
+tnlSinWaveFunction< 2, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
+
+template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
-#ifdef HAVE_CUDA
-      __device__ __host__
-#endif
+             int ZDiffOrder >
+__cuda_callable__
 Real
 tnlSinWaveFunction< 3, Real >::
-getValue( const Vertex& v,
-          const Real& time ) const
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
@@ -175,7 +193,27 @@ getValue( const Vertex& v,
       return 2.0 * M_PI * z / ( this->waveLength * sqrt( x * x + y * y + z * z ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 2 )
       return 2.0 * M_PI * ( x * x + y * y ) / ( this->waveLength * sqrt( x * x + y * y + z * z ) * sqrt( x * x + y * y + z * z ) * sqrt( x * x + y * y + z * z ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) - 4.0 * M_PI * M_PI * z * z / ( this->waveLength * this->waveLength * ( x * x + y * y + z * z ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ); 
+   if( XDiffOrder == 1 && YDiffOrder == 1 && ZDiffOrder == 0 )
+      return -4.0 * M_PI * M_PI * x * y / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) 
+             - 2.0 * M_PI * this->amplitude * x * y * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
+   if( XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 1 )
+      return -4.0 * M_PI * M_PI * x * z / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) 
+             - 2.0 * M_PI * this->amplitude * x * z * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
+   if( XDiffOrder == 0 && YDiffOrder == 1 && ZDiffOrder == 1 )
+      return -4.0 * M_PI * M_PI * z * y / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) 
+             - 2.0 * M_PI * this->amplitude * z * y * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
    return 0.0;
 }
+
+template< typename Real >
+__cuda_callable__
+Real
+tnlSinWaveFunction< 3, Real >::
+operator()( const VertexType& v,
+            const Real& time ) const
+{
+   return this->template getPartialDerivative< 0, 0, 0 >( v, time );
+}
+
 
 #endif /* TNLSINWAVEFUNCTION_IMPL_H_ */

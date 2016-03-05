@@ -36,7 +36,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename tnlMatrix< Real, Device, Index >::RowLengthsVector RowLengthsVector;
+   typedef typename tnlMatrix< Real, Device, Index >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef tnlDenseMatrix< Real, Device, Index > ThisType;
    typedef tnlDenseMatrix< Real, tnlHost, Index > HostType;
    typedef tnlDenseMatrix< Real, tnlCuda, Index > CudaType;
@@ -59,7 +59,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
    /****
     * This method is only for the compatibility with the sparse matrices.
     */
-   bool setRowLengths( const RowLengthsVector& rowLengths );
+   bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
 
    /****
     * Returns maximal number of the nonzero matrix elements that can be stored
@@ -77,9 +77,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
 
    void setValue( const RealType& v );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value );
@@ -88,9 +86,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
                     const IndexType column,
                     const RealType& value );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value,
@@ -101,9 +97,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
                     const RealType& value,
                     const RealType& thisElementMultiplicator = 1.0 );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool setRowFast( const IndexType row,
                     const IndexType* columns,
                     const RealType* values,
@@ -114,9 +108,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
                 const RealType* values,
                 const IndexType elements );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    bool addRowFast( const IndexType row,
                     const IndexType* columns,
                     const RealType* values,
@@ -129,18 +121,14 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
                 const IndexType elements,
                 const RealType& thisRowMultiplicator = 1.0 );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    Real getElementFast( const IndexType row,
                         const IndexType column ) const;
 
    Real getElement( const IndexType row,
                     const IndexType column ) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    void getRowFast( const IndexType row,
                     IndexType* columns,
                     RealType* values ) const;
@@ -149,20 +137,14 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
                 IndexType* columns,
                 RealType* values ) const;*/
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    MatrixRow getRow( const IndexType rowIndex );
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    const MatrixRow getRow( const IndexType rowIndex ) const;
 
    template< typename Vector >
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    typename Vector::RealType rowVectorProduct( const IndexType row,
                                                const Vector& vector ) const;
 
@@ -217,9 +199,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
 
    protected:
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+   __cuda_callable__
    IndexType getElementIndex( const IndexType row,
                               const IndexType column ) const;
 
