@@ -32,7 +32,17 @@ tnlString tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index
 }
 
 
-
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: tnlFastSweeping()
+:Entity(Mesh),
+ dofVector(Mesh),
+ dofVector2(Mesh)
+{
+}
 
 template< typename MeshReal,
           typename Device,
@@ -56,9 +66,10 @@ bool tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > ::
 		   cerr << "I am not able to load the initial condition from the file " << meshFile << "." << endl;
 		   return false;
 	}
-	dofVector2.setLike(dofVector);
+	dofVector2.load(initialCondition);
 
-	h = Mesh.getHx();
+	h = Mesh.template getSpaceStepsProducts< 1, 0, 0 >();
+	Entity.refresh();
 
 	const tnlString& exact_input = parameters.getParameter< tnlString >( "exact-input" );
 
@@ -224,38 +235,40 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: updateValue( Index i, Index j, Index k)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j,k));
-	Real value = dofVector2[index];
+	this->Entity.setCoordinates(CoordinatesType(i,j,k));
+	this->Entity.refresh();
+	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities(Entity);
+	Real value = dofVector2[Entity.getIndex()];
 	Real a,b,c, tmp;
 
 	if( i == 0 )
-		a = dofVector2[Mesh.template getCellNextToCell<1,0,0>(index)];
+		a = dofVector2[neighbourEntities.template getEntityIndex< 1,  0,  0>()];
 	else if( i == Mesh.getDimensions().x() - 1 )
-		a = dofVector2[Mesh.template getCellNextToCell<-1,0,0>(index)];
+		a = dofVector2[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
 	else
 	{
-		a = fabsMin( dofVector2[Mesh.template getCellNextToCell<-1,0,0>(index)],
-				 dofVector2[Mesh.template getCellNextToCell<1,0,0>(index)] );
+		a = fabsMin( dofVector2[neighbourEntities.template getEntityIndex< -1,  0,  0>()],
+				 dofVector2[neighbourEntities.template getEntityIndex< 1,  0,  0>()] );
 	}
 
 	if( j == 0 )
-		b = dofVector2[Mesh.template getCellNextToCell<0,1,0>(index)];
+		b = dofVector2[neighbourEntities.template getEntityIndex< 0,  1,  0>()];
 	else if( j == Mesh.getDimensions().y() - 1 )
-		b = dofVector2[Mesh.template getCellNextToCell<0,-1,0>(index)];
+		b = dofVector2[neighbourEntities.template getEntityIndex< 0,  -1,  0>()];
 	else
 	{
-		b = fabsMin( dofVector2[Mesh.template getCellNextToCell<0,-1,0>(index)],
-				 dofVector2[Mesh.template getCellNextToCell<0,1,0>(index)] );
+		b = fabsMin( dofVector2[neighbourEntities.template getEntityIndex< 0,  -1,  0>()],
+				 dofVector2[neighbourEntities.template getEntityIndex< 0,  1,  0>()] );
 	}
 
 	if( k == 0 )
-		c = dofVector2[Mesh.template getCellNextToCell<0,0,1>(index)];
+		c = dofVector2[neighbourEntities.template getEntityIndex< 0,  0,  1>()];
 	else if( k == Mesh.getDimensions().z() - 1 )
-		c = dofVector2[Mesh.template getCellNextToCell<0,0,-1>(index)];
+		c = dofVector2[neighbourEntities.template getEntityIndex< 0,  0,  -1>()];
 	else
 	{
-		c = fabsMin( dofVector2[Mesh.template getCellNextToCell<0,0,-1>(index)],
-				 dofVector2[Mesh.template getCellNextToCell<0,0,1>(index)] );
+		c = fabsMin( dofVector2[neighbourEntities.template getEntityIndex< 0,  0,  -1>()],
+				 dofVector2[neighbourEntities.template getEntityIndex< 0,  0,  1>()] );
 	}
 
 	Real hD = 3.0*h*h - 2.0*(a*a+b*b+c*c-a*b-a*c-b*c);
@@ -266,7 +279,7 @@ void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > ::
 		tmp = (1.0/3.0) * ( a + b + c + Sign(value)*sqrt(hD) );
 
 
-	dofVector2[index]  = fabsMin(value, tmp);
+	dofVector2[Entity.getIndex()]  = fabsMin(value, tmp);
 }
 
 
@@ -288,441 +301,6 @@ Real tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > ::
 		return y;
 
 }
-
-
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1111( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	dofVector2[index]=fabsMin(INT_MAX,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(INT_MAX,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(INT_MAX,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(INT_MAX,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0000( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	dofVector2[index]=fabsMin(-INT_MAX,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-INT_MAX,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-INT_MAX,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-INT_MAX,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1110( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<1,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,1>(index)]));
-
-	be=abs(dofVector[Mesh.template getCellNextToCell<1,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,1>(index)]));
-
-	a = be/al;
-	b=1.0;
-	c=-be;
-	s= h/sqrt(a*a+b*b);
-
-
-	dofVector2[index]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1101( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,1>(index)]));
-
-	be=abs(dofVector[Mesh.template getCellNextToCell<0,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,1>(index)]));
-
-	a = be/al;
-	b=1.0;
-	c=-be;
-	s= h/sqrt(a*a+b*b);
-
-
-	dofVector2[index]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1011( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<1,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,0>(index)]));
-
-	be=abs(dofVector[Mesh.template getCellNextToCell<1,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,0>(index)]));
-
-	a = be/al;
-	b=1.0;
-	c=-be;
-	s= h/sqrt(a*a+b*b);
-
-
-	dofVector2[index]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0111( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
-
-	be=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
-
-	a = be/al;
-	b=1.0;
-	c=-be;
-	s= h/sqrt(a*a+b*b);
-
-
-	dofVector2[index]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0001( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<1,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,1>(index)]));
-
-	be=abs(dofVector[Mesh.template getCellNextToCell<1,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,1>(index)]));
-
-	a = be/al;
-	b=1.0;
-	c=-be;
-	s= h/sqrt(a*a+b*b);
-
-
-	dofVector2[index]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0010( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,1>(index)]));
-
-	be=abs(dofVector[Mesh.template getCellNextToCell<0,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,1>(index)]));
-
-	a = be/al;
-	b=1.0;
-	c=-be;
-	s= h/sqrt(a*a+b*b);
-
-
-	dofVector2[index]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0100( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<1,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,0>(index)]));
-
-	be=abs(dofVector[Mesh.template getCellNextToCell<1,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,0>(index)]));
-
-	a = be/al;
-	b=1.0;
-	c=-be;
-	s= h/sqrt(a*a+b*b);
-
-
-	dofVector2[index]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1000( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
-
-	be=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
-
-	a = be/al;
-	b=1.0;
-	c=-be;
-	s= h/sqrt(a*a+b*b);
-
-
-	dofVector2[index]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-
-
-
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1100( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
-
-	be=abs(dofVector[Mesh.template getCellNextToCell<1,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,0>(index)]));
-
-	a = al-be;
-	b=1.0;
-	c=-al;
-	s= h/sqrt(a*a+b*b);
-
-
-	dofVector2[index]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1010( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
-
-	be=abs(dofVector[Mesh.template getCellNextToCell<0,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,1>(index)]));
-
-	a = al-be;
-	b=1.0;
-	c=-be;
-	s= h/sqrt(a*a+b*b);
-
-
-	dofVector2[index]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1001( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	dofVector2[index]=fabsMin(dofVector[index],dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(dofVector[Mesh.template getCellNextToCell<0,1>(index)],dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(dofVector[Mesh.template getCellNextToCell<1,1>(index)],dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(dofVector[Mesh.template getCellNextToCell<1,0>(index)],dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-
-
-
-
-
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0011( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
-
-	be=abs(dofVector[Mesh.template getCellNextToCell<1,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,0>(index)]));
-
-	a = al-be;
-	b=1.0;
-	c=-al;
-	s= h/sqrt(a*a+b*b);
-
-
-	dofVector2[index]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0101( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
-
-	be=abs(dofVector[Mesh.template getCellNextToCell<0,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,1>(index)]));
-
-	a = al-be;
-	b=1.0;
-	c=-be;
-	s= h/sqrt(a*a+b*b);
-
-
-	dofVector2[index]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-void tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0110( Index i, Index j)
-{
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	dofVector2[index]=fabsMin(dofVector[index],dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(dofVector[Mesh.template getCellNextToCell<0,1>(index)],dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(dofVector[Mesh.template getCellNextToCell<1,1>(index)],dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(dofVector[Mesh.template getCellNextToCell<1,0>(index)],dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
-}
-
 
 
 

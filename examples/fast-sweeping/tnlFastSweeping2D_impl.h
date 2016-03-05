@@ -396,11 +396,7 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 {
 
 	this->Entity.setCoordinates(CoordinatesType(i,j));
-
-		//cout << Entity.getIndex()  << endl;
-
 	this->Entity.refresh();
-//	cout << "No. = " << dofVector2[i+j*Mesh.getDimensions().x()] << " i = " << i << ", " << Entity.getCoordinates().x() << " j = " << j << ", " << Entity.getCoordinates().y()<< " i+j*n = " <<i+j*Mesh.getDimensions().x()<< " index = "<<Entity.getIndex() << endl;
 	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
 
 	Real value = dofVector2[Entity.getIndex()];

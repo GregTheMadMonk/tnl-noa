@@ -138,7 +138,7 @@ public:
 	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
-
+	tnlFastSweeping();
 
 	static tnlString getType();
 	bool init( const tnlParameterContainer& parameters );
@@ -151,24 +151,6 @@ public:
 	//for parallel version use this one instead:
 //	void updateValue(const Index i, const Index j, DofVectorType* grid);
 
-
-	void setupSquare1000(Index i, Index j);
-	void setupSquare1100(Index i, Index j);
-	void setupSquare1010(Index i, Index j);
-	void setupSquare1001(Index i, Index j);
-	void setupSquare1110(Index i, Index j);
-	void setupSquare1101(Index i, Index j);
-	void setupSquare1011(Index i, Index j);
-	void setupSquare1111(Index i, Index j);
-	void setupSquare0000(Index i, Index j);
-	void setupSquare0100(Index i, Index j);
-	void setupSquare0010(Index i, Index j);
-	void setupSquare0001(Index i, Index j);
-	void setupSquare0110(Index i, Index j);
-	void setupSquare0101(Index i, Index j);
-	void setupSquare0011(Index i, Index j);
-	void setupSquare0111(Index i, Index j);
-
 	Real fabsMin(const Real x, const Real y);
 
 
@@ -178,9 +160,13 @@ protected:
 
 	bool exactInput;
 
-	DofVectorType dofVector, dofVector2;
+
+	tnlMeshFunction<MeshType> dofVector, dofVector2;
+	DofVectorType data;
 
 	RealType h;
+
+	tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage > Entity;
 
 #ifdef HAVE_OPENMP
 //	omp_lock_t* gridLock;
@@ -195,6 +181,6 @@ protected:
 	//for parallel version use this one instead:
 // #include "tnlFastSweeping2D_openMP_impl.h"
 
-//															#include "tnlFastSweeping3D_impl.h"
+#include "tnlFastSweeping3D_impl.h"
 
 #endif /* TNLFASTSWEEPING_H_ */
