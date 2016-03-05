@@ -43,16 +43,36 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return false;
 
-    tnlFastSweeping<tnlGrid<3,double,tnlHost, int>, double, int> solver;
-    if(!solver.init(parameters))
+   const tnlString& dim = parameters.getParameter< tnlString >( "dim" );
+
+   if(dim == "2")
    {
-    	cerr << "Solver failed to initialize." << endl;
-   		return EXIT_FAILURE;
+		tnlFastSweeping<tnlGrid<2,double,tnlHost, int>, double, int> solver;
+		if(!solver.init(parameters))
+	   {
+			cerr << "Solver failed to initialize." << endl;
+			return EXIT_FAILURE;
+	   }
+		checkCudaDevice;
+	   cout << "-------------------------------------------------------------" << endl;
+	   cout << "Starting solver..." << endl;
+	   solver.run();
    }
-    checkCudaDevice;
-   cout << "-------------------------------------------------------------" << endl;
-   cout << "Starting solver..." << endl;
-   solver.run();
+   else    if(dim == "3")
+   {
+		tnlFastSweeping<tnlGrid<3,double,tnlHost, int>, double, int> solver;
+		if(!solver.init(parameters))
+	   {
+			cerr << "Solver failed to initialize." << endl;
+			return EXIT_FAILURE;
+	   }
+		checkCudaDevice;
+	   cout << "-------------------------------------------------------------" << endl;
+	   cout << "Starting solver..." << endl;
+	   solver.run();
+   }
+   else
+	   cerr << "Unsopported no. of dimensions: " << dim << "!" << endl;
 
 
    time(&stop);
