@@ -19,8 +19,10 @@
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlStaticVector.h>
+#include <functions/tnlMeshFunction.h>
 #include <core/tnlHost.h>
 #include <mesh/tnlGrid.h>
+#include <mesh/grids/tnlGridEntity.h>
 #include <limits.h>
 #include <core/tnlDevice.h>
 #include <ctime>
@@ -57,6 +59,7 @@ public:
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
+	tnlFastSweeping();
 
 	static tnlString getType();
 	bool init( const tnlParameterContainer& parameters );
@@ -96,9 +99,13 @@ protected:
 
 	bool exactInput;
 
-	DofVectorType dofVector, dofVector2;
+	tnlMeshFunction<MeshType> dofVector, dofVector2;
+	DofVectorType data;
 
 	RealType h;
+
+	tnlGridEntity< MeshType, 0, tnlGridEntityNoStencilStorage > Entity;
+
 
 #ifdef HAVE_OPENMP
 //	omp_lock_t* gridLock;
@@ -188,6 +195,6 @@ protected:
 	//for parallel version use this one instead:
 // #include "tnlFastSweeping2D_openMP_impl.h"
 
-#include "tnlFastSweeping3D_impl.h"
+//															#include "tnlFastSweeping3D_impl.h"
 
 #endif /* TNLFASTSWEEPING_H_ */

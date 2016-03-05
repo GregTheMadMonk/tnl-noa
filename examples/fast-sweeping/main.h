@@ -17,11 +17,11 @@
 
 #include "MainBuildConfig.h"
 	//for HOST versions:
-//#include "tnlFastSweeping.h"
+#include "tnlFastSweeping.h"
 	//for DEVICE versions:
-#include "tnlFastSweeping_CUDA.h"
+//#include "tnlFastSweeping_CUDA.h"
 #include "fastSweepingConfig.h"
-#include <solvers/tnlConfigTags.h>
+#include <solvers/tnlBuildConfigTags.h>
 
 #include <mesh/tnlGrid.h>
 #include <core/tnlDevice.h>
@@ -43,7 +43,7 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return false;
 
-    tnlFastSweeping<tnlGrid<3,double,tnlHost, int>, double, int> solver;
+    tnlFastSweeping<tnlGrid<2,double,tnlHost, int>, double, int> solver;
     if(!solver.init(parameters))
    {
     	cerr << "Solver failed to initialize." << endl;

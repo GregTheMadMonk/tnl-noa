@@ -237,7 +237,6 @@ bool setElementType( const Mesh& mesh,
                      const tnlParameterContainer& parameters )
 {
    tnlString elementType;
-
    if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
       elementType = parsedObjectType[ 2 ];

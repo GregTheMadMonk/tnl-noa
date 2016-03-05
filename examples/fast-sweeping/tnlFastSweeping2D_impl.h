@@ -31,6 +31,18 @@ tnlString tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index
 	          ::getType< Index >() + " >";
 }
 
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: tnlFastSweeping()
+:Entity(Mesh),
+ dofVector(Mesh),
+ dofVector2(Mesh)
+{
+}
+
 
 
 
@@ -56,9 +68,10 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 		   cerr << "I am not able to load the initial condition from the file " << meshFile << "." << endl;
 		   return false;
 	}
-	dofVector2.setLike(dofVector);
+	dofVector2.load(initialCondition);
 
-	h = Mesh.getHx();
+	h = Mesh.template getSpaceStepsProducts< 1, 0 >();
+	Entity.refresh();
 
 	const tnlString& exact_input = parameters.getParameter< tnlString >( "exact-input" );
 
@@ -67,6 +80,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	else
 		exactInput=true;
 
+	cout << "a" << endl;
 	return initGrid();
 }
 
@@ -88,20 +102,24 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	{
 		for(int j = 0 ; j < Mesh.getDimensions().x()-1; j++)
 			{
-				if(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] > 0)
+			this->Entity.setCoordinates(CoordinatesType(i,j));
+			this->Entity.refresh();
+			auto neighbourEntities =  Entity.getNeighbourEntities();
+
+				if(dofVector[this->Entity.getIndex()] > 0)
 				{
-					if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))] > 0)
+					if(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
 					{
-						if(dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))] > 0)
+						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
 						{
-							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare1111(i,j);
 							else
 								setupSquare1110(i,j);
 						}
 						else
 						{
-							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare1101(i,j);
 							else
 								setupSquare1100(i,j);
@@ -109,16 +127,16 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 					}
 					else
 					{
-						if(dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))] > 0)
+						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
 						{
-							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare1011(i,j);
 							else
 								setupSquare1010(i,j);
 						}
 						else
 						{
-							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare1001(i,j);
 							else
 								setupSquare1000(i,j);
@@ -127,18 +145,18 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 				}
 				else
 				{
-					if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))] > 0)
+					if(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
 					{
-						if(dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))] > 0)
+						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
 						{
-							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare0111(i,j);
 							else
 								setupSquare0110(i,j);
 						}
 						else
 						{
-							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare0101(i,j);
 							else
 								setupSquare0100(i,j);
@@ -146,16 +164,16 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 					}
 					else
 					{
-						if(dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))] > 0)
+						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
 						{
-							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare0011(i,j);
 							else
 								setupSquare0010(i,j);
 						}
 						else
 						{
-							if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j+1))] > 0)
+							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
 								setupSquare0001(i,j);
 							else
 								setupSquare0000(i,j);
@@ -165,6 +183,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 
 			}
 	}
+	cout << "a" << endl;
 
 //	Real tmp = 0.0;
 //	Real ax=0.5/sqrt(2.0);
@@ -298,8 +317,11 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 //
 //		dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
 
-
-	dofVector2.save("u-00000.tnl");
+	data.setLike(dofVector2.getData());
+	data=dofVector2.getData();
+	cout << data.getType() << endl;
+	data.save("u-00000.tnl");
+	//dofVector2.getData().save("u-00000.tnl");
 
 	return true;
 }
@@ -354,7 +376,11 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 /*---------------------------------------------------------------------------------------------------------------------------*/
 
 
-	dofVector2.save("u-00001.tnl");
+	data.setLike(dofVector2.getData());
+	data = dofVector2.getData();
+	cout << data.getType() << endl;
+	data.save("u-00001.tnl");
+	//dofVector2.getData().save("u-00001.tnl");
 
 	return true;
 }
@@ -367,28 +393,32 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: updateValue( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	Real value = dofVector2[index];
+
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
+
+	Real value = dofVector2[Entity.getIndex()];
 	Real a,b, tmp;
 
 	if( i == 0 )
-		a = dofVector2[Mesh.template getCellNextToCell<1,0>(index)];
+		a = dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()];
 	else if( i == Mesh.getDimensions().x() - 1 )
-		a = dofVector2[Mesh.template getCellNextToCell<-1,0>(index)];
+		a = dofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
 	else
 	{
-		a = fabsMin( dofVector2[Mesh.template getCellNextToCell<-1,0>(index)],
-				 dofVector2[Mesh.template getCellNextToCell<1,0>(index)] );
+		a = fabsMin( dofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()],
+				 dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()] );
 	}
 
 	if( j == 0 )
-		b = dofVector2[Mesh.template getCellNextToCell<0,1>(index)];
+		b = dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()];
 	else if( j == Mesh.getDimensions().y() - 1 )
-		b = dofVector2[Mesh.template getCellNextToCell<0,-1>(index)];
+		b = dofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()];
 	else
 	{
-		b = fabsMin( dofVector2[Mesh.template getCellNextToCell<0,-1>(index)],
-				 dofVector2[Mesh.template getCellNextToCell<0,1>(index)] );
+		b = fabsMin( dofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()],
+				 dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()] );
 	}
 
 
@@ -398,7 +428,7 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 		tmp = 0.5 * (a + b + Sign(value)*sqrt(2.0 * h * h - (a - b) * (a - b) ) );
 
 
-	dofVector2[index]  = fabsMin(value, tmp);
+	dofVector2[Entity.getIndex()]  = fabsMin(value, tmp);
 }
 
 
@@ -430,11 +460,13 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1111( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	dofVector2[index]=fabsMin(INT_MAX,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(INT_MAX,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(INT_MAX,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(INT_MAX,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
+	dofVector2[Entity.getIndex()]=fabsMin(INT_MAX,dofVector2[Entity.getIndex()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -446,11 +478,13 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0000( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	dofVector2[index]=fabsMin(-INT_MAX,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-INT_MAX,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-INT_MAX,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-INT_MAX,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
+	dofVector2[Entity.getIndex()]=fabsMin(-INT_MAX,dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-INT_MAX,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -462,15 +496,17 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1110( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<1,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,1>(index)]));
+	al=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]));
 
-	be=abs(dofVector[Mesh.template getCellNextToCell<1,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,1>(index)]));
+	be=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -478,10 +514,10 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	s= h/sqrt(a*a+b*b);
 
 
-	dofVector2[index]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	dofVector2[Entity.getIndex()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -492,15 +528,17 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1101( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,1>(index)]));
+	al=abs(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
 
-	be=abs(dofVector[Mesh.template getCellNextToCell<0,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,1>(index)]));
+	be=abs(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
+			(dofVector[Entity.getIndex()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -508,10 +546,10 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	s= h/sqrt(a*a+b*b);
 
 
-	dofVector2[index]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	dofVector2[Entity.getIndex()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -522,15 +560,17 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1011( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<1,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,0>(index)]));
+	al=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
+			(dofVector[Entity.getIndex()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
 
-	be=abs(dofVector[Mesh.template getCellNextToCell<1,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,0>(index)]));
+	be=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -538,10 +578,10 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	s= h/sqrt(a*a+b*b);
 
 
-	dofVector2[index]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	dofVector2[Entity.getIndex()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -552,15 +592,17 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0111( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+	al=abs(dofVector[Entity.getIndex()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
+			 dofVector[Entity.getIndex()]));
 
-	be=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+	be=abs(dofVector[Entity.getIndex()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
+			 dofVector[Entity.getIndex()]));
 
 	a = be/al;
 	b=1.0;
@@ -568,10 +610,10 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	s= h/sqrt(a*a+b*b);
 
 
-	dofVector2[index]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	dofVector2[Entity.getIndex()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -583,15 +625,17 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0001( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<1,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,1>(index)]));
+	al=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]));
 
-	be=abs(dofVector[Mesh.template getCellNextToCell<1,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,1>(index)]));
+	be=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -599,10 +643,10 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	s= h/sqrt(a*a+b*b);
 
 
-	dofVector2[index]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	dofVector2[Entity.getIndex()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -613,15 +657,17 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0010( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,1>(index)]));
+	al=abs(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
 
-	be=abs(dofVector[Mesh.template getCellNextToCell<0,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,1>(index)]));
+	be=abs(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
+			(dofVector[Entity.getIndex()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -629,10 +675,10 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	s= h/sqrt(a*a+b*b);
 
 
-	dofVector2[index]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	dofVector2[Entity.getIndex()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -643,15 +689,17 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0100( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<1,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,0>(index)]));
+	al=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
+			(dofVector[Entity.getIndex()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
 
-	be=abs(dofVector[Mesh.template getCellNextToCell<1,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,0>(index)]));
+	be=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
 
 	a = be/al;
 	b=1.0;
@@ -659,10 +707,10 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	s= h/sqrt(a*a+b*b);
 
 
-	dofVector2[index]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	dofVector2[Entity.getIndex()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -673,15 +721,17 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1000( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+	al=abs(dofVector[Entity.getIndex()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
+			 dofVector[Entity.getIndex()]));
 
-	be=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+	be=abs(dofVector[Entity.getIndex()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
+			 dofVector[Entity.getIndex()]));
 
 	a = be/al;
 	b=1.0;
@@ -689,10 +739,10 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	s= h/sqrt(a*a+b*b);
 
 
-	dofVector2[index]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	dofVector2[Entity.getIndex()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -707,15 +757,17 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1100( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+	al=abs(dofVector[Entity.getIndex()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
+			 dofVector[Entity.getIndex()]));
 
-	be=abs(dofVector[Mesh.template getCellNextToCell<1,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,0>(index)]));
+	be=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
 
 	a = al-be;
 	b=1.0;
@@ -723,10 +775,10 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	s= h/sqrt(a*a+b*b);
 
 
-	dofVector2[index]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	dofVector2[Entity.getIndex()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -737,15 +789,17 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1010( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+	al=abs(dofVector[Entity.getIndex()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
+			 dofVector[Entity.getIndex()]));
 
-	be=abs(dofVector[Mesh.template getCellNextToCell<0,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,1>(index)]));
+	be=abs(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
 
 	a = al-be;
 	b=1.0;
@@ -753,10 +807,10 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	s= h/sqrt(a*a+b*b);
 
 
-	dofVector2[index]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	dofVector2[Entity.getIndex()]=fabsMin(abs(a*0+b*0+c)*s,dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(-abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -767,11 +821,13 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare1001( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	dofVector2[index]=fabsMin(dofVector[index],dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(dofVector[Mesh.template getCellNextToCell<0,1>(index)],dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(dofVector[Mesh.template getCellNextToCell<1,1>(index)],dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(dofVector[Mesh.template getCellNextToCell<1,0>(index)],dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
+	dofVector2[Entity.getIndex()]=fabsMin(dofVector[Entity.getIndex()],dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()],dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()],dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()],dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -788,15 +844,17 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0011( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<0,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+	al=abs(dofVector[Entity.getIndex()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]-
+			 dofVector[Entity.getIndex()]));
 
-	be=abs(dofVector[Mesh.template getCellNextToCell<1,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<1,0>(index)]));
+	be=abs(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]));
 
 	a = al-be;
 	b=1.0;
@@ -804,10 +862,10 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	s= h/sqrt(a*a+b*b);
 
 
-	dofVector2[index]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	dofVector2[Entity.getIndex()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -818,15 +876,17 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0101( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
 	Real al,be, a,b,c,s;
-	al=abs(dofVector[Mesh.template getCellNextToCell<0,0>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,0>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,0>(index)]));
+	al=abs(dofVector[Entity.getIndex()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()]-
+			 dofVector[Entity.getIndex()]));
 
-	be=abs(dofVector[Mesh.template getCellNextToCell<0,1>(index)]/
-			(dofVector[Mesh.template getCellNextToCell<1,1>(index)]-
-			 dofVector[Mesh.template getCellNextToCell<0,1>(index)]));
+	be=abs(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]/
+			(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()]-
+			 dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()]));
 
 	a = al-be;
 	b=1.0;
@@ -834,10 +894,10 @@ void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	s= h/sqrt(a*a+b*b);
 
 
-	dofVector2[index]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	dofVector2[Entity.getIndex()]=fabsMin(-abs(a*0+b*0+c)*s,dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(-abs(a*1+b*0+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(abs(a*1+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(abs(a*0+b*1+c)*s,dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 
 }
 
@@ -848,11 +908,13 @@ template< typename MeshReal,
           typename Index >
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: setupSquare0110( Index i, Index j)
 {
-	Index index = Mesh.getCellIndex(CoordinatesType(i,j));
-	dofVector2[index]=fabsMin(dofVector[index],dofVector2[(index)]);
-	dofVector2[Mesh.template getCellNextToCell<0,1>(index)]=fabsMin(dofVector[Mesh.template getCellNextToCell<0,1>(index)],dofVector2[Mesh.template getCellNextToCell<0,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,1>(index)]=fabsMin(dofVector[Mesh.template getCellNextToCell<1,1>(index)],dofVector2[Mesh.template getCellNextToCell<1,1>(index)]);
-	dofVector2[Mesh.template getCellNextToCell<1,0>(index)]=fabsMin(dofVector[Mesh.template getCellNextToCell<1,0>(index)],dofVector2[Mesh.template getCellNextToCell<1,0>(index)]);
+	this->Entity.setCoordinates(CoordinatesType(i,j));
+	this->Entity.refresh();
+	auto neighbourEntities =  Entity.getNeighbourEntities();
+	dofVector2[Entity.getIndex()]=fabsMin(dofVector[Entity.getIndex()],dofVector2[(Entity.getIndex())]);
+	dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]=fabsMin(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()],dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]=fabsMin(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()],dofVector2[neighbourEntities.template getEntityIndex< 1,  1 >()]);
+	dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]=fabsMin(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()],dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()]);
 }
 
 

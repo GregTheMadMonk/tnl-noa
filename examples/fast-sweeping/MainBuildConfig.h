@@ -18,7 +18,7 @@
 #ifndef MAINBUILDCONFIG_H_
 #define MAINBUILDCONFIG_H_
 
-#include <solvers/tnlConfigTags.h>
+#include <solvers/tnlBuildConfigTags.h>
 
 class MainBuildConfig
 {

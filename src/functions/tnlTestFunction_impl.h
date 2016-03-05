@@ -72,6 +72,12 @@ configSetup( tnlConfigDescription& config,
       config.addEntryEnum( "twins" );
       config.addEntryEnum( "pseudoSquare" );
       config.addEntryEnum( "blob" );
+      config.addEntryEnum( "sdf-sin-wave" );
+      config.addEntryEnum( "sdf-sin-bumps" );
+      config.addEntryEnum( "sdf-sin-wave-sdf" );
+      config.addEntryEnum( "sdf-sin-bumps-sdf" );
+      config.addEntryEnum( "sdf-paraboloid" );
+      config.addEntryEnum( "sdf-paraboloid-sdf" );
    config.addEntry     < double >( prefix + "constant", "Value of the constant function.", 0.0 );
    config.addEntry     < double >( prefix + "wave-length", "Wave length of the sine based test functions.", 1.0 );
    config.addEntry     < double >( prefix + "wave-length-x", "Wave length of the sine based test functions.", 1.0 );
