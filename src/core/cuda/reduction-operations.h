@@ -545,7 +545,7 @@ class tnlParallelReductionLpNorm : public tnlParallelReductionSum< Real, Index >
 
    void setPower( const RealType& p )
    {
-      this -> p = p;
+      this->p = p;
    };
 
    ResultType reduceOnHost( const IndexType& idx,
@@ -879,7 +879,7 @@ class tnlParallelReductionDiffLpNorm : public tnlParallelReductionSum< Real, Ind
 
    void setPower( const RealType& p )
    {
-      this -> p = p;
+      this->p = p;
    };
 
    ResultType reduceOnHost( const IndexType& idx,

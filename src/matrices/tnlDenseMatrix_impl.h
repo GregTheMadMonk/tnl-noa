@@ -48,7 +48,7 @@ template< typename Real,
           typename Index >
 tnlString tnlDenseMatrix< Real, Device, Index >::getTypeVirtual() const
 {
-   return this -> getType();
+   return this->getType();
 }
 
 template< typename Real,
@@ -932,7 +932,7 @@ class tnlDenseMatrixDeviceDependentCode< tnlHost >
                                  OutVector& outVector )
       {
 #ifdef HAVE_OPENMP
-#pragma omp parallel for
+#pragma omp parallel for if( tnlOmp::isEnabled() )
 #endif           
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );

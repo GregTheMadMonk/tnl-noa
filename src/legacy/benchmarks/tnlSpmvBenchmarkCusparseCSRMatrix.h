@@ -48,9 +48,9 @@ class tnlSpmvBenchmarkCusparseCSRMatrix : public tnlSpmvBenchmark< Real, tnlCuda
 template< typename Real, typename Index>
 bool tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
 {
-   if( ! this -> matrix. copyFrom( matrix ) )
+   if( ! this->matrix. copyFrom( matrix ) )
       return false;
-   this -> setupOk = true;
+   this->setupOk = true;
    return true;
 }
 
@@ -58,7 +58,7 @@ template< typename Real,
           typename Index>
 void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: tearDown()
 {
-   this -> matrix. reset();
+   this->matrix. reset();
 }
 
 template< typename Real,
@@ -72,15 +72,15 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: writeProgress() const
 {
-   cout << left << setw( this -> formatColumnWidth ) << "Cusparse";
+   cout << left << setw( this->formatColumnWidth ) << "Cusparse";
    //   cout << left << setw( 25 ) << matrixFormat << setw( 5 ) << cudaBlockSize;
-   cout << right << setw( this -> timeColumnWidth ) << setprecision( 2 ) << this -> getTime()
-        << right << setw( this -> iterationsColumnWidth ) << this -> getIterations()
-        << right << setw( this -> gflopsColumnWidth ) << setprecision( 2 ) << this -> getGflops();
-   if( this -> getBenchmarkWasSuccesful() )
-        cout << right << setw( this -> benchmarkStatusColumnWidth ) << "OK ";
+   cout << right << setw( this->timeColumnWidth ) << setprecision( 2 ) << this->getTime()
+        << right << setw( this->iterationsColumnWidth ) << this->getIterations()
+        << right << setw( this->gflopsColumnWidth ) << setprecision( 2 ) << this->getGflops();
+   if( this->getBenchmarkWasSuccesful() )
+        cout << right << setw( this->benchmarkStatusColumnWidth ) << "OK ";
    else
-        cout << right << setw( this -> benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this -> maxError << ". ";
+        cout << right << setw( this->benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this->maxError << ". ";
 #ifndef HAVE_CUSP
    cout << "CUSPARSE library is missing.";
 #endif
@@ -102,12 +102,12 @@ void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: writeToLogTable( ostrea
                                                                        const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                                                                        bool writeMatrixInfo  ) const
 {
-   if( this -> getBenchmarkWasSuccesful() )
+   if( this->getBenchmarkWasSuccesful() )
    {
-      double speedUp = this -> getGflops() / csrGflops;
-      tnlString bgColor = this -> getBgColorBySpeedUp( speedUp );
-      logFile << "             <td bgcolor=" << bgColor << ">" << this -> getTime() << "</td>" << endl;
-      logFile << "             <td bgcolor=" << bgColor << ">" << this -> getGflops() << "</td>" << endl;
+      double speedUp = this->getGflops() / csrGflops;
+      tnlString bgColor = this->getBgColorBySpeedUp( speedUp );
+      logFile << "             <td bgcolor=" << bgColor << ">" << this->getTime() << "</td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << ">" << this->getGflops() << "</td>" << endl;
 
       logFile << "             <td bgcolor=" << bgColor << "> " << speedUp << "</td>" << endl;
    }

@@ -85,7 +85,7 @@ class tnlExplicitTimeStepper
 
    MeshDependentDataType* meshDependentData;
    
-   tnlTimerRT explicitUpdaterTimer;
+   tnlTimerRT explicitUpdaterTimer, mainTimer;
 };
 
 #include <solvers/pde/tnlExplicitTimeStepper_impl.h>

@@ -85,7 +85,7 @@ bool tnlObject :: save( const tnlString& fileName ) const
       cerr << "I am not bale to open the file " << fileName << " for writing." << endl;
       return false;
    }
-   if( ! this -> save( file ) )
+   if( ! this->save( file ) )
       return false;
    if( ! file. close() )
    {
@@ -103,7 +103,7 @@ bool tnlObject :: load( const tnlString& fileName )
       cerr << "I am not bale to open the file " << fileName << " for reading." << endl;
       return false;
    }
-   if( ! this -> load( file ) )
+   if( ! this->load( file ) )
       return false;
    if( ! file. close() )
    {

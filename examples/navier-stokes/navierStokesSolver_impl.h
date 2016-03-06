@@ -147,8 +147,8 @@ bool navierStokesSolver< Mesh, EulerScheme >::setup( const tnlParameterContainer
       cerr << "Error: height must be positive real number! It is " << proportions. y() << " now." << endl;
       return false;
    }
-   this -> mesh. setOrigin( tnlStaticVector< 2, RealType >( 0, 0 ) );
-   this -> mesh. setProportions( proportions );
+   this->mesh. setOrigin( tnlStaticVector< 2, RealType >( 0, 0 ) );
+   this->mesh. setProportions( proportions );
 
    if( ! this->initMesh( this->mesh, parameters ) )
       return false;
@@ -187,15 +187,15 @@ bool navierStokesSolver< Mesh, EulerScheme >::setup( const tnlParameterContainer
     */
 
    pressureGradient.setFunction( nsSolver.getPressure() );
-   pressureGradient.bindMesh( this -> mesh );
-   this->eulerScheme. bindMesh( this -> mesh );
-   this->eulerScheme. setPressureGradient( this -> pressureGradient );
-   this->u1Viscosity. bindMesh( this -> mesh );
-   this->u1Viscosity. setFunction( this -> nsSolver.getU1() );
-   this->u2Viscosity. bindMesh( this -> mesh );
-   this->u2Viscosity. setFunction( this -> nsSolver.getU2() );
-   this->eViscosity. bindMesh( this -> mesh );
-   this->eViscosity.setFunction( this -> nsSolver.getEnergy() );
+   pressureGradient.bindMesh( this->mesh );
+   this->eulerScheme. bindMesh( this->mesh );
+   this->eulerScheme. setPressureGradient( this->pressureGradient );
+   this->u1Viscosity. bindMesh( this->mesh );
+   this->u1Viscosity. setFunction( this->nsSolver.getU1() );
+   this->u2Viscosity. bindMesh( this->mesh );
+   this->u2Viscosity. setFunction( this->nsSolver.getU2() );
+   this->eViscosity. bindMesh( this->mesh );
+   this->eViscosity.setFunction( this->nsSolver.getEnergy() );
    nsSolver.setAdvectionScheme( this->eulerScheme );
    nsSolver.setDiffusionScheme( this->u1Viscosity,
                                 this->u2Viscosity,
@@ -244,7 +244,7 @@ bool navierStokesSolver< Mesh, EulerScheme > :: setInitialCondition( const tnlPa
 template< typename Mesh, typename EulerScheme >
 typename navierStokesSolver< Mesh, EulerScheme > :: DofVectorType& navierStokesSolver< Mesh, EulerScheme > :: getDofVector()
 {
-   return this -> dofVector;
+   return this->dofVector;
 }
 
 template< typename Mesh, typename EulerScheme >

@@ -250,10 +250,10 @@ template< typename Real, typename Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setSize( Index newSize )
 {
    tnlAssert( newSize > 0, cerr << "newSize = " << newSize );
-   this -> size = newSize;
-   if( ! groupInfo. setSize( this -> getSize() ) ||
-       ! threads. setSize( this -> getSize() ) ||
-       ! rowToGroupMapping. setSize( this -> getSize() ) )
+   this->size = newSize;
+   if( ! groupInfo. setSize( this->getSize() ) ||
+       ! threads. setSize( this->getSize() ) ||
+       ! rowToGroupMapping. setSize( this->getSize() ) )
       return false;
    threads. setValue( 0 );
    rowToGroupMapping. setValue( 0 );
@@ -308,15 +308,15 @@ template< typename Real, typename Device, typename Index >
 void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tuneFormat( const Index desiredChunkSize,
                                                                   const Index cudaBlockSize )
 {
-   this -> desiredChunkSize = desiredChunkSize;
-   this -> cudaBlockSize = cudaBlockSize;
+   this->desiredChunkSize = desiredChunkSize;
+   this->cudaBlockSize = cudaBlockSize;
 }
 
 template< typename Real, typename Device, typename Index >
 Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getFirstThreadInRow( const Index row, const Index groupId ) const
 {
    dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "getFirstThreadInRow" );
-   tnlAssert( row >= 0 && row < this -> getSize(), cerr << " row = " << row << " size = " << this -> getSize() );
+   tnlAssert( row >= 0 && row < this->getSize(), cerr << " row = " << row << " size = " << this->getSize() );
    //dbgExpr( row );
    //dbgExpr( groupInfo[ groupId ]. firstRow );
    if( row == groupInfo[ groupId ]. firstRow )
@@ -327,7 +327,7 @@ Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getFirstThreadInRow( cons
 template< typename Real, typename Device, typename Index >
 Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getLastThreadInRow( const Index row, const Index groupId ) const
 {
-   tnlAssert( row >= 0 && row < this -> getSize(), cerr << " row = " << row << " size = " << this -> getSize() );
+   tnlAssert( row >= 0 && row < this->getSize(), cerr << " row = " << row << " size = " << this->getSize() );
    return threads. getElement( row );
 }
 
@@ -335,7 +335,7 @@ template< typename Real, typename Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix )
 {
   dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "copyFrom" );
-  if( ! this -> setSize( csrMatrix. getSize() ) )
+  if( ! this->setSize( csrMatrix. getSize() ) )
           return false;
   
   if( Device :: getDevice() == tnlHostDevice )
@@ -360,14 +360,14 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
           * First compute the group size such that the number of the non-zero elements in each group is
           * approximately the same.
           */
-         groupEnd += this -> groupSizeStep;
-         groupEnd = Min( groupEnd, this -> getSize() );
+         groupEnd += this->groupSizeStep;
+         groupEnd = Min( groupEnd, this->getSize() );
 
          nonzerosInGroup = csrMatrix. row_offsets[ groupEnd ] - csrMatrix. row_offsets[ groupBegin ];
          rowsInGroup = groupEnd - groupBegin;
 
          if( nonzerosInGroup < cudaBlockSize * desiredChunkSize &&
-             groupEnd < this -> getSize() &&
+             groupEnd < this->getSize() &&
              rowsInGroup < cudaBlockSize )
             continue;
 
@@ -466,7 +466,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
          numberOfStoredValues += cudaBlockSize * maxChunkSize;
          groupBegin = groupEnd;
 
-         if( groupBegin == this -> getSize() )
+         if( groupBegin == this->getSize() )
          {
             numberOfGroups = groupId;
             break;
@@ -505,13 +505,13 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
             const Index matrixRow = groupRow + baseRow;
             dbgCout( "Row = " << matrixRow <<
                      " group row = " << groupRow <<
-                     " firstThreadInRow = " << this -> getFirstThreadInRow( matrixRow, groupId ) <<
-                     " lastThreadInRow = " << this -> getLastThreadInRow( matrixRow, groupId ) <<
+                     " firstThreadInRow = " << this->getFirstThreadInRow( matrixRow, groupId ) <<
+                     " lastThreadInRow = " << this->getLastThreadInRow( matrixRow, groupId ) <<
                      " inserting offset = " << index );
             Index pos = csrMatrix. row_offsets[ matrixRow ];
             Index rowCounter( 0 );
-            for( Index thread = this -> getFirstThreadInRow( matrixRow, groupId );
-                 thread < this -> getLastThreadInRow( matrixRow, groupId );
+            for( Index thread = this->getFirstThreadInRow( matrixRow, groupId );
+                 thread < this->getLastThreadInRow( matrixRow, groupId );
                  thread ++ )
             {
                Index insertPosition = groupInfo[ groupId ]. offset + thread;
@@ -546,11 +546,11 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
             {
                const Index matrixRow = groupRow + baseRow;
                dbgCout( "group row = " << row <<
-                        " firstThreadInRow = " << this -> getFirstThreadInRow( matrixRow, groupId ) <<
-                        " lastThreadInRow = " << this -> getLastThreadInRow( matrixRow, groupId ) <<
+                        " firstThreadInRow = " << this->getFirstThreadInRow( matrixRow, groupId ) <<
+                        " lastThreadInRow = " << this->getLastThreadInRow( matrixRow, groupId ) <<
                         " inserting offset = " << index );
-               for( Index thread = this -> getFirstThreadInRow( matrixRow, groupId );
-                    thread < this -> getLastThreadInRow( matrixRow, groupId );
+               for( Index thread = this->getFirstThreadInRow( matrixRow, groupId );
+                    thread < this->getLastThreadInRow( matrixRow, groupId );
                     thread ++ )
                {
                   tnlAssert( index < numberOfStoredValues, cerr << "Index = " << index << " numberOfStoredValues = " << numberOfStoredValues );
@@ -597,7 +597,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlAdaptiv
    numberOfGroups = adaptiveRgCSRMatrix. numberOfGroups;
   
 
-   if( ! this -> setSize( adaptiveRgCSRMatrix. getSize() ) )
+   if( ! this->setSize( adaptiveRgCSRMatrix. getSize() ) )
       return false;   
 
    /****
@@ -624,7 +624,7 @@ Real tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getElement( Index row,
                                                                   Index column ) const
 {
    dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "getElement" );
-   tnlAssert( 0 <= row && row < this -> getSize(),
+   tnlAssert( 0 <= row && row < this->getSize(),
               cerr << "The row is outside the matrix." );
    if( Device :: getDevice() == tnlHostDevice )
    {
@@ -637,10 +637,10 @@ Real tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getElement( Index row,
          for( Index currentRow = firstRow; currentRow < lastRow; currentRow ++ )
          {
             if( currentRow != row )
-               pointer += this -> getLastThreadInRow( currentRow, groupId ) - this -> getFirstThreadInRow( currentRow, groupId );
+               pointer += this->getLastThreadInRow( currentRow, groupId ) - this->getFirstThreadInRow( currentRow, groupId );
             else
-               for( Index i = this -> getFirstThreadInRow( currentRow, groupId );
-                    i < this -> getLastThreadInRow( currentRow, groupId );
+               for( Index i = this->getFirstThreadInRow( currentRow, groupId );
+                    i < this->getLastThreadInRow( currentRow, groupId );
                     i ++ )
                {
                   if( columns[ pointer ] == column )
@@ -665,20 +665,20 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVe
                                                                      tnlVector< Real, Device, Index >& result ) const
 {
    dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "vectorProduct" )
-   tnlAssert( vec. getSize() == this -> getSize(),
+   tnlAssert( vec. getSize() == this->getSize(),
               cerr << "The matrix and vector for a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << endl; );
-   tnlAssert( result. getSize() == this -> getSize(),
+   tnlAssert( result. getSize() == this->getSize(),
               cerr << "The matrix and result vector of a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << endl; );
 
    if( Device :: getDevice() == tnlHostDevice )
    {
 
       Real partialSums[ 256 ];
-      const Index blockDim = this -> getCUDABlockSize();
+      const Index blockDim = this->getCUDABlockSize();
       for( Index bId = 0; bId < numberOfGroups; bId ++ )
       //for( Index bId = 0; bId < 1; bId ++ )
       {
@@ -730,9 +730,9 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVe
                   continue;
                Index rowCounter( 0 ), chunkCounter( firstChunk );
                Real partialSum( 0.0 );
-               for( Index j = 0; j < this -> getSize(); j ++)
+               for( Index j = 0; j < this->getSize(); j ++)
                {
-                  const Real val = this -> getElement( row, j );
+                  const Real val = this->getElement( row, j );
                   if( val != 0 )
                   {
                      if( row == 2265 )
@@ -784,8 +784,8 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVe
                 * Check the result with the method getElement
                 */
                Real checkSum( 0.0 );
-               for( Index i = 0; i < this -> getSize(); i ++ )
-                  checkSum += this -> getElement( row, i );// * vec[ i ];
+               for( Index i = 0; i < this->getSize(); i ++ )
+                  checkSum += this->getElement( row, i );// * vec[ i ];
 
                if( checkSum != sum )
                {
@@ -808,8 +808,8 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVe
       /****
        * Go over all groups ...
        */
-      dbgExpr( this -> numberOfGroups );
-      for( Index groupId = 0; groupId < this -> numberOfGroups; groupId ++ )
+      dbgExpr( this->numberOfGroups );
+      for( Index groupId = 0; groupId < this->numberOfGroups; groupId ++ )
       {
          /****
           * In each group compute partial sums of each thread
@@ -817,14 +817,14 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVe
          dbgExpr( groupId );
          for( Index thread = 0; thread < cudaBlockSize; thread ++ )
          {
-            idx[ thread ] = this -> groupInfo[ groupId ]. offset + thread;
+            idx[ thread ] = this->groupInfo[ groupId ]. offset + thread;
             psum[ thread ] = 0;
             for( Index chunkOffset = 0;
-                 chunkOffset < this -> groupInfo[ groupId ]. chunkSize;
+                 chunkOffset < this->groupInfo[ groupId ]. chunkSize;
                  chunkOffset ++ )
             {
-               if( this -> columns[ idx[ thread ] ] != -1  )
-                  psum[ thread ] += this -> nonzeroElements[ idx[ thread ] ] * vec[ this -> columns[ idx[ thread ] ] ];
+               if( this->columns[ idx[ thread ] ] != -1  )
+                  psum[ thread ] += this->nonzeroElements[ idx[ thread ] ] * vec[ this->columns[ idx[ thread ] ] ];
                idx[ thread ] += cudaBlockSize;
             }
             dbgExpr( psum[ thread ] );
@@ -837,10 +837,10 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVe
               row < groupInfo[ groupId ]. firstRow + groupInfo[ groupId ]. size;
               row ++ )
          {
-            dbgCout( "Row: " << row << " firstThreadInRow: " << this -> getFirstThreadInRow( row, groupId ) << " lastThreadInRow: " << this -> getLastThreadInRow( row, groupId ) );
+            dbgCout( "Row: " << row << " firstThreadInRow: " << this->getFirstThreadInRow( row, groupId ) << " lastThreadInRow: " << this->getLastThreadInRow( row, groupId ) );
             result[ row ] = 0.0;
-            for( Index thread = this -> getFirstThreadInRow( row, groupId );
-                 thread < this -> getLastThreadInRow( row, groupId );
+            for( Index thread = this->getFirstThreadInRow( row, groupId );
+                 thread < this->getLastThreadInRow( row, groupId );
                  thread ++ )
             {
                result[ row ] += psum[ thread ];
@@ -853,11 +853,11 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVe
    if( Device :: getDevice() == tnlCudaDevice )
    {
 #ifdef HAVE_CUDA
-   Index blockSize = this -> getCUDABlockSize();
-   const Index size = this -> getSize();
+   Index blockSize = this->getCUDABlockSize();
+   const Index size = this->getSize();
 
    Index desGridSize;
-	desGridSize = this -> numberOfGroups;
+	desGridSize = this->numberOfGroups;
 	//desGridSize = (desGridSize < 4096) ? desGridSize : 4096;
 
    cudaThreadSynchronize();
@@ -907,16 +907,16 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOutGroup( ostream& st
    Index groupBaseRow = groupInfo[ groupId ]. firstRow;
    for( Index row = firstRow; row < lastRow; row ++ )
    {
-      Index firstThread = this -> getFirstThreadInRow( row, groupId );
-      Index lastThread = this -> getLastThreadInRow( row, groupId );
+      Index firstThread = this->getFirstThreadInRow( row, groupId );
+      Index lastThread = this->getLastThreadInRow( row, groupId );
       str << " Row number: " << row << " Threads: " << firstThread << " -- " << lastThread << endl;
       for( Index thread = firstThread; thread < lastThread; thread ++ )
       {
-         Index threadOffset = this -> groupInfo[ groupId ]. offset + thread;
+         Index threadOffset = this->groupInfo[ groupId ]. offset + thread;
          str << "  Thread: " << thread << " Thread Offset: " << threadOffset << " Chunk: ";
          for( Index i = 0; i < groupInfo[ groupId ]. chunkSize; i ++ )
-            str << this -> nonzeroElements[ threadOffset + i * cudaBlockSize ] << "["
-                << this -> columns[ threadOffset + i * cudaBlockSize ] << "], ";
+            str << this->nonzeroElements[ threadOffset + i * cudaBlockSize ] << "["
+                << this->columns[ threadOffset + i * cudaBlockSize ] << "], ";
          str << endl;
       }
       str << endl;
@@ -934,13 +934,13 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
    {
       str << "Structure of tnlAdaptiveRgCSRMatrix" << endl;
       str << "Matrix name:" << name << endl;
-      str << "Matrix size:" << this -> getSize() << endl;
+      str << "Matrix size:" << this->getSize() << endl;
       str << "Allocated elements:" << nonzeroElements. getSize() << endl;
       str << "Number of groups: " << numberOfGroups << endl;
 
       Index print_lines = lines;
       if( ! print_lines )
-         print_lines = this -> getSize();
+         print_lines = this->getSize();
 
       for( Index groupId = 0; groupId < numberOfGroups; groupId ++ )
       {
@@ -956,26 +956,26 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
    {
       str << "<h1>Structure of tnlAdaptiveRgCSRMatrix</h1>" << endl;
       str << "<b>Matrix name:</b> " << name << "<p>" << endl;
-      str << "<b>Matrix size:</b> " << this -> getSize() << "<p>" << endl;
+      str << "<b>Matrix size:</b> " << this->getSize() << "<p>" << endl;
       str << "<b>Allocated elements:</b> " << nonzeroElements. getSize() << "<p>" << endl;
-      str << "<b>Number of groups:</b> " << this -> numberOfGroups << "<p>" << endl;
+      str << "<b>Number of groups:</b> " << this->numberOfGroups << "<p>" << endl;
       str << "<table border=1>" << endl;
       str << "<tr> <td> <b> GroupId </b> </td> <td> <b> Size </b> </td> <td> <b> Chunk size </b> </td> <td> <b> % of nonzeros </b> </td> </tr>" << endl;
       Index print_lines = lines;
       if( ! print_lines )
-         print_lines = this -> getSize();
+         print_lines = this->getSize();
 
-      Index minGroupSize( this -> getSize() );
+      Index minGroupSize( this->getSize() );
       Index maxGroupSize( 0 );
-      for( Index i = 0; i < this -> numberOfGroups; i ++ )
+      for( Index i = 0; i < this->numberOfGroups; i ++ )
       {
-         const Index groupSize = this -> groupInfo. getElement( i ). size;
+         const Index groupSize = this->groupInfo. getElement( i ). size;
          minGroupSize = Min( groupSize, minGroupSize );
          maxGroupSize = Max( groupSize, maxGroupSize );
-         const Index chunkSize = this -> groupInfo. getElement( i ). chunkSize;
-         const Index allElements = chunkSize * this -> cudaBlockSize;
+         const Index chunkSize = this->groupInfo. getElement( i ). chunkSize;
+         const Index allElements = chunkSize * this->cudaBlockSize;
          double filling = ( double ) ( allElements ) /
-                          ( double ) this -> nonzeroElements. getSize();
+                          ( double ) this->nonzeroElements. getSize();
          str << "<tr> <td> " << i
             << "</td> <td> " << groupSize
             << "</td> <td> " << chunkSize
@@ -1005,32 +1005,32 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: draw( ostream& str,
    if( format == "eps" )
    {
       const int elementSize = 10;
-      this -> writePostscriptHeader( str, elementSize );
+      this->writePostscriptHeader( str, elementSize );
 
       /****
        * Draw the groups
        */
       for( Index groupId = 0; groupId < numberOfGroups; groupId ++ )
       {
-         const Index groupSize = this -> groupInfo. getElement( groupId ). size;
+         const Index groupSize = this->groupInfo. getElement( groupId ). size;
          if( groupId % 2 == 0 )
             str << "0.9 0.9 0.9 setrgbcolor" << endl;
          else
             str << "0.8 0.8 0.8 setrgbcolor" << endl;
          str << "0 -" << groupSize * elementSize
-             << " translate newpath 0 0 " << this -> getSize() * elementSize
+             << " translate newpath 0 0 " << this->getSize() * elementSize
              << " " << groupSize * elementSize << " rectfill" << endl;
       }
       /****
        * Restore black color and the origin of the coordinates
        */
       str << "0 0 0 setrgbcolor" << endl;
-      str << "0 " << this -> getSize() * elementSize << " translate" << endl;
+      str << "0 " << this->getSize() * elementSize << " translate" << endl;
 
       if( csrMatrix )
          csrMatrix -> writePostscriptBody( str, elementSize, verbose );
       else
-         this -> writePostscriptBody( str, elementSize, verbose );
+         this->writePostscriptBody( str, elementSize, verbose );
 
 
       str << "showpage" << endl;

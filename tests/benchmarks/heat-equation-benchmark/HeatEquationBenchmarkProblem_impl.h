@@ -196,7 +196,7 @@ getExplicitRHS( const RealType& time,
                            ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
       }
 
-   
+      
    /*this->bindDofs( mesh, _u );
    tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    MeshFunctionType u( mesh, _u ); 

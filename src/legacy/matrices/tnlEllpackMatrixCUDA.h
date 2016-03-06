@@ -166,7 +166,7 @@ tnlString tnlEllpackMatrix< Real, tnlCuda, Index > :: getType() const
 template< typename Real, typename Index >
 bool tnlEllpackMatrix< Real, tnlCuda, Index > :: setSize( Index new_size )
 {
-   this -> size = new_size;
+   this->size = new_size;
    if( ! ellpack_nonzero_elements. setSize( new_size * row_length ) )
       return false;
    ellpack_nonzero_elements. setValue( 0.0 );
@@ -233,7 +233,7 @@ bool tnlEllpackMatrix< Real, tnlCuda, Index > :: copyFrom( const tnlEllpackMatri
    dbgFunctionName( "tnlEllpackMatrix< Real, tnlCuda >", "copyFrom" );
 
    row_length = ellpack_matrix. getRowLength();
-   if( ! this -> setSize( ellpack_matrix. getSize() ) )
+   if( ! this->setSize( ellpack_matrix. getSize() ) )
    		return false;
 
    if( ! setNonzeroCOOElements( ellpack_matrix. coo_nonzero_elements. getSize() ) )
@@ -258,16 +258,16 @@ template< typename Real, typename Index >
 void tnlEllpackMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlVector< Real, tnlCuda, Index >& x,
                                                                 tnlVector< Real, tnlCuda, Index >& b ) const
 {
-   tnlAssert( x. getSize() == this -> getSize(),
+   tnlAssert( x. getSize() == this->getSize(),
               cerr << "The matrix and vector for a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << x. getSize() << endl; );
-   tnlAssert( b. getSize() == this -> getSize(),
+   tnlAssert( b. getSize() == this->getSize(),
               cerr << "The matrix and result vector of a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << b. getSize() << endl; );
 #ifdef HAVE_CUDA
-	sparseEllpackMatrixVectorProductKernelCaller( this -> getSize(),
+	sparseEllpackMatrixVectorProductKernelCaller( this->getSize(),
 	                                       row_length,
 	                                       ellpack_nonzero_elements. getData(),
 	                                       ellpack_columns. getData(),
@@ -282,9 +282,9 @@ template< typename Real, typename Index >
 Real tnlEllpackMatrix< Real, tnlCuda, Index > :: rowProduct( Index row,
                                                              const tnlVector< Real, tnlCuda, Index >& vector ) const
 {
-   tnlAssert( vector. getSize() == this -> getSize(),
+   tnlAssert( vector. getSize() == this->getSize(),
               cerr << "The matrix and vector for a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vector. getSize() << endl; );
 
 	tnlAssert( false, );

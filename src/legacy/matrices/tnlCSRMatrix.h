@@ -269,8 +269,8 @@ tnlString tnlCSRMatrix< Real, Device, Index > :: getType() const
 template< typename Real, typename Device, typename Index >
 bool tnlCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
 {
-   this -> size = new_size;
-   if( ! row_offsets. setSize( this -> size + 1 ) )
+   this->size = new_size;
+   if( ! row_offsets. setSize( this->size + 1 ) )
       return false;
    row_offsets. setValue( 0 );
    last_nonzero_element = 0;
@@ -283,7 +283,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: setLike( const tnlCSRMatrix< Real, D
    dbgFunctionName( "tnlCSRMatrix< Real, Device, Index >", "setLike" );
    dbgCout( "Setting size to " << matrix. getSize() << "." );
 
-   this -> size = matrix. getSize();
+   this->size = matrix. getSize();
    if( ! nonzero_elements. setLike( matrix. nonzero_elements ) ||
        ! columns. setLike( matrix. columns ) ||
        ! row_offsets. setLike( matrix. row_offsets ) )
@@ -323,8 +323,8 @@ Index tnlCSRMatrix< Real, Device, Index > :: getNonzeroElements() const
 template< typename Real, typename Device, typename Index >
 Index tnlCSRMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& row ) const
 {
-   tnlAssert( row >= 0 && row < this -> getSize(),
-              cerr << "row = " << row << " this -> getSize() = " << this -> getSize() );
+   tnlAssert( row >= 0 && row < this->getSize(),
+              cerr << "row = " << row << " this->getSize() = " << this->getSize() );
    return row_offsets[ row + 1 ] - row_offsets[ row ];
 }
 
@@ -340,7 +340,7 @@ Index tnlCSRMatrix< Real, Device, Index > :: checkNonzeroElements() const
 template< typename Real, typename Device, typename Index >
 Index tnlCSRMatrix< Real, Device, Index > :: getRowLength( const Index row ) const
 {
-	tnlAssert( row >= 0 && row < this -> getSize(), );
+	tnlAssert( row >= 0 && row < this->getSize(), );
 	return row_offsets[ row + 1 ] - row_offsets[ row ];
 }
 
@@ -390,7 +390,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: shiftElements( Index position,
       }
    }
    last_nonzero_element += shift;
-   for( Index i = row + 1; i <= this -> size; i ++ )
+   for( Index i = row + 1; i <= this->size; i ++ )
       if( row_offsets[ i ] >= position )
       {
          row_offsets[ i ] += shift;
@@ -412,13 +412,13 @@ bool tnlCSRMatrix< Real, Device, Index > :: insertRow( Index row,
                                                        Index* offsets )
 {
    dbgFunctionName( "tnlCSRMatrix< Real, Device, Index >", "insertRow" )
-   tnlAssert( row >=0 && row < this -> getSize(),
+   tnlAssert( row >=0 && row < this->getSize(),
               cerr << "The row " << row << " is out of the matrix." );
    tnlAssert( elements > 0,
               cerr << "The number of elements to insert is negative:" << elements << "." );
    tnlAssert( data != NULL,
               cerr << "Null pointer passed as data for the inserted row." );
-   tnlAssert( first_column >=0 &&  first_column < this -> getSize(),
+   tnlAssert( first_column >=0 &&  first_column < this->getSize(),
               cerr << "first_column is out of the matrix" );
    tnlAssert( offsets != NULL,
               cerr << "Null pointer passed as data for the column offsets." );
@@ -437,7 +437,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: insertRow( Index row,
    /*
     * And now those which have column larger then size - 1
     */
-   while( elements > 0 && first_column + offsets[ elements - 1 ] >= this -> size )
+   while( elements > 0 && first_column + offsets[ elements - 1 ] >= this->size )
    {
 	   elements --;
 	   dbgCout( "Decreasing elements to " << elements << "." );
@@ -474,9 +474,9 @@ template< typename Real, typename Device, typename Index >
 Index tnlCSRMatrix< Real, Device, Index > :: getElementPosition( Index row,
                                                                   Index column ) const
 {
-   tnlAssert( 0 <= row && row < this -> getSize(),
+   tnlAssert( 0 <= row && row < this->getSize(),
               cerr << "The row is outside the matrix." );
-   tnlAssert( 0 <= column && column < this -> getSize(),
+   tnlAssert( 0 <= column && column < this->getSize(),
               cerr << "The column is outside the matrix." );
    Index first_in_row = row_offsets[ row ];
    Index last_in_row = row_offsets[ row + 1 ];
@@ -554,11 +554,11 @@ template< typename Real, typename Device, typename Index >
 Real tnlCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
                                                          const tnlVector< Real, Device, Index >& vec ) const
 {
-   tnlAssert( 0 <= row && row < this -> getSize(),
+   tnlAssert( 0 <= row && row < this->getSize(),
               cerr << "The row is outside the matrix." );
-   tnlAssert( vec. getSize() == this -> getSize(),
+   tnlAssert( vec. getSize() == this->getSize(),
               cerr << "The matrix and vector for multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << endl; );
    Index i = row_offsets[ row ];
    Index last_in_row = row_offsets[ row + 1 ];
@@ -580,13 +580,13 @@ template< typename Real,
 void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const Vector1& vec,
                                                            Vector2& result ) const
 {
-   tnlAssert( vec. getSize() == this -> getSize(),
+   tnlAssert( vec. getSize() == this->getSize(),
               cerr << "The matrix and vector for a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << endl; );
-   tnlAssert( result. getSize() == this -> getSize(),
+   tnlAssert( result. getSize() == this->getSize(),
               cerr << "The matrix and result vector of a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << result. getSize() << endl; );
 
    const Index* cols = columns. getData();
@@ -598,7 +598,7 @@ void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const Vector1& vec,
 //#ifdef HAVE_OPENMP
 //#pragma omp parallel for
 //#endif
-      for( Index row = 0; row < this -> size; row ++ )
+      for( Index row = 0; row < this->size; row ++ )
       {
          Real product( 0.0 );
          Index i = rw_offsets[ row ];
@@ -616,7 +616,7 @@ void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const Vector1& vec,
 //#ifdef HAVE_OPENMP
 //#pragma omp parallel for
 //#endif
-      for( Index row = 0; row < this -> size; row ++ )
+      for( Index row = 0; row < this->size; row ++ )
       {
          Real product( 0.0 );
          Index i = rw_offsets[ row + 1 ] - 1;
@@ -638,26 +638,26 @@ bool tnlCSRMatrix< Real, Device, Index > :: performSORIteration( const Real& ome
                                                                  Index firstRow,
                                                                  Index lastRow ) const
 {
-   tnlAssert( firstRow >=0 && firstRow < this -> getSize(),
-              cerr << "Wrong parameter firstRow. Should be in 0..." << this -> getSize()
+   tnlAssert( firstRow >=0 && firstRow < this->getSize(),
+              cerr << "Wrong parameter firstRow. Should be in 0..." << this->getSize()
                    << " but it equals " << firstRow << endl; );
-   tnlAssert( lastRow >=0 && lastRow < this -> getSize(),
-              cerr << "Wrong parameter lastRow. Should be in 0..." << this -> getSize()
+   tnlAssert( lastRow >=0 && lastRow < this->getSize(),
+              cerr << "Wrong parameter lastRow. Should be in 0..." << this->getSize()
                    << " but it equals " << lastRow << endl; );
 
    if( lastRow == 0 )
-      lastRow = this -> getSize();
+      lastRow = this->getSize();
    for( Index i = firstRow; i < lastRow; i ++ )
    {
       Real diagonal( 0.0 );
       Real update = b[ i ];
-      for( Index j = this -> row_offsets[ i ]; j < this -> row_offsets[ i + 1 ]; j ++ )
+      for( Index j = this->row_offsets[ i ]; j < this->row_offsets[ i + 1 ]; j ++ )
       {
-         const Index column = this -> columns[ j ];
+         const Index column = this->columns[ j ];
          if( column == i )
-            diagonal = this -> nonzero_elements[ j ];
+            diagonal = this->nonzero_elements[ j ];
          else
-            update -= this -> nonzero_elements[ j ] * x[ column ];
+            update -= this->nonzero_elements[ j ] * x[ column ];
       }
       if( diagonal == ( Real ) 0.0 )
       {
@@ -673,13 +673,13 @@ bool tnlCSRMatrix< Real, Device, Index > :: performSORIteration( const Real& ome
 template< typename Real, typename Device, typename Index >
 void tnlCSRMatrix< Real, Device, Index > :: setBackwardSpMV( bool backwardSpMV )
 {
-   this -> backwardSpMV = backwardSpMV;
+   this->backwardSpMV = backwardSpMV;
 }
 
 template< typename Real, typename Device, typename Index >
 Real tnlCSRMatrix< Real, Device, Index > :: getRowL1Norm( Index row ) const
 {
-   tnlAssert( 0 <= row && row < this -> getSize(),
+   tnlAssert( 0 <= row && row < this->getSize(),
                  cerr << "The row is outside the matrix." );
    Index i = row_offsets[ row ];
    Index last_in_row = row_offsets[ row + 1 ];
@@ -693,7 +693,7 @@ Real tnlCSRMatrix< Real, Device, Index > :: getRowL1Norm( Index row ) const
 template< typename Real, typename Device, typename Index >
 void tnlCSRMatrix< Real, Device, Index > :: multiplyRow( Index row, const Real& value )
 {
-   tnlAssert( 0 <= row && row < this -> getSize(),
+   tnlAssert( 0 <= row && row < this->getSize(),
                  cerr << "The row is outside the matrix." );
    Index i = row_offsets[ row ];
    Index last_in_row = row_offsets[ row + 1 ];
@@ -708,12 +708,12 @@ bool tnlCSRMatrix< Real, Device, Index > :: reorderRows( const tnlVector< Index,
 {
    dbgFunctionName( "tnlCSRMatrix< Real, Device, Index >", "reorderRows" );
    last_nonzero_element = 0;
-   if( ! this -> setLike( inputCsrMatrix ) )
+   if( ! this->setLike( inputCsrMatrix ) )
    {
       cerr << "I am not able to allocate new memory for matrix reordering." << endl;
       return false;
    }
-   for( Index i = 0; i < this -> getSize(); i ++ )
+   for( Index i = 0; i < this->getSize(); i ++ )
    {
       tnlAssert( last_nonzero_element < nonzero_elements. getSize(), );
       tnlAssert( last_nonzero_element < columns. getSize(), );
@@ -728,9 +728,9 @@ bool tnlCSRMatrix< Real, Device, Index > :: reorderRows( const tnlVector< Index,
    }
    tnlAssert( last_nonzero_element <= nonzero_elements. getSize(), );
    tnlAssert( last_nonzero_element <= columns. getSize(), );
-   row_offsets[ this -> getSize() ] = last_nonzero_element;
-   dbgExpr( row_offsets[ this -> getSize() ] );
-   dbgExpr( this -> getSize() );
+   row_offsets[ this->getSize() ] = last_nonzero_element;
+   dbgExpr( row_offsets[ this->getSize() ] );
+   dbgExpr( this->getSize() );
    return true;
 }
 
@@ -804,12 +804,12 @@ void tnlCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
 {
    str << "Structure of tnlCSRMatrix" << endl;
    str << "Matrix name:" << name << endl;
-   str << "Matrix size:" << this -> getSize() << endl;
+   str << "Matrix size:" << this->getSize() << endl;
    str << "Allocated elements:" << nonzero_elements. getSize() << endl;
    str << "Matrix rows:" << endl;
    Index print_lines = lines;
    if( ! print_lines )
-	   print_lines = this -> getSize();
+	   print_lines = this->getSize();
    for( Index i = 0; i < print_lines; i ++ )
    {
       Index first = row_offsets[ i ];
@@ -834,17 +834,17 @@ void tnlCSRMatrix< Real, Device, Index > :: getRowStatistics( Index& min_row_len
                                                         Index& max_row_length,
                                                         Index& average_row_length ) const
 {
-   min_row_length = this -> getSize();
+   min_row_length = this->getSize();
    max_row_length = 0;
    average_row_length = 0;
-   for( Index i = 0; i < this -> getSize(); i ++ )
+   for( Index i = 0; i < this->getSize(); i ++ )
    {
       Index row_length = row_offsets[ i + 1 ] - row_offsets[ i ];
       min_row_length = Min( min_row_length, row_length );
       max_row_length = Max( max_row_length, row_length );
       average_row_length += row_length;
    }
-   average_row_length /= ( double ) this -> getSize();
+   average_row_length /= ( double ) this->getSize();
 };
 
 template< typename Real, typename Device, typename Index >
@@ -1023,8 +1023,8 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
    if( verbose )
       cout << "Non-zero elements parsed:   " << setw( 9 ) << right << parsed_elements << endl;
 
-   if( ! this -> setSize( size ) ||
-       ! this -> setNonzeroElements( parsed_elements ) )
+   if( ! this->setSize( size ) ||
+       ! this->setNonzeroElements( parsed_elements ) )
    {
       cerr << "Not enough memory to allocate the sparse or the full matrix for testing." << endl;
       return false;
@@ -1099,17 +1099,17 @@ void tnlCSRMatrix< Real, Device, Index > :: writePostscriptBody( ostream& str,
                                                                  const int elementSize,
                                                                  bool verbose ) const
 {
-   const double scale = elementSize * this -> getSize();
-   double hx = scale / ( double ) this -> getSize();
+   const double scale = elementSize * this->getSize();
+   double hx = scale / ( double ) this->getSize();
    Index lastRow( 0 ), lastColumn( 0 );
-   for( Index row = 0; row < this -> getSize(); row ++ )
+   for( Index row = 0; row < this->getSize(); row ++ )
    {
-      for( Index i = this -> row_offsets[ row ]; i < this -> row_offsets[ row + 1 ]; i ++ )
+      for( Index i = this->row_offsets[ row ]; i < this->row_offsets[ row + 1 ]; i ++ )
       {
-         Real elementValue = this -> nonzero_elements[ i ];
+         Real elementValue = this->nonzero_elements[ i ];
          if(  elementValue != ( Real ) 0.0 )
          {
-            Index column = this -> columns[ i ];
+            Index column = this->columns[ i ];
             str << ( column - lastColumn ) * elementSize
                 << " " << -( row - lastRow ) * elementSize
                 << " translate newpath 0 0 " << elementSize << " " << elementSize << " rectstroke" << endl;

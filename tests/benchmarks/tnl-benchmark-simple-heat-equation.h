@@ -484,13 +484,15 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
     */
    if( verbose )
       cout << "Starting the solver main loop..." << endl;
-   tnlTimerRT timer;
+   tnlTimerRT timer, computationTimer;
+   computationTimer.reset();
    timer.reset();
    timer.start();
    Real time( 0.0 );   
    Index iteration( 0 );
    while( time < finalTime )
    {
+      computationTimer.start();
       const Real timeLeft = finalTime - time;
       const Real currentTau = tau < timeLeft ? tau : timeLeft;
 
@@ -524,20 +526,21 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
          for( Index i = 1; i < gridXSize - 1; i++ )
          {
             const Index c = j * gridXSize + i;
-            aux[ c ] = currentTau * ( ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ] ) * hx_inv +
+            aux[ c ] =  ( ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ] ) * hx_inv +
                                      ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
          }
+      computationTimer.stop();
       
-      
-      Real absMax( 0.0 );
+      Real absMax( 0.0 ), residue( 0.0 );
       for( Index i = 0; i < dofsCount; i++ )
       {
-         const Real a = fabs( aux[ i ] );
-         absMax = a > absMax ? a : absMax;
+         const Real add = currentTau * aux[ i ];
+         u[ i ] += add;
+         residue += fabs( add );
+         /*const Real a = fabs( aux[ i ] );         
+         absMax = a > absMax ? a : absMax;*/
       }
-      
-      for( Index i = 0; i < dofsCount; i++ )
-         u[ i ] += aux[ i ];         
+
       
       time += currentTau;
       iteration++;
@@ -547,7 +550,8 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
    timer.stop();
    if( verbose )      
       cout << endl << "Finished..." << endl;
-   cout << "Computation time is " << timer.getTime() << " sec. i.e. " << timer.getTime() / ( double ) iteration << "sec. per iteration." << endl;
+   cout << "Explicit update computation time is " << computationTimer.getTime() << " sec. i.e. " << computationTimer.getTime() / ( double ) iteration << "sec. per iteration." << endl;
+   cout << "Explicit time stepper time is " << timer.getTime() << " sec. i.e. " << timer.getTime() / ( double ) iteration << "sec. per iteration." << endl;
    
    /***
     * Freeing allocated memory

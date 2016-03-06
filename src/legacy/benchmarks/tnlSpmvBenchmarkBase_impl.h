@@ -41,44 +41,44 @@ tnlSpmvBenchmarkBase< Matrix >::tnlSpmvBenchmarkBase()
 template< typename  Matrix >
 bool tnlSpmvBenchmarkBase< Matrix >::getBenchmarkWasSuccesful() const
 {
-   return this -> benchmarkWasSuccesful;
+   return this->benchmarkWasSuccesful;
 }
 
 template< typename Matrix >
 double tnlSpmvBenchmarkBase< Matrix >::getGflops() const
 {
-   return this -> gflops;
+   return this->gflops;
 }
 
 template< typename Matrix >
 double tnlSpmvBenchmarkBase< Matrix >::getTime() const
 {
-   return this -> time;
+   return this->time;
 }
 
 template< typename Matrix >
 void tnlSpmvBenchmarkBase< Matrix >::setMaxIterations( const int maxIterations )
 {
-   this -> maxIterations = maxIterations;
+   this->maxIterations = maxIterations;
 }
 
 template< typename Matrix >
 int tnlSpmvBenchmarkBase< Matrix >::getIterations() const
 {
-   return this -> iterations;
+   return this->iterations;
 }
 
 
 template< typename Matrix >
 typename Matrix::IndexType tnlSpmvBenchmarkBase< Matrix >::getArtificialZeros() const
 {
-   return this -> artificialZeros;
+   return this->artificialZeros;
 }
 
 template< typename Matrix >
 typename Matrix::RealType tnlSpmvBenchmarkBase< Matrix >::getMaxError() const
 {
-   return this -> maxError;
+   return this->maxError;
 }
 
 template< typename Matrix >
@@ -114,7 +114,7 @@ void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const tnlVector< RealType, De
       iterations ++;
    }
 
-   this -> time = rt_timer. getTime();
+   this->time = rt_timer. getTime();
 
    firstErrorOccurence = 0;
    tnlVector< RealType, tnlHost, IndexType > resB( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
@@ -135,7 +135,7 @@ void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const tnlVector< RealType, De
          error = ( RealType ) fabs( refB[ j ] );
       if( error > maxError )
          firstErrorOccurence = j;
-      this -> maxError = Max( this -> maxError, error );
+      this->maxError = Max( this->maxError, error );
 
       /*if( error > tnlSpmvBenchmarkPrecision( error ) )
          benchmarkWasSuccesful = false;*/
@@ -144,7 +144,7 @@ void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const tnlVector< RealType, De
    //cout << "First error was on " << firstErrorOccurence << endl;
 
    double flops = 2.0 * iterations * matrix.getNumberOfNonzeroMatrixElements();
-   this -> gflops = flops / time * 1.0e-9;
+   this->gflops = flops / time * 1.0e-9;
    artificialZeros = matrix.getNumberOfMatrixElements() - matrix.getNumberOfNonzeroMatrixElements();
 
    if( verbose )
@@ -154,20 +154,20 @@ void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const tnlVector< RealType, De
 template< typename Matrix >
 void tnlSpmvBenchmarkBase< Matrix >::writeProgressTableHeader()
 {
-   int totalWidth = this -> formatColumnWidth +
-                    this -> timeColumnWidth +
-                    this -> iterationsColumnWidth +
-                    this -> gflopsColumnWidth +
-                    this -> benchmarkStatusColumnWidth +
-                    this -> infoColumnWidth;
+   int totalWidth = this->formatColumnWidth +
+                    this->timeColumnWidth +
+                    this->iterationsColumnWidth +
+                    this->gflopsColumnWidth +
+                    this->benchmarkStatusColumnWidth +
+                    this->infoColumnWidth;
 
-   cout << left << setw( this -> formatColumnWidth - 5 ) << "MATRIX FORMAT"
+   cout << left << setw( this->formatColumnWidth - 5 ) << "MATRIX FORMAT"
         << left << setw( 5 ) << "BLOCK"
-        << right << setw( this -> timeColumnWidth ) << "TIME"
-        << right << setw( this -> iterationsColumnWidth ) << "ITERATIONS"
-        << right << setw( this -> gflopsColumnWidth ) << "GFLOPS"
-        << right << setw( this -> benchmarkStatusColumnWidth ) << "CHECK"
-        << left << setw(  this -> infoColumnWidth ) << " INFO" << endl
+        << right << setw( this->timeColumnWidth ) << "TIME"
+        << right << setw( this->iterationsColumnWidth ) << "ITERATIONS"
+        << right << setw( this->gflopsColumnWidth ) << "GFLOPS"
+        << right << setw( this->benchmarkStatusColumnWidth ) << "CHECK"
+        << left << setw(  this->infoColumnWidth ) << " INFO" << endl
         << setfill( '-' ) << setw( totalWidth ) << "--" << endl
         << setfill( ' ');
 }

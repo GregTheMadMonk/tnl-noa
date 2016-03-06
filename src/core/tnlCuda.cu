@@ -17,6 +17,27 @@
 
 #include <core/tnlCuda.h>
 
+void tnlCuda::configSetup( tnlConfigDescription& config, const tnlString& prefix )
+{
+#ifdef HAVE_CUDA
+   //config.addEntry< bool >( prefix + "omp-enabled", "Enable support of OpenMP.", true );
+   //config.addEntry<  int >( prefix + "omp-max-threads", "Set maximum number of OpenMP threads.", omp_get_max_threads() );
+#else
+   //config.addEntry< bool >( prefix + "omp-enabled", "Enable support of OpenMP (not supported on this system).", false );
+   //config.addEntry<  int >( prefix + "omp-max-threads", "Set maximum number of OpenMP threads (not supported on this system).", 0 );
+#endif
+   
+}
+      
+bool tnlCuda::setup( const tnlParameterContainer& parameters,
+                    const tnlString& prefix )
+{
+   //enable = parameters.getParameter< bool >( prefix + "omp-enabled" );
+   //maxThreadsCount = parameters.getParameter< int ( prefix + "omp-max-threads" );
+   return true;
+}
+
+
 bool tnlCuda::checkDevice( const char* file_name, int line )
 {
    cudaError error = cudaGetLastError();

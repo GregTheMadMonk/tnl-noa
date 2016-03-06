@@ -47,7 +47,7 @@ class tnlSolverTesterProblem
    void writeProlog( tnlLogger& logger,
                      const tnlParameterContainer& parameters ) const { };
 
-   bool setup( const tnlParameterContainer& parameters ) { this -> dofVector. setSize( 100 ); return true; };
+   bool setup( const tnlParameterContainer& parameters ) { this->dofVector. setSize( 100 ); return true; };
 
    bool setInitialCondition( const tnlParameterContainer& parameters ) { return true; };
 
@@ -55,7 +55,7 @@ class tnlSolverTesterProblem
 
    tnlSolverMonitor< RealType, IndexType >* getSolverMonitor() { return 0; };
 
-   DofVectorType& getDofVector() { return this -> dofVector;};
+   DofVectorType& getDofVector() { return this->dofVector;};
 
    void GetExplicitRHS( const RealType& time,
                         const RealType& tau,

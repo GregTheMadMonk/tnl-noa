@@ -65,14 +65,14 @@ template< typename Matrix,
           typename Preconditioner >
 void tnlTFQMRSolver< Matrix, Preconditioner > :: setMatrix( const MatrixType& matrix )
 {
-   this -> matrix = &matrix;
+   this->matrix = &matrix;
 }
 
 template< typename Matrix,
            typename Preconditioner >
 void tnlTFQMRSolver< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
 {
-   this -> preconditioner = &preconditioner;
+   this->preconditioner = &preconditioner;
 }
 
 template< typename Matrix,
@@ -81,14 +81,14 @@ template< typename Matrix,
 bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
 {
    dbgFunctionName( "tnlTFQMRSolver", "Solve" );
-   if( ! this -> setSize( matrix -> getRows() ) ) return false;
+   if( ! this->setSize( matrix -> getRows() ) ) return false;
 
    RealType tau, theta, eta, rho, alpha, w_norm;
    RealType b_norm = b. lpNorm( 2.0 );
    if( b_norm == 0.0 )
        b_norm = 1.0;
 
-   this -> matrix -> vectorProduct( x, r );
+   this->matrix -> vectorProduct( x, r );
    r. addVector( b, 1.0, -1.0 );
    w = u = r;
    matrix -> vectorProduct( u, Au );
@@ -109,7 +109,7 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       const IndexType iter = this->getIterations();
 
       if( iter % 2 == 1 ) {
-         alpha = rho / v. scalarProduct( this -> r_ast );
+         alpha = rho / v. scalarProduct( this->r_ast );
       }
       else {
          // not necessary in odd iter since the previous iteration
@@ -131,7 +131,7 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       }
 
       if( iter % 2 == 0 ) {
-         const RealType rho_new  = w. scalarProduct( this -> r_ast );
+         const RealType rho_new  = w. scalarProduct( this->r_ast );
          const RealType beta = rho_new / rho;
          rho = rho_new;
 
@@ -144,7 +144,7 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          u.addVector( v, -alpha );
       }
       
-      this -> refreshSolverMonitor();
+      this->refreshSolverMonitor();
    }
 
 //   this->matrix->vectorProduct( x, r );

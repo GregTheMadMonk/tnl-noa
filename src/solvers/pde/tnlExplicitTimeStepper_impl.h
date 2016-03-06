@@ -57,6 +57,7 @@ tnlExplicitTimeStepper< Problem, OdeSolver >::
 init( const MeshType& mesh )
 {
    this->explicitUpdaterTimer.reset();
+   this->mainTimer.reset();
    return true;
 }
 
@@ -113,7 +114,8 @@ solve( const RealType& time,
        MeshDependentDataType& meshDependentData )
 {
    tnlAssert( this->odeSolver, );
-   this->odeSolver->setTau( this -> timeStep );
+   mainTimer.start();
+   this->odeSolver->setTau( this->timeStep );
    this->odeSolver->setProblem( * this );
    this->odeSolver->setTime( time );
    this->odeSolver->setStopTime( stopTime );
@@ -122,6 +124,7 @@ solve( const RealType& time,
    this->mesh = &mesh;
    this->meshDependentData = &meshDependentData;
    return this->odeSolver->solve( dofVector );
+   mainTimer.stop();
 }
 
 template< typename Problem,
@@ -143,7 +146,7 @@ getExplicitRHS( const RealType& time,
       return;
       //return false; // TODO: throw exception
    }
-   this->explicitUpdaterTimer.start();   
+   this->explicitUpdaterTimer.start();
    this->problem->getExplicitRHS( time, tau, *( this->mesh ), u, fu, *( this->meshDependentData ) );
    this->explicitUpdaterTimer.stop();
    if( ! this->problem->postIterate( time,
@@ -165,6 +168,7 @@ tnlExplicitTimeStepper< Problem, OdeSolver >::
 writeEpilog( tnlLogger& logger )
 {
    logger.writeParameter< double >( "Explicit update computation time:", this->explicitUpdaterTimer.getTime() );
+   logger.writeParameter< double >( "Explicit time stepper time:", this->mainTimer.getTime() );
    return true;
 }
 

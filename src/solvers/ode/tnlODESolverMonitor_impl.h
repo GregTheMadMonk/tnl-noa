@@ -28,16 +28,16 @@ tnlODESolverMonitor< RealType, IndexType> :: tnlODESolverMonitor()
 template< typename RealType, typename IndexType >
 void tnlODESolverMonitor< RealType, IndexType> :: refresh()
 {
-   if( this -> verbose > 0 && this -> getIterations() % this -> refreshRate == 0 )
+   if( this->verbose > 0 && this->getIterations() % this->refreshRate == 0 )
    {
       // TODO: add EST
       //cout << " EST: " << estimated;
-      cout << " ITER:" << setw( 8 ) << this -> getIterations()
-           << " TAU:" << setprecision( 5 ) << setw( 12 ) << this -> getTimeStep()
-           << " T:" << setprecision( 5 ) << setw( 12 ) << this -> getTime()
-           << " RES:" << setprecision( 5 ) << setw( 12 ) << this -> getResidue()
-           << " CPU: " << setw( 8 ) << this -> getCPUTime()
-           << " ELA: " << setw( 8 ) << this -> getRealTime();
+      cout << " ITER:" << setw( 8 ) << this->getIterations()
+           << " TAU:" << setprecision( 5 ) << setw( 12 ) << this->getTimeStep()
+           << " T:" << setprecision( 5 ) << setw( 12 ) << this->getTime()
+           << " RES:" << setprecision( 5 ) << setw( 12 ) << this->getResidue()
+           << " CPU: " << setw( 8 ) << this->getCPUTime()
+           << " ELA: " << setw( 8 ) << this->getRealTime();
        /*double flops = ( double ) tnl_flops_counter. getFlops();
        if( flops )
        {
@@ -45,31 +45,31 @@ void tnlODESolverMonitor< RealType, IndexType> :: refresh()
        }*/
        cout << "   \r" << flush;
     }
-   this -> refreshing ++;
+   this->refreshing ++;
 }
 
 template< typename RealType, typename IndexType >
 void tnlODESolverMonitor< RealType, IndexType> :: setTimeStep( const RealType& timeStep )
 {
-   this -> timeStep = timeStep;
+   this->timeStep = timeStep;
 }
 
 template< typename RealType, typename IndexType >
 const RealType& tnlODESolverMonitor< RealType, IndexType> :: getTimeStep() const
 {
-   return this -> timeStep;
+   return this->timeStep;
 }
 
 template< typename RealType, typename IndexType >
 void tnlODESolverMonitor< RealType, IndexType> :: setTime( const RealType& time )
 {
-   this -> time = time;
+   this->time = time;
 }
 
 template< typename RealType, typename IndexType >
 const RealType& tnlODESolverMonitor< RealType, IndexType> :: getTime() const
 {
-   return this -> time;
+   return this->time;
 }
 
 #endif /* TNLODESOLVERMONITOR_IMPL_H_ */

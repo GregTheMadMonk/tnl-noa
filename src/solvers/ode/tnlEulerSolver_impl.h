@@ -32,6 +32,8 @@ template< typename Problem >
 tnlEulerSolver< Problem > :: tnlEulerSolver()
 : cflCondition( 0.0 )
 {
+   timer.reset();
+   updateTimer.reset();
 };
 
 template< typename Problem >
@@ -63,13 +65,13 @@ bool tnlEulerSolver< Problem > :: setup( const tnlParameterContainer& parameters
 template< typename Problem >
 void tnlEulerSolver< Problem > :: setCFLCondition( const RealType& cfl )
 {
-   this -> cflCondition = cfl;
+   this->cflCondition = cfl;
 }
 
 template< typename Problem >
 const typename Problem :: RealType& tnlEulerSolver< Problem > :: getCFLCondition() const
 {
-   return this -> cflCondition;
+   return this->cflCondition;
 }
 
 template< typename Problem >
@@ -78,6 +80,7 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
    /****
     * First setup the supporting meshes k1...k5 and k_tmp.
     */
+   timer.start();
    if( ! k1. setLike( u ) )
    {
       cerr << "I do not have enough memory to allocate a supporting grid for the Euler explicit solver." << endl;
@@ -96,7 +99,7 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
 
-   this -> refreshSolverMonitor();
+   this->refreshSolverMonitor();
 
    /****
     * Start the main loop
@@ -106,28 +109,32 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
       /****
        * Compute the RHS
        */
+      timer.stop();
       this->problem->getExplicitRHS( time, currentTau, u, k1 );
+      timer.start();
 
       RealType lastResidue = this->getResidue();
       RealType maxResidue( 0.0 );
-      if( this -> cflCondition != 0.0 )
+      if( this->cflCondition != 0.0 )
       {
          maxResidue = k1. absMax();
-         if( currentTau * maxResidue > this -> cflCondition )
+         if( currentTau * maxResidue > this->cflCondition )
          {
             currentTau *= 0.9;
             continue;
          }
       }
       RealType newResidue( 0.0 );
+      updateTimer.start();
       computeNewTimeLevel( u, currentTau, newResidue );
+      updateTimer.stop();
       this->setResidue( newResidue );
 
       /****
        * When time is close to stopTime the new residue
        * may be inaccurate significantly.
        */
-      if( currentTau + time == this -> stopTime ) this->setResidue( lastResidue );
+      if( currentTau + time == this->stopTime ) this->setResidue( lastResidue );
       time += currentTau;
 
       if( ! this->nextIteration() )
@@ -136,28 +143,30 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
       /****
        * Compute the new time step.
        */
-      if( time + currentTau > this -> getStopTime() )
-         currentTau = this -> getStopTime() - time; //we don't want to keep such tau
-      else this -> tau = currentTau;
+      if( time + currentTau > this->getStopTime() )
+         currentTau = this->getStopTime() - time; //we don't want to keep such tau
+      else this->tau = currentTau;
 
-      this -> refreshSolverMonitor();
+      this->refreshSolverMonitor();
 
       /****
        * Check stop conditions.
        */
       if( time >= this->getStopTime() ||
-          ( this -> getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() ) )
+          ( this->getConvergenceResidue() != 0.0 && this->getResidue() < this->getConvergenceResidue() ) )
       {
-         this -> refreshSolverMonitor();
+         this->refreshSolverMonitor();
+         std::cerr << std::endl << "RHS Timer = " << timer.getTime() << std::endl;
+         std::cerr << std::endl << "Update Timer = " << updateTimer.getTime() << std::endl;
          return true;
       }
 
-      if( this -> cflCondition != 0.0 )
+      if( this->cflCondition != 0.0 )
       {
          currentTau /= 0.95;
          currentTau = Min( currentTau, this->getMaxTau() );
       }
-   }
+   }   
 };
 
 template< typename Problem >
@@ -170,10 +179,10 @@ void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
    RealType* _u = u. getData();
    RealType* _k1 = k1. getData();
 
-   if( DeviceType :: getDevice() == tnlHostDevice )
+   if( std::is_same< DeviceType, tnlHost >::value )
    {
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:localResidue) firstprivate( _u, _k1, tau )
+#pragma omp parallel for reduction(+:localResidue) firstprivate( _u, _k1, tau ) if( tnlOmp::isEnabled() )
 #endif
       for( IndexType i = 0; i < size; i ++ )
       {
@@ -182,7 +191,7 @@ void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
          localResidue += fabs( add );
       }
    }
-   if( DeviceType :: getDevice() == tnlCudaDevice )
+   if( std::is_same< DeviceType, tnlCuda >::value )
    {
 #ifdef HAVE_CUDA
       dim3 cudaBlockSize( 512 );
@@ -209,7 +218,7 @@ void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
 #endif
    }
    localResidue /= tau * ( RealType ) size;
-   :: MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this -> solver_comm );
+   :: MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this->solver_comm );
 }
 
 #ifdef HAVE_CUDA

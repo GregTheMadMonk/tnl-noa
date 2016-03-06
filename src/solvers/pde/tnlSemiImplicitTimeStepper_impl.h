@@ -84,7 +84,7 @@ void
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 setProblem( ProblemType& problem )
 {
-   this -> problem = &problem;
+   this->problem = &problem;
 };
 
 template< typename Problem,
@@ -93,7 +93,7 @@ Problem*
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 getProblem() const
 {
-    return this -> problem;
+    return this->problem;
 };
 
 template< typename Problem,

@@ -41,7 +41,7 @@ tnlDebugStructure :: ~tnlDebugStructure()
 
 void tnlDebugStructure :: setDebug( bool debug )
 {
-   this -> debug = debug;
+   this->debug = debug;
 }
 
 void tnlDebugStructure :: AppendGroup( tnlDebugGroup* group )

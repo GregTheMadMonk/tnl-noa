@@ -203,10 +203,10 @@ tnlString tnlFastCSRMatrix< Real, tnlHost, Index > :: getType() const
 template< typename Real, typename Index >
 bool tnlFastCSRMatrix< Real, tnlHost, Index > :: setSize( Index new_size )
 {
-   this -> size = new_size;
-   if( ! row_offsets. setSize( this -> size + 1 ) ||
-	   ! columns_sequences_offsets. setSize( this -> size + 1 ) ||
-	   ! column_sequences_lengths. setSize( this -> size ) )
+   this->size = new_size;
+   if( ! row_offsets. setSize( this->size + 1 ) ||
+	   ! columns_sequences_offsets. setSize( this->size + 1 ) ||
+	   ! column_sequences_lengths. setSize( this->size ) )
       return false;
    row_offsets. setValue( 0 );
    columns_sequences_offsets. setValue( 0.0 );
@@ -256,7 +256,7 @@ Index tnlFastCSRMatrix< Real, tnlHost, Index > :: getColumnSequencesLength() con
 template< typename Real, typename Index >
 Index tnlFastCSRMatrix< Real, tnlHost, Index > :: getRowLength( Index row ) const
 {
-	tnlAssert( row >= 0 && row < this -> getSize(), );
+	tnlAssert( row >= 0 && row < this->getSize(), );
 	return row_offsets[ row + 1 ] - row_offsets[ row ];
 }
 
@@ -297,10 +297,10 @@ template< typename Real, typename Index >
 bool tnlFastCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix )
 {
 	dbgFunctionName( "tnlFastCSRMatrix< Real, tnlHost >", "copyFrom" );
-	if( ! this -> setSize( csr_matrix. getSize() ) )
+	if( ! this->setSize( csr_matrix. getSize() ) )
 		return false;
 
-	if( ! this -> setNonzeroElements( csr_matrix. getNonzeroElements() ) )
+	if( ! this->setNonzeroElements( csr_matrix. getNonzeroElements() ) )
 		return false;
 
 	nonzero_elements = csr_matrix. nonzero_elements;
@@ -309,7 +309,7 @@ bool tnlFastCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlCSRMatrix< R
 	last_nonzero_element = csr_matrix. last_nonzero_element;
 
 	const Index compression_depth = 1024;
-	for( Index row = 0; row < this -> size; row ++ )
+	for( Index row = 0; row < this->size; row ++ )
 	{
 		Index column_sequence_offset = csr_matrix. row_offsets[ row ];
 		Index column_sequence_length = csr_matrix. row_offsets[ row + 1 ] - column_sequence_offset;
@@ -357,9 +357,9 @@ template< typename Real, typename Index >
 Real tnlFastCSRMatrix< Real, tnlHost, Index > :: getElement( Index row,
                                                       Index column ) const
 {
-   tnlAssert( 0 <= row && row < this -> getSize(),
+   tnlAssert( 0 <= row && row < this->getSize(),
 			  cerr << "The row is outside the matrix." );
-   tnlAssert( 0 <= column && column < this -> getSize(),
+   tnlAssert( 0 <= column && column < this->getSize(),
 			  cerr << "The column is outside the matrix." );
    Index column_offset = columns_sequences_offsets[ row ];
    Index data_offset = row_offsets[ row ];
@@ -379,11 +379,11 @@ template< typename Real, typename Index >
 Real tnlFastCSRMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
                                                              const tnlVector< Real, tnlHost, Index >& vec ) const
 {
-   tnlAssert( 0 <= row && row < this -> getSize(),
+   tnlAssert( 0 <= row && row < this->getSize(),
 			  cerr << "The row is outside the matrix." );
-   tnlAssert( vec. getSize() == this -> getSize(),
+   tnlAssert( vec. getSize() == this->getSize(),
               cerr << "The matrix and vector for multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << endl; );
 
    Index data_offset = row_offsets[ row ];
@@ -412,19 +412,19 @@ template< typename Real, typename Index >
 void tnlFastCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVector< Real, tnlHost, Index >& vec,
                                                                 tnlVector< Real, tnlHost, Index >& result ) const
 {
-   tnlAssert( vec. getSize() == this -> getSize(),
+   tnlAssert( vec. getSize() == this->getSize(),
               cerr << "The matrix and vector for a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << endl; );
-   tnlAssert( result. getSize() == this -> getSize(),
+   tnlAssert( result. getSize() == this->getSize(),
               cerr << "The matrix and result vector of a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << result. getSize() << endl; );
 
    const Index* cols = column_sequences. getData();
    const Real* els = nonzero_elements. getData();
 
-   for( Index row = 0; row < this -> size; row ++ )
+   for( Index row = 0; row < this->size; row ++ )
    {
       Index data_offset = row_offsets[ row ];
       Index column_offset =  columns_sequences_offsets[ row ];
@@ -479,12 +479,12 @@ void tnlFastCSRMatrix< Real, tnlHost, Index > :: printOut( ostream& str,
 {
    str << "Structure of tnlFastCSRMatrix" << endl;
    str << "Matrix name:" << name << endl;
-   str << "Matrix size:" << this -> getSize() << endl;
+   str << "Matrix size:" << this->getSize() << endl;
    str << "Allocated elements:" << nonzero_elements. getSize() << endl;
    str << "Matrix rows:" << endl;
    Index print_lines = lines;
    if( ! print_lines )
-	   print_lines = this -> getSize();
+	   print_lines = this->getSize();
 
    for( Index i = 0; i < print_lines; i ++ )
    {

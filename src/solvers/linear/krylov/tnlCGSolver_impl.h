@@ -29,8 +29,8 @@ template< typename Matrix,
 tnlString tnlCGSolver< Matrix, Preconditioner > :: getType() const
 {
    return tnlString( "tnlCGSolver< " ) +
-          this -> matrix -> getType() + ", " +
-          this -> preconditioner -> getType() + " >";
+          this->matrix -> getType() + ", " +
+          this->preconditioner -> getType() + " >";
 }
 
 template< typename Matrix,
@@ -57,14 +57,14 @@ template< typename Matrix,
           typename Preconditioner >
 void tnlCGSolver< Matrix, Preconditioner > :: setMatrix( const MatrixType& matrix )
 {
-   this -> matrix = &matrix;
+   this->matrix = &matrix;
 }
 
 template< typename Matrix,
            typename Preconditioner >
 void tnlCGSolver< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
 {
-   this -> preconditioner = &preconditioner;
+   this->preconditioner = &preconditioner;
 }
 
 template< typename Matrix,
@@ -138,11 +138,11 @@ solve( const Vector& b, Vector& x )
        */
       new_r.swap( r );
       
-      if( this -> getIterations() % 10 == 0 )
-         this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
+      if( this->getIterations() % 10 == 0 )
+         this->setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    }
-   this -> setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
-   this -> refreshSolverMonitor( true );
+   this->setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
+   this->refreshSolverMonitor( true );
    return this->checkConvergence();
 };
 

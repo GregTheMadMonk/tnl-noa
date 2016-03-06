@@ -726,7 +726,7 @@ class tnlCSRMatrixDeviceDependentCode< tnlHost >
          const InVector* inVectorPtr = &inVector;
          OutVector* outVectorPtr = &outVector;
 #ifdef HAVE_OPENMP
-#pragma omp parallel for private( matrixPtr, inVectorPtr, outVectorPtr ), schedule(static )
+#pragma omp parallel for private( matrixPtr, inVectorPtr, outVectorPtr ), schedule(static ), if( tnlOmp::isEnabled() )
 #endif         
          for( Index row = 0; row < rows; row ++ )
             ( *outVectorPtr )[ row ] = matrixPtr->rowVectorProduct( row, *inVectorPtr );

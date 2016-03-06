@@ -15,11 +15,14 @@ set (headers tnlAssert.h
              tnlDynamicTypeTag.h
              tnlFeature.h
              tnlFile.h 
+             tnlFile_impl.h
              tnlFlopsCounter.h
              tnlHost.h 
              tnlIndexedSet.h
              tnlList.h
-             tnlLogger.h 
+             tnlList_impl.h
+             tnlLogger.h
+             tnlOmp.h
              tnlObject.h 
              tnlStack.h
              tnlStaticFor.h
@@ -49,7 +52,8 @@ set( common_SOURCES
      ${CURRENT_DIR}/mfilename.cpp 
      ${CURRENT_DIR}/mpi-supp.cpp 
      ${CURRENT_DIR}/tnlCuda.cpp
-     ${CURRENT_DIR}/tnlHost.cpp )       
+     ${CURRENT_DIR}/tnlHost.cpp
+     ${CURRENT_DIR}/tnlOmp.cpp )
 
 IF( BUILD_CUDA )
    set( tnl_core_CUDA__SOURCES

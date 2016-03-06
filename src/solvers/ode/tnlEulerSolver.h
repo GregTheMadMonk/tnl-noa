@@ -60,6 +60,8 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem >
    DofVectorType k1;
 
    RealType cflCondition;
+   
+   tnlTimerRT timer, updateTimer;
 };
 
 #include <solvers/ode/tnlEulerSolver_impl.h>

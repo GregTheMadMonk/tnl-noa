@@ -420,7 +420,7 @@ bool tnlString :: getLine( istream& stream )
 {
    std :: string str;
    getline( stream, str );
-   this -> setString( str. data() );
+   this->setString( str. data() );
    if( ! ( *this ) ) return false;
    return true;
 }

@@ -150,6 +150,7 @@ writeProlog( tnlLogger& logger,
    logger.writeSystemInformation( parameters );
    logger.writeSeparator();
    logger.writeCurrentTime( "Started at:" );
+   logger.writeSeparator();
    return true;
 }
 
@@ -295,19 +296,19 @@ void tnlPDESolver< Problem, TimeStepper > :: setIoRtTimer( tnlTimerRT& ioRtTimer
 template< typename Problem, typename TimeStepper >
 void tnlPDESolver< Problem, TimeStepper > :: setComputeRtTimer( tnlTimerRT& computeRtTimer )
 {
-   this -> computeRtTimer = &computeRtTimer;
+   this->computeRtTimer = &computeRtTimer;
 }
 
 template< typename Problem, typename TimeStepper >
 void tnlPDESolver< Problem, TimeStepper > :: setIoCpuTimer( tnlTimerCPU& ioCpuTimer )
 {
-   this -> ioCpuTimer = &ioCpuTimer;
+   this->ioCpuTimer = &ioCpuTimer;
 }
 
 template< typename Problem, typename TimeStepper >
 void tnlPDESolver< Problem, TimeStepper > :: setComputeCpuTimer( tnlTimerCPU& computeCpuTimer )
 {
-   this -> computeCpuTimer = & computeCpuTimer;
+   this->computeCpuTimer = & computeCpuTimer;
 }
 
 template< typename Problem, typename TimeStepper >
@@ -329,11 +330,13 @@ solve()
    IndexType step( 0 );
    IndexType allSteps = ceil( ( this->finalTime - this->initialTime ) / this->snapshotPeriod );
 
+   this->ioRtTimer->reset();
+   this->ioCpuTimer->reset();
+   this->computeRtTimer->reset();
+   this->computeCpuTimer->reset();
+   
    this->ioRtTimer->start();
    this->ioCpuTimer->start();
-   this->computeRtTimer->stop();
-   this->computeCpuTimer->stop();
-
    if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->meshDependentData ) )
    {
       cerr << "Making the snapshot failed." << endl;
@@ -353,8 +356,8 @@ solve()
    this->timeStepper->setTimeStep( this->timeStep * pow( mesh.getSmallestSpaceStep(), this->timeStepOrder ) );
    while( step < allSteps )
    {
-      RealType tau = Min( this -> snapshotPeriod,
-                          this -> finalTime - t );
+      RealType tau = Min( this->snapshotPeriod,
+                          this->finalTime - t );
       if( ! this->timeStepper->solve( t, t + tau, mesh, this->dofs, this->meshDependentData ) )
          return false;
       step ++;
