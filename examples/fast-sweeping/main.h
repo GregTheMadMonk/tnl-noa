@@ -17,9 +17,9 @@
 
 #include "MainBuildConfig.h"
 	//for HOST versions:
-#include "tnlFastSweeping.h"
+//#include "tnlFastSweeping.h"
 	//for DEVICE versions:
-//#include "tnlFastSweeping_CUDA.h"
+#include "tnlFastSweeping_CUDA.h"
 #include "fastSweepingConfig.h"
 #include <solvers/tnlBuildConfigTags.h>
 
@@ -58,21 +58,24 @@ int main( int argc, char* argv[] )
 	   cout << "Starting solver..." << endl;
 	   solver.run();
    }
-   else    if(dim == "3")
+   else if(dim == "3")
    {
-		tnlFastSweeping<tnlGrid<3,double,tnlHost, int>, double, int> solver;
-		if(!solver.init(parameters))
-	   {
-			cerr << "Solver failed to initialize." << endl;
-			return EXIT_FAILURE;
-	   }
-		checkCudaDevice;
-	   cout << "-------------------------------------------------------------" << endl;
-	   cout << "Starting solver..." << endl;
-	   solver.run();
+//		tnlFastSweeping<tnlGrid<3,double,tnlHost, int>, double, int> solver;
+//		if(!solver.init(parameters))
+//	   {
+//			cerr << "Solver failed to initialize." << endl;
+//			return EXIT_FAILURE;
+//	   }
+//		checkCudaDevice;
+//	   cout << "-------------------------------------------------------------" << endl;
+//	   cout << "Starting solver..." << endl;
+//	   solver.run();
    }
    else
-	   cerr << "Unsopported no. of dimensions: " << dim << "!" << endl;
+   {
+	   cerr << "Unsupported number of dimensions: " << dim << "!" << endl;
+	   return EXIT_FAILURE;
+   }
 
 
    time(&stop);

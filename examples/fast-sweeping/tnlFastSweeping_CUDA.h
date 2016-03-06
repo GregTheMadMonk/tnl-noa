@@ -21,6 +21,9 @@
 #include <core/vectors/tnlStaticVector.h>
 #include <core/tnlHost.h>
 #include <mesh/tnlGrid.h>
+#include <mesh/grids/tnlGridEntity.h>
+
+#include <functions/tnlMeshFunction.h>
 #include <limits.h>
 #include <core/tnlDevice.h>
 #include <ctime>
@@ -54,7 +57,7 @@ public:
 	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
-
+	tnlFastSweeping();
 
 	__host__ static tnlString getType();
 	__host__ bool init( const tnlParameterContainer& parameters );
@@ -96,7 +99,9 @@ protected:
 
 	bool exactInput;
 
-	DofVectorType dofVector;
+	tnlMeshFunction<MeshType> dofVector;
+	DofVectorType data;
+
 
 	RealType h;
 
@@ -143,22 +148,6 @@ public:
 	double* cudaDofVector;
 	double* cudaDofVector2;
 	int counter;
-	__device__ void setupSquare1000(Index i, Index j);
-	__device__ void setupSquare1100(Index i, Index j);
-	__device__ void setupSquare1010(Index i, Index j);
-	__device__ void setupSquare1001(Index i, Index j);
-	__device__ void setupSquare1110(Index i, Index j);
-	__device__ void setupSquare1101(Index i, Index j);
-	__device__ void setupSquare1011(Index i, Index j);
-	__device__ void setupSquare1111(Index i, Index j);
-	__device__ void setupSquare0000(Index i, Index j);
-	__device__ void setupSquare0100(Index i, Index j);
-	__device__ void setupSquare0010(Index i, Index j);
-	__device__ void setupSquare0001(Index i, Index j);
-	__device__ void setupSquare0110(Index i, Index j);
-	__device__ void setupSquare0101(Index i, Index j);
-	__device__ void setupSquare0011(Index i, Index j);
-	__device__ void setupSquare0111(Index i, Index j);
 #endif
 
 	MeshType Mesh;
@@ -170,6 +159,7 @@ protected:
 	bool exactInput;
 
 	DofVectorType dofVector;
+	DofVectorType data;
 
 	RealType h;
 
@@ -189,6 +179,8 @@ __global__ void runCUDA(tnlFastSweeping< tnlGrid< 3,double, tnlHost, int >, doub
 
 __global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
 __global__ void initCUDA(tnlFastSweeping< tnlGrid< 3,double, tnlHost, int >, double, int >* solver);
+
+__global__ void setEntityGridCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
 #endif
 
 /*various implementtions.... choose one*/
@@ -197,6 +189,8 @@ __global__ void initCUDA(tnlFastSweeping< tnlGrid< 3,double, tnlHost, int >, dou
 //#include "tnlFastSweeping2D_CUDA_v3_impl.h"
 #include "tnlFastSweeping2D_CUDA_v4_impl.h"
 //#include "tnlFastSweeping2D_CUDA_v5_impl.h"
-#include "tnlFastSweeping3D_CUDA_impl.h"
+
+
+//															#include "tnlFastSweeping3D_CUDA_impl.h"
 
 #endif /* TNLFASTSWEEPING_H_ */
