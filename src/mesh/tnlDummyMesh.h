@@ -28,9 +28,13 @@ class tnlDummyMesh
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-
+   typedef tnlDummyMesh< Real, Device, Index > ThisType;
+   
    static const int meshDimensions = 1;
-
+   
+   constexpr static int getMeshDimensions() { return meshDimensions; }
+      
+   
    const Real& getParametricStep(){ return 0.0; }
    
    tnlString getSerializationType() const { return tnlString( "tnlDummyMesh" ); }
