@@ -119,7 +119,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	dim3 threadsPerBlock(16, 16);
 	dim3 numBlocks(n/16 + 1 ,n/16 +1);
 
-//	setEntityGridCUDA<<<dim3(1,1),dim3(1,1)>>>(this->cudaSolver);
+
 	initCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
 	checkCudaDevice;
@@ -149,13 +149,15 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 	cudaDeviceSynchronize();
 	checkCudaDevice;
 
-	data.setLike(dofVector.getData());
-	cudaMemcpy(data.getData(), cudaDofVector2, this->dofVector.getData().getSize()*sizeof(double), cudaMemcpyDeviceToHost);
+	//data.setLike(dofVector.getData());
+	//cudaMemcpy(data.getData(), cudaDofVector2, this->dofVector.getData().getSize()*sizeof(double), cudaMemcpyDeviceToHost);
+	cudaMemcpy(dofVector.getData().getData(), cudaDofVector2, this->dofVector.getData().getSize()*sizeof(double), cudaMemcpyDeviceToHost);
 	cudaDeviceSynchronize();
 	cudaFree(cudaDofVector);
 	cudaFree(cudaDofVector2);
 	cudaFree(cudaSolver);
-	data.save("u-00001.tnl");
+	//data.save("u-00001.tnl");
+	dofVector.save("u-00001.tnl");
 	cudaDeviceSynchronize();
 	return true;
 }
@@ -174,13 +176,9 @@ template< typename MeshReal,
 __device__
 void tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: updateValue( Index i, Index j)
 {
-	if(i >= Mesh.getDimensions().x() || j >= Mesh.getDimensions().y() || i<0 || j<0 )
-		printf("i = %d, j = %d",i,j);
 	tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 	Entity.setCoordinates(CoordinatesType(i,j));
 	Entity.refresh();
-//	printf("index: %d\n",Entity.getIndex());
-//	neighbourEntities.refresh(Mesh,Entity.getIndex());
 	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
 	Real value = cudaDofVector2[Entity.getIndex()];
 	Real a,b, tmp;

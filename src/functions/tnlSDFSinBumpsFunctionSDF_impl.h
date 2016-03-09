@@ -89,16 +89,19 @@ tnlSDFSinBumpsFunctionSDF< 1, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
-   const RealType& x = v.x();
-   if (sqrt(x*x) + Sign(x)*(this->phase.x())*(this->waveLength.x())/(2.0*M_PI) > this->wavesNumber.x()*this->waveLength.x() && this->wavesNumber.x() != 0.0 )
+	   const RealType& x = v.x();
+	   RealType xp = sqrt(x*x) + Sign(x)*(this->phase.x())*(this->waveLength.x())/(2.0*M_PI);
+	   if (xp > this->wavesNumber.x()*this->waveLength.x() && this->wavesNumber.x() != 0.0 )
+		   return 0.0;
+	   if( YDiffOrder != 0 || ZDiffOrder != 0 )
+	      return 0.0;
+	   if( XDiffOrder == 0 )
+	      return Sign(xp - round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0)
+	  		    *(xp- round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0)
+	  		    *Sign(sin(this-> phase.x() + 2.0 * M_PI * x / this->waveLength.x()));
+	   if( XDiffOrder == 1 )
+	      return 1.0;
 	   return 0.0;
-   if( YDiffOrder != 0 || ZDiffOrder != 0 )
-      return 0.0;
-   if( XDiffOrder == 0 )
-      return this->amplitude * sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() );
-   if( XDiffOrder == 1 )
-      return 2.0 * M_PI / this->waveLength.x() * this->amplitude * cos( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() );
-   return 0.0;
 }
 
 /****
@@ -139,29 +142,28 @@ tnlSDFSinBumpsFunctionSDF< 2, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
-   const RealType& x = v.x();
-   const RealType& y = v.y();
-   if ( (sqrt(x*x) + Sign(x)*(this->phase.x())*(this->waveLength.x())/(2.0*M_PI) > this->wavesNumber.x()*this->waveLength.x() && this->wavesNumber.x() != 0.0 )  ||
-	    (sqrt(y*y) + Sign(y)*(this->phase.y())*(this->waveLength.y())/(2.0*M_PI) > this->wavesNumber.y()*this->waveLength.y() && this->wavesNumber.y() != 0.0 ) )
+	   const RealType& x = v.x();
+	   const RealType& y = v.y();
+	   RealType xp = sqrt(x*x) + Sign(x)*(this->phase.x())*(this->waveLength.x())/(2.0*M_PI);
+	   RealType yp = sqrt(y*y) + Sign(y)*(this->phase.y())*(this->waveLength.y())/(2.0*M_PI);
+	   if ( (xp > this->wavesNumber.x()*this->waveLength.x() && this->wavesNumber.x() != 0.0 )  ||
+			(yp > this->wavesNumber.y()*this->waveLength.y() && this->wavesNumber.y() != 0.0 ) )
+		   return 0.0;
+	   const RealType sx = Sign(xp - round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0)
+	  		  		    *(xp - round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0);
+	   const RealType sy = Sign(yp - round((2.0 * yp)/this->waveLength.y())* this->waveLength.y()/2.0)
+	  		  		    *(yp - round((2.0 * yp)/this->waveLength.y())* this->waveLength.y()/2.0);
+	   RealType sxy;
+	   if(sx < sy)
+		   sxy = sx;
+	   else
+		   sxy = sy;
+	   if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
+	   {
+		      return sxy * Sign( sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() )
+		      	  	  	       * sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) );
+	   }
 	   return 0.0;
-   if( ZDiffOrder != 0 )
-      return 0.0;
-   if( XDiffOrder == 0 && YDiffOrder == 0 )
-      return this->amplitude *
-             sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) *
-             sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() );
-   else if( XDiffOrder == 1 && YDiffOrder == 0 )
-	      return this->amplitude *
-	             cos( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) *
-	             sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) *
-	             2.0*M_PI/this->waveLength.x();
-   else if( XDiffOrder == 0 && YDiffOrder == 1 )
-	      return this->amplitude *
-	             sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) *
-	             cos( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) *
-	             2.0*M_PI/this->waveLength.y();
-
-   return 0.0;
 }
 
 /****
@@ -207,38 +209,36 @@ tnlSDFSinBumpsFunctionSDF< 3, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
-   const RealType& x = v.x();
-   const RealType& y = v.y();
-   const RealType& z = v.z();
-   if ( (sqrt(x*x) + Sign(x)*(this->phase.x())*(this->waveLength.x())/(2.0*M_PI) > this->wavesNumber.x()*this->waveLength.x() && this->wavesNumber.x() != 0.0 ) ||
-		(sqrt(y*y) + Sign(y)*(this->phase.y())*(this->waveLength.y())/(2.0*M_PI) > this->wavesNumber.y()*this->waveLength.y() && this->wavesNumber.y() != 0.0 ) ||
-		(sqrt(z*z) + Sign(z)*(this->phase.z())*(this->waveLength.z())/(2.0*M_PI) > this->wavesNumber.z()*this->waveLength.z() && this->wavesNumber.z() != 0.0 ) )
+	   const RealType& x = v.x();
+	   const RealType& y = v.y();
+	   const RealType& z = v.z();
+	   RealType xp = sqrt(x*x) + Sign(x)*(this->phase.x())*(this->waveLength.x())/(2.0*M_PI);
+	   RealType yp = sqrt(y*y) + Sign(y)*(this->phase.y())*(this->waveLength.y())/(2.0*M_PI);
+	   RealType zp = sqrt(z*z) + Sign(z)*(this->phase.z())*(this->waveLength.z())/(2.0*M_PI);
+	   if ( ( xp > this->wavesNumber.x()*this->waveLength.x() && this->wavesNumber.x() != 0.0 ) ||
+			(yp > this->wavesNumber.y()*this->waveLength.y() && this->wavesNumber.y() != 0.0 ) ||
+			(sqrt(z*z) > this->wavesNumber.z()*this->waveLength.z() && this->wavesNumber.z() != 0.0 ) )
+		   return 0.0;
+	   const RealType sx = Sign(xp - round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0)
+	  		  		    *(xp - round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0);
+	   const RealType sy = Sign(yp - round((2.0 * yp)/this->waveLength.y())* this->waveLength.y()/2.0)
+	  		  		    *(yp - round((2.0 * yp)/this->waveLength.y())* this->waveLength.y()/2.0);
+	   const RealType sz = Sign(zp - round((2.0 * zp)/this->waveLength.z())* this->waveLength.z()/2.0)
+	  		  		    *(zp - round((2.0 * zp)/this->waveLength.z())* this->waveLength.z()/2.0);
+	   RealType sxyz;
+	   if(sx <= sy && sx <= sz)
+		   sxyz = sx;
+	   else if ( sy <= sx && sy <= sz)
+		   sxyz = sy;
+	   else
+		   sxyz = sz;
+	   if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
+	   {
+	      return sxyz * Sign( sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() )
+	      	  	  	  	  	* sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() )
+	      	  	  	  	  	* sin( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() ) );
+	   }
 	   return 0.0;
-
-   if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
-      return this->amplitude *
-             sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) *
-             sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) *
-             sin( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() );
-   else if( XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 0 )
-	      return this->amplitude *
-	             cos( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) *
-	             sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) *
-	             sin( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() ) *
-	             2.0*M_PI/this->waveLength.x();
-   else if( XDiffOrder == 0 && YDiffOrder == 1 && ZDiffOrder == 0 )
-	      return this->amplitude *
-	             sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) *
-	             cos( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) *
-	             sin( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() ) *
-	             2.0*M_PI/this->waveLength.y();
-   else if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 1 )
-	      return this->amplitude *
-	             sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) *
-	             sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() ) *
-	             cos( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() ) *
-	             2.0*M_PI/this->waveLength.z();
-   return 0.0;
 }
 
 #endif /* TNLSDFSINBUMPSFUNCTIONSDF_IMPL_H_ */

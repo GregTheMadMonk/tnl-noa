@@ -31,13 +31,14 @@ class tnlMeshFunctionNormGetter
 template< int Dimensions,
           typename MeshReal,
           typename MeshIndex,
-          int EntityDimensions >
-class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex >, EntityDimensions >,
+          int EntityDimensions,
+          typename Real >
+class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex >, EntityDimensions, Real >,
                                  tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex > >
 {
    public:
       
-      typedef tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex >, EntityDimensions > MeshFunctionType;
+      typedef tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
       typedef tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
       typedef tnlHost DeviceType;
@@ -109,13 +110,14 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
 template< int Dimensions,
           typename MeshReal,
           typename MeshIndex,
-          int EntityDimensions >
-class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlCuda, MeshIndex >, EntityDimensions >,
+          int EntityDimensions,
+          typename Real >
+class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlCuda, MeshIndex >, EntityDimensions, Real >,
                                  tnlGrid< Dimensions, MeshReal, tnlCuda, MeshIndex > >
 {
    public:
       
-      typedef tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlCuda, MeshIndex >, EntityDimensions > MeshFunctionType;
+      typedef tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlCuda, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
       typedef tnlGrid< Dimensions, MeshReal, tnlCuda, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
       typedef tnlCuda DeviceType;

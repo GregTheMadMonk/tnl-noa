@@ -158,7 +158,7 @@ protected:
 
 	bool exactInput;
 
-	DofVectorType dofVector;
+	tnlMeshFunction<MeshType> dofVector;
 	DofVectorType data;
 
 	RealType h;
@@ -179,8 +179,6 @@ __global__ void runCUDA(tnlFastSweeping< tnlGrid< 3,double, tnlHost, int >, doub
 
 __global__ void initCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
 __global__ void initCUDA(tnlFastSweeping< tnlGrid< 3,double, tnlHost, int >, double, int >* solver);
-
-__global__ void setEntityGridCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
 #endif
 
 /*various implementtions.... choose one*/
@@ -191,6 +189,6 @@ __global__ void setEntityGridCUDA(tnlFastSweeping< tnlGrid< 2,double, tnlHost, i
 //#include "tnlFastSweeping2D_CUDA_v5_impl.h"
 
 
-//															#include "tnlFastSweeping3D_CUDA_impl.h"
+#include "tnlFastSweeping3D_CUDA_impl.h"
 
 #endif /* TNLFASTSWEEPING_H_ */
