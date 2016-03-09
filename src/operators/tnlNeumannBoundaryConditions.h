@@ -49,7 +49,11 @@ template< typename MeshReal,
           typename Index >
 class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >
    : public tnlNeumannBoundaryConditionsBase< Function >,
-     public tnlDomain< 1, MeshBoundaryDomain >
+     public tnlOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >,
+                         MeshBoundaryDomain,
+                         1, 1,
+                         Real,
+                         Index >
 {
    public:
 
@@ -62,6 +66,8 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, F
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< 1, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
+   typedef tnlNeumannBoundaryConditions< MeshType, Function, Real, Index > ThisType;
+   typedef tnlNeumannBoundaryConditionsBase< Function > BaseType;
 
    template< typename EntityType,
              typename MeshFunction >
@@ -101,7 +107,12 @@ template< typename MeshReal,
           typename Index >
 class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >
    : public tnlNeumannBoundaryConditionsBase< Function >,
-     public tnlDomain< 2, MeshBoundaryDomain >
+     public tnlOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >,
+                         MeshBoundaryDomain,
+                         2, 2,
+                         Real,
+                         Index >
+
 {
    public:
 
@@ -114,6 +125,9 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, F
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< 2, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
+   typedef tnlNeumannBoundaryConditions< MeshType, Function, Real, Index > ThisType;
+   typedef tnlNeumannBoundaryConditionsBase< Function > BaseType;
+   
 
    template< typename EntityType,
              typename MeshFunction >
@@ -152,7 +166,11 @@ template< typename MeshReal,
           typename Index >
 class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >
    : public tnlNeumannBoundaryConditionsBase< Function >,
-     public tnlDomain< 3, MeshBoundaryDomain >
+     public tnlOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >,
+                         MeshBoundaryDomain,
+                         3, 3,
+                         Real,
+                         Index >
 {
    public:
 
@@ -165,6 +183,8 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, F
    typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
    typedef tnlStaticVector< 3, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
+   typedef tnlNeumannBoundaryConditions< MeshType, Function, Real, Index > ThisType;
+   typedef tnlNeumannBoundaryConditionsBase< Function > BaseType;   
 
    template< typename EntityType,
              typename MeshFunction >
