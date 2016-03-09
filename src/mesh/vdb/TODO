@@ -4,6 +4,6 @@ echo "Bitmasks seem to be alright at the moment"
 echo
 echo
 echo "Currently most important is to implement math funcs,"
-echo "as the origin ones are exponentially complex in 2D"
+echo "as the original ones are exponentially complex, in 2D"
 echo "its complexity is at most 2^2, in 3D its at most 2^3 (!)"
 echo "which lightweigth GPU threads won't handle."
