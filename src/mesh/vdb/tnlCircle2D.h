@@ -4,25 +4,28 @@
 class tnlCircle2D
 {
 public:
-    tnlCircle2D( unsigned x,
-                 unsigned y,
+    tnlCircle2D( unsigned a,
+                 unsigned b,
                  unsigned r );
 
-    bool isIntercept( unsigned x1,
-                      unsigned x2,
-                      unsigned y1,
-                      unsigned y2 );
+    bool isIntercept( float x1,
+                      float x2,
+                      float y1,
+                      float y2 );
 
-    bool isInInterval( unsigned x1,
-                       unsigned x2,
-                       unsigned x );
+    bool isInInterval( float x1,
+                       float x2,
+                       float x );
 
-    ~tnlCircle2D()
+    ~tnlCircle2D();
 
 private:
-    unsigned x;
-    unsigned y;
+    // x and y define center of the circle
+    // r defines its radius
+    unsigned a;
+    unsigned b;
     unsigned r;
 };
 
+#include "tnlCircle2D_impl.h"
 #endif // _TNLCIRCLE2D_H_INCLUDED_

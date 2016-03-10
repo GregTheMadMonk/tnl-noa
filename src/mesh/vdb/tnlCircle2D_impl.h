@@ -4,52 +4,52 @@
 #include <cmath>
 #include "tnlCircle2D.h"
 
-tnlCircle2D::tnlCircle2D( unsigned x,
-                          unsigned y,
+tnlCircle2D::tnlCircle2D( unsigned a,
+                          unsigned b,
                           unsigned r )
 {
-    this->x = x;
-    this->y = y;
+    this->a = a;
+    this->b = b;
     this->r = r;
 }
 
-tnlCircle2D::isIntercept( unsigned x1,
-                          unsigned x2,
-                          unsigned y1,
-                          unsigned y2 )
+bool tnlCircle2D::isIntercept( float x1,
+                               float x2,
+                               float y1,
+                               float y2 )
 {
-    unsigned R = this->r * this->r;
-    unsigned X = this->x * this->x;
-    unsigned Y = this->y * this->y;
+    float R = this->r * this->r;
+    float A = this->a * this->a;
+    float B = this->b * this->b;
 
-    unsigned aux = x1 - this->x;
-    if( R - aux * aux > 0 &&
-        this->isInInterval( y1, y2, sqrt( R - aux * aux ) + this->y ) )
+    float aux = x1 - this->a;
+    if( R - aux * aux >= 0 &&
+        this->isInInterval( y1, y2, sqrt( R - aux * aux ) + this->b ) )
         return true;
     
-    aux = x2 - this->x;
-    if( R - aux * aux > 0 &&
-        this->isInInterval( y1, y2, sqrt( R - aux * aux ) + this->y ) )
+    aux = x2 - this->a;
+    if( R - aux * aux >= 0 &&
+        this->isInInterval( y1, y2, sqrt( R - aux * aux ) + this->b ) )
         return true;
 
-    aux = y1 - this->y;
-    if( R - aux * aux > 0 &&
-        this->isInInterval( x1, x2, sqrt( R - aux * aux ) + this->x ) )
+    aux = y1 - this->b;
+    if( R - aux * aux >= 0 &&
+        this->isInInterval( x1, x2, sqrt( R - aux * aux ) + this->a ) )
         return true;
 
-    aux = y2 - this->y;
-    if( R - aux * aux > 0 &&
-        this->isInInterval( x1, x2, sqrt( R - aux * aux ) + this->x ) )
+    aux = y2 - this->b;
+    if( R - aux * aux >= 0 &&
+        this->isInInterval( x1, x2, sqrt( R - aux * aux ) + this->a ) )
         return true;
 
     return false;
 }
 
-tnlCircle2D::isInInterval( unsigned x1,
-                           unsigned x2,
-                           unsigned x )
+bool tnlCircle2D::isInInterval( float x1,
+                                float x2,
+                                float x )
 {
-    return ( ( x1 < x ) and ( x < x2 ) );
+    return ( ( x1 <= x ) and ( x <= x2 ) );
 }
 
 #endif // _TNLCIRCLE2D_IMPL_H_INCLUDED_
