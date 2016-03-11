@@ -11,7 +11,8 @@ public:
     bool isIntercept( float x1,
                       float x2,
                       float y1,
-                      float y2 );
+                      float y2,
+                      bool verbose = false );
 
     bool isInInterval( float x1,
                        float x2,
