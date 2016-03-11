@@ -25,6 +25,16 @@ class eulerProblem:
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
+      typedef tnlMeshFunction<Mesh,Mesh::getMeshDimensions(),RealType>MeshFunction;
+    //definition
+	tnlVector< RealType, DeviceType, IndexType > _uRho;
+	tnlVector< RealType, DeviceType, IndexType > _uRhoVelocity;
+	tnlVector< RealType, DeviceType, IndexType > _uEnergy;
+
+	tnlVector< RealType, DeviceType, IndexType > _fuRho;
+	tnlVector< RealType, DeviceType, IndexType > _fuRhoVelocity;
+	tnlVector< RealType, DeviceType, IndexType > _fuEnergy;
+
 
       static tnlString getTypeStatic();
       tnlSharedVector< RealType, DeviceType, IndexType > rho;

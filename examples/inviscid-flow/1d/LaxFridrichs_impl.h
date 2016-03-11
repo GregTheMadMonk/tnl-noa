@@ -40,6 +40,57 @@ operator()( const MeshFunction& u,
     static_assert( MeshEntity::entityDimensions == 1, "Wrong mesh entity dimensions." ); 
     static_assert( MeshFunction::getEntitiesDimensions() == 1, "Wrong preimage function" ); 
     const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities(); 
+      /*
+   //rho
+   const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1 >(); 
+   const IndexType& center = entity.getIndex(); 
+   const IndexType& east = neighbourEntities.template getEntityIndex< 1 >(); 
+   const IndexType& west = neighbourEntities.template getEntityIndex< -1 >();
+   typedef typename MeshType::Cell Cell;
+   const int size = mesh.template getEntitiesCount< Cell >()/5; 
+   return (0.5 * this->tau)( u[ west ] - 2.0 * u[ center ]  + u[ east ] ) 
+          - 0.5 * hxInverse * ( u[ west ] * u[ west + 3*size ] - u[ east ] * u[ east + 3*size ] );
+   */
+   /*
+   //rhoVel
+   const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1 >(); 
+   const IndexType& center = entity.getIndex(); 
+   const IndexType& east = neighbourEntities.template getEntityIndex< 1 >(); 
+   const IndexType& west = neighbourEntities.template getEntityIndex< -1 >();
+   typedef typename MeshType::Cell Cell;
+   const int size = mesh.template getEntitiesCount< Cell >()/5; 
+   return (0.5 * this->tau)( u[ west ] - 2.0 * u[ center ]  + u[ east ] ) 
+          - 0.5 * hxInverse * 
+          (( u[ west ] * u[ west + 2*size ] + u[ west + 3*size ] ) 
+          - (u[ east ] * u[ east + 2*size ] + u[ east + 3*size ] ));
+   */
+   /*
+   //energy
+   const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1 >(); 
+   const IndexType& center = entity.getIndex(); 
+   const IndexType& east = neighbourEntities.template getEntityIndex< 1 >(); 
+   const IndexType& west = neighbourEntities.template getEntityIndex< -1 >();
+   typedef typename MeshType::Cell Cell;
+   const int size = mesh.template getEntitiesCount< Cell >()/5; 
+   return (0.5 * this->tau)( u[ west ] - 2.0 * u[ center ]  + u[ east ] ) 
+          - 0.5 * hxInverse * 
+          (( u[ west ] + u[ west + 2*size ] ) * u[ west + size ]  
+          - (u[ east ] + u[ east + 2*size ] ) * u[ east + size ] );
+   */
+   /*
+   //vel
+   const IndexType& center = entity.getIndex(); 
+   typedef typename MeshType::Cell Cell;
+   const int size = mesh.template getEntitiesCount< Cell >()/5; 
+   return ( fu[ center - 2*size] - fu[ center - 3*size]);
+   */
+   /*
+   //pressure
+   const IndexType& center = entity.getIndex(); 
+   typedef typename MeshType::Cell Cell;
+   const int size = mesh.template getEntitiesCount< Cell >()/5; 
+   return ( this->gamma - 1 ) * ( fu[ center - 2*size ] - 0.5 * fu[ center - 3* size ] * fu[ center - 4*size]);
+   */
 
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2 >(); 
    const IndexType& center = entity.getIndex(); 

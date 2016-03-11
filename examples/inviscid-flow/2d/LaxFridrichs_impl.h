@@ -95,7 +95,7 @@ operator()( const MeshFunction& u,
 
 
 
-   const RealType& hxInverse = entity.getMesh().template getSpaceStepsProducts< -1 >(); 
+   const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -1 >(); 
    const IndexType& center = entity.getIndex(); 
    const IndexType& east = neighbourEntities.template getEntityIndex< 1 >(); 
    const IndexType& west = neighbourEntities.template getEntityIndex< -1 >(); 

@@ -106,7 +106,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
    double eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * velR * velR;
    double x0 = parameters.getParameter< double >( "riemann-border" );
    cout << gamma << " " << rhoL << " " << velL << " " << preL << " " << eL << " " << rhoR << " " << velR << " " << preR << " " << eR << " " << x0 << " " << gamma << endl;
-   int count = mesh.template getEntitiesCount< Cell >();
+   int count = mesh.template getEntitiesCount< Cell >()/3;
    this->rho.bind(dofs,0,count);
    this->rhoVel.bind(dofs,count,count);
    this->energy.bind(dofs,2 * count,count);
@@ -248,55 +248,65 @@ getExplicitRHS( const RealType& time,
     p this->pressure[]
     */
     typedef typename MeshType::Cell Cell;
-    int count = mesh.template getEntitiesCount< Cell >();
-    const RealType& size = 1;//mesh.template getSpaceStepsProducts< -1, 0 >();
-    for (long int i = 1; i < count - 1; i++)
-       _fu[i] = 1.0 / (2.0*tau) * (this->rho[i-1]+this->rho[i+1]-2.0*this->rho[i])-(1.0/(2.0 * size)) * (this->rho[i+1]
-       * this->velocity[i+1] - this->rho[i-1] * this->velocity[i-1]);
-       _fu[count-1] = _fu[count-2];
-    for (long int i = 1; i < count - 1; i++)
-       _fu[count + i] =
-       1.0 / (2.0 * tau) * (this->rhoVel[i+1] + this->rhoVel[i+1] - 
-       2.0 * this->rhoVel[i])-(1.0 / (2.0 * size)) * ((this->rhoVel[i+1]
-       * this->velocity[i + 1] + this->pressure[i + 1]) - (this->rhoVel[i-1] * this->velocity[i - 1] 
-       + this->pressure[i - 1]));
-       _fu[2*count-1] = _fu[2*count-2];
-    for (long int i = 1; i < count - 1; i++)
-       _fu[i + 2 * count] = 1.0 / (2.0*tau) * (this->energy[i-1]
-       + this->energy[i+1]-2.0*this->energy[i])
-       - (1.0/(2.0 * size)) * ((this->energy[i+1]
-       + this->pressure[i + 1]) * this->velocity[i + 1] - (this->energy[i-1] + this->pressure[i -1]) * this->velocity[i - 1]);
-       _fu[3 * count-1] = _fu[3 * count-2];
-    for (long int i = 0; i <= count; i++) //pressure
-       this->pressure[i] = (this->gamma - 1 ) * ( this->energy[i] - 0.5 * this->rhoVel[i] * this->velocity[i]);
-    for (long int i = 0; i <= count ; i++) //velocity
-       this->velocity[i] = this->rhoVel[i]/this->rho[i];
-     
-   /****
-    * If you use an explicit solver like tnlEulerSolver or tnlMersonSolver, you
-    * need to implement this method. Compute the right-hand side of
-    *
-    *   d/dt u(x) = fu( x, u )
-    *
-    * You may use supporting mesh dependent data if you need.
-    
+    int count = mesh.template getEntitiesCount< Cell >()/3;
+	//bind _u
+    this->_uRho.bind(_u,0,count);
+    this->_uRhoVelocity.bind(_u,count,count);
+    this->_uEnergy.bind(_u,2 * count,count);
+		
+	//bind _fu
+    this->_fuRho.bind(_u,0,count);
+    this->_fuRhoVelocity.bind(_u,count,count);
+    this->_fuEnergy.bind(_u,2 * count,count);
 
+   MeshFunctionType velocity( mesh, this->velocity );
+   MeshFunctionType pressure( mesh, this->pressure );
+	//rho
    this->bindDofs( mesh, _u );
    tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   MeshFunctionType u( mesh, _u ); 
-   MeshFunctionType fu( mesh, _fu ); 
+   MeshFunctionType uRho( mesh, _uRho ); 
+   MeshFunctionType fuRho( mesh, _fuRho );
+   diffrrentialOperatorRho.setTau(tau);
+   differentialOperatorRho.setVelocity(velocity) 
    explicitUpdater.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           this->differentialOperator,
+                                                           this->differentialOperatorRho,
                                                            this->boundaryCondition,
                                                            this->rightHandSide,
-                                                           u,
-                                                           fu );
+                                                           uRho,
+                                                           fuRho );
+   //rhoVelocity
+   MeshFunctionType uRhoVelocity( mesh, _uRhoVelocity ); 
+   MeshFunctionType fuRhoVelocity( mesh, _fuRhoVelocity );
+   diffrrentialOperatorRhoVelocity.setTau(tau);
+   differentialOperatorRhoVelocity.setVelocity(velocity)
+   differentialOperatorRhoVelocity.setPressure(pressure) 
+   explicitUpdater.template update< typename Mesh::Cell >( time,
+                                                           mesh,
+                                                           this->differentialOperatorRhoVelocity,
+                                                           this->boundaryCondition,
+                                                           this->rightHandSide,
+                                                           uRhoVelocity,
+                                                           fuRhoVelocity );
+   
+   //energy
+   MeshFunctionType uEnergy( mesh, _uEnergy ); 
+   MeshFunctionType fuEnergy( mesh, _fuEnergy );
+   diffrrentialOperatorEnergy.setTau(tau);
+   diffrrentialOperatorEnergy.setPressure(pressure);
+   diffrrentialOperatorEnergy.setVelocity(velocity); 
+   explicitUpdater.template update< typename Mesh::Cell >( time,
+                                                           mesh,
+                                                           this->differentialOperatorEnergy,
+                                                           this->boundaryCondition,
+                                                           this->rightHandSide,
+                                                           uEnergy,
+                                                           fuEnergy );
    tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
    boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
       this->boundaryCondition, 
       time + tau, 
-       u ); */
+       u );
  }
 
 template< typename Mesh,

@@ -229,91 +229,89 @@ getExplicitRHS( const RealType& time,
                 MeshDependentDataType& meshDependentData )
 {
     typedef typename MeshType::Cell Cell;
-    const RealType& cellSize = 1;// mesh.template getSpaceStepsProducts< -1, 0 >();
-    int size = mesh.template getEntitiesCount< Cell >()/4; 
-// prepsat na SWEN
+    int count = mesh.template getEntitiesCount< Cell >()/4;
+	//bind _u
+    this->_uRho.bind(_u,0,count);
+    this->_uRhoVelocityX.bind(_u,count,count);
+    this->_uRhoVelocityY.bind(_u,2 * count,count);
+    this->_uEnergy.bind(_u,3 * count,count);
+		
+	//bind _fu
+    this->_fuRho.bind(_u,0,count);
+    this->_fuRhoVelocityX.bind(_u,count,count);
+    this->_fuRhoVelocityY.bind(_u,2 * count,count);
+    this->_fuEnergy.bind(_u,3 * count,count);
 
-    for (long int j = 1; j < size - 1; j++)
-       {
-          for (long int i = 1; i < size - 1; i++)
-             {
-                _fu[j*size+i] = 1.0 / (4.0*tau) * 
-                (this->rho[j*size+i-1]+this->rho[j*size+i+1]+this->rho[(j-1)*size+i]+this->rho[(j+1)*size+i]-4.0*this->rho[j*size+i])
-                -(1.0/(2.0*cellSize))*(this->rho[j*size+i+1]*this->velocityX[j*size+i+1]-this->rho[j*size+i-1]*this->velocityX[j*size+i-1])
-                -(1.0/(2.0*cellSize))*(this->rho[(j+1)*size+i]*this->velocityY[(j+1)*size+i]-this->rho[(j-1)*size+i]*this->velocityY[(j-1)*size+i]);
-                _fu[pow(size,2)-size+i]=_fu[pow(size,2)-2*size+i];
-             };
-       _fu[j*size-1] = _fu[j*size-1];
-       };
-    for (long int j = 1; j < size - 1; j++)
-       {
-          for (long int i = 1; i < size - 1; i++)
-             {
-                _fu[pow(size,2) + j*size+i] = 1.0 / (4.0 * tau) *
-                (this->rhoVelX[j*size+i+1]+this->rhoVelX[j*size+i-1]+this->rhoVelX[(j-1)*size+i]+this->rhoVelX[(j+1)*size+i]-4.0*this->rhoVelX[j*size+i])
-               -(1.0/(2.0*cellSize))*((this->rhoVelX[j*size+i+1]*this->velocityX[j*size+i+1]+this->pressure[j*size+i+1])-(this->rhoVelX[j*size+i-1]*this->velocityX[j*size+i-1]+this->pressure[j*size+i-1]))
-               -(1.0/(2.0*cellSize))*((this->rhoVelX[(j+1)*size+i]*this->velocityY[(j+1)*size+i])-(this->rhoVelX[(j-1)*size+i]*this->velocityY[(j-1)*size+i]));
-               _fu[2*pow(size,2)-size+i]=_fu[2*pow(size,2)-2*size+i];
-             };
-       _fu[pow(size,2)+j*size] = _fu[pow(size,2)+j*size-1];
-       };
-    for (long int j = 1; j < size - 1; j++)
-       {
-          for (long int i = 1; i < size - 1; i++)
-             {
-                _fu[2*pow(size,2) + j*size+i] = 1.0 / (4.0 * tau) *
-                (this->rhoVelY[j*size+i+1]+this->rhoVelY[j*size+i-1]+this->rhoVelY[(j-1)*size+i]+this->rhoVelY[(j+1)*size+i]-4.0*this->rhoVelY[j*size+i])
-               -(1.0/(2.0*cellSize))*((this->rhoVelY[(j+1)*size+i]*this->velocityY[(j+1)*size+i]+this->pressure[(j+1)*size+i])-(this->rhoVelY[(j-1)*size+i]*this->velocityY[(j-1)*size+i]+this->pressure[(j-1)*size+i]))
-               -(1.0/(2.0*cellSize))*((this->rhoVelY[j*size+i+1]*this->velocityX[j*size+i+1])-(this->rhoVelY[j*size+i-1]*this->velocityX[j*size+i-1]));
-               _fu[3*pow(size,2)-size+i]=_fu[3*pow(size,2)-2*size+i];
-             };
-       _fu[2*pow(size,2)+j*size] = _fu[2*pow(size,2)+j*size-1];
-       };
-    for (long int j = 1; j < size - 1; j++)
-       {
-          for (long int i = 1; i < size - 1; i++)
-             {
-                _fu[3*pow(size,2) + j*size+i] = 1.0 / (4.0 * tau) *
-                (this->energy[j*size+i+1]+this->energy[j*size+i-1]+this->energy[(j-1)*size+i]+this->energy[(j+1)*size+i]-4.0*this->energy[j*size+i])
-       		-(1.0/(2.0*cellSize))*((this->energy[j*size+i+1]+this->pressure[j*size+i+1])*this->velocityX[j*size+i+1]-(this->energy[j*size+i-1]+this->pressure[j*size+i-1])*this->velocityX[j*size+i-1])
-        	-(1.0/(2.0*cellSize))*((this->energy[(j+1)*size+i]+this->pressure[(j+1)*size+i])*this->velocityY[(j+1)*size+i]-(this->energy[(j-1)*size+i]+this->pressure[(j-1)*size+i])*this->velocityY[(j-1)*size+i]);
-       		_fu[4*pow(size,2)-size+i] = _fu[4*pow(size,2)-2*size+i];
-             };
-       _fu[3*pow(size,2)+j*size] = _fu[3*pow(size,2)+j*size-1];
-       };
-
-    for (long int j = 1; j < size; j++) //pressure
-       for (long int i = 1; i < size; i++)
-          this->pressure[j*size+i] = (this->gamma - 1 ) * ( this->energy[j*size+i] - 0.5 * this->rho[j*size+i] * (pow(this->velocityX[j*size+i],2) + pow(this->velocityY[j*size+i],2)));
-    for (long int j = 1; j < size; j++) //velocityX
-       for (long int i = 1; i < size; i++)
-       this->velocityX[j*size+i] = this->rhoVelX[j*size+i]/this->rho[j*size+i];
-    for (long int j = 1; j < size; j++) //velocityY
-       for (long int i = 1; i < size; i++)
-       this->velocityY[j*size+i] = this->rhoVelY[j*size+i]/this->rho[j*size+i];
-    for (long int j = 1; j < size; j++) //velocity
-       for (long int i = 1; i < size; i++)
-       this->velocity[j*size+i] =sqrt(pow(velocityX[j*size+i],2)+pow(velocityY[j*size+i],2));
-
-/*
-
+   MeshFunctionType velocity( mesh, this->velocity );
+   MeshFunctionType velocityX( mesh, this->velocityX );
+   MeshFunctionType velocityY( mesh, this->velocityY );
+   MeshFunctionType pressure( mesh, this->pressure );
+   //rho
    this->bindDofs( mesh, _u );
    tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   MeshFunctionType u( mesh, _u ); 
-   MeshFunctionType fu( mesh, _fu ); 
+   MeshFunctionType uRho( mesh, _uRho ); 
+   MeshFunctionType fuRho( mesh, _fuRho );
+   diffrrentialOperatorRho.setTau(tau);
+   differentialOperatorRho.setVelocityX(velocityX);
+   differentialOperatorRho.setVelocityY(velocityY); 
    explicitUpdater.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           this->differentialOperator,
+                                                           this->differentialOperatorRho,
                                                            this->boundaryCondition,
                                                            this->rightHandSide,
-                                                           u,
-                                                           fu );
+                                                           uRho,
+                                                           fuRho );
+   //rhoVelocityX
+   MeshFunctionType uRhoVelocityX( mesh, _uRhoVelocityX ); 
+   MeshFunctionType fuRhoVelocityX( mesh, _fuRhoVelocityX );
+   diffrrentialOperatorRhoVelocityX.setTau(tau);
+   differentialOperatorRhoVelocityX.setVelocityX(velocityX);
+   differentialOperatorRhoVelocityX.setVelocityY(velocityY);
+   differentialOperatorRhoVelocityX.setPressure(pressure); 
+   explicitUpdater.template update< typename Mesh::Cell >( time,
+                                                           mesh,
+                                                           this->differentialOperatorRhoVelocityX,
+                                                           this->boundaryCondition,
+                                                           this->rightHandSide,
+                                                           uRhoVelocityX,
+                                                           fuRhoVelocityX );
+   //rhoVelocityY
+   MeshFunctionType uRhoVelocityY( mesh, _uRhoVelocityY ); 
+   MeshFunctionType fuRhoVelocityY( mesh, _fuRhoVelocityY );
+   diffrrentialOperatorRhoVelocityY.setTau(tau);
+   differentialOperatorRhoVelocityY.setVelocityX(velocityX);
+   differentialOperatorRhoVelocityY.setVelocityY(velocityY);
+   differentialOperatorRhoVelocityY.setPressure(pressure); 
+   explicitUpdater.template update< typename Mesh::Cell >( time,
+                                                           mesh,
+                                                           this->differentialOperatorRhoVelocityY,
+                                                           this->boundaryCondition,
+                                                           this->rightHandSide,
+                                                           uRhoVelocityY,
+                                                           fuRhoVelocityY );
+   
+   
+   //energy
+   MeshFunctionType uEnergy( mesh, _uEnergy ); 
+   MeshFunctionType fuEnergy( mesh, _fuEnergy );
+   diffrrentialOperatorEnergy.setTau(tau);
+   diffrrentialOperatorEnergy.setVelocityX(velocityX); 
+   diffrrentialOperatorEnergy.setVelocityY(velocityY); 
+   diffrrentialOperatorEnergy.setPressure(pressure);
+   explicitUpdater.template update< typename Mesh::Cell >( time,
+                                                           mesh,
+                                                           this->differentialOperatorEnergy,
+                                                           this->boundaryCondition,
+                                                           this->rightHandSide,
+                                                           uEnergy,
+                                                           fuEnergy );
+
+
    tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
    boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
       this->boundaryCondition, 
       time + tau, 
-       u ); 
-*/
+       u );
  }
 
 template< typename Mesh,
