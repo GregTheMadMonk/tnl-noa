@@ -36,6 +36,9 @@ void tnlOmp::disable()
 void tnlOmp::setMaxThreadsCount( int maxThreadsCount_ )
 {
    maxThreadsCount = maxThreadsCount_;
+#ifdef HAVE_OPENMP   
+   omp_set_num_threads( maxThreadsCount );
+#endif   
 }
 
 int tnlOmp::getMaxThreadsCount()
