@@ -83,6 +83,8 @@ class tnlSemiImplicitTimeStepper
    tnlTimerRT preIterateTimer, linearSystemAssemblerTimer, linearSystemSolverTimer, postIterateTimer;
    
    bool verbose;
+   
+   long long int allIterations;
 };
 
 #include <solvers/pde/tnlSemiImplicitTimeStepper_impl.h>
