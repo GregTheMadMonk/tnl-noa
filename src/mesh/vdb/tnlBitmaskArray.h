@@ -9,8 +9,6 @@ class tnlBitmaskArray
 public:
     tnlBitmaskArray( unsigned size );
 
-    
-
     ~tnlBitmaskArray();
 
 private:
