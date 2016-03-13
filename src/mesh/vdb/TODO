@@ -1,7 +1,12 @@
 echo
 echo
-echo "Bitmasks seem to be alright at the moment"
-echo
+echo "Basics of the tree are implemented. What must be done now"
+echo "is to implement internal and leaf nodes and handler to "
+echo "create the whole tree. After that lookup methods need "
+echo "to be implemented and also class values to store functions"
+echo "values in each point. There should also be some bitmask "
+echo "to tell which nodes are active for fast lookup and bitmask"
+echo "to identify coordinates of given area."
 echo
 echo "Currently most important is to implement math funcs,"
 echo "as the original ones are exponentially complex, in 2D"
