@@ -22,6 +22,11 @@ tnlBitmask::tnlBitmask( bool state,
     this->bitmask = x64 | y64 | state64;
 }                        
 
+tnlBitmask::tnlBitmask( tnlBitmask* bitmask )
+{
+    this->bitmask = bitmask->getBitmask();
+}
+
 bool tnlBitmask::getState()
 {
     return this->bitmask & 1;
@@ -39,6 +44,11 @@ unsigned tnlBitmask::getY()
     unsigned mask = 3 << 30;
     uint64_t y = this->bitmask >> 34;
     return ( unsigned ) ( y & ( ~mask ) );
+}
+
+uint64_t tnlBitmask::getBitmask()
+{
+    return this->bitmask;
 }
 
 #endif //_TNLBITMASK_IMPL_H_INCLUDED_

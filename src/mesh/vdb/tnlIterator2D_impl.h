@@ -6,12 +6,13 @@
 #include "tnlBitmask.h"
 #include "tnlCircle2D.h"
 
-tnlIterator2D::tnlIterator2D( unsigned cellsX,
-                              unsigned cellsY,
-                              float stepX,
-                              float stepY,
-                              float startX,
-                              float startY );
+template< unsigned size >
+tnlIterator2D< size >::tnlIterator2D( unsigned cellsX,
+                                      unsigned cellsY,
+                                      float stepX,
+                                      float stepY,
+                                      float startX,
+                                      float startY )
 {
     this->cellsX = cellsX;
     this->cellsY = cellsY;
@@ -21,8 +22,9 @@ tnlIterator2D::tnlIterator2D( unsigned cellsX,
     this->startY = startY;
 }
 
-void tnlIterator2D::computeBitmaskArray( tnlBitmaskArray &bitmaskArray,
-                                         tnlCircle2D &circle )
+template< unsigned size >
+void tnlIterator2D< size >::computeBitmaskArray( tnlBitmaskArray< size >* bitmaskArray,
+                                                 tnlCircle2D* circle )
 {
     // yeah, in matrix, i like to iterate over rows first
     for( int i = 0; i < this->cellsY; i++ )
@@ -34,8 +36,7 @@ void tnlIterator2D::computeBitmaskArray( tnlBitmaskArray &bitmaskArray,
             float y2 = this->startY + ( i + 1 ) * this->stepY;
             bool state = circle->isIntercept( x1, x2, y1, y2 );
 
-            bitmaskArray[ i * this->cellsX + j * this->cellsX ] = 
-               new tnlBitmask( state, j, i );
+            bitmaskArray->setIthBitmask( i * this->cellsX + j, new tnlBitmask( state, j, i ) );
         }
 }
 

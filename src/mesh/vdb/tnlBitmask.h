@@ -7,6 +7,8 @@ class tnlBitmask
 {
 public:
     tnlBitmask( bool state, unsigned x, unsigned y );
+
+    tnlBitmask( tnlBitmask* bitmask );
     
     bool getState();
     
@@ -14,6 +16,8 @@ public:
     
     unsigned getY();
     
+    uint64_t getBitmask();
+
     ~tnlBitmask(){};
     
 private:

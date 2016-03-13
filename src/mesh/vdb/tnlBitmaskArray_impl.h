@@ -1,27 +1,43 @@
 #ifndef _TNLBITMASKARRAY_IMPL_H_INCLUDED_
 #define _TNLBITMASKARRAY_IMPL_H_INCLUDED_
 
-#include <tnlBitmask.h>
+#include <cassert>
+#include "tnlBitmask.h"
+#include "tnlBitmaskArray.h"
 
 template< unsigned size >
-tnlBitmaskArray< size >::tnlBitmaskArray( unsigned size )
+tnlBitmaskArray< size >::tnlBitmaskArray()
 {
-    this->size = size;
-    this->bitmaskArray = new tnlBitmask*[size];
-    // in this part all the partial masks should be computed
-    // this could be handled by some iterator that knows
-    // current depth of the n-tree
+    this->length = size;
+}
 
+template< unsigned size >
+unsigned tnlBitmaskArray< size >::getSize()
+{
+    return this->length;
+}
 
-    	// TODO: vymyslet jak na to
+template< unsigned size >
+void tnlBitmaskArray< size >::setIthBitmask( unsigned i,
+                                             tnlBitmask bitmask )
+{
+    assert( i < size );
+    this->bitmaskArray[ i ] = new tnlBitmask( bitmask );
+}
+
+template< unsigned size >
+tnlBitmask* tnlBitmaskArray< size >::getIthBitmask( unsigned i )
+{
+    assert( i < size );
+    return this->bitmaskArray[ i ];
 }
 
 template< unsigned size >
 tnlBitmaskArray< size >::~tnlBitmaskArray()
 {
-    for( int i = 0; i < this->size; i++ )
+    for( int i = 0; i < this->length; i++ )
         delete this->bitmaskArray[ i ];
-    delete [] this->bitmaskArray;
+    delete this->bitmaskArray;
 }
 
 #endif // _TNLBITMASKARRAY_IMPL_H_INCLUDED_

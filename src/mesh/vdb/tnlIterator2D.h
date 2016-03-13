@@ -4,6 +4,7 @@
 #include "tnlBitmaskArray.h"
 #include "tnlCircle2D.h"
 
+template< unsigned size >
 class tnlIterator2D
 {
 public:
@@ -14,8 +15,8 @@ public:
                    float startX,
                    float startY );
 
-    void computeBitmaskArray( tnlBitmaskArray &bitmaskArray,
-                              tnlCircle2D &circle );
+    void computeBitmaskArray( tnlBitmaskArray< size >* bitmaskArray,
+                              tnlCircle2D* circle );
 
     ~tnlIterator2D(){};
 
