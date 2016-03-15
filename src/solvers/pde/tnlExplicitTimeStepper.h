@@ -21,7 +21,7 @@
 #include <solvers/ode/tnlODESolverMonitor.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
-#include <core/tnlTimerRT.h>
+#include <core/tnlTimer.h>
 #include <core/tnlLogger.h>
 
 
@@ -85,7 +85,7 @@ class tnlExplicitTimeStepper
 
    MeshDependentDataType* meshDependentData;
    
-   tnlTimerRT explicitUpdaterTimer, mainTimer;
+   tnlTimer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
    
    long long int allIterations;
 };

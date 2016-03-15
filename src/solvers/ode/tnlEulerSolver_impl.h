@@ -182,7 +182,7 @@ void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
    if( std::is_same< DeviceType, tnlHost >::value )
    {
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:localResidue) firstprivate( _u, _k1, tau ) if( tnlOmp::isEnabled() )
+#pragma omp parallel for reduction(+:localResidue) firstprivate( _u, _k1, tau ) if( tnlHost::isOMPEnabled() )
 #endif
       for( IndexType i = 0; i < size; i ++ )
       {

@@ -323,7 +323,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
       const IndexType size = dofs_rho.getSize();
 
       #ifdef HAVE_OPENMP
-      #pragma omp parallel for, if( tnlOmp::isEnabled() )
+      #pragma omp parallel for, if( tnlHost::isOMPEnabled() )
       #endif
       for( IndexType c = 0; c < size; c++ )
          {
@@ -447,7 +447,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
    writePhysicalVariables( time, -4 );
 
 #ifdef HAVE_OPENMP
-  #pragma omp parallel for, if( tnlOmp::isEnabled() )
+  #pragma omp parallel for, if( tnlHost::isOMPEnabled() )
   #endif
   for( IndexType j = 0; j < ySize; j ++ )
      for( IndexType i = 0; i < xSize; i ++ )

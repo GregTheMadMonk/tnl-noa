@@ -274,28 +274,28 @@ void tnlMersonSolver< Problem > :: computeKFunctions( DofVectorType& u,
       this->problem->getExplicitRHS( time, tau, u, k1 );
 
    #ifdef HAVE_OPENMP
-   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, tau, tau_3 ) if( tnlOmp::isEnabled() )
+   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, tau, tau_3 ) if( tnlHost::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 1.0 / 3.0 * _k1[ i ] );
       this->problem->getExplicitRHS( time + tau_3, tau, kAux, k2 );
 
    #ifdef HAVE_OPENMP
-   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k2, tau, tau_3 ) if( tnlOmp::isEnabled() )
+   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k2, tau, tau_3 ) if( tnlHost::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * 1.0 / 6.0 * ( _k1[ i ] + _k2[ i ] );
       this->problem->getExplicitRHS( time + tau_3, tau, kAux, k3 );
 
    #ifdef HAVE_OPENMP
-   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, tau, tau_3 ) if( tnlOmp::isEnabled() )
+   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, tau, tau_3 ) if( tnlHost::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 0.125 * _k1[ i ] + 0.375 * _k3[ i ] );
       this->problem->getExplicitRHS( time + 0.5 * tau, tau, kAux, k4 );
 
    #ifdef HAVE_OPENMP
-   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, _k4, tau, tau_3 ) if( tnlOmp::isEnabled() )
+   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, _k4, tau, tau_3 ) if( tnlHost::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 0.5 * _k1[ i ] - 1.5 * _k3[ i ] + 2.0 * _k4[ i ] );
@@ -454,7 +454,7 @@ void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
    if( DeviceType :: getDevice() == tnlHostDevice )
    {
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:localResidue) firstprivate( size, _u, _k1, _k4, _k5, tau ) if( tnlOmp::isEnabled() )
+#pragma omp parallel for reduction(+:localResidue) firstprivate( size, _u, _k1, _k4, _k5, tau ) if( tnlHost::isOMPEnabled() )
 #endif
       for( IndexType i = 0; i < size; i ++ )
       {

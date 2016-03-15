@@ -59,6 +59,8 @@ init( const MeshType& mesh )
 {
    this->explicitUpdaterTimer.reset();
    this->mainTimer.reset();
+   this->preIterateTimer.reset();
+   this->postIterateTimer.reset();
    return true;
 }
 
@@ -140,6 +142,7 @@ getExplicitRHS( const RealType& time,
                 DofVectorType& u,
                 DofVectorType& fu )
 {
+   this->preIterateTimer.start();
    if( ! this->problem->preIterate( time,
                                     tau,
                                     *( this->mesh),
@@ -150,9 +153,11 @@ getExplicitRHS( const RealType& time,
       return;
       //return false; // TODO: throw exception
    }
+   this->preIterateTimer.stop();
    this->explicitUpdaterTimer.start();
    this->problem->getExplicitRHS( time, tau, *( this->mesh ), u, fu, *( this->meshDependentData ) );
    this->explicitUpdaterTimer.stop();
+   this->postIterateTimer.start();
    if( ! this->problem->postIterate( time,
                                      tau,
                                      *( this->mesh ),
@@ -163,6 +168,7 @@ getExplicitRHS( const RealType& time,
       return;
       //return false; // TODO: throw exception
    }
+   this->postIterateTimer.stop();
 }
 
 template< typename Problem,
@@ -171,9 +177,15 @@ bool
 tnlExplicitTimeStepper< Problem, OdeSolver >::
 writeEpilog( tnlLogger& logger )
 {
-   logger.writeParameter< long long int >( "Ierations count:", this->allIterations );
-   logger.writeParameter< double >( "Explicit update computation time:", this->explicitUpdaterTimer.getTime() );
-   logger.writeParameter< double >( "Explicit time stepper time:", this->mainTimer.getTime() );
+   logger.writeParameter< long long int >( "Iterations count:", this->allIterations );
+   logger.writeParameter< const char* >( "Pre-iterate time:", "" );
+   this->preIterateTimer.writeLog( logger, 1 );   
+   logger.writeParameter< const char* >( "Explicit update computation:", "" );
+   this->explicitUpdaterTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Explicit time stepper time:", "" );
+   this->mainTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Post-iterate time:", "" );
+   this->postIterateTimer.writeLog( logger, 1 );   
    return true;
 }
 

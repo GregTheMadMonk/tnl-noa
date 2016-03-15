@@ -29,10 +29,8 @@ tnlPDESolver()
   timeStep( 1.0 ),
   timeStepOrder( 0.0 ),
   problem( 0 ),
-  ioRtTimer( 0 ),
-  computeRtTimer( 0 ),
-  ioCpuTimer( 0 ),
-  computeCpuTimer( 0 )
+  ioTimer( 0 ),
+  computeTimer( 0 )
 {
 }
 
@@ -288,27 +286,15 @@ getTimeStepOrder() const
 }
 
 template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper > :: setIoRtTimer( tnlTimerRT& ioRtTimer )
+void tnlPDESolver< Problem, TimeStepper > :: setIoTimer( tnlTimer& ioTimer )
 {
-   this->ioRtTimer = &ioRtTimer;
+   this->ioTimer = &ioTimer;
 }
 
 template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper > :: setComputeRtTimer( tnlTimerRT& computeRtTimer )
+void tnlPDESolver< Problem, TimeStepper > :: setComputeTimer( tnlTimer& computeTimer )
 {
-   this->computeRtTimer = &computeRtTimer;
-}
-
-template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper > :: setIoCpuTimer( tnlTimerCPU& ioCpuTimer )
-{
-   this->ioCpuTimer = &ioCpuTimer;
-}
-
-template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper > :: setComputeCpuTimer( tnlTimerCPU& computeCpuTimer )
-{
-   this->computeCpuTimer = & computeCpuTimer;
+   this->computeTimer = &computeTimer;
 }
 
 template< typename Problem, typename TimeStepper >
@@ -330,23 +316,17 @@ solve()
    IndexType step( 0 );
    IndexType allSteps = ceil( ( this->finalTime - this->initialTime ) / this->snapshotPeriod );
 
-   this->ioRtTimer->reset();
-   this->ioCpuTimer->reset();
-   this->computeRtTimer->reset();
-   this->computeCpuTimer->reset();
+   this->ioTimer->reset();
+   this->computeTimer->reset();
    
-   this->ioRtTimer->start();
-   this->ioCpuTimer->start();
+   this->ioTimer->start();
    if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->meshDependentData ) )
    {
       cerr << "Making the snapshot failed." << endl;
       return false;
-   }
-
-   this->ioRtTimer->stop();
-   this->ioCpuTimer->stop();
-   this->computeRtTimer->start();
-   this->computeCpuTimer->start();
+   }   
+   this->ioTimer->stop();
+   this->computeTimer->start();
 
    /****
     * Initialize the time stepper
@@ -363,22 +343,17 @@ solve()
       step ++;
       t += tau;
 
-      this->ioRtTimer->start();
-      this->ioCpuTimer->start();
-      this->computeRtTimer->stop();
-      this->computeCpuTimer->stop();
-
+      this->ioTimer->start();
+      this->computeTimer->stop();
       if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->meshDependentData ) )
       {
          cerr << "Making the snapshot failed." << endl;
          return false;
       }
-
-      this->ioRtTimer->stop();
-      this->ioCpuTimer->stop();
-      this->computeRtTimer->start();
-      this->computeCpuTimer->start();
+      this->ioTimer->stop();
+      this->computeTimer->start();
    }
+   this->computeTimer->stop();
    return true;
 }
 

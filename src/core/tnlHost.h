@@ -22,20 +22,48 @@
 #include <core/tnlDevice.h>
 #include <core/tnlString.h>
 
+class tnlConfigDescription;
+class tnlParameterContainer;
+
 class tnlHost
 {
    public:
 
-   enum { DeviceType = tnlHostDevice };
+      enum { DeviceType = tnlHostDevice };
 
-   static tnlString getDeviceType();
+      static tnlString getDeviceType();
 
-#ifdef HAVE_CUDA
-   __host__ __device__
-#endif
-   static inline tnlDeviceEnum getDevice() { return tnlHostDevice; };
+   #ifdef HAVE_CUDA
+      __host__ __device__
+   #endif
+      static inline tnlDeviceEnum getDevice() { return tnlHostDevice; };
 
-   static size_t getFreeMemory();
+      static size_t getFreeMemory();
+   
+      static void disableOMP();
+      
+      static void enableOMP();
+      
+      static inline bool isOMPEnabled() { return ompEnabled; };
+      
+      static void setMaxThreadsCount( int maxThreadsCount );
+      
+      static int getMaxThreadsCount();
+      
+      static int getThreadIdx();
+      
+      static void configSetup( tnlConfigDescription& config, const tnlString& prefix = "" );
+      
+      static bool setup( const tnlParameterContainer& parameters,
+                         const tnlString& prefix = "" );
+
+   protected:
+      
+      static bool ompEnabled;
+      
+      static int maxThreadsCount;
+
+
 };
 
 #endif /* TNLHOST_H_ */
