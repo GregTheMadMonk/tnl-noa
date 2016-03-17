@@ -240,13 +240,6 @@ getExplicitRHS( const RealType& time,
                 DofVectorType& _fu,
                 MeshDependentDataType& meshDependentData )
 {
-   /* 
-    W[1] [0				...	count-1	]
-    W[2] [count	...	2*count-1	]
-    W[3] [2*count	...	3*count-1	]
-    V this->velocity[]
-    p this->pressure[]
-    */
     typedef typename MeshType::Cell Cell;
     int count = mesh.template getEntitiesCount< Cell >()/3;
 	//bind _u
@@ -261,52 +254,73 @@ getExplicitRHS( const RealType& time,
 
    MeshFunctionType velocity( mesh, this->velocity );
    MeshFunctionType pressure( mesh, this->pressure );
-	//rho
-   this->bindDofs( mesh, _u );
-   tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    MeshFunctionType uRho( mesh, _uRho ); 
    MeshFunctionType fuRho( mesh, _fuRho );
-   diffrrentialOperatorRho.setTau(tau);
-   differentialOperatorRho.setVelocity(velocity) 
+   MeshFunctionType uRhoVelocity( mesh, _uRhoVelocity ); 
+   MeshFunctionType fuRhoVelocity( mesh, _fuRhoVelocity );
+   MeshFunctionType uEnergy( mesh, _uEnergy ); 
+   MeshFunctionType fuEnergy( mesh, _fuEnergy );
+
+/*
+   //velocity
+   EulerVelGetter.setRhoVel(_urhoVel);
+   EulerVelGetter.setRho(_urho); 
+   tnlOperatorFunction< EulerVelGetter, MeshFunction, void, time > OFVel;
+   velocity = OFVel;
+
+   //pressure
+   EulerPressureGetter.setRhoVel(_urhoVel);
+   EulerPressureGetter.setVel(velocity);
+   EulerPressureGetter.setGamma(gamma);
+   EulerPressureGetter.setEnergy(energy); 
+   tnlOperatorFunction<EulerPressureGetter,MeshFunction,void,time>OFPressure;
+   pressure = OFPressure;
+
+   //rho
+   this->bindDofs( mesh, _u );
+   LaxFridrichsContinuity.setTau(tau);
+   LaxFridrichsContinuity.setVelocity(velocity);
+   tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           this->differentialOperatorRho,
+                                                           this->LaxFridrichsContinuity,
                                                            this->boundaryCondition,
                                                            this->rightHandSide,
                                                            uRho,
                                                            fuRho );
+
    //rhoVelocity
-   MeshFunctionType uRhoVelocity( mesh, _uRhoVelocity ); 
-   MeshFunctionType fuRhoVelocity( mesh, _fuRhoVelocity );
-   diffrrentialOperatorRhoVelocity.setTau(tau);
-   differentialOperatorRhoVelocity.setVelocity(velocity)
-   differentialOperatorRhoVelocity.setPressure(pressure) 
+   LaxFridrichsMomentum.setTau(tau);
+   LaxFridrichsMomentum.setVelocity(velocity);
+   LaxFridrichsMomentum.setPressure(pressure);
+   tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           this->differentialOperatorRhoVelocity,
+                                                           this->LaxFridrichsMomentum,
                                                            this->boundaryCondition,
                                                            this->rightHandSide,
                                                            uRhoVelocity,
                                                            fuRhoVelocity );
    
+
    //energy
-   MeshFunctionType uEnergy( mesh, _uEnergy ); 
-   MeshFunctionType fuEnergy( mesh, _fuEnergy );
-   diffrrentialOperatorEnergy.setTau(tau);
-   diffrrentialOperatorEnergy.setPressure(pressure);
-   diffrrentialOperatorEnergy.setVelocity(velocity); 
+   LaxFridrichsEnergy.setTau(tau);
+   LaxFridrichsEnergy.setPressure(pressure);
+   LaxFridrichsEnergy.setVelocity(velocity);
+   tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.template update< typename Mesh::Cell >( time,
                                                            mesh,
-                                                           this->differentialOperatorEnergy,
+                                                           this->LaxFridrichsEnergy,
                                                            this->boundaryCondition,
                                                            this->rightHandSide,
                                                            uEnergy,
-                                                           fuEnergy );
+                                                           fuEnergy );   
+   
    tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
    boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
       this->boundaryCondition, 
       time + tau, 
-       u );
+       u );*/
  }
 
 template< typename Mesh,

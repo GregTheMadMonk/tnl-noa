@@ -37,12 +37,12 @@ class eulerProblem:
 
 
       static tnlString getTypeStatic();
-      tnlSharedVector< RealType, DeviceType, IndexType > rho;
-      tnlSharedVector< RealType, DeviceType, IndexType > rhoVel;
-      tnlSharedVector< RealType, DeviceType, IndexType > energy;
+      tnlVector< RealType, DeviceType, IndexType > rho;
+      tnlVector< RealType, DeviceType, IndexType > rhoVel;
+      tnlVector< RealType, DeviceType, IndexType > energy;
       tnlVector< RealType, DeviceType, IndexType > data;
-      tnlSharedVector< RealType, DeviceType, IndexType > pressure;
-      tnlSharedVector< RealType, DeviceType, IndexType > velocity;
+      tnlVector< RealType, DeviceType, IndexType > pressure;
+      tnlVector< RealType, DeviceType, IndexType > velocity;
       double gamma;
 
       tnlString getPrologHeader() const;

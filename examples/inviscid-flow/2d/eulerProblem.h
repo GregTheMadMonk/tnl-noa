@@ -37,15 +37,15 @@ class eulerProblem:
 	tnlVector< RealType, DeviceType, IndexType > _fuRhoVelocityY;
 	tnlVector< RealType, DeviceType, IndexType > _fuEnergy;
 
-      tnlSharedVector< RealType, DeviceType, IndexType > rho;
-      tnlSharedVector< RealType, DeviceType, IndexType > rhoVelX;
-      tnlSharedVector< RealType, DeviceType, IndexType > rhoVelY;
-      tnlSharedVector< RealType, DeviceType, IndexType > energy;
+      tnlVector< RealType, DeviceType, IndexType > rho;
+      tnlVector< RealType, DeviceType, IndexType > rhoVelX;
+      tnlVector< RealType, DeviceType, IndexType > rhoVelY;
+      tnlVector< RealType, DeviceType, IndexType > energy;
       tnlVector< RealType, DeviceType, IndexType > data;
-      tnlSharedVector< RealType, DeviceType, IndexType > pressure;
-      tnlSharedVector< RealType, DeviceType, IndexType > velocity;
-      tnlSharedVector< RealType, DeviceType, IndexType > velocityX;
-      tnlSharedVector< RealType, DeviceType, IndexType > velocityY;
+      tnlVector< RealType, DeviceType, IndexType > pressure;
+      tnlVector< RealType, DeviceType, IndexType > velocity;
+      tnlVector< RealType, DeviceType, IndexType > velocityX;
+      tnlVector< RealType, DeviceType, IndexType > velocityY;
       double gamma;
 
       static tnlString getTypeStatic();

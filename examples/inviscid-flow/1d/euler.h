@@ -9,6 +9,8 @@
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsMomentum.h"
 #include "LaxFridrichsEnergy.h"
+#include "EulerVelGetter.h"
+#include "EulerPressureGetter.h"
 
 #include "eulerRhs.h"
 #include "eulerBuildConfigTag.h"
