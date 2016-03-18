@@ -111,6 +111,9 @@ if( WITH_CUDA STREQUAL "yes" )
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} )
         # TODO: this is necessary only due to a bug in cmake
         set( CUDA_ADD_LIBRARY_OPTIONS -shared )
+        # TODO: workaround for a bug in cmake 3.5.0
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -ccbin "${CMAKE_CXX_COMPILER}" )
+        set( CUDA_HOST_COMPILER "" )
 
         ####
         # Check for cuBLAS
