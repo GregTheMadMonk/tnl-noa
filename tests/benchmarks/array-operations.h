@@ -86,6 +86,8 @@ benchmarkArrayOperations( Benchmark & benchmark,
     benchmark.time( reset1,
                     "CPU->GPU", copyAssignHostCuda,
                     "GPU->CPU", copyAssignCudaHost );
+
+    return true;
 }
 
 } // namespace benchmarks

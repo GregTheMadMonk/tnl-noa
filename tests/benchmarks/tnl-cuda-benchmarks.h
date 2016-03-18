@@ -228,8 +228,8 @@ int main( int argc, char* argv[] )
    benchmarkVectorOperations< Real >( benchmark, loops, size );
 
 
-   // SpMV
-   benchmark.newBenchmark( tnlString("SpMV (") + precision + ")",
+   // Sparse matrix-vector multiplication
+   benchmark.newBenchmark( tnlString("Sparse matrix-vector multiplication (") + precision + ")",
                            metadata );
    benchmark.setMetadataColumns( Benchmark::MetadataColumns({
       {"rows", size},
