@@ -60,6 +60,18 @@ template< typename Mesh,
           typename Index >
 bool
 tnlPDEProblem< Mesh, Real, Device, Index >::
+writeEpilog( tnlLogger& logger ) const
+{
+   return true;
+}
+
+
+template< typename Mesh,
+          typename Real,
+          typename Device,
+          typename Index >
+bool
+tnlPDEProblem< Mesh, Real, Device, Index >::
 setMeshDependentData( const MeshType& mesh,
                       MeshDependentDataType& meshDependentData )
 {

@@ -50,6 +50,9 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
 
       void writeProlog( tnlLogger& logger,
                         const tnlParameterContainer& parameters ) const;
+      
+      bool writeEpilog( tnlLogger& logger ) const;
+
 
       bool setMeshDependentData( const MeshType& mesh,
                                  MeshDependentDataType& meshDependentData );

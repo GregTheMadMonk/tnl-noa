@@ -18,6 +18,9 @@
 #ifndef TNLPDESOLVER_IMPL_H_
 #define TNLPDESOLVER_IMPL_H_
 
+#include "tnlPDESolver.h"
+
+
 template< typename Problem,
           typename TimeStepper >
 tnlPDESolver< Problem, TimeStepper >::
@@ -362,7 +365,8 @@ bool
 tnlPDESolver< Problem, TimeStepper >::
 writeEpilog( tnlLogger& logger ) const
 {
-   return this->timeStepper->writeEpilog( logger );
+   return ( this->timeStepper->writeEpilog( logger ) &&
+      this->problem->writeEpilog( logger ) );
 }
 
 #endif /* TNLPDESOLVER_IMPL_H_ */
