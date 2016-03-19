@@ -49,14 +49,11 @@ void configSetup( tnlConfigDescription& config )
 {
    config.addDelimiter                            ( "General settings:" );
    config.addRequiredEntry< tnlString >( "test" , "Test to be performed." );
-      config.addEntryEnum< tnlString >( "tridiagonal" );
-      config.addEntryEnum< tnlString >( "multidiagonal" );
-      config.addEntryEnum< tnlString >( "multidiagonal-with-long-rows" );
       config.addEntryEnum< tnlString >( "mtx" );
       config.addEntryEnum< tnlString >( "tnl" );
    config.addRequiredEntry< tnlString >( "input-file" , "Input binary file name." );
    config.addEntry< tnlString >( "log-file", "Log file name.", "tnl-benchmark-linear-solvers.log");
-   config.addEntry< tnlString >( "precison", "Precision of the arithmetics.", "double" );
+   config.addEntry< tnlString >( "precision", "Precision of the arithmetics.", "double" );
    config.addEntry< tnlString >( "matrix-format", "Matrix format.", "csr" );
       config.addEntryEnum< tnlString >( "dense" );
       config.addEntryEnum< tnlString >( "tridiagonal" );

@@ -41,16 +41,12 @@ void setupConfig( tnlConfigDescription& config )
 {
    config.addDelimiter                            ( "General settings:" );
    config.addRequiredEntry< tnlString >( "test" , "Test to be performed." );
-      config.addEntryEnum< tnlString >( "tridiagonal" );
-      config.addEntryEnum< tnlString >( "multidiagonal" );
-      config.addEntryEnum< tnlString >( "multidiagonal-with-long-rows" );
       config.addEntryEnum< tnlString >( "mtx" );
       config.addEntryEnum< tnlString >( "tnl" );
    config.addRequiredEntry< tnlString >( "input-file" , "Input file name." );
-   config.addEntry< tnlString >( "log-file", "Log file name.", "tnl-benchmark-linear-solvers.log");
-   config.addEntry< tnlString >( "pdf-file", "PDf file name for the matrix pattern.", "tnl-benchmark.log");
+   config.addEntry< tnlString >( "log-file", "Log file name.", "tnl-benchmark-spmv.log");
    config.addEntry< tnlString >( "precision", "Precision of the arithmetics.", "double" );
-   config.addEntry< double >( "stop-time" ,"Seconds to iterate the SpMV operation.", 1.0 );
+   config.addEntry< double >( "stop-time", "Seconds to iterate the SpMV operation.", 1.0 );
    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
 }
 
