@@ -23,6 +23,7 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <core/tnlTimer.h>
+#include <core/tnlTimerRT.h>
 #include <core/tnlCuda.h>
 
 using namespace std;
