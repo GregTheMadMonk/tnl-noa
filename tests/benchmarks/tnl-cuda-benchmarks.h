@@ -82,6 +82,9 @@ setupConfig( tnlConfigDescription & config )
 {
     config.addDelimiter( "Benchmark settings:" );
     config.addEntry< tnlString >( "log-file", "Log file name.", "tnl-cuda-benchmarks.log");
+    config.addEntry< tnlString >( "output-mode", "Mode for opening the log file.", "overwrite" );
+    config.addEntryEnum( "append" );
+    config.addEntryEnum( "overwrite" );
     config.addEntry< tnlString >( "precision", "Precision of the arithmetics.", "double" );
     config.addEntryEnum( "float" );
     config.addEntryEnum( "double" );
@@ -108,7 +111,8 @@ main( int argc, char* argv[] )
         return 1;
     }
 
-    ofstream logFile( parameters.getParameter< tnlString >( "log-file" ).getString() );
+    const tnlString & logFileName = parameters.getParameter< tnlString >( "log-file" );
+    const tnlString & outputMode = parameters.getParameter< tnlString >( "output-mode" );
     const tnlString & precision = parameters.getParameter< tnlString >( "precision" );
     const unsigned minSize = parameters.getParameter< unsigned >( "min-size" );
     const unsigned maxSize = parameters.getParameter< unsigned >( "max-size" );
@@ -121,6 +125,12 @@ main( int argc, char* argv[] )
         cerr << "The value of --size-step-factor must be greater than 1." << endl;
         return EXIT_FAILURE;
     }
+
+    // open log file
+    auto mode = ios::out;
+    if( outputMode == "append" )
+        mode |= ios::app;
+    ofstream logFile( logFileName.getString(), mode );
 
     // init benchmark and common metadata
     Benchmark benchmark( loops, verbose );
