@@ -175,10 +175,51 @@ public:
     }
 
     void
+    writeErrorMessage( const char* msg,
+                       const int & colspan = 1 )
+    {
+        // initial indent string
+        header_indent = "!";
+        log << endl;
+        for( auto & it : metadataColumns ) {
+            log << header_indent << " " << it.first << endl;
+        }
+
+        // make sure there is a header column for the message
+        if( horizontalGroups.size() == 0 )
+            horizontalGroups.push_back( {"", 1} );
+
+        // dump stacked spanning columns
+        while( horizontalGroups.back().second <= 0 ) {
+            horizontalGroups.pop_back();
+            header_indent.pop_back();
+        }
+        for( int i = 0; i < horizontalGroups.size(); i++ ) {
+            if( horizontalGroups[ i ].second > 0 ) {
+                log << header_indent << " " << horizontalGroups[ i ].first << endl;
+                header_indent += "!";
+            }
+        }
+        if( horizontalGroups.size() > 0 ) {
+            horizontalGroups.back().second -= colspan;
+            header_indent.pop_back();
+        }
+
+        // only when changed (the header has been already adjusted)
+        // print each element on separate line
+        for( auto & it : metadataColumns ) {
+            log << it.second << endl;
+        }
+        log << msg << endl;
+    }
+
+    void
     closeTable()
     {
+        log << endl;
         header_indent = body_indent = "";
         header_changed = true;
+        horizontalGroups.clear();
     }
 
     bool save( std::ostream & logFile )
@@ -186,7 +227,7 @@ public:
         closeTable();
         logFile << log.str();
         if( logFile.good() ) {
-            log.str() ="";
+            log.str() = "";
             return true;
         }
         return false;
@@ -359,6 +400,17 @@ public:
         time( reset, performer, compute );
         time( reset, nextComputations... );
         return this->baseTime;
+    }
+
+    // Adds an error message to the log. Should be called in places where the
+    // "time" method could not be called (e.g. due to failed allocation).
+    void
+    addErrorMessage( const char* msg,
+                     const int & numberOfComputations = 1 )
+    {
+        // each computation has 3 subcolumns
+        const int colspan = 3 * numberOfComputations;
+        writeErrorMessage( msg, colspan );
     }
 
     using Logging::save;

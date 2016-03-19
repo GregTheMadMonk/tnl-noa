@@ -24,12 +24,16 @@ benchmarkArrayOperations( Benchmark & benchmark,
 
     HostArray hostArray, hostArray2;
     CudaArray deviceArray, deviceArray2;
-    hostArray.setSize( size );
-    if( ! deviceArray.setSize( size ) )
+    if( ! hostArray.setSize( size ) ||
+        ! hostArray2.setSize( size ) ||
+        ! deviceArray.setSize( size ) ||
+        ! deviceArray2.setSize( size ) )
+    {
+        const char* msg = "error: allocation of arrays failed";
+        cerr << msg << endl;
+        benchmark.addErrorMessage( msg );
         return false;
-    hostArray2.setLike( hostArray );
-    if( ! deviceArray2.setLike( deviceArray ) )
-        return false;
+    }
 
     Real resultHost, resultDevice;
 

@@ -253,7 +253,7 @@ class logToHtmlConvertor:
         elements = [line.strip() for line in body]
 
         if len(elements) != len(leafColumns):
-            raise Exception("Error in the table format: header has {} leaf columns, but the corresponding row has {} elements.".format(len(leafColumns), len(row)))
+            raise Exception("Error in the table format: header has {} leaf columns, but the corresponding row has {} elements.".format(len(leafColumns), len(elements)))
 
         row = collections.OrderedDict()
         for element, column in zip(elements, leafColumns):

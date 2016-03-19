@@ -90,8 +90,8 @@ void setCudaTestMatrix( Matrix& matrix,
       if( gridIdx == cudaGrids - 1 )
          cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
       setCudaTestMatrixKernel< Matrix >
-       <<< cudaGridSize, cudaBlockSize >>>
-       ( kernel_matrix, elementsPerRow, gridIdx );
+         <<< cudaGridSize, cudaBlockSize >>>
+         ( kernel_matrix, elementsPerRow, gridIdx );
       checkCudaDevice;
    }
    tnlCuda::freeFromDevice( kernel_matrix );
@@ -119,6 +119,11 @@ benchmarkSpMV( Benchmark & benchmark,
    HostVector hostVector, hostVector2;
    CudaVector deviceVector, deviceVector2;
 
+   // create benchmark group
+   tnlList< tnlString > parsedType;
+   parseObjectType( HostMatrix::getType(), parsedType );
+   benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
+
    if( ! hostRowLengths.setSize( size ) ||
        ! deviceRowLengths.setSize( size ) ||
        ! hostMatrix.setDimensions( size, size ) ||
@@ -128,7 +133,9 @@ benchmarkSpMV( Benchmark & benchmark,
        ! deviceVector.setSize( size ) ||
        ! deviceVector2.setSize( size ) )
    {
-      cerr << "Unable to allocate all matrices and vectors for the SpMV benchmark." << endl;
+      const char* msg = "error: allocation of vectors failed";
+      cerr << msg << endl;
+      benchmark.addErrorMessage( msg, 2 );
       return false;
    }
 
@@ -137,18 +144,18 @@ benchmarkSpMV( Benchmark & benchmark,
 
    if( ! hostMatrix.setCompressedRowsLengths( hostRowLengths ) )
    {
-      cerr << "Unable to allocate host matrix elements." << endl;
+      const char* msg = "error: allocation of host matrix failed";
+      cerr << msg << endl;
+      benchmark.addErrorMessage( msg, 2 );
       return false;
    }
    if( ! deviceMatrix.setCompressedRowsLengths( deviceRowLengths ) )
    {
-      cerr << "Unable to allocate device matrix elements." << endl;
+      const char* msg = "error: allocation of device matrix failed";
+      cerr << msg << endl;
+      benchmark.addErrorMessage( msg, 2 );
       return false;
    }
-
-   tnlList< tnlString > parsedType;
-   parseObjectType( HostMatrix::getType(), parsedType );
-   benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
 
    const int elements = setHostTestMatrix< HostMatrix >( hostMatrix, elementsPerRow );
    setCudaTestMatrix< DeviceMatrix >( deviceMatrix, elementsPerRow );

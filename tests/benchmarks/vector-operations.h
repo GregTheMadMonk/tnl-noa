@@ -28,12 +28,16 @@ benchmarkVectorOperations( Benchmark & benchmark,
 
     HostVector hostVector, hostVector2;
     CudaVector deviceVector, deviceVector2;
-    hostVector.setSize( size );
-    if( ! deviceVector.setSize( size ) )
+    if( ! hostVector.setSize( size ) ||
+        ! hostVector2.setSize( size ) ||
+        ! deviceVector.setSize( size ) ||
+        ! deviceVector2.setSize( size ) )
+    {
+        const char* msg = "error: allocation of vectors failed";
+        cerr << msg << endl;
+        benchmark.addErrorMessage( msg );
         return false;
-    hostVector2.setLike( hostVector );
-    if( ! deviceVector2.setLike( deviceVector ) )
-        return false;
+    }
 
     Real resultHost, resultDevice;
 
