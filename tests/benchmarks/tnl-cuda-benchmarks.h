@@ -18,6 +18,8 @@
 #ifndef TNLCUDABENCHMARKS_H_
 #define TNLCUDBENCHMARKS_H_
 
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
 #include <core/tnlList.h>
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlEllpackMatrix.h>
@@ -54,7 +56,7 @@ int setHostTestMatrix( Matrix& matrix,
             matrix.setElement( row, col + element, element + 1 );
             elements++;
          }
-      }      
+      }
    }
    return elements;
 }
@@ -67,13 +69,13 @@ __global__ void setCudaTestMatrixKernel( Matrix* matrix,
    const int rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( rowIdx >= matrix->getRows() )
       return;
-   int col = rowIdx - elementsPerRow / 2;   
+   int col = rowIdx - elementsPerRow / 2;
    for( int element = 0; element < elementsPerRow; element++ )
    {
       if( col + element >= 0 &&
           col + element < matrix->getColumns() )
          matrix->setElementFast( rowIdx, col + element, element + 1 );
-   }      
+   }
 }
 
 template< typename Matrix >
@@ -186,79 +188,115 @@ benchmarkSpMV( Benchmark & benchmark,
    return true;
 }
 
-int main( int argc, char* argv[] )
+template< typename Real >
+void
+runCudaBenchmarks( Benchmark & benchmark,
+                   Benchmark::MetadataMap metadata,
+                   const unsigned & minSize,
+                   const unsigned & maxSize,
+                   const unsigned & loops,
+                   const unsigned & elementsPerRow )
+{
+    const tnlString precision = getType< Real >();
+    metadata["precision"] = precision;
+
+    // Array operations
+    benchmark.newBenchmark( tnlString("Array operations (") + precision + ")",
+                            metadata );
+    for( unsigned size = minSize; size <= maxSize; size *= 2 ) {
+        benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+           {"size", size},
+        } ));
+        benchmarkArrayOperations< Real >( benchmark, loops, size );
+    }
+
+    // Vector operations
+    benchmark.newBenchmark( tnlString("Vector operations (") + precision + ")",
+                            metadata );
+    for( unsigned size = minSize; size <= maxSize; size *= 2 ) {
+        benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+           {"size", size},
+        } ));
+        benchmarkVectorOperations< Real >( benchmark, loops, size );
+    }
+
+    // Sparse matrix-vector multiplication
+    benchmark.newBenchmark( tnlString("Sparse matrix-vector multiplication (") + precision + ")",
+                            metadata );
+    for( unsigned size = minSize; size <= maxSize; size *= 2 ) {
+        benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+            {"rows", size},
+            {"columns", size},
+            {"elements per row", elementsPerRow},
+        } ));
+
+        // TODO: benchmark all formats from tnl-benchmark-spmv (different parameters of the base formats)
+        benchmarkSpMV< Real, tnlCSRMatrix >( benchmark, loops, size, elementsPerRow );
+        benchmarkSpMV< Real, tnlEllpackMatrix >( benchmark, loops, size, elementsPerRow );
+        benchmarkSpMV< Real, SlicedEllpackMatrix >( benchmark, loops, size, elementsPerRow );
+        benchmarkSpMV< Real, tnlChunkedEllpackMatrix >( benchmark, loops, size, elementsPerRow );
+    }
+}
+
+void
+setupConfig( tnlConfigDescription & config )
+{
+    config.addDelimiter( "Benchmark settings:" );
+    config.addEntry< tnlString >( "log-file", "Log file name.", "tnl-cuda-benchmarks.log");
+    config.addEntry< tnlString >( "precision", "Precision of the arithmetics.", "double" );
+    config.addEntryEnum( "float" );
+    config.addEntryEnum( "double" );
+    config.addEntryEnum( "all" );
+    config.addEntry< int >( "min-size", "Minimum size of arrays/vectors used in the benchmark (next size is 2*min-size and so on, up to max-size).", 100000 );
+    config.addEntry< int >( "max-size", "Minimum size of arrays/vectors used in the benchmark (next size is 2*min-size and so on, up to max-size).", 10000000 );
+    config.addEntry< int >( "loops", "Number of iterations for every computation.", 1.0 );
+    config.addEntry< int >( "elements-per-row", "Number of elements per row of the sparse matrix used in the matrix-vector multiplication benchmark.", 5 );
+    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
+}
+
+int
+main( int argc, char* argv[] )
 {
 #ifdef HAVE_CUDA
-   
-   typedef double Real;
-   tnlString precision = getType< Real >();
-   
-   /****
-    * The first argument of this program is the size od data set to be reduced.
-    * If no argument is given we use hardcoded default value.
-    */
-   int size = 1 << 22;
-   if( argc > 1 )
-      size = atoi( argv[ 1 ] );
-   int loops = 10;
-   if( argc > 2 )
-      loops = atoi( argv[ 2 ] );
-   int elementsPerRow = 5;
-   if( argc > 3 )
-      elementsPerRow = atoi( argv[ 3 ] );
+    tnlParameterContainer parameters;
+    tnlConfigDescription conf_desc;
 
-   ofstream logFile( "tnl-cuda-benchmarks.log" );
-   Benchmark benchmark( loops, true );
-//   ostream & logFile = cout;
-//   Benchmark benchmark( loops, false );
-   
-   // TODO: add hostname, CPU info, GPU info, date, ...
-   Benchmark::MetadataMap metadata {
-      {"precision", precision},
-   };
-   // TODO: loop over sizes
-   
+    setupConfig( conf_desc );
 
-   // Array operations
-   benchmark.newBenchmark( tnlString("Array operations (") + precision + ")",
-                           metadata );
-   benchmark.setMetadataColumns( Benchmark::MetadataColumns({
-      {"size", size},
-   } ));
-   benchmarkArrayOperations< Real >( benchmark, loops, size );
-   
-   // Vector operations
-   benchmark.newBenchmark( tnlString("Vector operations (") + precision + ")",
-                           metadata );
-   benchmark.setMetadataColumns( Benchmark::MetadataColumns({
-      {"size", size},
-   } ));
-   benchmarkVectorOperations< Real >( benchmark, loops, size );
+    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) ) {
+        conf_desc.printUsage( argv[ 0 ] );
+        return 1;
+    }
 
+    ofstream logFile( parameters.getParameter< tnlString >( "log-file" ).getString() );
+    const tnlString & precision = parameters.getParameter< tnlString >( "precision" );
+    const unsigned minSize = parameters.getParameter< unsigned >( "min-size" );
+    const unsigned maxSize = parameters.getParameter< unsigned >( "max-size" );
+    const unsigned loops = parameters.getParameter< unsigned >( "loops" );
+    const unsigned elementsPerRow = parameters.getParameter< unsigned >( "elements-per-row" );
+    const unsigned verbose = parameters.getParameter< unsigned >( "verbose" );
 
-   // Sparse matrix-vector multiplication
-   benchmark.newBenchmark( tnlString("Sparse matrix-vector multiplication (") + precision + ")",
-                           metadata );
-   benchmark.setMetadataColumns( Benchmark::MetadataColumns({
-      {"rows", size},
-      {"columns", size},
-      {"elements per row", elementsPerRow},
-   } ));
+    // init benchmark and common metadata
+    Benchmark benchmark( loops, verbose );
+    // TODO: add hostname, CPU info, GPU info, date, ...
+    Benchmark::MetadataMap metadata {
+//        {"key", value},
+    };
 
-   // TODO: benchmark all formats from tnl-benchmark-spmv (different parameters of the base formats)
-   benchmarkSpMV< Real, tnlCSRMatrix >( benchmark, loops, size, elementsPerRow );
-   benchmarkSpMV< Real, tnlEllpackMatrix >( benchmark, loops, size, elementsPerRow );
-   benchmarkSpMV< Real, SlicedEllpackMatrix >( benchmark, loops, size, elementsPerRow );
-   benchmarkSpMV< Real, tnlChunkedEllpackMatrix >( benchmark, loops, size, elementsPerRow );
+    if( precision == "all" || precision == "float" )
+        runCudaBenchmarks< float >( benchmark, metadata, minSize, maxSize, loops, elementsPerRow );
+    if( precision == "all" || precision == "double" )
+        runCudaBenchmarks< double >( benchmark, metadata, minSize, maxSize, loops, elementsPerRow );
 
+    if( ! benchmark.save( logFile ) ) {
+        cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< tnlString >( "log-file" ) << "'." << endl;
+        return EXIT_FAILURE;
+    }
 
-   if( ! benchmark.save( logFile ) )
-       return EXIT_FAILURE;
-   
-   return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 #else
-   tnlCudaSupportMissingMessage;
-   return EXIT_FAILURE;
+    tnlCudaSupportMissingMessage;
+    return EXIT_FAILURE;
 #endif
 }
 

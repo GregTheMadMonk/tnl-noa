@@ -3,6 +3,19 @@
 import sys
 import collections
 
+def getSortKey(value):
+    # try to convert to number if possible
+    try:
+        return int(value)
+    except ValueError:
+        try:
+            return float(value)
+        except ValueError:
+            if value:
+                return value
+            # None or empty string
+            return 0
+
 class columnFormating:
 
     def __init__( self, data ):
@@ -305,7 +318,7 @@ class logToHtmlConvertor:
         # TODO: check this
         # sort again (just in case, previous sorting might compare values from
         # different columns)
-        self.tableRows.sort(key=lambda row: list(row.values()))
+        self.tableRows.sort(key=lambda row: [getSortKey(value) for value in row.values()])
 
     def countSubcolumns( self ):
         for path, col in self.tableColumns.items():
