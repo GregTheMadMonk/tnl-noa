@@ -49,6 +49,12 @@ tnlString :: tnlString( const tnlString& str )
    setString( str. getString() );
 }
 
+tnlString :: tnlString( unsigned number )
+: string( 0 ), length( 0 )
+{
+   this->setString( convertToString( number ).getString() );
+}
+
 tnlString :: tnlString( int number )
 : string( 0 ), length( 0 )
 {
