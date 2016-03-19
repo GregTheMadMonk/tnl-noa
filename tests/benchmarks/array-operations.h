@@ -91,6 +91,50 @@ benchmarkArrayOperations( Benchmark & benchmark,
                     "CPU->GPU", copyAssignHostCuda,
                     "GPU->CPU", copyAssignCudaHost );
 
+
+    auto setValueHost = [&]() {
+        hostArray.setValue( 3.0 );
+    };
+    auto setValueCuda = [&]() {
+        deviceArray.setValue( 3.0 );
+    };
+    benchmark.setOperation( "setValue", datasetSize );
+    benchmark.time( reset1,
+                    "CPU", setValueHost,
+                    "GPU", setValueCuda );
+
+
+    auto setSizeHost = [&]() {
+        hostArray.setSize( size );
+    };
+    auto setSizeCuda = [&]() {
+        deviceArray.setSize( size );
+    };
+    auto resetSize1 = [&]() {
+        hostArray.reset();
+        deviceArray.reset();
+    };
+    benchmark.setOperation( "allocation (setSize)", datasetSize );
+    benchmark.time( resetSize1,
+                    "CPU", setSizeHost,
+                    "GPU", setSizeCuda );
+
+
+    auto resetSizeHost = [&]() {
+        hostArray.reset();
+    };
+    auto resetSizeCuda = [&]() {
+        deviceArray.reset();
+    };
+    auto setSize1 = [&]() {
+        hostArray.setSize( size );
+        deviceArray.setSize( size );
+    };
+    benchmark.setOperation( "deallocation (reset)", datasetSize );
+    benchmark.time( setSize1,
+                    "CPU", resetSizeHost,
+                    "GPU", resetSizeCuda );
+
     return true;
 }
 
