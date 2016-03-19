@@ -71,7 +71,7 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, N
       {
          const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
          const typename MeshEntity::MeshType& mesh = entity.getMesh();
-         const RealType& hx_div = mesh.template getSpaceStepsProducts< -2 >();
+         const RealType& hx_div = entity.getMesh().template getSpaceStepsProducts< -2 >();
          const IndexType& center = entity.getIndex();
          const IndexType& east = neighbourEntities.template getEntityIndex<  1 >();
          const IndexType& west = neighbourEntities.template getEntityIndex< -1 >();
@@ -92,26 +92,24 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, N
          return 3;
       }
 
-      template< typename MeshEntity,
-                typename MeshFunction,
-                typename Vector,
-                typename Matrix >
+      template< typename PreimageFunction,
+                typename MeshEntity,
+                typename Matrix,
+                typename Vector >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const MeshEntity& entity,
-                               const MeshFunction& u,
-                               Vector& b,
-                               Matrix& matrix ) const
+      inline void setMatrixElements( const PreimageFunction& u,
+                                     const MeshEntity& entity,
+                                     const RealType& time,
+                                     const RealType& tau,
+                                     Matrix& matrix,
+                                     Vector& b ) const
       {
          typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
          const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
          const IndexType& center = entity.getIndex();
          const IndexType& east = neighbourEntities.template getEntityIndex<  1 >();
          const IndexType& west = neighbourEntities.template getEntityIndex< -1 >();
-         const RealType lambda_x = tau * mesh.template getSpaceStepsProducts< -2 >();
+         const RealType lambda_x = tau * entity.getMesh().template getSpaceStepsProducts< -2 >();
          const RealType& nonlinearity_center = this->nonlinearity[ center ];
          const RealType& nonlinearity_west = this->nonlinearity[ west ];
          const RealType aCoef = -lambda_x * nonlinearity_west;
@@ -167,8 +165,8 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, 
       {
          const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
          const typename MeshEntity::MeshType& mesh = entity.getMesh();
-         const RealType& hx_div = mesh.template getSpaceStepsProducts< -2,  0 >();
-         const RealType& hy_div = mesh.template getSpaceStepsProducts<  0, -2 >();
+         const RealType& hx_div = entity.getMesh().template getSpaceStepsProducts< -2,  0 >();
+         const RealType& hy_div = entity.getMesh().template getSpaceStepsProducts<  0, -2 >();
          const IndexType& center = entity.getIndex();
          const IndexType& east = neighbourEntities.template getEntityIndex<  1, 0 >();
          const IndexType& west = neighbourEntities.template getEntityIndex< -1, 0 >();
@@ -194,19 +192,17 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, 
          return 5;
       }
 
-      template< typename MeshEntity,
-                typename MeshFunction,
-                typename Vector,
-                typename Matrix >
+      template< typename PreimageFunction,
+                typename MeshEntity,
+                typename Matrix,
+                typename Vector >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const MeshEntity& entity,
-                               const MeshFunction& u,
-                               Vector& b,
-                               Matrix& matrix ) const
+      inline void setMatrixElements( const PreimageFunction& u,
+                                     const MeshEntity& entity,
+                                     const RealType& time,
+                                     const RealType& tau,
+                                     Matrix& matrix,
+                                     Vector& b ) const
       {
          typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
          const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
@@ -215,8 +211,8 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, 
          const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0 >();
          const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1 >();
          const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >();                  
-         const RealType lambda_x = tau * mesh.template getSpaceStepsProducts< -2,  0 >();
-         const RealType lambda_y = tau * mesh.template getSpaceStepsProducts<  0, -2 >();
+         const RealType lambda_x = tau * entity.getMesh().template getSpaceStepsProducts< -2,  0 >();
+         const RealType lambda_y = tau * entity.getMesh().template getSpaceStepsProducts<  0, -2 >();
          const RealType& nonlinearity_center = this->nonlinearity[ center ];
          const RealType& nonlinearity_west = this->nonlinearity[ west ];
          const RealType& nonlinearity_south = this->nonlinearity[ south ];
@@ -278,9 +274,9 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
       {
          const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
          const typename MeshEntity::MeshType& mesh = entity.getMesh();
-         const RealType& hx_div = mesh.template getSpaceStepsProducts< -2,  0,  0 >();
-         const RealType& hy_div = mesh.template getSpaceStepsProducts<  0, -2,  0 >();
-         const RealType& hz_div = mesh.template getSpaceStepsProducts<  0,  0, -2 >();
+         const RealType& hx_div = entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >();
+         const RealType& hy_div = entity.getMesh().template getSpaceStepsProducts<  0, -2,  0 >();
+         const RealType& hz_div = entity.getMesh().template getSpaceStepsProducts<  0,  0, -2 >();
          const IndexType& center = entity.getIndex();
          const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0,  0 >();
          const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0,  0 >();
@@ -313,19 +309,17 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
          return 7;
       }
 
-      template< typename MeshEntity,
-                typename MeshFunction,
-                typename Vector,                
-                typename Matrix >
+      template< typename PreimageFunction,
+                typename MeshEntity,
+                typename Matrix,
+                typename Vector >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const MeshEntity& entity,
-                               const MeshFunction& u,
-                               Vector& b,
-                               Matrix& matrix ) const
+      inline void setMatrixElements( const PreimageFunction& u,
+                                     const MeshEntity& entity,
+                                     const RealType& time,
+                                     const RealType& tau,
+                                     Matrix& matrix,
+                                     Vector& b ) const
       {
          typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
          const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
@@ -338,9 +332,9 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
          const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >();                  
          
          
-         const RealType lambda_x = tau * mesh.template getSpaceStepsProducts< -2,  0,  0 >();
-         const RealType lambda_y = tau * mesh.template getSpaceStepsProducts<  0, -2,  0 >();
-         const RealType lambda_z = tau * mesh.template getSpaceStepsProducts<  0,  0, -2 >();
+         const RealType lambda_x = tau * entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >();
+         const RealType lambda_y = tau * entity.getMesh().template getSpaceStepsProducts<  0, -2,  0 >();
+         const RealType lambda_z = tau * entity.getMesh().template getSpaceStepsProducts<  0,  0, -2 >();
          const RealType& nonlinearity_center = this->nonlinearity[ center ];
          const RealType& nonlinearity_west   = this->nonlinearity[ west ];
          const RealType& nonlinearity_south  = this->nonlinearity[ south ];
