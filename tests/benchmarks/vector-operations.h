@@ -86,11 +86,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.setOperation( "scalar multiplication", 2 * datasetSize );
     benchmark.time( reset1,
                     "CPU", multiplyHost,
-                    "GPU", multiplyCuda
+                    "GPU", multiplyCuda );
 #ifdef HAVE_CUBLAS
-                  , "cuBLAS", multiplyCublas
+    benchmark.time( reset1, "cuBLAS", multiplyCublas );
 #endif
-                  );
 
 
     auto addVectorHost = [&]() {
@@ -111,11 +110,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.setOperation( "vector addition", 3 * datasetSize );
     benchmark.time( reset1,
                     "CPU", addVectorHost,
-                    "GPU", addVectorCuda
+                    "GPU", addVectorCuda );
 #ifdef HAVE_CUBLAS
-                  , "cuBLAS", addVectorCublas
+    benchmark.time( reset1, "cuBLAS", addVectorCublas );
 #endif
-                  );
 
 
     auto maxHost = [&]() {
@@ -160,11 +158,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.setOperation( "absMax", datasetSize );
     benchmark.time( reset1,
                     "CPU", absMaxHost,
-                    "GPU", absMaxCuda
+                    "GPU", absMaxCuda );
 #ifdef HAVE_CUBLAS
-                  , "cuBLAS", absMaxCublas
+    benchmark.time( reset1, "cuBLAS", absMaxCublas );
 #endif
-                  );
 
 
     auto absMinHost = [&]() {
@@ -185,11 +182,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.setOperation( "absMin", datasetSize );
     benchmark.time( reset1,
                     "CPU", absMinHost,
-                    "GPU", absMinCuda
+                    "GPU", absMinCuda );
 #ifdef HAVE_CUBLAS
-                  , "cuBLAS", absMinCublas
+    benchmark.time( reset1, "cuBLAS", absMinCublas );
 #endif
-                  );
 
 
     auto sumHost = [&]() {
@@ -220,11 +216,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.setOperation( "l1 norm", datasetSize );
     benchmark.time( reset1,
                     "CPU", l1normHost,
-                    "GPU", l1normCuda
+                    "GPU", l1normCuda );
 #ifdef HAVE_CUBLAS
-                  , "cuBLAS", l1normCublas
+    benchmark.time( reset1, "cuBLAS", l1normCublas );
 #endif
-                  );
 
 
     auto l2normHost = [&]() {
@@ -243,11 +238,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.setOperation( "l2 norm", datasetSize );
     benchmark.time( reset1,
                     "CPU", l2normHost,
-                    "GPU", l2normCuda
+                    "GPU", l2normCuda );
 #ifdef HAVE_CUBLAS
-                  , "cuBLAS", l2normCublas
+    benchmark.time( reset1, "cuBLAS", l2normCublas );
 #endif
-                  );
 
 
     auto l3normHost = [&]() {
@@ -279,11 +273,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.setOperation( "scalar product", 2 * datasetSize );
     benchmark.time( reset1,
                     "CPU", scalarProductHost,
-                    "GPU", scalarProductCuda
+                    "GPU", scalarProductCuda );
 #ifdef HAVE_CUBLAS
-                  , "cuBLAS", scalarProductCublas
+    benchmark.time( reset1, "cuBLAS", scalarProductCublas );
 #endif
-                  );
 
     /*
     cout << "Benchmarking prefix-sum:" << endl;
