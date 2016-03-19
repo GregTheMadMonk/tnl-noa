@@ -118,11 +118,19 @@ if( WITH_CUDA STREQUAL "yes" )
         ####
         # Check for cuBLAS
         #
-        if( WITH_CUBLAS STREQUAL "yes" ) 
-            message( "Enabling CUBLAS." )
-            set( HAVE_CUBLAS TRUE)
-            set( HAVE_CUBLAS "#define HAVE_CUBLAS 1" )
-        endif( WITH_CUBLAS STREQUAL "yes" )       
+        if( NOT WITH_CUBLAS STREQUAL "no" )
+            find_path( CUBLAS_INCLUDE_DIR cublas_v2.h
+                       /usr/local/cuda/include
+                       ${CUDA_INCLUDE_DIR}
+                       DOC "CUBLAS headers." )
+            if( ${CUBLAS_INCLUDE_DIR} STREQUAL "CUBLAS_INCLUDE_DIR-NOTFOUND" )
+                message( "CUBLAS not found." )
+                set( HAVE_CUBLAS "//#define HAVE_CUBLAS 1" )
+            else()
+                message( "CUBLAS found. -- ${CUBLAS_INCLUDE_DIR}" )
+                set( HAVE_CUBLAS "#define HAVE_CUBLAS 1" )
+            endif()
+        endif( NOT WITH_CUBLAS STREQUAL "no" )
 
         ####
         # Check for CUSP
@@ -142,7 +150,6 @@ if( WITH_CUDA STREQUAL "yes" )
         # Check for CUSPARSE
         #
         if( NOT WITH_CUSPARSE STREQUAL "no" )
-        
            find_path( CUSPARSE_INCLUDE_DIR cusparse.h
                       /usr/local/cuda/include                   
                       ${CUDA_INCLUDE_DIR}  
