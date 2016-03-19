@@ -19,9 +19,10 @@
 #define TNLCUDBENCHMARKS_H_
 
 #include <core/tnlList.h>
-#include <matrices/tnlSlicedEllpackMatrix.h>
-#include <matrices/tnlEllpackMatrix.h>
 #include <matrices/tnlCSRMatrix.h>
+#include <matrices/tnlEllpackMatrix.h>
+#include <matrices/tnlSlicedEllpackMatrix.h>
+#include <matrices/tnlChunkedEllpackMatrix.h>
 
 #include "array-operations.h"
 #include "vector-operations.h"
@@ -244,9 +245,11 @@ int main( int argc, char* argv[] )
       {"elements per row", elementsPerRow},
    } ));
 
+   // TODO: benchmark all formats from tnl-benchmark-spmv (different parameters of the base formats)
+   benchmarkSpMV< Real, tnlCSRMatrix >( benchmark, loops, size, elementsPerRow );
    benchmarkSpMV< Real, tnlEllpackMatrix >( benchmark, loops, size, elementsPerRow );
    benchmarkSpMV< Real, SlicedEllpackMatrix >( benchmark, loops, size, elementsPerRow );
-   benchmarkSpMV< Real, tnlCSRMatrix >( benchmark, loops, size, elementsPerRow );
+   benchmarkSpMV< Real, tnlChunkedEllpackMatrix >( benchmark, loops, size, elementsPerRow );
 
 
    if( ! benchmark.save( logFile ) )
