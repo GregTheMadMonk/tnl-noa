@@ -16,6 +16,30 @@
  ***************************************************************************/
 
 #include <core/tnlCuda.h>
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
+
+
+/*void tnlCuda::configSetup( tnlConfigDescription& config, const tnlString& prefix )
+{
+#ifdef HAVE_CUDA
+   config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device.", 0 );
+#else
+   config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device (CUDA is not supported on this system).", 0 );   
+#endif   
+}
+      
+bool tnlCuda::setup( const tnlParameterContainer& parameters,
+                    const tnlString& prefix )
+{
+   int cudaDevice = parameters.getParameter< int >( prefix + "cuda-device" );
+#ifdef HAVE_CUDA
+    cudaSetDevice( cudaDevice );
+    checkCudaDevice;
+#endif
+   return true;
+}
+*/
 
 bool tnlCuda::checkDevice( const char* file_name, int line )
 {

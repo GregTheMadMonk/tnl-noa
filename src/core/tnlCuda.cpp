@@ -18,7 +18,9 @@
 #include <core/tnlCuda.h>
 #include <core/mfuncs.h>
 #include <tnlConfig.h>
- 
+#include <config/tnlConfigDescription.h>
+#include <config/tnlParameterContainer.h>
+
 tnlString tnlCuda :: getDeviceType()
 {
    return tnlString( "tnlCuda" );
@@ -45,4 +47,27 @@ int tnlCuda::getNumberOfGrids( const int blocks,
 {
 
 }*/
+
+void tnlCuda::configSetup( tnlConfigDescription& config, const tnlString& prefix )
+{
+#ifdef HAVE_CUDA
+   config.addEntry<  int >( prefix + "cuda-device", "Choose CUDA device to run the computationon.", 0 );
+#else
+   config.addEntry<  int >( prefix + "cuda-device", "Choose CUDA device to run the computationon (not supported on this system).", 0 );
+#endif
+}
+      
+bool tnlCuda::setup( const tnlParameterContainer& parameters,
+                      const tnlString& prefix )
+{
+#ifdef HAVE_CUDA
+   int cudaDevice = parameters.getParameter< int >( "cuda-device" );
+   if( cudaSetDevice( cudaDevice ) != cudaSuccess )
+   {
+      std::cerr << "I cannot activate CUDA device number " << cudaDevice << "." << std::endl;
+      return false;
+   }
+#endif   
+   return true;
+}
 
