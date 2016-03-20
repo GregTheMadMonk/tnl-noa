@@ -703,71 +703,71 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
 
 		if(x == 0 && (boundaryCondition & 4) && y ==0)
 		{
-			if((u[subMesh.getCellYSuccessor( i )] - u[i])/subMesh.getHy() > 1.0)
+			if((u[subMesh.getCellYSuccessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 0, 1, 0 >() > 1.0)
 			{
 				//cout << "x = 0; y = 0" << endl;
-				u[i] = u[subMesh.getCellYSuccessor( i )] - subMesh.getHy();
+				u[i] = u[subMesh.getCellYSuccessor( i )] - subMesh.template getSpaceStepsProducts< 0, 1, 0 >();
 			}
 		}
 		else if(x == 0 && (boundaryCondition & 4) && y == subMesh.getDimensions().y() - 1)
 		{
-			if((u[subMesh.getCellYPredecessor( i )] - u[i])/subMesh.getHy() > 1.0)
+			if((u[subMesh.getCellYPredecessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 0, 1, 0 >() > 1.0)
 			{
 				//cout << "x = 0; y = n" << endl;
-				u[i] = u[subMesh.getCellYPredecessor( i )] - subMesh.getHy();
+				u[i] = u[subMesh.getCellYPredecessor( i )] - subMesh.template getSpaceStepsProducts< 0, 1, 0 >();
 			}
 		}
 
 
 		else if(x == subMesh.getDimensions().x() - 1 && (boundaryCondition & 2) && y ==0)
 		{
-			if((u[subMesh.getCellYSuccessor( i )] - u[i])/subMesh.getHy() > 1.0)
+			if((u[subMesh.getCellYSuccessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 0, 1, 0 >() > 1.0)
 			{
 				//cout << "x = n; y = 0" << endl;
-				u[i] = u[subMesh.getCellYSuccessor( i )] - subMesh.getHy();
+				u[i] = u[subMesh.getCellYSuccessor( i )] - subMesh.template getSpaceStepsProducts< 0, 1, 0 >();
 			}
 		}
 		else if(x == subMesh.getDimensions().x() - 1 && (boundaryCondition & 2) && y == subMesh.getDimensions().y() - 1)
 		{
-			if((u[subMesh.getCellYPredecessor( i )] - u[i])/subMesh.getHy() > 1.0)
+			if((u[subMesh.getCellYPredecessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 0, 1, 0 >() > 1.0)
 			{
 				//cout << "x = n; y = n" << endl;
-				u[i] = u[subMesh.getCellYPredecessor( i )] - subMesh.getHy();
+				u[i] = u[subMesh.getCellYPredecessor( i )] - subMesh.template getSpaceStepsProducts< 0, 1, 0 >();
 			}
 		}
 
 
 		else if(y == 0 && (boundaryCondition & 8) && x ==0)
 		{
-			if((u[subMesh.getCellXSuccessor( i )] - u[i])/subMesh.getHx() > 1.0)
+			if((u[subMesh.getCellXSuccessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 1, 0, 0 >() > 1.0)
 			{
 				//cout << "y = 0; x = 0" << endl;
-				u[i] = u[subMesh.getCellXSuccessor( i )] - subMesh.getHx();
+				u[i] = u[subMesh.getCellXSuccessor( i )] - subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
 			}
 		}
 		else if(y == 0 && (boundaryCondition & 8) && x == subMesh.getDimensions().x() - 1)
 		{
-			if((u[subMesh.getCellXPredecessor( i )] - u[i])/subMesh.getHx() > 1.0)
+			if((u[subMesh.getCellXPredecessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 1, 0, 0 >() > 1.0)
 			{
 				//cout << "y = 0; x = n" << endl;
-				u[i] = u[subMesh.getCellXPredecessor( i )] - subMesh.getHx();
+				u[i] = u[subMesh.getCellXPredecessor( i )] - subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
 			}
 		}
 
 
 		else if(y == subMesh.getDimensions().y() - 1 && (boundaryCondition & 1) && x ==0)
 		{
-			if((u[subMesh.getCellXSuccessor( i )] - u[i])/subMesh.getHx() > 1.0)			{
+			if((u[subMesh.getCellXSuccessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 1, 0, 0 >() > 1.0)			{
 				//cout << "y = n; x = 0" << endl;
-				u[i] = u[subMesh.getCellXSuccessor( i )] - subMesh.getHx();
+				u[i] = u[subMesh.getCellXSuccessor( i )] - subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
 			}
 		}
 		else if(y == subMesh.getDimensions().y() - 1 && (boundaryCondition & 1) && x == subMesh.getDimensions().x() - 1)
 		{
-			if((u[subMesh.getCellXPredecessor( i )] - u[i])/subMesh.getHx() > 1.0)
+			if((u[subMesh.getCellXPredecessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 1, 0, 0 >() > 1.0)
 			{
 				//cout << "y = n; x = n" << endl;
-				u[i] = u[subMesh.getCellXPredecessor( i )] - subMesh.getHx();
+				u[i] = u[subMesh.getCellXPredecessor( i )] - subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
 			}
 		}
 	}*/
@@ -964,7 +964,7 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
    //double lastResidue( 10000.0 );
    tnlGridEntity<MeshType, 3, tnlGridEntityNoStencilStorage > Entity(subMesh);
    tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities(Entity);
-   while( time < finalTime /*|| maxResidue > subMesh.getHx()*/)
+   while( time < finalTime /*|| maxResidue > subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*/)
    {
       /****
        * Compute the RHS
@@ -988,10 +988,10 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
 
      /* if (maxResidue < 0.05)
     	  cout << "Max < 0.05" << endl;*/
-      if(currentTau > 1.0 * this->subMesh.getHx())
+      if(currentTau > 1.0 * this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >())
       {
-    	  //cout << currentTau << " >= " << 2.0 * this->subMesh.getHx() << endl;
-    	  currentTau = 1.0 * this->subMesh.getHx();
+    	  //cout << currentTau << " >= " << 2.0 * this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >() << endl;
+    	  currentTau = 1.0 * this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
       }
       /*if(maxResidue > lastResidue)
     	  currentTau *=(1.0/10.0);*/
@@ -1163,17 +1163,17 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 		if(computeFU)
 		{
 			if(boundaryCondition == 4)
-				u[l] = u[this->subMesh.getCellCoordinates(0,j,k)] + Sign(u[0])*this->subMesh.getHx()*(threadIdx.x) ;//+  2*Sign(u[0])*this->subMesh.getHx()*(threadIdx.x+this->n);
+				u[l] = u[this->subMesh.getCellCoordinates(0,j,k)] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(threadIdx.x) ;//+  2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(threadIdx.x+this->n);
 			else if(boundaryCondition == 2)
-				u[l] = u[this->subMesh.getCellCoordinates(blockDim.x - 1,j,k)] + Sign(u[0])*this->subMesh.getHx()*(this->n - 1 - threadIdx.x);//+ 2*Sign(u[0])*this->subMesh.getHx()*(blockDim.x - threadIdx.x - 1+this->n);
+				u[l] = u[this->subMesh.getCellCoordinates(blockDim.x - 1,j,k)] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(this->n - 1 - threadIdx.x);//+ 2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(blockDim.x - threadIdx.x - 1+this->n);
 			else if(boundaryCondition == 8)
-				u[l] = u[this->subMesh.getCellCoordinates(i,0,k)] + Sign(u[0])*this->subMesh.getHx()*(threadIdx.y) ;//+ 2*Sign(u[0])*this->subMesh.getHx()*(threadIdx.y+this->n);
+				u[l] = u[this->subMesh.getCellCoordinates(i,0,k)] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(threadIdx.y) ;//+ 2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(threadIdx.y+this->n);
 			else if(boundaryCondition == 1)
-				u[l] = u[this->subMesh.getCellCoordinates(i,blockDim.y - 1,k)] + Sign(u[0])*this->subMesh.getHx()*(this->n - 1 - threadIdx.y) ;//+ Sign(u[0])*this->subMesh.getHx()*(blockDim.y - threadIdx.y  - 1 +this->n);
+				u[l] = u[this->subMesh.getCellCoordinates(i,blockDim.y - 1,k)] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(this->n - 1 - threadIdx.y) ;//+ Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(blockDim.y - threadIdx.y  - 1 +this->n);
 			else if(boundaryCondition == 32)
-				u[l] = u[this->subMesh.getCellCoordinates(i,j,0)] + Sign(u[0])*this->subMesh.getHx()*(threadIdx.z);
+				u[l] = u[this->subMesh.getCellCoordinates(i,j,0)] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(threadIdx.z);
 			else if(boundaryCondition == 16)
-				u[l] = u[this->subMesh.getCellCoordinates(i,j,blockDim.z - 1)] + Sign(u[0])*this->subMesh.getHx()*(this->n - 1 - threadIdx.z) ;
+				u[l] = u[this->subMesh.getCellCoordinates(i,j,blockDim.z - 1)] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(this->n - 1 - threadIdx.z) ;
 		}
 	}
 
@@ -1205,7 +1205,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 
       if(l == 0)
       {
-    	  if(sharedTau[0] > 1.0 * this->subMesh.getHx())	sharedTau[0] = 1.0 * this->subMesh.getHx();
+    	  if(sharedTau[0] > 1.0 * this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >())	sharedTau[0] = 1.0 * this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
       }
       else if(l == blockDim.x*blockDim.y*blockDim.z - 1)
     	  if( time + sharedTau[l] > finalTime )		sharedTau[l] = finalTime - time;
@@ -1537,7 +1537,7 @@ void /*tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>
 
 	//this->subMesh_cuda.setDimensions( this->n_cuda, this->n_cuda );
 	//this->subMesh_cuda.setDomain( tnlStaticVector<3,double>(0.0, 0.0),
-							 //tnlStaticVector<3,double>(this->mesh_cuda.getHx()*(double)(this->n_cuda), this->mesh_cuda.getHy()*(double)(this->n_cuda)) );
+							 //tnlStaticVector<3,double>(this->mesh_cuda.template getSpaceStepsProducts< 1, 0, 0 >()*(double)(this->n_cuda), this->mesh_cuda.template getSpaceStepsProducts< 0, 1, 0 >()*(double)(this->n_cuda)) );
 
 	//this->subMesh_cuda.save("submesh.tnl");
 
@@ -1547,7 +1547,7 @@ void /*tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>
 	//cout << this->mesh.getCellCenter(0) << endl;
 
 	//this->delta_cuda = parameters.getParameter <double>("delta");
-	//this->delta_cuda *= this->mesh_cuda.getHx()*this->mesh_cuda.getHy();
+	//this->delta_cuda *= this->mesh_cuda.template getSpaceStepsProducts< 1, 0, 0 >()*this->mesh_cuda.template getSpaceStepsProducts< 0, 1, 0 >();
 
 	//cout << "Setting delta to " << this->delta << endl;
 
@@ -1556,7 +1556,7 @@ void /*tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>
 	//this->stopTime_cuda = parameters.getParameter <double>("stop-time");
 
 	//this->cflCondition_cuda = parameters.getParameter <double>("cfl-condition");
-	//this -> cflCondition_cuda *= sqrt(this->mesh_cuda.getHx()*this->mesh_cuda.getHy());
+	//this -> cflCondition_cuda *= sqrt(this->mesh_cuda.template getSpaceStepsProducts< 1, 0, 0 >()*this->mesh_cuda.template getSpaceStepsProducts< 0, 1, 0 >());
 	//cout << "Setting CFL to " << this->cflCondition << endl;
 ////
 ////
@@ -1596,7 +1596,7 @@ void /*tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>
 	//this->stopTime_cuda /= (double)(this->gridCols_cuda);
 	//this->stopTime_cuda *= (1.0+1.0/((double)(this->n_cuda) - 1.0));
 	//cout << "Setting stopping time to " << this->stopTime << endl;
-	//this->stopTime_cuda = 1.5*((double)(this->n_cuda))*parameters.getParameter <double>("stop-time")*this->mesh_cuda.getHx();
+	//this->stopTime_cuda = 1.5*((double)(this->n_cuda))*parameters.getParameter <double>("stop-time")*this->mesh_cuda.template getSpaceStepsProducts< 1, 0, 0 >();
 	//cout << "Setting stopping time to " << this->stopTime << endl;
 
 	//cout << "Initializating scheme..." << endl;

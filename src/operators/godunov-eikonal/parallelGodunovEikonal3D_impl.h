@@ -80,9 +80,9 @@ bool parallelGodunovEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Rea
 	   }
 
 
-	   hx = originalMesh.template getSpaceStepsProducts< 1, 0 >();
-	   hy = originalMesh.template getSpaceStepsProducts< 0, 1 >();
-	   hz = originalMesh.getHz();
+	   hx = originalMesh.template getSpaceStepsProducts< 1, 0, 0 >();
+	   hy = originalMesh.template getSpaceStepsProducts< 0, 1, 0 >();
+	   hz = originalMesh.template getSpaceStepsProducts< 0, 0, 1 >();
 	   ihx = 1.0/hx;
 	   ihy = 1.0/hy;
 	   ihz = 1.0/hz;
