@@ -210,7 +210,7 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 		checkCudaDevice;
 
 		synchronizeCUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
-		cudaDeviceSynchronize();
+		cout << cudaGetErrorString(cudaDeviceSynchronize()) << endl;
 		checkCudaDevice;
 		synchronize2CUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,1>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
@@ -579,7 +579,6 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 
 	for(int i = 0; i < levelSize; i++)
 	{
-		this->unusedCell[i] = 1;
 		int diff =(this->n*this->gridCols) - idealStretch ;
 
 		int k = i/this->n - i/(this->n*this->gridCols) + this->mesh.getDimensions().x()*(i/(this->n*this->n*this->gridCols)) + (i/(this->n*this->gridCols))*diff;
@@ -596,7 +595,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 
 		for( int j = 0; j<this->n*this->gridLevels; j++)
 		{
-
+			this->unusedCell[i+j*levelSize] = 1;
 			int l = j/this->n;
 
 			if(j - idealStretch  >= 0)
@@ -604,7 +603,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 				l+= j - idealStretch + 1;
 			}
 
-			this->work_u[i+(j-l)*levelSize] = this->u0[i+(j-l)*mesh.getDimensions().x()*mesh.getDimensions().y()-k];
+			this->work_u[i+j*levelSize] = this->u0[i+(j-l)*mesh.getDimensions().x()*mesh.getDimensions().y()-k];
 		}
 
 	}
@@ -636,7 +635,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 			{
 				int l = j/this->n;
 				if(j - idealStretch  < 0)
-					this->u0[i+(j-l)*mesh.getDimensions().x()*mesh.getDimensions().y()-k] = this->work_u[i+(j-l)*levelSize];
+					this->u0[i+(j-l)*mesh.getDimensions().x()*mesh.getDimensions().y()-k] = this->work_u[i+j*levelSize];
 			}
 		}
 
@@ -689,182 +688,6 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
 	fu.setLike(u);
 	fu.setValue( 0.0 );
 
-/*
- *          Insert Euler-Solver Here
- */
-
-	/**/
-
-	/*for(int i = 0; i < u.getSize(); i++)
-	{
-		int x = this->subMesh.getCellCoordinates(i).x();
-		int y = this->subMesh.getCellCoordinates(i).y();
-
-		if(x == 0 && (boundaryCondition & 4) && y ==0)
-		{
-			if((u[subMesh.getCellYSuccessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 0, 1, 0 >() > 1.0)
-			{
-				//cout << "x = 0; y = 0" << endl;
-				u[i] = u[subMesh.getCellYSuccessor( i )] - subMesh.template getSpaceStepsProducts< 0, 1, 0 >();
-			}
-		}
-		else if(x == 0 && (boundaryCondition & 4) && y == subMesh.getDimensions().y() - 1)
-		{
-			if((u[subMesh.getCellYPredecessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 0, 1, 0 >() > 1.0)
-			{
-				//cout << "x = 0; y = n" << endl;
-				u[i] = u[subMesh.getCellYPredecessor( i )] - subMesh.template getSpaceStepsProducts< 0, 1, 0 >();
-			}
-		}
-
-
-		else if(x == subMesh.getDimensions().x() - 1 && (boundaryCondition & 2) && y ==0)
-		{
-			if((u[subMesh.getCellYSuccessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 0, 1, 0 >() > 1.0)
-			{
-				//cout << "x = n; y = 0" << endl;
-				u[i] = u[subMesh.getCellYSuccessor( i )] - subMesh.template getSpaceStepsProducts< 0, 1, 0 >();
-			}
-		}
-		else if(x == subMesh.getDimensions().x() - 1 && (boundaryCondition & 2) && y == subMesh.getDimensions().y() - 1)
-		{
-			if((u[subMesh.getCellYPredecessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 0, 1, 0 >() > 1.0)
-			{
-				//cout << "x = n; y = n" << endl;
-				u[i] = u[subMesh.getCellYPredecessor( i )] - subMesh.template getSpaceStepsProducts< 0, 1, 0 >();
-			}
-		}
-
-
-		else if(y == 0 && (boundaryCondition & 8) && x ==0)
-		{
-			if((u[subMesh.getCellXSuccessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 1, 0, 0 >() > 1.0)
-			{
-				//cout << "y = 0; x = 0" << endl;
-				u[i] = u[subMesh.getCellXSuccessor( i )] - subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
-			}
-		}
-		else if(y == 0 && (boundaryCondition & 8) && x == subMesh.getDimensions().x() - 1)
-		{
-			if((u[subMesh.getCellXPredecessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 1, 0, 0 >() > 1.0)
-			{
-				//cout << "y = 0; x = n" << endl;
-				u[i] = u[subMesh.getCellXPredecessor( i )] - subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
-			}
-		}
-
-
-		else if(y == subMesh.getDimensions().y() - 1 && (boundaryCondition & 1) && x ==0)
-		{
-			if((u[subMesh.getCellXSuccessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 1, 0, 0 >() > 1.0)			{
-				//cout << "y = n; x = 0" << endl;
-				u[i] = u[subMesh.getCellXSuccessor( i )] - subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
-			}
-		}
-		else if(y == subMesh.getDimensions().y() - 1 && (boundaryCondition & 1) && x == subMesh.getDimensions().x() - 1)
-		{
-			if((u[subMesh.getCellXPredecessor( i )] - u[i])/subMesh.template getSpaceStepsProducts< 1, 0, 0 >() > 1.0)
-			{
-				//cout << "y = n; x = n" << endl;
-				u[i] = u[subMesh.getCellXPredecessor( i )] - subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
-			}
-		}
-	}*/
-
-	/**/
-
-
-/*	bool tmp = false;
-	for(int i = 0; i < u.getSize(); i++)
-	{
-		if(u[0]*u[i] <= 0.0)
-			tmp=true;
-	}
-
-
-	if(tmp)
-	{}
-	else if(boundaryCondition == 4)
-	{
-		int i;
-		for(i = 0; i < u.getSize() - subMesh.getDimensions().x() ; i=subMesh.getCellYSuccessor(i))
-		{
-			int j;
-			for(j = i; j < subMesh.getDimensions().x() - 1; j=subMesh.getCellXSuccessor(j))
-			{
-				u[j] = u[i];
-			}
-			u[j] = u[i];
-		}
-		int j;
-		for(j = i; j < subMesh.getDimensions().x() - 1; j=subMesh.getCellXSuccessor(j))
-		{
-			u[j] = u[i];
-		}
-		u[j] = u[i];
-	}
-	else if(boundaryCondition == 8)
-	{
-		int i;
-		for(i = 0; i < subMesh.getDimensions().x() - 1; i=subMesh.getCellXSuccessor(i))
-		{
-			int j;
-			for(j = i; j < u.getSize() - subMesh.getDimensions().x(); j=subMesh.getCellYSuccessor(j))
-			{
-				u[j] = u[i];
-			}
-			u[j] = u[i];
-		}
-		int j;
-		for(j = i; j < u.getSize() - subMesh.getDimensions().x(); j=subMesh.getCellYSuccessor(j))
-		{
-			u[j] = u[i];
-		}
-		u[j] = u[i];
-
-	}
-	else if(boundaryCondition == 2)
-	{
-		int i;
-		for(i = subMesh.getDimensions().x() - 1; i < u.getSize() - subMesh.getDimensions().x() ; i=subMesh.getCellYSuccessor(i))
-		{
-			int j;
-			for(j = i; j > (i-1)*subMesh.getDimensions().x(); j=subMesh.getCellXPredecessor(j))
-			{
-				u[j] = u[i];
-			}
-			u[j] = u[i];
-		}
-		int j;
-		for(j = i; j > (i-1)*subMesh.getDimensions().x(); j=subMesh.getCellXPredecessor(j))
-		{
-			u[j] = u[i];
-		}
-		u[j] = u[i];
-	}
-	else if(boundaryCondition == 1)
-	{
-		int i;
-		for(i = (subMesh.getDimensions().y() - 1)*subMesh.getDimensions().x(); i < u.getSize() - 1; i=subMesh.getCellXSuccessor(i))
-		{
-			int j;
-			for(j = i; j >=subMesh.getDimensions().x(); j=subMesh.getCellYPredecessor(j))
-			{
-				u[j] = u[i];
-			}
-			u[j] = u[i];
-		}
-		int j;
-		for(j = i; j >=subMesh.getDimensions().x(); j=subMesh.getCellYPredecessor(j))
-		{
-			u[j] = u[i];
-		}
-		u[j] = u[i];
-	}
-*/
-	/**/
-
-
 
 	bool tmp = false;
 	for(int i = 0; i < u.getSize(); i++)
@@ -914,44 +737,6 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
 				//if(fabs(u[i*this->n + j]) < fabs(u[j]))
 				u[i*this->n + j] = value;// u[j];
 	}
-
-/*
-
-	else if(boundaryCondition == 5)
-	{
-		for(int i = 0; i < this->n - 1; i++)
-			for(int j = 1;j < this->n; j++)
-				//if(fabs(u[i*this->n + j]) <  fabs(u[i*this->n]))
-				u[i*this->n + j] = value;// u[i*this->n];
-	}
-	else if(boundaryCondition == 10)
-	{
-		for(int i = 1; i < this->n; i++)
-			for(int j =0 ;j < this->n -1; j++)
-				//if(fabs(u[i*this->n + j]) < fabs(u[(i+1)*this->n - 1]))
-				u[i*this->n + j] = value;// u[(i+1)*this->n - 1];
-	}
-	else if(boundaryCondition == 3)
-	{
-		for(int j = 0; j < this->n - 1; j++)
-			for(int i = 0;i < this->n - 1; i++)
-				//if(fabs(u[i*this->n + j]) < fabs(u[j + this->n*(this->n - 1)]))
-				u[i*this->n + j] = value;// u[j + this->n*(this->n - 1)];
-	}
-	else if(boundaryCondition == 12)
-	{
-		for(int j = 1; j < this->n; j++)
-			for(int i = 1;i < this->n; i++)
-				//if(fabs(u[i*this->n + j]) < fabs(u[j]))
-				u[i*this->n + j] = value;// u[j];
-	}
-*/
-
-
-	/**/
-
-	/*if (u.max() > 0.0)
-		this->stopTime *=(double) this->gridCols;*/
 
 
    double time = 0.0;
@@ -1132,8 +917,6 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	}
 	__syncthreads();
 
-	/*if(!tmp && (u[0]*u[l] <= 0.0))
-		atomicMax( &tmp, 1);*/
 
 	__syncthreads();
 	if(tmp !=1)
@@ -1205,7 +988,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
    __shared__ double currentTau;
    double cfl = this->cflCondition;
    double fu = 0.0;
-//   if(threadIdx.x * threadIdx.y == 0)
+//   if(threadIdx.x * threadIdx.y * threadIdx.z == 0)
 //   {
 //	   currentTau = this->tau0;
 //   }
@@ -1213,19 +996,22 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
    __syncthreads();
    if( time + currentTau > finalTime ) currentTau = finalTime - time;
 
-   	   tnlGridEntity<MeshType, 3, tnlGridEntityNoStencilStorage > Entity(subMesh);
-   	   tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities(Entity);
-   	   Entity.setCoordinates(tnlStaticVector<3,int>(i,j,k));
-   	   Entity.refresh();
-   	   neighbourEntities.refresh(subMesh,Entity.getIndex());
+   tnlGridEntity<MeshType, 3, tnlGridEntityNoStencilStorage > Entity(subMesh);
+   tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities(Entity);
+   Entity.setCoordinates(tnlStaticVector<3,int>(i,j,k));
+   Entity.refresh();
+   neighbourEntities.refresh(subMesh,Entity.getIndex());
 
 
    while( time < finalTime )
    {
-	  if(computeFU)
-		  fu = schemeHost.getValueDev( this->subMesh, l, tnlStaticVector<3,int>(i,j,k)/*this->subMesh.getCellCoordinates(l)*/, u, time, boundaryCondition, neighbourEntities);
+	  sharedTau[l]=finalTime;
 
-	  sharedTau[l]=cfl/abs(fu);
+	  if(computeFU)
+		  fu = schemeHost.getValueDev( this->subMesh, l, tnlStaticVector<3,int>(i,j,k), u, time, boundaryCondition, neighbourEntities);
+
+	  if(abs(fu) > 0.0)
+		  sharedTau[l]=abs(cfl/fu);
 
       if(l == 0)
       {
@@ -1235,9 +1021,9 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
     	  if( time + sharedTau[l] > finalTime )		sharedTau[l] = finalTime - time;
 
 
-      if((blockDim.x == 8) && (l < 256))		sharedTau[l] = Min(sharedTau[l],sharedTau[l+256]);
+      if((l < 256))		sharedTau[l] = Min(sharedTau[l],sharedTau[l+256]);
       __syncthreads();
-      if((blockDim.x == 8) && (l < 128))		sharedTau[l] = Min(sharedTau[l],sharedTau[l+128]);
+      if((l < 128))		sharedTau[l] = Min(sharedTau[l],sharedTau[l+128]);
       __syncthreads();
       if(l < 64)								sharedTau[l] = Min(sharedTau[l],sharedTau[l+64]);
       __syncthreads();
@@ -1249,6 +1035,8 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
       if(l < 1)									currentTau   = Min(sharedTau[l],sharedTau[l+1]);
 	__syncthreads();
 
+//	if(abs(fu) < 10000.0)
+//		printf("bla");
       u[l] += currentTau * fu;
       time += currentTau;
    }
@@ -1325,7 +1113,7 @@ void /*tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>
 
 	if(threadIdx.x+threadIdx.y+threadIdx.z == 0)
 	{
-		printf("z = %d, y = %d, x = %d\n",blockIdx.z,blockIdx.y,blockIdx.x);
+//		printf("z = %d, y = %d, x = %d\n",blockIdx.z,blockIdx.y,blockIdx.x);
 		subgridValue = cudaSolver->getSubgridValueCUDA3D(blockIdx.y*gridDim.x + blockIdx.x + blockIdx.z*gridDim.x*gridDim.y);
 		boundary[0] = 0;
 		boundary[1] = 0;
@@ -1414,6 +1202,7 @@ void /*tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>
 			atomicMax(&boundary[boundary_index], 1);
 			cudaSolver->work_u_cuda[gid] = u_cmp;
 		}
+		__threadfence();
 
 	}
 	__syncthreads();
@@ -1439,7 +1228,7 @@ template <typename SchemeHost, typename SchemeDevice, typename Device>
 __global__
 void synchronize2CUDA3D(tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int >* cudaSolver)
 {
-	if(blockIdx.x+blockIdx.y+blockIdx.z ==0)
+	if(blockIdx.x+blockIdx.y+blockIdx.z == 0)
 	{
 		cudaSolver->currentStep = cudaSolver->currentStep + 1;
 		*(cudaSolver->runcuda) = 0;
@@ -1452,6 +1241,7 @@ void synchronize2CUDA3D(tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Dev
 			cudaSolver->setSubgridValueCUDA3D(blockIdx.z*gridDim.x*gridDim.y + blockIdx.y*gridDim.x + blockIdx.x, stepValue);
 	}
 
+//	printf("%d\n",cudaSolver->getBoundaryConditionCUDA3D(blockIdx.z*gridDim.x*gridDim.y + blockIdx.y*gridDim.x + blockIdx.x)):
 	atomicMax((cudaSolver->runcuda),cudaSolver->getBoundaryConditionCUDA3D(blockIdx.z*gridDim.x*gridDim.y + blockIdx.y*gridDim.x + blockIdx.x));
 }
 
@@ -1616,7 +1406,7 @@ void runCUDA3D(tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, doub
 				caller->updateSubgridCUDA3D(i,caller, &u[l]);
 				__syncthreads();
 			}
-			if(   (bound == 4))
+			if((bound == 4))
 			{
 				caller->runSubgridCUDA3D(4,u,i);
 				caller->updateSubgridCUDA3D(i,caller, &u[l]);
