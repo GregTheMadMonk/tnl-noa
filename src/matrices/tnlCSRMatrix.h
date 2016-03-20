@@ -21,6 +21,11 @@
 #include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
 
+#ifdef HAVE_UMFPACK
+    template< typename Matrix, typename Preconditioner >
+    class tnlUmfpackWrapper;
+#endif
+
 template< typename Real >
 class tnlCusparseCSRMatrix;
 
@@ -209,6 +214,10 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef tnlCSRMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlCSRMatrixDeviceDependentCode< DeviceType >;
    friend class tnlCusparseCSRMatrix< RealType >;
+#ifdef HAVE_UMFPACK
+    template< typename Matrix, typename Preconditioner >
+    friend class tnlUmfpackWrapper;
+#endif
 
 };
 

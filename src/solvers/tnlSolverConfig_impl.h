@@ -118,6 +118,10 @@ bool tnlSolverConfig< MeshConfig, ProblemConfig >::configSetup( tnlConfigDescrip
          config.addEntryEnum( "tfqmr" );
       if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitSORSolverTag >::enabled )
          config.addEntryEnum( "sor" );
+#ifdef HAVE_UMFPACK
+      if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitUmfpackSolverTag >::enabled )
+         config.addEntryEnum( "umfpack" );
+#endif
    }
    config.addEntry< tnlString >( "preconditioner", "The preconditioner for the discrete solver:", "none" );
    config.addEntryEnum( "none" );
