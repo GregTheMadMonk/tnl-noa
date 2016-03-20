@@ -224,7 +224,8 @@ public:
                    const CoordinatesType& coordinates,
                    const Vector& u,
                    const RealType& time,
-                   const IndexType boundaryCondition ) const;
+                   const IndexType boundaryCondition,
+  	  	  	       const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities  ) const;
 
 #ifdef HAVE_CUDA
    __device__
@@ -234,7 +235,8 @@ public:
                   const CoordinatesType& coordinates,
                   const RealType* u,
                   const RealType& time,
-                  const IndexType boundaryCondition) const;
+                  const IndexType boundaryCondition,
+ 	  	  	      const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities ) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -261,7 +263,7 @@ protected:
 
 //#include <operators/godunov-eikonal/parallelGodunovEikonal1D_impl.h>
 #include <operators/godunov-eikonal/parallelGodunovEikonal2D_impl.h>
-//#include <operators/godunov-eikonal/parallelGodunovEikonal3D_impl.h>
+#include <operators/godunov-eikonal/parallelGodunovEikonal3D_impl.h>
 
 
 #endif /* GODUNOVEIKONAL_H_ */

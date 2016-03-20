@@ -126,7 +126,8 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const CoordinatesType& coordinates,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Vector& u,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time,
-          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition ) const
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition,
+          	  	          	  	  	  	  	  	  	  	  	  	                     const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities  ) const
 {
 	if ( ((coordinates.x() == 0 && (boundaryCondition & 4)) or
 		 (coordinates.x() == mesh.getDimensions().x() - 1 && (boundaryCondition & 2)) or
@@ -159,35 +160,35 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
 
 
 	   if(coordinates.x() == mesh.getDimensions().x() - 1)
-		   xf += u[mesh.template getCellNextToCell<-1,0,0>( cellIndex )];
+		   xf += u[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
 	   else
-		   xf += u[mesh.template getCellNextToCell<1,0,0>( cellIndex )];
+		   xf += u[neighbourEntities.template getEntityIndex< 1,  0,  0 >()];
 
 	   if(coordinates.x() == 0)
-		   xb -= u[mesh.template getCellNextToCell<1,0,0>( cellIndex )];
+		   xb -= u[neighbourEntities.template getEntityIndex< 1,  0,  0 >()];
 	   else
-		   xb -= u[mesh.template getCellNextToCell<-1,0,0>( cellIndex )];
+		   xb -= u[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
 
 	   if(coordinates.y() == mesh.getDimensions().y() - 1)
-		   yf += u[mesh.template getCellNextToCell<0,-1,0>( cellIndex )];
+		   yf += u[neighbourEntities.template getEntityIndex< 0,  -1,  0 >()];
 	   else
-		   yf += u[mesh.template getCellNextToCell<0,1,0>( cellIndex )];
+		   yf += u[neighbourEntities.template getEntityIndex< 0,  1,  0 >()];
 
 	   if(coordinates.y() == 0)
-		   yb -= u[mesh.template getCellNextToCell<0,1,0>( cellIndex )];
+		   yb -= u[neighbourEntities.template getEntityIndex< 0,  1,  0 >()];
 	   else
-		   yb -= u[mesh.template getCellNextToCell<0,-1,0>( cellIndex )];
+		   yb -= u[neighbourEntities.template getEntityIndex< 0,  -1,  0 >()];
 
 
 	   if(coordinates.z() == mesh.getDimensions().z() - 1)
-		   zf += u[mesh.template getCellNextToCell<0,0,-1>( cellIndex )];
+		   zf += u[neighbourEntities.template getEntityIndex< 0,  0,  -1 >()];
 	   else
-		   zf += u[mesh.template getCellNextToCell<0,0,1>( cellIndex )];
+		   zf += u[neighbourEntities.template getEntityIndex< 0,  0,  1 >()];
 
 	   if(coordinates.z() == 0)
-		   zb -= u[mesh.template getCellNextToCell<0,0,1>( cellIndex )];
+		   zb -= u[neighbourEntities.template getEntityIndex< 0,  0,  1 >()];
 	   else
-		   zb -= u[mesh.template getCellNextToCell<0,0,-1>( cellIndex )];
+		   zb -= u[neighbourEntities.template getEntityIndex< 0,  0,  -1 >()];
 
 
 	   //xb *= ihx;
@@ -266,7 +267,9 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const CoordinatesType& coordinates,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real* u,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time,
-          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition) const
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition,
+          	  	          	  	  	  	  	  	  	  	  	  	                     const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 ) const
 {
 
 /*
@@ -300,35 +303,35 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
 
 
 	   if(coordinates.x() == mesh.getDimensions().x() - 1)
-		   xf += u[mesh.template getCellNextToCell<-1,0,0>( cellIndex )];
+		   xf += u[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
 	   else
-		   xf += u[mesh.template getCellNextToCell<1,0,0>( cellIndex )];
+		   xf += u[neighbourEntities.template getEntityIndex< 1,  0,  0 >()];
 
 	   if(coordinates.x() == 0)
-		   xb -= u[mesh.template getCellNextToCell<1,0,0>( cellIndex )];
+		   xb -= u[neighbourEntities.template getEntityIndex< 1,  0,  0 >()];
 	   else
-		   xb -= u[mesh.template getCellNextToCell<-1,0,0>( cellIndex )];
+		   xb -= u[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
 
 	   if(coordinates.y() == mesh.getDimensions().y() - 1)
-		   yf += u[mesh.template getCellNextToCell<0,-1,0>( cellIndex )];
+		   yf += u[neighbourEntities.template getEntityIndex< 0,  -1,  0 >()];
 	   else
-		   yf += u[mesh.template getCellNextToCell<0,1,0>( cellIndex )];
+		   yf += u[neighbourEntities.template getEntityIndex< 0,  1,  0 >()];
 
 	   if(coordinates.y() == 0)
-		   yb -= u[mesh.template getCellNextToCell<0,1,0>( cellIndex )];
+		   yb -= u[neighbourEntities.template getEntityIndex< 0,  1,  0 >()];
 	   else
-		   yb -= u[mesh.template getCellNextToCell<0,-1,0>( cellIndex )];
+		   yb -= u[neighbourEntities.template getEntityIndex< 0,  -1,  0 >()];
 
 
 	   if(coordinates.z() == mesh.getDimensions().z() - 1)
-		   zf += u[mesh.template getCellNextToCell<0,0,-1>( cellIndex )];
+		   zf += u[neighbourEntities.template getEntityIndex< 0,  0,  -1 >()];
 	   else
-		   zf += u[mesh.template getCellNextToCell<0,0,1>( cellIndex )];
+		   zf += u[neighbourEntities.template getEntityIndex< 0,  0,  1 >()];
 
 	   if(coordinates.z() == 0)
-		   zb -= u[mesh.template getCellNextToCell<0,0,1>( cellIndex )];
+		   zb -= u[neighbourEntities.template getEntityIndex< 0,  0,  1 >()];
 	   else
-		   zb -= u[mesh.template getCellNextToCell<0,0,-1>( cellIndex )];
+		   zb -= u[neighbourEntities.template getEntityIndex< 0,  0,  -1 >()];
 
 
 	   //xb *= ihx;
