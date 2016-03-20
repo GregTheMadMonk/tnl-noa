@@ -481,7 +481,7 @@ printFunction( ostream& str ) const
       str << *f;
       return str;
    }
-   if( std::is_same< Deice, tnlCuda >::value )
+   if( std::is_same< Device, tnlCuda >::value )
    {
       tnlCuda::print( f, str );
       return str;
