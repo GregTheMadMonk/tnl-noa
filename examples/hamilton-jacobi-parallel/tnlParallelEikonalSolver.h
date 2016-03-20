@@ -20,8 +20,10 @@
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlStaticVector.h>
+#include <functions/tnlMeshFunction.h>
 #include <core/tnlHost.h>
 #include <mesh/tnlGrid.h>
+#include <mesh/grids/tnlGridEntity.h>
 #include <limits.h>
 #include <core/tnlDevice.h>
 
@@ -91,9 +93,13 @@ public:
 	VectorType runSubgrid( int boundaryCondition, VectorType u, int subGridID);
 
 
-	VectorType u0, work_u;
+	tnlMeshFunction<MeshType> u0;
+	VectorType work_u;
 	IntVectorType subgridValues, boundaryConditions, unusedCell, calculationsCount;
 	MeshType mesh, subMesh;
+
+//	tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage > Entity;
+
 	SchemeHost schemeHost;
 	SchemeDevice schemeDevice;
 	double delta, tau0, stopTime,cflCondition;
@@ -214,7 +220,8 @@ public:
 		VectorType runSubgrid( int boundaryCondition, VectorType u, int subGridID);
 
 
-		VectorType u0, work_u;
+		tnlMeshFunction<MeshType> u0;
+		VectorType work_u;
 		IntVectorType subgridValues, boundaryConditions, unusedCell, calculationsCount;
 		MeshType mesh, subMesh;
 		SchemeHost schemeHost;
@@ -326,6 +333,32 @@ template <typename SchemeHost, typename SchemeDevice, typename Device>
 __global__ void synchronize2CUDA3D(tnlParallelEikonalSolver<3, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
 #endif
 
-#include "tnlParallelEikonalSolver2D_impl.h"
 
+__device__
+double fabsMin( double x, double y)
+{
+	double fx = abs(x);
+
+	if(Min(fx,abs(y)) == fx)
+		return x;
+	else
+		return y;
+}
+
+__device__
+double atomicFabsMin(double* address, double val)
+{
+	unsigned long long int* address_as_ull =
+						  (unsigned long long int*)address;
+	unsigned long long int old = *address_as_ull, assumed;
+	do {
+		assumed = old;
+			old = atomicCAS(address_as_ull, assumed,__double_as_longlong( fabsMin(__longlong_as_double(assumed),val) ));
+	} while (assumed != old);
+	return __longlong_as_double(old);
+}
+
+
+#include "tnlParallelEikonalSolver2D_impl.h"
+#include "tnlParallelEikonalSolver3D_impl.h"
 #endif /* TNLPARALLELEIKONALSOLVER_H_ */

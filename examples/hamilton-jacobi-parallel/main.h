@@ -17,7 +17,7 @@
 #include "tnlParallelEikonalSolver.h"
 #include "parallelEikonalConfig.h"
 #include "MainBuildConfig.h"
-#include <solvers/tnlConfigTags.h>
+#include <solvers/tnlBuildConfigTags.h>
 #include <operators/godunov-eikonal/parallelGodunovEikonal.h>
 #include <mesh/tnlGrid.h>
 #include <core/tnlDevice.h>

@@ -84,7 +84,7 @@ bool parallelGodunovEikonalScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Rea
 	   }
 
 
-	   h = originalMesh.getHx();
+	   h = originalMesh.template getSpaceStepsProducts< 1, 0 >();
 	   cout << "h = " << h << endl;
 
 	   epsilon = parameters. getParameter< double >( "epsilon" );

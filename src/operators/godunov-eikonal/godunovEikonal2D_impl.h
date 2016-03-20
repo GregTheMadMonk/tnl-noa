@@ -84,8 +84,8 @@ bool godunovEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index
 
 
 
-	   hx = originalMesh.getHx();
-	   hy = originalMesh.getHy();
+	   hx = originalMesh.template getSpaceStepsProducts< 1, 0 >();
+	   hy = originalMesh.template getSpaceStepsProducts< 0, 1 >();
 
 	   epsilon = parameters. getParameter< double >( "epsilon" );
 

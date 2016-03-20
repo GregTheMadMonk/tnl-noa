@@ -61,7 +61,7 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 
 	this->subMesh.setDimensions( this->n, this->n );
 	this->subMesh.setDomain( tnlStaticVector<3,double>(0.0, 0.0),
-							 tnlStaticVector<3,double>(this->mesh.getHx()*(double)(this->n), this->mesh.getHy()*(double)(this->n),this->mesh.getHz()*(double)(this->n)) );
+							 tnlStaticVector<3,double>(mesh.template getSpaceStepsProducts< 1, 0, 0 >()*(double)(this->n), mesh.template getSpaceStepsProducts< 0, 1, 0 >()*(double)(this->n),mesh.template getSpaceStepsProducts< 0, 0, 1 >()*(double)(this->n)) );
 
 	this->subMesh.save("submesh.tnl");
 
@@ -71,7 +71,7 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	//cout << this->mesh.getCellCenter(0) << endl;
 
 	this->delta = parameters.getParameter <double>("delta");
-	this->delta *= this->mesh.getHx()*this->mesh.getHy();
+	this->delta *= mesh.template getSpaceStepsProducts< 1, 0, 0 >()*mesh.template getSpaceStepsProducts< 0, 1, 0 >();
 
 	cout << "Setting delta to " << this->delta << endl;
 
@@ -80,14 +80,14 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	this->stopTime = parameters.getParameter <double>("stop-time");
 
 	this->cflCondition = parameters.getParameter <double>("cfl-condition");
-	this -> cflCondition *= sqrt(this->mesh.getHx()*this->mesh.getHy());
+	this -> cflCondition *= sqrt(mesh.template getSpaceStepsProducts< 1, 0, 0 >()*mesh.template getSpaceStepsProducts< 0, 1, 0 >());
 	cout << "Setting CFL to " << this->cflCondition << endl;
 
 	stretchGrid();
 	this->stopTime /= (double)(this->gridCols);
 	this->stopTime *= (1.0+1.0/((double)(this->n) - 2.0));
 	cout << "Setting stopping time to " << this->stopTime << endl;
-	//this->stopTime = 1.5*((double)(this->n))*parameters.getParameter <double>("stop-time")*this->mesh.getHx();
+	//this->stopTime = 1.5*((double)(this->n))*parameters.getParameter <double>("stop-time")*mesh.template getSpaceStepsProducts< 1, 0, 0 >();
 	//cout << "Setting stopping time to " << this->stopTime << endl;
 
 	cout << "Initializating scheme..." << endl;
@@ -962,6 +962,8 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
 
    double maxResidue( 1.0 );
    //double lastResidue( 10000.0 );
+   tnlGridEntity<MeshType, 3, tnlGridEntityNoStencilStorage > Entity(subMesh);
+   tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities(Entity);
    while( time < finalTime /*|| maxResidue > subMesh.getHx()*/)
    {
       /****
@@ -970,7 +972,13 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
 
       for( int i = 0; i < fu.getSize(); i ++ )
       {
-    	  fu[ i ] = schemeHost.getValue( this->subMesh, i, this->subMesh.getCellCoordinates(i), u, time, boundaryCondition );
+    	  tnlStaticVector<3,int> coords(i % subMesh.getDimensions().x(),
+    	  								(i % subMesh.getDimensions().x()*subMesh.getDimensions().y())/ subMesh.getDimensions().x(),
+    	  								i / subMesh.getDimensions().x()*subMesh.getDimensions().y());
+			Entity.setCoordinates(coords);
+			Entity.refresh();
+			neighbourEntities.refresh(subMesh,Entity.getIndex());
+    	  fu[ i ] = schemeHost.getValue( this->subMesh, i, coords,u, time, boundaryCondition );
       }
       maxResidue = fu. absMax();
 
@@ -1181,11 +1189,17 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
    __syncthreads();
    if( time + currentTau > finalTime ) currentTau = finalTime - time;
 
+   	   tnlGridEntity<MeshType, 3, tnlGridEntityNoStencilStorage > Entity(subMesh);
+   	   tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities(Entity);
+   	   Entity.setCoordinates(tnlStaticVector<3,int>(i,j,k));
+   	   Entity.refresh();
+   	   neighbourEntities.refresh(subMesh,Entity.getIndex());
+
 
    while( time < finalTime )
    {
 	  if(computeFU)
-		  fu = schemeHost.getValueDev( this->subMesh, l, tnlStaticVector<3,int>(i,j)/*this->subMesh.getCellCoordinates(l)*/, u, time, boundaryCondition);
+		  fu = schemeHost.getValueDev( this->subMesh, l, tnlStaticVector<3,int>(i,j,k)/*this->subMesh.getCellCoordinates(l)*/, u, time, boundaryCondition);
 
 	  sharedTau[l]=cfl/fabs(fu);
 

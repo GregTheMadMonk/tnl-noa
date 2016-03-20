@@ -97,9 +97,9 @@ bool parallelGodunovEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Rea
 
 
 
-	   hx = originalMesh.getHx();
+	   hx = originalMesh.template getSpaceStepsProducts< 1, 0 >();
 	   ihx = 1.0/hx;
-	   hy = originalMesh.getHy();
+	   hy = originalMesh.template getSpaceStepsProducts< 0, 1 >();
 	   ihy = 1.0/hy;
 
 	   this->epsilon = parameters. getParameter< double >( "epsilon" );
@@ -144,7 +144,8 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const CoordinatesType& coordinates,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Vector& u,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time,
-          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition ) const
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition,
+          	  	  	  	  	  	  	  	  	  	                     const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities ) const
 {
 
 
@@ -181,24 +182,24 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 
 
 	   if(coordinates.x() == mesh.getDimensions().x() - 1)
-		   xf += u[mesh.template getCellNextToCell<-1,0>( cellIndex )];
+		   xf += u[neighbourEntities.template getEntityIndex< -1,  0 >()];
 	   else
-		   xf += u[mesh.template getCellNextToCell<1,0>( cellIndex )];
+		   xf += u[neighbourEntities.template getEntityIndex< 1,  0 >()];
 
 	   if(coordinates.x() == 0)
-		   xb -= u[mesh.template getCellNextToCell<1,0>( cellIndex )];
+		   xb -= u[neighbourEntities.template getEntityIndex< 1,  0 >()];
 	   else
-		   xb -= u[mesh.template getCellNextToCell<-1,0>( cellIndex )];
+		   xb -= u[neighbourEntities.template getEntityIndex< -1,  0 >()];
 
 	   if(coordinates.y() == mesh.getDimensions().y() - 1)
-		   yf += u[mesh.template getCellNextToCell<0,-1>( cellIndex )];
+		   yf += u[neighbourEntities.template getEntityIndex< 0,  -1 >()];
 	   else
-		   yf += u[mesh.template getCellNextToCell<0,1>( cellIndex )];
+		   yf += u[neighbourEntities.template getEntityIndex< 0,  1 >()];
 
 	   if(coordinates.y() == 0)
-		   yb -= u[mesh.template getCellNextToCell<0,1>( cellIndex )];
+		   yb -= u[neighbourEntities.template getEntityIndex< 0,  1 >()];
 	   else
-		   yb -= u[mesh.template getCellNextToCell<0,-1>( cellIndex )];
+		   yb -= u[neighbourEntities.template getEntityIndex< 0,  -1 >()];
 
 
 	   //xb *= ihx;
@@ -268,9 +269,9 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 //		   else *//*if(boundaryCondition & 4)
 //			   xf = 0.0;
 //		   else /**/if(coordinates.x() == mesh.getDimensions().x() - 1)
-//			   xf = negativePart((u[mesh.template getCellNextToCell<-1,0>( cellIndex )] - u[cellIndex])*ihx);
+//			   xf = negativePart((u[neighbourEntities.template getEntityIndex< -1,  0 >()] - u[cellIndex])*ihx);
 //		   else
-//			   xf = negativePart((u[mesh.template getCellNextToCell<1,0>( cellIndex )] - u[cellIndex])*ihx);
+//			   xf = negativePart((u[neighbourEntities.template getEntityIndex< 1,  0 >()] - u[cellIndex])*ihx);
 //
 //	/**/ /*  if(boundaryCondition & 4)
 //			   xb = (u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])*ihx;
@@ -279,25 +280,25 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 //		   else /**/if(coordinates.x() == 0)
 //			   xb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<+1,0>( cellIndex )])*ihx);
 //		   else
-//			   xb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<-1,0>( cellIndex )])*ihx);
+//			   xb = positivePart((u[cellIndex] - u[neighbourEntities.template getEntityIndex< -1,  0 >()])*ihx);
 //
 //	/**/  /* if(boundaryCondition & 1)
 //			   yf = (u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])*ihy;
 //		   else *//*if(boundaryCondition & 8)
 //			   yf = 0.0;
 //		   else /**/if(coordinates.y() == mesh.getDimensions().y() - 1)
-//			   yf = negativePart((u[mesh.template getCellNextToCell<0,-1>( cellIndex )] - u[cellIndex])*ihy);
+//			   yf = negativePart((u[neighbourEntities.template getEntityIndex< 0,  -1 >()] - u[cellIndex])*ihy);
 //		   else
-//			   yf = negativePart((u[mesh.template getCellNextToCell<0,1>( cellIndex )] - u[cellIndex])*ihy);
+//			   yf = negativePart((u[neighbourEntities.template getEntityIndex< 0,  1 >()] - u[cellIndex])*ihy);
 //
 //	/**/  /* if(boundaryCondition & 8)
 //			   yb = (u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])*ihy;
 //		   else *//*if(boundaryCondition & 1)
 //			   yb = 0.0;
 //		   else /**/if(coordinates.y() == 0)
-//			   yb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,1>( cellIndex )])*ihy);
+//			   yb = positivePart((u[cellIndex] - u[neighbourEntities.template getEntityIndex< 0,  1 >()])*ihy);
 //		   else
-//			   yb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,-1>( cellIndex )])*ihy);
+//			   yb = positivePart((u[cellIndex] - u[neighbourEntities.template getEntityIndex< 0,  -1 >()])*ihy);
 //
 //		   if(xb - xf > 0.0)
 //			   xf = 0.0;
@@ -322,36 +323,36 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 //		   else*//* if(boundaryCondition & 4)
 //			   xf = 0.0;
 //		   else /**/if(coordinates.x() == mesh.getDimensions().x() - 1)
-//			   xf = positivePart((u[mesh.template getCellNextToCell<-1,0>( cellIndex )] - u[cellIndex])*ihx);
+//			   xf = positivePart((u[neighbourEntities.template getEntityIndex< -1,  0 >()] - u[cellIndex])*ihx);
 //		   else
-//			   xf = positivePart((u[mesh.template getCellNextToCell<1,0>( cellIndex )] - u[cellIndex])*ihx);
+//			   xf = positivePart((u[neighbourEntities.template getEntityIndex< 1,  0 >()] - u[cellIndex])*ihx);
 //
 //	/**/  /* if(boundaryCondition & 4)
 //			   xb = (u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])*ihx;
 //		   else*//* if(boundaryCondition & 2)
 //			   xb = 0.0;
 //		   else /**/if(coordinates.x() == 0)
-//			   xb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<1,0>( cellIndex )])*ihx);
+//			   xb = negativePart((u[cellIndex] - u[neighbourEntities.template getEntityIndex< 1,  0 >()])*ihx);
 //		   else
-//			   xb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<-1,0>( cellIndex )])*ihx);
+//			   xb = negativePart((u[cellIndex] - u[neighbourEntities.template getEntityIndex< -1,  0 >()])*ihx);
 //
 //	/**/ /*  if(boundaryCondition & 1)
 //			   yf = (u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])*ihy;
 //		   else *//*if(boundaryCondition & 8)
 //			   yf = 0.0;
 //		   else /**/if(coordinates.y() == mesh.getDimensions().y() - 1)
-//			   yf = positivePart((u[mesh.template getCellNextToCell<0,-1>( cellIndex )] - u[cellIndex])*ihy);
+//			   yf = positivePart((u[neighbourEntities.template getEntityIndex< 0,  -1 >()] - u[cellIndex])*ihy);
 //		   else
-//			   yf = positivePart((u[mesh.template getCellNextToCell<0,1>( cellIndex )] - u[cellIndex])*ihy);
+//			   yf = positivePart((u[neighbourEntities.template getEntityIndex< 0,  1 >()] - u[cellIndex])*ihy);
 //
 //	/**/  /* if(boundaryCondition & 8)
 //			   yb = (u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])*ihy;
 //		   else*//* if(boundaryCondition & 1)
 //			   yb = 0.0;
 //		   else /**/if(coordinates.y() == 0)
-//			   yb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,1>( cellIndex )])*ihy);
+//			   yb = negativePart((u[cellIndex] - u[neighbourEntities.template getEntityIndex< 0,  1 >()])*ihy);
 //		   else
-//			   yb = negativePart((u[cellIndex] - u[mesh.template getCellNextToCell<0,-1>( cellIndex )])*ihy);
+//			   yb = negativePart((u[cellIndex] - u[neighbourEntities.template getEntityIndex< 0,  -1 >()])*ihy);
 //
 //
 //		   if(xb - xf > 0.0)
@@ -399,37 +400,42 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const CoordinatesType& coordinates,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real* u,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time,
-          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition) const
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition,
+          	  	  	  	  	  	  	  	  	  	                     const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities) const
 {
 
-	RealType signui = sign(u[cellIndex],this->epsilon);
+	RealType signui;
+	if(boundaryCondition == 0)
+		signui = sign(u[cellIndex],/*(boundaryCondition != 0) * */this->epsilon);
+	else
+		signui = Sign(u[cellIndex]);
 
 	RealType xb = u[cellIndex];
 	RealType xf = -u[cellIndex];
 	RealType yb = u[cellIndex];
 	RealType yf = -u[cellIndex];
-	RealType a,b,c;
+	RealType a,b/*,c*/;
 
 
 	   if(coordinates.x() == mesh.getDimensions().x() - 1)
-		   xf += u[mesh.template getCellNextToCell<-1,0>( cellIndex )];
+		   xf += u[neighbourEntities.template getEntityIndex< -1,  0 >()];
 	   else
-		   xf += u[mesh.template getCellNextToCell<1,0>( cellIndex )];
+		   xf += u[neighbourEntities.template getEntityIndex< 1,  0 >()];
 
 	   if(coordinates.x() == 0)
-		   xb -= u[mesh.template getCellNextToCell<1,0>( cellIndex )];
+		   xb -= u[neighbourEntities.template getEntityIndex< 1,  0 >()];
 	   else
-		   xb -= u[mesh.template getCellNextToCell<-1,0>( cellIndex )];
+		   xb -= u[neighbourEntities.template getEntityIndex< -1,  0 >()];
 
 	   if(coordinates.y() == mesh.getDimensions().y() - 1)
-		   yf += u[mesh.template getCellNextToCell<0,-1>( cellIndex )];
+		   yf += u[neighbourEntities.template getEntityIndex< 0,  -1 >()];
 	   else
-		   yf += u[mesh.template getCellNextToCell<0,1>( cellIndex )];
+		   yf += u[neighbourEntities.template getEntityIndex< 0,  1 >()];
 
 	   if(coordinates.y() == 0)
-		   yb -= u[mesh.template getCellNextToCell<0,1>( cellIndex )];
+		   yb -= u[neighbourEntities.template getEntityIndex< 0,  1 >()];
 	   else
-		   yb -= u[mesh.template getCellNextToCell<0,-1>( cellIndex )];
+		   yb -= u[neighbourEntities.template getEntityIndex< 0,  -1 >()];
 
 
 	   if(signui > 0.0)
@@ -466,12 +472,12 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 	   else
 		   b = yf;
 
-	   c =(1.0 - sqrt(a*a+b*b)*ihx );
+//	   c =(1.0 - sqrt(a*a+b*b)*ihx );
 
-	   if(c > 0.0 )
-		   return Sign(u[cellIndex])*c;
-	   else
-		   return signui*c;
+//	   if(c > 0.0 )
+//		   return Sign(u[cellIndex])*c;
+//	   else
+		   return signui*(1.0 - sqrt(a*a+b*b)*ihx );
 }
 
 

@@ -26,6 +26,7 @@
 #include <core/mfilename.h>
 #include <mesh/tnlGrid.h>
 #include <core/tnlCuda.h>
+#include <mesh/grids/tnlGridEntity.h>
 
 
 template< typename Mesh,
@@ -147,8 +148,8 @@ public:
                    const CoordinatesType& coordinates,
                    const Vector& u,
                    const RealType& time,
-                   const IndexType boundaryCondition ) const;
-
+                   const IndexType boundaryCondition,
+                   const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities) const;
 
  #ifdef HAVE_CUDA
     __device__
@@ -158,7 +159,8 @@ public:
                    const CoordinatesType& coordinates,
                    const RealType* u,
                    const RealType& time,
-                   const IndexType boundaryCondition) const;
+                   const IndexType boundaryCondition,
+                   const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities) const;
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
