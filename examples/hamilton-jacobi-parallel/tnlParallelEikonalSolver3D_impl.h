@@ -1017,10 +1017,12 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 
       if(l == 0)
       {
-    	  if(sharedTau[0] > 1.0 * this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >())	sharedTau[0] = 1.0 * this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
+    	  if(sharedTau[0] > 0.5 * this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >())	sharedTau[0] = 0.5 * this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
       }
       else if(l == blockDim.x*blockDim.y*blockDim.z - 1)
+      {
     	  if( time + sharedTau[l] > finalTime )		sharedTau[l] = finalTime - time;
+      }
 
 
       if(l < 256)								sharedTau[l] = Min(sharedTau[l],sharedTau[l+256]);
@@ -1030,6 +1032,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
       if(l < 64)								sharedTau[l] = Min(sharedTau[l],sharedTau[l+64]);
       __syncthreads();
       if(l < 32)    							sharedTau[l] = Min(sharedTau[l],sharedTau[l+32]);
+      __syncthreads();
       if(l < 16)								sharedTau[l] = Min(sharedTau[l],sharedTau[l+16]);
       if(l < 8)									sharedTau[l] = Min(sharedTau[l],sharedTau[l+8]);
       if(l < 4)									sharedTau[l] = Min(sharedTau[l],sharedTau[l+4]);

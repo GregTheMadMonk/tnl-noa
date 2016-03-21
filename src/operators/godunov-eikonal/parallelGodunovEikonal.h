@@ -88,6 +88,7 @@ public:
 #endif
 	bool init( const tnlParameterContainer& parameters );
 
+   RealType epsilon;
 
 protected:
 
@@ -97,7 +98,7 @@ protected:
 
 	RealType h;
 
-	RealType epsilon;
+
 
 
 };
@@ -166,6 +167,7 @@ public:
 #endif
 	bool init( const tnlParameterContainer& parameters );
 
+   RealType epsilon;
 
 protected:
 
@@ -176,7 +178,7 @@ protected:
     RealType hx, ihx;
     RealType hy, ihy;
 
-    RealType epsilon;
+
 
 
 };
@@ -243,6 +245,7 @@ public:
 #endif
     bool init( const tnlParameterContainer& parameters );
 
+   RealType epsilon;
 
 protected:
 
@@ -253,9 +256,6 @@ protected:
     RealType hx, ihx;
     RealType hy, ihy;
     RealType hz, ihz;
-
-    RealType epsilon;
-
 
 };
 
