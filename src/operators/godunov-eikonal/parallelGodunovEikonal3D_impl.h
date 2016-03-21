@@ -53,13 +53,13 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Rea
 {
 	if(x > eps)
 		return 1.0;
-	else if (x < -eps)
+	if (x < -eps)
 		return (-1.0);
 
-	if ( eps == 0.0)
+	if ( x == 0.0)
 		return 0.0;
 
-	return sin((M_PI*x)/(2.0*eps));
+	return sin((M_PI/2.0)*(x/eps));
 }
 
 
@@ -90,7 +90,7 @@ bool parallelGodunovEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Rea
 	   epsilon = parameters. getParameter< double >( "epsilon" );
 
 	   if(epsilon != 0.0)
-		   epsilon *=sqrt( hx*hx + hy*hy +hz*hz );
+		   epsilon *=sqrt( hx*hx + hy*hy + hz*hz );
 
 	//   dofVector. setSize( this->mesh.getDofs() );
 
@@ -220,9 +220,9 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
 
 		   yb = negativePart(yb);
 
-		   zf = positivePart(yf);
+		   yf = positivePart(yf);
 
-		   yb = negativePart(zb);
+		   zb = negativePart(zb);
 
 		   zf = positivePart(zf);
 	   }
@@ -271,27 +271,12 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
           	  	          	  	  	  	  	  	  	  	  	  	                     const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 ) const
 {
-
-/*
-	if ( ((coordinates.x() == 0 && (boundaryCondition & 4)) or
-		 (coordinates.x() == mesh.getDimensions().x() - 1 && (boundaryCondition & 2)) or
-		 (coordinates.y() == 0 && (boundaryCondition & 8)) or
-		 (coordinates.y() == mesh.getDimensions().y() - 1  && (boundaryCondition & 1)))
-		)
-	{
-		return 0.0;
-	}
-
-*/
-	//RealType acc = hx*hy*hx*hy;
-
 	RealType signui;
-	signui = sign(u[cellIndex],this->epsilon);
+	if(boundaryCondition == 0)
+		signui = sign(u[cellIndex], this->epsilon);
+	else
+		signui = Sign(u[cellIndex]);
 
-
-#ifdef HAVE_CUDA
-	//printf("%d   :    %d ;;;; %d   :   %d  , %f \n",threadIdx.x, mesh.getDimensions().x() , threadIdx.y,mesh.getDimensions().y(), epsilon );
-#endif
 
 	RealType xb = u[cellIndex];
 	RealType xf = -u[cellIndex];
@@ -300,6 +285,8 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
 	RealType zb = u[cellIndex];
 	RealType zf = -u[cellIndex];
 	RealType a,b,c,d;
+//	if(threadIdx.x+threadIdx.y+threadIdx.z == 0)
+//		printf("x = %d, y = %d, z = %d\n",mesh.getDimensions().x() - 1,mesh.getDimensions().y() - 1,mesh.getDimensions().z() - 1);
 
 
 	   if(coordinates.x() == mesh.getDimensions().x() - 1)
@@ -363,9 +350,9 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
 
 		   yb = negativePart(yb);
 
-		   zf = positivePart(yf);
+		   yf = positivePart(yf);
 
-		   yb = negativePart(zb);
+		   zb = negativePart(zb);
 
 		   zf = positivePart(zf);
 	   }
@@ -386,11 +373,13 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
 	   else
 		   c = zf;
 
-	   d =(1.0 - sqrt(a*a+b*b+c*c)*ihx );
+//	   d =(1.0 - sqrt(a*a+b*b+c*c)*ihx );
 
-	   if(Sign(d) > 0.0 )
-		   return Sign(u[cellIndex])*d;
-	   else
+	   d = 1.0 - sqrt(xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb)*ihx; /*upwind*/
+
+//	   if(Sign(d) > 0.0 )
+//		   return Sign(u[cellIndex])*d;
+//	   else
 		   return signui*d;
 }
 

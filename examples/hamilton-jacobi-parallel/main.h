@@ -44,45 +44,94 @@ int main( int argc, char* argv[] )
    tnlDeviceEnum device;
    device = tnlHostDevice;
 
-   typedef parallelGodunovEikonalScheme< tnlGrid<3,double,tnlHost, int>, double, int > SchemeTypeHost;
-/*#ifdef HAVE_CUDA
-   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,tnlCuda, int>, double, int > SchemeTypeDevice;
-#endif
-#ifndef HAVE_CUDA*/
-   typedef parallelGodunovEikonalScheme< tnlGrid<3,double,tnlHost, int>, double, int > SchemeTypeDevice;
-/*#endif*/
+   const int& dim = parameters.getParameter< int >( "dim" );
 
-   if(device==tnlHostDevice)
-   {
-	   typedef tnlHost Device;
+  if(dim == 2)
+  {
+
+	   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,tnlHost, int>, double, int > SchemeTypeHost;
+		/*#ifdef HAVE_CUDA
+		   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,tnlCuda, int>, double, int > SchemeTypeDevice;
+		#endif
+		#ifndef HAVE_CUDA*/
+	   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,tnlHost, int>, double, int > SchemeTypeDevice;
+		/*#endif*/
+
+	   if(device==tnlHostDevice)
+	   {
+		   typedef tnlHost Device;
 
 
-   	   tnlParallelEikonalSolver<3,SchemeTypeHost,SchemeTypeDevice, Device> solver;
-   	   if(!solver.init(parameters))
-   	   {
-   		   cerr << "Solver failed to initialize." << endl;
-   		   return EXIT_FAILURE;
-   	   }
-   	   cout << "-------------------------------------------------------------" << endl;
-   	   cout << "Starting solver loop..." << endl;
-   	   solver.run();
-   }
-   else if(device==tnlCudaDevice )
-   {
-	   typedef tnlCuda Device;
-  	   //typedef parallelGodunovEikonalScheme< tnlGrid<2,double,Device, int>, double, int > SchemeType;
+		   tnlParallelEikonalSolver<2,SchemeTypeHost,SchemeTypeDevice, Device> solver;
+		   if(!solver.init(parameters))
+		   {
+			   cerr << "Solver failed to initialize." << endl;
+			   return EXIT_FAILURE;
+		   }
+		   cout << "-------------------------------------------------------------" << endl;
+		   cout << "Starting solver loop..." << endl;
+		   solver.run();
+	   }
+	   else if(device==tnlCudaDevice )
+	   {
+		   typedef tnlCuda Device;
+		   //typedef parallelGodunovEikonalScheme< tnlGrid<2,double,Device, int>, double, int > SchemeType;
 
-   	   tnlParallelEikonalSolver<3,SchemeTypeHost,SchemeTypeDevice, Device> solver;
-   	   if(!solver.init(parameters))
-   	   {
-   		   cerr << "Solver failed to initialize." << endl;
-   		   return EXIT_FAILURE;
-   	   }
-   	   cout << "-------------------------------------------------------------" << endl;
-   	   cout << "Starting solver loop..." << endl;
-   	   solver.run();
-   }
+		   tnlParallelEikonalSolver<2,SchemeTypeHost,SchemeTypeDevice, Device> solver;
+		   if(!solver.init(parameters))
+		   {
+			   cerr << "Solver failed to initialize." << endl;
+			   return EXIT_FAILURE;
+		   }
+		   cout << "-------------------------------------------------------------" << endl;
+		   cout << "Starting solver loop..." << endl;
+		   solver.run();
+	   }
   // }
+  }
+  else if(dim == 3)
+  {
+
+	   typedef parallelGodunovEikonalScheme< tnlGrid<3,double,tnlHost, int>, double, int > SchemeTypeHost;
+		/*#ifdef HAVE_CUDA
+		   typedef parallelGodunovEikonalScheme< tnlGrid<2,double,tnlCuda, int>, double, int > SchemeTypeDevice;
+		#endif
+		#ifndef HAVE_CUDA*/
+	   typedef parallelGodunovEikonalScheme< tnlGrid<3,double,tnlHost, int>, double, int > SchemeTypeDevice;
+		/*#endif*/
+
+	   if(device==tnlHostDevice)
+	   {
+		   typedef tnlHost Device;
+
+
+		   tnlParallelEikonalSolver<3,SchemeTypeHost,SchemeTypeDevice, Device> solver;
+		   if(!solver.init(parameters))
+		   {
+			   cerr << "Solver failed to initialize." << endl;
+			   return EXIT_FAILURE;
+		   }
+		   cout << "-------------------------------------------------------------" << endl;
+		   cout << "Starting solver loop..." << endl;
+		   solver.run();
+	   }
+	   else if(device==tnlCudaDevice )
+	   {
+		   typedef tnlCuda Device;
+		   //typedef parallelGodunovEikonalScheme< tnlGrid<2,double,Device, int>, double, int > SchemeType;
+
+		   tnlParallelEikonalSolver<3,SchemeTypeHost,SchemeTypeDevice, Device> solver;
+		   if(!solver.init(parameters))
+		   {
+			   cerr << "Solver failed to initialize." << endl;
+			   return EXIT_FAILURE;
+		   }
+		   cout << "-------------------------------------------------------------" << endl;
+		   cout << "Starting solver loop..." << endl;
+		   solver.run();
+	   }
+ // }
+  }
 
    time(&stop);
    cout << endl;

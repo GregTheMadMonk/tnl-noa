@@ -43,9 +43,9 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return false;
 
-   const tnlString& dim = parameters.getParameter< tnlString >( "dim" );
+   const int& dim = parameters.getParameter< int >( "dim" );
 
-   if(dim == "2")
+   if(dim == 2)
    {
 		tnlFastSweeping<tnlGrid<2,double,tnlHost, int>, double, int> solver;
 		if(!solver.init(parameters))
@@ -58,7 +58,7 @@ int main( int argc, char* argv[] )
 	   cout << "Starting solver..." << endl;
 	   solver.run();
    }
-   else if(dim == "3")
+   else if(dim == 3)
    {
 		tnlFastSweeping<tnlGrid<3,double,tnlHost, int>, double, int> solver;
 		if(!solver.init(parameters))

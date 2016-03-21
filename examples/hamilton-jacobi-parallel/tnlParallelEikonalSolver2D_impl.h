@@ -21,7 +21,6 @@
 #include "tnlParallelEikonalSolver.h"
 #include <core/mfilename.h>
 
-
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::tnlParallelEikonalSolver()
 {
@@ -1044,7 +1043,7 @@ template< typename SchemeHost, typename SchemeDevice, typename Device>
 __device__
 void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::updateSubgridCUDA2D( const int i ,tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int >* caller, double* a)
 {
-	int j = threadIdx.x + threadIdx.y * blockDim.x;
+//	int j = threadIdx.x + threadIdx.y * blockDim.x;
 	int index = (blockIdx.y) * caller->n*caller->n*caller->gridCols
             + (blockIdx.x) * caller->n
             + threadIdx.y * caller->n*caller->gridCols
@@ -1165,7 +1164,6 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
    double finalTime = this->stopTime;
    __syncthreads();
 //   if( time + currentTau > finalTime ) currentTau = finalTime - time;
-
 
    tnlGridEntity<MeshType, 2, tnlGridEntityNoStencilStorage > Entity(subMesh);
    tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
@@ -1312,20 +1310,8 @@ void /*tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>
 			subgridValue_cmp = cudaSolver->getSubgridValueCUDA2D(blockIdx.y*gridDim.x + blockIdx.x + 1);
 			boundary_index = 1;
 		}
-//		if(threadIdx.y == 0 && (blockIdx.y != 0) && (cudaSolver->currentStep & 1))
-//		{
-//			u_cmp = cudaSolver->work_u_cuda[gid - blockDim.x*gridDim.x];
-//			subgridValue_cmp = cudaSolver->getSubgridValueCUDA2D((blockIdx.y - 1)*gridDim.x + blockIdx.x);
-//			boundary_index = 3;
-//		}
-//		if(threadIdx.y == blockDim.y - 1 && (blockIdx.y != gridDim.y - 1) && (cudaSolver->currentStep & 1))
-//		{
-//			u_cmp = cudaSolver->work_u_cuda[gid + blockDim.x*gridDim.x];
-//			subgridValue_cmp = cudaSolver->getSubgridValueCUDA2D((blockIdx.y + 1)*gridDim.x + blockIdx.x);
-//			boundary_index = 0;
-//		}
 
-//		__threadfence();
+		__threadfence();
 		if((subgridValue == INT_MAX || fabs(u_cmp) + cudaSolver->delta < fabs(u) ) && (subgridValue_cmp != INT_MAX && subgridValue_cmp != -INT_MAX))
 		{
 			cudaSolver->unusedCell_cuda[gid] = 0;

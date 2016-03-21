@@ -39,6 +39,7 @@ class parallelEikonalConfig
          config.addRequiredEntry        < double > ( "initial-tau", " initial tau for solver" );
          config.addEntry        < double > ( "cfl-condition", " CFL condition", 0.0 );
          config.addEntry        < int > ( "subgrid-size", "Subgrid size.", 16 );
+         config.addRequiredEntry        < int > ( "dim", "Dimension of problem.");
       }
 };
 
