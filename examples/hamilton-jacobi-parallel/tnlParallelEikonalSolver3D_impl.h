@@ -186,7 +186,7 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 		dim3 numBlocks(this->gridCols,this->gridRows,this->gridLevels);
 		cudaDeviceSynchronize();
 		checkCudaDevice;
-		initRunCUDA3D<SchemeTypeHost,SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,3*this->n*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
+		initRunCUDA3D<SchemeTypeHost,SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,2*this->n*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 		cudaDeviceSynchronize();
 //		cout << "post 1 kernel" << endl;
 
@@ -349,7 +349,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 			cudaDeviceSynchronize();
 			checkCudaDevice;
 			start = std::clock();
-			runCUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,3*this->n*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
+			runCUDA3D<SchemeTypeHost, SchemeTypeDevice, DeviceType><<<numBlocks,threadsPerBlock,2*this->n*this->n*this->n*sizeof(double)>>>(this->cudaSolver);
 			//cout << "a" << endl;
 			cudaDeviceSynchronize();
 			time_diff += (std::clock() - start) / (double)(CLOCKS_PER_SEC);
@@ -895,7 +895,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	__shared__ double value;
 	//double tmpRes = 0.0;
 	volatile double* sharedTau = &u[blockDim.x*blockDim.y*blockDim.z];
-	volatile double* absVal = &u[2*blockDim.x*blockDim.y*blockDim.z];
+//	volatile double* absVal = &u[2*blockDim.x*blockDim.y*blockDim.z];
 	int i = threadIdx.x;
 	int j = threadIdx.y;
 	int k = threadIdx.z;
@@ -1008,12 +1008,11 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	  sharedTau[l]=finalTime;
 
 	  if(computeFU)
+	  {
 		  fu = schemeHost.getValueDev( this->subMesh, l, tnlStaticVector<3,int>(i,j,k), u, time, boundaryCondition, neighbourEntities);
-
-	  if(abs(fu) > 0.0)
-		  sharedTau[l]=abs(cfl/fu);
-
-	 /* if(u[l]*fu < 0.0 && abs(fu*sharedTau[l]) >abs(u[l])) sharedTau[l] = 0.9*abs(u[l]/fu)/* + this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*/;
+		  if(abs(fu) > 0.0)
+			  sharedTau[l]=abs(cfl/fu);
+	  }
 
       if(l == 0)
       {
@@ -1038,12 +1037,14 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
       if(l < 4)									sharedTau[l] = Min(sharedTau[l],sharedTau[l+4]);
       if(l < 2)									sharedTau[l] = Min(sharedTau[l],sharedTau[l+2]);
       if(l < 1)									currentTau   = Min(sharedTau[l],sharedTau[l+1]);
-	__syncthreads();
+      __syncthreads();
 
 //	if(abs(fu) < 10000.0)
 //		printf("bla");
-      u[l] += currentTau * fu;
+      if(computeFU)
+    	  u[l] += currentTau * fu;
       time += currentTau;
+      __syncthreads();
    }
 
 
@@ -1317,7 +1318,9 @@ void initRunCUDA3D(tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, 
 	{
 		caller->runSubgridCUDA3D(0,u,i);
 		__syncthreads();
-		caller->insertSubgridCUDA3D(u[l],i);
+//		caller->insertSubgridCUDA3D(u[l],i);
+		caller->updateSubgridCUDA3D(i,caller, &u[l]);
+
 		__syncthreads();
 		if(l == 0)
 			caller->setSubgridValueCUDA3D(i, 4);
@@ -1339,7 +1342,7 @@ void runCUDA3D(tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, doub
 	int l = threadIdx.z * blockDim.x * blockDim.y + threadIdx.y * blockDim.x + threadIdx.x;
 	int bound = caller->getBoundaryConditionCUDA3D(i);
 
-	if(caller->getSubgridValueCUDA3D(i) != INT_MAX && bound != 0 && caller->getSubgridValueCUDA3D(i) > -10)
+	if(caller->getSubgridValueCUDA3D(i) != INT_MAX && bound != 0 && caller->getSubgridValueCUDA3D(i) > 0)
 	{
 		caller->getSubgridCUDA3D(i,caller, &u[l]);
 

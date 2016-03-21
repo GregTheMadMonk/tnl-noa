@@ -358,21 +358,21 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
 	   }
 
 
-	   if(xb - xf > 0.0)
-		   a = xb;
-	   else
-		   a = xf;
-
-	   if(yb - yf > 0.0)
-		   b = yb;
-	   else
-		   b = yf;
-
-	   if(zb - zf > 0.0)
-		   c = zb;
-	   else
-		   c = zf;
-
+//	   if(xb - xf > 0.0)
+//		   a = xb;
+//	   else
+//		   a = xf;
+//
+//	   if(yb - yf > 0.0)
+//		   b = yb;
+//	   else
+//		   b = yf;
+//
+//	   if(zb - zf > 0.0)
+//		   c = zb;
+//	   else
+//		   c = zf;
+//
 //	   d = ( 1.0 - sqrt(a*a + b*b + c*c)*ihx );
 
 	   d = 1.0 - sqrt(xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb)*ihx; /*upwind*/
