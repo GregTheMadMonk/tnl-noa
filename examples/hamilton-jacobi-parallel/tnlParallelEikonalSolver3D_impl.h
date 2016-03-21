@@ -994,7 +994,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 //   }
    double finalTime = this->stopTime;
    __syncthreads();
-   //if( time + currentTau > finalTime ) currentTau = finalTime - time;
+   if( boundaryCondition == 0 ) finalTime *= 2.0;
 
    tnlGridEntity<MeshType, 3, tnlGridEntityNoStencilStorage > Entity(subMesh);
    tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities(Entity);
