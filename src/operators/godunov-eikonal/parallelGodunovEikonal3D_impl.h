@@ -39,7 +39,7 @@ template< typename MeshReal,
 Real  parallelGodunovEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: negativePart(const Real arg) const
 {
 	if(arg < 0.0)
-		return arg;
+		return -arg;
 	return 0.0;
 }
 
@@ -272,10 +272,10 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 ) const
 {
 	RealType signui;
-	if(boundaryCondition == 0)
+//	if(boundaryCondition == 0)
 		signui = sign(u[cellIndex], this->epsilon);
-	else
-		signui = Sign(u[cellIndex]);
+//	else
+//		signui = Sign(u[cellIndex]);
 
 
 	RealType xb = u[cellIndex];
@@ -358,24 +358,24 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
 	   }
 
 
-//	   if(xb - xf > 0.0)
-//		   a = xb;
-//	   else
-//		   a = xf;
-//
-//	   if(yb - yf > 0.0)
-//		   b = yb;
-//	   else
-//		   b = yf;
-//
-//	   if(zb - zf > 0.0)
-//		   c = zb;
-//	   else
-//		   c = zf;
-//
-//	   d = ( 1.0 - sqrt(a*a + b*b + c*c)*ihx );
+	   if(xb - xf > 0.0)
+		   a = xb;
+	   else
+		   a = xf;
 
-	   d = 1.0 - sqrt(xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb)*ihx; /*upwind*/
+	   if(yb - yf > 0.0)
+		   b = yb;
+	   else
+		   b = yf;
+
+	   if(zb - zf > 0.0)
+		   c = zb;
+	   else
+		   c = zf;
+
+	   d = ( 1.0 - sqrt(a*a + b*b + c*c)*ihx );
+
+//	   d = 1.0 - sqrt(xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb)*ihx; /*upwind*/
 
 	   if(Sign(d) > 0.0 )
 		   return Sign(u[cellIndex])*d;

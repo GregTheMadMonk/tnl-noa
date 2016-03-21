@@ -949,37 +949,37 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 			{
 				Ent.setCoordinates(tnlStaticVector<3,int>(0,j,k));
 			   	Ent.refresh();
-				u[l] = u[Ent.getIndex()] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(threadIdx.x) ;//+  2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(threadIdx.x+this->n);
+				u[l] = u[Ent.getIndex()];// + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(threadIdx.x) ;//+  2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(threadIdx.x+this->n);
 			}
 			else if(boundaryCondition == 2)
 			{
 				Ent.setCoordinates(tnlStaticVector<3,int>(blockDim.x - 1,j,k));
 			   	Ent.refresh();
-				u[l] = u[Ent.getIndex()] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(this->n - 1 - threadIdx.x);//+ 2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(blockDim.x - threadIdx.x - 1+this->n);
+				u[l] = u[Ent.getIndex()];// + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(this->n - 1 - threadIdx.x);//+ 2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(blockDim.x - threadIdx.x - 1+this->n);
 			}
 			else if(boundaryCondition == 8)
 			{
 				Ent.setCoordinates(tnlStaticVector<3,int>(i,0,k));
 			   	Ent.refresh();
-				u[l] = u[Ent.getIndex()] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 0, 1, 0 >()*(threadIdx.y) ;//+ 2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(threadIdx.y+this->n);
+				u[l] = u[Ent.getIndex()];// + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 0, 1, 0 >()*(threadIdx.y) ;//+ 2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(threadIdx.y+this->n);
 			}
 			else if(boundaryCondition == 1)
 			{
 				Ent.setCoordinates(tnlStaticVector<3,int>(i,blockDim.y - 1,k));
 			   	Ent.refresh();
-				u[l] = u[Ent.getIndex()] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 0, 1, 0 >()*(this->n - 1 - threadIdx.y) ;//+ Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(blockDim.y - threadIdx.y  - 1 +this->n);
+				u[l] = u[Ent.getIndex()];// + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 0, 1, 0 >()*(this->n - 1 - threadIdx.y) ;//+ Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*(blockDim.y - threadIdx.y  - 1 +this->n);
 			}
 			else if(boundaryCondition == 32)
 			{
 				Ent.setCoordinates(tnlStaticVector<3,int>(i,j,0));
 			   	Ent.refresh();
-				u[l] = u[Ent.getIndex()] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 0, 0, 1 >()*(threadIdx.z);
+				u[l] = u[Ent.getIndex()];// + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 0, 0, 1 >()*(threadIdx.z);
 			}
 			else if(boundaryCondition == 16)
 			{
 				Ent.setCoordinates(tnlStaticVector<3,int>(i,j,blockDim.z - 1));
 			   	Ent.refresh();
-				u[l] = u[Ent.getIndex()] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 0, 0, 1 >()*(this->n - 1 - threadIdx.z) ;
+				u[l] = u[Ent.getIndex()];// + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 0, 0, 1 >()*(this->n - 1 - threadIdx.z) ;
 			}
 		}
 	}
