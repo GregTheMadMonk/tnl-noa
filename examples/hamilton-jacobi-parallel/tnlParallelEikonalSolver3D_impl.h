@@ -1013,7 +1013,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	  if(abs(fu) > 0.0)
 		  sharedTau[l]=abs(cfl/fu);
 
-	  if(u[l]*fu < 0.0 && abs(fu*sharedTau[l]) >abs(u[l])) sharedTau[l] = 0.5*abs(u[l]/fu) + this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
+	 /* if(u[l]*fu < 0.0 && abs(fu*sharedTau[l]) >abs(u[l])) sharedTau[l] = 0.9*abs(u[l]/fu)/* + this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >()*/;
 
       if(l == 0)
       {
