@@ -1,64 +1,43 @@
 #!/bin/bash
 
-#GRID_SIZES="0897"
-GRID_SIZES="0008 0015 0029 0057 0113 0225 0449"
-#GRID_SIZES="1793"
-
 dimensions=2
 
 size=2
 
-time=3
+time=50
 
-for grid_size in $GRID_SIZES;
+rm -r work_dir
+mkdir work_dir
+cp mapa_png.png work_dir/mapa_png.png
+cd  work_dir
 
-do
-
-	rm -r grid-${grid_size}
-   	mkdir grid-${grid_size}
-   	cd grid-${grid_size}
-
-	tnl-grid-setup --dimensions $dimensions \
-	               --origin-x -1.0 \
-	               --origin-y -1.0 \
-	               --origin-z -1.0 \
-	               --proportions-x $size \
-	               --proportions-y $size \
-	               --proportions-z $size \
-	               --size-x ${grid_size} \
-	               --size-y ${grid_size} \
-	               --size-z ${grid_size}
-
-	tnl-init --test-function sdf-para \
-		     --offset 0.25 \
-	             --output-file init.tnl \
-		     --final-time 0.0 \
-		     --snapshot-period 0.1 \
+tnl-image-converter 		--image-format png\
+		    		--input-images mapa_png.png
 
 
-	tnl-init --test-function sdf-para-sdf \
-		     --offset 0.25 \
-	             --output-file sdf.tnl \
-		     --final-time 0.0 \
-		     --snapshot-period 0.1
+tnl-init 			--test-function sdf-para \
+	     			--x-centre 0.5 \
+	    			--y-centre 1.0 \
+ 	   			--offset 0.05 \
+           			--output-file init.tnl \
+	     			--final-time 0.0 \
+	     			--snapshot-period 0.1
 
-	hamilton-jacobi-parallel --initial-condition init.tnl \
-	              --cfl-condition 1.0e-1 \
-		      	  --mesh mesh.tnl \
-		     	  --initial-tau 1.0e-3 \
-		      	  --epsilon 1.0 \
-	        	  --delta 0.0 \
-	       	      --stop-time $time \
-		          --scheme godunov \
-		          --subgrid-size 8
+hamilton-jacobi-parallel-map-dbg 	--initial-condition init.tnl \
+				--map mapa_png.tnl \
+              			--cfl-condition 50 \
+	      	  		--mesh mesh.tnl \
+	     	  		--initial-tau 1.0e-3 \
+	      	  		--epsilon 4.0 \
+        	  		--delta 0.0 \
+       	      			--stop-time $time \
+	          		--scheme godunov \
+	          		--subgrid-size 8 \
+		  		--dim $dimensions
 
-        tnl-diff --mesh mesh.tnl --mode sequence --input-files sdf.tnl u-00001.tnl --write-difference yes --output-file ../${grid_size}.diff
 	
-	cd ..
+#cp ../template.dat1 template.dat1
+#cp ../template.dat2 template.dat2
+#cp ../gplt2eps.py gplt2eps.py
+cd ..
 
-done
-
-
-./tnl-err2eoc-2.py --format txt --size $size *.diff
-
-              
