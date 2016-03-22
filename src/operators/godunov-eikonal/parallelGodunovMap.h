@@ -1,5 +1,5 @@
 /***************************************************************************
-                          parallelGodunovEikonal.h  -  description
+                          parallelGodunovMap.h  -  description
                              -------------------
     begin                : Dec 1 , 2014
     copyright            : (C) 2014 by Tomas Sobotik
@@ -14,8 +14,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef PARALLELGODUNOVEIKONAL_H_
-#define PARALLELGODUNOVEIKONAL_H_
+#ifndef PARALLELGODUNOVMAP_H_
+#define PARALLELGODUNOVMAP_H_
 
 #include <matrices/tnlCSRMatrix.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
@@ -32,7 +32,7 @@
 template< typename Mesh,
 		  typename Real,
 		  typename Index >
-class parallelGodunovEikonalScheme
+class parallelGodunovMapScheme
 {
 };
 
@@ -44,7 +44,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class parallelGodunovEikonalScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+class parallelGodunovMapScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 {
 
 public:
@@ -113,7 +113,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class parallelGodunovEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+class parallelGodunovMapScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 {
 
 public:
@@ -161,7 +161,8 @@ public:
                    const RealType* u,
                    const RealType& time,
                    const IndexType boundaryCondition,
-                   const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities) const;
+                   const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities,
+  	  	  	       const RealType* map) const;
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -189,7 +190,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class parallelGodunovEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+class parallelGodunovMapScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 {
 
 public:
@@ -238,7 +239,7 @@ public:
                   const RealType* u,
                   const RealType& time,
                   const IndexType boundaryCondition,
- 	  	  	      const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities ) const;
+ 	  	  	      const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities) const;
 
 #ifdef HAVE_CUDA
    __device__ __host__
@@ -261,9 +262,9 @@ protected:
 
 
 
-//#include <operators/godunov-eikonal/parallelGodunovEikonal1D_impl.h>
-#include <operators/godunov-eikonal/parallelGodunovEikonal2D_impl.h>
-#include <operators/godunov-eikonal/parallelGodunovEikonal3D_impl.h>
+//#include <operators/godunov-eikonal/parallelGodunovMap1D_impl.h>
+#include <operators/godunov-eikonal/parallelGodunovMap2D_impl.h>
+//#include <operators/godunov-eikonal/parallelGodunovMap3D_impl.h>
 
 
-#endif /* PARALLELGODUNOVEIKONAL_H_ */
+#endif /* PARALLELGODUNOVMAP_H_ */

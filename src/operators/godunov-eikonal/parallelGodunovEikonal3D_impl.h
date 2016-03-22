@@ -14,8 +14,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GODUNOVEIKONAL3D_IMPL_H_
-#define GODUNOVEIKONAL3D_IMPL_H_
+#ifndef PARALLELGODUNOVEIKONAL3D_IMPL_H_
+#define PARALLELGODUNOVEIKONAL3D_IMPL_H_
 
 
 template< typename MeshReal,
@@ -384,4 +384,4 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
 }
 
 
-#endif /* GODUNOVEIKONAL3D_IMPL_H_ */
+#endif /* PARALLELGODUNOVEIKONAL3D_IMPL_H_ */

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          parallelGodunovEikonal2D_impl.h  -  description
+                          parallelGodunovMap2D_impl.h  -  description
                              -------------------
     begin                : Dec 1 , 2014
     copyright            : (C) 2014 by Tomas Sobotik
@@ -14,8 +14,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef PARALLELGODUNOVEIKONAL2D_IMPL_H_
-#define PARALLELGODUNOVEIKONAL2D_IMPL_H_
+#ifndef PARALLELGODUNOVMAP2D_IMPL_H_
+#define PARALLELGODUNOVMAP2D_IMPL_H_
 
 
 template< typename MeshReal,
@@ -26,7 +26,7 @@ template< typename MeshReal,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-Real parallelGodunovEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >:: positivePart(const Real arg) const
+Real parallelGodunovMapScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >:: positivePart(const Real arg) const
 {
 	if(arg > 0.0)
 		return arg;
@@ -42,7 +42,7 @@ template< typename MeshReal,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-Real  parallelGodunovEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: negativePart(const Real arg) const
+Real  parallelGodunovMapScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: negativePart(const Real arg) const
 {
 	if(arg < 0.0)
 		return -arg;
@@ -58,7 +58,7 @@ template< typename MeshReal,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-Real parallelGodunovEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: sign(const Real x, const Real eps) const
+Real parallelGodunovMapScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: sign(const Real x, const Real eps) const
 {
 	if(x > eps)
 		return 1.0;
@@ -83,7 +83,7 @@ template< typename MeshReal,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-bool parallelGodunovEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: init( const tnlParameterContainer& parameters )
+bool parallelGodunovMapScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: init( const tnlParameterContainer& parameters )
 {
 
 	   const tnlString& meshFile = parameters.getParameter< tnlString >( "mesh" );
@@ -121,9 +121,9 @@ template< typename MeshReal,
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
-tnlString parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index > :: getType()
+tnlString parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index > :: getType()
 {
-   return tnlString( "parallelGodunovEikonalScheme< " ) +
+   return tnlString( "parallelGodunovMapScheme< " ) +
           MeshType::getType() + ", " +
           ::getType< Real >() + ", " +
           ::getType< Index >() + " >";
@@ -139,7 +139,7 @@ template< typename Vector >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >:: getValue( const MeshType& mesh,
+Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >:: getValue( const MeshType& mesh,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType cellIndex,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const CoordinatesType& coordinates,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Vector& u,
@@ -395,26 +395,39 @@ template< typename MeshReal,
 #ifdef HAVE_CUDA
 __device__
 #endif
-Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >:: getValueDev( const MeshType& mesh,
+Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >:: getValueDev( const MeshType& mesh,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType cellIndex,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const CoordinatesType& coordinates,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real* u,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition,
-          	  	  	  	  	  	  	  	  	  	                     const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities) const
+          	  	  	  	  	  	  	  	  	  	                     const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities,
+          	  	  	  	  	  	  	  	  	  	                     const Real* map) const
 {
+//	int gid = (blockDim.y*blockIdx.y + threadIdx.y)*blockDim.x*gridDim.x + blockDim.x*blockIdx.x + threadIdx.x;
 
 	RealType signui;
-	if(boundaryCondition == 0)
+//	if(boundaryCondition == 0)
 		signui = sign(u[cellIndex],/*(boundaryCondition != 0) * */this->epsilon);
-	else
-		signui = Sign(u[cellIndex]);
+//	else
+//		signui = Sign(u[cellIndex]);
+
+	RealType value;
+//	if(map[cellIndex] == 0.0)
+//	{
+////		value = INT_MAX;
+//		u[cellIndex] = Sign(u[cellIndex])*INT_MAX;
+//		return 0.0;
+//	}
+//	else
+		value = 50.0/ map[cellIndex];
+
 
 	RealType xb = u[cellIndex];
 	RealType xf = -u[cellIndex];
 	RealType yb = u[cellIndex];
 	RealType yf = -u[cellIndex];
-	RealType a,b/*,c*/;
+	RealType a,b,c;
 
 
 	   if(coordinates.x() == mesh.getDimensions().x() - 1)
@@ -461,6 +474,15 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 		   yf = positivePart(yf);
 	   }
 
+	   /*if(boundaryCondition &1)
+		   yb = 0.0;
+	   else
+		   yf = 0.0;
+
+	   if(boundaryCondition & 2)
+		   xb = 0.0;
+	   else
+		   xf = 0.0;*/
 
 	   if(xb - xf > 0.0)
 		   a = xb;
@@ -472,13 +494,14 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 	   else
 		   b = yf;
 
-//	   c =(1.0 - sqrt(a*a+b*b)*ihx );
+	   c =(value - sqrt(a*a+b*b)*ihx );
 
-//	   if(c > 0.0 )
-//		   return Sign(u[cellIndex])*c;
-//	   else
-		   return signui*(1.0 - sqrt(a*a+b*b)*ihx );
+	   if(c > 0.0 )
+		   return Sign(u[cellIndex])*c;
+	   else
+
+	   return signui*c;
 }
 
 
-#endif /* PARALLELGODUNOVEIKONAL2D_IMPL_H_ */
+#endif /* PARALLELGODUNOVMAP2D_IMPL_H_ */

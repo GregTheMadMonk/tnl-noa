@@ -1,8 +1,8 @@
 /***************************************************************************
-                          parallelEikonalConfig.h  -  description
+                          parallelMapConfig.h  -  description
                              -------------------
-    begin                : Oct 5, 2014
-    copyright            : (C) 2014 by Tomas Sobotik
+    begin                : Mar 22 , 2016
+    copyright            : (C) 2016 by Tomas Sobotik
     email                :
  ***************************************************************************/
 
@@ -15,13 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef HAMILTONJACOBIPARALLELEIKONALPROBLEMCONFIG_H_
-#define HAMILTONJACOBIPARALLELEIKONALPROBLEMCONFIG_H_
+#ifndef HAMILTONJACOBIPARALLELMAPPROBLEMCONFIG_H_
+#define HAMILTONJACOBIPARALLELMAPPROBLEMCONFIG_H_
 
 #include <config/tnlConfigDescription.h>
 
 template< typename ConfigTag >
-class parallelEikonalConfig
+class parallelMapConfig
 {
    public:
       static void configSetup( tnlConfigDescription& config )
@@ -32,6 +32,7 @@ class parallelEikonalConfig
          config.addEntryEnum( "godunov" );
          config.addEntryEnum( "upwind" );
          config.addRequiredEntry        < tnlString > ( "initial-condition", "Initial condition for solver");
+         config.addRequiredEntry        < tnlString > ( "map", "Gradient map for solver");
          config.addEntry       < tnlString > ( "mesh", "Name of mesh.", "mesh.tnl" );
          config.addEntry        < double > ( "epsilon", "This defines epsilon for smoothening of sign().", 0.0 );
          config.addEntry        < double > ( "delta", " Allowed difference on subgrid boundaries", 0.0 );
@@ -43,4 +44,4 @@ class parallelEikonalConfig
       }
 };
 
-#endif /* HAMILTONJACOBIPARALLELEIKONALPROBLEMCONFIG_H_ */
+#endif /* HAMILTONJACOBIPARALLELMAPPROBLEMCONFIG_H_ */

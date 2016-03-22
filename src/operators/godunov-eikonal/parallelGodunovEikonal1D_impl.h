@@ -14,8 +14,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GODUNOVEIKONAL1D_IMPL_H_
-#define GODUNOVEIKONAL1D_IMPL_H_
+#ifndef PARALLELGODUNOVEIKONAL1D_IMPL_H_
+#define PARALLELGODUNOVEIKONAL1D_IMPL_H_
 
 
 
@@ -167,4 +167,4 @@ Real parallelGodunovEikonalScheme< tnlGrid< 1, MeshReal, Device, MeshIndex >, Re
 }
 
 
-#endif /* GODUNOVEIKONAL1D_IMPL_H_ */
+#endif /* PARALLELGODUNOVEIKONAL1D_IMPL_H_ */

@@ -1,6 +1,7 @@
 set( tnl_hamilton_jacobi_parallel_SOURCES
 #     MainBuildConfig.h
-#     tnlParallelEikonalSolver_impl.h
+#     tnlParallelEikonalSolver2D_impl.h
+#     tnlParallelEikonalSolver3D_impl.h
 #     tnlParallelEikonalSolver.h
 #     parallelEikonalConfig.h 
      main.cpp)
