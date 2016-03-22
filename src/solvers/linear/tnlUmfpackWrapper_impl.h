@@ -64,7 +64,6 @@ solve( const Vector& b,
     int status = UMFPACK_OK;
     double Control[ UMFPACK_CONTROL ];
     double Info[ UMFPACK_INFO ];
-//    Control[ UMFPACK_PRL ] = 2;
 
     // umfpack expects Compressed Sparse Column format, we have Compressed Sparse Row
     // so we need to solve  A^T * x = rhs
@@ -78,9 +77,6 @@ solve( const Vector& b,
                                   &Symbolic, Control, Info );
     if( status != UMFPACK_OK ) {
         cerr << "error: symbolic reordering failed" << endl;
-        umfpack_di_report_status( Control, status );
-//       umfpack_di_report_control( Control );
-//       umfpack_di_report_info( Control, Info );
         goto finished;
     }
 
@@ -91,9 +87,6 @@ solve( const Vector& b,
                                  Symbolic, &Numeric, Control, Info );
     if( status != UMFPACK_OK ) {
         cerr << "error: numeric factorization failed" << endl;
-        umfpack_di_report_status( Control, status );
-//       umfpack_di_report_control( Control );
-//       umfpack_di_report_info( Control, Info );
         goto finished;
     }
 
@@ -107,15 +100,18 @@ solve( const Vector& b,
                                Numeric, Control, Info );
     if( status != UMFPACK_OK ) {
         cerr << "error: umfpack_di_solve failed" << endl;
-            umfpack_di_report_status( Control, status );
-//           umfpack_di_report_control( Control );
-//           umfpack_di_report_info( Control, Info );
         goto finished;
     }
 
-//    umfpack_di_report_info( Control, Info );
-
 finished:
+    if( status != UMFPACK_OK ) {
+        // increase print level for reports
+        Control[ UMFPACK_PRL ] = 2;
+        umfpack_di_report_status( Control, status );
+//        umfpack_di_report_control( Control );
+//        umfpack_di_report_info( Control, Info );
+    }
+
     if( Symbolic )
         umfpack_di_free_symbolic( &Symbolic );
     if( Numeric )
