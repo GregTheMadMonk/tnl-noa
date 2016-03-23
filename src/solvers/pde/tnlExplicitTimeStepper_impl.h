@@ -27,7 +27,8 @@ tnlExplicitTimeStepper< Problem, OdeSolver >::
 tnlExplicitTimeStepper()
 : odeSolver( 0 ),
   problem( 0 ),
-  timeStep( 0 )
+  timeStep( 0 ),
+  allIterations( 0 )
 {
 };
 
@@ -123,8 +124,11 @@ solve( const RealType& time,
       this->odeSolver->setMaxTau( ( stopTime - time ) / ( typename OdeSolver< Problem >::RealType ) this->odeSolver->getMinIterations() );
    this->mesh = &mesh;
    this->meshDependentData = &meshDependentData;
-   return this->odeSolver->solve( dofVector );
+   if( ! this->odeSolver->solve( dofVector ) )
+      return false;
    mainTimer.stop();
+   this->allIterations += this->odeSolver->getIterations();
+   return true;
 }
 
 template< typename Problem,
@@ -167,6 +171,7 @@ bool
 tnlExplicitTimeStepper< Problem, OdeSolver >::
 writeEpilog( tnlLogger& logger )
 {
+   logger.writeParameter< long long int >( "Ierations count:", this->allIterations );
    logger.writeParameter< double >( "Explicit update computation time:", this->explicitUpdaterTimer.getTime() );
    logger.writeParameter< double >( "Explicit time stepper time:", this->mainTimer.getTime() );
    return true;
