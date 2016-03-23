@@ -26,6 +26,11 @@ class eulerProblem:
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
       typedef tnlMeshFunction<Mesh,Mesh::getMeshDimensions(),RealType>MeshFunction;
+      
+      typedef typename DifferentialOperator::Continuity Continuity;
+      typedef typename DifferentialOperator::Momentum Momentum;
+      typedef typename DifferentialOperator::Energy Energy;
+      
     //definition
 	tnlVector< RealType, DeviceType, IndexType > _uRho;
 	tnlVector< RealType, DeviceType, IndexType > _uRhoVelocity;
