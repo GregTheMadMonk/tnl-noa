@@ -87,6 +87,12 @@ class eulerProblem:
                                  Matrix& matrix,
                                  DofVectorType& rightHandSide,
                                  MeshDependentDataType& meshDependentData );
+      
+      bool postIterate( const RealType& time,
+                        const RealType& tau,
+                        const MeshType& mesh,
+                        DofVectorType& dofs,
+                        MeshDependentDataType& meshDependentData );
 
    protected:
 

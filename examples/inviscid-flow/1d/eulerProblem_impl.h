@@ -359,4 +359,10 @@ assemblyLinearSystem( const RealType& time,
                                                              b );
 }
 
+      bool postIterate( const RealType& time,
+                        const RealType& tau,
+                        const MeshType& mesh,
+                        DofVectorType& dofs,
+                        MeshDependentDataType& meshDependentData );
+
 #endif /* eulerPROBLEM_IMPL_H_ */
