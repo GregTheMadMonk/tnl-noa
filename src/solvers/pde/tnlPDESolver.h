@@ -21,7 +21,6 @@
 #include <core/tnlObject.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
-#include <solvers/tnlSolverMonitor.h>
 #include <core/tnlLogger.h>
 
 template< typename Problem,
