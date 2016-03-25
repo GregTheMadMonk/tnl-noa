@@ -29,26 +29,26 @@ class LaxFridrichs< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 
       static tnlString getType();
       Real tau;
-      MeshFunction& velocityX;
-      MeshFunction& velocityY;
-      MeshFunction& pressure;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType pressure;
 
       void setTau(const Real& tau)
       {
           this->tau = tau;
       };
 
-      void setVelocityX(const MeshFunction& velocityX)
+      void setVelocityX(const MeshFunctionType& velocityX)
       {
           this->velocityX = velocityX;
       };
 
-      void setVelocityY(const MeshFunction& velocityY)
+      void setVelocityY(const MeshFunctionType& velocityY)
       {
           this->velocityY = velocityY;
       };
 
-      void setPressure(const MeshFunction& pressure)
+      void setPressure(const MeshFunctionType& pressure)
       {
           this->pressure = pressure;
       };
@@ -96,26 +96,26 @@ class LaxFridrichs< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 
       static tnlString getType();
       Real tau;
-      MeshFunction& velocityX;
-      MeshFunction& velocityY;
-      MeshFunction& pressure;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType pressure;
 
       void setTau(const Real& tau)
       {
           this->tau = tau;
       };
 
-      void setVelocityX(const MeshFunction& velocityX)
+      void setVelocityX(const MeshFunctionType& velocityX)
       {
           this->velocityX = velocityX;
       };
 
-      void setVelocityY(const MeshFunction& velocityY)
+      void setVelocityY(const MeshFunctionType& velocityY)
       {
           this->velocityY = velocityY;
       };
 
-      void setPressure(const MeshFunction& pressure)
+      void setPressure(const MeshFunctionType& pressure)
       {
           this->pressure = pressure;
       };
@@ -162,26 +162,26 @@ class LaxFridrichs< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 
       static tnlString getType();
       Real tau;
-      MeshFunction& velocityX;
-      MeshFunction& velocityY;
-      MeshFunction& pressure;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType pressure;
 
       void setTau(const Real& tau)
       {
           this->tau = tau;
       };
 
-      void setVelocityX(const MeshFunction& velocityX)
+      void setVelocityX(const MeshFunctionType& velocityX)
       {
           this->velocityX = velocityX;
       };
 
-      void setVelocityY(const MeshFunction& velocityY)
+      void setVelocityY(const MeshFunctionType& velocityY)
       {
           this->velocityY = velocityY;
       };
 
-      void setPressure(const MeshFunction& pressure)
+      void setPressure(const MeshFunctionType& pressure)
       {
           this->pressure = pressure;
       };

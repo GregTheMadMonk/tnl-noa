@@ -29,7 +29,7 @@ class LaxFridrichsContinuity< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, In
 
       static tnlString getType();
       Real tau;
-      MeshFunctionType& velocity;
+      MeshFunctionType velocity;
 
       void setTau(const Real& tau)
       {
@@ -83,7 +83,7 @@ class LaxFridrichsContinuity< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, In
 
       static tnlString getType();
       Real tau;
-      MeshFunctionType& velocity;
+      MeshFunctionType velocity;
 
       void setTau(const Real& tau)
       {
@@ -93,7 +93,7 @@ class LaxFridrichsContinuity< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, In
       void setVelocity(const MeshFunctionType& velocity)
       {
 	  this->velocity = velocity;
-};
+      };
 
 
       template< typename MeshFunction, typename MeshEntity >
@@ -138,7 +138,7 @@ class LaxFridrichsContinuity< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, In
 
       static tnlString getType();
       Real tau;
-      MeshFunctionType& velocity;
+      MeshFunctionType velocity;
 
       void setTau(const Real& tau)
       {

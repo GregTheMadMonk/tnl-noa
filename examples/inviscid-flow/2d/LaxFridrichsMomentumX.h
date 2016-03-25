@@ -1,5 +1,5 @@
-#ifndef LaxFridrichs_H
-#define LaxFridrichs_H
+#ifndef LaxFridrichsMomentumX_H
+#define LaxFridrichsMomentumX_H
 
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
@@ -7,7 +7,7 @@
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class LaxFridrichs
+class LaxFridrichsMomentumX
 {
 };
 
@@ -16,7 +16,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichs< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumX< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
       typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
@@ -29,9 +29,9 @@ class LaxFridrichs< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 
       static tnlString getType();
       Real tau;
-      MeshFunctionType& velocityX;
-      MeshFunctionType& velocityY;
-      MeshFunctionType& pressure;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType pressure;
 
       void setTau(const Real& tau)
       {
@@ -83,7 +83,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichs< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumX< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
       typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
@@ -96,9 +96,9 @@ class LaxFridrichs< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 
       static tnlString getType();
       Real tau;
-      MeshFunctionType& velocityX;
-      MeshFunctionType& velocityY;
-      MeshFunctionType& pressure;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType pressure;
 
       void setTau(const Real& tau)
       {
@@ -149,7 +149,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class LaxFridrichs< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+class LaxFridrichsMomentumX< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
       typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
@@ -162,9 +162,9 @@ class LaxFridrichs< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 
       static tnlString getType();
       Real tau;
-      MeshFunctionType& velocityX;
-      MeshFunctionType& velocityY;
-      MeshFunctionType& pressure;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
+      MeshFunctionType pressure;
 
       void setTau(const Real& tau)
       {
@@ -211,6 +211,6 @@ class LaxFridrichs< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 };
 
 
-#include "LaxFridrichs_impl.h"
+#include "LaxFridrichsMomentumX_impl.h"
 
-#endif	/* LaxFridrichs_H */
+#endif	/* LaxFridrichsMomentumX_H */

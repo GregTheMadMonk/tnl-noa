@@ -29,7 +29,6 @@ class EulerPressureGetter< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index
 
       static tnlString getType();
       Real gamma;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType1;
       MeshFunctionType& velocity;
       MeshFunctionType& rhoVel;
       MeshFunctionType& energy;

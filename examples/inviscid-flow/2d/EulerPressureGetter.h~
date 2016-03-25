@@ -28,6 +28,31 @@ class EulerPressureGetter< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static tnlString getType();
+      Real gamma;
+      MeshFunctionType velocity;
+      MeshFunctionType rho;
+      MeshFunctionType energy;
+
+      void setGamma(const Real& gamma)
+      {
+          this->gamma = gamma;
+      };
+
+      void setVelocity(const MeshFunctionType& velocity)
+      {
+          this->velocity = velocity;
+      };
+
+      void setRho(const MeshFunctionType& rho)
+      {
+          this->rho = rho;
+      };
+
+      void setEnergy(const MeshFunctionType& energy)
+      {
+          this->energy = energy;
+      };
+
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -70,6 +95,31 @@ class EulerPressureGetter< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static tnlString getType();
+      Real gamma;
+      MeshFunctionType velocity;
+      MeshFunctionType rho;
+      MeshFunctionType energy;
+
+      void setGamma(const Real& gamma)
+      {
+          this->gamma = gamma;
+      };
+
+      void setVelocity(const MeshFunctionType& velocity)
+      {
+          this->velocity = velocity;
+      };
+
+      void setRho(const MeshFunctionType& rho)
+      {
+          this->rho = rho;
+      };
+
+      void setEnergy(const MeshFunctionType& energy)
+      {
+          this->energy = energy;
+      };
+
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -112,6 +162,31 @@ class EulerPressureGetter< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static tnlString getType();
+      Real gamma;
+      MeshFunctionType velocity;
+      MeshFunctionType rho;
+      MeshFunctionType energy;
+
+      void setGamma(const Real& gamma)
+      {
+          this->gamma = gamma;
+      };
+
+      void setVelocity(const MeshFunctionType& velocity)
+      {
+          this->velocity = velocity;
+      };
+
+      void setRho(const MeshFunctionType& rho)
+      {
+          this->rhoVel = rho;
+      };
+
+      void setEnergy(const MeshFunctionType& energy)
+      {
+          this->energy = energy;
+      };
+
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__

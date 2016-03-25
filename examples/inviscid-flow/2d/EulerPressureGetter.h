@@ -29,9 +29,9 @@ class EulerPressureGetter< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index
 
       static tnlString getType();
       Real gamma;
-      MeshFunctionType& velocity;
-      MeshFunctionType& rho;
-      MeshFunctionType& energy;
+      MeshFunctionType velocity;
+      MeshFunctionType rho;
+      MeshFunctionType energy;
 
       void setGamma(const Real& gamma)
       {
@@ -45,7 +45,7 @@ class EulerPressureGetter< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index
 
       void setRho(const MeshFunctionType& rho)
       {
-          this->rhoVel = rho;
+          this->rho = rho;
       };
 
       void setEnergy(const MeshFunctionType& energy)
@@ -96,9 +96,9 @@ class EulerPressureGetter< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index
 
       static tnlString getType();
       Real gamma;
-      MeshFunctionType& velocity;
-      MeshFunctionType& rho;
-      MeshFunctionType& energy;
+      MeshFunctionType velocity;
+      MeshFunctionType rho;
+      MeshFunctionType energy;
 
       void setGamma(const Real& gamma)
       {
@@ -112,7 +112,7 @@ class EulerPressureGetter< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index
 
       void setRho(const MeshFunctionType& rho)
       {
-          this->rhoVel = rho;
+          this->rho = rho;
       };
 
       void setEnergy(const MeshFunctionType& energy)
@@ -163,9 +163,9 @@ class EulerPressureGetter< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index
 
       static tnlString getType();
       Real gamma;
-      MeshFunctionType& velocity;
-      MeshFunctionType& rho;
-      MeshFunctionType& energy;
+      MeshFunctionType velocity;
+      MeshFunctionType rho;
+      MeshFunctionType energy;
 
       void setGamma(const Real& gamma)
       {
@@ -179,7 +179,7 @@ class EulerPressureGetter< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index
 
       void setRho(const MeshFunctionType& rho)
       {
-          this->rhoVel = rho;
+          this->rho = rho;
       };
 
       void setEnergy(const MeshFunctionType& energy)

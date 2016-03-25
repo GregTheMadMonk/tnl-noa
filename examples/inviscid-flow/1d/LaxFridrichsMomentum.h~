@@ -44,7 +44,7 @@ class LaxFridrichsMomentum< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Inde
 
       void setPressure(const MeshFunctionType& pressure)
       {
-          this->pressure = presure;
+          this->pressure = pressure;
       };
 
       template< typename MeshFunction, typename MeshEntity >
@@ -104,7 +104,7 @@ class LaxFridrichsMomentum< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Inde
 
       void setPressure(const MeshFunctionType& pressure)
       {
-          this->pressure = presure;
+          this->pressure = pressure;
       };
 
       template< typename MeshFunction, typename MeshEntity >
@@ -164,7 +164,7 @@ class LaxFridrichsMomentum< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Inde
 
       void setPressure(const MeshFunctionType& pressure)
       {
-          this->pressure = presure;
+          this->pressure = pressure;
       };
 
       template< typename MeshFunction, typename MeshEntity >

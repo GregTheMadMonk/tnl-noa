@@ -137,7 +137,7 @@ operator()( const MeshFunction& u,
 {
    //velY
    const IndexType& center = entity.getIndex(); 
-   return ( rhoVelY[ center ] - rho[ center ]);
+   return ( rhoVelY[ center ] / rho[ center ]);
 }
 
 template< typename MeshReal,

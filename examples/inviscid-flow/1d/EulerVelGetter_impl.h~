@@ -1,5 +1,5 @@
-#ifndef LaxFridrichs_IMPL_H
-#define LaxFridrichs_IMPL_H
+#ifndef EulerVelGetter_IMPL_H
+#define EulerVelGetter_IMPL_H
 
 /****
  * 1D problem
@@ -10,10 +10,10 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 tnlString
-LaxFridrichs< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "LaxFridrichs< " ) +
+   return tnlString( "EulerVelGetter< " ) +
           MeshType::getType() + ", " +
           ::getType< Real >() + ", " +
           ::getType< Index >() + " >";
@@ -27,7 +27,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-LaxFridrichs< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -54,7 +54,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-LaxFridrichs< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -77,7 +77,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-LaxFridrichs< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -105,17 +105,17 @@ updateLinearSystem( const RealType& time,
 
 /****
  * 2D problem
- */
+
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
           typename Index >
 tnlString
-LaxFridrichs< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "LaxFridrichs< " ) +
+   return tnlString( "EulerVelGetter< " ) +
           MeshType::getType() + ", " +
           ::getType< Real >() + ", " +
           ::getType< Index >() + " >";
@@ -129,7 +129,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-LaxFridrichs< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -138,7 +138,7 @@ operator()( const MeshFunction& u,
     * Implement your explicit form of the differential operator here.
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
-    */
+    *
     static_assert( MeshEntity::entityDimensions == 2, "Wrong mesh entity dimensions." ); 
     static_assert( MeshFunction::getEntitiesDimensions() == 2, "Wrong preimage function" ); 
     const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
@@ -162,7 +162,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-LaxFridrichs< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -172,7 +172,7 @@ getLinearSystemRowLength( const MeshType& mesh,
     * the linear system.
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
-    */
+    *
 
    return 2*Dimensions + 1;
 }
@@ -185,7 +185,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-LaxFridrichs< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -199,7 +199,7 @@ updateLinearSystem( const RealType& time,
     * Setup the non-zero elements of the linear system here.
     * The following example is the Laplace operator appriximated 
     * by the Finite difference method.
-    */
+    *
 
     const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
    const RealType& lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2, 0 >(); 
@@ -218,17 +218,17 @@ updateLinearSystem( const RealType& time,
 
 /****
  * 3D problem
- */
+ *
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
           typename Index >
 tnlString
-LaxFridrichs< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "LaxFridrichs< " ) +
+   return tnlString( "EulerVelGetter< " ) +
           MeshType::getType() + ", " +
           ::getType< Real >() + ", " +
           ::getType< Index >() + " >";
@@ -242,7 +242,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-LaxFridrichs< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -251,7 +251,7 @@ operator()( const MeshFunction& u,
     * Implement your explicit form of the differential operator here.
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
-    */
+    *
     static_assert( MeshEntity::entityDimensions == 3, "Wrong mesh entity dimensions." ); 
     static_assert( MeshFunction::getEntitiesDimensions() == 3, "Wrong preimage function" ); 
     const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
@@ -279,7 +279,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-LaxFridrichs< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -289,7 +289,7 @@ getLinearSystemRowLength( const MeshType& mesh,
     * the linear system.
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
-    */
+    *
 
    return 2*Dimensions + 1;
 }
@@ -302,7 +302,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-LaxFridrichs< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -316,7 +316,7 @@ updateLinearSystem( const RealType& time,
     * Setup the non-zero elements of the linear system here.
     * The following example is the Laplace operator appriximated 
     * by the Finite difference method.
-    */
+    *
 
     const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
    const RealType& lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >(); 
@@ -337,6 +337,6 @@ updateLinearSystem( const RealType& time,
    matrixRow.setElement( 5, north,  -lambdaY );
    matrixRow.setElement( 6, up,     -lambdaZ );
 }
-
-#endif	/* LaxFridrichsIMPL_H */
+*/
+#endif	/* EulerVelGetterIMPL_H */
 

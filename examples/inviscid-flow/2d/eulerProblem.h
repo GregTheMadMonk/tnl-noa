@@ -26,6 +26,15 @@ class eulerProblem:
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
 
+      typedef typename DifferentialOperator::Continuity Continuity;
+      typedef typename DifferentialOperator::MomentumX MomentumX;
+      typedef typename DifferentialOperator::MomentumY MomentumY;
+      typedef typename DifferentialOperator::Energy Energy;
+      typedef typename DifferentialOperator::Velocity Velocity;
+      typedef typename DifferentialOperator::VelocityX VelocityX;
+      typedef typename DifferentialOperator::VelocityY VelocityY;
+      typedef typename DifferentialOperator::Pressure Pressure;
+
     //definition
 	tnlVector< RealType, DeviceType, IndexType > _uRho;
 	tnlVector< RealType, DeviceType, IndexType > _uRhoVelocityX;
@@ -92,6 +101,12 @@ class eulerProblem:
                                  Matrix& matrix,
                                  DofVectorType& rightHandSide,
                                  MeshDependentDataType& meshDependentData );
+
+      bool postIterate( const RealType& time,
+                        const RealType& tau,
+                        const MeshType& mesh,
+                        DofVectorType& dofs,
+                        MeshDependentDataType& meshDependentData );
 
    protected:
 

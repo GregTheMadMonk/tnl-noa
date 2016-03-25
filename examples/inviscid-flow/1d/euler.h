@@ -6,11 +6,6 @@
 #include <functions/tnlConstantFunction.h>
 #include "eulerProblem.h"
 #include "LaxFridrichs.h"
-#include "LaxFridrichsContinuity.h"
-#include "LaxFridrichsMomentum.h"
-#include "LaxFridrichsEnergy.h"
-#include "EulerVelGetter.h"
-#include "EulerPressureGetter.h"
 
 #include "eulerRhs.h"
 #include "eulerBuildConfigTag.h"

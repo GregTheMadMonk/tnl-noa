@@ -30,6 +30,8 @@ class eulerProblem:
       typedef typename DifferentialOperator::Continuity Continuity;
       typedef typename DifferentialOperator::Momentum Momentum;
       typedef typename DifferentialOperator::Energy Energy;
+      typedef typename DifferentialOperator::Velocity Velocity;
+      typedef typename DifferentialOperator::Pressure Pressure;
       
     //definition
 	tnlVector< RealType, DeviceType, IndexType > _uRho;
@@ -42,10 +44,10 @@ class eulerProblem:
 
 
       static tnlString getTypeStatic();
+      tnlVector< RealType, DeviceType, IndexType > data;
       tnlVector< RealType, DeviceType, IndexType > rho;
       tnlVector< RealType, DeviceType, IndexType > rhoVel;
       tnlVector< RealType, DeviceType, IndexType > energy;
-      tnlVector< RealType, DeviceType, IndexType > data;
       tnlVector< RealType, DeviceType, IndexType > pressure;
       tnlVector< RealType, DeviceType, IndexType > velocity;
       double gamma;

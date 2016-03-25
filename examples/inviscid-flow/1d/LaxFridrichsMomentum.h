@@ -29,8 +29,8 @@ class LaxFridrichsMomentum< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Inde
 
       static tnlString getType();
       Real tau;
-      MeshFunctionType& velocity;
-      MeshFunctionType& pressure;
+      MeshFunctionType velocity;
+      MeshFunctionType pressure;
 
       void setTau(const Real& tau)
       {
@@ -89,8 +89,8 @@ class LaxFridrichsMomentum< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Inde
 
       static tnlString getType();
       Real tau;
-      MeshFunctionType& velocity;
-      MeshFunctionType& pressure;
+      MeshFunctionType velocity;
+      MeshFunctionType pressure;
 
       void setTau(const Real& tau)
       {
@@ -149,8 +149,8 @@ class LaxFridrichsMomentum< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Inde
 
       static tnlString getType();
       Real tau;
-      MeshFunctionType& velocity;
-      MeshFunctionType& pressure;
+      MeshFunctionType velocity;
+      MeshFunctionType pressure;
 
       void setTau(const Real& tau)
       {

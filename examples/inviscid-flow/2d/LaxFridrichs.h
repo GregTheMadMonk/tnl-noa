@@ -4,140 +4,34 @@
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
 
+#include "LaxFridrichsContinuity.h"
+#include "LaxFridrichsEnergy.h"
+#include "LaxFridrichsMomentumX.h"
+#include "LaxFridrichsMomentumY.h"
+#include "EulerPressureGetter.h"
+#include "EulerVelXGetter.h"
+#include "EulerVelYGetter.h"
+#include "EulerVelGetter.h"
+
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class LaxFridrichs
 {
-};
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-class LaxFridrichs< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
-{
    public:
-      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
-      typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
-
-      static tnlString getType();
-
-      template< typename MeshFunction, typename MeshEntity >
-      __cuda_callable__
-      Real operator()( const MeshFunction& u,
-                       const MeshEntity& entity,
-                       const RealType& time = 0.0 ) const;
-
-      __cuda_callable__
-      template< typename MeshEntity >
-      Index getLinearSystemRowLength( const MeshType& mesh,
-                                      const IndexType& index,
-                                      const MeshEntity& entity ) const;
-
-      template< typename MeshEntity, typename Vector, typename MatrixRow >
-      __cuda_callable__
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const MeshEntity& entity,
-                               const MeshFunctionType& u,
-                               Vector& b,
-                               MatrixRow& matrixRow ) const;
+      typedef tnlMeshFunction< Mesh > MeshFunctionType;
+ 
+      typedef LaxFridrichsContinuity< Mesh, Real, Index > Continuity;
+      typedef LaxFridrichsMomentumX< Mesh, Real, Index > MomentumX;
+      typedef LaxFridrichsMomentumY< Mesh, Real, Index > MomentumY;
+      typedef LaxFridrichsEnergy< Mesh, Real, Index > Energy;
+      typedef EulerVelXGetter< Mesh, Real, Index > VelocityX;
+      typedef EulerVelYGetter< Mesh, Real, Index > VelocityY;
+      typedef EulerVelGetter< Mesh, Real, Index > Velocity;
+      typedef EulerPressureGetter< Mesh, Real, Index > Pressure;
+   
 };
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-class LaxFridrichs< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
-{
-   public:
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
-
-      static tnlString getType();
-
-      template< typename MeshFunction, typename MeshEntity >
-      __cuda_callable__
-      Real operator()( const MeshFunction& u,
-                       const MeshEntity& entity,
-                       const RealType& time = 0.0 ) const;
-
-      __cuda_callable__
-      template< typename MeshEntity >
-      Index getLinearSystemRowLength( const MeshType& mesh,
-                                      const IndexType& index,
-                                      const MeshEntity& entity ) const;
-
-      template< typename MeshEntity, typename Vector, typename MatrixRow >
-      __cuda_callable__
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const MeshEntity& entity,
-                               const MeshFunctionType& u,
-                               Vector& b,
-                               MatrixRow& matrixRow ) const;
-};
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-class LaxFridrichs< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
-{
-   public:
-      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
-
-      static tnlString getType();
-
-      template< typename MeshFunction, typename MeshEntity >
-      __cuda_callable__
-      Real operator()( const MeshFunction& u,
-                       const MeshEntity& entity,
-                       const RealType& time = 0.0 ) const;
-
-      __cuda_callable__
-      template< typename MeshEntity >
-      Index getLinearSystemRowLength( const MeshType& mesh,
-                                      const IndexType& index,
-                                      const MeshEntity& entity ) const;
-
-      template< typename MeshEntity, typename Vector, typename MatrixRow >
-      __cuda_callable__
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const MeshEntity& entity,
-                               const MeshFunctionType& u,
-                               Vector& b,
-                               MatrixRow& matrixRow ) const;
-};
-
-
-#include "LaxFridrichs_impl.h"
 
 #endif	/* LaxFridrichs_H */

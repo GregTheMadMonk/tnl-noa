@@ -137,7 +137,6 @@ operator()( const MeshFunction& u,
 {
    //velY
    const IndexType& center = entity.getIndex(); 
-   typedef typename MeshType::Cell Cell;
    return ( rhoVelY[ center ] - rho[ center ]);
 }
 

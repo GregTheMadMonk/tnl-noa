@@ -28,8 +28,8 @@ class EulerVelGetter< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static tnlString getType();
-      MeshFunctionType& velX;
-      MeshFunctionType& velY;
+      MeshFunctionType velX;
+      MeshFunctionType velY;
 
       void setVelX(const MeshFunctionType& velX)
       {
@@ -82,8 +82,8 @@ class EulerVelGetter< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static tnlString getType();
-      MeshFunctionType& velX;
-      MeshFunctionType& velY;
+      MeshFunctionType velX;
+      MeshFunctionType velY;
 
       void setVelX(const MeshFunctionType& velX)
       {
@@ -136,8 +136,8 @@ class EulerVelGetter< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static tnlString getType();
-      MeshFunctionType& velX;
-      MeshFunctionType& velY;
+      MeshFunctionType velX;
+      MeshFunctionType velY;
 
       void setVelX(const MeshFunctionType& velX)
       {

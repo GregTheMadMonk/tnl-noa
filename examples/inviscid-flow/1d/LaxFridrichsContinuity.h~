@@ -28,16 +28,15 @@ class LaxFridrichsContinuity< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, In
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static tnlString getType();
-      typedef tnlMeshFunction< MeshType > MeshFunction; 
       Real tau;
-      MeshFunction& velocity;
+      MeshFunctionType velocity;
 
       void setTau(const Real& tau)
       {
           this->tau = tau;
       };
 
-      void setVelocity(const MeshFunction& velocity)
+      void setVelocity(const MeshFunctionType& velocity)
       {
           this->velocity = velocity;
       };
@@ -83,19 +82,18 @@ class LaxFridrichsContinuity< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, In
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static tnlString getType();
-      typedef tnlMeshFunction< MeshType > MeshFunction; 
       Real tau;
-      MeshFunction& velocity;
+      MeshFunctionType velocity;
 
       void setTau(const Real& tau)
       {
           this->tau = tau;
       };
 
-      void setVelocity(const MeshFunction& velocity)
+      void setVelocity(const MeshFunctionType& velocity)
       {
-	  this->velocity = velocity;
-};
+//	  this->velocity = velocity;
+      };
 
 
       template< typename MeshFunction, typename MeshEntity >
@@ -139,18 +137,17 @@ class LaxFridrichsContinuity< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, In
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static tnlString getType();
-      typedef tnlMeshFunction< MeshType > MeshFunction; 
       Real tau;
-      MeshFunction& velocity;
+      MeshFunctionType velocity;
 
       void setTau(const Real& tau)
       {
           this->tau = tau;
       };
 
-      void setVelocity(const MeshFunction& velocity)
+      void setVelocity(const MeshFunctionType& velocity)
       {
-          this->velocity = velocity;
+//          this->velocity = velocity;
       };
 
 
