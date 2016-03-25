@@ -347,11 +347,14 @@ class tnlSolverStarterExplicitTimeStepperSetter
          typedef typename Problem::IndexType IndexType;
          typedef tnlODESolverMonitor< RealType, IndexType > SolverMonitorType;
 
+         const int verbose = parameters.getParameter< int >( "verbose" );
+
          ExplicitSolver explicitSolver;
          explicitSolver.setup( parameters );
-         int verbose = parameters.getParameter< int >( "verbose" );
          explicitSolver.setVerbose( verbose );
+
          SolverMonitorType odeSolverMonitor;
+         odeSolverMonitor.setVerbose( verbose );
          if( ! problem.getSolverMonitor() )
             explicitSolver.setSolverMonitor( odeSolverMonitor );
          else
@@ -390,10 +393,13 @@ class tnlSolverStarterSemiImplicitTimeStepperSetter
          typedef typename Problem::IndexType IndexType;
          typedef tnlIterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
 
+         const int verbose = parameters.getParameter< int >( "verbose" );
+
          LinearSystemSolverType linearSystemSolver;
          linearSystemSolver.setup( parameters );
 
          SolverMonitorType solverMonitor;
+         solverMonitor.setVerbose( verbose );
          if( ! problem.getSolverMonitor() )
             linearSystemSolver.setSolverMonitor( solverMonitor );
          else
