@@ -9,13 +9,12 @@ template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class EulerPressureGetter
-: public tnlDomain< Mesh::geMeshDimensions(), MeshDomain >
+: public tnlDomain< Mesh::getMeshDimensions(), MeshDomain >
 {
    public:
       
       typedef Mesh MeshType;
       typedef Real RealType;
-      typedef Device DeviceType;
       typedef Index IndexType;
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };

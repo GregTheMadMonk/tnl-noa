@@ -100,7 +100,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
                      MeshDependentDataType& meshDependentData )
 {
    typedef typename MeshType::Cell Cell;
-   double gamma = parameters.getParameter< double >( "gamma" );
+   this->gamma = parameters.getParameter< double >( "gamma" );
    double rhoL = parameters.getParameter< double >( "left-density" );
    double velL = parameters.getParameter< double >( "left-velocity" );
    double preL = parameters.getParameter< double >( "left-pressure" );
@@ -112,33 +112,31 @@ setInitialCondition( const tnlParameterContainer& parameters,
    double x0 = parameters.getParameter< double >( "riemann-border" );
    cout << gamma << " " << rhoL << " " << velL << " " << preL << " " << eL << " " << rhoR << " " << velR << " " << preR << " " << eR << " " << x0 << " " << gamma << endl;
    int count = mesh.template getEntitiesCount< Cell >()/3;
-   this->rho.bind(dofs,0,count);
-   this->rhoVel.bind(dofs,count,count);
-   this->energy.bind(dofs,2 * count,count);
-   this->data.setSize(2*count);
-   this->pressure.bind(this->data,0,count);
-   this->velocity.bind(this->data,count,count);
-   for(long int i = 0; i < count; i++)
+   rho.bind(mesh,dofs,0);
+   rhoVel.bind(mesh,dofs,count);
+   energy.bind(mesh,dofs,2 * count);
+//   pressure(mesh);
+//   velocity(mesh);
+/*   for(long int i = 0; i < count; i++)
       if (i < x0 * count )
          {
-            this->rho[i] = rhoL;
-            this->rhoVel[i] = rhoL * velL;
-            this->energy[i] = eL;
+            this->Rho[i] = rhoL;
+            this->RhoVel[i] = rhoL * velL;
+            this->Energy[i] = eL;
             this->velocity[i] = velL;
             this->pressure[i] = preL;
          }
       else
          {
-            this->rho[i] = rhoR;
-            this->rhoVel[i] = rhoR * velR;
-            this->energy[i] = eR;
+            this->Rho[i] = rhoR;
+            this->RhoVel[i] = rhoR * velR;
+            this->Energy[i] = eR;
             this->velocity[i] = velR;
             this->pressure[i] = preR;
          };
-   this->gamma = gamma;
    cout << "dofs = " << dofs << endl;
    getchar();
-  
+*/  
    
    /*
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
@@ -187,7 +185,7 @@ makeSnapshot( const RealType& time,
               const MeshType& mesh,
               DofVectorType& dofs,
               MeshDependentDataType& meshDependentData )
-{
+{/*
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
    this->bindDofs( mesh, dofs );
    tnlString fileName;
@@ -228,7 +226,7 @@ makeSnapshot( const RealType& time,
       return false;
    FileNameBaseNumberEnding( "energy-", step, 5, ".tnl", fileName );
    if( ! energy.save( fileName ) )
-      return false;
+      return false;*/
    return true;
 }
 
@@ -246,22 +244,17 @@ getExplicitRHS( const RealType& time,
                 MeshDependentDataType& meshDependentData )
 {
     typedef typename MeshType::Cell Cell;
-    int count = mesh.template getEntitiesCount< Cell >(); ///3;
+    int count = mesh.template getEntitiesCount< Cell >();
 	//bind _u
-    this->uRho.bind(_u,0,count);
-    this->uRhoVelocity.bind(_u,count,count);
-    this->uEnergy.bind(_u,2 * count,count);
+    this->uRho.bind(mesh, _u, 0);
+    this->uRhoVelocity.bind(mesh, _u ,count);
+    this->uEnergy.bind(mesh, _u, 2 * count);
 		
 	//bind _fu
-    this->fuRho.bind(_u,0,count);
-    this->fuRhoVelocity.bind(_u,count,count);
-    this->fuEnergy.bind(_u,2 * count,count);
-        //bind MeshFunctions
-   this->velocity.setMesh( mesh );
-   // TODO: osetrit rychlost podobne jako tlak
-   this->pressure.setMesh( mesh );
-   EulerPressureGetter< Mesh, RealType, IndexType > pressureGetter( velocity, rhoVel, energy, gamma );
-   this->pressure = pressureGetter;
+    this->fuRho.bind(mesh, _u, 0);
+    this->fuRhoVelocity.bind(mesh, _u, count);
+    fuEnergy.bind(mesh, _u, 2 * count);
+
    //generating Differential operator object
    Continuity lF1DContinuity;
    Momentum lF1DMomentum;
@@ -365,37 +358,14 @@ postIterate( const RealType& time,
              DofVectorType& dofs,
              MeshDependentDataType& meshDependentData )
 {
-   typedef typename MeshType::Cell Cell;
-   int count = mesh.template getEntitiesCount< Cell >()/3;
-
-   //bind _u
-   this->_uRho.bind(dofs, 0, count);
-   this->_uRhoVelocity.bind(dofs, count, count);
-   this->_uEnergy.bind(dofs, 2 * count, count);
-
-   //bind meshfunction
-   MeshFunctionType velocity( mesh, this->velocity );
-   MeshFunctionType pressure( mesh, this->pressure );
-   MeshFunctionType uRho( mesh, _uRho );
-   MeshFunctionType uRhoVel( mesh, _uRhoVelocity );
-   MeshFunctionType uEnergy( mesh, _uEnergy );
-   //Generating differential operators
-   Velocity euler1DVelocity;
-   Pressure euler1DPressure;
    //velocity
-   euler1DVelocity.setRhoVel(uRhoVel);
-   euler1DVelocity.setRho(uRho); 
-//   tnlOperatorFunction< Velocity, MeshFunction, void, true > OFVel;
-//   velocity = OFVel;
-
-   //pressure
-   euler1DPressure.setRhoVel(uRhoVel);
-   euler1DPressure.setVelocity(velocity);
-   euler1DPressure.setGamma(gamma);
-   euler1DPressure.setEnergy(uEnergy); 
-//   tnlOperatorFunction< Pressure, MeshFunction, void, true > OFPressure;
-//   pressure = OFPressure;
-
+   this->velocity.setMesh( mesh );
+   Velocity velocityGetter( uRho, uRhoVelocity );
+   this->velocity = velocityGetter;
+/*   //pressure
+   this->pressure.setMesh( mesh );
+   Pressure pressureGetter( velocity, RhoVelocity, Energy, gamma );
+   this->pressure = pressureGetter; */
 }
 
 #endif /* eulerPROBLEM_IMPL_H_ */

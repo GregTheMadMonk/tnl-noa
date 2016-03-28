@@ -8,174 +8,45 @@ template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class EulerVelGetter
-{
-};
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-class EulerVelGetter< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+: public tnlDomain< Mesh::getMeshDimensions(), MeshDomain >
 {
    public:
-      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
+      
+      typedef Mesh MeshType;
       typedef Real RealType;
-      typedef Device DeviceType;
       typedef Index IndexType;
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static tnlString getType();
-      MeshFunctionType rhoVel;
-      MeshFunctionType rho;
+      
+      EulerVelGetter( const MeshFunctionType& rho,
+                      const MeshFunctionType& rhoVel)
+      : rho( rho ), rhoVel( rhoVel )
+      {}
 
-      void setRhoVel(const MeshFunctionType& rhoVel)
-      {
-          this->rhoVel = rhoVel;
-      };
-
-      void setRho(const MeshFunctionType& rho)
-      {
-          this->rho = rho;
-      };
-
-      template< typename MeshFunction, typename MeshEntity >
-      __cuda_callable__
-      Real operator()( const MeshFunction& u,
-                       const MeshEntity& entity,
-                       const RealType& time = 0.0 ) const;
-
-      __cuda_callable__
       template< typename MeshEntity >
-      Index getLinearSystemRowLength( const MeshType& mesh,
-                                      const IndexType& index,
-                                      const MeshEntity& entity ) const;
-
-      template< typename MeshEntity, typename Vector, typename MatrixRow >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const MeshEntity& entity,
-                               const MeshFunctionType& u,
-                               Vector& b,
-                               MatrixRow& matrixRow ) const;
-};
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-class EulerVelGetter< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
-{
-   public:
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
-
-      static tnlString getType();
-      MeshFunctionType rhoVel;
-      MeshFunctionType rho;
-
-      void setRhoVel(const MeshFunctionType& rhoVel)
+      Real operator()( const MeshEntity& entity,
+                       const RealType& time = 0.0 ) const
       {
-          this->rhoVel = rhoVel;
-      };
-
-      void setRho(const MeshFunctionType& rho)
-      {
-          this->rho = rho;
-      };
-
-
-      template< typename MeshFunction, typename MeshEntity >
-      __cuda_callable__
-      Real operator()( const MeshFunction& u,
-                       const MeshEntity& entity,
-                       const RealType& time = 0.0 ) const;
-
-      __cuda_callable__
+         return this->operator[]( entity.getIndex() );
+      }
+      
       template< typename MeshEntity >
-      Index getLinearSystemRowLength( const MeshType& mesh,
-                                      const IndexType& index,
-                                      const MeshEntity& entity ) const;
-
-      template< typename MeshEntity, typename Vector, typename MatrixRow >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const MeshEntity& entity,
-                               const MeshFunctionType& u,
-                               Vector& b,
-                               MatrixRow& matrixRow ) const;
-};
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-class EulerVelGetter< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
-{
-   public:
-      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
-      typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
-      enum { Dimensions = MeshType::getMeshDimensions() };
-
-      static tnlString getType();
-      MeshFunctionType rhoVel;
-      MeshFunctionType rho;
-
-      void setRhoVel(const MeshFunctionType& rhoVel)
+      Real operator[]( const IndexType& idx ) const
       {
-          this->rhoVel = rhoVel;
-      };
+         return this->rho[ idx ] / this->rhoVel[ idx ];
+      }
 
-      void setRho(const MeshFunctionType& rho)
-      {
-          this->rho = rho;
-      };
+      
+   protected:
+      
+      const MeshFunctionType& rho;
+      
+      const MeshFunctionType& rhoVel;
 
-
-      template< typename MeshFunction, typename MeshEntity >
-      __cuda_callable__
-      Real operator()( const MeshFunction& u,
-                       const MeshEntity& entity,
-                       const RealType& time = 0.0 ) const;
-
-      __cuda_callable__
-      template< typename MeshEntity >
-      Index getLinearSystemRowLength( const MeshType& mesh,
-                                      const IndexType& index,
-                                      const MeshEntity& entity ) const;
-
-      template< typename MeshEntity, typename Vector, typename MatrixRow >
-      __cuda_callable__
-      void updateLinearSystem( const RealType& time,
-                               const RealType& tau,
-                               const MeshType& mesh,
-                               const IndexType& index,
-                               const MeshEntity& entity,
-                               const MeshFunctionType& u,
-                               Vector& b,
-                               MatrixRow& matrixRow ) const;
 };
-
-
-#include "EulerVelGetter_impl.h"
 
 #endif	/* EulerVelGetter_H */

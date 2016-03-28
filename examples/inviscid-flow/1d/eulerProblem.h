@@ -95,7 +95,7 @@ class eulerProblem:
       MeshFunctionType uRho, uRhoVelocity, uEnergy;
       MeshFunctionType fuRho, fuRhoVelocity, fuEnergy;
       
-      MeshFunctionType rho, rhoVel, energy, pressure, velocity;
+      MeshFunctionType pressure, velocity, rho, rhoVel, energy;
       
       RealType gamma;
 
