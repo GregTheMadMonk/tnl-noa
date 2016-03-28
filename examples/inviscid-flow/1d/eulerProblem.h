@@ -33,24 +33,9 @@ class eulerProblem:
       typedef typename DifferentialOperator::Velocity Velocity;
       typedef typename DifferentialOperator::Pressure Pressure;
       
-    //definition
-	tnlVector< RealType, DeviceType, IndexType > _uRho;
-	tnlVector< RealType, DeviceType, IndexType > _uRhoVelocity;
-	tnlVector< RealType, DeviceType, IndexType > _uEnergy;
-
-	tnlVector< RealType, DeviceType, IndexType > _fuRho;
-	tnlVector< RealType, DeviceType, IndexType > _fuRhoVelocity;
-	tnlVector< RealType, DeviceType, IndexType > _fuEnergy;
 
 
       static tnlString getTypeStatic();
-      tnlVector< RealType, DeviceType, IndexType > data;
-      tnlVector< RealType, DeviceType, IndexType > rho;
-      tnlVector< RealType, DeviceType, IndexType > rhoVel;
-      tnlVector< RealType, DeviceType, IndexType > energy;
-      tnlVector< RealType, DeviceType, IndexType > pressure;
-      tnlVector< RealType, DeviceType, IndexType > velocity;
-      double gamma;
 
       tnlString getPrologHeader() const;
 
@@ -106,6 +91,15 @@ class eulerProblem:
       DifferentialOperator differentialOperator;
       BoundaryCondition boundaryCondition;
       RightHandSide rightHandSide;
+      
+      MeshFunctionType uRho, uRhoVelocity, uEnergy;
+      MeshFunctionType fuRho, fuRhoVelocity, fuEnergy;
+      
+      MeshFunctionType rho, rhoVel, energy, pressure, velocity;
+      
+      RealType gamma;
+
+
 };
 
 #include "eulerProblem_impl.h"

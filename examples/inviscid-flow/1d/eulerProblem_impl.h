@@ -246,30 +246,30 @@ getExplicitRHS( const RealType& time,
                 MeshDependentDataType& meshDependentData )
 {
     typedef typename MeshType::Cell Cell;
-    int count = mesh.template getEntitiesCount< Cell >()/3;
+    int count = mesh.template getEntitiesCount< Cell >(); ///3;
 	//bind _u
-    this->_uRho.bind(_u,0,count);
-    this->_uRhoVelocity.bind(_u,count,count);
-    this->_uEnergy.bind(_u,2 * count,count);
+    this->uRho.bind(_u,0,count);
+    this->uRhoVelocity.bind(_u,count,count);
+    this->uEnergy.bind(_u,2 * count,count);
 		
 	//bind _fu
-    this->_fuRho.bind(_u,0,count);
-    this->_fuRhoVelocity.bind(_u,count,count);
-    this->_fuEnergy.bind(_u,2 * count,count);
+    this->fuRho.bind(_u,0,count);
+    this->fuRhoVelocity.bind(_u,count,count);
+    this->fuEnergy.bind(_u,2 * count,count);
         //bind MeshFunctions
-   MeshFunctionType velocity( mesh, this->velocity );
-   MeshFunctionType pressure( mesh, this->pressure );
-   MeshFunctionType uRho( mesh, _uRho ); 
-   MeshFunctionType fuRho( mesh, _fuRho );
-   MeshFunctionType uRhoVelocity( mesh, _uRhoVelocity ); 
-   MeshFunctionType fuRhoVelocity( mesh, _fuRhoVelocity );
-   MeshFunctionType uEnergy( mesh, _uEnergy ); 
-   MeshFunctionType fuEnergy( mesh, _fuEnergy );
-        //generating Differential operator object
+   this->velocity.setMesh( mesh );
+   // TODO: osetrit rychlost podobne jako tlak
+   this->pressure.setMesh( mesh );
+   EulerPressureGetter< Mesh, RealType, IndexType > pressureGetter( velocity, rhoVel, energy, gamma );
+   this->pressure = pressureGetter;
+   //generating Differential operator object
    Continuity lF1DContinuity;
    Momentum lF1DMomentum;
    Energy lF1DEnergy;
 
+   
+   
+   
    //rho
    this->bindDofs( mesh, _u );
    lF1DContinuity.setTau(tau);
