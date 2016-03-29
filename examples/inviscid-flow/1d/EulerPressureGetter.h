@@ -25,7 +25,7 @@ class EulerPressureGetter
                            const MeshFunctionType& rhoVel,
                            const MeshFunctionType& energy,
                            const RealType& gamma )
-      : velocity( velocity ), rhoVel( rhoVel ), energy( energy ), gamma( gamma )
+      : rho( rho ), rhoVel( rhoVel ), energy( energy ), gamma( gamma )
       {}
 
       template< typename MeshEntity >
@@ -39,7 +39,7 @@ class EulerPressureGetter
       __cuda_callable__
       Real operator[]( const IndexType& idx ) const
       {
-         return ( this->gamma - 1.0 ) * ( this->energy[ idx ] - 0.5 * this->rhoVel[ idx ] * this->velocity[ idx ]);
+         return ( this->gamma - 1.0 ) * ( this->energy[ idx ] - 0.5 * this->rhoVel[ idx ] * this->rhoVel[ idx ] / this->rho[ idx ]);
       }
 
       
@@ -47,7 +47,7 @@ class EulerPressureGetter
       
       Real gamma;
       
-      const MeshFunctionType& velocity;
+      const MeshFunctionType& rho;
       
       const MeshFunctionType& rhoVel;
       

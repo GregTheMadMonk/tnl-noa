@@ -112,31 +112,33 @@ setInitialCondition( const tnlParameterContainer& parameters,
    double x0 = parameters.getParameter< double >( "riemann-border" );
    cout << gamma << " " << rhoL << " " << velL << " " << preL << " " << eL << " " << rhoR << " " << velR << " " << preR << " " << eR << " " << x0 << " " << gamma << endl;
    int count = mesh.template getEntitiesCount< Cell >()/3;
-   rho.bind(mesh,dofs,0);
-   rhoVel.bind(mesh,dofs,count);
-   energy.bind(mesh,dofs,2 * count);
-   pressure(mesh);
-//   velocity(mesh);
-/*   for(long int i = 0; i < count; i++)
+   uRho.bind(mesh,dofs,0);
+   uRhoVel.bind(mesh,dofs,count);
+   uEnergy.bind(mesh,dofs,2 * count);
+   tnlVector < RealType, DeviceType, IndexType > data;
+   data.setSize(2*count);
+   velocity.bind(mesh,data,0);
+   pressure.bind(mesh,data,count);
+   for(IndexType i = 0; i < count; i++)
       if (i < x0 * count )
          {
-            this->Rho[i] = rhoL;
-            this->RhoVel[i] = rhoL * velL;
-            this->Energy[i] = eL;
-            this->velocity[i] = velL;
-            this->pressure[i] = preL;
+            uRho[i] = rhoL;
+            uRhoVel[i] = rhoL * velL;
+            uEnergy[i] = eL;
+            velocity[i] = velL;
+            pressure[i] = preL;
          }
       else
          {
-            this->Rho[i] = rhoR;
-            this->RhoVel[i] = rhoR * velR;
-            this->Energy[i] = eR;
-            this->velocity[i] = velR;
-            this->pressure[i] = preR;
+            uRho[i] = rhoR;
+            uRhoVel[i] = rhoR * velR;
+            uEnergy[i] = eR;
+            velocity[i] = velR;
+            pressure[i] = preR;
          };
    cout << "dofs = " << dofs << endl;
    getchar();
-*/  
+  
    
    /*
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
@@ -185,48 +187,48 @@ makeSnapshot( const RealType& time,
               const MeshType& mesh,
               DofVectorType& dofs,
               MeshDependentDataType& meshDependentData )
-{/*
+{
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
    this->bindDofs( mesh, dofs );
    tnlString fileName;
    ofstream vysledek;
    cout << "pressure:" << endl;
-   for (int i = 0; i<100; i++) cout << this->pressure[i] << " " ;
-   vysledek.open("pressure" + to_string(step) + ".txt");
-      for (int i = 0; i<101; i++)
+   for (IndexType i = 0; i<100; i++) cout << this->pressure[i] << " " ;
+      vysledek.open("pressure" + to_string(step) + ".txt");
+   for (IndexType i = 0; i<101; i++)
       vysledek << 0.01*i << " " << pressure[i] << endl;
    vysledek.close();
    cout << " " << endl;
    cout << "velocity:" << endl;
-   for (int i = 0; i<100; i++) cout << this->velocity[i] << " " ;
-   vysledek.open("velocity" + to_string(step) + ".txt");
-      for (int i = 0; i<101; i++)
+   for (IndexType i = 0; i<100; i++) cout << this->velocity[i] << " " ;
+      vysledek.open("velocity" + to_string(step) + ".txt");
+   for (IndexType i = 0; i<101; i++)
       vysledek << 0.01*i << " " << pressure[i] << endl;
    vysledek.close();
    cout << "energy:" << endl;
-   for (int i = 0; i<100; i++) cout << this->energy[i] << " " ;
-   vysledek.open("energy" + to_string(step) + ".txt");
-      for (int i = 0; i<101; i++)
-      vysledek << 0.01*i << " " << energy[i] << endl;
+   for (IndexType i = 0; i<100; i++) cout << this->uEnergy[i] << " " ;
+      vysledek.open("energy" + to_string(step) + ".txt");
+   for (IndexType i = 0; i<101; i++)
+      vysledek << 0.01*i << " " << uEnergy[i] << endl;
    vysledek.close();
    cout << " " << endl;
    cout << "density:" << endl;
-   for (int i = 0; i<100; i++) cout << this->rho[i] << " " ;
-   vysledek.open("density" + to_string(step) + ".txt");
-      for (int i = 0; i<101; i++)
-      vysledek << 0.01*i << " " << rho[i] << endl;
+   for (IndexType i = 0; i<100; i++) cout << this->uRho[i] << " " ;
+      vysledek.open("density" + to_string(step) + ".txt");
+   for (IndexType i = 0; i<101; i++)
+      vysledek << 0.01*i << " " << uRho[i] << endl;
    vysledek.close();
    getchar();
 
    FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
-   if( ! rho.save( fileName ) )
+   if( ! uRho.save( fileName ) )
       return false;
    FileNameBaseNumberEnding( "rhoVel-", step, 5, ".tnl", fileName );
-   if( ! rhoVel.save( fileName ) )
+   if( ! uRhoVelocity.save( fileName ) )
       return false;
    FileNameBaseNumberEnding( "energy-", step, 5, ".tnl", fileName );
-   if( ! energy.save( fileName ) )
-      return false;*/
+   if( ! uEnergy.save( fileName ) )
+      return false;
    return true;
 }
 
@@ -244,17 +246,17 @@ getExplicitRHS( const RealType& time,
                 MeshDependentDataType& meshDependentData )
 {
     typedef typename MeshType::Cell Cell;
-    int count = mesh.template getEntitiesCount< Cell >(); ///3;
-/*	//bind _u
-    this->uRho.bind(_u,0,count);
-    this->uRhoVelocity.bind(_u,count,count);
-    this->uEnergy.bind(_u,2 * count,count);
+    int count = mesh.template getEntitiesCount< Cell >();
+	//bind _u
+    this->uRho.bind(mesh, _u, 0);
+    this->uRhoVelocity.bind(mesh, _u ,count);
+    this->uEnergy.bind(mesh, _u, 2 * count);
 		
 	//bind _fu
-    this->fuRho.bind(_u,0,count);
-    this->fuRhoVelocity.bind(_u,count,count);
-    fuEnergy.bind(_u,2 * count,count);
-*/
+    this->fuRho.bind(mesh, _u, 0);
+    this->fuRhoVelocity.bind(mesh, _u, count);
+    this->fuEnergy.bind(mesh, _u, 2 * count);
+
    //generating Differential operator object
    Continuity lF1DContinuity;
    Momentum lF1DMomentum;
@@ -362,10 +364,10 @@ postIterate( const RealType& time,
    this->velocity.setMesh( mesh );
    Velocity velocityGetter( uRho, uRhoVelocity );
    this->velocity = velocityGetter;
-/*   //pressure
+   //pressure
    this->pressure.setMesh( mesh );
-   Pressure pressureGetter( velocity, RhoVelocity, Energy, gamma );
-   this->pressure = pressureGetter; */
+   Pressure pressureGetter( uRho, uRhoVelocity, uEnergy, gamma );
+   this->pressure = pressureGetter;
 }
 
 #endif /* eulerPROBLEM_IMPL_H_ */
