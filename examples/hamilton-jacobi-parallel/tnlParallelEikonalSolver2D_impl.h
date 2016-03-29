@@ -25,7 +25,7 @@ template< typename SchemeHost, typename SchemeDevice, typename Device>
 tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::tnlParallelEikonalSolver()
 {
 	cout << "a" << endl;
-	this->device = tnlCudaDevice;  /////////////// tnlCuda Device --- vypocet na GPU, tnlHostDevice   ---    vypocet na CPU
+	this->device = tnlHostDevice;  /////////////// tnlCuda Device --- vypocet na GPU, tnlHostDevice   ---    vypocet na CPU
 
 #ifdef HAVE_CUDA
 	if(this->device == tnlCudaDevice)
@@ -168,7 +168,8 @@ bool tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 		if(containsCurve)
 		{
 			//cout << "Computing initial SDF on subgrid " << i << "." << endl;
-			insertSubgrid(runSubgrid(0, tmp[i],i), i);
+			tmp[i] = runSubgrid(0, tmp[i],i);
+			insertSubgrid(tmp[i], i);
 			setSubgridValue(i, 4);
 			//cout << "Computed initial SDF on subgrid " << i  << "." << endl;
 		}
@@ -249,6 +250,8 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 		{
 			if(getSubgridValue(i) != INT_MAX)
 			{
+				VectorType tmp;
+				tmp.setSize(this->n * this->n);
 				//cout << "subMesh: " << i << ", BC: " << getBoundaryCondition(i) << endl;
 
 				if(getSubgridValue(i) == currentStep+4)
@@ -256,22 +259,30 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 
 				if(getBoundaryCondition(i) & 1)
 				{
-					insertSubgrid( runSubgrid(1, getSubgrid(i),i), i);
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(1, tmp ,i);
+					insertSubgrid( tmp, i);
 					this->calculationsCount[i]++;
 				}
 				if(getBoundaryCondition(i) & 2)
 				{
-					insertSubgrid( runSubgrid(2, getSubgrid(i),i), i);
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(1, tmp ,i);
+					insertSubgrid( tmp, 2);
 					this->calculationsCount[i]++;
 				}
 				if(getBoundaryCondition(i) & 4)
 				{
-					insertSubgrid( runSubgrid(4, getSubgrid(i),i), i);
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(4, tmp ,i);
+					insertSubgrid( tmp, i);
 					this->calculationsCount[i]++;
 				}
 				if(getBoundaryCondition(i) & 8)
 				{
-					insertSubgrid( runSubgrid(8, getSubgrid(i),i), i);
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(8, tmp ,i);
+					insertSubgrid( tmp, i);
 					this->calculationsCount[i]++;
 				}
 				}
@@ -280,25 +291,33 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 					/*	&&(!(getBoundaryCondition(i) & 5) && !(getBoundaryCondition(i) & 10)) */)
 				{
 					//cout << "3 @ " << getBoundaryCondition(i) << endl;
-					insertSubgrid( runSubgrid(3, getSubgrid(i),i), i);
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(1, tmp ,i);
+					insertSubgrid( tmp, 3);
 				}
 				if( ((getBoundaryCondition(i) & 4) )|| (getBoundaryCondition(i) & 1)//)
 					/*	&&(!(getBoundaryCondition(i) & 3) && !(getBoundaryCondition(i) & 12)) */)
 				{
 					//cout << "5 @ " << getBoundaryCondition(i) << endl;
-					insertSubgrid( runSubgrid(5, getSubgrid(i),i), i);
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(5, tmp ,i);
+					insertSubgrid( tmp, i);
 				}
 				if( ((getBoundaryCondition(i) & 2) )|| (getBoundaryCondition(i) & 8)//)
 					/*	&&(!(getBoundaryCondition(i) & 12) && !(getBoundaryCondition(i) & 3))*/ )
 				{
 					//cout << "10 @ " << getBoundaryCondition(i) << endl;
-					insertSubgrid( runSubgrid(10, getSubgrid(i),i), i);
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(10, tmp ,i);
+					insertSubgrid( tmp, i);
 				}
 				if(   ((getBoundaryCondition(i) & 4) )|| (getBoundaryCondition(i) & 8)//)
 					/*&&(!(getBoundaryCondition(i) & 10) && !(getBoundaryCondition(i) & 5)) */)
 				{
 					//cout << "12 @ " << getBoundaryCondition(i) << endl;
-					insertSubgrid( runSubgrid(12, getSubgrid(i),i), i);
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(12, tmp ,i);
+					insertSubgrid( tmp, i);
 				}
 
 
@@ -659,7 +678,10 @@ void tnlParallelEikonalSolver<2,SchemeHost, SchemeDevice, Device, double, int>::
 
 	for( int j = 0; j < this->n*this->n; j++)
 	{
-		int index = (i / this->gridCols)*this->n*this->n*this->gridCols + (i % this->gridCols)*this->n + (j/this->n)*this->n*this->gridCols + (j % this->n);
+		int index = (i / this->gridCols)*this->n*this->n*this->gridCols
+					+ (i % this->gridCols)*this->n
+					+ (j/this->n)*this->n*this->gridCols
+					+ (j % this->n);
 		//OMP LOCK index
 		if( (fabs(this->work_u[index]) > fabs(u[j])) || (this->unusedCell[index] == 1) )
 		{

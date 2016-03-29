@@ -90,7 +90,7 @@ public:
 
 	void insertSubgrid( VectorType u, const int i );
 
-	VectorType runSubgrid( int boundaryCondition, VectorType u, int subGridID);
+	VectorType runSubgrid( int boundaryCondition, VectorType u, int subGridID,VectorType map);
 
 
 	tnlMeshFunction<MeshType> u0;

@@ -145,7 +145,8 @@ Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, 
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Vector& u,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType boundaryCondition,
-          	  	  	  	  	  	  	  	  	  	                     const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities ) const
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities,
+          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Vector& map) const
 {
 
 
@@ -164,15 +165,22 @@ Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, 
 	}
 
 
-	//-----------------------------------
-
 	RealType signui;
-	signui = sign(u[cellIndex],this->epsilon);
+//	if(boundaryCondition == 0)
+		signui = sign(u[cellIndex],/*(boundaryCondition != 0) * */this->epsilon);
+//	else
+//		signui = Sign(u[cellIndex]);
 
+	RealType value;
+//	if(map[cellIndex] == 0.0)
+//	{
+////		value = INT_MAX;
+//		u[cellIndex] = Sign(u[cellIndex])*INT_MAX;
+//		return 0.0;
+//	}
+//	else
+		value = 50.0/ map[cellIndex];
 
-#ifdef HAVE_CUDA
-	//printf("%d   :    %d ;;;; %d   :   %d  , %f \n",threadIdx.x, mesh.getDimensions().x() , threadIdx.y,mesh.getDimensions().y(), epsilon );
-#endif
 
 	RealType xb = u[cellIndex];
 	RealType xf = -u[cellIndex];
@@ -202,11 +210,6 @@ Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, 
 		   yb -= u[neighbourEntities.template getEntityIndex< 0,  -1 >()];
 
 
-	   //xb *= ihx;
-	   //xf *= ihx;
-	  // yb *= ihy;
-	   //yf *= ihy;
-
 	   if(signui > 0.0)
 	   {
 		   xf = negativePart(xf);
@@ -230,6 +233,15 @@ Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, 
 		   yf = positivePart(yf);
 	   }
 
+	   /*if(boundaryCondition &1)
+		   yb = 0.0;
+	   else
+		   yf = 0.0;
+
+	   if(boundaryCondition & 2)
+		   xb = 0.0;
+	   else
+		   xf = 0.0;*/
 
 	   if(xb - xf > 0.0)
 		   a = xb;
@@ -241,140 +253,13 @@ Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, 
 	   else
 		   b = yf;
 
-	   c =(1.0 - sqrt(a*a+b*b)*ihx );
+	   c =(value - sqrt(a*a+b*b)*ihx );
 
-	   if(Sign(c) > 0.0 )
+	   if(c > 0.0 )
 		   return Sign(u[cellIndex])*c;
 	   else
-		   return signui*c;
 
-	   //--------------------------------------------------
-
-//
-//
-//
-//	RealType acc = hx*hy*hx*hy;
-//
-//	RealType nabla, xb, xf, yb, yf, signui;
-//
-//	signui = sign(u[cellIndex],this->epsilon);
-//
-//
-//	//if(fabs(u[cellIndex]) < acc) return 0.0;
-//
-//	   if(signui > 0.0)
-//	   {
-//	/**/ /*  if(boundaryCondition & 2)
-//			   xf = (u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])/hx;
-//		   else *//*if(boundaryCondition & 4)
-//			   xf = 0.0;
-//		   else /**/if(coordinates.x() == mesh.getDimensions().x() - 1)
-//			   xf = negativePart((u[neighbourEntities.template getEntityIndex< -1,  0 >()] - u[cellIndex])*ihx);
-//		   else
-//			   xf = negativePart((u[neighbourEntities.template getEntityIndex< 1,  0 >()] - u[cellIndex])*ihx);
-//
-//	/**/ /*  if(boundaryCondition & 4)
-//			   xb = (u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])*ihx;
-//		   else *//*if(boundaryCondition & 2)
-//			   xb = 0.0;
-//		   else /**/if(coordinates.x() == 0)
-//			   xb = positivePart((u[cellIndex] - u[mesh.template getCellNextToCell<+1,0>( cellIndex )])*ihx);
-//		   else
-//			   xb = positivePart((u[cellIndex] - u[neighbourEntities.template getEntityIndex< -1,  0 >()])*ihx);
-//
-//	/**/  /* if(boundaryCondition & 1)
-//			   yf = (u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])*ihy;
-//		   else *//*if(boundaryCondition & 8)
-//			   yf = 0.0;
-//		   else /**/if(coordinates.y() == mesh.getDimensions().y() - 1)
-//			   yf = negativePart((u[neighbourEntities.template getEntityIndex< 0,  -1 >()] - u[cellIndex])*ihy);
-//		   else
-//			   yf = negativePart((u[neighbourEntities.template getEntityIndex< 0,  1 >()] - u[cellIndex])*ihy);
-//
-//	/**/  /* if(boundaryCondition & 8)
-//			   yb = (u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])*ihy;
-//		   else *//*if(boundaryCondition & 1)
-//			   yb = 0.0;
-//		   else /**/if(coordinates.y() == 0)
-//			   yb = positivePart((u[cellIndex] - u[neighbourEntities.template getEntityIndex< 0,  1 >()])*ihy);
-//		   else
-//			   yb = positivePart((u[cellIndex] - u[neighbourEntities.template getEntityIndex< 0,  -1 >()])*ihy);
-//
-//		   if(xb - xf > 0.0)
-//			   xf = 0.0;
-//		   else
-//			   xb = 0.0;
-//
-//		   if(yb - yf > 0.0)
-//			   yf = 0.0;
-//		   else
-//			   yb = 0.0;
-//
-//		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
-//		   if(fabs(1.0-nabla) < acc)
-//			   return 0.0;
-//		   return signui*(1.0 - nabla);
-//	   }
-//	   else if (signui < 0.0)
-//	   {
-//
-//	/**/  /* if(boundaryCondition & 2)
-//			   xf = (u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])*ihx;
-//		   else*//* if(boundaryCondition & 4)
-//			   xf = 0.0;
-//		   else /**/if(coordinates.x() == mesh.getDimensions().x() - 1)
-//			   xf = positivePart((u[neighbourEntities.template getEntityIndex< -1,  0 >()] - u[cellIndex])*ihx);
-//		   else
-//			   xf = positivePart((u[neighbourEntities.template getEntityIndex< 1,  0 >()] - u[cellIndex])*ihx);
-//
-//	/**/  /* if(boundaryCondition & 4)
-//			   xb = (u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])*ihx;
-//		   else*//* if(boundaryCondition & 2)
-//			   xb = 0.0;
-//		   else /**/if(coordinates.x() == 0)
-//			   xb = negativePart((u[cellIndex] - u[neighbourEntities.template getEntityIndex< 1,  0 >()])*ihx);
-//		   else
-//			   xb = negativePart((u[cellIndex] - u[neighbourEntities.template getEntityIndex< -1,  0 >()])*ihx);
-//
-//	/**/ /*  if(boundaryCondition & 1)
-//			   yf = (u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])*ihy;
-//		   else *//*if(boundaryCondition & 8)
-//			   yf = 0.0;
-//		   else /**/if(coordinates.y() == mesh.getDimensions().y() - 1)
-//			   yf = positivePart((u[neighbourEntities.template getEntityIndex< 0,  -1 >()] - u[cellIndex])*ihy);
-//		   else
-//			   yf = positivePart((u[neighbourEntities.template getEntityIndex< 0,  1 >()] - u[cellIndex])*ihy);
-//
-//	/**/  /* if(boundaryCondition & 8)
-//			   yb = (u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])*ihy;
-//		   else*//* if(boundaryCondition & 1)
-//			   yb = 0.0;
-//		   else /**/if(coordinates.y() == 0)
-//			   yb = negativePart((u[cellIndex] - u[neighbourEntities.template getEntityIndex< 0,  1 >()])*ihy);
-//		   else
-//			   yb = negativePart((u[cellIndex] - u[neighbourEntities.template getEntityIndex< 0,  -1 >()])*ihy);
-//
-//
-//		   if(xb - xf > 0.0)
-//			   xf = 0.0;
-//		   else
-//			   xb = 0.0;
-//
-//		   if(yb - yf > 0.0)
-//			   yf = 0.0;
-//		   else
-//			   yb = 0.0;
-//
-//		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
-//
-//		   if(fabs(1.0-nabla) < acc)
-//			   return 0.0;
-//		   return signui*(1.0 - nabla);
-//	   }
-//	   else
-//	   {
-//		   return 0.0;
-//	   }
+	   return signui*c;
 
 }
 

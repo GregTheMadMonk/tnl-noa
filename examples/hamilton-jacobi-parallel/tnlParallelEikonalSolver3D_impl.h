@@ -148,33 +148,43 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 
 	if(this->device == tnlHostDevice)
 	{
-	for(int i = 0; i < this->subgridValues.getSize(); i++)
-	{
-
-		if(! tmp[i].setSize(this->n * this->n*this->n))
-			cout << "Could not allocate tmp["<< i <<"] array." << endl;
-		tmp[i] = getSubgrid(i);
-		containsCurve = false;
-
-		for(int j = 0; j < tmp[i].getSize(); j++)
+		for(int i = 0; i < this->subgridValues.getSize(); i++)
 		{
-			if(tmp[i][0]*tmp[i][j] <= 0.0)
+//			cout << "Working on subgrid " << i <<" --- check 1" << endl;
+
+			if(! tmp[i].setSize(this->n*this->n*this->n))
+				cout << "Could not allocate tmp["<< i <<"] array." << endl;
+//			cout << "Working on subgrid " << i <<" --- check 2" << endl;
+
+			tmp[i] = getSubgrid(i);
+			containsCurve = false;
+//			cout << "Working on subgrid " << i <<" --- check 3" << endl;
+
+
+			for(int j = 0; j < tmp[i].getSize(); j++)
 			{
-				containsCurve = true;
-				j=tmp[i].getSize();
+				if(tmp[i][0]*tmp[i][j] <= 0.0)
+				{
+					containsCurve = true;
+					j=tmp[i].getSize();
+//					cout << tmp[i][0] << " " << tmp[i][j] << endl;
+				}
+
 			}
+//			cout << "Working on subgrid " << i <<" --- check 4" << endl;
+
+			if(containsCurve)
+			{
+//				cout << "Computing initial SDF on subgrid " << i << "." << endl;
+				tmp[i] = runSubgrid(0, tmp[i] ,i);
+				insertSubgrid( tmp[i], i);
+				setSubgridValue(i, 4);
+//				cout << "Computed initial SDF on subgrid " << i  << "." << endl;
+			}
+			containsCurve = false;
 
 		}
-		if(containsCurve)
-		{
-			//cout << "Computing initial SDF on subgrid " << i << "." << endl;
-			insertSubgrid(runSubgrid(0, tmp[i],i), i);
-			setSubgridValue(i, 4);
-			//cout << "Computed initial SDF on subgrid " << i  << "." << endl;
-		}
-		containsCurve = false;
-
-	}
+//		cout << "CPU: Curve found" << endl;
 	}
 #ifdef HAVE_CUDA
 	else if(this->device == tnlCudaDevice)
@@ -247,6 +257,8 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 #endif
 		for(int i = 0; i < this->subgridValues.getSize(); i++)
 		{
+			VectorType tmp;
+			tmp.setSize(this->n*this->n*this->n);
 			if(getSubgridValue(i) != INT_MAX)
 			{
 				//cout << "subMesh: " << i << ", BC: " << getBoundaryCondition(i) << endl;
@@ -254,61 +266,102 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 				if(getSubgridValue(i) == currentStep+4)
 				{
 
-				if(getBoundaryCondition(i) & 1)
-				{
-					insertSubgrid( runSubgrid(1, getSubgrid(i),i), i);
-					this->calculationsCount[i]++;
-				}
-				if(getBoundaryCondition(i) & 2)
-				{
-					insertSubgrid( runSubgrid(2, getSubgrid(i),i), i);
-					this->calculationsCount[i]++;
-				}
-				if(getBoundaryCondition(i) & 4)
-				{
-					insertSubgrid( runSubgrid(4, getSubgrid(i),i), i);
-					this->calculationsCount[i]++;
-				}
-				if(getBoundaryCondition(i) & 8)
-				{
-					insertSubgrid( runSubgrid(8, getSubgrid(i),i), i);
-					this->calculationsCount[i]++;
-				}
-				}
-
-				if( ((getBoundaryCondition(i) & 2) )|| (getBoundaryCondition(i) & 1)//)
-					/*	&&(!(getBoundaryCondition(i) & 5) && !(getBoundaryCondition(i) & 10)) */)
-				{
-					//cout << "3 @ " << getBoundaryCondition(i) << endl;
-					insertSubgrid( runSubgrid(3, getSubgrid(i),i), i);
-				}
-				if( ((getBoundaryCondition(i) & 4) )|| (getBoundaryCondition(i) & 1)//)
-					/*	&&(!(getBoundaryCondition(i) & 3) && !(getBoundaryCondition(i) & 12)) */)
-				{
-					//cout << "5 @ " << getBoundaryCondition(i) << endl;
-					insertSubgrid( runSubgrid(5, getSubgrid(i),i), i);
-				}
-				if( ((getBoundaryCondition(i) & 2) )|| (getBoundaryCondition(i) & 8)//)
-					/*	&&(!(getBoundaryCondition(i) & 12) && !(getBoundaryCondition(i) & 3))*/ )
-				{
-					//cout << "10 @ " << getBoundaryCondition(i) << endl;
-					insertSubgrid( runSubgrid(10, getSubgrid(i),i), i);
-				}
-				if(   ((getBoundaryCondition(i) & 4) )|| (getBoundaryCondition(i) & 8)//)
-					/*&&(!(getBoundaryCondition(i) & 10) && !(getBoundaryCondition(i) & 5)) */)
-				{
-					//cout << "12 @ " << getBoundaryCondition(i) << endl;
-					insertSubgrid( runSubgrid(12, getSubgrid(i),i), i);
+					if(getBoundaryCondition(i) & 1)
+					{
+						tmp = getSubgrid(i);
+						tmp = runSubgrid(1, tmp ,i);
+						insertSubgrid( tmp, i);
+						this->calculationsCount[i]++;
+					}
+					if(getBoundaryCondition(i) & 2)
+					{
+						tmp = getSubgrid(i);
+						tmp = runSubgrid(2, tmp ,i);
+						insertSubgrid( tmp, i);
+						this->calculationsCount[i]++;
+					}
+					if(getBoundaryCondition(i) & 4)
+					{
+						tmp = getSubgrid(i);
+						tmp = runSubgrid(4, tmp ,i);
+						insertSubgrid( tmp, i);
+						this->calculationsCount[i]++;
+					}
+					if(getBoundaryCondition(i) & 8)
+					{
+						tmp = getSubgrid(i);
+						tmp = runSubgrid(8, tmp ,i);
+						insertSubgrid( tmp, i);
+						this->calculationsCount[i]++;
+					}
+					if(getBoundaryCondition(i) & 16)
+					{
+						tmp = getSubgrid(i);
+						tmp = runSubgrid(16, tmp ,i);
+						insertSubgrid( tmp, i);
+						this->calculationsCount[i]++;
+					}
+					if(getBoundaryCondition(i) & 32)
+					{
+						tmp = getSubgrid(i);
+						tmp = runSubgrid(32, tmp ,i);
+						insertSubgrid( tmp, i);
+						this->calculationsCount[i]++;
+					}
 				}
 
-
-				/*if(getBoundaryCondition(i))
+				if( getBoundaryCondition(i) & 19)
 				{
-					insertSubgrid( runSubgrid(15, getSubgrid(i),i), i);
-				}*/
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(19, tmp ,i);
+					insertSubgrid( tmp, i);
+				}
+				if( getBoundaryCondition(i) & 21)
+				{
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(21, tmp ,i);
+					insertSubgrid( tmp, i);
+				}
+				if( getBoundaryCondition(i) & 26)
+				{
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(26, tmp ,i);
+					insertSubgrid( tmp, i);
+				}
+				if( getBoundaryCondition(i) & 28)
+				{
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(28, tmp ,i);
+					insertSubgrid( tmp, i);
+				}
+
+				if( getBoundaryCondition(i) & 35)
+				{
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(35, tmp ,i);
+					insertSubgrid( tmp, i);
+				}
+				if( getBoundaryCondition(i) & 37)
+				{
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(37, tmp ,i);
+					insertSubgrid( tmp, i);
+				}
+				if( getBoundaryCondition(i) & 42)
+				{
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(42, tmp ,i);
+					insertSubgrid( tmp, i);
+				}
+				if( getBoundaryCondition(i) & 44)
+				{
+					tmp = getSubgrid(i);
+					tmp = runSubgrid(44, tmp ,i);
+					insertSubgrid( tmp, i);
+				}
+
 
 				setBoundaryCondition(i, 0);
-
 				setSubgridValue(i, getSubgridValue(i)-1);
 
 			}
@@ -413,81 +466,147 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	int tmp1, tmp2;
 	int grid1, grid2;
 
-	if(this->currentStep & 1)
-	{
+//	if(this->currentStep & 1)
+//	{
 		for(int j = 0; j < this->gridRows - 1; j++)
 		{
 			for (int i = 0; i < this->gridCols*this->n; i++)
 			{
-				tmp1 = this->gridCols*this->n*((this->n-1)+j*this->n) + i;
-				tmp2 = this->gridCols*this->n*((this->n)+j*this->n) + i;
-				grid1 = getSubgridValue(getOwner(tmp1));
-				grid2 = getSubgridValue(getOwner(tmp2));
-				if(getOwner(tmp1)==getOwner(tmp2))
-					cout << "i, j" << i << "," << j << endl;
-				if ((fabs(this->work_u[tmp1]) < fabs(this->work_u[tmp2]) - this->delta || grid2 == INT_MAX || grid2 == -INT_MAX) && (grid1 != INT_MAX && grid1 != -INT_MAX))
+				for (int k = 0; k < this->gridLevels*this->n; k++)
 				{
-					this->work_u[tmp2] = this->work_u[tmp1];
-					this->unusedCell[tmp2] = 0;
-					if(grid2 == INT_MAX)
+//					cout << "a" << endl;
+					tmp1 = this->gridCols*this->n*((this->n-1)+j*this->n) + i + k*this->gridCols*this->n*this->gridRows*this->n;
+//					cout << "b" << endl;
+					tmp2 = this->gridCols*this->n*((this->n)+j*this->n) + i + k*this->gridCols*this->n*this->gridRows*this->n;
+//					cout << "c" << endl;
+					if(tmp1 > work_u.getSize())
+						cout << "tmp1: " << tmp1 << " x: " << j <<" y: " << i <<" z: " << k << endl;
+					if(tmp2 > work_u.getSize())
+						cout << "tmp2: " << tmp2 << " x: " << j <<" y: " << i <<" z: " << k << endl;
+					grid1 = getSubgridValue(getOwner(tmp1));
+//					cout << "d" << endl;
+					grid2 = getSubgridValue(getOwner(tmp2));
+//					cout << "e" << endl;
+					if(getOwner(tmp1)==getOwner(tmp2))
+						cout << "i, j, k" << i << "," << j << "," << k << endl;
+					if ((fabs(this->work_u[tmp1]) < fabs(this->work_u[tmp2]) - this->delta || grid2 == INT_MAX || grid2 == -INT_MAX) && (grid1 != INT_MAX && grid1 != -INT_MAX))
 					{
-						setSubgridValue(getOwner(tmp2), -INT_MAX);
+						this->work_u[tmp2] = this->work_u[tmp1];
+//						cout << "f" << endl;
+						this->unusedCell[tmp2] = 0;
+//						cout << "g" << endl;
+						if(grid2 == INT_MAX)
+						{
+							setSubgridValue(getOwner(tmp2), -INT_MAX);
+						}
+//						cout << "h" << endl;
+						if(! (getBoundaryCondition(getOwner(tmp2)) & 8) )
+							setBoundaryCondition(getOwner(tmp2), getBoundaryCondition(getOwner(tmp2))+8);
+//						cout << "i" << endl;
 					}
-					if(! (getBoundaryCondition(getOwner(tmp2)) & 8) )
-						setBoundaryCondition(getOwner(tmp2), getBoundaryCondition(getOwner(tmp2))+8);
-				}
-				else if ((fabs(this->work_u[tmp1]) > fabs(this->work_u[tmp2]) + this->delta || grid1 == INT_MAX || grid1 == -INT_MAX) && (grid2 != INT_MAX && grid2 != -INT_MAX))
-				{
-					this->work_u[tmp1] = this->work_u[tmp2];
-					this->unusedCell[tmp1] = 0;
-					if(grid1 == INT_MAX)
+					else if ((fabs(this->work_u[tmp1]) > fabs(this->work_u[tmp2]) + this->delta || grid1 == INT_MAX || grid1 == -INT_MAX) && (grid2 != INT_MAX && grid2 != -INT_MAX))
 					{
-						setSubgridValue(getOwner(tmp1), -INT_MAX);
+						this->work_u[tmp1] = this->work_u[tmp2];
+//						cout << "j" << endl;
+						this->unusedCell[tmp1] = 0;
+//						cout << "k" << endl;
+						if(grid1 == INT_MAX)
+						{
+							setSubgridValue(getOwner(tmp1), -INT_MAX);
+						}
+//						cout << "l" << endl;
+						if(! (getBoundaryCondition(getOwner(tmp1)) & 1) )
+							setBoundaryCondition(getOwner(tmp1), getBoundaryCondition(getOwner(tmp1))+1);
+//						cout << "m" << endl;
 					}
-					if(! (getBoundaryCondition(getOwner(tmp1)) & 1) )
-						setBoundaryCondition(getOwner(tmp1), getBoundaryCondition(getOwner(tmp1))+1);
 				}
 			}
 		}
 
-	}
-	else
-	{
+//	}
+//	else
+//	{
+
+		cout << "sync 2" << endl;
 		for(int i = 1; i < this->gridCols; i++)
 		{
 			for (int j = 0; j < this->gridRows*this->n; j++)
 			{
-				tmp1 = this->gridCols*this->n*j + i*this->n - 1;
-				tmp2 = this->gridCols*this->n*j + i*this->n ;
-				grid1 = getSubgridValue(getOwner(tmp1));
-				grid2 = getSubgridValue(getOwner(tmp2));
-				if(getOwner(tmp1)==getOwner(tmp2))
-					cout << "i, j" << i << "," << j << endl;
-				if ((fabs(this->work_u[tmp1]) < fabs(this->work_u[tmp2]) - this->delta || grid2 == INT_MAX || grid2 == -INT_MAX) && (grid1 != INT_MAX && grid1 != -INT_MAX))
+				for (int k = 0; k < this->gridLevels*this->n; k++)
 				{
-					this->work_u[tmp2] = this->work_u[tmp1];
-					this->unusedCell[tmp2] = 0;
-					if(grid2 == INT_MAX)
+					tmp1 = this->gridCols*this->n*j + i*this->n - 1 + k*this->gridCols*this->n*this->gridRows*this->n;
+					tmp2 = this->gridCols*this->n*j + i*this->n + k*this->gridCols*this->n*this->gridRows*this->n;
+					grid1 = getSubgridValue(getOwner(tmp1));
+					grid2 = getSubgridValue(getOwner(tmp2));
+					if(getOwner(tmp1)==getOwner(tmp2))
+						cout << "i, j, k" << i << "," << j << "," << k << endl;
+					if ((fabs(this->work_u[tmp1]) < fabs(this->work_u[tmp2]) - this->delta || grid2 == INT_MAX || grid2 == -INT_MAX) && (grid1 != INT_MAX && grid1 != -INT_MAX))
 					{
-						setSubgridValue(getOwner(tmp2), -INT_MAX);
+						this->work_u[tmp2] = this->work_u[tmp1];
+						this->unusedCell[tmp2] = 0;
+						if(grid2 == INT_MAX)
+						{
+							setSubgridValue(getOwner(tmp2), -INT_MAX);
+						}
+						if(! (getBoundaryCondition(getOwner(tmp2)) & 4) )
+							setBoundaryCondition(getOwner(tmp2), getBoundaryCondition(getOwner(tmp2))+4);
 					}
-					if(! (getBoundaryCondition(getOwner(tmp2)) & 4) )
-						setBoundaryCondition(getOwner(tmp2), getBoundaryCondition(getOwner(tmp2))+4);
-				}
-				else if ((fabs(this->work_u[tmp1]) > fabs(this->work_u[tmp2]) + this->delta || grid1 == INT_MAX || grid1 == -INT_MAX) && (grid2 != INT_MAX && grid2 != -INT_MAX))
-				{
-					this->work_u[tmp1] = this->work_u[tmp2];
-					this->unusedCell[tmp1] = 0;
-					if(grid1 == INT_MAX)
+					else if ((fabs(this->work_u[tmp1]) > fabs(this->work_u[tmp2]) + this->delta || grid1 == INT_MAX || grid1 == -INT_MAX) && (grid2 != INT_MAX && grid2 != -INT_MAX))
 					{
-						setSubgridValue(getOwner(tmp1), -INT_MAX);
+						this->work_u[tmp1] = this->work_u[tmp2];
+						this->unusedCell[tmp1] = 0;
+						if(grid1 == INT_MAX)
+						{
+							setSubgridValue(getOwner(tmp1), -INT_MAX);
+						}
+						if(! (getBoundaryCondition(getOwner(tmp1)) & 2) )
+							setBoundaryCondition(getOwner(tmp1), getBoundaryCondition(getOwner(tmp1))+2);
 					}
-					if(! (getBoundaryCondition(getOwner(tmp1)) & 2) )
-						setBoundaryCondition(getOwner(tmp1), getBoundaryCondition(getOwner(tmp1))+2);
 				}
 			}
 		}
-	}
+
+		cout << "sync 3" << endl;
+
+		for(int k = 1; k < this->gridLevels; k++)
+		{
+			for (int j = 0; j < this->gridRows*this->n; j++)
+			{
+				for (int i = 0; i < this->gridCols*this->n; i++)
+				{
+					tmp1 = this->gridCols*this->n*j + i + (k*this->n-1)*this->gridCols*this->n*this->gridRows*this->n;
+					tmp2 = this->gridCols*this->n*j + i + k*this->n*this->gridCols*this->n*this->gridRows*this->n;
+					grid1 = getSubgridValue(getOwner(tmp1));
+					grid2 = getSubgridValue(getOwner(tmp2));
+					if(getOwner(tmp1)==getOwner(tmp2))
+						cout << "i, j, k" << i << "," << j << "," << k << endl;
+					if ((fabs(this->work_u[tmp1]) < fabs(this->work_u[tmp2]) - this->delta || grid2 == INT_MAX || grid2 == -INT_MAX) && (grid1 != INT_MAX && grid1 != -INT_MAX))
+					{
+						this->work_u[tmp2] = this->work_u[tmp1];
+						this->unusedCell[tmp2] = 0;
+						if(grid2 == INT_MAX)
+						{
+							setSubgridValue(getOwner(tmp2), -INT_MAX);
+						}
+						if(! (getBoundaryCondition(getOwner(tmp2)) & 32) )
+							setBoundaryCondition(getOwner(tmp2), getBoundaryCondition(getOwner(tmp2))+32);
+					}
+					else if ((fabs(this->work_u[tmp1]) > fabs(this->work_u[tmp2]) + this->delta || grid1 == INT_MAX || grid1 == -INT_MAX) && (grid2 != INT_MAX && grid2 != -INT_MAX))
+					{
+						this->work_u[tmp1] = this->work_u[tmp2];
+						this->unusedCell[tmp1] = 0;
+						if(grid1 == INT_MAX)
+						{
+							setSubgridValue(getOwner(tmp1), -INT_MAX);
+						}
+						if(! (getBoundaryCondition(getOwner(tmp1)) & 16) )
+							setBoundaryCondition(getOwner(tmp1), getBoundaryCondition(getOwner(tmp1))+16);
+					}
+				}
+			}
+		}
+//		}
+
 
 
 	this->currentStep++;
@@ -507,7 +626,11 @@ template< typename SchemeHost, typename SchemeDevice, typename Device>
 int tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::getOwner(int i) const
 {
 
-	return (i / (this->gridCols*this->n*this->n))*this->gridCols + (i % (this->gridCols*this->n))/this->n;
+	int j = i % (this->gridCols*this->gridRows*this->n*this->n);
+
+	return ( (i / (this->gridCols*this->gridRows*this->n*this->n*this->n))*this->gridCols*this->gridRows
+			+ (j / (this->gridCols*this->n*this->n))*this->gridCols
+			+ (j % (this->gridCols*this->n))/this->n);
 }
 
 template< typename SchemeHost, typename SchemeDevice, typename Device>
@@ -648,15 +771,31 @@ template< typename SchemeHost, typename SchemeDevice, typename Device>
 typename tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::VectorType
 tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::getSubgrid( const int i ) const
 {
-	VectorType u;
-	u.setSize(this->n*this->n);
 
-	for( int j = 0; j < u.getSize(); j++)
+	VectorType u;
+	u.setSize(this->n*this->n*this->n);
+
+	int idx, idy, idz;
+	idz = i / (gridRows*this->gridCols);
+	idy = (i % (this->gridRows*this->gridCols)) / this->gridCols;
+	idx = i %  (this->gridCols);
+
+	for( int j = 0; j < this->n; j++)
 	{
-		u[j] = this->work_u[ (i / this->gridCols) * this->n*this->n*this->gridCols
-		                     + (i % this->gridCols) * this->n
-		                     + (j/this->n) * this->n*this->gridCols
-		                     + (j % this->n) ];
+	//	int index = (i / this->gridCols)*this->n*this->n*this->gridCols + (i % this->gridCols)*this->n + (j/this->n)*this->n*this->gridCols + (j % this->n);
+		for( int k = 0; k < this->n; k++)
+		{
+			for( int l = 0; l < this->n; l++)
+			{
+				int index = (idz*this->n + l) * this->n*this->n*this->gridCols*this->gridRows
+						 + (idy) * this->n*this->n*this->gridCols
+						 + (idx) * this->n
+						 + k * this->n*this->gridCols
+						 + j;
+
+				u[j + k*this->n  + l*this->n*this->n] = this->work_u[ index ];
+			}
+		}
 	}
 	return u;
 }
@@ -664,17 +803,35 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::getSu
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::insertSubgrid( VectorType u, const int i )
 {
+	int idx, idy, idz;
+	idz = i / (this->gridRows*this->gridCols);
+	idy = (i % (this->gridRows*this->gridCols)) / this->gridCols;
+	idx = i %  (this->gridCols);
 
-	for( int j = 0; j < this->n*this->n; j++)
+	for( int j = 0; j < this->n; j++)
 	{
-		int index = (i / this->gridCols)*this->n*this->n*this->gridCols + (i % this->gridCols)*this->n + (j/this->n)*this->n*this->gridCols + (j % this->n);
-		//OMP LOCK index
-		if( (fabs(this->work_u[index]) > fabs(u[j])) || (this->unusedCell[index] == 1) )
+	//	int index = (i / this->gridCols)*this->n*this->n*this->gridCols + (i % this->gridCols)*this->n + (j/this->n)*this->n*this->gridCols + (j % this->n);
+		for( int k = 0; k < this->n; k++)
 		{
-			this->work_u[index] = u[j];
-			this->unusedCell[index] = 0;
+			for( int l = 0; l < this->n; l++)
+			{
+
+				int index = (idz*this->n + l) * this->n*this->n*this->gridCols*this->gridRows
+						 + (idy) * this->n*this->n*this->gridCols
+						 + (idx) * this->n
+						 + k * this->n*this->gridCols
+						 + j;
+
+				//OMP LOCK index
+//				cout<< idx << " " << idy << " " << idz << " " << j << " " << k << " " << l << " " << idz << " " << unusedCell.getSize() << " " << u.getSize() << " " << index <<endl;
+				if( (fabs(this->work_u[index]) > fabs(u[j + k*this->n  + l*this->n*this->n])) || (this->unusedCell[index] == 1) )
+				{
+					this->work_u[index] = u[j + k*this->n  + l*this->n*this->n];
+					this->unusedCell[index] = 0;
+				}
+				//OMP UNLOCK index
+			}
 		}
-		//OMP UNLOCK index
 	}
 }
 
@@ -694,10 +851,15 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
 	{
 		if(u[0]*u[i] <= 0.0)
 			tmp=true;
-		int centreGID = (this->n*(subGridID / this->gridRows)+ (this->n >> 1))*(this->n*this->gridCols) + this->n*(subGridID % this->gridRows) + (this->n >> 1);
-		if(this->unusedCell[centreGID] == 0 || boundaryCondition == 0)
-			tmp = true;
 	}
+	int idx,idy,idz;
+	idz = subGridID / (this->gridRows*this->gridCols);
+	idy = (subGridID % (this->gridRows*this->gridCols)) / this->gridCols;
+	idx = subGridID %  (this->gridCols);
+	int centreGID = (this->n*idy + (this->n>>1) )*(this->n*this->gridCols) + this->n*idx + (this->n>>1)
+			      + ((this->n>>1)+this->n*idz)*this->n*this->n*this->gridRows*this->gridCols;
+	if(this->unusedCell[centreGID] == 0 || boundaryCondition == 0)
+		tmp = true;
 	//if(this->currentStep + 3 < getSubgridValue(subGridID))
 		//tmp = true;
 
@@ -713,35 +875,56 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
 	{
 		for(int i = 0; i < this->n; i++)
 			for(int j = 1;j < this->n; j++)
+				for(int k = 0;k < this->n; k++)
 				//if(fabs(u[i*this->n + j]) <  fabs(u[i*this->n]))
-				u[i*this->n + j] = value;// u[i*this->n];
+				u[k*this->n*this->n + i*this->n + j] = value;// u[i*this->n];
 	}
 	else if(boundaryCondition == 2)
 	{
 		for(int i = 0; i < this->n; i++)
 			for(int j =0 ;j < this->n -1; j++)
+				for(int k = 0;k < this->n; k++)
 				//if(fabs(u[i*this->n + j]) < fabs(u[(i+1)*this->n - 1]))
-				u[i*this->n + j] = value;// u[(i+1)*this->n - 1];
+				u[k*this->n*this->n + i*this->n + j] = value;// u[(i+1)*this->n - 1];
 	}
 	else if(boundaryCondition == 1)
 	{
 		for(int j = 0; j < this->n; j++)
 			for(int i = 0;i < this->n - 1; i++)
+				for(int k = 0;k < this->n; k++)
 				//if(fabs(u[i*this->n + j]) < fabs(u[j + this->n*(this->n - 1)]))
-				u[i*this->n + j] = value;// u[j + this->n*(this->n - 1)];
+				u[k*this->n*this->n + i*this->n + j] = value;// u[j + this->n*(this->n - 1)];
 	}
 	else if(boundaryCondition == 8)
 	{
 		for(int j = 0; j < this->n; j++)
 			for(int i = 1;i < this->n; i++)
+				for(int k = 0;k < this->n; k++)
 				//if(fabs(u[i*this->n + j]) < fabs(u[j]))
-				u[i*this->n + j] = value;// u[j];
+				u[k*this->n*this->n + i*this->n + j] = value;// u[j];
+	}
+	else if(boundaryCondition == 16)
+	{
+		for(int j = 0; j < this->n; j++)
+			for(int i = 0;i < this->n ; i++)
+				for(int k = 0;k < this->n-1; k++)
+				//if(fabs(u[i*this->n + j]) < fabs(u[j + this->n*(this->n - 1)]))
+				u[k*this->n*this->n + i*this->n + j] = value;// u[j + this->n*(this->n - 1)];
+	}
+	else if(boundaryCondition == 32)
+	{
+		for(int j = 0; j < this->n; j++)
+			for(int i = 0;i < this->n; i++)
+				for(int k = 1;k < this->n; k++)
+				//if(fabs(u[i*this->n + j]) < fabs(u[j]))
+				u[k*this->n*this->n + i*this->n + j] = value;// u[j];
 	}
 
 
    double time = 0.0;
    double currentTau = this->tau0;
    double finalTime = this->stopTime;// + 3.0*(u.max() - u.min());
+   if(boundaryCondition == 0) finalTime *= 2.0;
    if( time + currentTau > finalTime ) currentTau = finalTime - time;
 
    double maxResidue( 1.0 );
@@ -756,13 +939,19 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
 
       for( int i = 0; i < fu.getSize(); i ++ )
       {
+//    	  cout << "i: " << i << ", time: " << time <<endl;
     	  tnlStaticVector<3,int> coords(i % subMesh.getDimensions().x(),
-    	  								(i % subMesh.getDimensions().x()*subMesh.getDimensions().y())/ subMesh.getDimensions().x(),
-    	  								i / subMesh.getDimensions().x()*subMesh.getDimensions().y());
+    	  								(i % (subMesh.getDimensions().x()*subMesh.getDimensions().y())) / subMesh.getDimensions().x(),
+    	  								i / (subMesh.getDimensions().x()*subMesh.getDimensions().y()));
+//    	  	cout << "b " << i << " " << i % subMesh.getDimensions().x() << " " << (i % (subMesh.getDimensions().x()*subMesh.getDimensions().y())) << " " << (i % subMesh.getDimensions().x()*subMesh.getDimensions().y()) / subMesh.getDimensions().x() << " " << subMesh.getDimensions().x()*subMesh.getDimensions().y() << " " <<endl;
 			Entity.setCoordinates(coords);
+//			cout <<"c" << coords << endl;
 			Entity.refresh();
+//			cout << "d" <<endl;
 			neighbourEntities.refresh(subMesh,Entity.getIndex());
+//			cout << "e" <<endl;
     	  fu[ i ] = schemeHost.getValue( this->subMesh, i, coords,u, time, boundaryCondition, neighbourEntities );
+//    	  cout << "f" <<endl;
       }
       maxResidue = fu. absMax();
 
@@ -772,11 +961,8 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
 
      /* if (maxResidue < 0.05)
     	  cout << "Max < 0.05" << endl;*/
-      if(currentTau > 1.0 * this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >())
-      {
-    	  //cout << currentTau << " >= " << 2.0 * this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >() << endl;
-    	  currentTau = 1.0 * this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
-      }
+      if(currentTau > 0.5 * this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >())
+    	  currentTau = 0.5 * this->subMesh.template getSpaceStepsProducts< 1, 0, 0 >();
       /*if(maxResidue > lastResidue)
     	  currentTau *=(1.0/10.0);*/
 
@@ -807,13 +993,14 @@ tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::runSu
 	/*if (u.max() > 0.0)
 		this->stopTime /=(double) this->gridCols;*/
 
-	VectorType solution;
-	solution.setLike(u);
-    for( int i = 0; i < u.getSize(); i ++ )
-  	{
-    	solution[i]=u[i];
-   	}
-	return solution;
+//	VectorType solution;
+//	solution.setLike(u);
+//    for( int i = 0; i < u.getSize(); i ++ )
+//  	{
+//    	solution[i]=u[i];
+//   	}
+//	return solution;
+	return u;
 }
 
 

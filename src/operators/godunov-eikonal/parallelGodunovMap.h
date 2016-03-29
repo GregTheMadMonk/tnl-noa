@@ -150,7 +150,8 @@ public:
                    const Vector& u,
                    const RealType& time,
                    const IndexType boundaryCondition,
-                   const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities) const;
+                   const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities,
+                   const Vector& map) const;
 
  #ifdef HAVE_CUDA
     __device__
