@@ -184,11 +184,11 @@ template< typename Real, typename Device, typename Index >
 Real tnlFullMatrix< Real, Device, Index > :: rowProduct( const Index row,
                                                          const tnlVector< Real, Device, Index >& vec ) const
 {
-   tnlAssert( 0 <= row && row < this -> getSize(),
+   tnlAssert( 0 <= row && row < this->getSize(),
               cerr << "The row is outside the matrix." );
-   tnlAssert( vec. getSize() == this -> getSize(),
+   tnlAssert( vec. getSize() == this->getSize(),
               cerr << "The matrix and vector for multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << endl; );
 
    const Index size = getSize();
@@ -215,13 +215,13 @@ template< typename Real, typename Device, typename Index >
 void tnlFullMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real, Device, Index >& vec,
                                                             tnlVector< Real, Device, Index >& result ) const
 {
-   tnlAssert( vec. getSize() == this -> getSize(),
+   tnlAssert( vec. getSize() == this->getSize(),
               cerr << "The matrix and vector for a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << endl; );
-   tnlAssert( result. getSize() == this -> getSize(),
+   tnlAssert( result. getSize() == this->getSize(),
               cerr << "The matrix and result vector of a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << result. getSize() << endl; );
 
    const Index size = getSize();

@@ -291,31 +291,31 @@ getPartialDerivative( const VertexType& vertex,
    {
       case constant:
          return scale * ( ( tnlConstantFunction< Dimensions, Real >* ) function )->
-                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case expBump:
          return scale * ( ( tnlExpBumpFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinBumps:
          return scale * ( ( tnlSinBumpsFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinWave:
          return scale * ( ( tnlSinWaveFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case cylinder:
          return scale * ( ( tnlCylinderFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case flowerpot:
          return scale * ( ( tnlFlowerpotFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case twins:
          return scale * ( ( tnlTwinsFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case pseudoSquare:
          return scale * ( ( tnlPseudoSquareFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case blob:
          return scale * ( ( tnlBlobFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       default:
          return 0.0;
    }
@@ -476,17 +476,17 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 printFunction( ostream& str ) const
 {
    FunctionType* f = ( FunctionType* ) this->function;
-   switch( Device::DeviceType )
+   if( std::is_same< Device, tnlHost >::value )
    {
-      case tnlHostDevice:
-         str << *f;
-         return str;
-      case tnlCudaDevice:
-         tnlCuda::print( f, str );
-         return str;
-      default:
-         return str;
+      str << *f;
+      return str;
    }
+   if( std::is_same< Device, tnlCuda >::value )
+   {
+      tnlCuda::print( f, str );
+      return str;
+   }
+   return str;
 }
 
 template< int FunctionDimensions,

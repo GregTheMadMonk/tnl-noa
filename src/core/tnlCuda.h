@@ -24,6 +24,9 @@
 #include <core/tnlString.h>
 #include <core/tnlAssert.h>
 
+class tnlConfigDescription;
+class tnlParameterContainer;
+
 #ifdef HAVE_CUDA
 #define __cuda_callable__ __device__ __host__
 #else
@@ -90,6 +93,12 @@ class tnlCuda
 #else
    static bool checkDevice( const char* file_name, int line ) { return false;};
 #endif
+   
+   static void configSetup( tnlConfigDescription& config, const tnlString& prefix = "" );
+      
+   static bool setup( const tnlParameterContainer& parameters,
+                      const tnlString& prefix = "" );
+
 
 };
 

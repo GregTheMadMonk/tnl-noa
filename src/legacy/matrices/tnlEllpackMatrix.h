@@ -132,7 +132,7 @@ tnlString tnlEllpackMatrix< Real, tnlHost, Index > :: getType() const
 template< typename Real, typename Index >
 bool tnlEllpackMatrix< Real, tnlHost, Index > :: setSize( Index new_size )
 {
-   this -> size = new_size;
+   this->size = new_size;
    if( ! ellpack_nonzero_elements. setSize( new_size * row_length ) )
       return false;
    ellpack_nonzero_elements. setValue( 0 );
@@ -189,7 +189,7 @@ bool tnlEllpackMatrix< Real, tnlHost, Index > :: copyFrom( const tnlCSRMatrix< R
       row_length = average_row_length;
    }*/
 
-   if( ! this -> setSize( csr_matrix. getSize() ) )
+   if( ! this->setSize( csr_matrix. getSize() ) )
    		return false;
 
    /*
@@ -197,7 +197,7 @@ bool tnlEllpackMatrix< Real, tnlHost, Index > :: copyFrom( const tnlCSRMatrix< R
     * They will be stored in the COO data array.
     */
    Index coo_elements = 0;
-   for( Index i = 0; i < this -> getSize(); i ++ )
+   for( Index i = 0; i < this->getSize(); i ++ )
    {
 	   Index csr_row_length = csr_matrix. getRowLength( i );
 	   if( csr_row_length > row_length )
@@ -210,8 +210,8 @@ bool tnlEllpackMatrix< Real, tnlHost, Index > :: copyFrom( const tnlCSRMatrix< R
     */
    dbgCout( "Inserting CSR row ... ");
    artificial_zeros = 0;
-   dbgExpr( this -> getSize() );
-   for( Index i = 0; i < this -> getSize(); i ++ )
+   dbgExpr( this->getSize() );
+   for( Index i = 0; i < this->getSize(); i ++ )
    {
 	   Index csr_row_length = csr_matrix. getRowLength( i );
 	   Index csr_row_offset = csr_matrix. row_offsets[ i ];
@@ -221,7 +221,7 @@ bool tnlEllpackMatrix< Real, tnlHost, Index > :: copyFrom( const tnlCSRMatrix< R
 	    */
 	   while( j < csr_row_length && j < row_length )
 	   {
-		   Index element_pos = j * this -> getSize() + i;
+		   Index element_pos = j * this->getSize() + i;
 		   ellpack_nonzero_elements[ element_pos ] = csr_matrix. nonzero_elements[ csr_row_offset + j ];
 		   ellpack_columns[ element_pos ] = csr_matrix. columns[ csr_row_offset + j ];
 		   dbgExpr( element_pos );
@@ -252,7 +252,7 @@ Real tnlEllpackMatrix< Real, tnlHost, Index > :: getElement( Index row,
    {
       dbgExpr( element_pos );
       i ++;
-      element_pos += this -> getSize();
+      element_pos += this->getSize();
    }
    if( i < row_length && ellpack_columns[ element_pos ] == column )
       return ellpack_nonzero_elements[ element_pos ];
@@ -263,11 +263,11 @@ template< typename Real, typename Index >
 Real tnlEllpackMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
                                                              const tnlVector< Real, tnlHost, Index >& vector ) const
 {
-   tnlAssert( 0 <= row && row < this -> getSize(),
+   tnlAssert( 0 <= row && row < this->getSize(),
               cerr << "The row is outside the matrix." );
-   tnlAssert( vector. getSize() == this -> getSize(),
+   tnlAssert( vector. getSize() == this->getSize(),
               cerr << "The matrix and vector for multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vector. getSize() << endl; );
 
    Real product( 0.0 );
@@ -282,7 +282,7 @@ Real tnlEllpackMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
       product += ellpack_nonzero_elements[ element_pos ] *
                  vector[ ellpack_columns[ element_pos ] ];
       i ++;
-      element_pos += this -> getSize();
+      element_pos += this->getSize();
    }
    if( i < row_length )
       return product;
@@ -294,16 +294,16 @@ template< typename Real, typename Index >
 void tnlEllpackMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVector< Real, tnlHost, Index >& x,
                                                                 tnlVector< Real, tnlHost, Index >& b ) const
 {
-   tnlAssert( x. getSize() == this -> getSize(),
+   tnlAssert( x. getSize() == this->getSize(),
               cerr << "The matrix and vector for a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << x. getSize() << endl; );
-   tnlAssert( b. getSize() == this -> getSize(),
+   tnlAssert( b. getSize() == this->getSize(),
               cerr << "The matrix and result vector of a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << b. getSize() << endl; );
 
-   for( Index i = 0; i < this -> getSize(); i ++)
+   for( Index i = 0; i < this->getSize(); i ++)
       b[ i ] = rowProduct( i, x );
 };
 
@@ -313,18 +313,18 @@ void tnlEllpackMatrix< Real, tnlHost, Index > :: printOut( ostream& str,
 {
    str << "Structure of tnlEllpackMatrix" << endl;
    str << "Matrix name:" << name << endl;
-   str << "Matrix size:" << this -> getSize() << endl;
+   str << "Matrix size:" << this->getSize() << endl;
    str << "Allocated elements:" << ellpack_nonzero_elements. getSize() << endl;
    str << "Matrix row length:" << row_length << endl;
-   for( Index i = 0; i < this -> size; i ++ )
+   for( Index i = 0; i < this->size; i ++ )
    {
       str << i << "th row data:    ";
       for( Index j = 0; j < row_length; j ++ )
-         str << setprecision( 5 ) << setw( 8 ) << ellpack_nonzero_elements[ i + j * this -> getSize() ] << " ";
+         str << setprecision( 5 ) << setw( 8 ) << ellpack_nonzero_elements[ i + j * this->getSize() ] << " ";
 
       str << endl << i << "th row columns: ";
       for( Index j = 0; j < row_length; j ++ )
-         str << setprecision( 5 ) << setw( 8 ) << ellpack_columns[ i + j * this -> getSize() ] << " ";
+         str << setprecision( 5 ) << setw( 8 ) << ellpack_columns[ i + j * this->getSize() ] << " ";
       str << endl;
    }
 }

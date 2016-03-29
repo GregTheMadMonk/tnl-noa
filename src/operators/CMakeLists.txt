@@ -5,7 +5,6 @@ ADD_SUBDIRECTORY( operator-Q )
 ADD_SUBDIRECTORY( operator-curvature )
 
 SET( headers tnlDirichletBoundaryConditions.h
-             tnlDirichletBoundaryConditions_impl.h
              tnlExactFunctionInverseOperator.h
              tnlExactIdentityOperator.h
              tnlExactOperatorComposition.h

@@ -39,8 +39,8 @@ template< typename Matrix,
 tnlString tnlBICGStabSolver< Matrix, Preconditioner > :: getType() const
 {
    return tnlString( "tnlBICGStabSolver< " ) +
-          this -> matrix -> getType() + ", " +
-          this -> preconditioner -> getType() + " >";
+          this->matrix -> getType() + ", " +
+          this->preconditioner -> getType() + " >";
 }
 
 template< typename Matrix,
@@ -67,14 +67,14 @@ template< typename Matrix,
           typename Preconditioner >
 void tnlBICGStabSolver< Matrix, Preconditioner > :: setMatrix( const MatrixType& matrix )
 {
-   this -> matrix = &matrix;
+   this->matrix = &matrix;
 }
 
 template< typename Matrix,
            typename Preconditioner >
 void tnlBICGStabSolver< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
 {
-   this -> preconditioner = &preconditioner;
+   this->preconditioner = &preconditioner;
 }
 
 template< typename Matrix,
@@ -85,15 +85,15 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
    dbgFunctionName( "tnlBICGStabSolver", "Solve" );
    if( ! this->setSize( matrix->getRows() ) ) return false;
 
-   this -> resetIterations();
-   this -> setResidue( this -> getConvergenceResidue() + 1.0 );
+   this->resetIterations();
+   this->setResidue( this->getConvergenceResidue() + 1.0 );
 
    RealType alpha, beta, omega, s1, s2, rho( 0.0 ), bNorm( 0.0 );
    // r_0 = b - A x_0, p_0 = r_0
    // r^ast_0 = r_0
 
    dbgCout( "Computing Ax" );
-   this -> matrix -> vectorProduct( x, r );
+   this->matrix -> vectorProduct( x, r );
 
    //if( bNorm == 0.0 ) bNorm = 1.0;
 
@@ -132,7 +132,7 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
          M -> Solve( M_tmp, Ap );
       }
       else*/
-          this -> matrix -> vectorProduct( p, Ap );
+          this->matrix -> vectorProduct( p, Ap );
 
       //dbgCout( "Computing alpha" );
       s2 = Ap. scalarProduct( r_ast );
@@ -154,7 +154,7 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
          M -> Solve( M_tmp, As );
       }
       else*/
-          this -> matrix -> vectorProduct( s, As );
+          this->matrix -> vectorProduct( s, As );
 
       s1 = As. scalarProduct( s );
       s2 = As. scalarProduct( As );

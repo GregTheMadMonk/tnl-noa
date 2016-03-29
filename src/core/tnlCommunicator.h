@@ -155,38 +155,38 @@ tnlCommunicator< Dimensions, Device > :: tnlCommunicator()
 template< int Dimensions, typename Device >
 int tnlCommunicator< Dimensions, Device > :: getCommunicationGroupSize() const
 {
-   return this -> communicationGroupSize;
+   return this->communicationGroupSize;
 }
 
 template< int Dimensions, typename Device >
 bool tnlCommunicator< Dimensions, Device > :: setDimensions( const tnlStaticVector< Dimensions, int >& dimensions )
 {
-   this -> dimensions = dimensions;
+   this->dimensions = dimensions;
    // TODO: add automatic dimensions setting from the group size
 }
 
 template< int Dimensions, typename Device >
 const tnlStaticVector< Dimensions, int >& tnlCommunicator< Dimensions, Device > :: getDimensions() const
 {
-   return this -> dimensions;
+   return this->dimensions;
 }
 
 template< int Dimensions, typename Device >
 const tnlStaticVector< Dimensions, int >& tnlCommunicator< Dimensions, Device > :: getNodeCoordinates() const
 {
-   return this -> nodeCoordinates;
+   return this->nodeCoordinates;
 }
 
 template< int Dimensions, typename Device >
 int tnlCommunicator< Dimensions, Device > :: getDeviceId() const
 {
-    return this -> deviceID;
+    return this->deviceID;
 }
 
 template< int Dimensions, typename Device >
 bool tnlCommunicator< Dimensions, Device > :: setCommunicationGroupSize( int communicationGroupSize )
 {
-    this -> communicationGroupSize = communicationGroupSize;
+    this->communicationGroupSize = communicationGroupSize;
     // TODO: add automatic groupsize setting
 }
 
@@ -194,18 +194,18 @@ template< int Dimensions, typename Device >
 bool tnlCommunicator< Dimensions, Device > :: start()
 {
    dbgFunctionName( "tnlCommunicator", "start" );
-   if( this -> getCommunicationGroupSize() < 1 )
-      this -> setCommunicationGroupSize();
-   if( this -> getCommunicationGroupSize() < 1 )
+   if( this->getCommunicationGroupSize() < 1 )
+      this->setCommunicationGroupSize();
+   if( this->getCommunicationGroupSize() < 1 )
    {
-      cerr << "Sorry, but I have wrong size ( " << this -> getCommunicationGroupSize() << " of the communication group. I cannot create a communicator." << endl;
+      cerr << "Sorry, but I have wrong size ( " << this->getCommunicationGroupSize() << " of the communication group. I cannot create a communicator." << endl;
       return false;
    }
-   if( this -> getDimensions() == tnlStaticVector< Dimensions, int >( 0 ) )
-      this -> setDimensions( tnlStaticVector< Dimensions, int >( 0 ) );
-   if( this -> getDimensions() == tnlStaticVector< Dimensions, int >( -1 ) )
+   if( this->getDimensions() == tnlStaticVector< Dimensions, int >( 0 ) )
+      this->setDimensions( tnlStaticVector< Dimensions, int >( 0 ) );
+   if( this->getDimensions() == tnlStaticVector< Dimensions, int >( -1 ) )
    {
-      cerr << "Sorry, but I have wrong dimensions ( " << this -> getDimensions() << " of the communication group. I cannot create a communicator." << endl;
+      cerr << "Sorry, but I have wrong dimensions ( " << this->getDimensions() << " of the communication group. I cannot create a communicator." << endl;
       return false;
    }
    if( Device :: getDeviceType() == "tnlCuda" ||
@@ -213,7 +213,7 @@ bool tnlCommunicator< Dimensions, Device > :: start()
    {
       deviceID = 0;
       int currentDeviceID = 1;
-      for( int i = 0; i < this -> getCommunicationGroupSize() - 1; i ++ )
+      for( int i = 0; i < this->getCommunicationGroupSize() - 1; i ++ )
       {
          pid_t child_pid = fork();
          if( child_pid != 0 )
@@ -230,7 +230,7 @@ bool tnlCommunicator< Dimensions, Device > :: start()
             dbgCout( "The CHILD process is setting ID to " << deviceID );
             return true;
          } // if( child_pid != 0 ) - else
-      } // for( int i = 0; i < this -> getCommunicationGroupSize() - 1; i ++ )
+      } // for( int i = 0; i < this->getCommunicationGroupSize() - 1; i ++ )
    }
 }
 

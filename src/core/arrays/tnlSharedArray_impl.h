@@ -113,8 +113,8 @@ void tnlSharedArray< Element, Device, Index > :: bind( Element* data,
    tnlAssert( data != 0,
               cerr << "You try to use null pointer to data for tnlSharedArray." );
 
-   this -> size = size;
-   this -> data = data;
+   this->size = size;
+   this->data = data;
 };
 
 template< typename Element,
@@ -154,8 +154,8 @@ template< typename Element,
 __cuda_callable__
 void tnlSharedArray< Element, Device, Index > :: bind( tnlSharedArray< Element, Device, Index >& array )
 {
-   this -> size = array. getSize();
-   this -> data = array. getData();
+   this->size = array. getSize();
+   this->data = array. getData();
 };
 
 template< typename Element,
@@ -163,8 +163,8 @@ template< typename Element,
           typename Index >
 void tnlSharedArray< Element, Device, Index > :: swap( tnlSharedArray< Element, Device, Index >& array )
 {
-   :: swap( this -> size, array. size );
-   :: swap( this -> data, array. data );
+   :: swap( this->size, array. size );
+   :: swap( this->data, array. data );
 };
 
 template< typename Element,
@@ -172,8 +172,8 @@ template< typename Element,
           typename Index >
 void tnlSharedArray< Element, Device, Index > :: reset()
 {
-   this -> size = 0;
-   this -> data = 0;
+   this->size = 0;
+   this->data = 0;
 };
 
 template< typename Element,
@@ -182,7 +182,7 @@ template< typename Element,
 __cuda_callable__
 Index tnlSharedArray< Element, Device, Index > :: getSize() const
 {
-   return this -> size;
+   return this->size;
 }
 
 template< typename Element,
@@ -190,11 +190,11 @@ template< typename Element,
           typename Index >
 void tnlSharedArray< Element, Device, Index > :: setElement( const Index& i, const Element& x )
 {
-   tnlAssert( 0 <= i && i < this -> getSize(),
+   tnlAssert( 0 <= i && i < this->getSize(),
               cerr << "Wrong index for setElement method in tnlSharedArray "
                    << " index is " << i
-                   << " and array size is " << this -> getSize() );
-   return tnlArrayOperations< Device >::setMemoryElement( & ( this -> data[ i ] ), x );
+                   << " and array size is " << this->getSize() );
+   return tnlArrayOperations< Device >::setMemoryElement( & ( this->data[ i ] ), x );
 };
 
 template< typename Element,
@@ -202,11 +202,11 @@ template< typename Element,
           typename Index >
 Element tnlSharedArray< Element, Device, Index > :: getElement( const Index& i ) const
 {
-   tnlAssert( 0 <= i && i < this -> getSize(),
+   tnlAssert( 0 <= i && i < this->getSize(),
               cerr << "Wrong index for getElement method in tnlSharedArray "
                    << " index is " << i
-                   << " and array size is " << this -> getSize() );
-   return tnlArrayOperations< Device >::getMemoryElement( &( this -> data[ i ] ) );
+                   << " and array size is " << this->getSize() );
+   return tnlArrayOperations< Device >::getMemoryElement( &( this->data[ i ] ) );
 };
 
 template< typename Element,
@@ -215,10 +215,10 @@ template< typename Element,
 __cuda_callable__
 Element& tnlSharedArray< Element, Device, Index > :: operator[] ( const Index& i )
 {
-   tnlAssert( 0 <= i && i < this -> getSize(),
+   tnlAssert( 0 <= i && i < this->getSize(),
               cerr << "Wrong index for operator[] in tnlSharedArray "
                    << " index is " << i
-                   << " and array size is " << this -> getSize() );
+                   << " and array size is " << this->getSize() );
    return this->data[ i ];
 };
 
@@ -228,10 +228,10 @@ template< typename Element,
 __cuda_callable__
 const Element& tnlSharedArray< Element, Device, Index > :: operator[] ( const Index& i ) const
 {
-   tnlAssert( 0 <= i && i < this -> getSize(),
+   tnlAssert( 0 <= i && i < this->getSize(),
               cerr << "Wrong index for operator[] in tnlSharedArray "
                    << " index is " << i
-                   << " and array size is " << this -> getSize() );
+                   << " and array size is " << this->getSize() );
    return this->data[ i ];
 };
 
@@ -241,14 +241,14 @@ template< typename Element,
 tnlSharedArray< Element, Device, Index >&
     tnlSharedArray< Element, Device, Index > :: operator = ( const tnlSharedArray< Element, Device, Index >& array )
 {
-   tnlAssert( array. getSize() == this -> getSize(),
+   tnlAssert( array. getSize() == this->getSize(),
            cerr << "Source size: " << array. getSize() << endl
-                << "Target size: " << this -> getSize() << endl );
+                << "Target size: " << this->getSize() << endl );
    tnlArrayOperations< Device > ::
    template copyMemory< Element,
                         Element,
                         Index >
-                       ( this -> getData(),
+                       ( this->getData(),
                          array. getData(),
                          array. getSize() );
    return ( *this );
@@ -260,15 +260,15 @@ template< typename Element,
    template< typename Array >
 tnlSharedArray< Element, Device, Index >& tnlSharedArray< Element, Device, Index > :: operator = ( const Array& array )
 {
-   tnlAssert( array. getSize() == this -> getSize(),
+   tnlAssert( array. getSize() == this->getSize(),
            cerr << "Source size: " << array. getSize() << endl
-                << "Target size: " << this -> getSize() << endl );
+                << "Target size: " << this->getSize() << endl );
    tnlArrayOperations< typename Array :: DeviceType,
                        Device > ::
     template copyMemory< Element,
                          typename Array :: ElementType,
                          typename Array :: IndexType >
-                       ( this -> getData(),
+                       ( this->getData(),
                          array. getData(),
                          array. getSize() );
    return ( *this );
@@ -280,14 +280,14 @@ template< typename Element,
    template< typename Array >
 bool tnlSharedArray< Element, Device, Index > :: operator == ( const Array& array ) const
 {
-   if( array. getSize() != this -> getSize() )
+   if( array. getSize() != this->getSize() )
       return false;
    return tnlArrayOperations< Device,
                               typename Array :: DeviceType > ::
     template compareMemory< typename Array :: ElementType,
                             Element,
                             typename Array :: IndexType >
-                          ( this -> getData(),
+                          ( this->getData(),
                             array. getData(),
                             array. getSize() );
 }
@@ -306,9 +306,9 @@ template< typename Element,
           typename Index >
 void tnlSharedArray< Element, Device, Index > :: setValue( const Element& e )
 {
-   tnlAssert( this -> size != 0, );
+   tnlAssert( this->size != 0, );
    tnlArrayOperations< Device >::template setMemory< Element, Index >
-                              ( this -> getData(), e, this -> getSize() );
+                              ( this->getData(), e, this->getSize() );
 
 }
 
@@ -317,7 +317,7 @@ template< typename Element,
           typename Index >
 const Element* tnlSharedArray< Element, Device, Index > :: getData() const
 {
-   return this -> data;
+   return this->data;
 }
 
 template< typename Element,
@@ -325,7 +325,7 @@ template< typename Element,
           typename Index >
 Element* tnlSharedArray< Element, Device, Index > :: getData()
 {
-   return this -> data;
+   return this->data;
 }
 
 template< typename Element,
@@ -351,19 +351,19 @@ template< typename Element,
           typename Index >
 bool tnlSharedArray< Element, Device, Index > :: save( tnlFile& file ) const
 {
-   tnlAssert( this -> size != 0,
+   tnlAssert( this->size != 0,
               cerr << "You try to save empty array." << endl );
    if( ! tnlObject :: save( file ) )
       return false;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. write< const Index, tnlHost >( &this -> size ) )
+   if( ! file. write< const Index, tnlHost >( &this->size ) )
 #else            
-   if( ! file. write( &this -> size ) )
+   if( ! file. write( &this->size ) )
 #endif      
       return false;
-   if( ! file. write< Element, Device, Index >( this -> data, this -> size ) )
+   if( ! file. write< Element, Device, Index >( this->data, this->size ) )
    {
-      cerr << "I was not able to WRITE tnlSharedArray with size " << this -> getSize() << endl;
+      cerr << "I was not able to WRITE tnlSharedArray with size " << this->getSize() << endl;
       return false;
    }
    return true;
@@ -400,9 +400,9 @@ bool tnlSharedArray< Element, Device, Index > :: load( tnlFile& file )
    }
    if( _size )
    {
-      if( ! file. read< Element, Device, Index >( this -> data, this -> size ) )
+      if( ! file. read< Element, Device, Index >( this->data, this->size ) )
       {
-         cerr << "I was not able to READ tnlSharedArray with size " << this -> getSize() << endl;
+         cerr << "I was not able to READ tnlSharedArray with size " << this->getSize() << endl;
          return false;
       }
    }

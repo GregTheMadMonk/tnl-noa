@@ -183,13 +183,13 @@ tnlString tnlFastRgCSRMatrix< Real, tnlHost, Index > :: getType() const
 template< typename Real, typename Index >
 bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: setSize( Index new_size )
 {
-   this -> size = new_size;
-   Index blocks_number = this -> size / block_size + ( this -> size % block_size != 0 );
+   this->size = new_size;
+   Index blocks_number = this->size / block_size + ( this->size % block_size != 0 );
    if( ! block_offsets. setSize( blocks_number + 1 ) ||
 	   ! columns_sequences_blocks_offsets. setSize( blocks_number + 1 ) ||
 	   ! column_sequences_in_block. setSize( blocks_number ) ||
-	   ! columns_sequences_offsets. setSize( this -> size + 1 ) ||
-	   ! column_sequences_lengths. setSize( this -> size ) )
+	   ! columns_sequences_offsets. setSize( this->size + 1 ) ||
+	   ! column_sequences_lengths. setSize( this->size ) )
       return false;
    block_offsets. setValue( 0 );
    columns_sequences_blocks_offsets. setValue( 0 );
@@ -249,10 +249,10 @@ template< typename Real, typename Index >
 bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlFastCSRMatrix< Real, tnlHost >& fast_csr_matrix )
 {
 	dbgFunctionName( "tnlFastRgCSRMatrix< Real, tnlHost >", "copyFrom" );
-	if( ! this -> setSize( fast_csr_matrix. getSize() ) )
+	if( ! this->setSize( fast_csr_matrix. getSize() ) )
 		return false;
 
-	Index blocks_number = this -> size / block_size + ( this -> size % block_size != 0 );
+	Index blocks_number = this->size / block_size + ( this->size % block_size != 0 );
 	tnlVector< Index > col_seq_block_size( "tnlFastRgCSRMatrix< Real, tnlHost, Index > :: col_seq_block_size" );
 	col_seq_block_size. setSize( blocks_number );
 	col_seq_block_size. setValue( 0 );
@@ -269,7 +269,7 @@ bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlFastCSRMat
 	 *	The length of the longest sequence is stored in longest_sequence_length,
 	 *	and the number of sequences in one block is stored in columns_sequences_in_block
 	 */
-	for( Index i = 0; i < this -> getSize(); i ++ )
+	for( Index i = 0; i < this->getSize(); i ++ )
 	{
 		Index block_id = i / block_size;
 		/*
@@ -277,8 +277,8 @@ bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlFastCSRMat
 		 * We store it in the current_block_size
 		 */
 		Index current_block_size = block_size;
-		if( ( block_id + 1 ) * block_size > this -> getSize() )
-		   current_block_size = this -> getSize() % block_size;
+		if( ( block_id + 1 ) * block_size > this->getSize() )
+		   current_block_size = this->getSize() % block_size;
 
 		Index current_column_sequence = fast_csr_matrix. columns_sequences_offsets[ i ];
 
@@ -342,7 +342,7 @@ bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlFastCSRMat
     column_sequences. setValue( -1 );
 	Index column_sequences_end( 0 );
 	Index inserted_column_sequences( 0 );
-	for( Index i = 0; i < this -> getSize(); i ++ )
+	for( Index i = 0; i < this->getSize(); i ++ )
 	{
 	   dbgCout( "Processing column-sequence for the line " << i );
 		Index block_id = i / block_size;
@@ -413,7 +413,7 @@ bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlFastCSRMat
 	Index total_elements( 0 );
 	Index max_row_in_block( 0 );
 	Index blocks_inserted( -1 );
-	for( Index i = 0; i < this -> getSize(); i ++ )
+	for( Index i = 0; i < this->getSize(); i ++ )
 	{
 		if( i % block_size == 0 )
 		{
@@ -427,7 +427,7 @@ bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlFastCSRMat
 		//dbgExpr( nonzeros_in_row[ i ] );
 		max_row_in_block = Max( max_row_in_block, column_sequences_lengths[ i ] );
 	}
-	total_elements += max_row_in_block * ( this -> getSize() - blocks_inserted * block_size );
+	total_elements += max_row_in_block * ( this->getSize() - blocks_inserted * block_size );
 	block_offsets[ block_offsets. getSize() - 1 ] = total_elements;
 
 
@@ -454,8 +454,8 @@ bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlFastCSRMat
 		 * We store it in the current_block_size
 		 */
 		Index current_block_size = block_size;
-		if( ( i + 1 ) * block_size > this -> getSize() )
-			current_block_size = this -> getSize() % block_size;
+		if( ( i + 1 ) * block_size > this->getSize() )
+			current_block_size = this->getSize() % block_size;
 
 		/*
 		 * We insert 'current_block_size' rows in this matrix with the stride
@@ -471,7 +471,7 @@ bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlFastCSRMat
 			Index j = block_offsets[ i ] + k;                   // position of the first element of the row
 			Index element_row = i * block_size + k;
 			//dbgExpr( element_row );
-			if( element_row < this -> getSize() )
+			if( element_row < this->getSize() )
 			{
 
 				/*
@@ -500,9 +500,9 @@ template< typename Real, typename Index >
 Real tnlFastRgCSRMatrix< Real, tnlHost, Index > :: getElement( Index row,
                                                                Index column ) const
 {
-   tnlAssert( 0 <= row && row < this -> getSize(),
+   tnlAssert( 0 <= row && row < this->getSize(),
 			  cerr << "The row is outside the matrix." );
-   tnlAssert( 0 <= column && column < this -> getSize(),
+   tnlAssert( 0 <= column && column < this->getSize(),
 			  cerr << "The column is outside the matrix." );
 
 	Index block_id = row / block_size;
@@ -513,8 +513,8 @@ Real tnlFastRgCSRMatrix< Real, tnlHost, Index > :: getElement( Index row,
 	 * We store it in the current_block_size
 	 */
 	Index current_block_size = block_size;
-	if( ( block_id + 1 ) * block_size > this -> getSize() )
-		current_block_size = this -> getSize() % block_size;
+	if( ( block_id + 1 ) * block_size > this->getSize() )
+		current_block_size = this->getSize() % block_size;
 	Index pos = block_offset + block_row;
 
    Index column_offset = columns_sequences_offsets[ row ];
@@ -535,11 +535,11 @@ template< typename Real, typename Index >
 Real tnlFastRgCSRMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
                                                                const tnlVector< Real, tnlHost, Index >& vec ) const
 {
-   tnlAssert( 0 <= row && row < this -> getSize(),
+   tnlAssert( 0 <= row && row < this->getSize(),
            cerr << "The row is outside the matrix." );
-   tnlAssert( vec. getSize() == this -> getSize(),
+   tnlAssert( vec. getSize() == this->getSize(),
               cerr << "The matrix and vector for multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << endl; );
 
    Index block_id = row / block_size;
@@ -550,8 +550,8 @@ Real tnlFastRgCSRMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
 	* We store it in the current_block_size
 	*/
    Index current_block_size = block_size;
-   if( ( block_id + 1 ) * block_size > this -> getSize() )
-	   current_block_size = this -> getSize() % block_size;
+   if( ( block_id + 1 ) * block_size > this->getSize() )
+	   current_block_size = this->getSize() % block_size;
    Real product( 0.0 );
    Index val_pos = block_offset + block_row;
    Index column_pos = columns_sequences_offsets[ row ];
@@ -570,16 +570,16 @@ template< typename Real, typename Index >
 void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVector< Real, tnlHost, Index >& vec,
                                                                   tnlVector< Real, tnlHost, Index >& result ) const
 {
-   tnlAssert( vec. getSize() == this -> getSize(),
+   tnlAssert( vec. getSize() == this->getSize(),
               cerr << "The matrix and vector for a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << endl; );
-   tnlAssert( result. getSize() == this -> getSize(),
+   tnlAssert( result. getSize() == this->getSize(),
               cerr << "The matrix and result vector of a multiplication have different sizes. "
-                   << "The matrix size is " << this -> getSize() << "."
+                   << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << result. getSize() << endl; );
 
-   for( Index row = 0; row < this -> getSize(); row ++ )
+   for( Index row = 0; row < this->getSize(); row ++ )
    {
 	   Index block_id = row / block_size;
 	   Index block_row = row % block_size;
@@ -589,8 +589,8 @@ void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVecto
 		* We store it in the current_block_size
 		*/
 	   Index current_block_size = block_size;
-	   if( ( block_id + 1 ) * block_size > this -> getSize() )
-		   current_block_size = this -> getSize() % block_size;
+	   if( ( block_id + 1 ) * block_size > this->getSize() )
+		   current_block_size = this->getSize() % block_size;
 	   Real product( 0.0 );
 	   Index val_pos = block_offset + block_row;
 	   Index column_pos = columns_sequences_offsets[ row ];
@@ -615,22 +615,22 @@ void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: printOut( ostream& str,
 {
    str << "Structure of tnlFastRgCSRMatrix" << endl;
    str << "Matrix name:" << name << endl;
-   str << "Matrix size:" << this -> getSize() << endl;
+   str << "Matrix size:" << this->getSize() << endl;
    str << "Allocated elements:" << nonzero_elements. getSize() << endl;
    str << "Matrix blocks: " << block_offsets. getSize() << endl;
 
    Index print_lines = lines;
    if( ! print_lines )
-	   print_lines = this -> getSize();
+	   print_lines = this->getSize();
 
-   for( Index i = 0; i < this -> block_offsets. getSize() - 1; i ++ )
+   for( Index i = 0; i < this->block_offsets. getSize() - 1; i ++ )
    {
 	   if( i * block_size > print_lines )
 		   continue;
 	   str << endl << "Block number: " << i << endl;
 	   str << " Lines: " << i * block_size << " -- " << ( i + 1 ) * block_size << endl;
 	   str << " Column sequences: " << column_sequences_in_block[ i ] << endl;
-	   for( Index k = i * block_size; k < ( i + 1 ) * block_size && k < this -> getSize(); k ++ )
+	   for( Index k = i * block_size; k < ( i + 1 ) * block_size && k < this->getSize(); k ++ )
 	   {
 		   str << " Line: " << k << flush
 			   << " Line length: " << column_sequences_lengths[ k ] << flush
@@ -643,8 +643,8 @@ void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: printOut( ostream& str,
 	   str << endl;
 
 	   Index current_block_size = block_size;
-	   if( ( i + 1 ) * block_size > this -> getSize() )
-	      current_block_size = this -> getSize() % block_size;
+	   if( ( i + 1 ) * block_size > this->getSize() )
+	      current_block_size = this->getSize() % block_size;
 	   Index block_length = block_offsets[ i + 1 ] - block_offsets[ i ];
 	   Index row_length = block_length / block_size;
 	   str << " Block data: " << block_offsets[ i ] << " -- " << block_offsets[ i + 1 ] << endl;

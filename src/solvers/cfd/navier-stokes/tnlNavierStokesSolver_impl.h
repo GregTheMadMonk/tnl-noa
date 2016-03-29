@@ -323,7 +323,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
       const IndexType size = dofs_rho.getSize();
 
       #ifdef HAVE_OPENMP
-      #pragma omp parallel for
+      #pragma omp parallel for, if( tnlHost::isOMPEnabled() )
       #endif
       for( IndexType c = 0; c < size; c++ )
          {
@@ -331,7 +331,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
             const RealType u1 = this->u1[ c ] = dofs_rho_u1[ c ] / dofs_rho[ c ];
             const RealType u2 = this->u2[ c ] = dofs_rho_u2[ c ] / dofs_rho[ c ];
             this->u[ c ] = sqrt( u1*u1 + u2*u2 );
-            //this->p[ c ] = dofs_rho[ c ] * this -> R * this -> T;
+            //this->p[ c ] = dofs_rho[ c ] * this->R * this->T;
             this->p[ c ] = ( this->gamma - 1.0 ) *
                            ( dofs_e[ c ] - 0.5 * this->rho[ c ] * ( this->u1[ c ] * this->u1[ c ] + this->u2[ c ] * this->u2[ c ] ) );
             this->energy[ c ] = dofs_e[ c ];
@@ -447,7 +447,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
    writePhysicalVariables( time, -4 );
 
 #ifdef HAVE_OPENMP
-  #pragma omp parallel for
+  #pragma omp parallel for, if( tnlHost::isOMPEnabled() )
   #endif
   for( IndexType j = 0; j < ySize; j ++ )
      for( IndexType i = 0; i < xSize; i ++ )
@@ -468,7 +468,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
                                          tau );
 
         //rho_u1_t[ c ] += ;
-        //rho_u2_t[ c ] -= startUpCoefficient * this -> gravity * this -> rho[ c ];
+        //rho_u2_t[ c ] -= startUpCoefficient * this->gravity * this->rho[ c ];
 
         /***
          * Add the viscosity term

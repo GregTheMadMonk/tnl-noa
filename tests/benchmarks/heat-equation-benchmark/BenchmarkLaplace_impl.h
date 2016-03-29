@@ -80,7 +80,7 @@ template< typename MeshReal,
 __cuda_callable__
 void
 BenchmarkLaplace< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,
@@ -188,7 +188,7 @@ template< typename MeshReal,
 __cuda_callable__
 void
 BenchmarkLaplace< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,
@@ -305,7 +305,7 @@ template< typename MeshReal,
 __cuda_callable__
 void
 BenchmarkLaplace< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,

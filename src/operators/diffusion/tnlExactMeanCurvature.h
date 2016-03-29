@@ -44,7 +44,7 @@ class tnlExactMeanCurvature
       template< typename Real >
       void setRegularizationEpsilon( const Real& eps)
       {
-         nonlinearDiffusion.getNonlinearity().getInnerOperator().setRegularizationEpislon( eps );
+         nonlinearDiffusion.getNonlinearity().getInnerOperator().setRegularizationEpsilon( eps );
       }
       
       template< typename Function >

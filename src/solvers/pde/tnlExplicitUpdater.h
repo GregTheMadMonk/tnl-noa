@@ -19,6 +19,7 @@
 #define TNLEXPLICITUPDATER_H_
 
 #include <functions/tnlFunctionAdapter.h>
+#include <core/tnlTimer.h>
 
 template< typename Real,
           typename MeshFunction,
@@ -72,6 +73,14 @@ class tnlExplicitUpdater
                                                    DifferentialOperator,
                                                    BoundaryConditions,
                                                    RightHandSide > TraverserUserData;
+      
+      tnlExplicitUpdater()
+      : gpuTransferTimer( 0 ){}
+      
+      void setGPUTransferTimer( tnlTimer& timer )
+      {
+         this->gpuTransferTimer = &timer;
+      }
 
       template< typename EntityType >
       void update( const RealType& time,
@@ -126,6 +135,10 @@ class tnlExplicitUpdater
                      *userData.time );
             }
       };
+      
+   protected:
+      
+      tnlTimer* gpuTransferTimer;
 };
 
 #include <solvers/pde/tnlExplicitUpdater_impl.h>

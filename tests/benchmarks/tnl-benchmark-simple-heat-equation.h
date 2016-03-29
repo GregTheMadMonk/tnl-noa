@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
+#include <core/tnlTimer.h>
 #include <core/tnlTimerRT.h>
 #include <core/tnlCuda.h>
 
@@ -447,8 +448,8 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
    /****
     * Initiation
     */   
-   Real* u = new Real[ gridXSize * gridYSize ];
-   Real* aux = new Real[ gridXSize * gridYSize ];
+   Real* __restrict__ u = new Real[ gridXSize * gridYSize ];
+   Real* __restrict__ aux = new Real[ gridXSize * gridYSize ];
    if( ! u || ! aux )
    {
       cerr << "I am not able to allocate grid function for grid size " << gridXSize << "x" << gridYSize << "." << endl;
@@ -484,13 +485,13 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
     */
    if( verbose )
       cout << "Starting the solver main loop..." << endl;
-   tnlTimerRT timer;
-   timer.reset();
+   tnlTimer timer, computationTimer, updateTimer;
    timer.start();
    Real time( 0.0 );   
    Index iteration( 0 );
    while( time < finalTime )
    {
+      computationTimer.start();
       const Real timeLeft = finalTime - time;
       const Real currentTau = tau < timeLeft ? tau : timeLeft;
 
@@ -524,20 +525,22 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
          for( Index i = 1; i < gridXSize - 1; i++ )
          {
             const Index c = j * gridXSize + i;
-            aux[ c ] = currentTau * ( ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ] ) * hx_inv +
+            aux[ c ] =  ( ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ] ) * hx_inv +
                                      ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
          }
+      computationTimer.stop();
       
-      
-      Real absMax( 0.0 );
+      updateTimer.start();
+      Real absMax( 0.0 ), residue( 0.0 );
       for( Index i = 0; i < dofsCount; i++ )
       {
-         const Real a = fabs( aux[ i ] );
-         absMax = a > absMax ? a : absMax;
+         const Real add = currentTau * aux[ i ];
+         u[ i ] += add;
+         residue += fabs( add );
+         /*const Real a = fabs( aux[ i ] );         
+         absMax = a > absMax ? a : absMax;*/
       }
-      
-      for( Index i = 0; i < dofsCount; i++ )
-         u[ i ] += aux[ i ];         
+      updateTimer.stop();
       
       time += currentTau;
       iteration++;
@@ -547,7 +550,15 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
    timer.stop();
    if( verbose )      
       cout << endl << "Finished..." << endl;
-   cout << "Computation time is " << timer.getTime() << " sec. i.e. " << timer.getTime() / ( double ) iteration << "sec. per iteration." << endl;
+   tnlLogger logger( 72, std::cout );
+   logger.writeSeparator();
+   logger.writeParameter< const char* >( "Compute time:", "" );
+   timer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Explicit update computation:", "" );
+   computationTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Euler solver update:", "" );
+   updateTimer.writeLog( logger, 1 );
+   logger.writeSeparator();
    
    /***
     * Freeing allocated memory

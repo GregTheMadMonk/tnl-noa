@@ -214,15 +214,15 @@ bool tnlMatrix< Real, Device, Index > :: operator == ( const tnlMatrix< Real, De
 template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: compare( const tnlMatrix< Real, Device, Index >& m, bool verbose ) const
 {
-   if( this -> getSize() != m. getSize() )
+   if( this->getSize() != m. getSize() )
       return false;
-   const Index size = this -> getSize();
+   const Index size = this->getSize();
    for( Index i = 0; i < size; i ++ )
       for( Index j = 0; j < size; j ++ )
       {
          if( verbose )
             cout << "Comparing: " << i << " / " << size << "\r";
-         if( this -> getElement( i, j ) != m. getElement( i, j ) )
+         if( this->getElement( i, j ) != m. getElement( i, j ) )
              return false;
       }
    return true;
@@ -276,7 +276,7 @@ template< typename Real, typename Device, typename Index >
    template< typename Real2 >
 tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index > ::  operator = ( const tnlMatrix< Real2, Device, Index >& matrix )
 {
-   this -> size = matrix. getSize();
+   this->size = matrix. getSize();
    /*if( ! rowsReorderingPermutation. setSize( matrix. rowsReorderingPermutation. getSize() ) )
    {
       cerr << "I am not able to allocat the row permutation vector for the new matrix." << endl;
@@ -383,8 +383,8 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
            cerr << "There is not square matrix in the file." << endl;
            return false;
          }
-         if( ! this -> setSize( M ) ||
-             ! this -> setNonzeroElements( L ) )
+         if( ! this->setSize( M ) ||
+             ! this->setNonzeroElements( L ) )
          {
             cerr << "Not enough memory to allocate the sparse or the full matrix for testing." << endl;
             return false;
@@ -407,9 +407,9 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
       parsed_elements ++;
       if( verbose )
          cout << "Parsed elements:   " << setw( 9 ) << right << parsed_elements << "\r" << flush;
-      this -> setElement( I - 1, J - 1, A );
+      this->setElement( I - 1, J - 1, A );
       if( symmetric && I != J )
-    	  this -> setElement( J - 1, I - 1, A );
+    	  this->setElement( J - 1, I - 1, A );
    }
    return true;
 }
@@ -431,10 +431,10 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlVector< Index,
     */
    for( Index i = 0; i < matrixSize; i ++ )
    {
-      tnlAssert( this -> getNonzeroElementsInRow( i ) <= matrixSize,
+      tnlAssert( this->getNonzeroElementsInRow( i ) <= matrixSize,
                  cerr << "getNonzeroElementsInRow( " << i << " ) = " << getNonzeroElementsInRow( i ) 
                       << "; matrixSize = " << matrixSize );
-      permutation[ this -> getNonzeroElementsInRow( i ) ] ++;
+      permutation[ this->getNonzeroElementsInRow( i ) ] ++;
    }
 
    tnlVector< Index, tnlHost, Index > buckets( "tnlMatrix::reorderRowsDecreasingly:buckets" );
@@ -450,11 +450,11 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlVector< Index,
 
    for( Index i = 0; i < matrixSize; i ++ )
    {
-      tnlAssert( buckets[ matrixSize - this -> getNonzeroElementsInRow( i ) ] <= matrixSize,
-               cerr << "buckets[ matrixSize - this -> getNonzeroElementsInRow( i ) - 1 ] = " << buckets[ matrixSize - this -> getNonzeroElementsInRow( i ) - 1 ]
+      tnlAssert( buckets[ matrixSize - this->getNonzeroElementsInRow( i ) ] <= matrixSize,
+               cerr << "buckets[ matrixSize - this->getNonzeroElementsInRow( i ) - 1 ] = " << buckets[ matrixSize - this->getNonzeroElementsInRow( i ) - 1 ]
                     << "; matrixSize = " << matrixSize );
-      dbgExpr( buckets[ matrixSize - this -> getNonzeroElementsInRow( i ) ] );
-      permutation[ buckets[ matrixSize - this -> getNonzeroElementsInRow( i ) ] ++ ] = i;
+      dbgExpr( buckets[ matrixSize - this->getNonzeroElementsInRow( i ) ] );
+      permutation[ buckets[ matrixSize - this->getNonzeroElementsInRow( i ) ] ++ ] = i;
    }
    return true;
 }
@@ -485,11 +485,11 @@ bool tnlMatrix< Real, Device, Index > :: draw( ostream& str,
 	if( format == "eps" )
 	{
 	   const int elementSize = 10;
-	   this -> writePostscriptHeader( str, elementSize );
+	   this->writePostscriptHeader( str, elementSize );
 	   if( csrMatrix )
 	      csrMatrix -> writePostscriptBody( str, elementSize, verbose );
 	   else
-	      this -> writePostscriptBody( str, elementSize, verbose );
+	      this->writePostscriptBody( str, elementSize, verbose );
 
 	   str << "showpage" << endl;
       str << "%%EOF" << endl;
@@ -506,7 +506,7 @@ template< typename Real, typename Device, typename Index >
 void tnlMatrix< Real, Device, Index > :: writePostscriptHeader( ostream& str,
                                                                 const int elementSize ) const
 {
-   const int scale = elementSize * this -> getSize();
+   const int scale = elementSize * this->getSize();
    str << "%!PS-Adobe-2.0 EPSF-2.0" << endl;
    str << "%%BoundingBox: 0 0 " << scale << " " << scale << endl;
    str << "%%Creator: TNL" << endl;
@@ -520,8 +520,8 @@ void tnlMatrix< Real, Device, Index > :: writePostscriptBody( ostream& str,
                                                               const int elementSize,
                                                               bool verbose ) const
 {
-   const double scale = elementSize * this -> getSize();
-   double hx = scale / ( double ) this -> getSize();
+   const double scale = elementSize * this->getSize();
+   double hx = scale / ( double ) this->getSize();
    Index lastRow( 0 ), lastColumn( 0 );
    for( Index row = 0; row < getSize(); row ++ )
    {

@@ -21,6 +21,7 @@
 #include <solvers/tnlSolverInitiator.h>
 #include <solvers/tnlSolverStarter.h>
 #include <solvers/tnlSolverConfig.h>
+#include <core/tnlCuda.h>
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
           template< typename MeshConfig > class ProblemConfig,
@@ -33,6 +34,10 @@ run( int argc, char* argv[] )
    tnlConfigDescription configDescription;
    ProblemConfig< MeshConfig >::configSetup( configDescription );
    tnlSolverConfig< MeshConfig, ProblemConfig< MeshConfig> >::configSetup( configDescription );
+   configDescription.addDelimiter( "Parallelization setup:" );
+   tnlHost::configSetup( configDescription );
+   tnlCuda::configSetup( configDescription );
+
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return false;
 

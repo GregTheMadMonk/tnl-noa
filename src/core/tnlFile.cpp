@@ -68,3 +68,15 @@ bool tnlFile :: close()
    readElements = writtenElements = 0;
    return true;
 };
+
+bool fileExists( const tnlString& fileName )
+{
+  fstream file;
+  file.open( fileName. getString(), ios::in );
+  bool result( true );
+  if( ! file )
+     result = false;
+  file.close();
+  return result;
+};
+

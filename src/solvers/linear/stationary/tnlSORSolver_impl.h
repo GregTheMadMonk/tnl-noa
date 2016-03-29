@@ -28,8 +28,8 @@ template< typename Matrix, typename Preconditioner >
 tnlString tnlSORSolver< Matrix, Preconditioner > :: getType() const
 {
    return tnlString( "tnlSORSolver< " ) +
-          this -> matrix -> getType() + ", " +
-          this -> preconditioner -> getType() + " >";
+          this->matrix -> getType() + ", " +
+          this->preconditioner -> getType() + " >";
 }
 
 template< typename Matrix,
@@ -63,27 +63,27 @@ setup( const tnlParameterContainer& parameters,
 template< typename Matrix, typename Preconditioner >
 void tnlSORSolver< Matrix, Preconditioner > :: setOmega( const RealType& omega )
 {
-   this -> omega = omega;
+   this->omega = omega;
 }
 
 template< typename Matrix, typename Preconditioner >
 const typename tnlSORSolver< Matrix, Preconditioner > :: RealType& tnlSORSolver< Matrix, Preconditioner > :: getOmega( ) const
 {
-   return this -> omega;
+   return this->omega;
 }
 
 template< typename Matrix,
           typename Preconditioner >
 void tnlSORSolver< Matrix, Preconditioner > :: setMatrix( const MatrixType& matrix )
 {
-   this -> matrix = &matrix;
+   this->matrix = &matrix;
 }
 
 template< typename Matrix,
            typename Preconditioner >
 void tnlSORSolver< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
 {
-   this -> preconditioner = &preconditioner;
+   this->preconditioner = &preconditioner;
 }
 
 
@@ -94,8 +94,8 @@ bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b,
 {
    const IndexType size = matrix -> getRows();
 
-   this -> resetIterations();
-   this -> setResidue( this -> getConvergenceResidue() + 1.0 );
+   this->resetIterations();
+   this->setResidue( this->getConvergenceResidue() + 1.0 );
 
    RealType bNorm = b. lpNorm( ( RealType ) 2.0 );
 
@@ -106,11 +106,11 @@ bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b,
                                       row,
                                       x,
                                       this->getOmega() );
-      this -> setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
-      this -> refreshSolverMonitor();
+      this->setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
+      this->refreshSolverMonitor();
    }
-   this -> setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
-   this -> refreshSolverMonitor( true );
+   this->setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
+   this->refreshSolverMonitor( true );
    return this->checkConvergence();
 };
 

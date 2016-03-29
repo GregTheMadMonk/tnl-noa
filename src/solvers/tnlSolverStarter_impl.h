@@ -21,6 +21,7 @@
 #include <tnlConfig.h>
 #include <core/tnlLogger.h>
 #include <core/tnlString.h>
+#include <core/tnlCuda.h>
 #include <solvers/ode/tnlMersonSolver.h>
 #include <solvers/ode/tnlEulerSolver.h>
 #include <solvers/linear/stationary/tnlSORSolver.h>
@@ -90,6 +91,9 @@ bool tnlSolverStarter< ConfigTag > :: run( const tnlParameterContainer& paramete
    /****
     * Create and set-up the problem
     */
+   if( ! tnlHost::setup( parameters ) ||
+       ! tnlCuda::setup( parameters ) )
+      return false;
    Problem problem;
    if( ! problem.setup( parameters ) )
    {
@@ -347,11 +351,14 @@ class tnlSolverStarterExplicitTimeStepperSetter
          typedef typename Problem::IndexType IndexType;
          typedef tnlODESolverMonitor< RealType, IndexType > SolverMonitorType;
 
+         const int verbose = parameters.getParameter< int >( "verbose" );
+
          ExplicitSolver explicitSolver;
          explicitSolver.setup( parameters );
-         int verbose = parameters.getParameter< int >( "verbose" );
          explicitSolver.setVerbose( verbose );
+
          SolverMonitorType odeSolverMonitor;
+         odeSolverMonitor.setVerbose( verbose );
          if( ! problem.getSolverMonitor() )
             explicitSolver.setSolverMonitor( odeSolverMonitor );
          else
@@ -390,10 +397,13 @@ class tnlSolverStarterSemiImplicitTimeStepperSetter
          typedef typename Problem::IndexType IndexType;
          typedef tnlIterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
 
+         const int verbose = parameters.getParameter< int >( "verbose" );
+
          LinearSystemSolverType linearSystemSolver;
          linearSystemSolver.setup( parameters );
 
          SolverMonitorType solverMonitor;
+         solverMonitor.setVerbose( verbose );
          if( ! problem.getSolverMonitor() )
             linearSystemSolver.setSolverMonitor( solverMonitor );
          else
@@ -441,7 +451,7 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
       DiscreteSolver solver;
       double omega = parameters. getParameter< double >( "sor-omega" );
       solver. setOmega( omega );
-      //solver. setVerbose( this -> verbose );
+      //solver. setVerbose( this->verbose );
       return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
    }
 
@@ -450,7 +460,7 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
       typedef tnlCGSolver< typename Problem :: DiscreteSolverMatrixType,
                            typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
-      //solver. setVerbose( this -> verbose );
+      //solver. setVerbose( this->verbose );
       return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
    }
 
@@ -459,7 +469,7 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
       typedef tnlBICGStabSolver< typename Problem :: DiscreteSolverMatrixType,
                                  typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
-      //solver. setVerbose( this -> verbose );
+      //solver. setVerbose( this->verbose );
       return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
    }
 
@@ -470,7 +480,7 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
       DiscreteSolver solver;
       int restarting = parameters. getParameter< int >( "gmres-restarting" );
       solver. setRestarting( restarting );
-      //solver. setVerbose( this -> verbose );
+      //solver. setVerbose( this->verbose );
       return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
    }
    cerr << "Unknown discrete solver " << discreteSolver << "." << endl;
@@ -485,8 +495,9 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
                                                     const tnlParameterContainer& parameters,
                                                     TimeStepper& timeStepper )
 {
-   this->totalCpuTimer.reset();
-   this->totalRtTimer.reset();
+   this->totalTimer.reset();
+   this->totalTimer.start();
+   
 
    /****
     * Set-up the PDE solver
@@ -529,16 +540,10 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Set-up timers
     */
-   this->computeRtTimer.reset();
-   this->computeCpuTimer.reset();
-   this->ioRtTimer.reset();
-   this->ioRtTimer.stop();
-   this->ioCpuTimer.reset();
-   this->ioCpuTimer.stop();
-   solver.setComputeRtTimer( this->computeRtTimer );
-   solver.setComputeCpuTimer( this->computeCpuTimer );
-   solver.setIoRtTimer( this->ioRtTimer );
-   solver.setIoCpuTimer( this->ioCpuTimer );
+   this->computeTimer.reset();
+   this->ioTimer.reset();
+   solver.setComputeTimer( this->computeTimer );
+   solver.setIoTimer( this->ioTimer );
 
    /****
     * Start the solver
@@ -566,10 +571,8 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Stop timers
     */
-   this->computeRtTimer.stop();
-   this->computeCpuTimer.stop();
-   this->totalCpuTimer.stop();
-   this->totalRtTimer.stop();
+   this->computeTimer.stop();   
+   this->totalTimer.stop();
 
    /****
     * Write an epilog
@@ -599,17 +602,18 @@ template< typename ConfigTag >
 bool tnlSolverStarter< ConfigTag > :: writeEpilog( ostream& str, const Solver& solver  )
 {
    tnlLogger logger( logWidth, str );
+   logger.writeSeparator();
    logger.writeCurrentTime( "Finished at:" );
    if( ! solver.writeEpilog( logger ) )
-      return false;
-   logger.writeParameter< double >( "IO Real Time:", this -> ioRtTimer. getTime() );
-   logger.writeParameter< double >( "IO CPU Time:", this -> ioCpuTimer. getTime() );
-   logger.writeParameter< double >( "Compute Real Time:", this -> computeRtTimer. getTime() );
-   logger.writeParameter< double >( "Compute CPU Time:", this -> computeCpuTimer. getTime() );
-   logger.writeParameter< double >( "Total Real Time:", this -> totalRtTimer. getTime() );
-   logger.writeParameter< double >( "Total CPU Time:", this -> totalCpuTimer. getTime() );
+      return false;   
+   logger.writeParameter< const char* >( "Compute time:", "" );
+   this->computeTimer.writeLog( logger, 1 );   
+   logger.writeParameter< const char* >( "I/O time:", "" );
+   this->ioTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Total time:", "" );
+   this->totalTimer.writeLog( logger, 1 );   
    char buf[ 256 ];
-   sprintf( buf, "%f %%", 100 * ( ( double ) this -> totalCpuTimer. getTime() ) / this -> totalRtTimer. getTime() );
+   sprintf( buf, "%f %%", 100 * ( ( double ) this->totalTimer.getCPUTime() ) / this->totalTimer.getRealTime() );
    logger.writeParameter< char* >( "CPU usage:", buf );
    logger.writeSeparator();
    return true;

@@ -33,7 +33,7 @@ template< typename Real,
           typename Index >
 tnlVector< Real, Device, Index >::tnlVector( const Index size )
 {
-   this -> setSize( size );
+   this->setSize( size );
 }
 
 

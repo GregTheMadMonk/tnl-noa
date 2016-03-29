@@ -201,13 +201,13 @@ tnlString tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: getType() const
 template< typename Real, typename Index >
 bool tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: setSize( int new_size )
 {
-   this -> size = new_size;
-   int blocks_number = this -> size / block_size + ( this -> size % block_size != 0 );
+   this->size = new_size;
+   int blocks_number = this->size / block_size + ( this->size % block_size != 0 );
    if( ! block_offsets. setSize( blocks_number + 1 ) ||
-	   ! columns_sequences_offsets. setSize( this -> size + 1 ) ||
+	   ! columns_sequences_offsets. setSize( this->size + 1 ) ||
 	   ! column_sequences_in_block. setSize( blocks_number ) ||
 	   ! columns_sequences_blocks_offsets. setSize( blocks_number + 1 ) ||
-	   ! column_sequences_lengths. setSize( this -> size ) )
+	   ! column_sequences_lengths. setSize( this->size ) )
       return false;
    block_offsets. setValue( 0 );
    columns_sequences_blocks_offsets. setValue( 0 );
@@ -275,7 +275,7 @@ bool tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: copyFrom( const tnlFastRgCSRM
 	}
 	block_size = coa_fast_csr_matrix. block_size;
 
-	if( ! this -> setSize( coa_fast_csr_matrix. getSize() ) ||
+	if( ! this->setSize( coa_fast_csr_matrix. getSize() ) ||
     	! nonzero_elements. setSize( coa_fast_csr_matrix. nonzero_elements. getSize() ) ||
 		! column_sequences. setSize( coa_fast_csr_matrix. column_sequences. getSize() ) )
 		return false;
@@ -304,9 +304,9 @@ template< typename Real, typename Index >
 Real tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: getElement( int row,
                                                         int column ) const
 {
-    tnlAssert( 0 <= row && row < this -> getSize(),
+    tnlAssert( 0 <= row && row < this->getSize(),
 	 		   cerr << "The row is outside the matrix." );
-    tnlAssert( 0 <= column && column < this -> getSize(),
+    tnlAssert( 0 <= column && column < this->getSize(),
 	    	   cerr << "The column is outside the matrix." );
 	 tnlAssert( false, cerr << "Not Implemeted Yet!" );
 	 return 0;
@@ -316,7 +316,7 @@ template< typename Real, typename Index >
 Real tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: rowProduct( int row,
                                                                const tnlVector< Real, tnlCuda, Index >& vec ) const
 {
-   tnlAssert( 0 <= row && row < this -> getSize(),
+   tnlAssert( 0 <= row && row < this->getSize(),
 			  cerr << "The row is outside the matrix." );
    tnlAssert( vec != NULL, );
    tnlAssert( false, cerr << "Not Implemented Yet!" );
@@ -330,7 +330,7 @@ void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlVecto
    tnlAssert( vec != NULL && result != NULL,);
 
 #ifdef HAVE_CUDA
-	/*sparseFastCSRMatrixVectorProductKernel( this -> getSize(),
+	/*sparseFastCSRMatrixVectorProductKernel( this->getSize(),
 	                                              block_size,
 	                                              columns_sequences_blocks_offsets. getData(),
 	                                              columns_sequences_offsets. getData(),
@@ -355,22 +355,22 @@ void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: printOut( ostream& str,
 {
    str << "Structure of tnlFastRgCSRMatrix" << endl;
    str << "Matrix name:" << name << endl;
-   str << "Matrix size:" << this -> getSize() << endl;
+   str << "Matrix size:" << this->getSize() << endl;
    str << "Allocated elements:" << nonzero_elements. getSize() << endl;
    str << "Matrix blocks: " << block_offsets. getSize() << endl;
 
    int print_lines = lines;
    if( ! print_lines )
-	   print_lines = this -> getSize();
+	   print_lines = this->getSize();
 
-   for( int i = 0; i < this -> block_offsets. getSize() - 1; i ++ )
+   for( int i = 0; i < this->block_offsets. getSize() - 1; i ++ )
    {
 	   if( i * block_size > print_lines )
 		   continue;
 	   str << endl << "Block number: " << i << endl;
 	   str << " Lines: " << i * block_size << " -- " << ( i + 1 ) * block_size << endl;
 	   str << " Column sequences: " << column_sequences_in_block. getElement( i ) << endl;
-	   for( int k = i * block_size; k < ( i + 1 ) * block_size && k < this -> getSize(); k ++ )
+	   for( int k = i * block_size; k < ( i + 1 ) * block_size && k < this->getSize(); k ++ )
 	   {
 		   str << " Line: " << k << flush
 			   << " Line length: " << column_sequences_lengths. getElement( k ) << flush
@@ -383,8 +383,8 @@ void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: printOut( ostream& str,
 	   str << endl;
 
 	   int current_block_size = block_size;
-	   if( ( i + 1 ) * block_size > this -> getSize() )
-	      current_block_size = this -> getSize() % block_size;
+	   if( ( i + 1 ) * block_size > this->getSize() )
+	      current_block_size = this->getSize() % block_size;
 	   int block_length = block_offsets. getElement( i + 1 ) - block_offsets. getElement( i );
 	   int row_length = block_length / block_size;
 	   str << " Block data: " << block_offsets. getElement( i ) << " -- " << block_offsets. getElement( i + 1 ) << endl;

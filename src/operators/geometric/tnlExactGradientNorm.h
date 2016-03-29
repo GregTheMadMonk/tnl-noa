@@ -45,7 +45,7 @@ class tnlExactGradientNorm< 1, Real >
       tnlExactGradientNorm()
       : epsilonSquare( 0.0 ){};
 
-      void setRegularization( const Real& epsilon )
+      void setRegularizationEpsilon( const Real& epsilon )
       {
          this->epsilonSquare = epsilon*epsilon;
       }
@@ -113,7 +113,7 @@ class tnlExactGradientNorm< 2, Real >
       tnlExactGradientNorm()
       : epsilonSquare( 0.0 ){};
 
-      void setRegularization( const Real& epsilon )
+      void setRegularizationEpsilon( const Real& epsilon )
       {
          this->epsilonSquare = epsilon*epsilon;
       }
@@ -187,7 +187,7 @@ class tnlExactGradientNorm< 3, Real >
       tnlExactGradientNorm()
       : epsilonSquare( 0.0 ){};
 
-      void setRegularization( const Real& epsilon )
+      void setRegularizationEpsilon( const Real& epsilon )
       {
          this->epsilonSquare = epsilon*epsilon;
       }

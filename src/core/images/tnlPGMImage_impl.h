@@ -34,8 +34,8 @@ tnlPGMImage< Index >::
 readHeader()
 {
    char magicNumber[ 3 ];
-   this -> file >> magicNumber;
-   if( this -> file.fail() )
+   this->file >> magicNumber;
+   if( this->file.fail() )
    {
       cerr << "Unable to read the magic number." << endl;
       return false;
@@ -49,17 +49,17 @@ readHeader()
       this->binary = true;
 
    char character;
-   this -> file.get(character);
-   while ( ! this -> file.eof() and ( character == ' ' || character == '\t' || character == '\r' || character == '\n') )
+   this->file.get(character);
+   while ( ! this->file.eof() and ( character == ' ' || character == '\t' || character == '\r' || character == '\n') )
    {
-	this -> file.get(character);
+	this->file.get(character);
 	if ( character == '#' )
-		while (! this -> file.eof() && ( character != '\n' ) )
-			this -> file.get( character );
+		while (! this->file.eof() && ( character != '\n' ) )
+			this->file.get( character );
    }
-   this -> file.unget();
+   this->file.unget();
    
-   this -> file >> this -> width >> this -> height >> this -> maxColors;
+   this->file >> this->width >> this->height >> this->maxColors;
    return true;   
 }
 
@@ -69,7 +69,7 @@ tnlPGMImage< Index >::
 openForRead( const tnlString& fileName )
 {
    this->close();
-   if ( this -> binary )
+   if ( this->binary )
    	this->file.open( fileName.getString(), fstream::in | fstream::binary);
    else 
 	this->file.open( fileName.getString(), fstream::in );
@@ -102,13 +102,13 @@ read( const tnlRegionOfInterest< Index > roi,
       for( j = 0; j < this->width; j ++ )
       {
          int col;
-	 unsigned char col_aux;
-         if( this->binary ) 
-	 {
-		this -> file >> col_aux;
-		col = (int)col_aux;
-	 }
-         else this -> file >> col;
+         unsigned char col_aux;
+              if( this->binary ) 
+         {
+           this->file >> col_aux;
+           col = (int)col_aux;
+         }
+         else this->file >> col;
          if( roi.isIn( i, j ) )
          {
             cell.getCoordinates().x() = j - roi.getLeft();
@@ -190,7 +190,7 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
          //                                     grid.getDimensions().y() - 1 - i ) );
 
          unsigned char color = 255 * vector.getElement( cell.getIndex() );
-         if ( ! this -> binary )
+         if ( ! this->binary )
 	 {
 	     int color_aux = (int)color;
 	     this->file << color_aux;
@@ -199,7 +199,7 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
 	 else this->file << color;
       }
       
-      if ( ! this -> binary )
+      if ( ! this->binary )
         this->file << '\n';
    }
    return true;

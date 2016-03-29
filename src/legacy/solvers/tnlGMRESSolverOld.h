@@ -170,13 +170,13 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
 
    if( normb == 0.0 ) normb = 1.0;
 
-   this -> iteration = 0;
-   this -> residue = beta / normb;
+   this->iteration = 0;
+   this->residue = beta / normb;
 
    tnlSharedVector< Real, Device, Index > vi;
    tnlSharedVector< Real, Device, Index > vk;
-   while( this -> iteration < max_iterations &&
-          this -> residue > max_residue )
+   while( this->iteration < max_iterations &&
+          this->residue > max_residue )
    {
       const Index m = restarting;
       for( i = 0; i < m + 1; i ++ )
@@ -199,7 +199,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
 
 
       //dbgCout( " ----------- Starting m-loop -----------------" );
-      for( i = 0; i < m && this -> iteration <= max_iterations; i++ )
+      for( i = 0; i < m && this->iteration <= max_iterations; i++ )
       {
          vi. bind( &( _v. getData()[ i * size ] ), size );
          /****
@@ -260,20 +260,20 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
                              cs[ i ],
                              sn[ i ] );
 
-         this -> residue = fabs( s[ i + 1 ] ) / normb;
+         this->residue = fabs( s[ i + 1 ] ) / normb;
 
-         if( this -> iteration % 10 == 0 &&
-             this -> verbosity > 1 )
-            this -> printOut();
-         if( this -> residue < max_residue )
+         if( this->iteration % 10 == 0 &&
+             this->verbosity > 1 )
+            this->printOut();
+         if( this->residue < max_residue )
          {
             update( i, m, _H, _s, _v, x );
-            if( this -> verbosity > 0 )
-               this -> printOut();
+            if( this->verbosity > 0 )
+               this->printOut();
             return true;
          }
          //DBG_WAIT;
-         this -> iteration ++;
+         this->iteration ++;
       }
       update( m - 1, m, _H, _s, _v, x );
       //dbgCout_ARRAY( x, size );
@@ -299,12 +299,12 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
       //dbgCout_ARRAY( r, size );
       //dbgExpr( beta );
       //dbgExpr( beta / normb );
-      this -> residue = beta / normb;
-      this -> iteration ++;
+      this->residue = beta / normb;
+      this->iteration ++;
    }
-   if( this -> verbosity > 0 )
-      this -> printOut();
-   if( this -> iteration == max_iterations ) return false;
+   if( this->verbosity > 0 )
+      this->printOut();
+   if( this->iteration == max_iterations ) return false;
    return true;
 };
 
@@ -342,7 +342,7 @@ void tnlGMRESSolverOld< Real, Device, Index > :: update( Index k,
    tnlSharedVector< Real, Device, Index > vi;
    for( i = 0; i <= k; i++)
    {
-      vi. bind( &( v. getData()[ i * this -> size ] ), x. getSize() );
+      vi. bind( &( v. getData()[ i * this->size ] ), x. getSize() );
       x. alphaXPlusY( y[ i ], vi );
    }
 };

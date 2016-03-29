@@ -56,7 +56,7 @@ template< typename Real,
           typename Index >
 tnlString tnlGrid< 1, Real, Device, Index >::getTypeVirtual() const
 {
-   return this -> getType();
+   return this->getType();
 }
 
 template< typename Real,
@@ -109,7 +109,7 @@ template< typename Real,
           typename Index  >
 void tnlGrid< 1, Real, Device, Index >::setDimensions( const CoordinatesType& dimensions )
 {
-   this -> setDimensions( dimensions. x() );
+   this->setDimensions( dimensions. x() );
 }
 
 template< typename Real,
@@ -278,7 +278,7 @@ tnlGrid< 1, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
         cell.getCoordinates().x() < getDimensions().x();
         cell.getCoordinates().x()++ )
    {
-      IndexType c = this -> getEntityIndex( cell );
+      IndexType c = this->getEntityIndex( cell );
       maxDiff = Max( maxDiff, tnlAbs( f1[ c ] - f2[ c ] ) );
    }
    return maxDiff;
@@ -340,7 +340,7 @@ bool tnlGrid< 1, Real, Device, Index >::load( tnlFile& file )
       cerr << "I was not able to load the domain description of a tnlGrid." << endl;
       return false;
    }
-   this -> setDimensions( dimensions );
+   this->setDimensions( dimensions );
    return true;
 };
 
@@ -384,7 +384,7 @@ bool tnlGrid< 1, Real, Device, Index >::write( const MeshFunction& function,
    {
       cerr << "The size ( " << function. getSize()
            << " ) of the mesh function does not agree with the DOFs ( " 
-           << this -> template getEntitiesCount< Cell >() << " ) of a mesh." << endl;
+           << this->template getEntitiesCount< Cell >() << " ) of a mesh." << endl;
       return false;
    }
    fstream file;

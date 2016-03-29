@@ -38,10 +38,11 @@ processEntities(
    const CoordinatesType& entityBasis,   
    UserData& userData )
 {
+
+   
    GridEntity entity( grid );
    entity.setOrientation( entityOrientation );
    entity.setBasis( entityBasis );
-   
    if( processOnlyBoundaryEntities )
    {
       entity.getCoordinates() = begin;
@@ -172,8 +173,8 @@ void
 tnlGridTraverser< tnlGrid< 2, Real, tnlHost, Index > >::
 processEntities(
    const GridType& grid,
-   const CoordinatesType& begin,
-   const CoordinatesType& end,
+   const CoordinatesType begin,
+   const CoordinatesType end,
    const CoordinatesType& entityOrientation,
    const CoordinatesType& entityBasis,      
    UserData& userData )
@@ -211,6 +212,7 @@ processEntities(
    }
    else
    {
+//#pragma omp parallel for firstprivate( entity, begin, end ) if( tnlHost::isOMPEnabled() )      
       for( entity.getCoordinates().y() = begin.y();
            entity.getCoordinates().y() <= end.y();
            entity.getCoordinates().y() ++ )

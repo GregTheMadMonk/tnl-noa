@@ -74,8 +74,22 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+writeEpilog( tnlLogger& logger )
+{
+   logger.writeParameter< const char* >( "GPU transfer time:", "" );
+   this->gpuTransferTimer.writeLog( logger, 1 );
+   return true;
+}
+
+template< typename Mesh,
+          typename BoundaryCondition,
+          typename RightHandSide,
+          typename DifferentialOperator >
+bool
+tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setup( const tnlParameterContainer& parameters )
 {
+   this->gpuTransferTimer.reset();
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
       return false;
@@ -207,6 +221,7 @@ getExplicitRHS( const RealType& time,
    this->bindDofs( mesh, uDofs );
    MeshFunctionType fu( mesh, fuDofs );
    tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+   explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
    explicitUpdater.template update< typename Mesh::Cell >( 
       time,
       mesh,

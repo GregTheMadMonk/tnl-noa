@@ -20,13 +20,16 @@
 
 #include <core/mfuncs.h>
 
+#include "tnlSemiImplicitTimeStepper.h"
+
 template< typename Problem,
           typename LinearSystemSolver >
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 tnlSemiImplicitTimeStepper()
 : problem( 0 ),
   linearSystemSolver( 0 ),
-  timeStep( 0 )
+  timeStep( 0 ),
+  allIterations( 0 )
 {
 };
 
@@ -75,6 +78,7 @@ init( const MeshType& mesh )
       return false;
    this->linearSystemAssemblerTimer.reset();
    this->linearSystemSolverTimer.reset();
+   this->allIterations = 0;
    return true;
 }
 
@@ -84,7 +88,7 @@ void
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 setProblem( ProblemType& problem )
 {
-   this -> problem = &problem;
+   this->problem = &problem;
 };
 
 template< typename Problem,
@@ -93,7 +97,7 @@ Problem*
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 getProblem() const
 {
-    return this -> problem;
+    return this->problem;
 };
 
 template< typename Problem,
@@ -187,6 +191,7 @@ solve( const RealType& time,
          return false;
       }
       this->linearSystemSolverTimer.stop();
+      this->allIterations += this->linearSystemSolver->getIterations();
 
       //if( verbose )
       //   cout << endl;
@@ -214,10 +219,15 @@ bool
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 writeEpilog( tnlLogger& logger )
 {
-   logger.writeParameter< double >( "Pre-iterate time:", this->preIterateTimer.getTime() );
-   logger.writeParameter< double >( "Linear system assembler time:", this->linearSystemAssemblerTimer.getTime() );
-   logger.writeParameter< double >( "Linear system solver time:", this->linearSystemSolverTimer.getTime() );
-   logger.writeParameter< double >( "Post-iterate time:", this->postIterateTimer.getTime() );
+   logger.writeParameter< long long int >( "Iterations count:", this->allIterations );
+   logger.writeParameter< const char* >( "Pre-iterate time:", "" );
+   this->preIterateTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Linear system assembler time:", "" );
+   this->linearSystemAssemblerTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Linear system solver time:", "" );
+   this->linearSystemSolverTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Post-iterate time:", "" );
+   this->postIterateTimer.writeLog( logger, 1 );
    return true;
 }
 

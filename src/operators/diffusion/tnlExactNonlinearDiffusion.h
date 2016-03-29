@@ -73,7 +73,7 @@ class tnlExactNonlinearDiffusion< 1, Nonlinearity, InnerOperator >
          const RealType u_xx = innerOperator.template getPartialDerivative< Function, 2, 0, 0 >( function, v, time );
          const RealType g = nonlinearity( function, v, time ); 
          const RealType g_x = nonlinearity.template getPartialDerivative< Function, 1, 0, 0 >( function, v, time );
-         return u_xx - u_x * g_x / g;          
+         return u_xx * g + u_x * g_x;          
       }
    
       protected:
@@ -131,7 +131,7 @@ class tnlExactNonlinearDiffusion< 2, Nonlinearity, InnerOperator >
          const RealType g_x = nonlinearity.template getPartialDerivative< Function, 1, 0, 0 >( function, v, time );
          const RealType g_y = nonlinearity.template getPartialDerivative< Function, 0, 1, 0 >( function, v, time );
 
-         return  u_xx + u_yy - ( g_x * u_x + g_y * u_y ) / g; 
+         return  ( u_xx + u_yy ) * g + g_x * u_x + g_y * u_y; 
       }
 
       protected:
@@ -193,7 +193,7 @@ class tnlExactNonlinearDiffusion< 3, Nonlinearity, InnerOperator >
          const RealType g_y = nonlinearity.template getPartialDerivative< Function, 0, 1, 0 >( function, v, time );
          const RealType g_z = nonlinearity.template getPartialDerivative< Function, 0, 0, 1 >( function, v, time );
 
-         return  u_xx + u_yy + u_zz - ( g_x * u_x + g_y * u_y + g_z * u_z ) / g; 
+         return ( u_xx + u_yy + u_zz ) * g + g_x * u_x + g_y * u_y + g_z * u_z; 
       }
       
       protected:

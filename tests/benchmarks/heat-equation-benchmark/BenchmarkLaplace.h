@@ -35,15 +35,15 @@ class BenchmarkLaplace< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
 
-      __cuda_callable__
       template< typename MeshEntity >
+      __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;
 
       template< typename MeshEntity, typename Vector, typename MatrixRow >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
+      void setMatrixElements( const RealType& time,
                                const RealType& tau,
                                const MeshType& mesh,
                                const IndexType& index,
@@ -77,15 +77,15 @@ class BenchmarkLaplace< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
 
-      __cuda_callable__
       template< typename MeshEntity >
+      __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;
 
       template< typename MeshEntity, typename Vector, typename MatrixRow >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
+      void setMatrixElements( const RealType& time,
                                const RealType& tau,
                                const MeshType& mesh,
                                const IndexType& index,
@@ -119,15 +119,15 @@ class BenchmarkLaplace< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
 
-      __cuda_callable__
       template< typename MeshEntity >
+      __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;
 
       template< typename MeshEntity, typename Vector, typename MatrixRow >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
+      void setMatrixElements( const RealType& time,
                                const RealType& tau,
                                const MeshType& mesh,
                                const IndexType& index,
