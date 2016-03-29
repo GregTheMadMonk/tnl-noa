@@ -33,7 +33,6 @@ class EulerVelGetter
          return this->operator[]( entity.getIndex() );
       }
       
-      template< typename MeshEntity >
       __cuda_callable__
       Real operator[]( const IndexType& idx ) const
       {
