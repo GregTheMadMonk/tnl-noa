@@ -111,18 +111,16 @@ setInitialCondition( const tnlParameterContainer& parameters,
    double eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * velR * velR;
    double x0 = parameters.getParameter< double >( "riemann-border" );
    cout << gamma << " " << rhoL << " " << velL << " " << preL << " " << eL << " " << rhoR << " " << velR << " " << preR << " " << eR << " " << x0 << " " << gamma << endl;
-   int count = mesh.template getEntitiesCount< Cell >()/3;
+   int count = mesh.template getEntitiesCount< Cell >();
    uRho.bind(mesh,dofs,0);
    uRhoVelocity.bind(mesh,dofs,count);
    uEnergy.bind(mesh,dofs,2 * count);
-   tnlVector < RealType, DeviceType, IndexType > data;
-   data.setSize(2*count);
-   velocity.bind(mesh,data,0);
-   pressure.bind(mesh,data,count);
+   velocity.setMesh( mesh );
+   pressure.setMesh( mesh );
    for(IndexType i = 0; i < count; i++)
       if (i < x0 * count )
          {
-            uRho[i] = rhoL;
+            uRho.setElement( i, rhoL );
             uRhoVelocity[i] = rhoL * velL;
             uEnergy[i] = eL;
             velocity[i] = velL;
@@ -305,12 +303,6 @@ getExplicitRHS( const RealType& time,
                                                            uEnergy,
                                                            fuEnergy );  
  
-/*   
-   tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
-   boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
-      this->boundaryCondition, 
-      time + tau, 
-       _u );*/
  }
 
 template< typename Mesh,
