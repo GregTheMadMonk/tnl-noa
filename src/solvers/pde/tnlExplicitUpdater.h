@@ -52,7 +52,8 @@ class tnlExplicitUpdaterTraverserUserData
         rightHandSide( &rightHandSide ),
         u( &u ),
         fu( &fu )
-      {};
+      {
+      };
 };
 
 
