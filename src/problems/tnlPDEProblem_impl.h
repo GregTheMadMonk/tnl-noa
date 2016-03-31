@@ -111,6 +111,20 @@ template< typename Mesh,
           typename Real,
           typename Device,
           typename Index >
+void
+tnlPDEProblem< Mesh, Real, Device, Index >::
+setExplicitBoundaryConditions( const RealType& time,
+                               const MeshType& mesh,
+                               DofVectorType& dofs,
+                               MeshDependentDataType& meshDependentData )
+{   
+}
+
+
+template< typename Mesh,
+          typename Real,
+          typename Device,
+          typename Index >
 bool
 tnlPDEProblem< Mesh, Real, Device, Index >::
 postIterate( const RealType& time,

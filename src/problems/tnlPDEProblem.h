@@ -65,6 +65,11 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
                        const MeshType& mesh,
                        DofVectorType& dofs,
                        MeshDependentDataType& meshDependentData );
+      
+      void setExplicitBoundaryConditions( const RealType& time,
+                                          const MeshType& mesh,
+                                          DofVectorType& dofs,
+                                          MeshDependentDataType& meshDependentData );
 
       bool postIterate( const RealType& time,
                         const RealType& tau,

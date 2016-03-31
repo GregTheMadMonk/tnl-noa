@@ -128,6 +128,7 @@ solve( const RealType& time,
    this->meshDependentData = &meshDependentData;
    if( ! this->odeSolver->solve( dofVector ) )
       return false;
+   this->problem->setExplicitBoundaryConditions( stopTime, *( this->mesh ), dofVector, *( this->meshDependentData ) );
    mainTimer.stop();
    this->allIterations += this->odeSolver->getIterations();
    return true;
@@ -155,6 +156,7 @@ getExplicitRHS( const RealType& time,
    }
    this->preIterateTimer.stop();
    this->explicitUpdaterTimer.start();
+   this->problem->setExplicitBoundaryConditions( time, *( this->mesh ), u, *( this->meshDependentData ) );
    this->problem->getExplicitRHS( time, tau, *( this->mesh ), u, fu, *( this->meshDependentData ) );
    this->explicitUpdaterTimer.stop();
    this->postIterateTimer.start();
