@@ -25,8 +25,17 @@
 #include <core/tnlTimer.h>
 #include <core/tnlTimerRT.h>
 #include <core/tnlCuda.h>
+#include <core/vectors/tnlStaticVector.h>
+#include <mesh/tnlGrid.h>
 
 using namespace std;
+
+struct Data
+{
+   double time, tau;
+   tnlStaticVector< 2, double > c1, c2, c3, c4;
+   tnlGrid< 2, double > grid;
+};
 
 #ifdef HAVE_CUDA
 template< typename Real, typename Index >
@@ -340,7 +349,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
    /****
     * Explicit Euler solver
     */
-   const int maxCudaGridSize = tnlCuda::getMaxGridSize();
+   //const int maxCudaGridSize = tnlCuda::getMaxGridSize();
    dim3 cudaBlockSize( 16, 16 );
    dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
                       gridYSize / 16 + ( gridYSize % 16 != 0 ) );
@@ -357,7 +366,21 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
    while( time < finalTime )
    {
       const Real timeLeft = finalTime - time;
-      const Real currentTau = tau < timeLeft ? tau : timeLeft;      
+      const Real currentTau = tau < timeLeft ? tau : timeLeft;    
+      
+      /*Real* kernelTime = tnlCuda::passToDevice( time );
+      Real* kernelTau = tnlCuda::passToDevice( tau );
+      typedef tnlStaticVector< 2, Real > Coordinates;
+      Coordinates c;
+      Coordinates* kernelC1 = tnlCuda::passToDevice( c );
+      Coordinates* kernelC2 = tnlCuda::passToDevice( c );
+      Coordinates* kernelC3 = tnlCuda::passToDevice( c );
+      Coordinates* kernelC4 = tnlCuda::passToDevice( c );
+      typedef tnlGrid< 2, Real, tnlCuda, int > Grid;
+      Grid g;
+      Grid* kernelGrid = tnlCuda::passToDevice( g );*/
+      Data d;
+      Data* kernelD = tnlCuda::passToDevice( d );
 
       /****
        * Neumann boundary conditions
@@ -410,6 +433,17 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
       iteration++;
       if( verbose && iteration % 1000 == 0 )
          cout << "Iteration: " << iteration << "\t Time:" << time << "    \r" << flush;
+      
+      
+      
+      tnlCuda::freeFromDevice( kernelD );
+      /*tnlCuda::freeFromDevice( kernelTau );
+      tnlCuda::freeFromDevice( kernelC1 );
+      tnlCuda::freeFromDevice( kernelC2 );
+      tnlCuda::freeFromDevice( kernelC3 );
+      tnlCuda::freeFromDevice( kernelC4 );
+      tnlCuda::freeFromDevice( kernelGrid );*/
+
    }
    timer.stop();
    if( verbose )      
