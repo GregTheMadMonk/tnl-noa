@@ -220,7 +220,9 @@ __global__ void heatEquationKernel( const Real* u,
                                     const Real hx_inv,
                                     const Real hy_inv,
                                     const Index gridXSize,
-                                    const Index gridYSize )
+                                    const Index gridYSize,
+                                    Data d1,
+                                    Data d2 )
 {
    const Index i = blockIdx.x * blockDim.x + threadIdx.x;
    const Index j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -379,8 +381,8 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
       typedef tnlGrid< 2, Real, tnlCuda, int > Grid;
       Grid g;
       Grid* kernelGrid = tnlCuda::passToDevice( g );*/
-      Data d;
-      Data* kernelD = tnlCuda::passToDevice( d );
+      Data d, d2;
+      //Data* kernelD = tnlCuda::passToDevice( d );
 
       /****
        * Neumann boundary conditions
@@ -398,7 +400,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
        */
       //cout << "Laplace operator ... " << endl;
       heatEquationKernel<<< cudaGridSize, cudaBlockSize >>>
-         ( cuda_u, cuda_aux, tau, hx_inv, hy_inv, gridXSize, gridYSize );
+         ( cuda_u, cuda_aux, tau, hx_inv, hy_inv, gridXSize, gridYSize, d, d2 );
       if( cudaGetLastError() != cudaSuccess )
       {
          cerr << "Laplace operator failed." << endl;
@@ -436,7 +438,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
       
       
       
-      tnlCuda::freeFromDevice( kernelD );
+      //tnlCuda::freeFromDevice( kernelD );
       /*tnlCuda::freeFromDevice( kernelTau );
       tnlCuda::freeFromDevice( kernelC1 );
       tnlCuda::freeFromDevice( kernelC2 );

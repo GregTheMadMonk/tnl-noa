@@ -28,17 +28,24 @@ template< typename Real,
           typename RightHandSide >
 class tnlExplicitUpdaterTraverserUserData
 {
-   public:
 
-      const Real *time;
+      /*const DifferentialOperator differentialOperator;
 
-      const DifferentialOperator* differentialOperator;
+      const BoundaryConditions boundaryConditions;
 
-      const BoundaryConditions* boundaryConditions;
+      const RightHandSide rightHandSide;
 
-      const RightHandSide* rightHandSide;
+      MeshFunction u, fu;*/
+      
+      char data[ sizeof( DifferentialOperator ) + 
+                 sizeof( BoundaryConditions ) + 
+                 sizeof( RightHandSide ) +
+                 2 * sizeof( MeshFunction ) ];
 
-      MeshFunction *u, *fu;
+      public:
+
+         const Real time;         
+
 
       tnlExplicitUpdaterTraverserUserData( const Real& time,
                                            const DifferentialOperator& differentialOperator,
@@ -46,14 +53,55 @@ class tnlExplicitUpdaterTraverserUserData
                                            const RightHandSide& rightHandSide,
                                            MeshFunction& u,
                                            MeshFunction& fu )
-      : time( &time ),
-        differentialOperator( &differentialOperator ),
-        boundaryConditions( &boundaryConditions ),
-        rightHandSide( &rightHandSide ),
-        u( &u ),
-        fu( &fu )
+      : time( time )
+        /*differentialOperator( differentialOperator ),
+        boundaryConditions( boundaryConditions ),
+        rightHandSide( rightHandSide ),
+        u( u ),
+        fu( fu )*/
       {
+         char* ptr = data;
+         memcpy( ptr, &differentialOperator, sizeof( DifferentialOperator ) );
+         ptr +=  sizeof( DifferentialOperator );
+         memcpy( ptr, &boundaryConditions, sizeof( BoundaryConditions ) );
+         ptr += sizeof( BoundaryConditions );
+         memcpy( ptr, &rightHandSide, sizeof( RightHandSide ) );
+         ptr += sizeof( RightHandSide );
+         memcpy( ptr, &u, sizeof( MeshFunction ) );
+         ptr += sizeof( MeshFunction );
+         memcpy( ptr, &fu, sizeof( MeshFunction ) );
       };
+      
+      DifferentialOperator& differentialOperator()
+      {
+         return * ( DifferentialOperator* ) data;
+      }
+      
+      BoundaryConditions& boundaryConditions()
+      {
+         return * ( BoundaryConditions* ) & data[ sizeof( DifferentialOperator ) ];
+      }
+      
+      RightHandSide& rightHandSide()
+      {
+         return * ( RightHandSide* ) & data[ sizeof( DifferentialOperator ) +
+                                             sizeof( BoundaryConditions ) ];
+      }
+      
+      MeshFunction& u()
+      {
+         return * ( MeshFunction* ) & data[ sizeof( DifferentialOperator ) +
+                                            sizeof( BoundaryConditions ) + 
+                                            sizeof( RightHandSide )];
+      }
+      
+      MeshFunction& fu()
+      {
+         return * ( MeshFunction* ) & data[ sizeof( DifferentialOperator ) +
+                                            sizeof( BoundaryConditions ) + 
+                                            sizeof( RightHandSide ) + 
+                                            sizeof( MeshFunction ) ];
+      }
 };
 
 
@@ -102,10 +150,10 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const GridEntity& entity )
             {
-               ( *userData.u )( entity ) = userData.boundaryConditions->operator()
-               ( *userData.u,
+               ( userData.u() )( entity ) = userData.boundaryConditions().operator()
+               ( userData.u(),
                  entity,
-                 *userData.time );
+                 userData.time );
             }
 
       };
@@ -122,18 +170,18 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const EntityType& entity )
             {
-               ( *userData.fu)( entity ) = 
-                  userData.differentialOperator->operator()(
-                     *userData.u,
+               ( userData.fu())( entity ) = 
+                  userData.differentialOperator().operator()(
+                     userData.u(),
                      entity,
-                     *userData.time );
+                     userData.time );
 
                typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               ( * userData.fu )( entity ) += 
+               (  userData.fu() )( entity ) += 
                   FunctionAdapter::getValue(
-                     *userData.rightHandSide,
+                     userData.rightHandSide(),
                      entity,
-                     *userData.time );
+                     userData.time );
             }
       };
       

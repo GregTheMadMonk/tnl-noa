@@ -46,7 +46,7 @@ update( const RealType& time,
                                            typename MeshFunction::DeviceType,
                                            typename MeshFunction::IndexType > >::value != true,
       "Error: I am getting tnlVector instead of tnlMeshFunction or similar object. You might forget to bind DofVector into tnlMeshFunction in you method getExplicitRHS."  );
-   if( std::is_same< DeviceType, tnlHost >::value )
+   //if( std::is_same< DeviceType, tnlHost >::value )
    {
       TraverserUserData userData( time, differentialOperator, boundaryConditions, rightHandSide, u, fu );
       tnlTraverser< MeshType, EntityType > meshTraverser;
@@ -60,7 +60,7 @@ update( const RealType& time,
                                                       userData );
 
    }
-   if( std::is_same< DeviceType, tnlCuda >::value )
+   /*if( std::is_same< DeviceType, tnlCuda >::value )
    {
       if( this->gpuTransferTimer ) 
          this->gpuTransferTimer->start();
@@ -73,7 +73,7 @@ update( const RealType& time,
      if( this->gpuTransferTimer ) 
          this->gpuTransferTimer->stop();
 
-      TraverserUserData userData( *kernelTime, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelFu );
+      //TraverserUserData userData( *kernelTime, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelFu );
       checkCudaDevice;
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
@@ -100,7 +100,7 @@ update( const RealType& time,
       if( this->gpuTransferTimer ) 
          this->gpuTransferTimer->stop();
 
-   }
+   }*/
 }
 
 #endif /* TNLEXPLICITUPDATER_IMPL_H_ */

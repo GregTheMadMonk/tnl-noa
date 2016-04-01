@@ -230,11 +230,11 @@ getExplicitRHS( const RealType& time,
       this->rightHandSide,
       this->u,
       fu );
-   tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
+   /*tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
    boundaryConditionsSetter.template apply< typename Mesh::Cell >(
       this->boundaryCondition,
       time + tau,
-      this->u );
+      this->u );*/
    
    //fu.write( "fu.txt", "gnuplot" );
    //this->u.write( "u.txt", "gnuplot");
