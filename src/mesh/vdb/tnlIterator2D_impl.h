@@ -6,8 +6,10 @@
 #include "tnlBitmask.h"
 #include "tnlCircle2D.h"
 
-template< unsigned size >
-tnlIterator2D< size >::tnlIterator2D( unsigned cellsX,
+template< unsigned size,
+          int LogX,
+          int LogY = LogX >
+tnlIterator2D< size, LogX, LogY >::tnlIterator2D( unsigned cellsX,
                                       unsigned cellsY,
                                       float stepX,
                                       float stepY,
@@ -22,8 +24,10 @@ tnlIterator2D< size >::tnlIterator2D( unsigned cellsX,
     this->startY = startY;
 }
 
-template< unsigned size >
-void tnlIterator2D< size >::computeBitmaskArray( tnlBitmaskArray< size >* bitmaskArray,
+template< unsigned size,
+          int LogX,
+          int LogY = LogX >
+void tnlIterator2D< size, LogX, LogY >::computeBitmaskArray( tnlBitmaskArray< size >* bitmaskArray,
                                                  tnlCircle2D* circle )
 {
     // yeah, in matrix, i like to iterate over rows first
@@ -40,5 +44,20 @@ void tnlIterator2D< size >::computeBitmaskArray( tnlBitmaskArray< size >* bitmas
         }
 }
 
+template< unsigned size,
+          int LogX,
+          int LogY = LogX >
+void tnlIterator2D< size, LogX, LogY >::setChildren( tnlNode< LogX, LogY >* children,
+                                                     tnlBitmaskArray< size >* bitmaskArray )
+{
+    for( int i = 0, i < size, i++ )
+    {
+        if( bitmaskArray->getIthBitmask( i )->getState() )
+            children[ i ] = new tnlNode< LogX, LogY >(); // TODO pridat parametry
+            children[ i ]->setChildren() // TODO pridat parametry level + depth
+        else
+            children[ i ] = NULL;
+    }
+}
 
 #endif // _TNLITERATOR2D_IMPL_H_INCLUDED_

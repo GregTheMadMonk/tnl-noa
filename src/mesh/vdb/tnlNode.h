@@ -13,6 +13,8 @@ class tnlNode
 public:
     tnlNode(){};
 
+    virtual void setChildren();
+
     ~tnlNode(){};
 
 private:

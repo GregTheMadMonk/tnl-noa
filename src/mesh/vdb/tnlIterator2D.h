@@ -3,8 +3,11 @@
 
 #include "tnlBitmaskArray.h"
 #include "tnlCircle2D.h"
+#include "tnlNode.h"
 
-template< unsigned size >
+template< unsigned size,
+          int LogX,
+          int LogY = LogX >
 class tnlIterator2D
 {
 public:
@@ -17,6 +20,9 @@ public:
 
     void computeBitmaskArray( tnlBitmaskArray< size >* bitmaskArray,
                               tnlCircle2D* circle );
+
+    void setChildren( tnlNode< LogX, LogY >* children,
+                      tnlBitmaskArray< size >* bitmaskArray );
 
     ~tnlIterator2D(){};
 
