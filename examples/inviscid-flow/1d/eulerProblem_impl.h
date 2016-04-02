@@ -99,28 +99,33 @@ setInitialCondition( const tnlParameterContainer& parameters,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
 {
+   cout << endl << "get conditions from CML";
    typedef typename MeshType::Cell Cell;
-   this->gamma = parameters.getParameter< double >( "gamma" );
-   double rhoL = parameters.getParameter< double >( "left-density" );
-   double velL = parameters.getParameter< double >( "left-velocity" );
-   double preL = parameters.getParameter< double >( "left-pressure" );
-   double eL = ( preL / (gamma - 1) ) + 0.5 * rhoL * velL * velL;
-   double rhoR = parameters.getParameter< double >( "right-density" );
-   double velR = parameters.getParameter< double >( "right-velocity" );
-   double preR = parameters.getParameter< double >( "right-pressure" );
-   double eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * velR * velR;
-   double x0 = parameters.getParameter< double >( "riemann-border" );
-   cout << gamma << " " << rhoL << " " << velL << " " << preL << " " << eL << " " << rhoR << " " << velR << " " << preR << " " << eR << " " << x0 << " " << gamma << endl;
+   this->gamma = parameters.getParameter< RealType >( "gamma" );
+   RealType rhoL = parameters.getParameter< RealType >( "left-density" );
+   RealType velL = parameters.getParameter< RealType >( "left-velocity" );
+   RealType preL = parameters.getParameter< RealType >( "left-pressure" );
+   RealType eL = ( preL / (gamma - 1) ) + 0.5 * rhoL * velL * velL;
+   RealType rhoR = parameters.getParameter< RealType >( "right-density" );
+   RealType velR = parameters.getParameter< RealType >( "right-velocity" );
+   RealType preR = parameters.getParameter< RealType >( "right-pressure" );
+   RealType eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * velR * velR;
+   RealType x0 = parameters.getParameter< RealType >( "riemann-border" );
+   cout <<endl << gamma << " " << rhoL << " " << velL << " " << preL << " " << eL << " " << rhoR << " " << velR << " " << preR << " " << eR << " " << x0 << " " << gamma << endl;
    int count = mesh.template getEntitiesCount< Cell >();
-   uRho.bind(mesh,dofs,0);
-   uRhoVelocity.bind(mesh,dofs,count);
-   uEnergy.bind(mesh,dofs,2 * count);
-   velocity.setMesh( mesh );
-   pressure.setMesh( mesh );
+cout << count << endl;
+   uRho.bind(mesh, dofs, 0);
+   uRhoVelocity.bind(mesh, dofs, count);
+   uEnergy.bind(mesh, dofs, 2 * count);
+   tnlVector < RealType, DeviceType, IndexType > data;
+   data.setSize(2*count);
+   velocity.bind( mesh, data, 0);
+   pressure.bind( mesh, data, count );
+   cout << endl << "set conditions from CML"<< endl;   
    for(IndexType i = 0; i < count; i++)
       if (i < x0 * count )
          {
-            uRho.setElement( i, rhoL );
+            uRho[i] = rhoL;
             uRhoVelocity[i] = rhoL * velL;
             uEnergy[i] = eL;
             velocity[i] = velL;
@@ -189,34 +194,36 @@ makeSnapshot( const RealType& time,
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
    this->bindDofs( mesh, dofs );
    tnlString fileName;
+   typedef typename MeshType::Cell Cell;
+   int count = mesh.template getEntitiesCount< Cell >();
    ofstream vysledek;
-   cout << "pressure:" << endl;
-   for (IndexType i = 0; i<100; i++) cout << this->pressure[i] << " " ;
+/*   cout << "pressure:" << endl;
+   for (IndexType i = 0; i<count; i++) cout << this->pressure[i] << " " << i ;
       vysledek.open("pressure" + to_string(step) + ".txt");
-   for (IndexType i = 0; i<101; i++)
+   for (IndexType i = 0; i<count; i++)
       vysledek << 0.01*i << " " << pressure[i] << endl;
    vysledek.close();
    cout << " " << endl;
    cout << "velocity:" << endl;
-   for (IndexType i = 0; i<100; i++) cout << this->velocity[i] << " " ;
+   for (IndexType i = 0; i<count; i++) cout << this->velocity[i] << " " ;
       vysledek.open("velocity" + to_string(step) + ".txt");
-   for (IndexType i = 0; i<101; i++)
+   for (IndexType i = 0; i<count; i++)
       vysledek << 0.01*i << " " << pressure[i] << endl;
    vysledek.close();
    cout << "energy:" << endl;
-   for (IndexType i = 0; i<100; i++) cout << this->uEnergy[i] << " " ;
+   for (IndexType i = 0; i<count; i++) cout << this->uEnergy[i] << " " ;
       vysledek.open("energy" + to_string(step) + ".txt");
-   for (IndexType i = 0; i<101; i++)
+   for (IndexType i = 0; i<count; i++)
       vysledek << 0.01*i << " " << uEnergy[i] << endl;
    vysledek.close();
    cout << " " << endl;
    cout << "density:" << endl;
-   for (IndexType i = 0; i<100; i++) cout << this->uRho[i] << " " ;
+   for (IndexType i = 0; i<count; i++) cout << this->uRho[i] << " " ;
       vysledek.open("density" + to_string(step) + ".txt");
-   for (IndexType i = 0; i<101; i++)
+   for (IndexType i = 0; i<count; i++)
       vysledek << 0.01*i << " " << uRho[i] << endl;
    vysledek.close();
-   getchar();
+*/   getchar();
 
    FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
    if( ! uRho.save( fileName ) )
@@ -243,6 +250,7 @@ getExplicitRHS( const RealType& time,
                 DofVectorType& _fu,
                 MeshDependentDataType& meshDependentData )
 {
+    cout << "explicitRHS" << endl;
     typedef typename MeshType::Cell Cell;
     int count = mesh.template getEntitiesCount< Cell >();
 	//bind _u
@@ -262,20 +270,21 @@ getExplicitRHS( const RealType& time,
 
    
    
-   
+   cout << "explicitRHSrho" << endl;   
    //rho
    this->bindDofs( mesh, _u );
    lF1DContinuity.setTau(tau);
    lF1DContinuity.setVelocity(velocity);
-   tnlExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity;
+   /*tnlExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity;
    explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF1DContinuity,
                                                            this->boundaryCondition,
                                                            this->rightHandSide,
                                                            uRho,
-                                                           fuRho );
+                                                           fuRho );*/
 
+   cout << "explicitRHSrhovel" << endl;
    //rhoVelocity
    lF1DMomentum.setTau(tau);
    lF1DMomentum.setVelocity(velocity);
@@ -289,7 +298,7 @@ getExplicitRHS( const RealType& time,
                                                            uRhoVelocity,
                                                            fuRhoVelocity );
    
-
+   cout << "explicitRHSenergy" << endl;
    //energy
    lF1DEnergy.setTau(tau);
    lF1DEnergy.setPressure(pressure);

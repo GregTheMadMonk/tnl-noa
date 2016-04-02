@@ -27,22 +27,22 @@ class LaxFridrichs< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
       Real tau;
-      double artificalViscosity;
-      double advectionSpeedX;
-      double advectionSpeedY;
+      Real artificalViscosity;
+      Real advectionSpeedX;
+      Real advectionSpeedY;
 
-      void setAdvectionSpeedY(const double advectionSpeed)
+      void setAdvectionSpeedY(const Real& advectionSpeed)
       {
 	   this->advectionSpeedY = advectionSpeed;
       }
 
 
-      void setAdvectionSpeedX(const double advectionSpeed)
+      void setAdvectionSpeedX(const Real& advectionSpeed)
       {
 	   this->advectionSpeedX = advectionSpeed;
       }
 
-      void setViscosity(const double artificalViscosity)
+      void setViscosity(const Real& artificalViscosity)
       {
 	   this->artificalViscosity = artificalViscosity;
       }
@@ -94,22 +94,22 @@ class LaxFridrichs< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
       Real tau;
-      double artificalViscosity;
-      double advectionSpeedX;
-      double advectionSpeedY;
+      Real artificalViscosity;
+      Real advectionSpeedX;
+      Real advectionSpeedY;
 
-      void setAdvectionSpeedY(const double advectionSpeed)
+      void setAdvectionSpeedY(const Real& advectionSpeed)
       {
 	   this->advectionSpeedY = advectionSpeed;
       }
 
 
-      void setAdvectionSpeedX(const double advectionSpeed)
+      void setAdvectionSpeedX(const Real& advectionSpeed)
       {
 	   this->advectionSpeedX = advectionSpeed;
       }
 
-      void setViscosity(const double artificalViscosity)
+      void setViscosity(const Real& artificalViscosity)
       {
 	   this->artificalViscosity = artificalViscosity;
       }
@@ -161,22 +161,22 @@ class LaxFridrichs< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
       Real tau;
-      double artificalViscosity;
-      double advectionSpeedX;
-      double advectionSpeedY;
+      Real artificalViscosity;
+      Real advectionSpeedX;
+      Real advectionSpeedY;
 
-      void setAdvectionSpeedY(const double advectionSpeed)
+      void setAdvectionSpeedY(const Real& advectionSpeed)
       {
 	   this->advectionSpeedY = advectionSpeed;
       }
 
 
-      void setAdvectionSpeedX(const double advectionSpeed)
+      void setAdvectionSpeedX(const Real& advectionSpeed)
       {
 	   this->advectionSpeedX = advectionSpeed;
       }
 
-      void setViscosity(const double artificalViscosity)
+      void setViscosity(const Real& artificalViscosity)
       {
 	   this->artificalViscosity = artificalViscosity;
       }

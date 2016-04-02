@@ -48,12 +48,8 @@ operator()( const MeshFunction& u,
    double a;
    a = this->advectionSpeedX;
    return   (0.5 / this->tau ) * this->artificalViscosity *
-	    ( u[ west ]
-            - 2.0 * u[ center ]
-            + u[ east ] )
-            - (a * ( u[ east ]
-            - u[west] ) )
-            * hxInverse * 0.5;
+	    ( u[ west ]- 2.0 * u[ center ] + u[ east ] )
+            - (a = this->advectionSpeedX * ( u[ east ] - u[west] ) ) * hxInverse * 0.5;
 
 }
 
@@ -165,18 +161,10 @@ operator()( const MeshFunction& u,
    double b;
    a = this->advectionSpeedX;
    b = this->advectionSpeedY;
-   return ( 0.25 / this->tau ) * this->artificalViscosity * (
-              u[ west ]
-            + u[ east ]
-            + u[ south ]
-            + u[ north ]
-            - 4 * u[ center ] )
-            - (a * ( u[ east ]
-            - u[west] ) )
-            * hxInverse * 0.5
-            - (b * ( u[ south ]
-            - u[ south ] ) )
-            * hyInverse * 0.5;
+   return ( 0.25 / this->tau ) * this->artificalViscosity * 
+          ( u[ west ] + u[ east ] + u[ south ] + u[ north ] - 4 * u[ center ] ) -
+          (a * ( u[ east ] - u[west] ) ) * hxInverse * 0.5 - 
+          (b * ( u[ north ] - u[ south ] ) ) * hyInverse * 0.5;
 
 
 }

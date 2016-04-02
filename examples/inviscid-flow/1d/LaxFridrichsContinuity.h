@@ -36,9 +36,9 @@ class LaxFridrichsContinuity< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, In
           this->tau = tau;
       };
 
-      void setVelocity(const MeshFunctionType& velocity)
+      void setVelocity(const MeshFunctionType velocity)
       {
-          this->velocity = velocity;
+          //this->velocity = velocity;
       };
 
       template< typename MeshFunction, typename MeshEntity >

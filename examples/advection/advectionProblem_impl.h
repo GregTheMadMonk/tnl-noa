@@ -94,36 +94,41 @@ setInitialCondition( const tnlParameterContainer& parameters,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
 {
+   cout << "vaules adding";
    typedef typename MeshType::Cell Cell;
+   int dimensions = parameters.getParameter< int >( "dimension" );
    int count = mesh.template getEntitiesCount< Cell >();
-   const RealType& size = 1;//mesh.template getSpaceStepsProducts< -1, 0 >();
+   const RealType& size = parameters.getParameter< double >( "realSize" ) / pow(count, 1.0/dimensions);
    const tnlString& beginChoice = parameters.getParameter< tnlString >( "begin" );
-   int dimensions = 2; //vyresit!!!!
+   cout << beginChoice << " " << dimensions << "   " << size << "   " << count << "   "<< 1/dimensions << endl;
+   getchar();
    if (beginChoice == "sin_square")
       {
 	   double constantFunction;
 	   if (dimensions == 1)
 	       {
+                   cout << "adding DOFS" << endl;
 		   dofs[0] = 0;
 		   double expValue;
-		   for (long int i = 1; i < count; i++)
+		   for (IndexType i = 1; i < count-2; i++)
 		   {
 			expValue = exp(-pow(size*i-2,2));
 			if ((i>0.4*count) && (i<0.5*count)) constantFunction=1; else constantFunction=0;
 			if (expValue>constantFunction) dofs[i] = expValue; else dofs[i] = constantFunction;
 		   };
-		   dofs[count] = 0;
-		};
-	    if (dimensions == 2)
+		   dofs[count-1] = 0;
+		}
+	    else if (dimensions == 2)
 	       {
+                   count = sqrt(count);
 		   double expValue;
-		   for (long int i = 1; i < count; i++)
-		   for (long int j = 1; j < count; j++)
-		   {
+		   for (IndexType i = 0; i < count-1; i++)
+                      for (IndexType j = 0; j < count-1; j++)
+		      {
 			expValue = exp(-pow(size*i-2,2)-pow(size*j-2,2));
-			if ((i>0.4*count) && (i<0.5*count)&&((j>0.4*count) && (j<0.5*count))) constantFunction=1; else constantFunction=0;
-			if (expValue>constantFunction) dofs[(i-1) * count -1+ j] = expValue; else dofs[(i-1) * count -1+ j] = constantFunction;
-		   };
+			if ((i>0.4*count) && (i<0.5*count) && (j>0.4*count) && (j<0.5*count)) constantFunction=1; else constantFunction=0;
+			if (expValue>constantFunction) dofs[i * count + j] = expValue; else dofs[i * count + j] = constantFunction;
+		      };
 		};
        }
    else if (beginChoice == "sin")
@@ -131,24 +136,25 @@ setInitialCondition( const tnlParameterContainer& parameters,
 	   if (dimensions == 1)
 	      {
 		   dofs[0] = 0;
-		   for (long int i = 1; i < count; i++)
+		   for (IndexType i = 1; i < count-2; i++)
 		   {
 			dofs[i] = exp(-pow(size*i-2,2));
 		   };
-		   dofs[count] = 0;
-		};
-	    if (dimensions == 2)
+		   dofs[count-1] = 0;
+		}
+	    else if (dimensions == 2)
 	       {
-		   for (long int i = 1; i < count; i++)
-		   for (long int j = 1; j < count; j++)
-		   {
-			dofs[(i-1) * count -1+ j] = exp(-pow(size*i-2,2)-pow(size*j-2,2));
-		   };
+                   count = sqrt(count);
+		   for (IndexType i = 1; i < count-1; i++)
+		      for (IndexType j = 1; j < count-1; j++)
+		      {
+			   dofs[i * count + j] = exp(-pow(size*i-2,2)-pow(size*j-2,2));
+		      };
 		};
      };
-//setting velocity field
-
-   
+   //setting velocity field
+   cout << dofs << endl;
+   getchar();
    /*const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
    if( ! dofs.load( initialConditionFile ) )
    {
@@ -164,6 +170,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
    differentialOperator.setAdvectionSpeedX(advectionSpeedX);
    const double advectionSpeedY = parameters.getParameter< double >( "advection-speedY" );
    differentialOperator.setAdvectionSpeedY(advectionSpeedY);
+   cout << "vaules added";
    return true;
 }
 
@@ -236,9 +243,9 @@ getExplicitRHS( const RealType& time,
     * You may use supporting mesh dependent data if you need.
     */
    typedef typename MeshType::Cell Cell;
-   int count = mesh.template getEntitiesCount< Cell >();
-   const RealType& size = 1;//mesh.template getSpaceStepsProducts< -1, 0 >();
-   if (this->velocityType == "rotation")
+   int count = sqrt(mesh.template getEntitiesCount< Cell >());
+//   const RealType& size = parameters.getParameter< double >( "realSize" ) / pow(count, 0.5);
+/*   if (this->velocityType == "rotation")
    {
       double radius;
       for (int i =1; i < count; i++)
@@ -259,11 +266,12 @@ getExplicitRHS( const RealType& time,
             ;}
   }
    else if (this->velocityType == "advection")
-  { 
+*/  { 
    this->bindDofs( mesh, _u );
    tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    MeshFunctionType u( mesh, _u ); 
-   MeshFunctionType fu( mesh, _fu ); 
+   MeshFunctionType fu( mesh, _fu );
+   differentialOperator.setTau(tau); 
    explicitUpdater.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            this->differentialOperator,
@@ -271,11 +279,11 @@ getExplicitRHS( const RealType& time,
                                                            this->rightHandSide,
                                                            u,
                                                            fu );
-   tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
+/*   tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
    boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
       this->boundaryCondition, 
       time + tau, 
-       u ); 
+       u ); */
  }
 }
 template< typename Mesh,

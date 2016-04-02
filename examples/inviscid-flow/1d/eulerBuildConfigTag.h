@@ -33,11 +33,11 @@ template< int Dimensions, typename Real, typename Device, typename Index >
  */
 template<> struct tnlConfigTagTimeDiscretisation< eulerBuildConfigTag, tnlExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
 template<> struct tnlConfigTagTimeDiscretisation< eulerBuildConfigTag, tnlSemiImplicitTimeDiscretisationTag >{ enum { enabled = true }; };
-template<> struct tnlConfigTagTimeDiscretisation< eulerBuildConfigTag, tnlImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
+template<> struct tnlConfigTagTimeDiscretisation< eulerBuildConfigTag, tnlImplicitTimeDiscretisationTag >{ enum { enabled = true }; };
 
 /****
  * Only the Runge-Kutta-Merson solver is enabled by default.
  */
-template<> struct tnlConfigTagExplicitSolver< eulerBuildConfigTag, tnlExplicitEulerSolverTag >{ enum { enabled = false }; };
+template<> struct tnlConfigTagExplicitSolver< eulerBuildConfigTag, tnlExplicitEulerSolverTag >{ enum { enabled = true }; };
 
 #endif /* eulerBUILDCONFIGTAG_H_ */

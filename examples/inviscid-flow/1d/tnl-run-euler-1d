@@ -1,19 +1,25 @@
 #!/usr/bin/env bash
 
-tnl-grid-setup --dimensions 2 \
+tnl-grid-setup --dimensions 1 \
                --origin-x 0.0 \
-               --origin-y 0.0 \
                --proportions-x 1.0 \
-               --proportions-y 1.0 \
-               --size-x 100 \
-               --size-y 100
+               --size-x 100 
 
-tnl-init --test-function sin-wave \
-         --output-file init.tnl
-./euler --time-discretisation explicit \
+#tnl-init --test-function sin-wave \
+#         --output-file init.tnl
+tnl-euler-1d-dbg --time-discretisation explicit \
+	      --time-step 1.0e-3 \
               --boundary-conditions-constant 0 \
-              --discrete-solver merson \
-              --snapshot-period 0.01 \
-              --final-time 1.0
+              --discrete-solver euler \
+              --snapshot-period 0.1 \
+              --final-time 1.0 \
+              --left-density 1.0 \
+              --left-velocity 0.75 \
+              --left-pressure 1.0 \
+              --right-density 0.125 \
+              --right-velocity 0 \
+              --right-pressure 0.1 \
+              --gamma 1.4 \
+              --riemann-border 0.3 \
 
 tnl-view --mesh mesh.tnl --input-files *tnl     

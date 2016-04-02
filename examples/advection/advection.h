@@ -40,6 +40,10 @@ template< typename ConfigTag >class advectionConfig
 	 config.addEntry< tnlString >( "move", "choose movement type", "advection");
 	    config.addEntryEnum< tnlString >( "advection");
 	    config.addEntryEnum< tnlString >( "rotation");
+	 config.addEntry< int >( "dimension", "choose movement typeproblem dimension", 1);
+	    config.addEntryEnum< int >( 1 );
+	    config.addEntryEnum< int >( 2 );
+	 config.addEntry< double >( "realSize", "Real size of scheme", 1.0);
 
          /****
           * Add definition of your solver command line arguments.
