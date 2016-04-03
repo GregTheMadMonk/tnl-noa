@@ -318,29 +318,29 @@ endif( WITH_TESTS STREQUAL "yes" )
 ####
 # Explicit template instantiation
 #
-if( WITH_TEMPLATE_INSTANTIATION STREQUAL "yes" )
-   AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION " )
-
-   if( INSTANTIATE_INT STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_INT " )
-   endif()
-
-   if( INSTANTIATE_LONG_INT STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_LONG_INT " )
-   endif()
-
-   if( INSTANTIATE_FLOAT STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_FLOAT " )
-   endif()
-
-   if( INSTANTIATE_DOUBLE STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_DOUBLE " )
-   endif()
-
-   if( INSTANTIATE_LONG_DOUBLE STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_LONG_DOUBLE " )
-   endif()
-endif()
+#if( WITH_TEMPLATE_INSTANTIATION STREQUAL "yes" )
+#   AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION " )
+#
+#   if( INSTANTIATE_INT STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_INT " )
+#   endif()
+#
+#   if( INSTANTIATE_LONG_INT STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_LONG_INT " )
+#   endif()
+#
+#   if( INSTANTIATE_FLOAT STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_FLOAT " )
+#   endif()
+#
+#   if( INSTANTIATE_DOUBLE STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_DOUBLE " )
+#   endif()
+#
+#   if( INSTANTIATE_LONG_DOUBLE STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_LONG_DOUBLE " )
+#   endif()
+#endif()
 
 set( CXX_TEST_FLAGS "-fprofile-arcs -ftest-coverage" )
 set( LD_TEST_FLAGS "-lgcov -coverage" )
