@@ -306,7 +306,7 @@ getLinearSystemRowLength( const MeshType& mesh,
     * by the Finite difference method.
     */
 
-   return 2*Dimensions + 1;
+   //return 2*Dimensions + 1;
 }
 
 template< typename MeshReal,
@@ -333,7 +333,7 @@ updateLinearSystem( const RealType& time,
     * by the Finite difference method.
     */
 
-    const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
+   /* const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities(); 
    const RealType& lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >(); 
    const RealType& lambdaY = tau * entity.getMesh().template getSpaceStepsProducts<  0, -2,  0 >(); 
    const RealType& lambdaZ = tau * entity.getMesh().template getSpaceStepsProducts<  0,  0, -2 >(); 
@@ -350,7 +350,7 @@ updateLinearSystem( const RealType& time,
    matrixRow.setElement( 3, center, 2.0 * ( lambdaX + lambdaY + lambdaZ ) );
    matrixRow.setElement( 4, east,   -lambdaX );
    matrixRow.setElement( 5, north,  -lambdaY );
-   matrixRow.setElement( 6, up,     -lambdaZ );
+   matrixRow.setElement( 6, up,     -lambdaZ );*/
 }
 
 #endif	/* LaxFridrichsIMPL_H */

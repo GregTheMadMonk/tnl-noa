@@ -57,10 +57,7 @@ template< typename ConfigTag > struct tnlConfigTagMeshResolve{ enum { enabled = 
 /****
  * 1, 2, and 3 dimensions are enabled by default
  */
-template< typename ConfigTag, int Dimensions > struct tnlConfigTagDimensions{ enum { enabled = false }; };
-   template< typename ConfigTag > struct tnlConfigTagDimensions< ConfigTag, 1 >{ enum { enabled = true }; };
-   template< typename ConfigTag > struct tnlConfigTagDimensions< ConfigTag, 2 >{ enum { enabled = true }; };
-   template< typename ConfigTag > struct tnlConfigTagDimensions< ConfigTag, 3 >{ enum { enabled = true }; };
+template< typename ConfigTag, int Dimensions > struct tnlConfigTagDimensions{ enum { enabled = ( Dimensions > 0 && Dimensions <= 3 ) }; };
 
 /****
  * Up to the exceptions enlisted below, all mesh types are disabled by default.

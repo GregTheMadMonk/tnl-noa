@@ -301,7 +301,7 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorType& b,
                       MeshDependentDataType& meshDependentData )
 {
-   tnlLinearSystemAssembler< Mesh,
+   /*tnlLinearSystemAssembler< Mesh,
                              MeshFunctionType,
                              DifferentialOperator,
                              BoundaryCondition,
@@ -319,7 +319,7 @@ assemblyLinearSystem( const RealType& time,
                                                              this->rightHandSide,
                                                              u,
                                                              matrix,
-                                                             b );
+                                                             b );*/
 }
 
 #endif /* advectionPROBLEM_IMPL_H_ */

@@ -17,10 +17,11 @@ template<> struct tnlConfigTagReal< eulerBuildConfigTag, long double > { enum { 
 template<> struct tnlConfigTagIndex< eulerBuildConfigTag, short int >{ enum { enabled = false }; };
 template<> struct tnlConfigTagIndex< eulerBuildConfigTag, long int >{ enum { enabled = false }; };
 
+template< int Dimensions > struct tnlConfigTagDimensions< eulerBuildConfigTag, Dimensions >{ enum { enabled = ( Dimensions == 2 ) }; };
+
 /****
  * Use of tnlGrid is enabled for allowed dimensions and Real, Device and Index types.
  */
-
 template< int Dimensions, typename Real, typename Device, typename Index >
    struct tnlConfigTagMesh< eulerBuildConfigTag, tnlGrid< Dimensions, Real, Device, Index > >
       { enum { enabled = tnlConfigTagDimensions< eulerBuildConfigTag, Dimensions >::enabled  &&
@@ -32,8 +33,8 @@ template< int Dimensions, typename Real, typename Device, typename Index >
  * Please, chose your preferred time discretisation  here.
  */
 template<> struct tnlConfigTagTimeDiscretisation< eulerBuildConfigTag, tnlExplicitTimeDiscretisationTag >{ enum { enabled = true }; };
-template<> struct tnlConfigTagTimeDiscretisation< eulerBuildConfigTag, tnlSemiImplicitTimeDiscretisationTag >{ enum { enabled = true }; };
-template<> struct tnlConfigTagTimeDiscretisation< eulerBuildConfigTag, tnlImplicitTimeDiscretisationTag >{ enum { enabled = true }; };
+template<> struct tnlConfigTagTimeDiscretisation< eulerBuildConfigTag, tnlSemiImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
+template<> struct tnlConfigTagTimeDiscretisation< eulerBuildConfigTag, tnlImplicitTimeDiscretisationTag >{ enum { enabled = false }; };
 
 /****
  * Only the Runge-Kutta-Merson solver is enabled by default.
