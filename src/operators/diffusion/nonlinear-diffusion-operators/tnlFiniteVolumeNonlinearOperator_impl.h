@@ -71,7 +71,7 @@ template< typename MeshEntity,
 __cuda_callable__
 void
 tnlFiniteVolumeNonlinearOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,
@@ -155,7 +155,7 @@ template< typename MeshEntity,
 __cuda_callable__
 void
 tnlFiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,
@@ -268,7 +268,7 @@ __cuda_callable__
 #endif
 void
 tnlFiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,

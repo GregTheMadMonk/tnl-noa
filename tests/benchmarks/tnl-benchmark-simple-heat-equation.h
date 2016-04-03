@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
+#include <core/tnlTimer.h>
 #include <core/tnlTimerRT.h>
 #include <core/tnlCuda.h>
 
@@ -447,8 +448,8 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
    /****
     * Initiation
     */   
-   Real* u = new Real[ gridXSize * gridYSize ];
-   Real* aux = new Real[ gridXSize * gridYSize ];
+   Real* __restrict__ u = new Real[ gridXSize * gridYSize ];
+   Real* __restrict__ aux = new Real[ gridXSize * gridYSize ];
    if( ! u || ! aux )
    {
       cerr << "I am not able to allocate grid function for grid size " << gridXSize << "x" << gridYSize << "." << endl;
@@ -484,9 +485,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
     */
    if( verbose )
       cout << "Starting the solver main loop..." << endl;
-   tnlTimerRT timer, computationTimer;
-   computationTimer.reset();
-   timer.reset();
+   tnlTimer timer, computationTimer, updateTimer;
    timer.start();
    Real time( 0.0 );   
    Index iteration( 0 );
@@ -531,6 +530,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
          }
       computationTimer.stop();
       
+      updateTimer.start();
       Real absMax( 0.0 ), residue( 0.0 );
       for( Index i = 0; i < dofsCount; i++ )
       {
@@ -540,7 +540,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
          /*const Real a = fabs( aux[ i ] );         
          absMax = a > absMax ? a : absMax;*/
       }
-
+      updateTimer.stop();
       
       time += currentTau;
       iteration++;
@@ -550,8 +550,15 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
    timer.stop();
    if( verbose )      
       cout << endl << "Finished..." << endl;
-   cout << "Explicit update computation time is " << computationTimer.getTime() << " sec. i.e. " << computationTimer.getTime() / ( double ) iteration << "sec. per iteration." << endl;
-   cout << "Explicit time stepper time is " << timer.getTime() << " sec. i.e. " << timer.getTime() / ( double ) iteration << "sec. per iteration." << endl;
+   tnlLogger logger( 72, std::cout );
+   logger.writeSeparator();
+   logger.writeParameter< const char* >( "Compute time:", "" );
+   timer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Explicit update computation:", "" );
+   computationTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Euler solver update:", "" );
+   updateTimer.writeLog( logger, 1 );
+   logger.writeSeparator();
    
    /***
     * Freeing allocated memory

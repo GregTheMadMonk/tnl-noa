@@ -55,12 +55,10 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
       
       static constexpr int getMeshDimensions() { return Dimensions; }
       
-      template< int EntityDimensions = Dimensions >
-      using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;
-
       static tnlString getType();
 
-      template< typename PreimageFunction, typename MeshEntity >
+      template< typename PreimageFunction,
+                typename MeshEntity >
       __cuda_callable__
       inline Real operator()( const PreimageFunction& u,
                               const MeshEntity& entity,
@@ -72,19 +70,17 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
                                              const IndexType& index,
                                              const MeshEntity& entity ) const;
 
-      template< typename MeshEntity,
-                typename Vector,
-                typename MatrixRow >
+      template< typename PreimageFunction,
+                typename MeshEntity,
+                typename Matrix,
+                typename Vector >
       __cuda_callable__
-      inline void updateLinearSystem( const RealType& time,
-                                      const RealType& tau,
-                                      const MeshType& mesh,
-                                      const IndexType& index,
-                                      const MeshEntity& entity,
-                                      const MeshFunction< 1 >& u,
-                                      Vector& b,
-                                      MatrixRow& matrixRow ) const;
-
+      inline void setMatrixElements( const PreimageFunction& u,
+                                     const MeshEntity& entity,
+                                     const RealType& time,
+                                     const RealType& tau,
+                                     Matrix& matrix,
+                                     Vector& b ) const;
 };
 
 
@@ -110,10 +106,6 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
       
       static constexpr int getMeshDimensions() { return Dimensions; }
 
-      
-      template< int EntityDimensions = Dimensions >
-      using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;      
-
       static tnlString getType();
 
       template< typename PreimageFunction, typename EntityType >
@@ -127,19 +119,18 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
       inline Index getLinearSystemRowLength( const MeshType& mesh,
                                              const IndexType& index,
                                              const EntityType& entity ) const;
-
-      template< typename Vector,
-                typename MatrixRow,
-                typename EntityType >
+      
+      template< typename PreimageFunction,
+                typename MeshEntity,
+                typename Matrix,
+                typename Vector >
       __cuda_callable__
-      inline void updateLinearSystem( const RealType& time,
-                                      const RealType& tau,
-                                      const MeshType& mesh,
-                                      const IndexType& index,
-                                      const EntityType& entity,
-                                      const MeshFunction< 2 >& u,
-                                      Vector& b,
-                                      MatrixRow& matrixRow ) const;
+      inline void setMatrixElements( const PreimageFunction& u,
+                                     const MeshEntity& entity,
+                                     const RealType& time,
+                                     const RealType& tau,
+                                     Matrix& matrix,
+                                     Vector& b ) const;
 };
 
 
@@ -165,10 +156,6 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
       
       static constexpr int getMeshDimensions() { return Dimensions; }      
 
-      template< int EntityDimensions = Dimensions >
-      using MeshFunction = tnlMeshFunction< MeshType, EntityDimensions >;
-
-      
       static tnlString getType();
 
       template< typename PreimageFunction, 
@@ -184,19 +171,17 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
                                              const IndexType& index,
                                              const EntityType& entity ) const;
 
-      template< typename Vector,
-                typename MatrixRow,
-                typename EntityType >
+      template< typename PreimageFunction,
+                typename MeshEntity,
+                typename Matrix,
+                typename Vector >
       __cuda_callable__
-      inline void updateLinearSystem( const RealType& time,
-                                      const RealType& tau,
-                                      const MeshType& mesh,
-                                      const IndexType& index,
-                                      const EntityType& entity,
-                                      const MeshFunction< 3 >& u,
-                                      Vector& b,
-                                      MatrixRow& matrixRow ) const;
-
+      inline void setMatrixElements( const PreimageFunction& u,
+                                     const MeshEntity& entity,
+                                     const RealType& time,
+                                     const RealType& tau,
+                                     Matrix& matrix,
+                                     Vector& b ) const;
 };
 
 

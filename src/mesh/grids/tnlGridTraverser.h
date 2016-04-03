@@ -112,8 +112,8 @@ class tnlGridTraverser< tnlGrid< 2, Real, tnlHost, Index > >
       static void
       processEntities(
          const GridType& grid,
-         const CoordinatesType& begin,
-         const CoordinatesType& end,
+         const CoordinatesType begin,
+         const CoordinatesType end,
          const CoordinatesType& entityOrientation,
          const CoordinatesType& entityBasis,         
          UserData& userData );

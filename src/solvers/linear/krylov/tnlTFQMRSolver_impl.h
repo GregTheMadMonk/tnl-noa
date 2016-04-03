@@ -18,17 +18,12 @@
 #ifndef tnlTFQMRSolver_implH
 #define tnlTFQMRSolver_implH
 
-template< typename RealType,
-          typename Vector >
-RealType computeTFQMRNewP( Vector& p,
-                           const Vector&r,
-                           const RealType& beta,
-                           const RealType& omega,
-                           const Vector& Ap );
-
 template< typename Matrix,
           typename Preconditioner >
 tnlTFQMRSolver< Matrix, Preconditioner > :: tnlTFQMRSolver()
+: size( 0 ),
+  matrix( 0 ),
+  preconditioner( 0 )
 {
 }
 
@@ -83,15 +78,29 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    dbgFunctionName( "tnlTFQMRSolver", "Solve" );
    if( ! this->setSize( matrix -> getRows() ) ) return false;
 
-   RealType tau, theta, eta, rho, alpha, w_norm;
-   RealType b_norm = b. lpNorm( 2.0 );
-   if( b_norm == 0.0 )
-       b_norm = 1.0;
+   RealType tau, theta, eta, rho, alpha, b_norm, w_norm;
 
-   this->matrix -> vectorProduct( x, r );
-   r. addVector( b, 1.0, -1.0 );
+   if( preconditioner ) {
+      preconditioner -> solve( b, M_tmp );
+      b_norm = M_tmp. lpNorm( ( RealType ) 2.0 );
+
+      matrix -> vectorProduct( x, M_tmp );
+      M_tmp.addVector( b, 1.0, -1.0 );
+      preconditioner -> solve( M_tmp, r );
+   }
+   else {
+      b_norm = b. lpNorm( 2.0 );
+      matrix -> vectorProduct( x, r );
+      r.addVector( b, 1.0, -1.0 );
+   }
    w = u = r;
-   matrix -> vectorProduct( u, Au );
+   if( preconditioner ) {
+      matrix -> vectorProduct( u, M_tmp );
+      preconditioner -> solve( M_tmp, Au );
+   }
+   else {
+      matrix -> vectorProduct( u, Au );
+   }
    v = Au;
    d. setValue( 0.0 );
    tau = r. lpNorm( 2.0 );
@@ -100,6 +109,9 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    rho = r_ast. scalarProduct( r );
    // only to avoid compiler warning; alpha is initialized inside the loop
    alpha = 0.0;
+
+   if( b_norm == 0.0 )
+       b_norm = 1.0;
 
    this->resetIterations();
    this->setResidue( tau / b_norm );
@@ -114,7 +126,13 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       else {
          // not necessary in odd iter since the previous iteration
          // already computed v_{m+1} = A*u_{m+1}
-         matrix -> vectorProduct( u, Au );
+         if( preconditioner ) {
+            matrix -> vectorProduct( u, M_tmp );
+            preconditioner -> solve( M_tmp, Au );
+         }
+         else {
+            matrix -> vectorProduct( u, Au );
+         }
       }
       w.addVector( Au, -alpha );
       d.addVector( u, 1.0, theta * theta * eta / alpha );
@@ -137,7 +155,13 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
 
          u.addVector( w, 1.0, beta );
          v.addVector( Au, beta, beta * beta );
-         matrix -> vectorProduct( u, Au );
+         if( preconditioner ) {
+            matrix -> vectorProduct( u, M_tmp );
+            preconditioner -> solve( M_tmp, Au );
+         }
+         else {
+            matrix -> vectorProduct( u, Au );
+         }
          v.addVector( Au, 1.0 );
       }
       else {
@@ -165,13 +189,17 @@ template< typename Matrix,
           typename Preconditioner >
 bool tnlTFQMRSolver< Matrix, Preconditioner > :: setSize( IndexType size )
 {
+   if( this->size == size )
+      return true;
+   this->size = size;
    if( ! d. setSize( size ) ||
        ! r. setSize( size ) ||
        ! w. setSize( size ) ||
        ! u. setSize( size ) ||
        ! v. setSize( size ) ||
        ! r_ast. setSize( size ) ||
-       ! Au. setSize( size ) )
+       ! Au. setSize( size ) ||
+       ! M_tmp. setSize( size ) )
    {
       cerr << "I am not able to allocate all supporting vectors for the TFQMR solver." << endl;
       return false;

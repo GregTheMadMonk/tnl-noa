@@ -156,7 +156,7 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
 
    config.addDelimiter( " === Logs and messages ===" );
    config.addEntry< int >( "verbose", "Set the verbose mode. The higher number the more messages are generated.", 1 );
-   config.addEntry< tnlString >( "log-file", "Log file for the computation." );
+   config.addEntry< tnlString >( "log-file", "Log file for the computation.", "log.txt" );
    config.addEntry< int >( "log-width", "Number of columns of the log table.", 80 );
    return true;
 

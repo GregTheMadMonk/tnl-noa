@@ -18,8 +18,6 @@
 #ifndef TNLVECTOROPERATIONSHOST_IMPL_H_
 #define TNLVECTOROPERATIONSHOST_IMPL_H_
 
-#include <core/tnlOmp.h>
-
 static const int OpenMPVectorOperationsThreshold = 65536; // TODO: check this threshold
 
 template< typename Vector >
@@ -104,7 +102,7 @@ getVectorL1Norm( const Vector& v )
    Real result( 0.0 );
    const Index n = v. getSize();
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:result) if( tnlOmp::isEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#pragma omp parallel for reduction(+:result) if( tnlHost::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif           
    for( Index i = 0; i < n; i ++ )
       result += fabs( v[ i ] );
@@ -122,7 +120,7 @@ getVectorL2Norm( const Vector& v )
    Real result( 0.0 );
    const Index n = v. getSize();
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:result) if( tnlOmp::isEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#pragma omp parallel for reduction(+:result) if( tnlHost::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif           
    for( Index i = 0; i < n; i ++ )
    {
@@ -151,7 +149,7 @@ getVectorLpNorm( const Vector& v,
    Real result( 0.0 );
    const Index n = v. getSize();
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:result) if( tnlOmp::isEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#pragma omp parallel for reduction(+:result) if( tnlHost::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif           
    for( Index i = 0; i < n; i ++ )
       result += pow( fabs( v[ i ] ), p );
@@ -168,7 +166,7 @@ typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorSum( cons
    Real result( 0.0 );
    const Index n = v. getSize();
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:result) if( tnlOmp::isEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#pragma omp parallel for reduction(+:result) if( tnlHost::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif        
    for( Index i = 0; i < n; i ++ )
       result += v[ i ];
@@ -256,7 +254,7 @@ getVectorDifferenceL1Norm( const Vector1& v1,
    Real result( 0.0 );
    const Index n = v1. getSize();
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:result) if( tnlOmp::isEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#pragma omp parallel for reduction(+:result) if( tnlHost::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif        
    for( Index i = 0; i < n; i ++ )
       result += fabs( v1[ i ] - v2[ i ] );
@@ -278,7 +276,7 @@ getVectorDifferenceL2Norm( const Vector1& v1,
    Real result( 0.0 );
    const Index n = v1. getSize();
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:result) if( tnlOmp::isEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#pragma omp parallel for reduction(+:result) if( tnlHost::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif        
    for( Index i = 0; i < n; i ++ )
    {
@@ -312,7 +310,7 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    Real result( 0.0 );
    const Index n = v1. getSize();
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:result) if( tnlOmp::isEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#pragma omp parallel for reduction(+:result) if( tnlHost::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif        
    for( Index i = 0; i < n; i ++ )
       result += pow( fabs( v1. getElement( i ) - v2. getElement( i ) ), p );
@@ -332,7 +330,7 @@ typename Vector1::RealType tnlVectorOperations< tnlHost > :: getVectorDifference
    Real result( 0.0 );
    const Index n = v1. getSize();
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:result) if( tnlOmp::isEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#pragma omp parallel for reduction(+:result) if( tnlHost::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif        
    for( Index i = 0; i < n; i ++ )
       result += v1. getElement( i ) - v2. getElement( i );
@@ -371,7 +369,7 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getScalarProduct(
    Real result( 0.0 );
    const Index n = v1. getSize();
 #ifdef HAVE_OPENMP
-  #pragma omp parallel for reduction(+:result) if( tnlOmp::isEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+  #pragma omp parallel for reduction(+:result) if( tnlHost::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif     
    for( Index i = 0; i < n; i++ )
       result += v1[ i ] * v2[ i ];
@@ -411,13 +409,13 @@ void tnlVectorOperations< tnlHost > :: addVector( Vector1& y,
    const Index n = y. getSize();
    if( thisMultiplicator == 1.0 )
 #ifdef HAVE_OPENMP
-#pragma omp parallel for if( tnlOmp::isEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#pragma omp parallel for if( tnlHost::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif           
       for( Index i = 0; i < n; i ++ )
          y[ i ] += alpha * x[ i ];
    else
 #ifdef HAVE_OPENMP
-#pragma omp parallel for if( tnlOmp::isEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#pragma omp parallel for if( tnlHost::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif           
       for( Index i = 0; i < n; i ++ )
          y[ i ] = thisMultiplicator * y[ i ] + alpha * x[ i ];
@@ -445,13 +443,13 @@ addVectors( Vector1& v,
    const Index n = v.getSize();
    if( thisMultiplicator == 1.0 )
 #ifdef HAVE_OPENMP
-#pragma omp parallel for if( tnlOmp::isEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#pragma omp parallel for if( tnlHost::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif           
       for( Index i = 0; i < n; i ++ )
          v[ i ] += multiplicator1 * v1[ i ] + multiplicator2 * v2[ i ];
    else
 #ifdef HAVE_OPENMP
-#pragma omp parallel for if( tnlOmp::isEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
+#pragma omp parallel for if( tnlHost::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif           
       for( Index i = 0; i < n; i ++ )
          v[ i ] = thisMultiplicator * v[ i ] * multiplicator1 * v1[ i ] + multiplicator2 * v2[ i ];

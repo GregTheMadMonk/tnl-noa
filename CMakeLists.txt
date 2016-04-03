@@ -12,7 +12,7 @@
 # Vladimir Klement
 # Jakub Klinkovsky
 
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required( VERSION 3.4 )
 
 project( tnl )
 
@@ -33,7 +33,6 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( debugExt -dbg )
-    set( CMAKE_CXX_FLAGS "${CXXFLAGS} -g ")
 else()
     set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
     set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Release/tests )
@@ -41,10 +40,12 @@ else()
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
 endif()
+
 # set Debug/Release options
 set( CMAKE_CXX_FLAGS "-std=c++11" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g" )
-set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG -g" )
+set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG" )
+#set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
 # pass -rdynamic only in Debug mode
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "" )
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG "-rdynamic" )
@@ -65,8 +66,8 @@ if( WITH_CUDA STREQUAL "yes" )
         set( BUILD_CUDA TRUE)
         set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
         set(BUILD_SHARED_LIBS ON)
-        set(CUDA_SEPARABLE_COMPILATION ON)
-        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -DHAVE_CUDA )
+        set(CUDA_SEPARABLE_COMPILATION ON)        
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA  )
         #AddCompilerFlag( "-DHAVE_NOT_CXX11" ) # -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 " )
         set( ALL_CUDA_ARCHS -gencode arch=compute_20,code=sm_20
                             -gencode arch=compute_30,code=sm_30
@@ -110,6 +111,9 @@ if( WITH_CUDA STREQUAL "yes" )
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} )
         # TODO: this is necessary only due to a bug in cmake
         set( CUDA_ADD_LIBRARY_OPTIONS -shared )
+        # TODO: workaround for a bug in cmake 3.5.0 (fixed in 3.5.1)
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -ccbin "${CMAKE_CXX_COMPILER}" )
+        set( CUDA_HOST_COMPILER "" )
 
         ####
         # Check for cuBLAS
@@ -152,7 +156,7 @@ if( WITH_CUDA STREQUAL "yes" )
                cuda_include_directories( ${CUSPARSE_INCLUDE_DIR} )
                set( CUSPARSE_LIBRARY "${CUDA_cusparse_LIBRARY}" )
            endif()            
-        endif( NOT WITH_CUSPARSE STREQUAL "no" )
+        endif( NOT WITH_CUSPARSE STREQUAL "no" )        
     endif( CUDA_FOUND )
 endif( WITH_CUDA STREQUAL "yes" )
 

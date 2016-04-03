@@ -49,7 +49,7 @@ getFunction() const
 /****
  * 1D grid
  */
-
+/*
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
@@ -106,7 +106,7 @@ template< typename MeshReal,
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const EntityType& entity,
@@ -130,11 +130,12 @@ updateLinearSystem( const RealType& time,
       b[ index ] = mesh.getSpaceSteps().x() *
          tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
    }
-}
+}*/
 
 /****
  * 2D grid
  */
+/*
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
@@ -204,7 +205,7 @@ template< typename MeshReal,
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const EntityType& entity,
@@ -242,11 +243,12 @@ updateLinearSystem( const RealType& time,
       b[ index ] = mesh.getSpaceSteps().y() *
          tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
    }
-}
+}*/
 
 /****
  * 3D grid
  */
+/*
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
@@ -326,7 +328,7 @@ template< typename MeshReal,
 __cuda_callable__
 void
 tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
                     const EntityType& entity,                    
@@ -379,6 +381,7 @@ updateLinearSystem( const RealType& time,
          tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
    }
 }
+*/
 
 #endif	/* TNLNEUMANNBOUNDARYCONDITIONS_IMPL_H */
 

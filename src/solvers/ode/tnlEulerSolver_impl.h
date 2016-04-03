@@ -32,8 +32,8 @@ template< typename Problem >
 tnlEulerSolver< Problem > :: tnlEulerSolver()
 : cflCondition( 0.0 )
 {
-   timer.reset();
-   updateTimer.reset();
+   //timer.reset();
+   //updateTimer.reset();
 };
 
 template< typename Problem >
@@ -80,7 +80,7 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
    /****
     * First setup the supporting meshes k1...k5 and k_tmp.
     */
-   timer.start();
+   //timer.start();
    if( ! k1. setLike( u ) )
    {
       cerr << "I do not have enough memory to allocate a supporting grid for the Euler explicit solver." << endl;
@@ -109,9 +109,9 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
       /****
        * Compute the RHS
        */
-      timer.stop();
+      //timer.stop();
       this->problem->getExplicitRHS( time, currentTau, u, k1 );
-      timer.start();
+      //timer.start();
 
       RealType lastResidue = this->getResidue();
       RealType maxResidue( 0.0 );
@@ -125,9 +125,9 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
          }
       }
       RealType newResidue( 0.0 );
-      updateTimer.start();
+      //updateTimer.start();
       computeNewTimeLevel( u, currentTau, newResidue );
-      updateTimer.stop();
+      //updateTimer.stop();
       this->setResidue( newResidue );
 
       /****
@@ -156,8 +156,8 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
           ( this->getConvergenceResidue() != 0.0 && this->getResidue() < this->getConvergenceResidue() ) )
       {
          this->refreshSolverMonitor();
-         std::cerr << std::endl << "RHS Timer = " << timer.getTime() << std::endl;
-         std::cerr << std::endl << "Update Timer = " << updateTimer.getTime() << std::endl;
+         //std::cerr << std::endl << "RHS Timer = " << timer.getRealTime() << std::endl;
+         //std::cerr << std::endl << "Update Timer = " << updateTimer.getRealTime() << std::endl;
          return true;
       }
 
@@ -175,15 +175,15 @@ void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
                                                        RealType& currentResidue )
 {
    RealType localResidue = RealType( 0.0 );
-   IndexType size = k1. getSize();
+   const IndexType size = k1. getSize();
    RealType* _u = u. getData();
    RealType* _k1 = k1. getData();
 
    if( std::is_same< DeviceType, tnlHost >::value )
    {
-#ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:localResidue) firstprivate( _u, _k1, tau ) if( tnlOmp::isEnabled() )
-#endif
+//#ifdef HAVE_OPENMP
+//#pragma omp parallel for reduction(+:localResidue) firstprivate( _u, _k1, tau ) if( tnlHost::isOMPEnabled() )
+//#endif
       for( IndexType i = 0; i < size; i ++ )
       {
          const RealType add = tau * _k1[ i ];

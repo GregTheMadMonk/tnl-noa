@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlOmp.h  -  description
+                          tnlTimer.h  -  description
                              -------------------
-    begin                : Mar 4, 2016
+    begin                : Mar 14, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -16,40 +16,49 @@
  ***************************************************************************/
 
 
-#ifndef TNLOMP_H
-#define	TNLOMP_H
+#ifndef TNLTIMER_H
+#define	TNLTIMER_H
 
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
+#include <core/tnlLogger.h>
 
-class tnlOmp
+class tnlTimer
 {
-   public:      
+   public:
+   
+      tnlTimer();
+
+      void reset();
+
+      void stop();
+
+      void start();
+
+      double getRealTime();
+
+      double getCPUTime();
+
+      unsigned long long int getCPUCycles();
       
-      static void disable();
-      
-      static void enable();
-      
-      static inline bool isEnabled() { return enabled; };
-      
-      static void setMaxThreadsCount( int maxThreadsCount );
-      
-      static int getMaxThreadsCount();
-      
-      static int getThreadIdx();
-      
-      static void configSetup( tnlConfigDescription& config, const tnlString& prefix = "" );
-      
-      static bool setup( const tnlParameterContainer& parameters,
-                         const tnlString& prefix = "" );
-            
+      bool writeLog( tnlLogger& logger, int logLevel = 0 );
+         
    protected:
-      
-      static bool enabled;
-      
-      static int maxThreadsCount;
+
+   double initialRealTime, totalRealTime,
+          initialCPUTime, totalCPUTime;
+   
+   unsigned long long int initialCPUCycles, totalCPUCycles;
+   
+   bool stopState;
+   
+   inline unsigned long long rdtsc()
+   {
+     unsigned hi, lo;
+     __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));
+     return ( ( unsigned long long ) lo ) | ( ( ( unsigned long long ) hi ) << 32 );
+   }
 };
 
+extern tnlTimer defaultTimer;
 
-#endif	/* TNLOMP_H */
+#endif	/* TNLTIMER_H */
 

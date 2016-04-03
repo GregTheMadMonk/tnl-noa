@@ -136,6 +136,17 @@ setup( const tnlParameterContainer& parameters,
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
+void
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+bind( tnlMeshFunction< Mesh, MeshEntityDimensions, Real >& meshFunction )
+{
+   this->mesh = meshFunction.getMesh();
+   this->data.bind( meshFunction.getData() );
+}
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
    template< typename Vector >
 void
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::

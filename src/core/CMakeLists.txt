@@ -22,13 +22,13 @@ set (headers tnlAssert.h
              tnlList.h
              tnlList_impl.h
              tnlLogger.h
-             tnlOmp.h
              tnlObject.h 
              tnlStack.h
              tnlStaticFor.h
              tnlStatistics.h 
              tnlString.h 
              tnlReal.h
+             tnlTimer.h
              tnlTimerCPU.h  
              tnlTimerRT.h    
              mfilename.h 
@@ -48,12 +48,12 @@ set( common_SOURCES
      ${CURRENT_DIR}/tnlObject.cpp
      ${CURRENT_DIR}/tnlStatistics.cpp
      ${CURRENT_DIR}/tnlString.cpp 
+     ${CURRENT_DIR}/tnlTimer.cpp 
      ${CURRENT_DIR}/tnlTimerCPU.cpp      
      ${CURRENT_DIR}/mfilename.cpp 
      ${CURRENT_DIR}/mpi-supp.cpp 
      ${CURRENT_DIR}/tnlCuda.cpp
-     ${CURRENT_DIR}/tnlHost.cpp
-     ${CURRENT_DIR}/tnlOmp.cpp )
+     ${CURRENT_DIR}/tnlHost.cpp )
 
 IF( BUILD_CUDA )
    set( tnl_core_CUDA__SOURCES

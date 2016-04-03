@@ -121,14 +121,13 @@ class tnlLinearSystemAssembler
                                     const EntityType& entity )
          {
              ( *userData.b )[ entity.getIndex() ] = 0.0;           
-             userData.boundaryConditions->updateLinearSystem
-               ( *userData.time + *userData.tau,
-                 mesh,
-                 entity.getIndex(),
+             userData.boundaryConditions->setMatrixElements
+               ( *userData.u,
                  entity,
-                 *userData.u,
-                 *userData.b,
-                 *userData.matrix );
+                 *userData.time + *userData.tau,
+                 *userData.tau,
+                 *userData.matrix,
+                 *userData.b );
          }
    };
 
@@ -143,15 +142,13 @@ class tnlLinearSystemAssembler
                                     const EntityType& entity )
          {
             ( *userData.b )[ entity.getIndex() ] = 0.0;            
-            userData.differentialOperator->updateLinearSystem
-               ( *userData.time,
-                 *userData.tau,
-                 mesh,
-                 entity.getIndex(),
+            userData.differentialOperator->setMatrixElements
+               ( *userData.u,
                  entity,
-                 *userData.u,
-                 *userData.b,
-                 *userData.matrix );
+                 *userData.time + *userData.tau,
+                 *userData.tau,
+                 *userData.matrix, 
+                 *userData.b );
             
             typedef tnlFunctionAdapter< MeshType, RightHandSide > RhsFunctionAdapter;
             typedef tnlFunctionAdapter< MeshType, MeshFunction > MeshFunctionAdapter;
