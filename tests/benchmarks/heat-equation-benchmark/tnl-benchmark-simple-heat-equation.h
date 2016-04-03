@@ -27,6 +27,7 @@
 #include <core/tnlCuda.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <mesh/tnlGrid.h>
+#include <functions/tnlMeshFunction.h>
 #include "pure-c-rhs.h"
 
 using namespace std;
@@ -372,6 +373,20 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
    timer.stop();
    cudaMemcpy( u, cuda_u, dofsCount * sizeof( Real ), cudaMemcpyDeviceToHost );
    writeFunction( "final", u, gridXSize, gridYSize, hx, hy );
+
+   /****
+    * Saving the result
+    */
+   typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
+   typedef typename GridType::VertexType VertexType;
+   GridType grid;
+   grid.setDimensions( gridXSize, gridYSize );
+   grid.setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   tnlVector< Real, tnlCuda, Index > vecU;
+   vecU.bind( u, gridXSize * gridYSize );
+   tnlMeshFunction< GridType > meshFunction;
+   meshFunction.bind( grid, vecU );
+   meshFunction.save( "simple-heat-equation-result.tnl" );
    
    /***
     * Freeing allocated memory
@@ -509,6 +524,20 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters,
          cout << "Iteration: " << iteration << "\t \t Time:" << time << "    \r" << flush;
    }
    timer.stop();
+   
+   /****
+    * Saving the result
+    */
+   typedef tnlGrid< 2, Real, tnlHost, Index > GridType;
+   typedef typename GridType::VertexType VertexType;
+   GridType grid;
+   grid.setDimensions( gridXSize, gridYSize );
+   grid.setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   tnlVector< Real, tnlHost, Index > vecU;
+   vecU.bind( u, gridXSize * gridYSize );
+   tnlMeshFunction< GridType > meshFunction;
+   meshFunction.bind( grid, vecU );
+   meshFunction.save( "simple-heat-equation-result.tnl" );
    
    /***
     * Freeing allocated memory
