@@ -275,20 +275,20 @@ getExplicitRHS( const RealType& time,
    this->bindDofs( mesh, _u );
    lF1DContinuity.setTau(tau);
    lF1DContinuity.setVelocity(velocity);
-   /*tnlExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity;
+   tnlExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity;
    explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF1DContinuity,
                                                            this->boundaryCondition,
                                                            this->rightHandSide,
                                                            uRho,
-                                                           fuRho );*/
+                                                           fuRho );
 
    cout << "explicitRHSrhovel" << endl;
    //rhoVelocity
    lF1DMomentum.setTau(tau);
-   lF1DMomentum.setVelocity(velocity);
-   lF1DMomentum.setPressure(pressure);
+   //lF1DMomentum.setVelocity(velocity);
+   //lF1DMomentum.setPressure(pressure);
    tnlExplicitUpdater< Mesh, MeshFunctionType, Momentum, BoundaryCondition, RightHandSide > explicitUpdaterMomentum;
    explicitUpdaterMomentum.template update< typename Mesh::Cell >( time,
                                                            mesh,
@@ -301,8 +301,8 @@ getExplicitRHS( const RealType& time,
    cout << "explicitRHSenergy" << endl;
    //energy
    lF1DEnergy.setTau(tau);
-   lF1DEnergy.setPressure(pressure);
-   lF1DEnergy.setVelocity(velocity);
+   //lF1DEnergy.setPressure(pressure);
+   //lF1DEnergy.setVelocity(velocity);
    tnlExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
    explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
                                                            mesh,

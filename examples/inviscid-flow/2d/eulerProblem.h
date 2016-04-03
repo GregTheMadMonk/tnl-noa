@@ -32,30 +32,7 @@ class eulerProblem:
       typedef typename DifferentialOperator::Energy Energy;
       typedef typename DifferentialOperator::Velocity Velocity;
       typedef typename DifferentialOperator::VelocityX VelocityX;
-      typedef typename DifferentialOperator::VelocityY VelocityY;
       typedef typename DifferentialOperator::Pressure Pressure;
-
-    //definition
-	tnlVector< RealType, DeviceType, IndexType > _uRho;
-	tnlVector< RealType, DeviceType, IndexType > _uRhoVelocityX;
-	tnlVector< RealType, DeviceType, IndexType > _uRhoVelocityY;
-	tnlVector< RealType, DeviceType, IndexType > _uEnergy;
-
-	tnlVector< RealType, DeviceType, IndexType > _fuRho;
-	tnlVector< RealType, DeviceType, IndexType > _fuRhoVelocityX;
-	tnlVector< RealType, DeviceType, IndexType > _fuRhoVelocityY;
-	tnlVector< RealType, DeviceType, IndexType > _fuEnergy;
-
-      tnlVector< RealType, DeviceType, IndexType > rho;
-      tnlVector< RealType, DeviceType, IndexType > rhoVelX;
-      tnlVector< RealType, DeviceType, IndexType > rhoVelY;
-      tnlVector< RealType, DeviceType, IndexType > energy;
-      tnlVector< RealType, DeviceType, IndexType > data;
-      tnlVector< RealType, DeviceType, IndexType > pressure;
-      tnlVector< RealType, DeviceType, IndexType > velocity;
-      tnlVector< RealType, DeviceType, IndexType > velocityX;
-      tnlVector< RealType, DeviceType, IndexType > velocityY;
-      double gamma;
 
       static tnlString getTypeStatic();
 
@@ -113,6 +90,14 @@ class eulerProblem:
       DifferentialOperator differentialOperator;
       BoundaryCondition boundaryCondition;
       RightHandSide rightHandSide;
+
+      MeshFunctionType uRho, uRhoVelocityX, uRhoVelocityY, uEnergy;
+      MeshFunctionType fuRho, fuRhoVelocityX, fuRhoVelocityY, fuEnergy;
+      
+      MeshFunctionType pressure, velocity, velocityX, velocityY;
+      
+      RealType gamma;
+
 };
 
 #include "eulerProblem_impl.h"

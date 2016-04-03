@@ -10,7 +10,6 @@
 #include "LaxFridrichsMomentumY.h"
 #include "EulerPressureGetter.h"
 #include "EulerVelXGetter.h"
-#include "EulerVelYGetter.h"
 #include "EulerVelGetter.h"
 
 template< typename Mesh,
@@ -28,7 +27,6 @@ class LaxFridrichs
       typedef LaxFridrichsMomentumY< Mesh, Real, Index > MomentumY;
       typedef LaxFridrichsEnergy< Mesh, Real, Index > Energy;
       typedef EulerVelXGetter< Mesh, Real, Index > VelocityX;
-      typedef EulerVelYGetter< Mesh, Real, Index > VelocityY;
       typedef EulerVelGetter< Mesh, Real, Index > Velocity;
       typedef EulerPressureGetter< Mesh, Real, Index > Pressure;
    

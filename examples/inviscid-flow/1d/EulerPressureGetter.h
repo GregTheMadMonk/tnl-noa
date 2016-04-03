@@ -21,7 +21,7 @@ class EulerPressureGetter
 
       static tnlString getType();
       
-      EulerPressureGetter( const MeshFunctionType& velocity,
+      EulerPressureGetter( const MeshFunctionType& rho,
                            const MeshFunctionType& rhoVel,
                            const MeshFunctionType& energy,
                            const RealType& gamma )
