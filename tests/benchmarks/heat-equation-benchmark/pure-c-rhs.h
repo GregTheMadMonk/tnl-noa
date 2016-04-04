@@ -18,7 +18,9 @@
 #ifndef PURE_C_RHS_H
 #define	PURE_C_RHS_H
 
+#ifdef HAVE_CUDA
 #include<cuda.h>
+#endif
 
 /****
  * Just testing data for measuring performance

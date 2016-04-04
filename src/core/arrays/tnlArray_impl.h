@@ -225,12 +225,14 @@ bind( Element* data,
 template< typename Element,
            typename Device,
            typename Index >
+   template< typename Array >
 void
 tnlArray< Element, Device, Index >::
-bind( const tnlArray< Element, Device, Index >& array,
+bind( const Array& array,
       const IndexType& begin,
       const IndexType& size )
 {
+   tnlAssert( ( std::is_same< Device, typename Array::DeviceType>::value ), );
    tnlAssert( begin <= array.getSize(),
               std::cerr << " begin = " << begin << " array.getSize() = " << array.getSize() );
    tnlAssert( begin + size  <= array.getSize(),

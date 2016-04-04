@@ -144,9 +144,11 @@ makeSnapshot( const RealType& time,
 {
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
    this->bindDofs( mesh, dofs );
+   MeshFunctionType u;
+   u.bind( mesh, dofs );
    tnlString fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! dofs.save( fileName ) )
+   if( ! u.save( fileName ) )
       return false;
    return true;
 }
