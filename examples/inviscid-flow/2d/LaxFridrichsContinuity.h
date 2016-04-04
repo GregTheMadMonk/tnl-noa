@@ -37,14 +37,14 @@ class LaxFridrichsContinuity< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, In
           this->tau = tau;
       };
 
-      void setVelocityX(const MeshFunctionType& velocityX)
+      void setVelocityX(MeshFunctionType& velocityX)
       {
-          this->velocityX = velocityX;
+          this->velocityX.bind(velocityX);
       };
 
-      void setVelocityY(const MeshFunctionType& velocityY)
+      void setVelocityY(MeshFunctionType& velocityY)
       {
-          this->velocityY = velocityY;
+          this->velocityY.bind(velocityY);
       };
 
 
@@ -98,14 +98,14 @@ class LaxFridrichsContinuity< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, In
           this->tau = tau;
       };
 
-      void setVelocityX(const MeshFunctionType& velocityX)
+      void setVelocityX(MeshFunctionType& velocityX)
       {
-          this->velocityX = velocityX;
+          this->velocityX.bind(velocityX);
       };
 
-      void setVelocityY(const MeshFunctionType& velocityY)
+      void setVelocityY(MeshFunctionType& velocityY)
       {
-          this->velocityY = velocityY;
+          this->velocityY.bind(velocityY);
       };
 
 
@@ -159,14 +159,14 @@ class LaxFridrichsContinuity< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, In
           this->tau = tau;
       };
 
-      void setVelocityX(const MeshFunctionType& velocityX)
+      void setVelocityX(MeshFunctionType& velocityX)
       {
-          this->velocityX = velocityX;
+          this->velocityX.bind(velocityX);
       };
 
-      void setVelocityY(const MeshFunctionType& velocityY)
+      void setVelocityY(MeshFunctionType& velocityY)
       {
-          this->velocityY = velocityY;
+          this->velocityY.bind(velocityY);
       };
 
 

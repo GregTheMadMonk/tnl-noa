@@ -38,19 +38,19 @@ class LaxFridrichsMomentumY< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Ind
           this->tau = tau;
       };
 
-      void setVelocityX(const MeshFunctionType& velocityX)
+      void setVelocityX(MeshFunctionType& velocityX)
       {
-          this->velocityX = velocityX;
+          this->velocityX.bind(velocityX);
       };
 
-      void setVelocityY(const MeshFunctionType& velocityY)
+      void setVelocityY(MeshFunctionType& velocityY)
       {
-          this->velocityY = velocityY;
+          this->velocityY.bind(velocityY);
       };
 
-      void setPressure(const MeshFunctionType& pressure)
+      void setPressure(MeshFunctionType& pressure)
       {
-          this->pressure = pressure;
+          this->pressure.bind(pressure);
       };
 
       template< typename MeshFunction, typename MeshEntity >
@@ -104,19 +104,19 @@ class LaxFridrichsMomentumY< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Ind
           this->tau = tau;
       };
 
-      void setVelocityX(const MeshFunctionType& velocityX)
+      void setVelocityX(MeshFunctionType& velocityX)
       {
-          this->velocityX = velocityX;
+          this->velocityX.bind(velocityX);
       };
 
-      void setVelocityY(const MeshFunctionType& velocityY)
+      void setVelocityY(MeshFunctionType& velocityY)
       {
-          this->velocityY = velocityY;
+          this->velocityY.bind(velocityY);
       };
 
-      void setPressure(const MeshFunctionType& pressure)
+      void setPressure(MeshFunctionType& pressure)
       {
-          this->pressure = pressure;
+          this->pressure.bind(pressure);
       };
 
       template< typename MeshFunction, typename MeshEntity >
@@ -170,19 +170,19 @@ class LaxFridrichsMomentumY< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Ind
           this->tau = tau;
       };
 
-      void setVelocityX(const MeshFunctionType& velocityX)
+      void setVelocityX(MeshFunctionType& velocityX)
       {
-          this->velocityX = velocityX;
+          this->velocityX.bind(velocityX);
       };
 
-      void setVelocityY(const MeshFunctionType& velocityY)
+      void setVelocityY(MeshFunctionType& velocityY)
       {
-          this->velocityY = velocityY;
+          this->velocityY.bind(velocityY);
       };
 
-      void setPressure(const MeshFunctionType& pressure)
+      void setPressure(MeshFunctionType& pressure)
       {
-          this->pressure = pressure;
+          this->pressure.bind(pressure);
       };
 
       template< typename MeshFunction, typename MeshEntity >

@@ -126,29 +126,29 @@ setInitialCondition( const tnlParameterContainer& parameters,
    velocity.bind(mesh, data, size);
    velocityX.bind(mesh, data, 2*size);
    velocityY.bind(mesh, data, 3*size);
-   for(IndexType j = 0; j < size; j++)   
-      for(IndexType i = 0; i < size; i++)
-         if ((i < x0 * size)&&(j < x0 * size) )
+   for(IndexType j = 0; j < sqrt(size); j++)   
+      for(IndexType i = 0; i < sqrt(size); i++)
+         if ((i < x0 * sqrt(size))&&(j < x0 * sqrt(size)) )
             {
-               uRho[j*size+i] = rhoL;
-               uRhoVelocityX[j*size+i] = rhoL * velLX;
-               uRhoVelocityY[j*size+i] = rhoL * velLY;
-               uEnergy[j*size+i] = eL;
-               velocity[j*size+i] = sqrt(pow(velLX,2)+pow(velLY,2));
-               velocityX[j*size+i] = velLX;
-               velocityY[j*size+i] = velLY;
-               pressure[j*size+i] = preL;
+               uRho[j*sqrt(size)+i] = rhoL;
+               uRhoVelocityX[j*sqrt(size)+i] = rhoL * velLX;
+               uRhoVelocityY[j*sqrt(size)+i] = rhoL * velLY;
+               uEnergy[j*sqrt(size)+i] = eL;
+               velocity[j*sqrt(size)+i] = sqrt(pow(velLX,2)+pow(velLY,2));
+               velocityX[j*sqrt(size)+i] = velLX;
+               velocityY[j*sqrt(size)+i] = velLY;
+               pressure[j*sqrt(size)+i] = preL;
             }
          else
             {
-               uRho[j*size+i] = rhoR;
-               uRhoVelocityX[j*size+i] = rhoR * velRX;
-               uRhoVelocityY[j*size+i] = rhoR * velRY;
-               uEnergy[j*size+i] = eR;
-               velocity[j*size+i] = sqrt(pow(velRX,2)+pow(velRY,2));
-               velocityX[j*size+i] = velRX;
-               velocityY[j*size+i] = velRY;
-               pressure[j*size+i] = preR;
+               uRho[j*sqrt(size)+i] = rhoR;
+               uRhoVelocityX[j*sqrt(size)+i] = rhoR * velRX;
+               uRhoVelocityY[j*sqrt(size)+i] = rhoR * velRY;
+               uEnergy[j*sqrt(size)+i] = eR;
+               velocity[j*sqrt(size)+i] = sqrt(pow(velRX,2)+pow(velRY,2));
+               velocityX[j*sqrt(size)+i] = velRX;
+               velocityY[j*sqrt(size)+i] = velRY;
+               pressure[j*sqrt(size)+i] = preR;
             };
    return true; 
 }
@@ -303,6 +303,25 @@ getExplicitRHS( const RealType& time,
                                                            this->rightHandSide,
                                                            uEnergy,
                                                            fuEnergy );
+/*
+cout << "rho " << uRho.getData() << endl;
+getchar();
+cout << "rhoVelX " << uRhoVelocityX.getData() << endl;
+getchar();
+cout << "rhoVelY " << uRhoVelocityY.getData() << endl;
+getchar();
+cout << "Energy " << uEnergy.getData() << endl;
+getchar();
+cout << "velocity " << velocity.getData() << endl;
+getchar();
+cout << "velocityX " << velocityX.getData() << endl;
+getchar();
+cout << "velocityY " << velocityY.getData() << endl;
+getchar();
+cout << "pressure " << pressure.getData() << endl;
+getchar();
+*/
+
 
 /*
    tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
@@ -360,23 +379,24 @@ postIterate( const RealType& time,
              DofVectorType& dofs,
              MeshDependentDataType& meshDependentData )
 {
+
    //velocityX
-   this->velocityX.setMesh( mesh );
    VelocityX velocityXGetter( uRho, uRhoVelocityX );
    this->velocityX = velocityXGetter;
+
    //velocityY
-   this->velocityY.setMesh( mesh );
    VelocityX velocityYGetter( uRho, uRhoVelocityY );
    this->velocityY = velocityYGetter;
+
    //velocity
-   this->velocity.setMesh( mesh );
-   Velocity velocityGetter( uRho, uRhoVelocityX, uRhoVelocityY );
-   this->velocity = velocityGetter;
+   //Velocity velocityGetter( uRho, uRhoVelocityX, uRhoVelocityY );
+   //this->velocity = velocityGetter;
+
    //pressure
-   this->pressure.setMesh( mesh );
    Pressure pressureGetter( uRho, uRhoVelocityX, uRhoVelocityY, uEnergy, gamma );
    this->pressure = pressureGetter;
 
+   return true;
 }
 
 #endif /* eulerPROBLEM_IMPL_H_ */

@@ -39,6 +39,6 @@ template<> struct tnlConfigTagTimeDiscretisation< eulerBuildConfigTag, tnlImplic
 /****
  * Only the Runge-Kutta-Merson solver is enabled by default.
  */
-template<> struct tnlConfigTagExplicitSolver< eulerBuildConfigTag, tnlExplicitEulerSolverTag >{ enum { enabled = false }; };
+template<> struct tnlConfigTagExplicitSolver< eulerBuildConfigTag, tnlExplicitEulerSolverTag >{ enum { enabled = true }; };
 
 #endif /* eulerBUILDCONFIGTAG_H_ */

@@ -37,7 +37,8 @@ class EulerVelGetter
       __cuda_callable__
       Real operator[]( const IndexType& idx ) const
       {
-         return sqrt( pow( this->rhoVelX[ idx ] / this->rho[ idx ], 2) + pow( this->rhoVelY[ idx ] / this->rho[ idx ], 2) ) ;
+cout << idx << endl;
+         if (this->rho[ idx ]==0) return 0; else return sqrt( pow( this->rhoVelX[ idx ] / this->rho[ idx ], 2) + pow( this->rhoVelY[ idx ] / this->rho[ idx ], 2) ) ;
       }
 
       
