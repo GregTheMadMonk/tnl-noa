@@ -3,4 +3,11 @@
 
 #include "tnlNode.h"
 
+template< int LogX,
+          int LogY = LogX >
+int tnlNode< LogX, LogY >::getLevel()
+{
+    return this->level;
+}
+
 #endif // _TNLNODE_IMPL_H_INCLUDED_

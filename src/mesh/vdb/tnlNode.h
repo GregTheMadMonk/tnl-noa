@@ -13,16 +13,21 @@ class tnlNode
 public:
     tnlNode(){};
 
-    virtual void setChildren();
+    virtual void setNode( int splitX,
+                          int splitY,
+                          int depth );
+
+    int getLevel();
 
     ~tnlNode(){};
 
 private:
+    int level;
     int size;
-    tnlNode< LogX, LogY >* childNodes[ LogX * LogY ];
     tnlArea2D* area;
     tnlCircle2D* circle;
-    tnlBitmask< LogX * LogY >* bitmaskArray;
+    tnlBitmaskArray< LogX * LogY >* bitmaskArray;
+    tnlBitmask* coordinates;
 };
 
 #include "tnlNode_impl.h"

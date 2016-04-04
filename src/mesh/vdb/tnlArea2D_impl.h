@@ -24,6 +24,11 @@ unsigned tnlArea2D::getEndX()
     return this->endX;
 }
 
+unsigned tnlArea2D::getLengthX()
+{
+    return this->endX - this->startX;
+}
+
 unsigned tnlArea2D::getStartY()
 {
     return this->startY;
@@ -32,6 +37,11 @@ unsigned tnlArea2D::getStartY()
 unsigned tnlArea2D::getEndY()
 {
     return this->endY;
+}
+
+unsigned tnlArea2D::getLengthY()
+{
+    return this->endY - this->startY;
 }
 
 #endif // _TNLAREA2D_IMPL_H_INCLUDED_

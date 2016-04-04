@@ -21,9 +21,6 @@ public:
     void computeBitmaskArray( tnlBitmaskArray< size >* bitmaskArray,
                               tnlCircle2D* circle );
 
-    void setChildren( tnlNode< LogX, LogY >* children,
-                      tnlBitmaskArray< size >* bitmaskArray );
-
     ~tnlIterator2D(){};
 
 private:

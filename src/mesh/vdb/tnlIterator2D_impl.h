@@ -44,20 +44,4 @@ void tnlIterator2D< size, LogX, LogY >::computeBitmaskArray( tnlBitmaskArray< si
         }
 }
 
-template< unsigned size,
-          int LogX,
-          int LogY = LogX >
-void tnlIterator2D< size, LogX, LogY >::setChildren( tnlNode< LogX, LogY >* children,
-                                                     tnlBitmaskArray< size >* bitmaskArray )
-{
-    for( int i = 0, i < size, i++ )
-    {
-        if( bitmaskArray->getIthBitmask( i )->getState() )
-            children[ i ] = new tnlNode< LogX, LogY >(); // TODO pridat parametry
-            children[ i ]->setChildren() // TODO pridat parametry level + depth
-        else
-            children[ i ] = NULL;
-    }
-}
-
 #endif // _TNLITERATOR2D_IMPL_H_INCLUDED_

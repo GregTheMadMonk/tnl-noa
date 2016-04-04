@@ -46,6 +46,17 @@ template< unsigned size,
 void tnlRootNode< size, LogX, LogY >::createTree()
 {
     this->setNode(); // first we need to create root node
+    for( int i = 0; i < size; i++ )
+        if( this->bitmaskArray[ i ]->getState() )
+        {
+            children[ i ] = new children( this->area,
+                                          this->circle,
+                                          this->bitmaskArray->getIthBitmask(),
+                                          1 );
+            children[ i ].setNode( this->nodesX, this->nodesY );
+        }
+        else
+            children[ i ] = NULL;
 }
 
 template< unsigned size,

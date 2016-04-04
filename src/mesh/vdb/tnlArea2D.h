@@ -13,9 +13,13 @@ public:
 
     unsigned getEndX();
 
+    unsigned getLengthX();
+
     unsigned getStartY();
 
     unsigned getEndY();
+
+    unsigned getLengthY();
 
     ~tnlArea2D(){};
 
