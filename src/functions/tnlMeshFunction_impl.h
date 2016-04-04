@@ -140,7 +140,7 @@ void
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 bind( tnlMeshFunction< Mesh, MeshEntityDimensions, Real >& meshFunction )
 {
-   this->mesh = meshFunction.getMesh();
+   this->mesh = &meshFunction.getMesh();
    this->data.bind( meshFunction.getData() );
 }
 
