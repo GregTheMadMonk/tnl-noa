@@ -6,9 +6,10 @@
 #include "tnlCircle2D.h"
 #include "tnlBitmask.h"
 #include "tnlIterator2D.h"
+#include "tnlVDBMath.h"
 
 template< int LogX,
-          int LogY = LogX >
+          int LogY >
 tnlLeafNode< LogX, LogY >::tnlLeafNode( tnlArea2D* area,
                                         tnlCircle2D* circle,
                                         tnlBitmask* coordinates,
@@ -21,13 +22,13 @@ tnlLeafNode< LogX, LogY >::tnlLeafNode( tnlArea2D* area,
 }
 
 template< int LogX,
-          int LogY = LogX >
-tnlLeafNode< LogX, LogY >::setNode( int splitX,
-                                    int splitY,
-                                    int depth )
+          int LogY >
+void tnlLeafNode< LogX, LogY >::setNode( int splitX,
+                                         int splitY,
+                                         int depth )
 {
-    int depthX = splitX * tnlVDBMath::power( LogX, level );
-    int depthY = splitY * tnlVDBMath::power( LogY, level );
+    int depthX = splitX * tnlVDBMath::power( LogX, this->level );
+    int depthY = splitY * tnlVDBMath::power( LogY, this->level );
     float stepX = ( float ) this->area->getLengthX() / depthX;
     float stepY = ( float ) this->area->getLengthY() / depthY;
     float startX = this->coordinates->getX() * stepX;
@@ -45,7 +46,7 @@ tnlLeafNode< LogX, LogY >::setNode( int splitX,
 }
 
 template< int LogX,
-          int LogY = LogX >
+          int LogY >
 tnlLeafNode< LogX, LogY >::~tnlLeafNode()
 {
     this->area = NULL;

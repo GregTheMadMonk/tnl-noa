@@ -8,7 +8,7 @@
 
 template< unsigned size,
           int LogX,
-          int LogY = LogX >
+          int LogY >
 tnlIterator2D< size, LogX, LogY >::tnlIterator2D( unsigned cellsX,
                                       unsigned cellsY,
                                       float stepX,
@@ -26,7 +26,7 @@ tnlIterator2D< size, LogX, LogY >::tnlIterator2D( unsigned cellsX,
 
 template< unsigned size,
           int LogX,
-          int LogY = LogX >
+          int LogY >
 void tnlIterator2D< size, LogX, LogY >::computeBitmaskArray( tnlBitmaskArray< size >* bitmaskArray,
                                                  tnlCircle2D* circle )
 {

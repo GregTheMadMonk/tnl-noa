@@ -4,7 +4,7 @@
 #include "tnlNode.h"
 
 template< int LogX,
-          int LogY = LogX >
+          int LogY >
 int tnlNode< LogX, LogY >::getLevel()
 {
     return this->level;

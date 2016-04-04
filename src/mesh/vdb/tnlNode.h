@@ -2,12 +2,12 @@
 #define _TNLNODE_H_INCLUDED_
 
 #include "tnlBitmaskArray.h"
-#include "tnlArea.h"
+#include "tnlArea2D.h"
 #include "tnlCircle2D.h"
 
 
 template< int LogX,
-          int LogY = logX >
+          int LogY = LogX >
 class tnlNode
 {
 public:
@@ -21,11 +21,15 @@ public:
 
     ~tnlNode(){};
 
+protected:
+    tnlArea2D* area;
+    tnlCircle2D circle;
+
 private:
     int level;
     int size;
-    tnlArea2D* area;
-    tnlCircle2D* circle;
+//    tnlArea2D* area;
+//    tnlCircle2D* circle;
     tnlBitmaskArray< LogX * LogY >* bitmaskArray;
     tnlBitmask* coordinates;
 };

@@ -6,27 +6,30 @@
 #include "tnlIterator2D.h"
 #include "tnlRootNode.h"
 #include "tnlCircle2D.h"
+#include "tnlInternalNode.h"
+#include "tnlLeafNode.h"
 
 template< unsigned size,
           int LogX,
-          int LogY = LogX >
+          int LogY >
 tnlRootNode< size, LogX, LogY >::tnlRootNode( tnlArea2D* area,
-                                  tnlCircle2D* circle,
-                                  unsigned nodesX,
-                                  unsigned nodesY,
-                                  unsigned treeDepth )
+                                              tnlCircle2D* circle,
+                                              unsigned nodesX,
+                                              unsigned nodesY,
+                                              unsigned depth )
 {
     this->area = area;
     this->circle = circle;
     this->nodesX = nodesX;
     this->nodesY = nodesY;
-    this->bitmaskArray = new tnlBitmaskArray< size, LogX, LogY >();
+    this->bitmaskArray = new tnlBitmaskArray< size >();
+    this->depth = depth;
     this->level = 0;
 }
 
 template< unsigned size, 
           int LogX,
-          int LogY = LogX >
+          int LogY >
 void tnlRootNode< size, LogX, LogY >::setNode()
 {
     float stepX = ( this->area->getEndX() - this->area->getStartX() ) / this->nodesX;
@@ -42,26 +45,34 @@ void tnlRootNode< size, LogX, LogY >::setNode()
 
 template< unsigned size,
           int LogX,
-          int LogY = LogX >
+          int LogY >
 void tnlRootNode< size, LogX, LogY >::createTree()
 {
     this->setNode(); // first we need to create root node
     for( int i = 0; i < size; i++ )
-        if( this->bitmaskArray[ i ]->getState() )
+        if( !this->bitmaskArray->getIthBitmask( i )->getState() )
+            this->children[ i ] = NULL;
+        else if( this->level < this->depth - 1 )
         {
-            children[ i ] = new children( this->area,
-                                          this->circle,
-                                          this->bitmaskArray->getIthBitmask(),
-                                          1 );
-            children[ i ].setNode( this->nodesX, this->nodesY );
+            this->children[ i ] = new tnlInternalNode< LogX, LogY >( this->area,
+                                                                     this->circle,
+                                                                     this->bitmaskArray->getIthBitmask( i ),
+                                                                     this->level + 1 );
+            this->children[ i ]->setNode( nodesX, nodesY, this->depth );
         }
         else
-            children[ i ] = NULL;
+        {
+            this->children[ i ] = new tnlLeafNode< LogX, LogY >( this->area,
+                                                                 this->circle,
+                                                                 this->bitmaskArray->getIthBitmask( i ),
+                                                                 this->level + 1 );
+            this->children[ i ]->setNode( nodesX, nodesY, this->depth );
+        }
 }
 
 template< unsigned size,
           int LogX,
-          int LogY = LogX >
+          int LogY >
 void tnlRootNode< size, LogX, LogY >::printStates()
 {
     for( int i = 0; i < size; i++ )
@@ -70,7 +81,7 @@ void tnlRootNode< size, LogX, LogY >::printStates()
 
 template< unsigned size,
           int LogX,
-          int LogY = LogX >
+          int LogY >
 tnlRootNode< size, LogX, LogY >::~tnlRootNode()
 {
     delete this->area;

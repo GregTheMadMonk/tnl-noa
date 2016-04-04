@@ -16,9 +16,7 @@ public:
                  tnlCircle2D* circle,
                  unsigned nodesX,
                  unsigned nodesY,
-                 unsigned childSplitX,
-                 unsigned childSplitY,
-                 unsigned treeDepth );
+                 unsigned depth );
 
     void setNode();
 
@@ -28,6 +26,8 @@ public:
 
     ~tnlRootNode();
 
+    friend class tnlNode< LogX, LogY >;
+
 private:
     tnlArea2D* area;
     unsigned nodesX;
@@ -36,7 +36,7 @@ private:
     tnlBitmaskArray< size >* bitmaskArray;
     tnlNode< LogX, LogY >* children[ LogX * LogY ];
     unsigned level;
-    unsigned treeDepth;
+    unsigned depth;
 };
 
 #include "tnlRootNode_impl.h"

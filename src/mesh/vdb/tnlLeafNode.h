@@ -3,9 +3,12 @@
 
 #include "tnlNode.h"
 
+//template< int LogX, int LogY >
+//class tnlNode;
+
 template< int LogX,
           int LogY = LogX >
-class tnlLeafNode : public tnlNode
+class tnlLeafNode : public tnlNode< LogX, LogY >
 {
 public:
     tnlLeafNode( tnlArea2D* area,
@@ -20,6 +23,6 @@ public:
     ~tnlLeafNode();
 
 private:
-}
+};
 
 #endif // _TNLLEAFNODE_H_INCLUDED_
