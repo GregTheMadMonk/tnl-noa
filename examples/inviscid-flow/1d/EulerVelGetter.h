@@ -36,7 +36,7 @@ class EulerVelGetter
       __cuda_callable__
       Real operator[]( const IndexType& idx ) const
       {
-         return this->rhoVel[ idx ] / this->rho[ idx ];
+          if (this->rho[ idx ]==0) return 0; else return this->rhoVel[ idx ] / this->rho[ idx ];
       }
 
       

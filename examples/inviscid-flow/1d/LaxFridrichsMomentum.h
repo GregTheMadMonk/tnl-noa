@@ -37,14 +37,14 @@ class LaxFridrichsMomentum< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Inde
           this->tau = tau;
       };
 
-      void setVelocity(const MeshFunctionType& velocity)
+      void setVelocity(MeshFunctionType& velocity)
       {
-          this->velocity = velocity;
+          this->velocity.bind(velocity);
       };
 
-      void setPressure(const MeshFunctionType& pressure)
+      void setPressure(MeshFunctionType& pressure)
       {
-          this->pressure = pressure;
+          this->pressure.bind(pressure);
       };
 
       template< typename MeshFunction, typename MeshEntity >
@@ -97,14 +97,14 @@ class LaxFridrichsMomentum< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Inde
           this->tau = tau;
       };
 
-      void setVelocity(const MeshFunctionType& velocity)
+      void setVelocity(MeshFunctionType& velocity)
       {
-	  this->velocity = velocity;
+	  this->velocity.bind(velocity);
       };
 
-      void setPressure(const MeshFunctionType& pressure)
+      void setPressure(MeshFunctionType& pressure)
       {
-          this->pressure = pressure;
+          this->pressure.bind(pressure);
       };
 
       template< typename MeshFunction, typename MeshEntity >
@@ -157,14 +157,14 @@ class LaxFridrichsMomentum< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Inde
           this->tau = tau;
       };
 
-      void setVelocity(const MeshFunctionType& velocity)
+      void setVelocity(MeshFunctionType& velocity)
       {
-          this->velocity = velocity;
+          this->velocity.bind(velocity);
       };
 
-      void setPressure(const MeshFunctionType& pressure)
+      void setPressure(MeshFunctionType& pressure)
       {
-          this->pressure = pressure;
+          this->pressure.bind(pressure);
       };
 
       template< typename MeshFunction, typename MeshEntity >

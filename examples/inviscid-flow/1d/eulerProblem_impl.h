@@ -140,6 +140,9 @@ cout << count << endl;
             pressure[i] = preR;
          };
    cout << "dofs = " << dofs << endl;
+   cout << "velocity = " << velocity.getData() << endl;
+   cout << "pressure = " << pressure.getData() << endl;
+
    getchar();
   
    
@@ -194,36 +197,6 @@ makeSnapshot( const RealType& time,
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
    this->bindDofs( mesh, dofs );
    tnlString fileName;
-   typedef typename MeshType::Cell Cell;
-   int count = mesh.template getEntitiesCount< Cell >();
-   ofstream vysledek;
-/*   cout << "pressure:" << endl;
-   for (IndexType i = 0; i<count; i++) cout << this->pressure[i] << " " << i ;
-      vysledek.open("pressure" + to_string(step) + ".txt");
-   for (IndexType i = 0; i<count; i++)
-      vysledek << 0.01*i << " " << pressure[i] << endl;
-   vysledek.close();
-   cout << " " << endl;
-   cout << "velocity:" << endl;
-   for (IndexType i = 0; i<count; i++) cout << this->velocity[i] << " " ;
-      vysledek.open("velocity" + to_string(step) + ".txt");
-   for (IndexType i = 0; i<count; i++)
-      vysledek << 0.01*i << " " << pressure[i] << endl;
-   vysledek.close();
-   cout << "energy:" << endl;
-   for (IndexType i = 0; i<count; i++) cout << this->uEnergy[i] << " " ;
-      vysledek.open("energy" + to_string(step) + ".txt");
-   for (IndexType i = 0; i<count; i++)
-      vysledek << 0.01*i << " " << uEnergy[i] << endl;
-   vysledek.close();
-   cout << " " << endl;
-   cout << "density:" << endl;
-   for (IndexType i = 0; i<count; i++) cout << this->uRho[i] << " " ;
-      vysledek.open("density" + to_string(step) + ".txt");
-   for (IndexType i = 0; i<count; i++)
-      vysledek << 0.01*i << " " << uRho[i] << endl;
-   vysledek.close();
-*/   getchar();
 
    FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
    if( ! uRho.save( fileName ) )
@@ -233,6 +206,12 @@ makeSnapshot( const RealType& time,
       return false;
    FileNameBaseNumberEnding( "energy-", step, 5, ".tnl", fileName );
    if( ! uEnergy.save( fileName ) )
+      return false;
+   FileNameBaseNumberEnding( "velocity-", step, 5, ".tnl", fileName );
+   if( ! velocity.save( fileName ) )
+      return false;
+   FileNameBaseNumberEnding( "pressure-", step, 5, ".tnl", fileName );
+   if( ! pressure.save( fileName ) )
       return false;
    return true;
 }
@@ -250,32 +229,23 @@ getExplicitRHS( const RealType& time,
                 DofVectorType& _fu,
                 MeshDependentDataType& meshDependentData )
 {
-    cout << "explicitRHS" << endl;
     typedef typename MeshType::Cell Cell;
     int count = mesh.template getEntitiesCount< Cell >();
-	//bind _u
-    this->uRho.bind(mesh, _u, 0);
-    this->uRhoVelocity.bind(mesh, _u ,count);
-    this->uEnergy.bind(mesh, _u, 2 * count);
-		
 	//bind _fu
-    this->fuRho.bind(mesh, _u, 0);
-    this->fuRhoVelocity.bind(mesh, _u, count);
-    this->fuEnergy.bind(mesh, _u, 2 * count);
+    this->fuRho.bind(mesh, _fu, 0);
+    this->fuRhoVelocity.bind(mesh, _fu, count);
+    this->fuEnergy.bind(mesh, _fu, 2 * count);
 
    //generating Differential operator object
    Continuity lF1DContinuity;
    Momentum lF1DMomentum;
    Energy lF1DEnergy;
 
-   
-   
-   cout << "explicitRHSrho" << endl;   
    //rho
    this->bindDofs( mesh, _u );
    lF1DContinuity.setTau(tau);
    lF1DContinuity.setVelocity(velocity);
-   tnlExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity;
+   tnlExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity;   
    explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF1DContinuity,
@@ -284,11 +254,10 @@ getExplicitRHS( const RealType& time,
                                                            uRho,
                                                            fuRho );
 
-   cout << "explicitRHSrhovel" << endl;
    //rhoVelocity
    lF1DMomentum.setTau(tau);
-   //lF1DMomentum.setVelocity(velocity);
-   //lF1DMomentum.setPressure(pressure);
+   lF1DMomentum.setVelocity(velocity);
+   lF1DMomentum.setPressure(pressure);
    tnlExplicitUpdater< Mesh, MeshFunctionType, Momentum, BoundaryCondition, RightHandSide > explicitUpdaterMomentum;
    explicitUpdaterMomentum.template update< typename Mesh::Cell >( time,
                                                            mesh,
@@ -298,11 +267,10 @@ getExplicitRHS( const RealType& time,
                                                            uRhoVelocity,
                                                            fuRhoVelocity );
    
-   cout << "explicitRHSenergy" << endl;
    //energy
    lF1DEnergy.setTau(tau);
-   //lF1DEnergy.setPressure(pressure);
-   //lF1DEnergy.setVelocity(velocity);
+   lF1DEnergy.setPressure(pressure);
+   lF1DEnergy.setVelocity(velocity);
    tnlExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
    explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
                                                            mesh,
@@ -310,8 +278,7 @@ getExplicitRHS( const RealType& time,
                                                            this->boundaryCondition,
                                                            this->rightHandSide,
                                                            uEnergy,
-                                                           fuEnergy );  
- 
+                                                           fuEnergy ); 
  }
 
 template< typename Mesh,
@@ -362,13 +329,12 @@ postIterate( const RealType& time,
              MeshDependentDataType& meshDependentData )
 {
    //velocity
-   this->velocity.setMesh( mesh );
    Velocity velocityGetter( uRho, uRhoVelocity );
    this->velocity = velocityGetter;
    //pressure
-   this->pressure.setMesh( mesh );
    Pressure pressureGetter( uRho, uRhoVelocity, uEnergy, gamma );
    this->pressure = pressureGetter;
+   return true;
 }
 
 #endif /* eulerPROBLEM_IMPL_H_ */
