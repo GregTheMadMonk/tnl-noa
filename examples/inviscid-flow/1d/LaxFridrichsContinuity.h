@@ -36,7 +36,7 @@ class LaxFridrichsContinuity< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, In
           this->tau = tau;
       };
 
-      void setVelocity(const MeshFunctionType velocity)
+      void setVelocity(MeshFunctionType& velocity)
       {
           velocity.bind( velocity );
       };
@@ -90,7 +90,7 @@ class LaxFridrichsContinuity< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, In
           this->tau = tau;
       };
 
-      void setVelocity(const MeshFunctionType& velocity)
+      void setVelocity(MeshFunctionType& velocity)
       {
           this->velocity.bind( velocity );
       };
@@ -145,7 +145,7 @@ class LaxFridrichsContinuity< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, In
           this->tau = tau;
       };
 
-      void setVelocity(const MeshFunctionType& velocity)
+      void setVelocity(MeshFunctionType& velocity)
       {
           velocity.bind( velocity );
       };
