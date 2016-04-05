@@ -20,7 +20,7 @@ class EulerVelGetter
 
       static tnlString getType();
       
-      EulerVelGetter( const MeshFunctionType& rhoX,
+      EulerVelGetter( const MeshFunctionType& rho,
                       const MeshFunctionType& rhoVelX,
                       const MeshFunctionType& rhoVelY)
       : rho( rho ), rhoVelX( rhoVelX ), rhoVelY( rhoVelY )
@@ -37,7 +37,6 @@ class EulerVelGetter
       __cuda_callable__
       Real operator[]( const IndexType& idx ) const
       {
-cout << idx << endl;
          if (this->rho[ idx ]==0) return 0; else return sqrt( pow( this->rhoVelX[ idx ] / this->rho[ idx ], 2) + pow( this->rhoVelY[ idx ] / this->rho[ idx ], 2) ) ;
       }
 

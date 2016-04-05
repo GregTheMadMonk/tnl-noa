@@ -389,8 +389,8 @@ postIterate( const RealType& time,
    this->velocityY = velocityYGetter;
 
    //velocity
-   //Velocity velocityGetter( uRho, uRhoVelocityX, uRhoVelocityY );
-   //this->velocity = velocityGetter;
+   Velocity velocityGetter( uRho, uRhoVelocityX, uRhoVelocityY );
+   this->velocity = velocityGetter;
 
    //pressure
    Pressure pressureGetter( uRho, uRhoVelocityX, uRhoVelocityY, uEnergy, gamma );
