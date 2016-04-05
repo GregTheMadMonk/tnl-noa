@@ -9,7 +9,7 @@ tnl-grid-setup --dimensions 1 \
 #         --output-file init.tnl
 tnl-euler-1d-dbg --time-discretisation explicit \
 	      --time-step 1.0e-3 \
-              --boundary-conditions-constant 0 \
+              --boundary-conditions-type mymixed \
               --discrete-solver euler \
               --snapshot-period 0.1 \
               --final-time 1.0 \
