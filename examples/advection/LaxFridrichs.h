@@ -28,18 +28,18 @@ class LaxFridrichs< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
       enum { Dimensions = MeshType::getMeshDimensions() };
       Real tau;
       Real artificalViscosity;
-      Real advectionSpeedX;
-      Real advectionSpeedY;
+      MeshFunctionType advectionSpeedX;
+      MeshFunctionType advectionSpeedY;
 
-      void setAdvectionSpeedY(const Real& advectionSpeed)
+      void setAdvectionSpeedY(MeshFunctionType& advectionSpeed)
       {
-	   this->advectionSpeedY = advectionSpeed;
+	   this->advectionSpeedY.bind(advectionSpeed);
       }
 
 
-      void setAdvectionSpeedX(const Real& advectionSpeed)
+      void setAdvectionSpeedX(MeshFunctionType& advectionSpeed)
       {
-	   this->advectionSpeedX = advectionSpeed;
+	   this->advectionSpeedX.bind(advectionSpeed);
       }
 
       void setViscosity(const Real& artificalViscosity)
@@ -95,18 +95,18 @@ class LaxFridrichs< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
       enum { Dimensions = MeshType::getMeshDimensions() };
       Real tau;
       Real artificalViscosity;
-      Real advectionSpeedX;
-      Real advectionSpeedY;
+      MeshFunctionType advectionSpeedX;
+      MeshFunctionType advectionSpeedY;
 
-      void setAdvectionSpeedY(const Real& advectionSpeed)
+      void setAdvectionSpeedY(MeshFunctionType& advectionSpeed)
       {
-	   this->advectionSpeedY = advectionSpeed;
+	   this->advectionSpeedY.bind(advectionSpeed);
       }
 
 
-      void setAdvectionSpeedX(const Real& advectionSpeed)
+      void setAdvectionSpeedX(MeshFunctionType& advectionSpeed)
       {
-	   this->advectionSpeedX = advectionSpeed;
+	   this->advectionSpeedX.bind(advectionSpeed);
       }
 
       void setViscosity(const Real& artificalViscosity)
@@ -162,18 +162,18 @@ class LaxFridrichs< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
       enum { Dimensions = MeshType::getMeshDimensions() };
       Real tau;
       Real artificalViscosity;
-      Real advectionSpeedX;
-      Real advectionSpeedY;
+      MeshFunctionType advectionSpeedX;
+      MeshFunctionType advectionSpeedY;
 
-      void setAdvectionSpeedY(const Real& advectionSpeed)
+      void setAdvectionSpeedY(MeshFunctionType& advectionSpeed)
       {
-	   this->advectionSpeedY = advectionSpeed;
+	   this->advectionSpeedY.bind(advectionSpeed);
       }
 
 
-      void setAdvectionSpeedX(const Real& advectionSpeed)
+      void setAdvectionSpeedX(MeshFunctionType& advectionSpeed)
       {
-	   this->advectionSpeedX = advectionSpeed;
+	   this->advectionSpeedX.bind(advectionSpeed);
       }
 
       void setViscosity(const Real& artificalViscosity)

@@ -98,18 +98,19 @@ setInitialCondition( const tnlParameterContainer& parameters,
    typedef typename MeshType::Cell Cell;
    int dimensions = parameters.getParameter< int >( "dimension" );
    int count = mesh.template getEntitiesCount< Cell >();
-   const RealType& size = parameters.getParameter< double >( "realSize" ) / pow(count, 1.0/dimensions);
+   int inveseSquareCount = sqrt(count);
+   const RealType& size = parameters.getParameter< RealType >( "realSize" ) / pow(count, 1.0/dimensions);
    const tnlString& beginChoice = parameters.getParameter< tnlString >( "begin" );
    cout << beginChoice << " " << dimensions << "   " << size << "   " << count << "   "<< 1/dimensions << endl;
    getchar();
    if (beginChoice == "sin_square")
       {
-	   double constantFunction;
+	   RealType constantFunction;
 	   if (dimensions == 1)
 	       {
                    cout << "adding DOFS" << endl;
 		   dofs[0] = 0;
-		   double expValue;
+		   RealType expValue;
 		   for (IndexType i = 1; i < count-2; i++)
 		   {
 			expValue = exp(-pow(size*i-2,2));
@@ -120,14 +121,15 @@ setInitialCondition( const tnlParameterContainer& parameters,
 		}
 	    else if (dimensions == 2)
 	       {
-                   count = sqrt(count);
-		   double expValue;
-		   for (IndexType i = 0; i < count-1; i++)
-                      for (IndexType j = 0; j < count-1; j++)
+		   RealType expValue;
+		   for (IndexType i = 0; i < inveseSquareCount-1; i++)
+                      for (IndexType j = 0; j < inveseSquareCount-1; j++)
 		      {
 			expValue = exp(-pow(size*i-2,2)-pow(size*j-2,2));
-			if ((i>0.4*count) && (i<0.5*count) && (j>0.4*count) && (j<0.5*count)) constantFunction=1; else constantFunction=0;
-			if (expValue>constantFunction) dofs[i * count + j] = expValue; else dofs[i * count + j] = constantFunction;
+			if ((i>0.4*inveseSquareCount) && (i<0.5*inveseSquareCount) && (j>0.4*inveseSquareCount) && (j<0.5*inveseSquareCount))
+                        constantFunction=1; else constantFunction=0;
+			if (expValue>constantFunction) dofs[i * inveseSquareCount + j] = expValue; else dofs[i * inveseSquareCount + j]
+                         = constantFunction;
 		      };
 		};
        }
@@ -145,15 +147,16 @@ setInitialCondition( const tnlParameterContainer& parameters,
 	    else if (dimensions == 2)
 	       {
                    count = sqrt(count);
-		   for (IndexType i = 1; i < count-1; i++)
-		      for (IndexType j = 1; j < count-1; j++)
+		   for (IndexType i = 1; i < inveseSquareCount-1; i++)
+		      for (IndexType j = 1; j < inveseSquareCount-1; j++)
 		      {
-			   dofs[i * count + j] = exp(-pow(size*i-2,2)-pow(size*j-2,2));
+			   dofs[i * inveseSquareCount + j] = exp(-pow(size*i-2,2)-pow(size*j-2,2));
 		      };
 		};
      };
    //setting velocity field
    cout << dofs << endl;
+   
    getchar();
    /*const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
    if( ! dofs.load( initialConditionFile ) )
@@ -163,13 +166,39 @@ setInitialCondition( const tnlParameterContainer& parameters,
    }
    return true;*/
    dofs.save( "dofs.tnl" );
-   this->velocityType = parameters.getParameter< tnlString >( "move" );
-   const double artificalViscosity = parameters.getParameter< double >( "artifical-viscosity" );
+   tnlString velocityType = parameters.getParameter< tnlString >( "move" );
+   RealType artificalViscosity = parameters.getParameter< RealType >( "artifical-viscosity" );
    differentialOperator.setViscosity(artificalViscosity);
-   const double advectionSpeedX = parameters.getParameter< double >( "advection-speedX" );
-   differentialOperator.setAdvectionSpeedX(advectionSpeedX);
-   const double advectionSpeedY = parameters.getParameter< double >( "advection-speedY" );
-   differentialOperator.setAdvectionSpeedY(advectionSpeedY);
+   tnlVector < RealType, DeviceType, IndexType > data;
+   data.setSize(2*count);
+   velocityX.bind(mesh, data, 0);
+   velocityY.bind(mesh, data, count);
+   RealType advectionSpeedX = parameters.getParameter< RealType >( "advection-speedX" );
+   RealType advectionSpeedY = parameters.getParameter< RealType >( "advection-speedY" );
+   if (velocityType == "advection")
+   {
+      for (IndexType i = 0; i<count; i++)
+         {
+            velocityX[i] = advectionSpeedX;
+            velocityY[i] = advectionSpeedY;
+         };
+   }
+   else if (velocityType == "rotation")
+   {
+      RealType radius;
+      for(IndexType i = 0; i<count; i++)
+         {
+            radius = sqrt(pow(i/inveseSquareCount - (inveseSquareCount/2.0), 2) + pow(i%inveseSquareCount - (inveseSquareCount/2.0), 2))/inveseSquareCount;
+            if ( radius == 0 ) {velocityX[i] = 0; velocityY[i] = 0; } else
+            velocityX[i] = advectionSpeedX * radius * sin(atan(1) * 4 * (i/inveseSquareCount-inveseSquareCount/2.0) / inveseSquareCount);
+            velocityY[i] = advectionSpeedX * radius * sin( (-1) * atan(1) * 4 * (i%inveseSquareCount-inveseSquareCount/2.0) / inveseSquareCount);
+         };
+   };
+   velocityX.write("Vx", "gnuplot");
+   velocityY.write("Vy", "gnuplot");
+   getchar();
+   differentialOperator.setAdvectionSpeedX(velocityX);      
+   differentialOperator.setAdvectionSpeedY(velocityY);
    cout << "vaules added";
    return true;
 }
@@ -242,8 +271,8 @@ getExplicitRHS( const RealType& time,
     *
     * You may use supporting mesh dependent data if you need.
     */
-   typedef typename MeshType::Cell Cell;
-   int count = sqrt(mesh.template getEntitiesCount< Cell >());
+//   typedef typename MeshType::Cell Cell;
+  // int count = sqrt(mesh.template getEntitiesCount< Cell >());
 //   const RealType& size = parameters.getParameter< double >( "realSize" ) / pow(count, 0.5);
 /*   if (this->velocityType == "rotation")
    {

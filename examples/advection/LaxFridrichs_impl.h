@@ -45,11 +45,9 @@ operator()( const MeshFunction& u,
    const IndexType& center = entity.getIndex(); 
    const IndexType& east = neighbourEntities.template getEntityIndex< 1 >(); 
    const IndexType& west = neighbourEntities.template getEntityIndex< -1 >(); 
-   double a;
-   a = this->advectionSpeedX;
    return   (0.5 / this->tau ) * this->artificalViscosity *
 	    ( u[ west ]- 2.0 * u[ center ] + u[ east ] )
-            - (a = this->advectionSpeedX * ( u[ east ] - u[west] ) ) * hxInverse * 0.5;
+            - (this->advectionSpeedX [ east ] * u[ east ] - this->advectionSpeedX [ west ] * u[west] ) * hxInverse * 0.5;
 
 }
 
@@ -157,14 +155,10 @@ operator()( const MeshFunction& u,
    const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0 >(); 
    const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1 >(); 
    const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >(); 
-   double a;
-   double b;
-   a = this->advectionSpeedX;
-   b = this->advectionSpeedY;
    return ( 0.25 / this->tau ) * this->artificalViscosity * 
           ( u[ west ] + u[ east ] + u[ south ] + u[ north ] - 4 * u[ center ] ) -
-          (a * ( u[ east ] - u[west] ) ) * hxInverse * 0.5 - 
-          (b * ( u[ north ] - u[ south ] ) ) * hyInverse * 0.5;
+          (this->advectionSpeedX [ east ] * u[ east ] - this->advectionSpeedX [ west ] * u[ west] ) * hxInverse * 0.5 - 
+          (this->advectionSpeedY [ north ] * u[ north ] - this->advectionSpeedY [ south ] * u[ south ] ) * hyInverse * 0.5;
 
 
 }

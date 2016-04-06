@@ -25,7 +25,6 @@ class advectionProblem:
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
-      tnlString velocityType;
       static tnlString getTypeStatic();
 
       tnlString getPrologHeader() const;
@@ -76,6 +75,8 @@ class advectionProblem:
       DifferentialOperator differentialOperator;
       BoundaryCondition boundaryCondition;
       RightHandSide rightHandSide;
+      MeshFunctionType velocityX;
+      MeshFunctionType velocityY;
 };
 
 #include "advectionProblem_impl.h"
