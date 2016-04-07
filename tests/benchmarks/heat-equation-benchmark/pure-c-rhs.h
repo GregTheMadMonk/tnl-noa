@@ -44,11 +44,11 @@ __global__ void boundaryConditionsKernel( const Real* u, Real* aux,
    if( i == 0 && j < gridYSize )
       aux[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
    if( i == gridXSize - 1 && j < gridYSize )
-      aux[ j * gridXSize + gridXSize - 2 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
+      aux[ j * gridXSize + gridYSize - 1 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
    if( j == 0 && i < gridXSize )
       aux[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
    if( j == gridYSize -1  && i < gridXSize )
-      aux[ j * gridXSize + gridXSize - 2 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
+      aux[ j * gridXSize + gridYSize - 1 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
     
 }
 
