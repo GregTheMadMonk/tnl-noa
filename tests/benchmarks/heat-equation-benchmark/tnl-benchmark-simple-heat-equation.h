@@ -292,7 +292,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
          const Real y = j * hy - domainYSize / 2.0;      
          u[ j * gridXSize + i ] = exp( - sigma * ( x * x + y * y ) );
       }
-   writeFunction( "initial", u, gridXSize, gridYSize, hx, hy );
+   
    
    /****
     * Allocate data on the CUDA device
@@ -308,6 +308,8 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
       cerr << "Allocation failed. " << cudaErr << endl;
       return false;
    }
+   //cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
+   //writeFunction( "initial", aux, gridXSize, gridYSize, hx, hy );
    
    /****
     * Explicit Euler solver
@@ -336,9 +338,12 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
       
       if( ! pureCRhsCuda( cudaGridSize, cudaBlockSize, cuda_u, cuda_aux, tau, hx_inv, hy_inv, gridXSize, gridYSize) )
          return false;
-
       computationTimer.stop();
-            
+      
+      //cudaMemcpy( aux, cuda_aux, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
+      //writeFunction( "rhs", aux, gridXSize, gridYSize, hx, hy );
+      //getchar();
+        
       updateTimer.start();
       /****
        * Update
@@ -350,6 +355,11 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
          cerr << "Update failed." << endl;
          return false;
       }
+      //cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
+      //writeFunction( "u", aux, gridXSize, gridYSize, hx, hy );
+      //getchar();
+      
+      
       cudaThreadSynchronize();
       cudaMemcpy( max_du, cuda_max_du, cudaUpdateBlocks.x * sizeof( Real ), cudaMemcpyDeviceToHost );
       if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
@@ -383,7 +393,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
    grid.setDimensions( gridXSize, gridYSize );
    grid.setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
    tnlVector< Real, tnlCuda, Index > vecU;
-   vecU.bind( u, gridXSize * gridYSize );
+   vecU.bind( cuda_u, gridXSize * gridYSize );
    tnlMeshFunction< GridType > meshFunction;
    meshFunction.bind( grid, vecU );
    meshFunction.save( "simple-heat-equation-result.tnl" );

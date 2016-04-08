@@ -175,28 +175,31 @@ getExplicitRHS( const RealType& time,
     * You may use supporting mesh dependent data if you need.
     */
 
-   const IndexType gridXSize = mesh.getDimensions().x();
-   const IndexType gridYSize = mesh.getDimensions().y();
-   const RealType& hx_inv = mesh.template getSpaceStepsProducts< -2,  0 >();
-   const RealType& hy_inv = mesh.template getSpaceStepsProducts<  0, -2 >();
-   for( IndexType j = 0; j < gridYSize; j++ )
+   if( std::is_same< DeviceType, tnlHost >::value )
    {
-      fu[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
-      fu[ j * gridXSize + gridXSize - 2 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];
-   }
-   for( IndexType i = 0; i < gridXSize; i++ )
-   {
-      fu[ i ] = 0.0; //u[ gridXSize + i ];
-      fu[ ( gridYSize - 1 ) * gridXSize + i ] = 0.0; //u[ ( gridYSize - 2 ) * gridXSize + i ];
-   }
-
-   for( IndexType j = 1; j < gridYSize - 1; j++ )
-      for( IndexType i = 1; i < gridXSize - 1; i++ )
+      const IndexType gridXSize = mesh.getDimensions().x();
+      const IndexType gridYSize = mesh.getDimensions().y();
+      const RealType& hx_inv = mesh.template getSpaceStepsProducts< -2,  0 >();
+      const RealType& hy_inv = mesh.template getSpaceStepsProducts<  0, -2 >();
+      for( IndexType j = 0; j < gridYSize; j++ )
       {
-         const IndexType c = j * gridXSize + i;
-         fu[ c ] = tau * ( ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ] ) * hx_inv +
-                           ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
+         fu[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
+         fu[ j * gridXSize + gridXSize - 2 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];
       }
+      for( IndexType i = 0; i < gridXSize; i++ )
+      {
+         fu[ i ] = 0.0; //u[ gridXSize + i ];
+         fu[ ( gridYSize - 1 ) * gridXSize + i ] = 0.0; //u[ ( gridYSize - 2 ) * gridXSize + i ];
+      }
+
+      for( IndexType j = 1; j < gridYSize - 1; j++ )
+         for( IndexType i = 1; i < gridXSize - 1; i++ )
+         {
+            const IndexType c = j * gridXSize + i;
+            fu[ c ] = tau * ( ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ] ) * hx_inv +
+                              ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
+         }
+   }
 
       
    /*this->bindDofs( mesh, _u );
