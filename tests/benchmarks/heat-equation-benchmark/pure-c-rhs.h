@@ -36,21 +36,32 @@ struct Data
 #ifdef HAVE_CUDA
 
 template< typename Real, typename Index >
-__global__ void boundaryConditionsKernel( const Real* u, Real* aux,
+__global__ void boundaryConditionsKernel( Real* u,
+                                          Real* aux,
                                           const Index gridXSize, const Index gridYSize )
 {
    const Index i = ( blockIdx.x ) * blockDim.x + threadIdx.x;
    const Index j = ( blockIdx.y ) * blockDim.y + threadIdx.y;
    if( i == 0 && j < gridYSize )
-      aux[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
+   {
+      aux[ j * gridXSize ] = 0.0;
+      u[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
+   }
    if( i == gridXSize - 1 && j < gridYSize )
-      aux[ j * gridXSize + gridYSize - 1 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
+   {
+      aux[ j * gridXSize + gridYSize - 1 ] = 0.0;
+      u[ j * gridXSize + gridYSize - 1 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
+   }
    if( j == 0 && i > 0 && i < gridXSize - 1 )
+   {
       aux[ i ] = 0.0; //u[ j * gridXSize + 1 ];
+      u[ i ] = 0.0; //u[ j * gridXSize + 1 ];
+   }
    if( j == gridYSize -1  && i > 0 && i < gridXSize - 1 )
+   {
       aux[ j * gridXSize + i ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
-   
-    
+      u[ j * gridXSize + i ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
+   }         
 }
 
 

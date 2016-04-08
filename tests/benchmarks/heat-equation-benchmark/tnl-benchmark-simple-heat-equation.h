@@ -222,7 +222,9 @@ bool writeFunction(
    const Index xSize,
    const Index ySize,
    const Real& hx,
-   const Real& hy )
+   const Real& hy,
+   const Real& originX,
+   const Real& originY )
 {
    fstream file;
    file.open( fileName, ios::out );
@@ -234,7 +236,7 @@ bool writeFunction(
    for( Index i = 0; i < xSize; i++ )
    {
       for( Index j = 0; j < ySize; j++ )
-         file << i * hx << " " << j * hy << " " << data[ j * xSize + i ] << endl;
+         file << i * hx - originX << " " << j * hy - originY << " " << data[ j * xSize + i ] << endl;
       file << endl;
    }
 }
@@ -308,8 +310,11 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
       cerr << "Allocation failed. " << cudaErr << endl;
       return false;
    }
-   //cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
-   //writeFunction( "initial", aux, gridXSize, gridYSize, hx, hy );
+   tnlVector< Real, tnlCuda, Index > vecAux;
+   vecAux.bind( cuda_aux, gridXSize * gridYSize );
+   vecAux.setValue( 0.0 );   
+   cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
+   writeFunction( "initial", aux, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
    
    /****
     * Explicit Euler solver
@@ -340,9 +345,9 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
          return false;
       computationTimer.stop();
       
-      //cudaMemcpy( aux, cuda_aux, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
-      //writeFunction( "rhs", aux, gridXSize, gridYSize, hx, hy );
-      //getchar();
+      /*cudaMemcpy( aux, cuda_aux, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
+      writeFunction( "rhs", aux, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
+      getchar();*/
         
       updateTimer.start();
       /****
@@ -355,9 +360,9 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
          cerr << "Update failed." << endl;
          return false;
       }
-      //cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
-      //writeFunction( "u", aux, gridXSize, gridYSize, hx, hy );
-      //getchar();
+      /*cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
+      writeFunction( "u", aux, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
+      getchar();*/
       
       
       cudaThreadSynchronize();
@@ -382,7 +387,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
    }
    timer.stop();
    cudaMemcpy( u, cuda_u, dofsCount * sizeof( Real ), cudaMemcpyDeviceToHost );
-   writeFunction( "final", u, gridXSize, gridYSize, hx, hy );
+   writeFunction( "final", u, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
 
    /****
     * Saving the result

@@ -153,6 +153,59 @@ makeSnapshot( const RealType& time,
    return true;
 }
 
+#ifdef HAVE_CUDA
+
+template< typename Real, typename Index >
+__global__ void boundaryConditionsKernel( Real* u,
+                                          Real* fu,
+                                          const Index gridXSize, const Index gridYSize )
+{
+   const Index i = ( blockIdx.x ) * blockDim.x + threadIdx.x;
+   const Index j = ( blockIdx.y ) * blockDim.y + threadIdx.y;
+   if( i == 0 && j < gridYSize )
+   {
+      fu[ j * gridXSize ] = 0.0;
+      u[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
+   }
+   if( i == gridXSize - 1 && j < gridYSize )
+   {
+      fu[ j * gridXSize + gridYSize - 1 ] = 0.0;
+      u[ j * gridXSize + gridYSize - 1 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
+   }
+   if( j == 0 && i > 0 && i < gridXSize - 1 )
+   {
+      fu[ i ] = 0.0; //u[ j * gridXSize + 1 ];
+      u[ i ] = 0.0; //u[ j * gridXSize + 1 ];
+   }
+   if( j == gridYSize -1  && i > 0 && i < gridXSize - 1 )
+   {
+      fu[ j * gridXSize + i ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
+      u[ j * gridXSize + i ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
+   }         
+}
+
+
+template< typename Real, typename Index >
+__global__ void heatEquationKernel( const Real* u, 
+                                    Real* fu,
+                                    const Real tau,
+                                    const Real hx_inv,
+                                    const Real hy_inv,
+                                    const Index gridXSize,
+                                    const Index gridYSize )
+{
+   const Index i = blockIdx.x * blockDim.x + threadIdx.x;
+   const Index j = blockIdx.y * blockDim.y + threadIdx.y;
+   if( i > 0 && i < gridXSize - 1 &&
+       j > 0 && j < gridYSize - 1 )
+   {
+      const Index c = j * gridXSize + i;
+      fu[ c ] = ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ] ) * hx_inv +
+                ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv;
+   }
+}
+#endif
+
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
@@ -200,25 +253,38 @@ getExplicitRHS( const RealType& time,
                               ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
          }
    }
-
+   if( std::is_same< DeviceType, tnlCuda >::value )
+   {
+      const IndexType gridXSize = mesh.getDimensions().x();
+      const IndexType gridYSize = mesh.getDimensions().y();
+      const RealType& hx_inv = mesh.template getSpaceStepsProducts< -2,  0 >();
+      const RealType& hy_inv = mesh.template getSpaceStepsProducts<  0, -2 >();
       
-   /*this->bindDofs( mesh, _u );
-   tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   MeshFunctionType u( mesh, _u ); 
-   MeshFunctionType fu( mesh, _fu ); 
-   explicitUpdater.template update< typename Mesh::Cell >( time,
-                                                           mesh,
-                                                           this->differentialOperator,
-                                                           this->boundaryCondition,
-                                                           this->rightHandSide,
-                                                           u,
-                                                           fu );
-   tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
-   boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
-      this->boundaryCondition, 
-      time + tau, 
-       u ); */
- }
+      dim3 cudaBlockSize( 16, 16 );
+      dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
+                         gridYSize / 16 + ( gridYSize % 16 != 0 ) );
+      
+      int cudaErr;
+      boundaryConditionsKernel<<< cudaGridSize, cudaBlockSize >>>( u.getData(), fu.getData(), gridXSize, gridYSize );
+      if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
+      {
+         cerr << "Setting of boundary conditions failed. " << cudaErr << endl;
+         return;
+      }
+
+      /****
+       * Laplace operator
+       */
+      //cout << "Laplace operator ... " << endl;
+      heatEquationKernel<<< cudaGridSize, cudaBlockSize >>>
+         ( u.getData(), fu.getData(), tau, hx_inv, hy_inv, gridXSize, gridYSize );
+      if( cudaGetLastError() != cudaSuccess )
+      {
+         cerr << "Laplace operator failed." << endl;
+         return;
+      }
+   }
+}
 
 template< typename Mesh,
           typename BoundaryCondition,
