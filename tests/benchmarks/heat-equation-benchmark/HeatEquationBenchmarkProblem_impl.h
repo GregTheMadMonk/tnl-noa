@@ -22,6 +22,19 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationBenchmarkProblem()
+: cudaMesh( 0 ),
+  cudaBoundaryConditions( 0 ),
+  cudaRightHandSide( 0 ),
+  cudaDifferentialOperator( 0 )
+{
+}
+
+template< typename Mesh,
+          typename BoundaryCondition,
+          typename RightHandSide,
+          typename DifferentialOperator >
 tnlString
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
@@ -54,6 +67,15 @@ setup( const tnlParameterContainer& parameters )
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
       return false;
+   this->cudaKernelType = parameters.getParameter< tnlString >( "cuda-kernel-type" );
+
+   if( std::is_same< DeviceType, tnlCuda >::value )
+   {
+      this->cudaBoundaryConditions = tnlCuda::passToDevice( this->boundaryCondition );
+      this->cudaRightHandSide = tnlCuda::passToDevice( this->rightHandSide );
+      this->cudaDifferentialOperator = tnlCuda::passToDevice( this->differentialOperator );
+   }
+   
    return true;
 }
 
@@ -204,7 +226,98 @@ __global__ void heatEquationKernel( const Real* u,
                 ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv;
    }
 }
+
+template< typename GridType,
+          typename GridEntity,
+          typename BoundaryConditions,
+          typename MeshFunction >
+__global__ void 
+boundaryConditionsTemplatedCompact( const GridType grid,
+                                    const BoundaryConditions boundaryConditions,
+                                    MeshFunction u,
+                                    const typename GridType::RealType time,
+                                    const typename GridEntity::CoordinatesType begin,
+                                    const typename GridEntity::CoordinatesType end,
+                                    const typename GridEntity::EntityOrientationType entityOrientation,
+                                    const typename GridEntity::EntityBasisType entityBasis,   
+                                    const typename GridType::IndexType gridXIdx,
+                                    const typename GridType::IndexType gridYIdx )
+{
+   //typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
+   typename GridType::CoordinatesType coordinates;
+
+   coordinates.x() = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   coordinates.y() = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
+   
+   GridEntity entity( grid, coordinates, entityOrientation, entityBasis );
+
+   if( entity.getCoordinates().x() < end.x() &&
+       entity.getCoordinates().y() < end.y() )
+   {
+      entity.refresh();
+      if( entity.isBoundaryEntity() )
+      {
+         u( entity ) = boundaryConditions( u, entity, time );
+      }
+   }
+}
+
+template< typename GridType,
+          typename GridEntity,
+          typename DifferentialOperator,
+          typename RightHandSide,
+          typename MeshFunction >
+__global__ void 
+heatEquationTemplatedCompact( const GridType grid,
+                              const DifferentialOperator differentialOperator,
+                              const RightHandSide rightHandSide,
+                              MeshFunction u,
+                              MeshFunction fu,
+                              const typename GridType::RealType time,
+                              const typename GridEntity::CoordinatesType begin,
+                              const typename GridEntity::CoordinatesType end,
+                              const typename GridEntity::EntityOrientationType entityOrientation,
+                              const typename GridEntity::EntityBasisType entityBasis,   
+                              const typename GridType::IndexType gridXIdx,
+                              const typename GridType::IndexType gridYIdx )
+{
+   //typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
+   typename GridType::CoordinatesType coordinates;
+
+   typedef typename GridType::IndexType IndexType;
+   typedef typename GridType::RealType RealType;
+
+   
+   coordinates.x() = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   coordinates.y() = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
+   
+   GridEntity entity( grid, coordinates, entityOrientation, entityBasis );
+
+   if( entity.getCoordinates().x() < end.x() &&
+       entity.getCoordinates().y() < end.y() )
+   {
+      
+      entity.refresh();
+      if( ! entity.isBoundaryEntity() )
+      {
+         const IndexType& xSize = entity.getMesh().getDimensions().x();
+         const IndexType& c = entity.getIndex();
+         const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >(); 
+         const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts< 0, -2 >(); 
+         fu( entity ) = ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ]  ) * hxSquareInverse +
+                ( u[ c - xSize ] - 2.0 * u[ c ] + u[ c + xSize ] ) * hySquareInverse;
+
+         //fu( entity ) = 
+            //differentialOperator( u, entity, time );
+
+         //typedef tnlFunctionAdapter< GridType, RightHandSide > FunctionAdapter;
+         //fu( entity ) +=  FunctionAdapter::getValue( rightHandSide, entity, time );
+      }
+   }
+}
 #endif
+
+
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -215,8 +328,8 @@ HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, Differenti
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshType& mesh,
-                DofVectorType& u,
-                DofVectorType& fu,
+                DofVectorType& uDofs,
+                DofVectorType& fuDofs,
                 MeshDependentDataType& meshDependentData )
 {
    /****
@@ -234,6 +347,8 @@ getExplicitRHS( const RealType& time,
       const IndexType gridYSize = mesh.getDimensions().y();
       const RealType& hx_inv = mesh.template getSpaceStepsProducts< -2,  0 >();
       const RealType& hy_inv = mesh.template getSpaceStepsProducts<  0, -2 >();
+      RealType* u = uDofs.getData();
+      RealType* fu = fuDofs.getData();
       for( IndexType j = 0; j < gridYSize; j++ )
       {
          fu[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
@@ -255,34 +370,111 @@ getExplicitRHS( const RealType& time,
    }
    if( std::is_same< DeviceType, tnlCuda >::value )
    {
-      const IndexType gridXSize = mesh.getDimensions().x();
-      const IndexType gridYSize = mesh.getDimensions().y();
-      const RealType& hx_inv = mesh.template getSpaceStepsProducts< -2,  0 >();
-      const RealType& hy_inv = mesh.template getSpaceStepsProducts<  0, -2 >();
-      
-      dim3 cudaBlockSize( 16, 16 );
-      dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
-                         gridYSize / 16 + ( gridYSize % 16 != 0 ) );
-      
-      int cudaErr;
-      boundaryConditionsKernel<<< cudaGridSize, cudaBlockSize >>>( u.getData(), fu.getData(), gridXSize, gridYSize );
-      if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
+      if( this->cudaKernelType == "pure-c" )
       {
-         cerr << "Setting of boundary conditions failed. " << cudaErr << endl;
-         return;
-      }
+         const IndexType gridXSize = mesh.getDimensions().x();
+         const IndexType gridYSize = mesh.getDimensions().y();
+         const RealType& hx_inv = mesh.template getSpaceStepsProducts< -2,  0 >();
+         const RealType& hy_inv = mesh.template getSpaceStepsProducts<  0, -2 >();
 
-      /****
-       * Laplace operator
-       */
-      //cout << "Laplace operator ... " << endl;
-      heatEquationKernel<<< cudaGridSize, cudaBlockSize >>>
-         ( u.getData(), fu.getData(), tau, hx_inv, hy_inv, gridXSize, gridYSize );
-      if( cudaGetLastError() != cudaSuccess )
-      {
-         cerr << "Laplace operator failed." << endl;
-         return;
+         dim3 cudaBlockSize( 16, 16 );
+         dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
+                            gridYSize / 16 + ( gridYSize % 16 != 0 ) );
+
+         int cudaErr;
+         boundaryConditionsKernel<<< cudaGridSize, cudaBlockSize >>>( uDofs.getData(), fuDofs.getData(), gridXSize, gridYSize );
+         if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
+         {
+            cerr << "Setting of boundary conditions failed. " << cudaErr << endl;
+            return;
+         }
+
+         /****
+          * Laplace operator
+          */
+         //cout << "Laplace operator ... " << endl;
+         heatEquationKernel<<< cudaGridSize, cudaBlockSize >>>
+            ( uDofs.getData(), fuDofs.getData(), tau, hx_inv, hy_inv, gridXSize, gridYSize );
+         if( cudaGetLastError() != cudaSuccess )
+         {
+            cerr << "Laplace operator failed." << endl;
+            return;
+         }
       }
+      if( this->cudaKernelType == "templated-compact" )
+      {
+#ifdef HAVE_CUDA         
+         typedef typename MeshType::Cell CellType;
+         typedef typename CellType::CoordinatesType CoordinatesType;         
+         MeshFunctionType u( mesh, uDofs );
+         MeshFunctionType fu( mesh, fuDofs );
+         fu.getData().setValue( 1.0 );
+         const CoordinatesType begin( 0,0 );
+         const CoordinatesType& end = mesh.getDimensions();
+         CellType cell( mesh );
+         dim3 cudaBlockSize( 16, 16 );
+         dim3 cudaBlocks;
+         cudaBlocks.x = tnlCuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
+         cudaBlocks.y = tnlCuda::getNumberOfBlocks( end.y() - begin.y() + 1, cudaBlockSize.y );
+         const IndexType cudaXGrids = tnlCuda::getNumberOfGrids( cudaBlocks.x );
+         const IndexType cudaYGrids = tnlCuda::getNumberOfGrids( cudaBlocks.y );
+         
+         //std::cerr << "Setting boundary conditions..." << std::endl;
+
+         for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
+            for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
+               boundaryConditionsTemplatedCompact< MeshType, CellType, BoundaryCondition, MeshFunctionType >
+                  <<< cudaBlocks, cudaBlockSize >>>
+                  ( mesh,
+                    boundaryCondition,
+                    u,
+                    time,
+                    begin,
+                    end,
+                    cell.getOrientation(),
+                    cell.getBasis(),
+                    gridXIdx,
+                    gridYIdx );
+         cudaThreadSynchronize();
+         
+         //std::cerr << "Computing the heat equation ..." << std::endl;
+         for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
+            for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
+               heatEquationTemplatedCompact< MeshType, CellType, DifferentialOperator, RightHandSide, MeshFunctionType >
+                  <<< cudaBlocks, cudaBlockSize >>>
+                  ( mesh,
+                    differentialOperator,
+                    rightHandSide,
+                    u,
+                    fu,
+                    time,
+                    begin,
+                    end,
+                    cell.getOrientation(),
+                    cell.getBasis(),
+                    gridXIdx,
+                    gridYIdx );
+         checkCudaDevice;
+         cudaThreadSynchronize();         
+      }
+      #endif
+      if( this->cudaKernelType == "templated" )
+      {
+         //if( !this->cudaMesh )
+         //   this->cudaMesh = tnlCuda::passToDevice( &mesh );
+         MeshFunctionType u( mesh, uDofs );
+         MeshFunctionType fu( mesh, fuDofs );
+         tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+         //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
+         explicitUpdater.template update< typename Mesh::Cell >( 
+            time,
+            mesh,
+            this->differentialOperator,
+            this->boundaryCondition,
+            this->rightHandSide,
+            u,
+            fu );
+            }
    }
 }
 
@@ -321,5 +513,19 @@ assemblyLinearSystem( const RealType& time,
                                                              matrix,
                                                              b );
 }
+
+template< typename Mesh,
+          typename BoundaryCondition,
+          typename RightHandSide,
+          typename DifferentialOperator >
+HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+~HeatEquationBenchmarkProblem()
+{
+   if( this->cudaMesh ) tnlCuda::freeFromDevice( this->cudaMesh );
+   if( this->cudaBoundaryConditions )  tnlCuda::freeFromDevice( this->cudaBoundaryConditions );
+   if( this->cudaRightHandSide ) tnlCuda::freeFromDevice( this->cudaRightHandSide );
+   if( this->cudaDifferentialOperator ) tnlCuda::freeFromDevice( this->cudaDifferentialOperator );
+}
+
 
 #endif /* HeatEquationBenchmarkPROBLEM_IMPL_H_ */

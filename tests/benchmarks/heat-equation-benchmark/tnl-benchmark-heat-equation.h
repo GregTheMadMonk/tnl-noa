@@ -31,6 +31,10 @@ template< typename ConfigTag >class HeatEquationBenchmarkConfig
             config.addEntryEnum< tnlString >( "dirichlet" );
             config.addEntryEnum< tnlString >( "neumann" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
+         config.addEntry< tnlString >( "cuda-kernel-type", "CUDA kernel type.", "pure-c" );
+            config.addEntryEnum< tnlString >( "pure-c" );
+            config.addEntryEnum< tnlString >( "templated" );
+            config.addEntryEnum< tnlString >( "templated-compact" );
 
          /****
           * Add definition of your solver command line arguments.

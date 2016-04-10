@@ -177,6 +177,7 @@ getMesh() const
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
+__cuda_callable__
 const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::VectorType& 
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getData() const
@@ -187,6 +188,7 @@ getData() const
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
+__cuda_callable__
 typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::VectorType& 
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getData()

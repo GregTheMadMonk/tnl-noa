@@ -141,9 +141,9 @@ operator()( const MeshFunction& u,
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
     */
-    static_assert( MeshEntity::entityDimensions == 2, "Wrong mesh entity dimensions." ); 
-    static_assert( MeshFunction::getEntitiesDimensions() == 2, "Wrong preimage function" ); 
-    const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
+   /*static_assert( MeshEntity::entityDimensions == 2, "Wrong mesh entity dimensions." ); 
+   static_assert( MeshFunction::getEntitiesDimensions() == 2, "Wrong preimage function" ); 
+   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
 
    const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >(); 
    const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts< 0, -2 >(); 
@@ -151,9 +151,14 @@ operator()( const MeshFunction& u,
    const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0 >(); 
    const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0 >(); 
    const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1 >(); 
-   const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >(); 
-   return ( u[ west ] - 2.0 * u[ center ] + u[ east ]  ) * hxSquareInverse +
-          ( u[ south ] - 2.0 * u[ center ] + u[ north ] ) * hySquareInverse;
+   const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >(); */
+
+   /*const IndexType& xSize = entity.getMesh().getDimensions().x();
+   const IndexType& c = entity.getIndex();
+   const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >(); 
+   const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts< 0, -2 >(); 
+   return ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ]  ) * hxSquareInverse +
+          ( u[ c - xSize ] - 2.0 * u[ c ] + u[ c + xSize ] ) * hySquareInverse;*/
 }
 
 template< typename MeshReal,

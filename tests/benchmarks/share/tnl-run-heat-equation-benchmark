@@ -1,10 +1,10 @@
 #!/bin/bash
 
-device="host"
-dofSize=256
+device="cuda"
+dofSize=128
 dimension=2;
 proportions=2
-finalTime=1.0e-1
+finalTime=1.0e-2
 timeStep=1.0e-5
 
 analyticFunction="exp-bump"
@@ -27,21 +27,22 @@ tnl-init --mesh mesh.tnl \
          --sigma ${sigma}
 
 #valgrind --tool=memcheck \
-tnl-heat-equation --device ${device} \
-                  --time-discretisation explicit \
-                  --boundary-conditions-type neumann \
-                  --boundary-conditions-constant 0 \
-                  --discrete-solver euler \
-                  --snapshot-period ${finalTime} \
-                  --final-time ${finalTime} \
-                  --time-step ${timeStep} \
-                  --max-iterations 100000000 \
-                  --refresh-rate 1000 \
-                  --omp-enabled false
+#tnl-heat-equation --device ${device} \
+#                  --time-discretisation explicit \
+#                  --boundary-conditions-type dirichlet \
+#                  --boundary-conditions-constant 0 \
+#                  --discrete-solver euler \
+#                  --snapshot-period ${finalTime} \
+#                  --final-time ${finalTime} \
+#                  --time-step ${timeStep} \
+#                  --max-iterations 100000000 \
+#                  --refresh-rate 1000 \
+#                  --omp-enabled false
 
 tnl-benchmark-heat-equation --device ${device} \
+                  --cuda-kernel-type templated-compact \
                   --time-discretisation explicit \
-                  --boundary-conditions-type neumann \
+                  --boundary-conditions-type dirichlet \
                   --boundary-conditions-constant 0 \
                   --discrete-solver euler \
                   --snapshot-period ${finalTime} \
@@ -50,7 +51,8 @@ tnl-benchmark-heat-equation --device ${device} \
                   --max-iterations 100000000 \
                   --refresh-rate 1000 \
                   --omp-enabled false
-              
+             
+echo "============================================================="              
 tnl-benchmark-simple-heat-equation --device ${device} \
                                    --domain-x-size 2 \
                                    --domain-y-size 2 \

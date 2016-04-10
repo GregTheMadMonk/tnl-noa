@@ -26,6 +26,8 @@ class HeatEquationBenchmarkProblem:
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
 
+      HeatEquationBenchmarkProblem();
+      
       static tnlString getTypeStatic();
 
       tnlString getPrologHeader() const;
@@ -70,12 +72,22 @@ class HeatEquationBenchmarkProblem:
                                  Matrix& matrix,
                                  DofVectorType& rightHandSide,
                                  MeshDependentDataType& meshDependentData );
+      
+      ~HeatEquationBenchmarkProblem();
 
    protected:
 
       DifferentialOperator differentialOperator;
       BoundaryCondition boundaryCondition;
       RightHandSide rightHandSide;
+      
+      tnlString cudaKernelType;
+      
+      MeshType* cudaMesh;
+      BoundaryCondition* cudaBoundaryConditions;
+      RightHandSide* cudaRightHandSide;
+      DifferentialOperator* cudaDifferentialOperator;
+      
 };
 
 #include "HeatEquationBenchmarkProblem_impl.h"

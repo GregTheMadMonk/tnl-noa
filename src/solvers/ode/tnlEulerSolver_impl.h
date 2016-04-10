@@ -138,7 +138,7 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
       time += currentTau;
 
       if( ! this->nextIteration() )
-         return false;
+         return this->checkConvergence();
 
       /****
        * Compute the new time step.

@@ -170,7 +170,7 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const EntityType& entity )
             {
-               ( userData.fu())( entity ) = 
+               ( userData.fu())( entity ) =
                   userData.differentialOperator().operator()(
                      userData.u(),
                      entity,
