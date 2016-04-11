@@ -243,8 +243,7 @@ boundaryConditionsTemplatedCompact( const GridType grid,
                                     const typename GridType::IndexType gridXIdx,
                                     const typename GridType::IndexType gridYIdx )
 {
-   //typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
-   typename GridType::CoordinatesType coordinates;
+   /*typename GridType::CoordinatesType coordinates;
 
    coordinates.x() = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    coordinates.y() = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
@@ -259,7 +258,16 @@ boundaryConditionsTemplatedCompact( const GridType grid,
       {
          u( entity ) = boundaryConditions( u, entity, time );
       }
-   }
+   }*/
+   typedef typename GridEntity::IndexType IndexType;
+   typedef typename GridEntity::RealType RealType;
+   RealType* _u = &u[ 0 ];
+   const IndexType tidX = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const IndexType tidY = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
+   if( tidX == 0 || tidX == end.x() - 1 || tidY == 0 || tidY == end.y() - 1 )      
+   {
+      _u[ tidY * grid.getDimensions().x() + tidX ] = 0.0;
+   }   
 }
 
 template< typename GridType,
@@ -281,14 +289,12 @@ heatEquationTemplatedCompact( const GridType grid,
                               const typename GridType::IndexType gridXIdx,
                               const typename GridType::IndexType gridYIdx )
 {
-   //typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
    typename GridType::CoordinatesType coordinates;
-
    typedef typename GridType::IndexType IndexType;
    typedef typename GridType::RealType RealType;
 
    
-   coordinates.x() = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   /*coordinates.x() = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    coordinates.y() = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
    
    GridEntity entity( grid, coordinates, entityOrientation, entityBasis );
@@ -300,20 +306,28 @@ heatEquationTemplatedCompact( const GridType grid,
       entity.refresh();
       if( ! entity.isBoundaryEntity() )
       {
-         const IndexType& xSize = entity.getMesh().getDimensions().x();
-         const IndexType& c = entity.getIndex();
-         const RealType& hxSquareInverse = entity.getMesh().template getSpaceStepsProducts< -2, 0 >(); 
-         const RealType& hySquareInverse = entity.getMesh().template getSpaceStepsProducts< 0, -2 >(); 
-         fu( entity ) = ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ]  ) * hxSquareInverse +
-                ( u[ c - xSize ] - 2.0 * u[ c ] + u[ c + xSize ] ) * hySquareInverse;
+         fu( entity ) = 
+            differentialOperator( u, entity, time );
 
-         //fu( entity ) = 
-            //differentialOperator( u, entity, time );
-
-         //typedef tnlFunctionAdapter< GridType, RightHandSide > FunctionAdapter;
-         //fu( entity ) +=  FunctionAdapter::getValue( rightHandSide, entity, time );
+         typedef tnlFunctionAdapter< GridType, RightHandSide > FunctionAdapter;
+         fu( entity ) +=  FunctionAdapter::getValue( rightHandSide, entity, time );
       }
-   }
+   }*/
+      
+   GridEntity entity( grid, coordinates, entityOrientation, entityBasis );
+   //entity.refresh();
+   
+   const IndexType tidX = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const IndexType tidY = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
+   if( tidX > 0 && tidX < end.x() - 1 && tidY > 0 && tidY < end.y() - 1 )      
+   {
+      const IndexType& xSize = grid.getDimensions().x();
+      const IndexType& c = tidY * xSize + tidX;
+      const RealType& hxSquareInverse = grid.template getSpaceStepsProducts< -2, 0 >(); 
+      const RealType& hySquareInverse = grid.template getSpaceStepsProducts< 0, -2 >(); 
+      fu[ c ] = ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ]  ) * hxSquareInverse +
+                ( u[ c - xSize ] - 2.0 * u[ c ] + u[ c + xSize ] ) * hySquareInverse;      
+   }   
 }
 #endif
 
