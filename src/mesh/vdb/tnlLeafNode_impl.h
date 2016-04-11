@@ -33,7 +33,7 @@ void tnlLeafNode< LogX, LogY >::setNode( int splitX,
                                          int splitY,
                                          int depth )
 {
-    std::cout << "tnlLeafNode::setNode" << std::endl;
+    //std::cout << "tnlLeafNode::setNode" << std::endl;
     int depthX = splitX * tnlVDBMath::power( LogX, this->level );
     int depthY = splitY * tnlVDBMath::power( LogY, this->level );
     float stepX = ( float ) this->area->getLengthX() / depthX;
@@ -59,7 +59,7 @@ void tnlLeafNode< LogX, LogY >::print( int splitX,
                                        int depth,
                                        fstream& file )
 {
-        int depthX = splitX * tnlVDBMath::power( LogX, this->level );
+    int depthX = splitX * tnlVDBMath::power( LogX, this->level );
     int depthY = splitY * tnlVDBMath::power( LogY, this->level );
     float stepX = ( float ) this->area->getLengthX() / depthX;
     float stepY = ( float ) this->area->getLengthY() / depthY;

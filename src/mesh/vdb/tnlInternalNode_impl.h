@@ -58,30 +58,36 @@ void tnlInternalNode< LogX, LogY >::setChildren( int splitX,
                                                  int splitY,
                                                  int depth )
 {
-    for( int i = 0; i < LogX * LogY; i++ )
-    {
-        if( !this->bitmaskArray->getIthBitmask( i )->getState() )
-            this->children[ i ] = NULL;
-        else if( this->level < depth - 1 )
+    for( int i = 0; i < LogY; i++ )
+        for( int j = 0; j < LogX; j++ )
         {
-            std::cout << "creating new node, level = " << this->level << std::endl;
-            this->children[ i ] = new tnlInternalNode< LogX, LogY >( this->area,
-                                                                     this->circle,
-                                                                     this->bitmaskArray->getIthBitmask( i )->getX(),
-                                                                     this->bitmaskArray->getIthBitmask( i )->getY(),
-                                                                     this->level + 1 );
-            this->children[ i ]->setNode( splitX, splitY, depth );
+            int index = i * LogY + j;
+            if( !this->bitmaskArray->getIthBitmask( index )->getState() )
+                this->children[ index ] = NULL;
+            else if( this->level < depth - 1 )
+            {
+                //std::cout << "creating new node, level = " << this->level << std::endl;
+                int X = this->X * LogX + j;
+                int Y = this->Y * LogY + i;
+                this->children[ index ] = new tnlInternalNode< LogX, LogY >( this->area,
+                                                                             this->circle,
+                                                                             X,
+                                                                             Y,
+                                                                             this->level + 1 );
+                this->children[ index ]->setNode( splitX, splitY, depth );
+            }
+            else
+            {
+                int X = this->X * LogX + j;
+                int Y = this->Y * LogY + i;
+                this->children[ index ] = new tnlLeafNode< LogX, LogY >( this->area,
+                                                                         this->circle,
+                                                                         X,
+                                                                         Y,
+                                                                         this->level + 1 );
+                this->children[ index ]->setNode( splitX, splitY, depth );
+            }    
         }
-        else
-        {
-            this->children[ i ] = new tnlLeafNode< LogX, LogY >( this->area,
-                                                                 this->circle,
-                                                                 this->bitmaskArray->getIthBitmask( i )->getX(),
-                                                                 this->bitmaskArray->getIthBitmask( i )->getY(),
-                                                                 this->level + 1 );
-            this->children[ i ]->setNode( splitX, splitY, depth );
-        }
-    }
 }
 
 template< int LogX,

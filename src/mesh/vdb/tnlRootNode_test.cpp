@@ -7,7 +7,7 @@
 int main()
 {
     fstream f;
-    f.open( "mrdat.txt" );
+    f.open( "mrdat.txt", ios::out | ios::trunc );
     const unsigned x = 4;
     const unsigned y = 4;
     const unsigned size = x * y;
