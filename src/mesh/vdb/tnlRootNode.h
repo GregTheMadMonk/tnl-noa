@@ -1,6 +1,7 @@
 #ifndef _TNLROOTNODE_H_INCLUDED_
 #define _TNLROOTNODE_H_INCLUDED_
 
+#include <fstream>
 #include "tnlBitmaskArray.h"
 #include "tnlArea2D.h"
 #include "tnlCircle2D.h"
@@ -22,7 +23,7 @@ public:
 
     void createTree();
 
-    void printStates();
+    void printStates( fstream& file );
 
     ~tnlRootNode();
 

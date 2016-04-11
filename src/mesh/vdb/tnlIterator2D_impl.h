@@ -5,6 +5,7 @@
 #include "tnlBitmaskArray.h"
 #include "tnlBitmask.h"
 #include "tnlCircle2D.h"
+#include <fstream>
 
 template< unsigned size,
           int LogX,
@@ -41,6 +42,28 @@ void tnlIterator2D< size, LogX, LogY >::computeBitmaskArray( tnlBitmaskArray< si
             bool state = circle->isIntercept( x1, x2, y1, y2 );
             tnlBitmask* bitmask = new tnlBitmask( state, j, i );
             bitmaskArray->setIthBitmask( i * this->cellsX + j, bitmask );
+        }
+}
+
+template< unsigned size,
+          int LogX,
+          int LogY >
+void tnlIterator2D< size, LogX, LogY >::dumpIntoFile( tnlBitmaskArray< size >* bitmaskArray,
+                                                      fstream& file,
+                                                      int level )
+{
+    for( int i = 0; i < this->cellsY; i++ )
+        for( int j = 0; j < this->cellsX; j++ )
+        {
+            float x1 = this->startX + j * this->stepX;
+            float x2 = this->startX + ( j + 1 ) * this->stepX;
+            float y1 = this->startY + i * this->stepY;
+            float y2 = this->startY + ( i + 1 ) * this->stepY;
+            bool state = bitmaskArray->getIthBitmask( i * this->cellsX + j )->getState();
+            file << "x1 = " << x1 << ", x2 = " << x2 << 
+                    ", y1 = " << y1 << ", y2 = " << y2 <<
+                    ", state = " << state << 
+                    ", level = " << level << std::endl;
         }
 }
 

@@ -3,6 +3,7 @@
 
 #include "tnlBitmaskArray.h"
 #include "tnlCircle2D.h"
+#include <fstream>
 
 template< unsigned size,
           int LogX,
@@ -19,6 +20,10 @@ public:
 
     void computeBitmaskArray( tnlBitmaskArray< size >* bitmaskArray,
                               tnlCircle2D* circle );
+
+    void dumpIntoFile( tnlBitmaskArray< size >* bitmaskArray,
+                       fstream& file,
+                       int level = 0 );
 
     ~tnlIterator2D(){};
 

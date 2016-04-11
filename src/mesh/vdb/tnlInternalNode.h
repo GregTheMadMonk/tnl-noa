@@ -1,6 +1,7 @@
 #ifndef _TNLINTERNALNODE_H_INCLUDED_
 #define _TNLINTERNALNODE_H_INCLUDED_
 
+#include <fstream>
 #include "tnlNode.h"
 #include "tnlArea2D.h"
 #include "tnlCircle2D.h"
@@ -26,6 +27,11 @@ public:
     void setChildren( int splitX,
                       int splitY,
                       int depth );
+
+    void print( int splitX,
+                int splitY,
+                int depth,
+                fstream& file );
 
     ~tnlInternalNode();
 

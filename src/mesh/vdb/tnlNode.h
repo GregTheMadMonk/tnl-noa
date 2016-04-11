@@ -4,6 +4,7 @@
 #include "tnlBitmaskArray.h"
 #include "tnlArea2D.h"
 #include "tnlCircle2D.h"
+#include <fstream>
 
 
 template< int LogX,
@@ -16,6 +17,11 @@ public:
     virtual void setNode( int splitX,
                           int splitY,
                           int depth ){};
+
+    virtual void print( int splitX,
+                        int splitY,
+                        int depth,
+                        fstream& file ){};
 
     int getLevel();
 

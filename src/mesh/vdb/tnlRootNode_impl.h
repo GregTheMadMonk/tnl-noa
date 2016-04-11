@@ -2,6 +2,7 @@
 #define _TNLROOTNODE_IMPL_H_INCLUDED_
 
 #include <iostream>
+#include <fstream>
 #include "tnlNode.h"
 #include "tnlArea2D.h"
 #include "tnlIterator2D.h"
@@ -77,10 +78,23 @@ void tnlRootNode< size, LogX, LogY >::createTree()
 template< unsigned size,
           int LogX,
           int LogY >
-void tnlRootNode< size, LogX, LogY >::printStates()
+void tnlRootNode< size, LogX, LogY >::printStates( fstream& file )
 {
+    float stepX = ( this->area->getEndX() - this->area->getStartX() ) / this->nodesX;
+    float stepY = ( this->area->getEndY() - this->area->getStartY() ) / this->nodesY;
+    tnlIterator2D< size, LogX, LogY >* iter = new tnlIterator2D< size, LogX, LogY >( this->nodesX,
+                                                             this->nodesY,
+                                                             stepX,
+                                                             stepY,
+                                                             this->area->getStartX(),
+                                                             this->area->getStartY() );
+    iter->dumpIntoFile( this->bitmaskArray, file );
+
     for( int i = 0; i < size; i++ )
-        std::cout << this->bitmaskArray->getIthBitmask( i )->getState() << std::endl;
+        if( this->children[ i ] == NULL )
+            continue;
+        else
+            children[ i ]->print( nodesX, nodesY, this->depth, file );
 }
 
 template< unsigned size,

@@ -1,6 +1,7 @@
 #ifndef _TNLINTERNALNODE_IMPL_H_INCLUDED_
 #define _TNLINTERNALNODE_IMPL_H_INCLUDED_
 
+#include <iostream>
 #include "tnlInternalNode.h"
 #include "tnlLeafNode.h"
 #include "tnlArea2D.h"
@@ -63,6 +64,7 @@ void tnlInternalNode< LogX, LogY >::setChildren( int splitX,
             this->children[ i ] = NULL;
         else if( this->level < depth - 1 )
         {
+            std::cout << "creating new node, level = " << this->level << std::endl;
             this->children[ i ] = new tnlInternalNode< LogX, LogY >( this->area,
                                                                      this->circle,
                                                                      this->bitmaskArray->getIthBitmask( i )->getX(),
@@ -81,5 +83,36 @@ void tnlInternalNode< LogX, LogY >::setChildren( int splitX,
         }
     }
 }
+
+template< int LogX,
+          int LogY >
+void tnlInternalNode< LogX, LogY >::print( int splitX,
+                                           int splitY,
+                                           int depth,
+                                           fstream& file )
+{
+    int depthX = splitX * tnlVDBMath::power( LogX, this->level );
+    int depthY = splitY * tnlVDBMath::power( LogY, this->level );
+    float stepX = ( float ) this->area->getLengthX() / depthX;
+    float stepY = ( float ) this->area->getLengthY() / depthY;
+    float startX = this->X * stepX;
+    float endX = ( this->X + 1 ) * stepX;
+    float startY = this->Y * stepY;
+    float endY = ( this->Y + 1 ) * stepY;
+    tnlIterator2D< LogX * LogY, LogX, LogY >* iter =
+                 new tnlIterator2D< LogX * LogY, LogX, LogY >( LogX,
+                                                               LogY,
+                                                               ( float ) ( endX - startX ) / LogX,
+                                                               ( float ) ( endY - startY ) / LogY,
+                                                               startX,
+                                                               startY );
+    iter->dumpIntoFile( this->bitmaskArray, file, this->level );
+    for( int i = 0; i < LogX * LogY; i++ )
+        if( this->children[ i ] == NULL )
+            continue;
+        else
+            this->children[ i ]->print( splitX, splitY, depth, file );
+}
+
 
 #endif // _TNLINTERNALNODE_IMPL_H_INCLUDED_

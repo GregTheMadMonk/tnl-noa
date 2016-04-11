@@ -1,6 +1,7 @@
 #ifndef _TNLLEAFNODE_H_INCLUDED_
 #define _TNLLEAFNODE_H_INCLUDED_
 
+#include <fstream>
 #include "tnlNode.h"
 #include "tnlArea2D.h"
 #include "tnlCircle2D.h"
@@ -20,6 +21,11 @@ public:
     void setNode( int splitX,
                   int splitY,
                   int depth );
+
+    void print( int splitX,
+                int splitY,
+                int depth,
+                fstream& file );
 
     ~tnlLeafNode();
 
