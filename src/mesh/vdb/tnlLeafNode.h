@@ -2,9 +2,9 @@
 #define _TNLLEAFNODE_H_INCLUDED_
 
 #include "tnlNode.h"
-
-//template< int LogX, int LogY >
-//class tnlNode;
+#include "tnlArea2D.h"
+#include "tnlCircle2D.h"
+#include "tnlBitmask.h"
 
 template< int LogX,
           int LogY = LogX >
@@ -13,7 +13,8 @@ class tnlLeafNode : public tnlNode< LogX, LogY >
 public:
     tnlLeafNode( tnlArea2D* area,
                  tnlCircle2D* circle,
-                 tnlBitmask* coordinates,
+                 int X,
+                 int Y,
                  int level );
 
     void setNode( int splitX,
@@ -25,4 +26,5 @@ public:
 private:
 };
 
+#include "tnlLeafNode_impl.h"
 #endif // _TNLLEAFNODE_H_INCLUDED_

@@ -15,7 +15,7 @@ public:
 
     virtual void setNode( int splitX,
                           int splitY,
-                          int depth );
+                          int depth ){};
 
     int getLevel();
 
@@ -23,15 +23,13 @@ public:
 
 protected:
     tnlArea2D* area;
-    tnlCircle2D circle;
+    tnlCircle2D* circle;
+    int X, Y;
+    int level;
+    tnlBitmaskArray< LogX * LogY >* bitmaskArray;
 
 private:
-    int level;
     int size;
-//    tnlArea2D* area;
-//    tnlCircle2D* circle;
-    tnlBitmaskArray< LogX * LogY >* bitmaskArray;
-    tnlBitmask* coordinates;
 };
 
 #include "tnlNode_impl.h"

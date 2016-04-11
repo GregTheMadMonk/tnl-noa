@@ -3,7 +3,7 @@
 
 class tnlVDBMath
 {
-
+public:
     static int power( int number,
                       int exponent )
     {

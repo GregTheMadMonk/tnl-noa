@@ -2,12 +2,14 @@
 #define _TNLROOTNODE_IMPL_H_INCLUDED_
 
 #include <iostream>
+#include "tnlNode.h"
 #include "tnlArea2D.h"
 #include "tnlIterator2D.h"
 #include "tnlRootNode.h"
 #include "tnlCircle2D.h"
 #include "tnlInternalNode.h"
 #include "tnlLeafNode.h"
+
 
 template< unsigned size,
           int LogX,
@@ -56,7 +58,8 @@ void tnlRootNode< size, LogX, LogY >::createTree()
         {
             this->children[ i ] = new tnlInternalNode< LogX, LogY >( this->area,
                                                                      this->circle,
-                                                                     this->bitmaskArray->getIthBitmask( i ),
+                                                                     this->bitmaskArray->getIthBitmask( i )->getX(),
+                                                                     this->bitmaskArray->getIthBitmask( i )->getY(),
                                                                      this->level + 1 );
             this->children[ i ]->setNode( nodesX, nodesY, this->depth );
         }
@@ -64,7 +67,8 @@ void tnlRootNode< size, LogX, LogY >::createTree()
         {
             this->children[ i ] = new tnlLeafNode< LogX, LogY >( this->area,
                                                                  this->circle,
-                                                                 this->bitmaskArray->getIthBitmask( i ),
+                                                                 this->bitmaskArray->getIthBitmask( i )->getX(),
+                                                                 this->bitmaskArray->getIthBitmask( i )->getY(),
                                                                  this->level + 1 );
             this->children[ i ]->setNode( nodesX, nodesY, this->depth );
         }

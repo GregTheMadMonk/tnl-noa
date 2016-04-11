@@ -33,8 +33,6 @@ bool tnlCircle2D::isIntercept( float x1,
         std::cout << "Circle is not inside area." << std::endl;
 
     float R = this->r * this->r;
-    float A = this->a * this->a;
-    float B = this->b * this->b;
 
     float aux = x1 - this->a;
     if( R - aux * aux >= 0 &&

@@ -4,8 +4,6 @@
 #include "tnlNode.h"
 #include "tnlArea2D.h"
 #include "tnlCircle2D.h"
-#include "tnlBitmask.h"
-#include "tnlBitmaskArray.h"
 
 //template< int LogX, int LogY >
 //class tnlNode;
@@ -17,7 +15,8 @@ class tnlInternalNode : public tnlNode< LogX, LogY >
 public:
     tnlInternalNode( tnlArea2D* area,
                      tnlCircle2D* circle,
-                     tnlBitmask* coordinates,
+                     int X,
+                     int Y,
                      int level );
 
     void setNode( int splitX,

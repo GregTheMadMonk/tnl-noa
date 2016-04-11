@@ -3,7 +3,6 @@
 
 #include "tnlBitmaskArray.h"
 #include "tnlCircle2D.h"
-#include "tnlNode.h"
 
 template< unsigned size,
           int LogX,

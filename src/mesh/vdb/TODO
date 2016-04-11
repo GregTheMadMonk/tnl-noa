@@ -12,3 +12,6 @@ echo "Currently most important is to implement math funcs,"
 echo "as the original ones are exponentially complex, in 2D"
 echo "its complexity is at most 2^2, in 3D its at most 2^3 (!)"
 echo "which lightweigth GPU threads won't handle."
+
+
+Program fails at tnlIterator2D->computeBitmaskArray() last instruction in for loop (check whats happenning in tnlBitmaskArray->setIthMask())
