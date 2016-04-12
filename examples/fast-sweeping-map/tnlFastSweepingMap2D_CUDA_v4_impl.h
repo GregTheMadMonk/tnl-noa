@@ -158,12 +158,15 @@ bool tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 
 	int run = 1;
 	int zero = 0;
+	int cntr = 0;
 
 	while(run != 0)
 	{
 		cudaMemcpy(this->changed, &zero, sizeof(int), cudaMemcpyHostToDevice);
 		runCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver,0,0, this->changed);
 		cudaMemcpy(&run, this->changed,sizeof(int), cudaMemcpyDeviceToHost);
+		cntr++;
+		cout << "Finished set of sweeps #" << cntr <<endl;
 	}
 
 	cudaDeviceSynchronize();
