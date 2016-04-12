@@ -117,6 +117,16 @@ void tnlRootNode< size, LogX, LogY >::write()
         std::string filename = "nodesLevel_" + std::to_string( i );
         fstream f;
         f.open( filename, ios::out | ios::trunc );
+        int startX = this->area->getStartX();
+        int endX = this->area->getEndX();
+        int startY = this->area->getStartY();
+        int endY = this->area->getEndY();
+        f << "startx=" << setw( 10 ) << startX
+          << ", endx=" << setw( 10 ) << endX
+          << ", starty=" <<setw( 10 ) << startY
+          << ", endy=" << setw( 10 ) << endY
+          << ", level=" << setw( 10 ) << i
+          << std::endl << std::endl;
         for( int j = 0; j < size; j++ )
         {
             if( this->level == i )
