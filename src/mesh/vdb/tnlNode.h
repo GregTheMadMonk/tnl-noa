@@ -23,6 +23,9 @@ public:
                         int depth,
                         fstream& file ){};
 
+    virtual void write( fstream& f,
+                        int level ){};
+
     int getLevel();
 
     ~tnlNode(){};

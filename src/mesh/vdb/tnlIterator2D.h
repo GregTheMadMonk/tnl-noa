@@ -19,7 +19,9 @@ public:
                    float startY );
 
     void computeBitmaskArray( tnlBitmaskArray< size >* bitmaskArray,
-                              tnlCircle2D* circle );
+                              tnlCircle2D* circle,
+                              int posX = 0,
+                              int posY = 0 );
 
     void dumpIntoFile( tnlBitmaskArray< size >* bitmaskArray,
                        fstream& file,

@@ -27,6 +27,9 @@ public:
                 int depth,
                 fstream& file );
 
+    void write( fstream& file,
+                int level );
+
     ~tnlLeafNode();
 
 private:

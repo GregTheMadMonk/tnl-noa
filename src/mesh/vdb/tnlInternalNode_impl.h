@@ -2,6 +2,7 @@
 #define _TNLINTERNALNODE_IMPL_H_INCLUDED_
 
 #include <iostream>
+#include <iomanip>
 #include "tnlInternalNode.h"
 #include "tnlLeafNode.h"
 #include "tnlArea2D.h"
@@ -48,7 +49,7 @@ void tnlInternalNode< LogX, LogY >::setNode( int splitX,
                                                                ( float ) ( endY - startY ) / LogY,
                                                                startX,
                                                                startY );
-    iter->computeBitmaskArray( this->bitmaskArray, this->circle );
+    iter->computeBitmaskArray( this->bitmaskArray, this->circle, this->X, this->Y );
     this->setChildren( splitX, splitY, depth );
 }
 
@@ -88,6 +89,28 @@ void tnlInternalNode< LogX, LogY >::setChildren( int splitX,
                 this->children[ index ]->setNode( splitX, splitY, depth );
             }    
         }
+}
+
+template< int LogX,
+          int LogY >
+void tnlInternalNode< LogX, LogY >::write( fstream& file,
+                                           int level )
+{
+    for( int i = 0; i < LogX * LogY; i++ )
+    {
+        if( this->level == level )
+        {
+            int x = this->bitmaskArray->getIthBitmask( i )->getX();
+            int y = this->bitmaskArray->getIthBitmask( i )->getY();
+            bool state = this->bitmaskArray->getIthBitmask( i )->getState();
+            file << "x=" << setw( 10 ) << x
+                 << ", y=" << setw( 10 ) << y
+                 << ", state=" << setw( 1 ) << state
+                 << std::endl;
+        }
+        else if( this->children[ i ] )
+            this->children[ i ]->write( file, level );
+    }
 }
 
 template< int LogX,

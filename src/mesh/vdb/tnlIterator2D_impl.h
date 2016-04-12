@@ -29,7 +29,9 @@ template< unsigned size,
           int LogX,
           int LogY >
 void tnlIterator2D< size, LogX, LogY >::computeBitmaskArray( tnlBitmaskArray< size >* bitmaskArray,
-                                                             tnlCircle2D* circle )
+                                                             tnlCircle2D* circle,
+                                                             int posX,
+                                                             int posY )
 {
     // yeah, in matrix, i like to iterate over rows first
     for( int i = 0; i < this->cellsY; i++ )
@@ -40,7 +42,9 @@ void tnlIterator2D< size, LogX, LogY >::computeBitmaskArray( tnlBitmaskArray< si
             float y1 = this->startY + i * this->stepY;
             float y2 = this->startY + ( i + 1 ) * this->stepY;
             bool state = circle->isIntercept( x1, x2, y1, y2 );
-            tnlBitmask* bitmask = new tnlBitmask( state, j, i );
+            int X = posX * cellsX + j;
+            int Y = posY * cellsY + i;
+            tnlBitmask* bitmask = new tnlBitmask( state, X, Y );
             bitmaskArray->setIthBitmask( i * this->cellsX + j, bitmask );
         }
 }
@@ -55,13 +59,15 @@ void tnlIterator2D< size, LogX, LogY >::dumpIntoFile( tnlBitmaskArray< size >* b
     for( int i = 0; i < this->cellsY; i++ )
         for( int j = 0; j < this->cellsX; j++ )
         {
-            float x1 = this->startX + j * this->stepX;
-            float x2 = this->startX + ( j + 1 ) * this->stepX;
-            float y1 = this->startY + i * this->stepY;
-            float y2 = this->startY + ( i + 1 ) * this->stepY;
+            //float x1 = this->startX + j * this->stepX;
+            //float x2 = this->startX + ( j + 1 ) * this->stepX;
+            //float y1 = this->startY + i * this->stepY;
+            //float y2 = this->startY + ( i + 1 ) * this->stepY;
+            int x = bitmaskArray->getIthBitmask( i * this->cellsX + j )->getX();
+            int y = bitmaskArray->getIthBitmask( i * this->cellsX + j )->getY();
             bool state = bitmaskArray->getIthBitmask( i * this->cellsX + j )->getState();
-            file << "x1 = " << x1 << ", x2 = " << x2 << 
-                    ", y1 = " << y1 << ", y2 = " << y2 <<
+            file << "x = " << x <<
+                    ", y = " << y <<
                     ", state = " << state << 
                     ", level = " << level << std::endl;
         }

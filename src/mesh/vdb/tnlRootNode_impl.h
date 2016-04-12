@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <iomanip>
+#include <string>
 #include "tnlNode.h"
 #include "tnlArea2D.h"
 #include "tnlIterator2D.h"
@@ -103,6 +105,34 @@ void tnlRootNode< size, LogX, LogY >::printStates( fstream& file )
             continue;
         else
             children[ i ]->print( nodesX, nodesY, this->depth, file );
+}
+
+template< unsigned size,
+          int LogX,
+          int LogY >
+void tnlRootNode< size, LogX, LogY >::write()
+{
+    for( int i = 0; i < this->depth; i++ )
+    {
+        std::string filename = "nodesLevel_" + std::to_string( i );
+        fstream f;
+        f.open( filename, ios::out | ios::trunc );
+        for( int j = 0; j < size; j++ )
+        {
+            if( this->level == i )
+            {
+                int x = this->bitmaskArray->getIthBitmask( j )->getX();
+                int y = this->bitmaskArray->getIthBitmask( j )->getY();
+                bool state = this->bitmaskArray->getIthBitmask( j )->getState();
+                f << "x=" << setw( 10 ) << x
+                  << ", y=" << setw( 10 ) << y
+                  << ", state=" << setw( 1 ) << state
+                  << std::endl;
+            }
+            else if( this->children[ j ] )
+                this->children[ j ]->write( f, i );
+        }
+    }
 }
 
 template< unsigned size,

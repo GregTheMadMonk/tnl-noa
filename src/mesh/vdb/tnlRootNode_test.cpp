@@ -15,6 +15,7 @@ int main()
     tnlCircle2D* circle = new tnlCircle2D( 10, 10, 4 );
     tnlRootNode< size, x, y >* root = new tnlRootNode< size, x, y >( area, circle, x, y, 5 );
     root->createTree();
-    root->printStates( f );
+    //root->printStates( f );
+    root->write();
     return 0;
 }

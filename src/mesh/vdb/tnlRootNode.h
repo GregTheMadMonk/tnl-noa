@@ -25,6 +25,8 @@ public:
 
     void printStates( fstream& file );
 
+    void write();
+
     ~tnlRootNode();
 
     friend class tnlNode< LogX, LogY >;

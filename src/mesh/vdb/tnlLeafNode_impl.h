@@ -10,6 +10,7 @@
 #include <iostream>
 #include "tnlBitmaskArray.h"
 #include <fstream>
+#include <iomanip>
 
 template< int LogX,
           int LogY >
@@ -49,7 +50,7 @@ void tnlLeafNode< LogX, LogY >::setNode( int splitX,
                                                                ( float ) ( endY - startY ) / LogY,
                                                                startX,
                                                                startY );
-    iter->computeBitmaskArray( this->bitmaskArray, this->circle );
+    iter->computeBitmaskArray( this->bitmaskArray, this->circle, this->X, this->Y );
 }
 
 template< int LogX,
@@ -75,6 +76,23 @@ void tnlLeafNode< LogX, LogY >::print( int splitX,
                                                                startX,
                                                                startY );
     iter->dumpIntoFile( this->bitmaskArray, file, this->level );
+}
+
+template< int LogX,
+          int LogY >
+void tnlLeafNode< LogX, LogY >::write( fstream& file,
+                                       int level )
+{
+    for( int i = 0; i < LogX * LogY; i++ )
+    {
+        int x = this->bitmaskArray->getIthBitmask( i )->getX();
+        int y = this->bitmaskArray->getIthBitmask( i )->getY();
+        bool state = this->bitmaskArray->getIthBitmask( i )->getState();
+        file << "x=" << setw( 10 ) << x
+             << ", y=" << setw( 10 ) << y
+             << ", state=" << setw( 1 ) << state
+             << std::endl;
+    }
 }
 
 template< int LogX,

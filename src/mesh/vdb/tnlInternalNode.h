@@ -33,6 +33,9 @@ public:
                 int depth,
                 fstream& file );
 
+    void write( fstream& f,
+                int level );
+
     ~tnlInternalNode();
 
 private:
