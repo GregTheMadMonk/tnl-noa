@@ -18,7 +18,7 @@
 
 #include "tnlFastSweepingMap.h"
 
-#define MAP_SOLVER_MAX_VALUE 150
+#define MAP_SOLVER_MAX_VALUE 3
 
 __device__
 double fabsMin( double x, double y)
@@ -163,10 +163,18 @@ bool tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 	while(run != 0)
 	{
 		cudaMemcpy(this->changed, &zero, sizeof(int), cudaMemcpyHostToDevice);
+		cudaDeviceSynchronize();
+		checkCudaDevice;
+
 		runCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver,0,0, this->changed);
+		cudaDeviceSynchronize();
+		checkCudaDevice;
+
 		cudaMemcpy(&run, this->changed,sizeof(int), cudaMemcpyDeviceToHost);
+		cudaDeviceSynchronize();
+		checkCudaDevice;
 		cntr++;
-		cout << "Finished set of sweeps #" << cntr <<endl;
+		cout << "Finished set of sweeps #" << cntr << "           " << run << endl;
 	}
 
 	cudaDeviceSynchronize();
@@ -207,7 +215,7 @@ void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 	{
 		tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
 		Real value = cudaDofVector2[Entity.getIndex()];
-		Real im = 1.0/map_cuda[Entity.getIndex()];
+		Real im = abs(1.0/map_cuda[Entity.getIndex()]);
 		Real a,b, tmp;
 
 		if( i == 0 )
@@ -239,7 +247,7 @@ void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 	//	cudaDofVector2[Entity.getIndex()]  = fabsMin(value, tmp);
 		atomicFabsMin(&(cudaDofVector2[Entity.getIndex()]), tmp);
 
-		if(abs(abs(value)-abs(tmp)) > 0.1*h)
+		if(abs(value)-abs(tmp) > 0.1*h)
 			atomicMax(something_changed,1);
 	}
 	else
@@ -270,92 +278,92 @@ bool tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 	int gid = Entity.getIndex();
 
 	cudaDofVector2[gid] = INT_MAX*Sign(cudaDofVector[gid]);
+
+	if(abs(cudaDofVector[gid]) < 1.01*h)
+		cudaDofVector2[gid] = cudaDofVector[gid];
+
+
+
+
+
+//	if(i+1 < Mesh.getDimensions().x() && j+1 < Mesh.getDimensions().y() )
+//	{
+//		if(cudaDofVector[Entity.getIndex()] > 0)
+//		{
+//			if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
+//			{
+//				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare1111(i,j);
+//					else
+//						setupSquare1110(i,j);
+//				}
+//				else
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare1101(i,j);
+//					else
+//						setupSquare1100(i,j);
+//				}
+//			}
+//			else
+//			{
+//				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare1011(i,j);
+//					else
+//						setupSquare1010(i,j);
+//				}
+//				else
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare1001(i,j);
+//					else
+//						setupSquare1000(i,j);
+//				}
+//			}
+//		}
+//		else
+//		{
+//			if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
+//			{
+//				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare0111(i,j);
+//					else
+//						setupSquare0110(i,j);
+//				}
+//				else
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare0101(i,j);
+//					else
+//						setupSquare0100(i,j);
+//				}
+//			}
+//			else
+//			{
+//				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare0011(i,j);
+//					else
+//						setupSquare0010(i,j);
+//				}
+//				else
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare0001(i,j);
+//					else
+//						setupSquare0000(i,j);
+//				}
+//			}
+//		}
 //
-//	if(abs(cudaDofVector[gid]) < 1.01*h)
-//		cudaDofVector2[gid] = cudaDofVector[gid];
-
-
-
-
-
-	if(i+1 < Mesh.getDimensions().x() && j+1 < Mesh.getDimensions().y() )
-	{
-		if(cudaDofVector[Entity.getIndex()] > 0)
-		{
-			if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
-			{
-				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare1111(i,j);
-					else
-						setupSquare1110(i,j);
-				}
-				else
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare1101(i,j);
-					else
-						setupSquare1100(i,j);
-				}
-			}
-			else
-			{
-				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare1011(i,j);
-					else
-						setupSquare1010(i,j);
-				}
-				else
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare1001(i,j);
-					else
-						setupSquare1000(i,j);
-				}
-			}
-		}
-		else
-		{
-			if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
-			{
-				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare0111(i,j);
-					else
-						setupSquare0110(i,j);
-				}
-				else
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare0101(i,j);
-					else
-						setupSquare0100(i,j);
-				}
-			}
-			else
-			{
-				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare0011(i,j);
-					else
-						setupSquare0010(i,j);
-				}
-				else
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare0001(i,j);
-					else
-						setupSquare0000(i,j);
-				}
-			}
-		}
-
-	}
+//	}
 
 	return true;
 
@@ -404,6 +412,7 @@ __global__ void runCUDA(tnlFastSweepingMap< tnlGrid< 2,double, tnlHost, int >, d
 	//int id1 = gx+gy;
 	//int id2 = (solver->Mesh.getDimensions().x() - gx - 1) + gy;
 
+	__syncthreads();
 	if(blockIdx.x==0)
 	{
 		for(int k = 0; k < n*blockCount + blockDim.y; k++)
