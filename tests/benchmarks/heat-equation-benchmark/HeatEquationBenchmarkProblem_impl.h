@@ -6,6 +6,7 @@
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
 #include <solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include "TestGridEntity.h"
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -270,6 +271,51 @@ boundaryConditionsTemplatedCompact( const GridType grid,
    }   
 }
 
+/*template< typename Grid,
+          int EntityDimensions = 2,
+          typename Config = tnlGridEntityNoStencilStorage >
+struct TestEntity
+{      
+      typedef Grid GridType;
+      typedef GridType MeshType;
+      typedef typename GridType::RealType RealType;
+      typedef typename GridType::IndexType IndexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      typedef Config ConfigType;
+      
+      static const int meshDimensions = GridType::meshDimensions;
+      
+      static const int entityDimensions = EntityDimensions;
+            
+      constexpr static int getDimensions() { return EntityDimensions; };
+      
+      constexpr static int getMeshDimensions() { return meshDimensions; };
+   
+      typedef TestEntity< GridType, EntityDimensions, Config > ThisType;
+      typedef tnlNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
+   
+   
+   __cuda_callable__ TestEntity(  const GridType& grid,
+               const CoordinatesType& coordinates,
+               const CoordinatesType& entityOrientation,
+               const CoordinatesType& entityBasis )
+      : grid( grid ), coordinates( coordinates ),
+      entityOrientation( 0  ),
+      entityBasis( 1 ),
+      neighbourEntitiesStorage( *this )
+   {
+      
+   }
+      
+       const GridType& grid;
+   
+   CoordinatesType coordinates;
+   CoordinatesType entityOrientation;
+   CoordinatesType entityBasis;
+      
+   NeighbourGridEntitiesStorageType neighbourEntitiesStorage;   
+};*/
+
 template< typename GridType,
           typename GridEntity,
           typename DifferentialOperator,
@@ -314,8 +360,10 @@ heatEquationTemplatedCompact( const GridType grid,
       }
    }*/
       
-   GridEntity entity( grid, coordinates, entityOrientation, entityBasis );
+   //GridEntity entity( grid, coordinates, entityOrientation, entityBasis );
+   //printf( "size = %d ", sizeof( GridEntity ) );
    //entity.refresh();
+   TestGridEntity< GridType, 2, tnlGridEntityCrossStencilStorage< 1 > > entity( grid, coordinates, entityOrientation, entityBasis );
    
    const IndexType tidX = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    const IndexType tidY = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
@@ -373,6 +421,12 @@ getExplicitRHS( const RealType& time,
          fu[ i ] = 0.0; //u[ gridXSize + i ];
          fu[ ( gridYSize - 1 ) * gridXSize + i ] = 0.0; //u[ ( gridYSize - 2 ) * gridXSize + i ];
       }
+      
+      /*typedef typename MeshType::Cell CellType;
+      typedef typename CellType::CoordinatesType CoordinatesType;
+      CoordinatesType coordinates( 0, 0 ), entityOrientation( 0,0 ), entityBasis( 0, 0 );*/
+      
+      //CellType entity( mesh, coordinates, entityOrientation, entityBasis );
 
       for( IndexType j = 1; j < gridYSize - 1; j++ )
          for( IndexType i = 1; i < gridXSize - 1; i++ )
