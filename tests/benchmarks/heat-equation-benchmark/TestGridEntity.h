@@ -1,5 +1,5 @@
 /***************************************************************************
-                          TestGridEntity.h  -  description
+                          tnlGridEntity.h  -  description
                              -------------------
     begin                : Nov 13, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -15,10 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
-#pragma once
+#pragma once 
 
 #include <mesh/grids/tnlNeighbourGridEntitiesStorage.h>
-//#include "TestNeighbourGridEntitiesStorage.h"
 
 template< typename GridEntity,
           int NeighbourEntityDimensions,
@@ -29,7 +28,7 @@ template< typename GridEntityType >
 class tnlBoundaryGridEntityChecker;
 
 template< typename GridEntityType >
-class TestGridEntityCenterGetter;
+class tnlGridEntityCenterGetter;
 
 
 template< typename Grid,          
@@ -75,7 +74,7 @@ class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensio
       template< int NeighbourEntityDimensions = entityDimensions >
       using NeighbourEntities = 
          tnlNeighbourGridEntityGetter<
-            TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
+            tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
                            EntityDimensions,
                            Config >,
             NeighbourEntityDimensions >;
@@ -161,7 +160,7 @@ class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensio
       
       friend class tnlBoundaryGridEntityChecker< ThisType >;
       
-      friend class TestGridEntityCenterGetter< ThisType >;
+      friend class tnlGridEntityCenterGetter< ThisType >;
 };
 
 /****
@@ -201,7 +200,7 @@ class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Co
       template< int NeighbourEntityDimensions = entityDimensions >
       using NeighbourEntities = 
          tnlNeighbourGridEntityGetter<
-            TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
+            tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
                            entityDimensions,
                            Config >,
             NeighbourEntityDimensions >;
@@ -288,7 +287,7 @@ class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Co
       
       friend class tnlBoundaryGridEntityChecker< ThisType >;
       
-      friend class TestGridEntityCenterGetter< ThisType >;
+      friend class tnlGridEntityCenterGetter< ThisType >;
 };
 
 /****
@@ -327,7 +326,7 @@ class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
       template< int NeighbourEntityDimensions = entityDimensions >
       using NeighbourEntities = 
          tnlNeighbourGridEntityGetter<
-            TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
+            tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
                            entityDimensions,
                            Config >,
             NeighbourEntityDimensions >;
@@ -412,7 +411,7 @@ class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
             
       friend class tnlBoundaryGridEntityChecker< ThisType >;
       
-      friend class TestGridEntityCenterGetter< ThisType >;
+      friend class tnlGridEntityCenterGetter< ThisType >;
 };
 
 #include "TestGridEntity_impl.h"

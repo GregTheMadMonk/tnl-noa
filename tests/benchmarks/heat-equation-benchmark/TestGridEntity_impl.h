@@ -1,5 +1,5 @@
 /***************************************************************************
-                          TestGridEntity_impl.h  -  description
+                          tnlGridEntity_impl.h  -  description
                              -------------------
     begin                : Nov 20, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -19,8 +19,8 @@
 #pragma once
 
 #include <mesh/grids/tnlBoundaryGridEntityChecker.h>
-#include "TestGridEntityCenterGetter.h"
-#include "TestGridEntityMeasureGetter.h"
+#include <mesh/grids/tnlGridEntityCenterGetter.h>
+#include <mesh/grids/tnlGridEntityMeasureGetter.h>
 #include "TestGridEntity.h"
 
 
@@ -252,7 +252,7 @@ typename tnlGrid< Dimensions, Real, Device, Index >::VertexType
 TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
 getCenter() const
 {
-   return TestGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
+   return tnlGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
 }
 
 template< int Dimensions,
@@ -266,7 +266,7 @@ const typename TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Entit
 TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
 getMeasure() const
 {
-   return TestGridEntityMeasureGetter< GridType, EntityDimensions >::getMeasure( this->getMesh(), *this );
+   return tnlGridEntityMeasureGetter< GridType, EntityDimensions >::getMeasure( this->getMesh(), *this );
 }
 
 template< int Dimensions,
@@ -469,7 +469,7 @@ typename tnlGrid< Dimensions, Real, Device, Index >::VertexType
 TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
 getCenter() const
 {
-   return TestGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
+   return tnlGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
 }
 
 template< int Dimensions,
@@ -689,7 +689,7 @@ typename tnlGrid< Dimensions, Real, Device, Index >::VertexType
 TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
 getCenter() const
 {
-   return TestGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
+   return tnlGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
 }
 
 template< int Dimensions,

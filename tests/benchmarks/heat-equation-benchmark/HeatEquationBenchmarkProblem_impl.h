@@ -363,7 +363,7 @@ heatEquationTemplatedCompact( const GridType grid,
    //GridEntity entity( grid, coordinates, entityOrientation, entityBasis );
    //printf( "size = %d ", sizeof( GridEntity ) );
    //entity.refresh();
-   TestGridEntity< GridType, 2, tnlGridEntityCrossStencilStorage< 1 > > entity( grid, coordinates, entityOrientation, entityBasis );
+   //typename GridType::TestCell entity( grid, coordinates, entityOrientation, entityBasis );
    
    const IndexType tidX = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    const IndexType tidY = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
@@ -472,7 +472,7 @@ getExplicitRHS( const RealType& time,
       if( this->cudaKernelType == "templated-compact" )
       {
 #ifdef HAVE_CUDA         
-         typedef typename MeshType::Cell CellType;
+         typedef typename MeshType::TestCell CellType;
          typedef typename CellType::CoordinatesType CoordinatesType;         
          MeshFunctionType u( mesh, uDofs );
          MeshFunctionType fu( mesh, fuDofs );
@@ -534,7 +534,7 @@ getExplicitRHS( const RealType& time,
          MeshFunctionType fu( mesh, fuDofs );
          tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
          //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
-         explicitUpdater.template update< typename Mesh::Cell >( 
+         explicitUpdater.template update< typename Mesh::TestCell >( 
             time,
             mesh,
             this->differentialOperator,
