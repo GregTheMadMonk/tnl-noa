@@ -86,7 +86,7 @@ class TestGridEntityCenterGetter< TestGridEntity< tnlGrid< 2, Real, Device, Inde
       __cuda_callable__ inline
       static VertexType getEntityCenter( const GridEntityType& entity )
       {
-         const GridType& grid = entity.grid;
+         const GridType& grid = entity.getMesh();
          return VertexType(
             grid.getOrigin().x() + ( entity.getCoordinates().x() + 0.5 ) * grid.getSpaceSteps().x(),
             grid.getOrigin().y() + ( entity.getCoordinates().y() + 0.5 ) * grid.getSpaceSteps().y() );
