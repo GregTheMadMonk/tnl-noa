@@ -17,7 +17,7 @@
 
 #pragma once 
 
-#include <mesh/grids/tnlNeighbourGridEntitiesStorage.h>
+#include "TestNeighbourGridEntitiesStorage.h"
 
 template< typename GridEntity,
           int NeighbourEntityDimensions,

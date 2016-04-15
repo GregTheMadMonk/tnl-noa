@@ -90,7 +90,7 @@ class TestNeighbourGridEntityLayer< GridEntity, 0 >
 };
 
 template< typename GridEntity >
-class tnlNeighbourGridEntitiesStorage
+class TestNeighbourGridEntitiesStorage
 : public TestNeighbourGridEntityLayer< GridEntity, GridEntity::meshDimensions >
 {
    typedef TestNeighbourGridEntityLayer< GridEntity, GridEntity::meshDimensions > BaseType;
