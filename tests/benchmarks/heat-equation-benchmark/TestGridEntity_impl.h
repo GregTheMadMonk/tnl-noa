@@ -19,7 +19,7 @@
 #pragma once
 
 #include <mesh/grids/tnlBoundaryGridEntityChecker.h>
-#include <mesh/grids/tnlGridEntityCenterGetter.h>
+#include "TestGridEntityCenterGetter.h"
 #include <mesh/grids/tnlGridEntityMeasureGetter.h>
 #include "TestGridEntity.h"
 
@@ -469,7 +469,7 @@ typename tnlGrid< Dimensions, Real, Device, Index >::VertexType
 TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
 getCenter() const
 {
-   return tnlGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
+   return TestGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
 }
 
 template< int Dimensions,
