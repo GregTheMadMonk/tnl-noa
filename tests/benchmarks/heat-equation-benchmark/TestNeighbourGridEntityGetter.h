@@ -15,12 +15,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLNEIGHBOURGRIDENTITYGETTER_H
-#define	TNLNEIGHBOURGRIDENTITYGETTER_H
+#pragma once
 
 #include <core/tnlAssert.h>
 
-enum tnlGridEntityStencilStorage
+/*enum tnlGridEntityStencilStorage
 { 
    tnlGridEntityNoStencil = 0,
    tnlGridEntityCrossStencil,
@@ -33,20 +32,20 @@ class tnlGridEntityStencilStorageTag
    public:
       
       static const int stencilStorage = storage;
-};
+};*/
 
 template< typename GridEntity,
           int NeighbourEntityDimensions,
           typename EntityStencilTag = 
             tnlGridEntityStencilStorageTag< GridEntity::ConfigType::template neighbourEntityStorage< GridEntity >( NeighbourEntityDimensions ) > >
-class tnlNeighbourGridEntityGetter
+class TestNeighbourGridEntityGetter
 {
    public:
 
       // TODO: not all specializations are implemented yet
       
       __cuda_callable__
-      tnlNeighbourGridEntityGetter( const GridEntity& entity )
+      TestNeighbourGridEntityGetter( const GridEntity& entity )
       {
          //tnlAssert( false, );
       };
@@ -61,5 +60,4 @@ class tnlNeighbourGridEntityGetter
 };
 
 
-#endif	/* TNLNEIGHBOURGRIDENTITYGETTER_H */
 

@@ -24,6 +24,7 @@
 #include <mesh/grids/tnlNeighbourGridEntityGetter.h>
 
 #include <../tests/benchmarks/heat-equation-benchmark/TestGridEntity.h>
+#include <../tests/benchmarks/heat-equation-benchmark/TestNeighbourGridEntityGetter2D_impl.h>
 
 template< typename Real,
           typename Device,

@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include <mesh/grids/tnlBoundaryGridEntityChecker.h>
+#include "TestBoundaryGridEntityChecker.h"
 #include "TestGridEntityCenterGetter.h"
 #include <mesh/grids/tnlGridEntityMeasureGetter.h>
 #include "TestGridEntity.h"
@@ -456,7 +456,7 @@ bool
 TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
 isBoundaryEntity() const
 {
-   return tnlBoundaryGridEntityChecker< ThisType >::isBoundaryEntity( *this );
+   return TestBoundaryGridEntityChecker< ThisType >::isBoundaryEntity( *this );
 }
 
 template< int Dimensions,

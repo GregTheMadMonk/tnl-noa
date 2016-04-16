@@ -20,6 +20,7 @@
 
 #include <core/tnlCuda.h>
 #include <mesh/tnlDimensionsTag.h>
+#include "TestNeighbourGridEntityGetter.h"
 
 template< typename GridEntity,
           int NeighbourEntityDimensions >
@@ -100,7 +101,7 @@ class TestNeighbourGridEntitiesStorage
       using BaseType::getNeighbourEntities;
       
       __cuda_callable__
-      tnlNeighbourGridEntitiesStorage( const GridEntity& entity )
+      TestNeighbourGridEntitiesStorage( const GridEntity& entity )
       : BaseType( entity )
       {}
 

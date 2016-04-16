@@ -69,12 +69,12 @@ class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensio
       typedef TestGridEntity< GridType, entityDimensions, Config > ThisType;
       typedef typename GridType::VertexType VertexType;
       
-      typedef tnlNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
+      typedef TestNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
       
       template< int NeighbourEntityDimensions = entityDimensions >
       using NeighbourEntities = 
-         tnlNeighbourGridEntityGetter<
-            tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
+         TestNeighbourGridEntityGetter<
+            TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
                            EntityDimensions,
                            Config >,
             NeighbourEntityDimensions >;
@@ -195,12 +195,12 @@ class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Co
       typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
       typedef TestGridEntity< GridType, entityDimensions, Config > ThisType;
-      typedef tnlNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
+      typedef TestNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
       
       template< int NeighbourEntityDimensions = entityDimensions >
       using NeighbourEntities = 
-         tnlNeighbourGridEntityGetter<
-            tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
+         TestNeighbourGridEntityGetter<
+            TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
                            entityDimensions,
                            Config >,
             NeighbourEntityDimensions >;
