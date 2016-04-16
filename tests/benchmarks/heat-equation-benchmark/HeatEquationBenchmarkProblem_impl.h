@@ -363,7 +363,7 @@ heatEquationTemplatedCompact( const GridType grid,
    //GridEntity entity( grid, coordinates, entityOrientation, entityBasis );
    //printf( "size = %d ", sizeof( GridEntity ) );
    //entity.refresh();
-   //typename GridType::TestCell entity( grid, coordinates, entityOrientation, entityBasis );
+   typename GridType::TestCell entity( grid, coordinates, entityOrientation, entityBasis );
    
    const IndexType tidX = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    const IndexType tidY = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
