@@ -90,9 +90,17 @@ void tnlIterativeSolver< Real, Index> :: resetIterations()
 template< typename Real, typename Index >
 bool tnlIterativeSolver< Real, Index> :: nextIteration()
 {
+   // this->checkNextIteration() must be called before the iteration counter is incremented
+   bool result = this->checkNextIteration();
+   this->currentIteration++;
+   return result;
+}
+
+template< typename Real, typename Index >
+bool tnlIterativeSolver< Real, Index> :: checkNextIteration()
+{
    // TODO: fix
    //tnlAssert( solverMonitor, );
-   this->currentIteration++;
    if( this->solverMonitor )
    {
       solverMonitor->setIterations( this->currentIteration );
@@ -103,8 +111,8 @@ bool tnlIterativeSolver< Real, Index> :: nextIteration()
 
    if( std::isnan( this->getResidue() ) || 
        this->getIterations() > this->getMaxIterations()  ||
-       ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() > this->getMinIterations() ) ||
-       ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() > this->minIterations ) ) 
+       ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() >= this->getMinIterations() ) ||
+       ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() >= this->getMinIterations() ) )
       return false;
    return true;
 }

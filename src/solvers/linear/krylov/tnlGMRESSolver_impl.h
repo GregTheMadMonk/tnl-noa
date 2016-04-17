@@ -151,7 +151,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    this->setResidue( beta / normb );
 
    tnlSharedVector< RealType, DeviceType, IndexType > vi, vk;
-   while( this->nextIteration() )
+   while( this->checkNextIteration() )
    {
       const IndexType m = restarting;
       for( IndexType i = 0; i < m + 1; i ++ )
@@ -251,10 +251,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
                              sn[ i ] );
 
          this->setResidue( fabs( s[ i + 1 ] ) / normb );
-         // The nextIteration() method should not be called here, because it increments
-         // the iteration counter. The condition below is slightly different than in
-         // nextIteration(), because it first increments and then compares.
-         if( this->getIterations() >= this->getMinIterations() && this->getResidue() < this->getConvergenceResidue() ) {
+         if( ! this->checkNextIteration() ) {
             update( i, m, _H, _s, _v, x );
             this->refreshSolverMonitor( true );
             return this->checkConvergence();
