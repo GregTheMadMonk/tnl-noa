@@ -462,12 +462,12 @@ Real parallelGodunovEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Re
 	   }
 
 
-	   if(xb - xf > 0.0)
+	   if(xb > xf)
 		   a = xb;
 	   else
 		   a = xf;
 
-	   if(yb - yf > 0.0)
+	   if(yb > yf)
 		   b = yb;
 	   else
 		   b = yf;

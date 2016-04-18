@@ -24,7 +24,7 @@
 
 
 
-#define MAP_SOLVER_MAX_VALUE 150
+#define MAP_SOLVER_MAX_VALUE 3
 
 
 
@@ -32,7 +32,7 @@ template< typename SchemeHost, typename SchemeDevice, typename Device>
 tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::tnlParallelMapSolver()
 {
 	cout << "a" << endl;
-	this->device = tnlHostDevice;  /////////////// tnlCuda Device --- vypocet na GPU, tnlHostDevice   ---    vypocet na CPU
+	this->device = tnlCudaDevice;  /////////////// tnlCuda Device --- vypocet na GPU, tnlHostDevice   ---    vypocet na CPU
 
 #ifdef HAVE_CUDA
 	if(this->device == tnlCudaDevice)
@@ -1023,11 +1023,13 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runS
 	int gid = (blockDim.y*blockIdx.y + threadIdx.y)*blockDim.x*gridDim.x + blockDim.x*blockIdx.x + threadIdx.x;
 
 	/* LOAD MAP */
-	int index = (blockIdx.y) * this->n*this->n*this->gridCols
-            + (blockIdx.x) * this->n
-            + threadIdx.y * this->n*this->gridCols
-            + threadIdx.x;
-	map_local[l]=this->map_stretched_cuda[index];
+//	int index = (blockIdx.y) * this->n*this->n*this->gridCols
+//            + (blockIdx.x) * this->n
+//            + threadIdx.y * this->n*this->gridCols
+//            + threadIdx.x;
+	map_local[l]=this->map_stretched_cuda[gid];
+	if(map_local[l] != 0.0)
+		map_local[l] = 1.0/map_local[l];
 	/* LOADED */
 
 	bool computeFU = !((i == 0 && (boundaryCondition & 4)) or
@@ -1074,13 +1076,13 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runS
 		if(computeFU)
 		{
 			if(boundaryCondition == 4)
-				u[l] = u[threadIdx.y * blockDim.x] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.x) ;//+  2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.x+this->n);
+				u[l] = u[threadIdx.y * blockDim.x] ;//+ Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.x) ;//+  2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.x+this->n);
 			else if(boundaryCondition == 2)
-				u[l] = u[threadIdx.y * blockDim.x + blockDim.x - 1] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(this->n - 1 - threadIdx.x);//+ 2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(blockDim.x - threadIdx.x - 1+this->n);
+				u[l] = u[threadIdx.y * blockDim.x + blockDim.x - 1] ;//+ Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(this->n - 1 - threadIdx.x);//+ 2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(blockDim.x - threadIdx.x - 1+this->n);
 			else if(boundaryCondition == 8)
-				u[l] = u[threadIdx.x] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.y) ;//+ 2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.y+this->n);
+				u[l] = u[threadIdx.x] ;//+ Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.y) ;//+ 2*Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(threadIdx.y+this->n);
 			else if(boundaryCondition == 1)
-				u[l] = u[(blockDim.y - 1)* blockDim.x + threadIdx.x] + Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(this->n - 1 - threadIdx.y) ;//+ Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(blockDim.y - threadIdx.y  - 1 +this->n);
+				u[l] = u[(blockDim.y - 1)* blockDim.x + threadIdx.x] ;//+ Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(this->n - 1 - threadIdx.y) ;//+ Sign(u[0])*this->subMesh.template getSpaceStepsProducts< 1, 0 >()*(blockDim.y - threadIdx.y  - 1 +this->n);
 		}
 	}
 
@@ -1152,8 +1154,9 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runS
       if(l < 1)									currentTau   = Min(sharedTau[l],sharedTau[l+1]);
       __syncthreads();
 
-      if(computeFU)
+//      if(computeFU)
     	  u[l] += currentTau * fu;
+
 //      if(abs(u[l]) > MAP_SOLVER_MAX_VALUE)
 //      {
 //  		u[l] = /*Sign(u[l])**/MAP_SOLVER_MAX_VALUE;
@@ -1309,127 +1312,11 @@ void /*tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::*/
 
 		if(blockIdx.x+blockIdx.y ==0)
 		{
-			cudaSolver->currentStep = cudaSolver->currentStep + 1;
+			cudaSolver->currentStep += 1;
 			*(cudaSolver->runcuda) = 0;
 		}
-//
-//		int stepValue = cudaSolver->currentStep + 4;
-//		if( cudaSolver->getSubgridValueCUDA2D(blockIdx.y*gridDim.x + blockIdx.x) == -INT_MAX )
-//				cudaSolver->setSubgridValueCUDA2D(blockIdx.y*gridDim.x + blockIdx.x, stepValue);
-//
-//		atomicMax((cudaSolver->runcuda),cudaSolver->getBoundaryConditionCUDA2D(blockIdx.y*gridDim.x + blockIdx.x));
 	}
 
-
-	/*
-	//printf("I am not an empty kernel!\n");
-	//cout << "Synchronizig..." << endl;
-	int tmp1, tmp2;
-	int grid1, grid2;
-
-	if(cudaSolver->currentStep & 1)
-	{
-		//printf("I am not an empty kernel! 1\n");
-		for(int j = 0; j < cudaSolver->gridRows - 1; j++)
-		{
-			//printf("I am not an empty kernel! 3\n");
-			for (int i = 0; i < cudaSolver->gridCols*cudaSolver->n; i++)
-			{
-				tmp1 = cudaSolver->gridCols*cudaSolver->n*((cudaSolver->n-1)+j*cudaSolver->n) + i;
-				tmp2 = cudaSolver->gridCols*cudaSolver->n*((cudaSolver->n)+j*cudaSolver->n) + i;
-				grid1 = cudaSolver->getSubgridValueCUDA2D(cudaSolver->getOwnerCUDA2D(tmp1));
-				grid2 = cudaSolver->getSubgridValueCUDA2D(cudaSolver->getOwnerCUDA2D(tmp2));
-
-				if ((fabs(cudaSolver->work_u_cuda[tmp1]) < fabs(cudaSolver->work_u_cuda[tmp2]) - cudaSolver->delta || grid2 == INT_MAX || grid2 == -INT_MAX) && (grid1 != INT_MAX && grid1 != -INT_MAX))
-				{
-					//printf("%d %d %d %d \n",tmp1,tmp2,cudaSolver->getOwnerCUDA2D(tmp1),cudaSolver->getOwnerCUDA2D(tmp2));
-					cudaSolver->work_u_cuda[tmp2] = cudaSolver->work_u_cuda[tmp1];
-					cudaSolver->unusedCell_cuda[tmp2] = 0;
-					if(grid2 == INT_MAX)
-					{
-						cudaSolver->setSubgridValueCUDA2D(cudaSolver->getOwnerCUDA2D(tmp2), -INT_MAX);
-					}
-					if(! (cudaSolver->getBoundaryConditionCUDA2D(cudaSolver->getOwnerCUDA2D(tmp2)) & 8) )
-						cudaSolver->setBoundaryConditionCUDA2D(cudaSolver->getOwnerCUDA2D(tmp2), cudaSolver->getBoundaryConditionCUDA2D(cudaSolver->getOwnerCUDA2D(tmp2))+8);
-				}
-				else if ((fabs(cudaSolver->work_u_cuda[tmp1]) > fabs(cudaSolver->work_u_cuda[tmp2]) + cudaSolver->delta || grid1 == INT_MAX || grid1 == -INT_MAX) && (grid2 != INT_MAX && grid2 != -INT_MAX))
-				{
-					//printf("%d %d %d %d \n",tmp1,tmp2,cudaSolver->getOwnerCUDA2D(tmp1),cudaSolver->getOwnerCUDA2D(tmp2));
-					cudaSolver->work_u_cuda[tmp1] = cudaSolver->work_u_cuda[tmp2];
-					cudaSolver->unusedCell_cuda[tmp1] = 0;
-					if(grid1 == INT_MAX)
-					{
-						cudaSolver->setSubgridValueCUDA2D(cudaSolver->getOwnerCUDA2D(tmp1), -INT_MAX);
-					}
-					if(! (cudaSolver->getBoundaryConditionCUDA2D(cudaSolver->getOwnerCUDA2D(tmp1)) & 1) )
-						cudaSolver->setBoundaryConditionCUDA2D(cudaSolver->getOwnerCUDA2D(tmp1), cudaSolver->getBoundaryConditionCUDA2D(cudaSolver->getOwnerCUDA2D(tmp1))+1);
-				}
-			}
-		}
-
-	}
-	else
-	{
-		//printf("I am not an empty kernel! 2\n");
-		for(int i = 1; i < cudaSolver->gridCols; i++)
-		{
-			//printf("I am not an empty kernel! 4\n");
-			for (int j = 0; j < cudaSolver->gridRows*cudaSolver->n; j++)
-			{
-
-				tmp1 = cudaSolver->gridCols*cudaSolver->n*j + i*cudaSolver->n - 1;
-				tmp2 = cudaSolver->gridCols*cudaSolver->n*j + i*cudaSolver->n ;
-				grid1 = cudaSolver->getSubgridValueCUDA2D(cudaSolver->getOwnerCUDA2D(tmp1));
-				grid2 = cudaSolver->getSubgridValueCUDA2D(cudaSolver->getOwnerCUDA2D(tmp2));
-
-				if ((fabs(cudaSolver->work_u_cuda[tmp1]) < fabs(cudaSolver->work_u_cuda[tmp2]) - cudaSolver->delta || grid2 == INT_MAX || grid2 == -INT_MAX) && (grid1 != INT_MAX && grid1 != -INT_MAX))
-				{
-					//printf("%d %d %d %d \n",tmp1,tmp2,cudaSolver->getOwnerCUDA2D(tmp1),cudaSolver->getOwnerCUDA2D(tmp2));
-					cudaSolver->work_u_cuda[tmp2] = cudaSolver->work_u_cuda[tmp1];
-					cudaSolver->unusedCell_cuda[tmp2] = 0;
-					if(grid2 == INT_MAX)
-					{
-						cudaSolver->setSubgridValueCUDA2D(cudaSolver->getOwnerCUDA2D(tmp2), -INT_MAX);
-					}
-					if(! (cudaSolver->getBoundaryConditionCUDA2D(cudaSolver->getOwnerCUDA2D(tmp2)) & 4) )
-						cudaSolver->setBoundaryConditionCUDA2D(cudaSolver->getOwnerCUDA2D(tmp2), cudaSolver->getBoundaryConditionCUDA2D(cudaSolver->getOwnerCUDA2D(tmp2))+4);
-				}
-				else if ((fabs(cudaSolver->work_u_cuda[tmp1]) > fabs(cudaSolver->work_u_cuda[tmp2]) + cudaSolver->delta || grid1 == INT_MAX || grid1 == -INT_MAX) && (grid2 != INT_MAX && grid2 != -INT_MAX))
-				{
-					//printf("%d %d %d %d \n",tmp1,tmp2,cudaSolver->getOwnerCUDA2D(tmp1),cudaSolver->getOwnerCUDA2D(tmp2));
-					cudaSolver->work_u_cuda[tmp1] = cudaSolver->work_u_cuda[tmp2];
-					cudaSolver->unusedCell_cuda[tmp1] = 0;
-					if(grid1 == INT_MAX)
-					{
-						cudaSolver->setSubgridValueCUDA2D(cudaSolver->getOwnerCUDA2D(tmp1), -INT_MAX);
-					}
-					if(! (cudaSolver->getBoundaryConditionCUDA2D(cudaSolver->getOwnerCUDA2D(tmp1)) & 2) )
-						cudaSolver->setBoundaryConditionCUDA2D(cudaSolver->getOwnerCUDA2D(tmp1), cudaSolver->getBoundaryConditionCUDA2D(cudaSolver->getOwnerCUDA2D(tmp1))+2);
-				}
-			}
-		}
-	}
-	//printf("I am not an empty kernel! 5 cudaSolver->currentStep : %d \n", cudaSolver->currentStep);
-
-	cudaSolver->currentStep = cudaSolver->currentStep + 1;
-	int stepValue = cudaSolver->currentStep + 4;
-	for (int i = 0; i < cudaSolver->gridRows * cudaSolver->gridCols; i++)
-	{
-		if( cudaSolver->getSubgridValueCUDA2D(i) == -INT_MAX )
-			cudaSolver->setSubgridValueCUDA2D(i, stepValue);
-	}
-
-	int maxi = 0;
-	for(int q=0; q < cudaSolver->gridRows*cudaSolver->gridCols;q++)
-	{
-		//printf("%d : %d\n", q, cudaSolver->boundaryConditions_cuda[q]);
-		maxi=Max(maxi,cudaSolver->getBoundaryConditionCUDA2D(q));
-	}
-	//printf("I am not an empty kernel! %d\n", maxi);
-	*(cudaSolver->runcuda) = (maxi > 0);
-	//printf("I am not an empty kernel! 7 %d\n", cudaSolver->boundaryConditions_cuda[0]);
-	//cout << "Grid synchronized at step " << (this->currentStep - 1 ) << endl;
-*/
 }
 
 
@@ -1438,11 +1325,7 @@ template <typename SchemeHost, typename SchemeDevice, typename Device>
 __global__
 void synchronize2CUDA2D(tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int >* cudaSolver)
 {
-//	if(blockIdx.x+blockIdx.y ==0)
-//	{
-//		cudaSolver->currentStep = cudaSolver->currentStep + 1;
-//		*(cudaSolver->runcuda) = 0;
-//	}
+
 
 	int stepValue = cudaSolver->currentStep + 4;
 	if( cudaSolver->getSubgridValueCUDA2D(blockIdx.y*gridDim.x + blockIdx.x) == -INT_MAX )
@@ -1460,54 +1343,18 @@ void synchronize2CUDA2D(tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device,
 
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 __global__
-void /*tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::*/initCUDA2D( tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr , int* ptr2, int* ptr3, double* tmp_map_ptr)
+void initCUDA2D( tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr , int* ptr2, int* ptr3, double* tmp_map_ptr)
 {
-	//cout << "Initializating solver..." << endl;
-	//const tnlString& meshLocation = parameters.getParameter <tnlString>("mesh");
-	//this->mesh_cuda.load( meshLocation );
 
-	//this->n_cuda = parameters.getParameter <int>("subgrid-size");
-	//cout << "Setting N << this->n_cuda << endl;
 
-	//this->subMesh_cuda.setDimensions( this->n_cuda, this->n_cuda );
-	//this->subMesh_cuda.setDomain( tnlStaticVector<2,double>(0.0, 0.0),
-							 //tnlStaticVector<2,double>(this->mesh_cuda.template getSpaceStepsProducts< 1, 0 >()*(double)(this->n_cuda), this->mesh_cuda.template getSpaceStepsProducts< 0, 1 >()*(double)(this->n_cuda)) );
-
-	//this->subMesh_cuda.save("submesh.tnl");
-
-//	const tnlString& initialCondition = parameters.getParameter <tnlString>("initial-condition");
-//	this->u0.load( initialCondition );
-
-	//cout << this->mesh.getCellCenter(0) << endl;
-
-	//this->delta_cuda = parameters.getParameter <double>("delta");
-	//this->delta_cuda *= this->mesh_cuda.template getSpaceStepsProducts< 1, 0 >()*this->mesh_cuda.template getSpaceStepsProducts< 0, 1 >();
-
-	//cout << "Setting delta to " << this->delta << endl;
-
-	//this->tau0_cuda = parameters.getParameter <double>("initial-tau");
-	//cout << "Setting initial tau to " << this->tau0_cuda << endl;
-	//this->stopTime_cuda = parameters.getParameter <double>("stop-time");
-
-	//this->cflCondition_cuda = parameters.getParameter <double>("cfl-condition");
-	//this -> cflCondition_cuda *= sqrt(this->mesh_cuda.template getSpaceStepsProducts< 1, 0 >()*this->mesh_cuda.template getSpaceStepsProducts< 0, 1 >());
-	//cout << "Setting CFL to " << this->cflCondition << endl;
-////
-////
-
-//	this->gridRows_cuda = gridRows;
-//	this->gridCols_cuda = gridCols;
-
-	cudaSolver->work_u_cuda = ptr;//(double*)malloc(cudaSolver->gridCols*cudaSolver->gridRows*cudaSolver->n*cudaSolver->n*sizeof(double));
+	cudaSolver->work_u_cuda = ptr;
 	cudaSolver->map_stretched_cuda = tmp_map_ptr;
-	cudaSolver->unusedCell_cuda = ptr3;//(int*)malloc(cudaSolver->gridCols*cudaSolver->gridRows*cudaSolver->n*cudaSolver->n*sizeof(int));
+	cudaSolver->unusedCell_cuda = ptr3;
 	cudaSolver->subgridValues_cuda =(int*)malloc(cudaSolver->gridCols*cudaSolver->gridRows*sizeof(int));
 	cudaSolver->boundaryConditions_cuda =(int*)malloc(cudaSolver->gridCols*cudaSolver->gridRows*sizeof(int));
-	cudaSolver->runcuda = ptr2;//(bool*)malloc(sizeof(bool));
+	cudaSolver->runcuda = ptr2;
 	*(cudaSolver->runcuda) = 1;
-	cudaSolver->currentStep = 1;
-	//cudaMemcpy(ptr,&(cudaSolver->work_u_cuda), sizeof(double*),cudaMemcpyDeviceToHost);
-	//ptr = cudaSolver->work_u_cuda;
+/* CHANGED !!!!!! from 1 to 0*/	cudaSolver->currentStep = 0;
 	printf("GPU memory allocated.\n");
 
 	for(int i = 0; i < cudaSolver->gridCols*cudaSolver->gridRows; i++)
@@ -1516,51 +1363,18 @@ void /*tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::*/
 		cudaSolver->boundaryConditions_cuda[i] = 0;
 	}
 
-	/*for(long int j = 0; j < cudaSolver->n*cudaSolver->n*cudaSolver->gridCols*cudaSolver->gridRows; j++)
-	{
-		printf("%d\n",j);
-		cudaSolver->unusedCell_cuda[ j] = 1;
-	}*/
 	printf("GPU memory initialized.\n");
-
-
-	//cudaSolver->work_u_cuda[50] = 32.153438;
-////
-////
-	//stretchGrid();
-	//this->stopTime_cuda /= (double)(this->gridCols_cuda);
-	//this->stopTime_cuda *= (1.0+1.0/((double)(this->n_cuda) - 1.0));
-	//cout << "Setting stopping time to " << this->stopTime << endl;
-	//this->stopTime_cuda = 1.5*((double)(this->n_cuda))*parameters.getParameter <double>("stop-time")*this->mesh_cuda.template getSpaceStepsProducts< 1, 0 >();
-	//cout << "Setting stopping time to " << this->stopTime << endl;
-
-	//cout << "Initializating scheme..." << endl;
-	//if(!this->schemeDevice.init(parameters))
-//	{
-		//cerr << "Scheme failed to initialize." << endl;
-//		return false;
-//	}
-	//cout << "Scheme initialized." << endl;
-
-	//test();
-
-//	this->currentStep_cuda = 1;
-	//return true;
 }
 
 
 
 
-//extern __shared__ double array[];
 template< typename SchemeHost, typename SchemeDevice, typename Device >
 __global__
-void /*tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::*/initRunCUDA2D(tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int >* caller)
+void initRunCUDA2D(tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int >* caller)
 
 {
-
-
 	extern __shared__ double u[];
-	//printf("%p\n",caller->work_u_cuda);
 
 	int i = blockIdx.y * gridDim.x + blockIdx.x;
 	int l = threadIdx.y * blockDim.x + threadIdx.x;
@@ -1569,28 +1383,17 @@ void /*tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::*/
 	if(l == 0)
 		containsCurve = 0;
 
-	//double a;
+
 	caller->getSubgridCUDA2D(i,caller, &u[l]);
-	//printf("%f   %f\n",a , u[l]);
-	//u[l] = a;
-	//printf("Hi %f \n", u[l]);
 	__syncthreads();
-	//printf("hurewrwr %f \n", u[l]);
+
 	if(u[0] * u[l] <= 0.0)
-	{
-		//printf("contains %d \n",i);
 		atomicMax( &containsCurve, 1);
-	}
 
 	__syncthreads();
-	//printf("hu");
-	//printf("%d : %f\n", l, u[l]);
 	if(containsCurve == 1)
 	{
-		//printf("have curve \n");
 		caller->runSubgridCUDA2D(0,u,i);
-		//printf("%d : %f\n", l, u[l]);
-		__syncthreads();
 		caller->insertSubgridCUDA2D(u[l],i);
 		__syncthreads();
 		if(l == 0)
@@ -1606,7 +1409,7 @@ void /*tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::*/
 
 template< typename SchemeHost, typename SchemeDevice, typename Device >
 __global__
-void /*tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::*/runCUDA2D(tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int >* caller)
+void runCUDA2D(tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int >* caller)
 {
 	extern __shared__ double u[];
 	int i = blockIdx.y * gridDim.x + blockIdx.x;
@@ -1617,227 +1420,88 @@ void /*tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::*/
 	{
 		caller->getSubgridCUDA2D(i,caller, &u[l]);
 
-		//if(l == 0)
-			//printf("i = %d, bound = %d\n",i,caller->getSubgridValueCUDA2D(i));
+
 		if(caller->getSubgridValueCUDA2D(i) == caller->currentStep+4)
 		{
 			if(bound & 1)
 			{
 				caller->runSubgridCUDA2D(1,u,i);
-				//__syncthreads();
-				//caller->insertSubgridCUDA2D(u[l],i);
-				//__syncthreads();
-				//caller->getSubgridCUDA2D(i,caller, &u[l]);
 				caller->updateSubgridCUDA2D(i,caller, &u[l]);
 				__syncthreads();
 			}
-			if(bound & 2 )
+			if(bound & 2)
 			{
 				caller->runSubgridCUDA2D(2,u,i);
-				//__syncthreads();
-				//caller->insertSubgridCUDA2D(u[l],i);
-				//__syncthreads();
-				//caller->getSubgridCUDA2D(i,caller, &u[l]);
 				caller->updateSubgridCUDA2D(i,caller, &u[l]);
 				__syncthreads();
 			}
 			if(bound & 4)
 			{
 				caller->runSubgridCUDA2D(4,u,i);
-				//__syncthreads();
-				//caller->insertSubgridCUDA2D(u[l],i);
-				//__syncthreads();
-				//caller->getSubgridCUDA2D(i,caller, &u[l]);
 				caller->updateSubgridCUDA2D(i,caller, &u[l]);
 				__syncthreads();
 			}
 			if(bound & 8)
 			{
 				caller->runSubgridCUDA2D(8,u,i);
-				//__syncthreads();
-				//caller->insertSubgridCUDA2D(u[l],i);
-				//__syncthreads();
-				//caller->getSubgridCUDA2D(i,caller, &u[l]);
 				caller->updateSubgridCUDA2D(i,caller, &u[l]);
 				__syncthreads();
 			}
-
-
-
-
-
-			if( ((bound & 3 )))
-				{
-					caller->runSubgridCUDA2D(3,u,i);
-					//__syncthreads();
-					//caller->insertSubgridCUDA2D(u[l],i);
-					//__syncthreads();
-					//caller->getSubgridCUDA2D(i,caller, &u[l]);
-					caller->updateSubgridCUDA2D(i,caller, &u[l]);
-					__syncthreads();
-				}
-				if( ((bound & 5 )))
-				{
-					caller->runSubgridCUDA2D(5,u,i);
-					//__syncthreads();
-					//caller->insertSubgridCUDA2D(u[l],i);
-					//__syncthreads();
-					//caller->getSubgridCUDA2D(i,caller, &u[l]);
-					caller->updateSubgridCUDA2D(i,caller, &u[l]);
-					__syncthreads();
-				}
-				if( ((bound & 10 )))
-				{
-					caller->runSubgridCUDA2D(10,u,i);
-					//__syncthreads();
-					//caller->insertSubgridCUDA2D(u[l],i);
-					//__syncthreads();
-					//caller->getSubgridCUDA2D(i,caller, &u[l]);
-					caller->updateSubgridCUDA2D(i,caller, &u[l]);
-					__syncthreads();
-				}
-				if(   (bound & 12 ))
-				{
-					caller->runSubgridCUDA2D(12,u,i);
-					//__syncthreads();
-					//caller->insertSubgridCUDA2D(u[l],i);
-					//__syncthreads();
-					//caller->getSubgridCUDA2D(i,caller, &u[l]);
-					caller->updateSubgridCUDA2D(i,caller, &u[l]);
-					__syncthreads();
-				}
-
-
-
-
-
 		}
-
-
 		else
 		{
 
-
-
-
-
-
-
-
-
-			if( ((bound == 2)))
-						{
-							caller->runSubgridCUDA2D(2,u,i);
-							//__syncthreads();
-							//caller->insertSubgridCUDA2D(u[l],i);
-							//__syncthreads();
-							//caller->getSubgridCUDA2D(i,caller, &u[l]);
-							caller->updateSubgridCUDA2D(i,caller, &u[l]);
-							__syncthreads();
-						}
-						if( ((bound == 1) ))
-						{
-							caller->runSubgridCUDA2D(1,u,i);
-							//__syncthreads();
-							//caller->insertSubgridCUDA2D(u[l],i);
-							//__syncthreads();
-							//caller->getSubgridCUDA2D(i,caller, &u[l]);
-							caller->updateSubgridCUDA2D(i,caller, &u[l]);
-							__syncthreads();
-						}
-						if( ((bound == 8) ))
-						{
-							caller->runSubgridCUDA2D(8,u,i);
-							//__syncthreads();
-							//caller->insertSubgridCUDA2D(u[l],i);
-							//__syncthreads();
-							//caller->getSubgridCUDA2D(i,caller, &u[l]);
-							caller->updateSubgridCUDA2D(i,caller, &u[l]);
-							__syncthreads();
-						}
-						if(   (bound == 4))
-						{
-							caller->runSubgridCUDA2D(4,u,i);
-							//__syncthreads();
-							//caller->insertSubgridCUDA2D(u[l],i);
-							//__syncthreads();
-							//caller->getSubgridCUDA2D(i,caller, &u[l]);
-							caller->updateSubgridCUDA2D(i,caller, &u[l]);
-							__syncthreads();
-						}
-
-
-
-
-
-
-
-
-
-
-			if( ((bound & 3) ))
+			if(bound == 1)
 			{
-				caller->runSubgridCUDA2D(3,u,i);
-				//__syncthreads();
-				//caller->insertSubgridCUDA2D(u[l],i);
-				//__syncthreads();
-				//caller->getSubgridCUDA2D(i,caller, &u[l]);
+				caller->runSubgridCUDA2D(1,u,i);
 				caller->updateSubgridCUDA2D(i,caller, &u[l]);
 				__syncthreads();
 			}
-			if( ((bound & 5) ))
+			if(bound == 2)
 			{
-				caller->runSubgridCUDA2D(5,u,i);
-				//__syncthreads();
-				//caller->insertSubgridCUDA2D(u[l],i);
-				//__syncthreads();
-				//caller->getSubgridCUDA2D(i,caller, &u[l]);
+				caller->runSubgridCUDA2D(2,u,i);
 				caller->updateSubgridCUDA2D(i,caller, &u[l]);
 				__syncthreads();
 			}
-			if( ((bound & 10) ))
+			if(bound == 4)
 			{
-				caller->runSubgridCUDA2D(10,u,i);
-				//__syncthreads();
-				//caller->insertSubgridCUDA2D(u[l],i);
-				//__syncthreads();
-				//caller->getSubgridCUDA2D(i,caller, &u[l]);
+				caller->runSubgridCUDA2D(4,u,i);
 				caller->updateSubgridCUDA2D(i,caller, &u[l]);
 				__syncthreads();
 			}
-			if(   (bound & 12) )
+			if(bound == 8)
 			{
-				caller->runSubgridCUDA2D(12,u,i);
-				//__syncthreads();
-				//caller->insertSubgridCUDA2D(u[l],i);
-				//__syncthreads();
-				//caller->getSubgridCUDA2D(i,caller, &u[l]);
+				caller->runSubgridCUDA2D(8,u,i);
 				caller->updateSubgridCUDA2D(i,caller, &u[l]);
 				__syncthreads();
 			}
-
-
-
-
-
-
-
-
-
-
-
-
 		}
-		/*if( bound )
+
+		if(bound & 3)
 		{
-			caller->runSubgridCUDA2D(15,u,i);
-			__syncthreads();
-			//caller->insertSubgridCUDA2D(u[l],i);
-			//__syncthreads();
-			//caller->getSubgridCUDA2D(i,caller, &u[l]);
+			caller->runSubgridCUDA2D(3,u,i);
 			caller->updateSubgridCUDA2D(i,caller, &u[l]);
 			__syncthreads();
-		}*/
+		}
+		if(bound & 5)
+		{
+			caller->runSubgridCUDA2D(5,u,i);
+			caller->updateSubgridCUDA2D(i,caller, &u[l]);
+			__syncthreads();
+		}
+		if(bound & 10)
+		{
+			caller->runSubgridCUDA2D(10,u,i);
+			caller->updateSubgridCUDA2D(i,caller, &u[l]);
+			__syncthreads();
+		}
+		if(bound & 12)
+		{
+			caller->runSubgridCUDA2D(12,u,i);
+			caller->updateSubgridCUDA2D(i,caller, &u[l]);
+			__syncthreads();
+		}
+
 
 		if(l==0)
 		{

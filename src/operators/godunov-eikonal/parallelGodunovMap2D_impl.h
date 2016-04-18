@@ -179,7 +179,7 @@ Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, 
 //		return 0.0;
 //	}
 //	else
-		value = 50.0/ map[cellIndex];
+		value = 1.0/ map[cellIndex];
 
 
 	RealType xb = u[cellIndex];
@@ -291,13 +291,13 @@ Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, 
 {
 //	int gid = (blockDim.y*blockIdx.y + threadIdx.y)*blockDim.x*gridDim.x + blockDim.x*blockIdx.x + threadIdx.x;
 
-	RealType signui;
+//	RealType signui;
 //	if(boundaryCondition == 0)
-		signui = sign(u[cellIndex],/*(boundaryCondition != 0) * */this->epsilon);
+//		signui = sign(u[cellIndex],/*(boundaryCondition != 0) * */this->epsilon);
 //	else
-//		signui = Sign(u[cellIndex]);
+	RealType signui = Sign(u[cellIndex]);
 
-	RealType value;
+//	RealType value;
 //	if(map[cellIndex] == 0.0)
 //	{
 ////		value = INT_MAX;
@@ -305,7 +305,7 @@ Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, 
 //		return 0.0;
 //	}
 //	else
-		value = 50.0/ map[cellIndex];
+	RealType value = /*1.0/*/ map[cellIndex];
 
 
 	RealType xb = u[cellIndex];
@@ -359,33 +359,32 @@ Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, 
 		   yf = positivePart(yf);
 	   }
 
-	   /*if(boundaryCondition &1)
-		   yb = 0.0;
-	   else
-		   yf = 0.0;
+//	   if(boundaryCondition &1)
+//		   yb = 0.0;
+//	   else
+//		   yf = 0.0;
+//
+//	   if(boundaryCondition & 2)
+//		   xb = 0.0;
+//	   else
+//		   xf = 0.0;
 
-	   if(boundaryCondition & 2)
-		   xb = 0.0;
-	   else
-		   xf = 0.0;*/
-
-	   if(xb - xf > 0.0)
+	   if(xb > xf)
 		   a = xb;
 	   else
 		   a = xf;
 
-	   if(yb - yf > 0.0)
+	   if(yb > yf)
 		   b = yb;
 	   else
 		   b = yf;
 
-	   c =(value - sqrt(a*a+b*b)*ihx );
+	   c = (value - sqrt(a*a+b*b)*ihx );
 
-	   if(c > 0.0 )
-		   return Sign(u[cellIndex])*c;
-	   else
-
-	   return signui*c;
+//	   if(c > 0.0 )
+//		   return Sign(u[cellIndex])*c;
+//	   else
+		   return signui*c;
 }
 
 

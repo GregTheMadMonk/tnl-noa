@@ -99,8 +99,10 @@ protected:
 
 	bool exactInput;
 
+	int something_changed;
+
 	tnlMeshFunction<MeshType> dofVector, dofVector2;
-	DofVectorType data;
+	DofVectorType data,map;
 
 	RealType h;
 

@@ -16,6 +16,10 @@
 #ifndef TNLFASTSWEEPING2D_IMPL_H_
 #define TNLFASTSWEEPING2D_IMPL_H_
 
+
+#define MAP_SOLVER_MAX_VALUE 3
+
+
 #include "tnlFastSweepingMap.h"
 
 template< typename MeshReal,
@@ -70,6 +74,10 @@ bool tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 	}
 	dofVector2.load(initialCondition);
 
+	const tnlString& mapFile = parameters.getParameter <tnlString>("map");
+	if(! this->map.load( mapFile ))
+		cout << "Failed to load map file : " << mapFile << endl;
+
 	h = Mesh.template getSpaceStepsProducts< 1, 0 >();
 	Entity.refresh();
 
@@ -81,6 +89,8 @@ bool tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 		exactInput=true;
 
 	cout << "a" << endl;
+
+	something_changed = 1;
 	return initGrid();
 }
 
@@ -97,226 +107,101 @@ bool tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 	for(int i=0; i< Mesh.getDimensions().x()*Mesh.getDimensions().x();i++)
 	{
 		dofVector2[i]=INT_MAX*Sign(dofVector[i]);
+
+		if(abs(dofVector[i]) < 1.01*h)
+		{
+			dofVector2[i] = dofVector[i];
+			if(map[i] != 0.0)
+				dofVector2[i] /= map[i];
+		}
 	}
 
-	for(int i = 0 ; i < Mesh.getDimensions().x()-1; i++)
-	{
-		for(int j = 0 ; j < Mesh.getDimensions().x()-1; j++)
-			{
-			this->Entity.setCoordinates(CoordinatesType(i,j));
-			this->Entity.refresh();
-			neighbourEntities.refresh(Mesh,Entity.getIndex());
-
-				if(dofVector[this->Entity.getIndex()] > 0)
-				{
-					if(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
-					{
-						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
-						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-								setupSquare1111(i,j);
-							else
-								setupSquare1110(i,j);
-						}
-						else
-						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-								setupSquare1101(i,j);
-							else
-								setupSquare1100(i,j);
-						}
-					}
-					else
-					{
-						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
-						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-								setupSquare1011(i,j);
-							else
-								setupSquare1010(i,j);
-						}
-						else
-						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-								setupSquare1001(i,j);
-							else
-								setupSquare1000(i,j);
-						}
-					}
-				}
-				else
-				{
-					if(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
-					{
-						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
-						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-								setupSquare0111(i,j);
-							else
-								setupSquare0110(i,j);
-						}
-						else
-						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-								setupSquare0101(i,j);
-							else
-								setupSquare0100(i,j);
-						}
-					}
-					else
-					{
-						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
-						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-								setupSquare0011(i,j);
-							else
-								setupSquare0010(i,j);
-						}
-						else
-						{
-							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-								setupSquare0001(i,j);
-							else
-								setupSquare0000(i,j);
-						}
-					}
-				}
-
-			}
-	}
+//	for(int i = 0 ; i < Mesh.getDimensions().x()-1; i++)
+//	{
+//		for(int j = 0 ; j < Mesh.getDimensions().x()-1; j++)
+//			{
+//			this->Entity.setCoordinates(CoordinatesType(i,j));
+//			this->Entity.refresh();
+//			neighbourEntities.refresh(Mesh,Entity.getIndex());
+//
+//				if(dofVector[this->Entity.getIndex()] > 0)
+//				{
+//					if(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
+//					{
+//						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//						{
+//							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//								setupSquare1111(i,j);
+//							else
+//								setupSquare1110(i,j);
+//						}
+//						else
+//						{
+//							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//								setupSquare1101(i,j);
+//							else
+//								setupSquare1100(i,j);
+//						}
+//					}
+//					else
+//					{
+//						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//						{
+//							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//								setupSquare1011(i,j);
+//							else
+//								setupSquare1010(i,j);
+//						}
+//						else
+//						{
+//							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//								setupSquare1001(i,j);
+//							else
+//								setupSquare1000(i,j);
+//						}
+//					}
+//				}
+//				else
+//				{
+//					if(dofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
+//					{
+//						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//						{
+//							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//								setupSquare0111(i,j);
+//							else
+//								setupSquare0110(i,j);
+//						}
+//						else
+//						{
+//							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//								setupSquare0101(i,j);
+//							else
+//								setupSquare0100(i,j);
+//						}
+//					}
+//					else
+//					{
+//						if(dofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//						{
+//							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//								setupSquare0011(i,j);
+//							else
+//								setupSquare0010(i,j);
+//						}
+//						else
+//						{
+//							if(dofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//								setupSquare0001(i,j);
+//							else
+//								setupSquare0000(i,j);
+//						}
+//					}
+//				}
+//
+//			}
+//	}
 	cout << "a" << endl;
-
-//	Real tmp = 0.0;
-//	Real ax=0.5/sqrt(2.0);
-//
-//	if(!exactInput)
-//	{
-//		for(Index i = 0; i < Mesh.getDimensions().x()*Mesh.getDimensions().y(); i++)
-//				dofVector[i]=0.5*h*Sign(dofVector[i]);
-//	}
-//
-//
-//	for(Index i = 1; i < Mesh.getDimensions().x()-1; i++)
-//	{
-//		for(Index j = 1; j < Mesh.getDimensions().y()-1; j++)
-//		{
-//			 tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//
-//			if(tmp == 0.0)
-//			{}
-//			else if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
-//					dofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
-//					dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 ||
-//					dofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
-//			{}
-//			else
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//		}
-//	}
-//
-//
-//
-//	for(int i = 1; i < Mesh.getDimensions().x()-1; i++)
-//	{
-//		Index j = 0;
-//		tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//
-//
-//		if(tmp == 0.0)
-//		{}
-//		else if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 )
-//		{}
-//		else
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//	}
-//
-//	for(int i = 1; i < Mesh.getDimensions().x()-1; i++)
-//	{
-//		Index j = Mesh.getDimensions().y() - 1;
-//		tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//
-//
-//		if(tmp == 0.0)
-//		{}
-//		else if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
-//		{}
-//		else
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//	}
-//
-//	for(int j = 1; j < Mesh.getDimensions().y()-1; j++)
-//	{
-//		Index i = 0;
-//		tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//
-//
-//		if(tmp == 0.0)
-//		{}
-//		else if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
-//		{}
-//		else
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//	}
-//
-//	for(int j = 1; j < Mesh.getDimensions().y()-1; j++)
-//	{
-//		Index i = Mesh.getDimensions().x() - 1;
-//		tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//
-//
-//		if(tmp == 0.0)
-//		{}
-//		else if(dofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp < 0.0 ||
-//				dofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp < 0.0 )
-//		{}
-//		else
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//	}
-//
-//
-//	Index i = Mesh.getDimensions().x() - 1;
-//	Index j = Mesh.getDimensions().y() - 1;
-//
-//	tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//	if(dofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp > 0.0 &&
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp > 0.0)
-//
-//		dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//
-//
-//
-//	j = 0;
-//	tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//	if(dofVector[Mesh.getCellIndex(CoordinatesType(i-1,j))]*tmp > 0.0 &&
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp > 0.0)
-//
-//		dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//
-//
-//
-//	i = 0;
-//	j = Mesh.getDimensions().y() -1;
-//	tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//	if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp > 0.0 &&
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j-1))]*tmp > 0.0)
-//
-//		dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
-//
-//
-//
-//	j = 0;
-//	tmp = Sign(dofVector[Mesh.getCellIndex(CoordinatesType(i,j))]);
-//	if(dofVector[Mesh.getCellIndex(CoordinatesType(i+1,j))]*tmp > 0.0 &&
-//			dofVector[Mesh.getCellIndex(CoordinatesType(i,j+1))]*tmp > 0.0)
-//
-//		dofVector[Mesh.getCellIndex(CoordinatesType(i,j))] = tmp*INT_MAX;
 
 	//data.setLike(dofVector2.getData());
 	//data=dofVector2.getData();
@@ -336,45 +221,51 @@ template< typename MeshReal,
           typename Index >
 bool tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: run()
 {
-
-	for(Index i = 0; i < Mesh.getDimensions().x(); i++)
+	int cntr = 0;
+	while(something_changed != 0)
 	{
-		for(Index j = 0; j < Mesh.getDimensions().y(); j++)
+		something_changed = 0;
+		for(Index i = 0; i < Mesh.getDimensions().x(); i++)
 		{
-			updateValue(i,j);
+			for(Index j = 0; j < Mesh.getDimensions().y(); j++)
+			{
+				updateValue(i,j);
+			}
 		}
-	}
 
-/*---------------------------------------------------------------------------------------------------------------------------*/
+	/*---------------------------------------------------------------------------------------------------------------------------*/
 
-	for(Index i = Mesh.getDimensions().x() - 1; i > -1; i--)
-	{
-		for(Index j = 0; j < Mesh.getDimensions().y(); j++)
+		for(Index i = Mesh.getDimensions().x() - 1; i > -1; i--)
 		{
-			updateValue(i,j);
+			for(Index j = 0; j < Mesh.getDimensions().y(); j++)
+			{
+				updateValue(i,j);
+			}
 		}
-	}
 
-/*---------------------------------------------------------------------------------------------------------------------------*/
+	/*---------------------------------------------------------------------------------------------------------------------------*/
 
-	for(Index i = Mesh.getDimensions().x() - 1; i > -1; i--)
-	{
-		for(Index j = Mesh.getDimensions().y() - 1; j > -1; j--)
+		for(Index i = Mesh.getDimensions().x() - 1; i > -1; i--)
 		{
-			updateValue(i,j);
+			for(Index j = Mesh.getDimensions().y() - 1; j > -1; j--)
+			{
+				updateValue(i,j);
+			}
 		}
-	}
 
-/*---------------------------------------------------------------------------------------------------------------------------*/
-	for(Index i = 0; i < Mesh.getDimensions().x(); i++)
-	{
-		for(Index j = Mesh.getDimensions().y() - 1; j > -1; j--)
+	/*---------------------------------------------------------------------------------------------------------------------------*/
+		for(Index i = 0; i < Mesh.getDimensions().x(); i++)
 		{
-			updateValue(i,j);
+			for(Index j = Mesh.getDimensions().y() - 1; j > -1; j--)
+			{
+				updateValue(i,j);
+			}
 		}
-	}
 
-/*---------------------------------------------------------------------------------------------------------------------------*/
+	/*---------------------------------------------------------------------------------------------------------------------------*/
+		cntr++;
+		cout << "Finished set of sweeps #" << cntr << "           " << something_changed << endl;
+	}
 
 
 //	data.setLike(dofVector2.getData());
@@ -397,42 +288,50 @@ void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 
 	this->Entity.setCoordinates(CoordinatesType(i,j));
 	this->Entity.refresh();
-	tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+	if(map[Entity.getIndex()] != 0.0)
+	{
+		tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
 
-	Real value = dofVector2[Entity.getIndex()];
-	Real a,b, tmp;
+		Real value = dofVector2[Entity.getIndex()];
+		Real im = abs(1.0/map[Entity.getIndex()]);
+		Real a,b, tmp;
 
-	if( i == 0 )
-		a = dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()];
-	else if( i == Mesh.getDimensions().x() - 1 )
-		a = dofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
+		if( i == 0 )
+			a = dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()];
+		else if( i == Mesh.getDimensions().x() - 1 )
+			a = dofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
+		else
+		{
+			a = fabsMin( dofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()],
+					 dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()] );
+		}
+
+		if( j == 0 )
+			b = dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()];
+		else if( j == Mesh.getDimensions().y() - 1 )
+			b = dofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()];
+		else
+		{
+			b = fabsMin( dofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()],
+					 dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()] );
+		}
+
+
+		if(fabs(a-b) >= im*h)
+			tmp = fabsMin(a,b) + Sign(value)*im*h;
+		else
+			tmp = 0.5 * (a + b + Sign(value)*sqrt(2.0 * im * h * im * h - (a - b) * (a - b) ) );
+
+		if(abs(value)-abs(tmp) > 0.0)
+			something_changed = 1;
+
+		dofVector2[Entity.getIndex()] = fabsMin(value, tmp);
+
+	}
 	else
 	{
-		a = fabsMin( dofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()],
-				 dofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()] );
+		dofVector2[Entity.getIndex()] = MAP_SOLVER_MAX_VALUE;
 	}
-
-	if( j == 0 )
-		b = dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()];
-	else if( j == Mesh.getDimensions().y() - 1 )
-		b = dofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()];
-	else
-	{
-		b = fabsMin( dofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()],
-				 dofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()] );
-	}
-
-
-	if(fabs(a-b) >= h)
-		tmp = fabsMin(a,b) + Sign(value)*h;
-	else
-		tmp = 0.5 * (a + b + Sign(value)*sqrt(2.0 * h * h - (a - b) * (a - b) ) );
-
-
-	dofVector2[Entity.getIndex()] = fabsMin(value, tmp);
-
-//	if(dofVector2[Entity.getIndex()] > 1.0)
-//		cout << value << "    " << tmp << " " << dofVector2[Entity.getIndex()] << endl;
 }
 
 

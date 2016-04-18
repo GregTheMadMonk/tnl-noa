@@ -247,7 +247,7 @@ void tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 	//	cudaDofVector2[Entity.getIndex()]  = fabsMin(value, tmp);
 		atomicFabsMin(&(cudaDofVector2[Entity.getIndex()]), tmp);
 
-		if(abs(value)-abs(tmp) > 0.1*h)
+		if(abs(value)-abs(tmp) > 0.0)
 			atomicMax(something_changed,1);
 	}
 	else
@@ -280,7 +280,11 @@ bool tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 	cudaDofVector2[gid] = INT_MAX*Sign(cudaDofVector[gid]);
 
 	if(abs(cudaDofVector[gid]) < 1.01*h)
+	{
 		cudaDofVector2[gid] = cudaDofVector[gid];
+		if(map_cuda[gid] != 0.0)
+			cudaDofVector2[gid] /=map_cuda[gid];
+	}
 
 
 
