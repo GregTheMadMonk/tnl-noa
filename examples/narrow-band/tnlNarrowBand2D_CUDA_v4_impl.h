@@ -119,6 +119,8 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 	cudaMalloc(&(cudaStatusVector),  statusGridSize*statusGridSize* sizeof(int));
 //	cudaMemcpy(cudaDofVector, this->dofVector.getData().getData(),  statusGridSize*statusGridSize* sizeof(int)), cudaMemcpyHostToDevice);
 
+	cudaMalloc(&reinitialize, sizeof(int));
+
 
 	cudaMalloc(&(this->cudaSolver), sizeof(tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >));
 	cudaMemcpy(this->cudaSolver, this,sizeof(tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >), cudaMemcpyHostToDevice);
@@ -127,9 +129,12 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 
 	int n = Mesh.getDimensions().x();
 
-	dim3 threadsPerBlock2(1, 1);
+	dim3 threadsPerBlock2(NARROWBAND_SUBGRID_SIZE, NARROWBAND_SUBGRID_SIZE);
 	dim3 numBlocks2(((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE) ,((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE));
-	initStatusGridCUDA<<<numBlocks2,threadsPerBlock2>>>(this->cudaSolver);
+	initSetupGridCUDA<<<numBlocks2,threadsPerBlock2>>>(this->cudaSolver);
+	cudaDeviceSynchronize();
+	checkCudaDevice;
+	initSetupGrid2CUDA<<<numBlocks2,1>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
 	checkCudaDevice;
 
@@ -158,25 +163,43 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: r
 {
 
 	int n = Mesh.getDimensions().x();
-	dim3 threadsPerBlock(1, 512);
-	dim3 numBlocks(4,1);
+	dim3 threadsPerBlockFS(1, 512);
+	dim3 numBlocksFS(4,1);
+	dim3 threadsPerBlockNB(NARROWBAND_SUBGRID_SIZE, NARROWBAND_SUBGRID_SIZE);
+	dim3 numBlocksNB(n/NARROWBAND_SUBGRID_SIZE + 1,n/NARROWBAND_SUBGRID_SIZE + 1);
 
 	double time = 0.0;
+	int reinit = 0;
 
+	runCUDA<<<numBlocksFS,threadsPerBlockFS>>>(this->cudaSolver,0,0);
+	cudaDeviceSynchronize();
+	checkCudaDevice;
 	while(time < finalTime)
 	{
 		if(tau+time > finalTime)
 			tau=finalTime-time;
 
-		runNarrowBandCUDA(this->cudaSolver,tau);
+		runNarrowBandCUDA<<<numBlocksNB,threadsPerBlockNB>>>(this->cudaSolver,tau);
+		cudaDeviceSynchronize();
+		checkCudaDevice;
 
 		time += tau;
+
+
+		cudaMemcpy(&reinit, this->reinitialize, sizeof(int), cudaMemcpyDeviceToHost);
+		if(reinit != 0)
+		{
+			initSetupGridCUDA<<<numBlocksNB,threadsPerBlockNB>>>(this->cudaSolver);
+			cudaDeviceSynchronize();
+			checkCudaDevice;
+			initSetupGridCUDA<<<numBlocksNB,1>>>(this->cudaSolver);
+			cudaDeviceSynchronize();
+			checkCudaDevice;
+			runCUDA<<<numBlocksFS,threadsPerBlockFS>>>(this->cudaSolver,0,0);
+			cudaDeviceSynchronize();
+			checkCudaDevice;
+		}
 	}
-
-	runCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver,0,0);
-
-	cudaDeviceSynchronize();
-	checkCudaDevice;
 
 	//data.setLike(dofVector.getData());
 	//cudaMemcpy(data.getData(), cudaDofVector2, this->dofVector.getData().getSize()*sizeof(double), cudaMemcpyDeviceToHost);
@@ -512,8 +535,50 @@ __global__ void initCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, doubl
 
 __global__ void initSetupGridCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
 {
-	cudaStatusVector[blockIdx.x + blockDim.x*blockIdx.y] = 0;
+	__shared__ double u0;
+	if(threadIdx.x+threadIdx.y == 0)
+	{
+		if(blockIdx.x+blockIdx.y == 0)
+			*(solver->reinitialize) = 0;
+
+		solver->cudaStatusVector[blockIdx.x + gridDim.x*blockIdx.y] = 0;
+
+		u0 = solver->cudaDofVector2[(blockDim.y*blockIdx.y + 0)*blockDim.x*gridDim.x + blockDim.x*blockIdx.x + 0];
+	}
+	__syncthreads();
+
+	double u = solver->cudaDofVector2[(blockDim.y*blockIdx.y + threadIdx.y)*blockDim.x*gridDim.x + blockDim.x*blockIdx.x + threadIdx.x];
+
+	if(u*u0 <=0.0)
+		atomicMax(&(solver->cudaStatusVector[blockIdx.x + gridDim.x*blockIdx.y]),1);
 }
+
+
+
+// run this with one thread per block
+__global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
+{
+	if(solver->cudaStatusVector[blockIdx.x + gridDim.x*blockIdx.y] == 1)
+	{
+//			1 - with curve,  	2 - to the north of curve, 	4  - to the south of curve,
+//								8 - to the east of curve, 	16 - to the west of curve.
+			if(blockIdx.x > 0)
+				atomicAdd(&(solver->cudaStatusVector[blockIdx.x - 1 + gridDim.x*blockIdx.y]), 16);
+
+			if(blockIdx.x < gridDim.x - 1)
+				atomicAdd(&(solver->cudaStatusVector[blockIdx.x + 1 + gridDim.x*blockIdx.y]), 8);
+
+			if(blockIdx.y > 0 )
+				atomicAdd(&(solver->cudaStatusVector[blockIdx.x + gridDim.x*(blockIdx.y - 1)]), 4);
+
+			if(blockIdx.y < gridDim.y - 1)
+				atomicAdd(&(solver->cudaStatusVector[blockIdx.x + gridDim.x*(blockIdx.y + 1)]), 2);
+	}
+}
+
+
+
+
 
 __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, double tau)
 {
@@ -521,19 +586,21 @@ __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 	int i = threadIdx.x + blockIdx.x*blockDim.x;
 	int j = threadIdx.y + blockIdx.y*blockDim.y;
 
+	int blockID = blockIdx.x + blockIdx.y*gridDim.x;
 
-	if(cudaStatusVector[i/NARROWBAND_SUBGRID_SIZE + (j/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE)] != 0)
+
+	if(solver->cudaStatusVector[blockID/*i/NARROWBAND_SUBGRID_SIZE + (j/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE)*/] != 0)
 	{
 		tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(solver->Mesh);
-		Entity.setCoordinates(CoordinatesType(i,j));
+		Entity.setCoordinates(tnlStaticVector<2,double>(i,j));
 		Entity.refresh();
-		tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
-		Real value = cudaDofVector2[Entity.getIndex()];
-		Real xf,xb,yf,yb, tmp, fu;
+		tnlNeighbourGridEntityGetter<tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+		double value = solver->cudaDofVector2[Entity.getIndex()];
+		double xf,xb,yf,yb, tmp, fu;
 
 		if( i == 0 )
 			yb = yf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()];
-		else if( i == Mesh.getDimensions().x() - 1 )
+		else if( i == solver->Mesh.getDimensions().x() - 1 )
 			yb = yf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
 		else
 		{
@@ -543,7 +610,7 @@ __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 
 		if( j == 0 )
 			xb = xf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()];
-		else if( j == Mesh.getDimensions().y() - 1 )
+		else if( j == solver->Mesh.getDimensions().y() - 1 )
 			xb = xf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0, -1 >()];
 		else
 		{
@@ -556,9 +623,22 @@ __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 
 		fu = 1.0 * tmp;
 
-		if((tau*fu+u)*u <=0 )
+		if((tau*fu+value)*value <=0 )
 		{
-//			if(blockIdx.x < gridDim.x -1)
+			int status = solver->cudaStatusVector[blockID];
+//			1 - with curve,  	2 - to the north of curve, 	4  - to the south of curve,
+//								8 - to the east of curve, 	16 - to the west of curve.
+
+			if(threadIdx.x == 0 && !(status & 8) && (blockIdx.x > 0) )
+				atomicMax(solver->reinitialize,1);
+			else if(threadIdx.x == blockDim.x-1 && !(status & 16) && (blockIdx.x < gridDim.x - 1) )
+				atomicMax(solver->reinitialize,1);
+			else if(threadIdx.y == 0 && !(status & 2) && (blockIdx.y > 0) )
+				atomicMax(solver->reinitialize,1);
+			else if(threadIdx.y == blockDim.y-1 && !(status & 4) && (blockIdx.y < gridDim.y - 1) )
+				atomicMax(solver->reinitialize,1);
+
+//			if(blockIdx.x < gridDim.x - 1)
 //			{
 //				atomicMax( &cudaStatusVector[(i+2)/NARROWBAND_SUBGRID_SIZE + (j/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE)]  ,1);
 //				if(blockIdx.y < gridDim.y -1)
@@ -583,7 +663,7 @@ __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 		}
 
 
-		cudaDofVector2[Entity.getIndex()]  = u+tau*fu;
+		solver->cudaDofVector2[Entity.getIndex()]  = value+tau*fu;
 	}
 }
 

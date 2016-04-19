@@ -74,6 +74,7 @@ public:
 	double* cudaDofVector2;
 	int* cudaStatusVector;
 	int counter;
+	int* reinitialize;
 	__device__ void setupSquare1000(Index i, Index j);
 	__device__ void setupSquare1100(Index i, Index j);
 	__device__ void setupSquare1010(Index i, Index j);
@@ -180,6 +181,7 @@ __global__ void runCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double
 __global__ void initCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
 
 __global__ void initSetupGridCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
+__global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
 __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, double tau);
 //__global__ void initCUDA(tnlNarrowBand< tnlGrid< 3,double, tnlHost, int >, double, int >* solver);
 #endif

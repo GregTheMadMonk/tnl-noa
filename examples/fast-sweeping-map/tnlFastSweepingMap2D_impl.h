@@ -268,11 +268,8 @@ bool tnlFastSweepingMap< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 	}
 
 
-//	data.setLike(dofVector2.getData());
-//	data = dofVector2.getData();
-//	cout << data.getType() << endl;
+
 	dofVector2.save("u-00001.tnl");
-	//dofVector2.getData().save("u-00001.tnl");
 
 	return true;
 }
