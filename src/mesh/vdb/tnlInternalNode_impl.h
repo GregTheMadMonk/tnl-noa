@@ -34,8 +34,8 @@ void tnlInternalNode< LogX, LogY >::setNode( int splitX,
                                              int splitY,
                                              int depth )
 {
-    int depthX = splitX * tnlVDBMath::power( LogX, this->level );
-    int depthY = splitY * tnlVDBMath::power( LogY, this->level );
+    int depthX = splitX * tnlVDBMath::power( LogX, this->level - 1 );
+    int depthY = splitY * tnlVDBMath::power( LogY, this->level - 1 );
     float stepX = ( float ) this->area->getLengthX() / depthX;
     float stepY = ( float ) this->area->getLengthY() / depthY;
     float startX = this->X * stepX;

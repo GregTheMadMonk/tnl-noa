@@ -62,8 +62,8 @@ void tnlRootNode< size, LogX, LogY >::createTree()
                 this->children[ index ] = NULL;
             else if( this->level < this->depth - 1 )
             {
-                int X = this->bitmaskArray->getIthBitmask( index )->getX() * LogX + j;
-                int Y = this->bitmaskArray->getIthBitmask( index )->getY() * LogY + i;
+                int X = j;
+                int Y = i;
                 this->children[ index ] = new tnlInternalNode< LogX, LogY >( this->area,
                                                                              this->circle,
                                                                              X,
@@ -73,8 +73,8 @@ void tnlRootNode< size, LogX, LogY >::createTree()
             }
             else
             {
-                int X = this->bitmaskArray->getIthBitmask( index )->getX() * LogX + j;
-                int Y = this->bitmaskArray->getIthBitmask( index )->getY() * LogY + i;
+                int X = j;
+                int Y = i;
                 this->children[ index ] = new tnlLeafNode< LogX, LogY >( this->area,
                                                                          this->circle,
                                                                          X,
@@ -126,6 +126,11 @@ void tnlRootNode< size, LogX, LogY >::write()
           << ", starty=" <<setw( 10 ) << startY
           << ", endy=" << setw( 10 ) << endY
           << ", level=" << setw( 10 ) << i
+          << std::endl;
+        f << "rootSplitX=" << setw( 10 ) << this->nodesX
+          << ", rootSplitY=" << setw( 10 ) << this->nodesY
+          << ", LogX=" << setw( 10 ) << LogX
+          << ", LogY=" << setw( 10 ) << LogY 
           << std::endl << std::endl;
         for( int j = 0; j < size; j++ )
         {

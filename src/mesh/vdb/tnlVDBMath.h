@@ -7,8 +7,8 @@ public:
     static int power( int number,
                       int exponent )
     {
-        int result = number;
-        for( int i = 1; i < exponent; i++ )
+        int result = 1;
+        for( int i = 0; i < exponent; i++ )
             result *= number;
         return result;
     }
