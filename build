@@ -1,0 +1,123 @@
+#!/bin/bash
+
+TARGET=TNL
+PREFIX=${HOME}/local
+WITH_CUDA="yes"
+WITH_TESTS="yes"
+
+WITH_CUDA_ARCH="auto"
+WITH_CUBLAS="no"
+WITH_TEMPLATE_INSTANTIATION="yes"
+INSTANTIATE_LONG_INT="no"
+INSTANTIATE_INT="yes"
+INSTANTIATE_LONG_DOUBLE="no"
+INSTANTIATE_DOUBLE="yes"
+INSTANTIATE_FLOAT="no"
+CMAKE="cmake"
+CMAKE_ONLY="no"
+HELP="no"
+VERBOSE=""
+ROOT_DIR="."
+DCMTK_DIR="/usr/include/dcmtk"
+BUILD_JOBS=`grep -c processor /proc/cpuinfo`
+
+for option in "$@"
+do
+    case $option in
+        --prefix=*                       ) PREFIX="${option#*=}" ;;
+        --build=*                        ) BUILD="${option#*=}" ;;
+        --with-tests=*                   ) WITH_TESTS="${option#*=}" ;;
+        --with-cuda=*                    ) WITH_CUDA="${option#*=}" ;;
+        --with-cublas=*                  ) WITH_CUBLAS="${option#*=}" ;;
+        --with-cuda-arch=*               ) WITH_CUDA_ARCH="${option#*=}";;
+        --with-templates-instantiation=* ) WITH_TEMPLATE_INSTANTIATION="${option#*=}" ;;
+        --instantiate-long-int=*         ) INSTANTIATE_LONG_INT="${option#*=}" ;;
+        --instantiate-int=*              ) INSTANTIATE_INT="${option#*=}" ;;
+        --instantiate-long-double=*      ) INSTANTIATE_LONG_DOUBLE="${option#*=}" ;;
+        --instantiate-double=*           ) INSTANTIATE_DOUBLE="${option#*=}" ;;
+        --instantiate-float=*            ) INSTANTIATE_FLOAT="${option#*=}" ;;
+        --fast-build                     ) INSTANTIATE_LONG_INT="no"
+                                           INSTANTIATE_INT="yes"
+                                           INSTANTIATE_LONG_DOUBLE="no"
+                                           INSTANTIATE_DOUBLE="yes"
+                                           INSTANTIATE_FLOAT="no"
+                                           WITH_CUDA_ARCH="auto" ;;
+        --with-cmake=*                   ) CMAKE="${option#*=}" ;;
+        --build-jobs=*                   ) BUILD_JOBS="${option#*=}" ;;
+        --cmake-only=*                   ) CMAKE_ONLY="${option#*=}" ;;
+        --verbose                        ) VERBOSE="VERBOSE=1" ;;
+        --root-dir=*                     ) ROOT_DIR="${option#*=}" ;;
+        --dcmtk-dir=*                    ) DCMTK_DIR="${option#*=}" ;;
+        --help                           ) HELP="yes" ;;
+        *                                ) 
+           echo "Unknown option ${option}. Use --help for more information."
+           exit 1 ;;
+    esac
+done
+
+if test ${HELP} = "yes";
+then
+    echo "TNL build options:"
+    echo ""
+    echo "   --prefix=PATH                         Prefix for the installation directory. ${HOME}/local by default."
+    echo "   --build=Debug/Release                 Build type."
+    echo "   --with-tests=yes/no                   Enable unit tests. 'yes' by default (libcppunit-dev is required)."
+    echo "   --with-cuda=yes/no                    Enable CUDA. 'yes' by default (CUDA Toolkit is required)."
+    echo "   --with-cuda-arch=all/auto/30/35/...   Choose CUDA architecture."   
+    echo "   --with-templates-instantiation=yes/no Some TNL templates are precompiled during the build. 'yes' by default."
+    echo "   --full-build                          Instantiate all -- long int indexing, float and long double floating point arithmetics."
+    echo "   --with-cmake=CMAKE                    Path to cmake. 'cmake' by default."
+    echo "   --build-jobs=NUM                      Number of processes to be used for the build. It is set to a number of CPU cores by default."
+    echo "   --verbose                             It enables verbose build."
+    echo "   --root-dir=PATH                       Path to the TNL source code root dir."
+    echo "   --dcmtk-dir=PATH                      Path to the DCMTK (Dicom Toolkit) root dir."
+    echo "   --help                                Write this help."
+    exit 1
+fi
+
+echo "Configuring ${BUILD} $TARGET ..."
+
+${CMAKE} ${ROOT_DIR} \
+         -DCMAKE_BUILD_TYPE=${BUILD} \
+         -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+         -DWITH_CUDA=${WITH_CUDA} \
+         -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH} \
+         -DWITH_CUBLAS=${WITH_CUBLAS} \
+         -DWITH_TESTS=${WITH_TESTS} \
+         -DPETSC_DIR=${PETSC_DIR} \
+         -DDCMTK_DIR=${DCMTK_DIR} \
+         -DWITH_TEMPLATE_INSTANTIATION=${WITH_TEMPLATE_INSTANTIATION} \
+         -DINSTANTIATE_FLOAT=${INSTANTIATE_FLOAT} \
+         -DINSTANTIATE_DOUBLE=${INSTANTIATE_DOUBLE} \
+         -DINSTANTIATE_LONG_DOUBLE=${INSTANTIATE_LONG_DOUBLE} \
+         -DINSTANTIATE_INT=${INSTANTIATE_INT} \
+         -DINSTANTIATE_LONG_INT=${INSTANTIATE_LONG_INT}
+
+if test $? != 0; then
+    echo "Error: cmake exited with error code."
+    exit 1
+fi
+
+if test ${CMAKE_ONLY} = "yes";
+then
+    exit 1
+fi
+
+echo "Building ${BUILD} $TARGET using $BUILD_JOBS processors ..."
+
+make -j${BUILD_JOBS} ${VERBOSE}
+if test $? != 0; then
+    echo "Error: Build process failed."
+    exit 1
+fi
+
+
+if test WITH_TESTS = "yes";
+then
+    make -j${BUILD_JOBS} test
+    if test $? != 0; then
+        echo "Error: Some test did not pass successfuly."
+    fi
+fi
+
+exit 0

@@ -32,29 +32,29 @@ int main( int argc, char* argv[] )
 	time_t stop;
 	time(&start);
 	std::clock_t start2= std::clock();
-   tnlParameterContainer parameters;
-   tnlConfigDescription configDescription;
-   parallelMapConfig< BuildConfig >::configSetup( configDescription );
+	tnlParameterContainer parameters;
+	tnlConfigDescription configDescription;
+	parallelMapConfig< BuildConfig >::configSetup( configDescription );
 
-   if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
-      return false;
+	if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
+	  return false;
 
 
-   tnlDeviceEnum device;
-   device = tnlHostDevice;
+	tnlDeviceEnum device;
+	device = tnlHostDevice;
 
-   const int& dim = parameters.getParameter< int >( "dim" );
+	const int& dim = parameters.getParameter< int >( "dim" );
 
-  if(dim == 2)
-  {
+	if(dim == 2)
+	{
 
 	   typedef parallelGodunovMapScheme< tnlGrid<2,double,tnlHost, int>, double, int > SchemeTypeHost;
-		/*#ifdef HAVE_CUDA
+/*#ifdef HAVE_CUDA
 		   typedef parallelGodunovMapScheme< tnlGrid<2,double,tnlCuda, int>, double, int > SchemeTypeDevice;
-		#endif
-		#ifndef HAVE_CUDA*/
+#endif
+#ifndef HAVE_CUDA*/
 	   typedef parallelGodunovMapScheme< tnlGrid<2,double,tnlHost, int>, double, int > SchemeTypeDevice;
-		/*#endif*/
+/*#endif*/
 
 	   if(device==tnlHostDevice)
 	   {
@@ -74,7 +74,7 @@ int main( int argc, char* argv[] )
 	   else if(device==tnlCudaDevice )
 	   {
 		   typedef tnlCuda Device;
-		   //typedef parallelGodunovMapScheme< tnlGrid<2,double,Device, int>, double, int > SchemeType;
+//typedef parallelGodunovMapScheme< tnlGrid<2,double,Device, int>, double, int > SchemeType;
 
 		   tnlParallelMapSolver<2,SchemeTypeHost,SchemeTypeDevice, Device> solver;
 		   if(!solver.init(parameters))
@@ -86,14 +86,13 @@ int main( int argc, char* argv[] )
 		   cout << "Starting solver loop..." << endl;
 		   solver.run();
 	   }
-  // }
-  }
+	}
 
 
-   time(&stop);
-   cout << endl;
-   cout << "Running time was: " << difftime(stop,start) << " .... " << (std::clock() - start2) / (double)(CLOCKS_PER_SEC) << endl;
-   return EXIT_SUCCESS;
+	time(&stop);
+	cout << endl;
+	cout << "Running time was: " << difftime(stop,start) << " .... " << (std::clock() - start2) / (double)(CLOCKS_PER_SEC) << endl;
+	return EXIT_SUCCESS;
 }
 
 

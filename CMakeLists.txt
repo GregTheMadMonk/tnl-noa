@@ -164,7 +164,7 @@ AddCompilerFlag( "-std=c++11" )
 find_package( OpenMP ) 
 if( OPENMP_FOUND )
    message( "Compiler supports OpenMP." )
-   #set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp")
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp")
 endif()
 
 ####

@@ -26,6 +26,7 @@
 #include <mesh/grids/tnlGridEntity.h>
 #include <limits.h>
 #include <core/tnlDevice.h>
+ #include <omp.h>
 
 
 #include <ctime>

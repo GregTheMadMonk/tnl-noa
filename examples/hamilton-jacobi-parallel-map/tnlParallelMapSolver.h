@@ -129,10 +129,7 @@ public:
 	int* calculationsCount_cuda;
 	double* tmpw;
 	double* tmp_map;
-	//MeshTypeCUDA mesh_cuda, subMesh_cuda;
-	//SchemeDevice scheme_cuda;
-	//double delta_cuda, tau0_cuda, stopTime_cuda,cflCondition_cuda;
-	//int gridRows_cuda, gridCols_cuda, currentStep_cuda, n_cuda;
+
 
 	int* runcuda;
 	int run_host;
@@ -146,10 +143,6 @@ public:
 
 	__device__ void runSubgridCUDA2D( int boundaryCondition, double* u, int subGridID);
 
-	/*__global__ void runCUDA();*/
-
-	//__device__ void synchronizeCUDA();
-
 	__device__ int getOwnerCUDA2D( int i) const;
 
 	__device__ int getSubgridValueCUDA2D( int i ) const;
@@ -160,10 +153,6 @@ public:
 
 	__device__ void setBoundaryConditionCUDA2D( int i, int value );
 
-	//__device__ bool initCUDA( tnlParallelMapSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
-
-	/*__global__ void initRunCUDA(tnlParallelMapSolver<Scheme, double, tnlHost, int >* caller);*/
-
 #endif
 
 };
@@ -174,123 +163,7 @@ public:
 
 
 
-	template<typename SchemeHost, typename SchemeDevice, typename Device>
-	class tnlParallelMapSolver<3, SchemeHost, SchemeDevice, Device, double, int >
-	{
-	public:
 
-		typedef SchemeDevice SchemeTypeDevice;
-		typedef SchemeHost SchemeTypeHost;
-		typedef Device DeviceType;
-		typedef tnlVector< double, tnlHost, int > VectorType;
-		typedef tnlVector< int, tnlHost, int > IntVectorType;
-		typedef tnlGrid< 3, double, tnlHost, int > MeshType;
-	#ifdef HAVE_CUDA
-		typedef tnlVector< double, tnlHost, int > VectorTypeCUDA;
-		typedef tnlVector< int, tnlHost, int > IntVectorTypeCUDA;
-		typedef tnlGrid< 3, double, tnlHost, int > MeshTypeCUDA;
-	#endif
-		tnlParallelMapSolver();
-		bool init( const tnlParameterContainer& parameters );
-		void run();
-
-		void test();
-
-	/*private:*/
-
-
-		void synchronize();
-
-		int getOwner( int i) const;
-
-		int getSubgridValue( int i ) const;
-
-		void setSubgridValue( int i, int value );
-
-		int getBoundaryCondition( int i ) const;
-
-		void setBoundaryCondition( int i, int value );
-
-		void stretchGrid();
-
-		void contractGrid();
-
-		VectorType getSubgrid( const int i ) const;
-
-		void insertSubgrid( VectorType u, const int i );
-
-		VectorType runSubgrid( int boundaryCondition, VectorType u, int subGridID);
-
-
-		tnlMeshFunction<MeshType> u0;
-		VectorType work_u;
-		IntVectorType subgridValues, boundaryConditions, unusedCell, calculationsCount;
-		MeshType mesh, subMesh;
-		SchemeHost schemeHost;
-		SchemeDevice schemeDevice;
-		double delta, tau0, stopTime,cflCondition;
-		int gridRows, gridCols, gridLevels, currentStep, n;
-
-		std::clock_t start;
-		double time_diff;
-
-
-		tnlDeviceEnum device;
-
-		tnlParallelMapSolver<3, SchemeHost, SchemeDevice, Device, double, int >* getSelf()
-		{
-			return this;
-		};
-
-#ifdef HAVE_CUDA
-
-	tnlParallelMapSolver<3, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver;
-
-	double* work_u_cuda;
-
-	int* subgridValues_cuda;
-	int* boundaryConditions_cuda;
-	int* unusedCell_cuda;
-	int* calculationsCount_cuda;
-	double* tmpw;
-	//MeshTypeCUDA mesh_cuda, subMesh_cuda;
-	//SchemeDevice scheme_cuda;
-	//double delta_cuda, tau0_cuda, stopTime_cuda,cflCondition_cuda;
-	//int gridRows_cuda, gridCols_cuda, currentStep_cuda, n_cuda;
-
-	int* runcuda;
-	int run_host;
-
-
-	__device__ void getSubgridCUDA3D( const int i, tnlParallelMapSolver<3, SchemeHost, SchemeDevice, Device, double, int >* caller, double* a);
-
-	__device__ void updateSubgridCUDA3D( const int i, tnlParallelMapSolver<3, SchemeHost, SchemeDevice, Device, double, int >* caller, double* a);
-
-	__device__ void insertSubgridCUDA3D( double u, const int i );
-
-	__device__ void runSubgridCUDA3D( int boundaryCondition, double* u, int subGridID);
-
-	/*__global__ void runCUDA();*/
-
-	//__device__ void synchronizeCUDA();
-
-	__device__ int getOwnerCUDA3D( int i) const;
-
-	__device__ int getSubgridValueCUDA3D( int i ) const;
-
-	__device__ void setSubgridValueCUDA3D( int i, int value );
-
-	__device__ int getBoundaryConditionCUDA3D( int i ) const;
-
-	__device__ void setBoundaryConditionCUDA3D( int i, int value );
-
-	//__device__ bool initCUDA( tnlParallelMapSolver<SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
-
-	/*__global__ void initRunCUDA(tnlParallelMapSolver<Scheme, double, tnlHost, int >* caller);*/
-
-#endif
-
-};
 
 
 
@@ -313,26 +186,6 @@ __global__ void synchronizeCUDA2D(tnlParallelMapSolver<2, SchemeHost, SchemeDevi
 template <typename SchemeHost, typename SchemeDevice, typename Device>
 __global__ void synchronize2CUDA2D(tnlParallelMapSolver<2, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
 
-
-
-
-
-
-
-template <typename SchemeHost, typename SchemeDevice, typename Device>
-__global__ void runCUDA3D(tnlParallelMapSolver<3, SchemeHost, SchemeDevice, Device, double, int >* caller);
-
-template <typename SchemeHost, typename SchemeDevice, typename Device>
-__global__ void initRunCUDA3D(tnlParallelMapSolver<3, SchemeHost, SchemeDevice, Device, double, int >* caller);
-
-template <typename SchemeHost, typename SchemeDevice, typename Device>
-__global__ void initCUDA3D( tnlParallelMapSolver<3, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver, double* ptr, int * ptr2, int* ptr3);
-
-template <typename SchemeHost, typename SchemeDevice, typename Device>
-__global__ void synchronizeCUDA3D(tnlParallelMapSolver<3, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
-
-template <typename SchemeHost, typename SchemeDevice, typename Device>
-__global__ void synchronize2CUDA3D(tnlParallelMapSolver<3, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
 #endif
 
 

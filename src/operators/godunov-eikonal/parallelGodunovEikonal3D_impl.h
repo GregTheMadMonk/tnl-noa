@@ -266,10 +266,10 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 ) const
 {
 	RealType signui;
-//	if(boundaryCondition == 0)
-		signui = sign(u[cellIndex], this->epsilon);
-//	else
-//		signui = Sign(u[cellIndex]);
+	if(boundaryCondition == 0)
+		signui = sign(u[cellIndex],this->epsilon);
+	else
+		signui = Sign(u[cellIndex]);
 
 
 	RealType xb = u[cellIndex];
@@ -371,9 +371,9 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
 
 //	   d = 1.0 - sqrt(xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb)*ihx; /*upwind*/
 
-	   if(Sign(d) > 0.0 )
-		   return Sign(u[cellIndex])*d;
-	   else
+//	   if(Sign(d) > 0.0 )
+//		   return Sign(u[cellIndex])*d;
+//	   else
 		   return signui*d;
 }
 

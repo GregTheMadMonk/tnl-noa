@@ -3,6 +3,7 @@ set( tnl_hamilton_jacobi_parallel_map_SOURCES
 #     tnlParallelMapSolver2D_impl.h
 #     tnlParallelMapSolver.h
 #     parallelMapConfig.h 
+#	  main.cu
      main.cpp)
 
 
