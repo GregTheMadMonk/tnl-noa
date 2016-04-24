@@ -25,7 +25,7 @@ template< typename SchemeHost, typename SchemeDevice, typename Device>
 tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::tnlParallelEikonalSolver()
 {
 	cout << "a" << endl;
-	this->device = tnlHostDevice;  /////////////// tnlCuda Device --- vypocet na GPU, tnlHostDevice   ---    vypocet na CPU
+	this->device = tnlCudaDevice;  /////////////// tnlCuda Device --- vypocet na GPU, tnlHostDevice   ---    vypocet na CPU
 
 #ifdef HAVE_CUDA
 	if(this->device == tnlCudaDevice)
@@ -101,7 +101,7 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	test();
 
 	VectorType* tmp = new VectorType[subgridValues.getSize()];
-	bool containsCurve = false;
+
 
 #ifdef HAVE_CUDA
 
@@ -148,8 +148,12 @@ bool tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 
 	if(this->device == tnlHostDevice)
 	{
+#ifdef HAVE_OPENMP
+#pragma omp parallel for num_threads(4) schedule(dynamic)
+#endif
 		for(int i = 0; i < this->subgridValues.getSize(); i++)
 		{
+			bool containsCurve = false;
 //			cout << "Working on subgrid " << i <<" --- check 1" << endl;
 
 			if(! tmp[i].setSize(this->n*this->n*this->n))
@@ -246,9 +250,9 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 	{
 
 	bool end = false;
-	while ((this->boundaryConditions.max() > 0 ) || !end)
+	while (/*(this->boundaryConditions.max() > 0 ) ||*/ !end)
 	{
-		if(this->boundaryConditions.max() == 0 )
+		if(this->boundaryConditions.max() == 0 || this->subgridValues.max() < 0)
 			end=true;
 		else
 			end=false;
@@ -1012,11 +1016,17 @@ __device__
 void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::getSubgridCUDA3D( const int i ,tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int >* caller, double* a)
 {
 	//int j = threadIdx.x + threadIdx.y * blockDim.x;
-	int index = (blockIdx.z*this->n + threadIdx.z) * this->n*this->n*this->gridCols*this->gridRows
-			 + (blockIdx.y) * this->n*this->n*this->gridCols
-             + (blockIdx.x) * this->n
-             + threadIdx.y * this->n*this->gridCols
-             + threadIdx.x;
+//	int index = (blockIdx.z*this->n + threadIdx.z) * this->n*this->n*this->gridCols*this->gridRows
+//			 + (blockIdx.y) * this->n*this->n*this->gridCols
+//             + (blockIdx.x) * this->n
+//             + threadIdx.y * this->n*this->gridCols
+//             + threadIdx.x;
+
+
+	int index =  blockDim.x*blockIdx.x + threadIdx.x +
+			  (blockDim.y*blockIdx.y + threadIdx.y)*blockDim.x*gridDim.x +
+			  (blockDim.z*blockIdx.z + threadIdx.z)*blockDim.x*gridDim.x*blockDim.y*gridDim.y;
+
 	//printf("i= %d,j= %d,th= %d\n",i,j,th);
 	*a = caller->work_u_cuda[index];
 	//printf("Hi %f \n", *a);
@@ -1029,11 +1039,15 @@ __device__
 void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::updateSubgridCUDA3D( const int i ,tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int >* caller, double* a)
 {
 //	int j = threadIdx.x + threadIdx.y * blockDim.x;
-	int index = (blockIdx.z*this->n + threadIdx.z) * this->n*this->n*this->gridCols*this->gridRows
-			 + (blockIdx.y) * this->n*this->n*this->gridCols
-             + (blockIdx.x) * this->n
-             + threadIdx.y * this->n*this->gridCols
-             + threadIdx.x;
+//	int index = (blockIdx.z*this->n + threadIdx.z) * this->n*this->n*this->gridCols*this->gridRows
+//			 + (blockIdx.y) * this->n*this->n*this->gridCols
+//             + (blockIdx.x) * this->n
+//             + threadIdx.y * this->n*this->gridCols
+//             + threadIdx.x;
+
+	int index =  blockDim.x*blockIdx.x + threadIdx.x +
+			  (blockDim.y*blockIdx.y + threadIdx.y)*blockDim.x*gridDim.x +
+			  (blockDim.z*blockIdx.z + threadIdx.z)*blockDim.x*gridDim.x*blockDim.y*gridDim.y;
 
 	if( (fabs(caller->work_u_cuda[index]) > fabs(*a)) || (caller->unusedCell_cuda[index] == 1) )
 	{
@@ -1055,11 +1069,15 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 //	int j = threadIdx.x + threadIdx.y * blockDim.x;
 	//printf("j = %d, u = %f\n", j,u);
 
-		int index = (blockIdx.z*this->n + threadIdx.z) * this->n*this->n*this->gridCols*this->gridRows
-				 + (blockIdx.y) * this->n*this->n*this->gridCols
-	             + (blockIdx.x) * this->n
-	             + threadIdx.y * this->n*this->gridCols
-	             + threadIdx.x;
+//		int index = (blockIdx.z*this->n + threadIdx.z) * this->n*this->n*this->gridCols*this->gridRows
+//				 + (blockIdx.y) * this->n*this->n*this->gridCols
+//	             + (blockIdx.x) * this->n
+//	             + threadIdx.y * this->n*this->gridCols
+//	             + threadIdx.x;
+
+		int index =  blockDim.x*blockIdx.x + threadIdx.x +
+				  (blockDim.y*blockIdx.y + threadIdx.y)*blockDim.x*gridDim.x +
+				  (blockDim.z*blockIdx.z + threadIdx.z)*blockDim.x*gridDim.x*blockDim.y*gridDim.y;
 
 		//printf("i= %d,j= %d,index= %d\n",i,j,index);
 		if( (fabs(this->work_u_cuda[index]) > fabs(u)) || (this->unusedCell_cuda[index] == 1) )
@@ -1181,7 +1199,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
 //   }
    double finalTime = this->stopTime;
    __syncthreads();
-//   if( boundaryCondition == 0 ) finalTime *= 2.0;
+   if( boundaryCondition == 0 ) finalTime *= 2.0;
 
    tnlGridEntity<MeshType, 3, tnlGridEntityNoStencilStorage > Entity(subMesh);
    tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities(Entity);
@@ -1210,7 +1228,7 @@ void tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>::
     	  if( time + sharedTau[l] > finalTime )		sharedTau[l] = finalTime - time;
       }
 
-
+      __syncthreads();
       if(l < 256)								sharedTau[l] = Min(sharedTau[l],sharedTau[l+256]);
       __syncthreads();
       if(l < 128)								sharedTau[l] = Min(sharedTau[l],sharedTau[l+128]);
@@ -1387,6 +1405,8 @@ void /*tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>
 			subgridValue_cmp = cudaSolver->getSubgridValueCUDA3D(blockIdx.y*gridDim.x + blockIdx.x + (blockIdx.z + 1)*gridDim.x*gridDim.y);
 			boundary_index = 4;
 		}
+		__threadfence();
+
 		if((subgridValue == INT_MAX || fabs(u_cmp) + cudaSolver->delta < fabs(u) ) && (subgridValue_cmp != INT_MAX && subgridValue_cmp != -INT_MAX))
 		{
 			cudaSolver->unusedCell_cuda[gid] = 0;
@@ -1402,7 +1422,7 @@ void /*tnlParallelEikonalSolver<3,SchemeHost, SchemeDevice, Device, double, int>
 	if(threadIdx.x+threadIdx.y+threadIdx.z == 0)
 	{
 
-		if(subgridValue == INT_MAX && newSubgridValue !=0)
+		if(subgridValue == INT_MAX && newSubgridValue != 0)
 			cudaSolver->setSubgridValueCUDA3D(blockIdx.y*gridDim.x + blockIdx.x + blockIdx.z*gridDim.x*gridDim.y, -INT_MAX);
 
 		cudaSolver->setBoundaryConditionCUDA3D(blockIdx.y*gridDim.x + blockIdx.x + blockIdx.z*gridDim.x*gridDim.y, 	1  * boundary[0] +

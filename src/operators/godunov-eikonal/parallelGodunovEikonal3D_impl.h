@@ -266,115 +266,104 @@ Real parallelGodunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Re
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 ) const
 {
 	RealType signui;
-	if(boundaryCondition == 0)
-		signui = sign(u[cellIndex],this->epsilon);
-	else
-		signui = Sign(u[cellIndex]);
+		signui = sign(u[cellIndex], this->epsilon);
 
 
-	RealType xb = u[cellIndex];
-	RealType xf = -u[cellIndex];
-	RealType yb = u[cellIndex];
-	RealType yf = -u[cellIndex];
-	RealType zb = u[cellIndex];
-	RealType zf = -u[cellIndex];
-	RealType a,b,c,d;
-//	if(threadIdx.x+threadIdx.y+threadIdx.z == 0)
-//		printf("x = %d, y = %d, z = %d\n",mesh.getDimensions().x() - 1,mesh.getDimensions().y() - 1,mesh.getDimensions().z() - 1);
+		RealType xb = u[cellIndex];
+		RealType xf = -u[cellIndex];
+		RealType yb = u[cellIndex];
+		RealType yf = -u[cellIndex];
+		RealType zb = u[cellIndex];
+		RealType zf = -u[cellIndex];
+		RealType a,b,c,d;
 
 
-	   if(coordinates.x() == mesh.getDimensions().x() - 1)
-		   xf += u[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
-	   else
-		   xf += u[neighbourEntities.template getEntityIndex< 1,  0,  0 >()];
+		   if(coordinates.x() == mesh.getDimensions().x() - 1)
+			   xf += u[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
+		   else
+			   xf += u[neighbourEntities.template getEntityIndex< 1,  0,  0 >()];
 
-	   if(coordinates.x() == 0)
-		   xb -= u[neighbourEntities.template getEntityIndex< 1,  0,  0 >()];
-	   else
-		   xb -= u[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
+		   if(coordinates.x() == 0)
+			   xb -= u[neighbourEntities.template getEntityIndex< 1,  0,  0 >()];
+		   else
+			   xb -= u[neighbourEntities.template getEntityIndex< -1,  0,  0 >()];
 
-	   if(coordinates.y() == mesh.getDimensions().y() - 1)
-		   yf += u[neighbourEntities.template getEntityIndex< 0,  -1,  0 >()];
-	   else
-		   yf += u[neighbourEntities.template getEntityIndex< 0,  1,  0 >()];
+		   if(coordinates.y() == mesh.getDimensions().y() - 1)
+			   yf += u[neighbourEntities.template getEntityIndex< 0,  -1,  0 >()];
+		   else
+			   yf += u[neighbourEntities.template getEntityIndex< 0,  1,  0 >()];
 
-	   if(coordinates.y() == 0)
-		   yb -= u[neighbourEntities.template getEntityIndex< 0,  1,  0 >()];
-	   else
-		   yb -= u[neighbourEntities.template getEntityIndex< 0,  -1,  0 >()];
-
-
-	   if(coordinates.z() == mesh.getDimensions().z() - 1)
-		   zf += u[neighbourEntities.template getEntityIndex< 0,  0,  -1 >()];
-	   else
-		   zf += u[neighbourEntities.template getEntityIndex< 0,  0,  1 >()];
-
-	   if(coordinates.z() == 0)
-		   zb -= u[neighbourEntities.template getEntityIndex< 0,  0,  1 >()];
-	   else
-		   zb -= u[neighbourEntities.template getEntityIndex< 0,  0,  -1 >()];
+		   if(coordinates.y() == 0)
+			   yb -= u[neighbourEntities.template getEntityIndex< 0,  1,  0 >()];
+		   else
+			   yb -= u[neighbourEntities.template getEntityIndex< 0,  -1,  0 >()];
 
 
-	   //xb *= ihx;
-	   //xf *= ihx;
-	  // yb *= ihy;
-	   //yf *= ihy;
+		   if(coordinates.z() == mesh.getDimensions().z() - 1)
+			   zf += u[neighbourEntities.template getEntityIndex< 0,  0,  -1 >()];
+		   else
+			   zf += u[neighbourEntities.template getEntityIndex< 0,  0,  1 >()];
 
-	   if(signui > 0.0)
-	   {
-		   xf = negativePart(xf);
+		   if(coordinates.z() == 0)
+			   zb -= u[neighbourEntities.template getEntityIndex< 0,  0,  1 >()];
+		   else
+			   zb -= u[neighbourEntities.template getEntityIndex< 0,  0,  -1 >()];
 
-		   xb = positivePart(xb);
+		   if(signui > 0.0)
+		   {
+			   xf = negativePart(xf);
 
-		   yf = negativePart(yf);
+			   xb = positivePart(xb);
 
-		   yb = positivePart(yb);
+			   yf = negativePart(yf);
 
-		   zf = negativePart(zf);
+			   yb = positivePart(yb);
 
-		   zb = positivePart(zb);
+			   zf = negativePart(zf);
 
-	   }
-	   else if(signui < 0.0)
-	   {
+			   zb = positivePart(zb);
 
-		   xb = negativePart(xb);
+		   }
+		   else if(signui < 0.0)
+		   {
 
-		   xf = positivePart(xf);
+			   xb = negativePart(xb);
 
-		   yb = negativePart(yb);
+			   xf = positivePart(xf);
 
-		   yf = positivePart(yf);
+			   yb = negativePart(yb);
 
-		   zb = negativePart(zb);
+			   yf = positivePart(yf);
 
-		   zf = positivePart(zf);
-	   }
+			   zb = negativePart(zb);
+
+			   zf = positivePart(zf);
+		   }
 
 
-	   if(xb - xf > 0.0)
-		   a = xb;
-	   else
-		   a = xf;
+		   if(xb - xf > 0.0)
+			   a = xb;
+		   else
+			   a = xf;
 
-	   if(yb - yf > 0.0)
-		   b = yb;
-	   else
-		   b = yf;
+		   if(yb - yf > 0.0)
+			   b = yb;
+		   else
+			   b = yf;
 
-	   if(zb - zf > 0.0)
-		   c = zb;
-	   else
-		   c = zf;
+		   if(zb - zf > 0.0)
+			   c = zb;
+		   else
+			   c = zf;
 
-	   d = ( 1.0 - sqrt(a*a + b*b + c*c)*ihx );
+		   d = ( 1.0 - sqrt(a*a + b*b + c*c)*ihx );
 
-//	   d = 1.0 - sqrt(xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb)*ihx; /*upwind*/
+	//	   d = 1.0 - sqrt(xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb)*ihx; /*upwind*/
 
-//	   if(Sign(d) > 0.0 )
-//		   return Sign(u[cellIndex])*d;
-//	   else
-		   return signui*d;
+		   if(Sign(d) > 0.0 )
+			   return Sign(u[cellIndex])*d;
+		   else
+			   return signui*d;
 }
 
 
