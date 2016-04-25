@@ -1,13 +1,7 @@
 #ifndef _TNLINTERNALNODE_H_INCLUDED_
 #define _TNLINTERNALNODE_H_INCLUDED_
 
-#include <fstream>
 #include "tnlNode.h"
-#include "tnlArea2D.h"
-#include "tnlCircle2D.h"
-
-//template< int LogX, int LogY >
-//class tnlNode;
 
 template< int LogX,
           int LogY = LogX >
@@ -39,6 +33,7 @@ public:
     ~tnlInternalNode();
 
 private:
+    tnlBitmaskArray< LogX * LogY >* bitmaskArray;
     tnlNode< LogX, LogY >* children[ LogX * LogY ];
 };
 

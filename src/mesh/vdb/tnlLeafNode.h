@@ -33,6 +33,7 @@ public:
     ~tnlLeafNode();
 
 private:
+    tnlBitmaskArray< LogX * LogY >* bitmaskArray;
 };
 
 #include "tnlLeafNode_impl.h"

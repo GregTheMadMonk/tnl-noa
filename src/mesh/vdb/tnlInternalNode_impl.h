@@ -5,12 +5,6 @@
 #include <iomanip>
 #include "tnlInternalNode.h"
 #include "tnlLeafNode.h"
-#include "tnlArea2D.h"
-#include "tnlCircle2D.h"
-#include "tnlBitmask.h"
-#include "tnlVDBMath.h"
-#include "tnlIterator2D.h"
-#include "tnlBitmaskArray.h"
 
 template< int LogX,
           int LogY >
@@ -19,13 +13,9 @@ tnlInternalNode< LogX, LogY >::tnlInternalNode( tnlArea2D* area,
                                                 int X,
                                                 int Y,
                                                 int level )
+: tnlNode< LogX, LogY >::tnlNode( area, circle, X, Y, level )
 {
     this->bitmaskArray = new tnlBitmaskArray< LogX * LogY >();
-    this->area = area;
-    this->circle = circle;
-    this->X = X;
-    this->Y = Y;
-    this->level = level;
 }
 
 template< int LogX,
@@ -34,22 +24,7 @@ void tnlInternalNode< LogX, LogY >::setNode( int splitX,
                                              int splitY,
                                              int depth )
 {
-    int depthX = splitX * tnlVDBMath::power( LogX, this->level - 1 );
-    int depthY = splitY * tnlVDBMath::power( LogY, this->level - 1 );
-    float stepX = ( float ) this->area->getLengthX() / depthX;
-    float stepY = ( float ) this->area->getLengthY() / depthY;
-    float startX = this->X * stepX;
-    float endX = ( this->X + 1 ) * stepX;
-    float startY = this->Y * stepY;
-    float endY = ( this->Y + 1 ) * stepY;
-    tnlIterator2D< LogX * LogY, LogX, LogY >* iter = 
-                 new tnlIterator2D< LogX * LogY, LogX, LogY >( LogX,
-                                                               LogY,
-                                                               ( float ) ( endX - startX ) / LogX,
-                                                               ( float ) ( endY - startY ) / LogY,
-                                                               startX,
-                                                               startY );
-    iter->computeBitmaskArray( this->bitmaskArray, this->circle, this->X, this->Y );
+    tnlNode< LogX, LogY >::setNode( splitX, splitY, this->bitmaskArray );
     this->setChildren( splitX, splitY, depth );
 }
 
@@ -141,6 +116,16 @@ void tnlInternalNode< LogX, LogY >::print( int splitX,
             continue;
         else
             this->children[ i ]->print( splitX, splitY, depth, file );
+}
+
+template< int LogX,
+          int LogY >
+tnlInternalNode< LogX, LogY >::~tnlInternalNode()
+{
+    delete this->bitmaskArray;
+    for( int i = 0; i < LogX * LogY; i++ )
+        delete this->children[ i ];
+    delete [] this->children;
 }
 
 

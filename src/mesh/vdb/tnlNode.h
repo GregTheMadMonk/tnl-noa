@@ -12,11 +12,19 @@ template< int LogX,
 class tnlNode
 {
 public:
-    tnlNode(){};
+    tnlNode( tnlArea2D* area,
+             tnlCircle2D* circle,
+             int X,
+             int Y,
+             int level );
 
-    virtual void setNode( int splitX,
-                          int splitY,
-                          int depth ){};
+    void setNode( int splitX,
+                  int splitY,
+                  tnlBitmaskArray< LogX * LogY >* bitmaskArray );
+
+    virtual void setNode( int splitX = 0,
+                          int splitY = 0,
+                          int depth = 0 ){};
 
     virtual void print( int splitX,
                         int splitY,
@@ -28,17 +36,12 @@ public:
 
     int getLevel();
 
-    ~tnlNode(){};
+    ~tnlNode();
 
 protected:
     tnlArea2D* area;
     tnlCircle2D* circle;
-    int X, Y;
-    int level;
-    tnlBitmaskArray< LogX * LogY >* bitmaskArray;
-
-private:
-    int size;
+    int X, Y, level;
 };
 
 #include "tnlNode_impl.h"

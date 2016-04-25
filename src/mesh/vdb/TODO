@@ -1,17 +1,7 @@
 echo
 echo
-echo "Basics of the tree are implemented. What must be done now"
-echo "is to implement internal and leaf nodes and handler to "
-echo "create the whole tree. After that lookup methods need "
-echo "to be implemented and also class values to store functions"
-echo "values in each point. There should also be some bitmask "
-echo "to tell which nodes are active for fast lookup and bitmask"
-echo "to identify coordinates of given area."
+echo "Add integration to tnl library -- that means: templates for"
+echo "Real, Index and Device types. Add Values class to store "
+echo "interpoled values in each node. Compare speed with original"
+echo "VDB. Implement on CUDA. Implement 3D version (should be trivial)."
 echo
-echo "Currently most important is to implement math funcs,"
-echo "as the original ones are exponentially complex, in 2D"
-echo "its complexity is at most 2^2, in 3D its at most 2^3 (!)"
-echo "which lightweigth GPU threads won't handle."
-
-
-Program fails at tnlIterator2D->computeBitmaskArray() last instruction in for loop (check whats happenning in tnlBitmaskArray->setIthMask())

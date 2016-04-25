@@ -2,14 +2,10 @@
 #define _TNLROOTNODE_IMPL_H_INCLUDED_
 
 #include <iostream>
-#include <fstream>
 #include <iomanip>
 #include <string>
 #include "tnlNode.h"
-#include "tnlArea2D.h"
-#include "tnlIterator2D.h"
 #include "tnlRootNode.h"
-#include "tnlCircle2D.h"
 #include "tnlInternalNode.h"
 #include "tnlLeafNode.h"
 
@@ -22,14 +18,12 @@ tnlRootNode< size, LogX, LogY >::tnlRootNode( tnlArea2D* area,
                                               unsigned nodesX,
                                               unsigned nodesY,
                                               unsigned depth )
+: tnlNode< LogX, LogY >::tnlNode( area, circle, 0, 0, 0 )
 {
-    this->area = area;
-    this->circle = circle;
     this->nodesX = nodesX;
     this->nodesY = nodesY;
     this->bitmaskArray = new tnlBitmaskArray< size >();
     this->depth = depth;
-    this->level = 0;
 }
 
 template< unsigned size, 
@@ -39,13 +33,21 @@ void tnlRootNode< size, LogX, LogY >::setNode()
 {
     float stepX = ( this->area->getEndX() - this->area->getStartX() ) / this->nodesX;
     float stepY = ( this->area->getEndY() - this->area->getStartY() ) / this->nodesY;
-    tnlIterator2D< size, LogX, LogY >* iter = new tnlIterator2D< size, LogX, LogY >( this->nodesX,
-                                                                                     this->nodesY,
-                                                                                     stepX,
-                                                                                     stepY,
-                                                                                     this->area->getStartX(),
-                                                                                     this->area->getStartY() );
-    iter->computeBitmaskArray( this->bitmaskArray, this->circle );
+    float startX = this->area->getStartX();
+    float startY = this->area->getStartY();
+    for( int i = 0; i < this->nodesX; i++ )
+        for( int j = 0; j < this->nodesY; j++ )
+        {
+            float x1 = startX + j * stepX;
+            float x2 = startX + ( j + 1 ) * stepX;
+            float y1 = startY + i * stepY;
+            float y2 = startY + ( i + 1 ) * stepY;
+            bool state = this->circle->isIntercept( x1, x2, y1, y2 );
+            int X = j;
+            int Y = i;
+            tnlBitmask* bitmask = new tnlBitmask( state, X, Y );
+            this->bitmaskArray->setIthBitmask( i * this->nodesX + j, bitmask);
+        }
 }
 
 template< unsigned size,
@@ -155,9 +157,10 @@ template< unsigned size,
           int LogY >
 tnlRootNode< size, LogX, LogY >::~tnlRootNode()
 {
-    delete this->area;
-    delete this->circle;
     delete this->bitmaskArray;
+    for( int i = 0; i < size; i++ ) 
+        delete this->children[ i ];
+    delete [] this->children;
 }
 
 #endif // _TNLROOTNODE_IMPL_H_INCLUDED_
