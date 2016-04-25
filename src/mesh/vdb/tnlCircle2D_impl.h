@@ -5,20 +5,22 @@
 #include <cmath>
 #include "tnlCircle2D.h"
 
-tnlCircle2D::tnlCircle2D( unsigned a,
-                          unsigned b,
-                          unsigned r )
+template< typename Real >
+tnlCircle2D< Real >::tnlCircle2D( unsigned a,
+                                  unsigned b,
+                                  unsigned r )
 {
     this->a = a;
     this->b = b;
     this->r = r;
 }
 
-bool tnlCircle2D::isIntercept( float x1,
-                               float x2,
-                               float y1,
-                               float y2,
-                               bool verbose )
+template< typename Real >
+bool tnlCircle2D< Real >::isIntercept( Real x1,
+                                       Real x2,
+                                       Real y1,
+                                       Real y2,
+                                       bool verbose )
 {
     if( this->isInInterval( x1, x2, this->a - this->r ) &&
         this->isInInterval( x1, x2, this->a + this->r ) &&
@@ -32,9 +34,9 @@ bool tnlCircle2D::isIntercept( float x1,
     else if( verbose )
         std::cout << "Circle is not inside area." << std::endl;
 
-    float R = this->r * this->r;
+    Real R = this->r * this->r;
 
-    float aux = x1 - this->a;
+    Real aux = x1 - this->a;
     if( R - aux * aux >= 0 &&
         ( this->isInInterval( y1, y2, sqrt( R - aux * aux ) + this->b ) ||
         this->isInInterval( y1, y2, -sqrt( R - aux * aux ) + this->b ) ) )
@@ -80,9 +82,10 @@ bool tnlCircle2D::isIntercept( float x1,
     return false;
 }
 
-bool tnlCircle2D::isInInterval( float x1,
-                                float x2,
-                                float x )
+template< typename Real >
+bool tnlCircle2D< Real >::isInInterval( Real x1,
+                                        Real x2,
+                                        Real x )
 {
     return ( ( x1 <= x ) and ( x <= x2 ) );
 }

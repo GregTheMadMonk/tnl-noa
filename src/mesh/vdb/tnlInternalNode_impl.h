@@ -6,46 +6,52 @@
 #include "tnlInternalNode.h"
 #include "tnlLeafNode.h"
 
-template< int LogX,
-          int LogY >
-tnlInternalNode< LogX, LogY >::tnlInternalNode( tnlArea2D* area,
-                                                tnlCircle2D* circle,
-                                                int X,
-                                                int Y,
-                                                int level )
-: tnlNode< LogX, LogY >::tnlNode( area, circle, X, Y, level )
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY >
+tnlInternalNode< Real, Index, LogX, LogY >::tnlInternalNode( tnlArea2D< Real >* area,
+                                                             tnlCircle2D< Real >* circle,
+                                                             Index X,
+                                                             Index Y,
+                                                             Index level )
+: tnlNode< Real, Index, LogX, LogY >::tnlNode( area, circle, X, Y, level )
 {
     this->bitmaskArray = new tnlBitmaskArray< LogX * LogY >();
 }
 
-template< int LogX,
-          int LogY >
-void tnlInternalNode< LogX, LogY >::setNode( int splitX,
-                                             int splitY,
-                                             int depth )
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY >
+void tnlInternalNode< Real, Index, LogX, LogY >::setNode( Index splitX,
+                                                          Index splitY,
+                                                          Index depth )
 {
-    tnlNode< LogX, LogY >::setNode( splitX, splitY, this->bitmaskArray );
+    tnlNode< Real, Index, LogX, LogY >::setNode( splitX, splitY, this->bitmaskArray );
     this->setChildren( splitX, splitY, depth );
 }
 
-template< int LogX,
-          int LogY >
-void tnlInternalNode< LogX, LogY >::setChildren( int splitX,
-                                                 int splitY,
-                                                 int depth )
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY >
+void tnlInternalNode< Real, Index, LogX, LogY >::setChildren( Index splitX,
+                                                              Index splitY,
+                                                              Index depth )
 {
-    for( int i = 0; i < LogY; i++ )
-        for( int j = 0; j < LogX; j++ )
+    for( Index i = 0; i < LogY; i++ )
+        for( Index j = 0; j < LogX; j++ )
         {
-            int index = i * LogY + j;
+            Index index = i * LogY + j;
             if( !this->bitmaskArray->getIthBitmask( index )->getState() )
                 this->children[ index ] = NULL;
             else if( this->level < depth - 1 )
             {
                 //std::cout << "creating new node, level = " << this->level << std::endl;
-                int X = this->X * LogX + j;
-                int Y = this->Y * LogY + i;
-                this->children[ index ] = new tnlInternalNode< LogX, LogY >( this->area,
+                Index X = this->X * LogX + j;
+                Index Y = this->Y * LogY + i;
+                this->children[ index ] = new tnlInternalNode< Real, Index, LogX, LogY >( this->area,
                                                                              this->circle,
                                                                              X,
                                                                              Y,
@@ -54,9 +60,9 @@ void tnlInternalNode< LogX, LogY >::setChildren( int splitX,
             }
             else
             {
-                int X = this->X * LogX + j;
-                int Y = this->Y * LogY + i;
-                this->children[ index ] = new tnlLeafNode< LogX, LogY >( this->area,
+                Index X = this->X * LogX + j;
+                Index Y = this->Y * LogY + i;
+                this->children[ index ] = new tnlLeafNode< Real, Index, LogX, LogY >( this->area,
                                                                          this->circle,
                                                                          X,
                                                                          Y,
@@ -66,17 +72,19 @@ void tnlInternalNode< LogX, LogY >::setChildren( int splitX,
         }
 }
 
-template< int LogX,
-          int LogY >
-void tnlInternalNode< LogX, LogY >::write( fstream& file,
-                                           int level )
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY >
+void tnlInternalNode< Real, Index, LogX, LogY >::write( fstream& file,
+                                                        Index level )
 {
-    for( int i = 0; i < LogX * LogY; i++ )
+    for( Index i = 0; i < LogX * LogY; i++ )
     {
         if( this->level == level )
         {
-            int x = this->bitmaskArray->getIthBitmask( i )->getX();
-            int y = this->bitmaskArray->getIthBitmask( i )->getY();
+            Index x = this->bitmaskArray->getIthBitmask( i )->getX();
+            Index y = this->bitmaskArray->getIthBitmask( i )->getY();
             bool state = this->bitmaskArray->getIthBitmask( i )->getState();
             file << "x=" << setw( 10 ) << x
                  << ", y=" << setw( 10 ) << y
@@ -88,12 +96,14 @@ void tnlInternalNode< LogX, LogY >::write( fstream& file,
     }
 }
 
-template< int LogX,
-          int LogY >
-tnlInternalNode< LogX, LogY >::~tnlInternalNode()
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY >
+tnlInternalNode< Real, Index, LogX, LogY >::~tnlInternalNode()
 {
     delete this->bitmaskArray;
-    for( int i = 0; i < LogX * LogY; i++ )
+    for( Index i = 0; i < LogX * LogY; i++ )
         delete this->children[ i ];
     delete [] this->children;
 }

@@ -4,13 +4,15 @@
 #include "tnlNode.h"
 #include "tnlVDBMath.h"
 
-template< int LogX,
-          int LogY >
-tnlNode< LogX, LogY >::tnlNode( tnlArea2D* area,
-                                tnlCircle2D* circle,
-                                int X,
-                                int Y,
-                                int level )
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY >
+tnlNode< Real, Index, LogX, LogY >::tnlNode( tnlArea2D< Real >* area,
+                                             tnlCircle2D< Real >* circle,
+                                             Index X,
+                                             Index Y,
+                                             Index level )
 {
     this->area = area;
     this->circle = circle;
@@ -19,48 +21,54 @@ tnlNode< LogX, LogY >::tnlNode( tnlArea2D* area,
     this->Y = Y;
 }
 
-template< int LogX,
-          int LogY >
-int tnlNode< LogX, LogY >::getLevel()
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY >
+Index tnlNode< Real, Index, LogX, LogY >::getLevel()
 {
     return this->level;
 }
 
-template< int LogX,
-          int LogY >
-void tnlNode< LogX, LogY >::setNode( int splitX,
-                                     int splitY,
-                                     tnlBitmaskArray< LogX * LogY >* bitmaskArray )
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY >
+void tnlNode< Real, Index, LogX, LogY >::setNode( Index splitX,
+                                                  Index splitY,
+                                                  tnlBitmaskArray< LogX * LogY >* bitmaskArray )
 {
 
-    int depthX = splitX * tnlVDBMath::power( LogX, this->level - 1 );
-    int depthY = splitY * tnlVDBMath::power( LogY, this->level - 1 );
-    float stepX = ( float ) this->area->getLengthX() / depthX;
-    float stepY = ( float ) this->area->getLengthY() / depthY;
-    float startX = this->X * stepX;
-    float endX = ( this->X + 1 ) * stepX;
-    float startY = this->Y * stepY;
-    float endY = ( this->Y + 1 ) * stepY;
-    float dx = ( endX - startX ) / LogX;
-    float dy = ( endY - startY ) / LogY;
-    for( int i = 0; i < LogY; i++ )
-        for( int j = 0; j < LogX; j++ )
+    Index depthX = splitX * tnlVDBMath::power( LogX, this->level - 1 );
+    Index depthY = splitY * tnlVDBMath::power( LogY, this->level - 1 );
+    Real stepX = ( Real ) this->area->getLengthX() / depthX;
+    Real stepY = ( Real ) this->area->getLengthY() / depthY;
+    Real startX = this->X * stepX;
+    Real endX = ( this->X + 1 ) * stepX;
+    Real startY = this->Y * stepY;
+    Real endY = ( this->Y + 1 ) * stepY;
+    Real dx = ( endX - startX ) / LogX;
+    Real dy = ( endY - startY ) / LogY;
+    for( Index i = 0; i < LogY; i++ )
+        for( Index j = 0; j < LogX; j++ )
         {
-            float x1 = startX + j * dx;
-            float x2 = startX + ( j + 1 ) * dx;
-            float y1 = startY + i * dy;
-            float y2 = startY + ( i + 1 ) * dy;
+            Real x1 = startX + j * dx;
+            Real x2 = startX + ( j + 1 ) * dx;
+            Real y1 = startY + i * dy;
+            Real y2 = startY + ( i + 1 ) * dy;
             bool state = this->circle->isIntercept( x1, x2, y1, y2 );
-            int posX = this->X * LogX + j;
-            int posY = this->Y * LogY + i;
+            Index posX = this->X * LogX + j;
+            Index posY = this->Y * LogY + i;
             tnlBitmask* bitmask = new tnlBitmask( state, posX, posY );
             bitmaskArray->setIthBitmask( i * LogX + j, bitmask );
         }
 }
 
-template< int LogX,
-          int LogY >
-tnlNode< LogX, LogY >::~tnlNode()
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY >
+tnlNode< Real, Index, LogX, LogY >::~tnlNode()
 {
     this->area = NULL;
     this->circle = NULL;

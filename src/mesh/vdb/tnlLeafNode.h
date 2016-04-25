@@ -7,23 +7,25 @@
 #include "tnlCircle2D.h"
 #include "tnlBitmask.h"
 
-template< int LogX,
-          int LogY = LogX >
-class tnlLeafNode : public tnlNode< LogX, LogY >
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY = LogX >
+class tnlLeafNode : public tnlNode< Real, Index, LogX, LogY >
 {
 public:
-    tnlLeafNode( tnlArea2D* area,
-                 tnlCircle2D* circle,
-                 int X,
-                 int Y,
-                 int level );
+    tnlLeafNode( tnlArea2D< Real >* area,
+                 tnlCircle2D< Real >* circle,
+                 Index X,
+                 Index Y,
+                 Index level );
 
-    void setNode( int splitX,
-                  int splitY,
-                  int depth );
+    void setNode( Index splitX,
+                  Index splitY,
+                  Index depth );
 
     void write( fstream& file,
-                int level );
+                Index level );
 
     ~tnlLeafNode();
 

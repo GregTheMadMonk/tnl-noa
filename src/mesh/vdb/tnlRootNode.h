@@ -3,14 +3,16 @@
 
 #include "tnlNode.h"
 
-template< unsigned size,
-          int LogX,
-          int LogY = LogX >
-class tnlRootNode : public tnlNode< LogX, LogY >
+template< typename Real,
+          typename Index,
+          unsigned size,
+          Index LogX,
+          Index LogY = LogX >
+class tnlRootNode : public tnlNode< Real, Index, LogX, LogY >
 {
 public:
-    tnlRootNode( tnlArea2D* area,
-                 tnlCircle2D* circle,
+    tnlRootNode( tnlArea2D< Real >* area,
+                 tnlCircle2D< Real >* circle,
                  unsigned nodesX,
                  unsigned nodesY,
                  unsigned depth );
@@ -27,7 +29,7 @@ private:
     unsigned nodesX;
     unsigned nodesY;
     tnlBitmaskArray< size >* bitmaskArray;
-    tnlNode< LogX, LogY >* children[ size ];
+    tnlNode< Real, Index, LogX, LogY >* children[ size ];
     unsigned depth;
 };
 

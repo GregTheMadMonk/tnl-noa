@@ -7,36 +7,38 @@
 #include <fstream>
 
 
-template< int LogX,
-          int LogY = LogX >
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY = LogX >
 class tnlNode
 {
 public:
-    tnlNode( tnlArea2D* area,
-             tnlCircle2D* circle,
-             int X,
-             int Y,
-             int level );
+    tnlNode( tnlArea2D< Real >* area,
+             tnlCircle2D< Real >* circle,
+             Index X,
+             Index Y,
+             Index level );
 
-    void setNode( int splitX,
-                  int splitY,
+    void setNode( Index splitX,
+                  Index splitY,
                   tnlBitmaskArray< LogX * LogY >* bitmaskArray );
 
-    virtual void setNode( int splitX = 0,
-                          int splitY = 0,
-                          int depth = 0 ){};
+    virtual void setNode( Index splitX = 0,
+                          Index splitY = 0,
+                          Index depth = 0 ){};
 
     virtual void write( fstream& f,
-                        int level ){};
+                        Index level ){};
 
-    int getLevel();
+    Index getLevel();
 
     ~tnlNode();
 
 protected:
-    tnlArea2D* area;
-    tnlCircle2D* circle;
-    int X, Y, level;
+    tnlArea2D< Real >* area;
+    tnlCircle2D< Real >* circle;
+    Index X, Y, level;
 };
 
 #include "tnlNode_impl.h"

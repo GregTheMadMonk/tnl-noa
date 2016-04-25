@@ -3,33 +3,35 @@
 
 #include "tnlNode.h"
 
-template< int LogX,
-          int LogY = LogX >
-class tnlInternalNode : public tnlNode< LogX, LogY >
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY = LogX >
+class tnlInternalNode : public tnlNode< Real, Index, LogX, LogY >
 {
 public:
-    tnlInternalNode( tnlArea2D* area,
-                     tnlCircle2D* circle,
-                     int X,
-                     int Y,
-                     int level );
+    tnlInternalNode( tnlArea2D< Real >* area,
+                     tnlCircle2D< Real >* circle,
+                     Index X,
+                     Index Y,
+                     Index level );
 
-    void setNode( int splitX,
-                  int splitY,
-                  int depth );
+    void setNode( Index splitX,
+                  Index splitY,
+                  Index depth );
 
-    void setChildren( int splitX,
-                      int splitY,
-                      int depth );
+    void setChildren( Index splitX,
+                      Index splitY,
+                      Index depth );
 
     void write( fstream& f,
-                int level );
+                Index level );
 
     ~tnlInternalNode();
 
 private:
     tnlBitmaskArray< LogX * LogY >* bitmaskArray;
-    tnlNode< LogX, LogY >* children[ LogX * LogY ];
+    tnlNode< Real, Index, LogX, LogY >* children[ LogX * LogY ];
 };
 
 

@@ -5,36 +5,42 @@
 #include <iostream>
 #include <iomanip>
 
-template< int LogX,
-          int LogY >
-tnlLeafNode< LogX, LogY >::tnlLeafNode( tnlArea2D* area,
-                                        tnlCircle2D* circle,
-                                        int X,
-                                        int Y,
-                                        int level )
-: tnlNode< LogX, LogY >::tnlNode( area, circle, X, Y, level )
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY >
+tnlLeafNode< Real, Index, LogX, LogY >::tnlLeafNode( tnlArea2D< Real >* area,
+                                                     tnlCircle2D< Real >* circle,
+                                                     Index X,
+                                                     Index Y,
+                                                     Index level )
+: tnlNode< Real, Index, LogX, LogY >::tnlNode( area, circle, X, Y, level )
 {
     this->bitmaskArray = new tnlBitmaskArray< LogX * LogY >();
 }
 
-template< int LogX,
-          int LogY >
-void tnlLeafNode< LogX, LogY >::setNode( int splitX,
-                                         int splitY,
-                                         int depth )
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY >
+void tnlLeafNode< Real, Index, LogX, LogY >::setNode( Index splitX,
+                                                      Index splitY,
+                                                      Index depth )
 {
-    tnlNode< LogX, LogY >::setNode( splitX, splitY, this->bitmaskArray );
+    tnlNode< Real, Index, LogX, LogY >::setNode( splitX, splitY, this->bitmaskArray );
 }
 
-template< int LogX,
-          int LogY >
-void tnlLeafNode< LogX, LogY >::write( fstream& file,
-                                       int level )
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY >
+void tnlLeafNode< Real, Index, LogX, LogY >::write( fstream& file,
+                                                    Index level )
 {
-    for( int i = 0; i < LogX * LogY; i++ )
+    for( Index i = 0; i < LogX * LogY; i++ )
     {
-        int x = this->bitmaskArray->getIthBitmask( i )->getX();
-        int y = this->bitmaskArray->getIthBitmask( i )->getY();
+        Index x = this->bitmaskArray->getIthBitmask( i )->getX();
+        Index y = this->bitmaskArray->getIthBitmask( i )->getY();
         bool state = this->bitmaskArray->getIthBitmask( i )->getState();
         file << "x=" << setw( 10 ) << x
              << ", y=" << setw( 10 ) << y
@@ -43,9 +49,11 @@ void tnlLeafNode< LogX, LogY >::write( fstream& file,
     }
 }
 
-template< int LogX,
-          int LogY >
-tnlLeafNode< LogX, LogY >::~tnlLeafNode()
+template< typename Real,
+          typename Index,
+          Index LogX,
+          Index LogY >
+tnlLeafNode< Real, Index, LogX, LogY >::~tnlLeafNode()
 {
     delete this->bitmaskArray;
 }

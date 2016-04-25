@@ -3,10 +3,11 @@
 
 #include "tnlArea2D.h"
 
-tnlArea2D::tnlArea2D( unsigned startX,
-                      unsigned endX,
-                      unsigned startY,
-                      unsigned endY )
+template< typename Real >
+tnlArea2D< Real >::tnlArea2D( Real startX,
+                              Real endX,
+                              Real startY,
+                              Real endY )
 {
     this->startX = startX;
     this->endX = endX;
@@ -14,32 +15,38 @@ tnlArea2D::tnlArea2D( unsigned startX,
     this->endY = endY;
 }
 
-unsigned tnlArea2D::getStartX()
+template< typename Real >
+Real tnlArea2D< Real >::getStartX()
 {
     return this->startX;
 }
 
-unsigned tnlArea2D::getEndX()
+template< typename Real >
+Real tnlArea2D< Real >::getEndX()
 {
     return this->endX;
 }
 
-unsigned tnlArea2D::getLengthX()
+template< typename Real >
+Real tnlArea2D< Real >::getLengthX()
 {
     return this->endX - this->startX;
 }
 
-unsigned tnlArea2D::getStartY()
+template< typename Real >
+Real tnlArea2D< Real >::getStartY()
 {
     return this->startY;
 }
 
-unsigned tnlArea2D::getEndY()
+template< typename Real >
+Real tnlArea2D< Real >::getEndY()
 {
     return this->endY;
 }
 
-unsigned tnlArea2D::getLengthY()
+template< typename Real >
+Real tnlArea2D< Real >::getLengthY()
 {
     return this->endY - this->startY;
 }

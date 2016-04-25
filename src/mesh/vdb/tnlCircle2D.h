@@ -1,6 +1,7 @@
 #ifndef _TNLCIRCLE2D_H_INCLUDED_
 #define _TNLCIRCLE2D_H_INCLUDED_
 
+template< typename Real >
 class tnlCircle2D
 {
 public:
@@ -8,15 +9,15 @@ public:
                  unsigned b,
                  unsigned r );
 
-    bool isIntercept( float x1,
-                      float x2,
-                      float y1,
-                      float y2,
+    bool isIntercept( Real x1,
+                      Real x2,
+                      Real y1,
+                      Real y2,
                       bool verbose = false );
 
-    bool isInInterval( float x1,
-                       float x2,
-                       float x );
+    bool isInInterval( Real x1,
+                       Real x2,
+                       Real x );
 
     ~tnlCircle2D();
 

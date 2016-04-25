@@ -1,33 +1,34 @@
 #ifndef _TNLAREA2D_H_INCLUDED_
 #define _TNLAREA2D_H_INCLUDED_
 
+template< typename Real >
 class tnlArea2D
 {
 public:
-    tnlArea2D( unsigned startX,
-               unsigned endX,
-               unsigned startY,
-               unsigned endY );
+    tnlArea2D( Real startX,
+               Real endX,
+               Real startY,
+               Real endY );
 
-    unsigned getStartX();
+    Real getStartX();
 
-    unsigned getEndX();
+    Real getEndX();
 
-    unsigned getLengthX();
+    Real getLengthX();
 
-    unsigned getStartY();
+    Real getStartY();
 
-    unsigned getEndY();
+    Real getEndY();
 
-    unsigned getLengthY();
+    Real getLengthY();
 
     ~tnlArea2D(){};
 
 private:
-    unsigned startX;
-    unsigned endX;
-    unsigned startY;
-    unsigned endY;
+    Real startX;
+    Real endX;
+    Real startY;
+    Real endY;
 };
 
 #include "tnlArea2D_impl.h"
