@@ -26,11 +26,6 @@ public:
                           int splitY = 0,
                           int depth = 0 ){};
 
-    virtual void print( int splitX,
-                        int splitY,
-                        int depth,
-                        fstream& file ){};
-
     virtual void write( fstream& f,
                         int level ){};
 

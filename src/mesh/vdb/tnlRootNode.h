@@ -19,8 +19,6 @@ public:
 
     void createTree();
 
-    void printStates( fstream& file );
-
     void write();
 
     ~tnlRootNode();

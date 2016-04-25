@@ -22,11 +22,6 @@ public:
                   int splitY,
                   int depth );
 
-    void print( int splitX,
-                int splitY,
-                int depth,
-                fstream& file );
-
     void write( fstream& file,
                 int level );
 

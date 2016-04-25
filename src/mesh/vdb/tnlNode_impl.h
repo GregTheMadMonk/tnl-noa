@@ -2,7 +2,6 @@
 #define _TNLNODE_IMPL_H_INCLUDED_
 
 #include "tnlNode.h"
-#include "tnlIterator2D.h"
 #include "tnlVDBMath.h"
 
 template< int LogX,

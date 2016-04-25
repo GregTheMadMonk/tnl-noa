@@ -28,31 +28,6 @@ void tnlLeafNode< LogX, LogY >::setNode( int splitX,
 
 template< int LogX,
           int LogY >
-void tnlLeafNode< LogX, LogY >::print( int splitX,
-                                       int splitY,
-                                       int depth,
-                                       fstream& file )
-{
-    int depthX = splitX * tnlVDBMath::power( LogX, this->level );
-    int depthY = splitY * tnlVDBMath::power( LogY, this->level );
-    float stepX = ( float ) this->area->getLengthX() / depthX;
-    float stepY = ( float ) this->area->getLengthY() / depthY;
-    float startX = this->X * stepX;
-    float endX = ( this->X + 1 ) * stepX;
-    float startY = this->Y * stepY;
-    float endY = ( this->Y + 1 ) * stepY;
-    tnlIterator2D< LogX * LogY, LogX, LogY >* iter =
-                 new tnlIterator2D< LogX * LogY, LogX, LogY >( LogX,
-                                                               LogY,
-                                                               ( float ) ( endX - startX ) / LogX,
-                                                               ( float ) ( endY - startY ) / LogY,
-                                                               startX,
-                                                               startY );
-    iter->dumpIntoFile( this->bitmaskArray, file, this->level );
-}
-
-template< int LogX,
-          int LogY >
 void tnlLeafNode< LogX, LogY >::write( fstream& file,
                                        int level )
 {
