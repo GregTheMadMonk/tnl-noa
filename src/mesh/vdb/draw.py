@@ -2,7 +2,15 @@ import re
 from pyx import *
 
 filename = "nodesLevel_"
-depth = 2
+depth = 5
+colors = [
+    color.cmyk.Yellow,
+    color.rgb.green,
+    color.rgb.blue,
+    color.rgb.red,
+    color.rgb.black
+]
+c = canvas.canvas()
 for i in range(depth):
     with open(filename + str(i), 'r') as f:
         lines = f.readlines()
@@ -38,11 +46,24 @@ for i in range(depth):
     stepy = lengthy / rectsy
     print(str(stepx))
     print(str(stepy))
-    c = canvas.canvas()
     for state in states:
-        if state.get("state"):
-            c.fill(path.rect(state.get("x") * stepx, 
-                             state.get("y") * stepy, 
+        if state.get("state") and i < depth - 1:
+            c.stroke(path.rect(state.get("x") * stepx, 
+                               state.get("y") * stepy, 
+                               stepx,
+                               stepy), 
+                     [deco.filled([colors[i]])])
+        elif i == 0:
+            c.stroke(path.rect(state.get("x") * stepx,
+                               state.get("y") * stepy,
+                               stepx,
+                               stepy),
+                     [deco.filled([color.rgb.white])])
+        elif i == depth - 1:
+            c.fill(path.rect(state.get("x") * stepx,
+                             state.get("y") * stepy,
                              stepx,
-                             stepy))
-    c.writePDFfile(filename + str(i)) 
+                             stepy),
+                   [deco.filled([color.rgb.black])])
+c.writePDFfile(filename) 
+
