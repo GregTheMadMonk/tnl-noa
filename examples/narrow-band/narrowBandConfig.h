@@ -26,7 +26,7 @@ class narrowBandConfig
    public:
       static void configSetup( tnlConfigDescription& config )
       {
-         config.addDelimiter( "Parallel Eikonal solver settings:" );
+         config.addDelimiter( "Narrow Band Solver solver settings:" );
          config.addEntry        < tnlString > ( "problem-name", "This defines particular problem.", "fast-sweeping" );
          config.addRequiredEntry        < tnlString > ( "initial-condition", "Initial condition for solver");
          config.addRequiredEntry        < int > ( "dim", "Dimension of problem.");

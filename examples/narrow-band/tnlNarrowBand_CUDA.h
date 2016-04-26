@@ -62,6 +62,14 @@ public:
 	__host__ static tnlString getType();
 	__host__ bool init( const tnlParameterContainer& parameters );
 	__host__ bool run();
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+	RealType positivePart(const RealType arg) const;
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+	RealType negativePart(const RealType arg) const;
 
 #ifdef HAVE_CUDA
 	__device__ bool initGrid();

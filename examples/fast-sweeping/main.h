@@ -17,9 +17,9 @@
 
 #include "MainBuildConfig.h"
 	//for HOST versions:
-#include "tnlFastSweeping.h"
+//#include "tnlFastSweeping.h"
 	//for DEVICE versions:
-//#include "tnlFastSweeping_CUDA.h"
+#include "tnlFastSweeping_CUDA.h"
 #include "fastSweepingConfig.h"
 #include <solvers/tnlBuildConfigTags.h>
 

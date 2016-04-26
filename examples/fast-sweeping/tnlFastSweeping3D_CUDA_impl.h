@@ -227,8 +227,8 @@ bool tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > ::
 	Entity.refresh();
 	int gid = Entity.getIndex();
 
-	if(abs(cudaDofVector[gid]) < 1.8*h)
-		cudaDofVector2[gid] = cudaDofVector[gid];
+	if(abs(cudaDofVector[gid]) < 1.0*h)
+		cudaDofVector2[gid] = 0.5*h;//cudaDofVector[gid];
 	else
 		cudaDofVector2[gid] = INT_MAX*Sign(cudaDofVector[gid]);
 

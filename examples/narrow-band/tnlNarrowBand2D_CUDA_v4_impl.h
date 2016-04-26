@@ -50,6 +50,37 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Real tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >:: positivePart(const Real arg) const
+{
+	if(arg > 0.0)
+		return arg;
+	return 0.0;
+}
+
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
+#ifdef HAVE_CUDA
+   __device__ __host__
+#endif
+Real  tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: negativePart(const Real arg) const
+{
+	if(arg < 0.0)
+		return -arg;
+	return 0.0;
+}
+
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real,
+          typename Index >
 tnlString tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: getType()
 {
 	   return tnlString( "tnlNarrowBand< " ) +
@@ -116,7 +147,7 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 	cudaMalloc(&(cudaDofVector2), this->dofVector.getData().getSize()*sizeof(double));
 	cudaMemcpy(cudaDofVector2, this->dofVector.getData().getData(), this->dofVector.getData().getSize()*sizeof(double), cudaMemcpyHostToDevice);
 
-	cudaMalloc(&(cudaStatusVector),  statusGridSize*statusGridSize* sizeof(int));
+	cudaMalloc(&(cudaStatusVector),  statusGridSize*statusGridSize*sizeof(int));
 //	cudaMemcpy(cudaDofVector, this->dofVector.getData().getData(),  statusGridSize*statusGridSize* sizeof(int)), cudaMemcpyHostToDevice);
 
 	cudaMalloc(&reinitialize, sizeof(int));
@@ -125,12 +156,15 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 	cudaMalloc(&(this->cudaSolver), sizeof(tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >));
 	cudaMemcpy(this->cudaSolver, this,sizeof(tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >), cudaMemcpyHostToDevice);
 
+
+	cudaDeviceSynchronize();
+	checkCudaDevice;
 #endif
 
 	int n = Mesh.getDimensions().x();
 
 	dim3 threadsPerBlock2(NARROWBAND_SUBGRID_SIZE, NARROWBAND_SUBGRID_SIZE);
-	dim3 numBlocks2(((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE) ,((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE));
+	dim3 numBlocks2(statusGridSize ,statusGridSize);
 	initSetupGridCUDA<<<numBlocks2,threadsPerBlock2>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
 	checkCudaDevice;
@@ -139,14 +173,14 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 	checkCudaDevice;
 
 
-	dim3 threadsPerBlock(16, 16);
-	dim3 numBlocks(n/16 + 1 ,n/16 +1);
-	initCUDA<<<numBlocks,threadsPerBlock>>>(this->cudaSolver);
+	/*dim3 threadsPerBlock(16, 16);
+	dim3 numBlocks(n/16 + 1 ,n/16 +1);*/
+	initCUDA<<<numBlocks2,threadsPerBlock2>>>(this->cudaSolver);
 	cudaDeviceSynchronize();
 	checkCudaDevice;
 
 
-
+	cout << "Solver initialized." << endl;
 	return true;
 }
 
@@ -171,9 +205,11 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: r
 	double time = 0.0;
 	int reinit = 0;
 
+	cout << "Hi!" << endl;
 	runCUDA<<<numBlocksFS,threadsPerBlockFS>>>(this->cudaSolver,0,0);
 	cudaDeviceSynchronize();
 	checkCudaDevice;
+	cout << "Hi2!" << endl;
 	while(time < finalTime)
 	{
 		if(tau+time > finalTime)
@@ -187,12 +223,19 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: r
 
 
 		cudaMemcpy(&reinit, this->reinitialize, sizeof(int), cudaMemcpyDeviceToHost);
-		if(reinit != 0)
+		cudaDeviceSynchronize();
+		checkCudaDevice;
+		if(reinit != 0 && time != finalTime )
 		{
+			cout << time << endl;
+
 			initSetupGridCUDA<<<numBlocksNB,threadsPerBlockNB>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
 			checkCudaDevice;
-			initSetupGridCUDA<<<numBlocksNB,1>>>(this->cudaSolver);
+			initSetupGrid2CUDA<<<numBlocksNB,1>>>(this->cudaSolver);
+			cudaDeviceSynchronize();
+			checkCudaDevice;
+			initCUDA<<<numBlocksNB,threadsPerBlockNB>>>(this->cudaSolver);
 			cudaDeviceSynchronize();
 			checkCudaDevice;
 			runCUDA<<<numBlocksFS,threadsPerBlockFS>>>(this->cudaSolver,0,0);
@@ -228,7 +271,10 @@ template< typename MeshReal,
 __device__
 void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: updateValue( Index i, Index j)
 {
-	if(cudaStatusVector[i/NARROWBAND_SUBGRID_SIZE + (j/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE)] != 0)
+	//			1 - with curve,  	2 - to the north of curve, 	4  - to the south of curve,
+	//								8 - to the east of curve, 	16 - to the west of curve.
+	int subgridID = i/NARROWBAND_SUBGRID_SIZE + (j/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE);
+	/*if(cudaStatusVector[subgridID] != 0)*/
 	{
 		tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 		Entity.setCoordinates(CoordinatesType(i,j));
@@ -237,9 +283,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: u
 		Real value = cudaDofVector2[Entity.getIndex()];
 		Real a,b, tmp;
 
-		if( i == 0 )
+		if( i == 0 /*|| (i/NARROWBAND_SUBGRID_SIZE == 0 && !(cudaStatusVector[subgridID] & 9)) */)
 			a = cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()];
-		else if( i == Mesh.getDimensions().x() - 1 )
+		else if( i == Mesh.getDimensions().x() - 1 /*|| (i/NARROWBAND_SUBGRID_SIZE == NARROWBAND_SUBGRID_SIZE - 1 && !(cudaStatusVector[subgridID] & 17)) */)
 			a = cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
 		else
 		{
@@ -247,9 +293,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: u
 					 cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()] );
 		}
 
-		if( j == 0 )
+		if( j == 0 /*|| (j/NARROWBAND_SUBGRID_SIZE == 0 && !(cudaStatusVector[subgridID] & 3)) */)
 			b = cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()];
-		else if( j == Mesh.getDimensions().y() - 1 )
+		else if( j == Mesh.getDimensions().y() - 1  /*|| (j/NARROWBAND_SUBGRID_SIZE == NARROWBAND_SUBGRID_SIZE - 1 && !(cudaStatusVector[subgridID] & 5)) */)
 			b = cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()];
 		else
 		{
@@ -268,6 +314,24 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: u
 	}
 
 }
+
+
+__global__ void initCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
+{
+
+
+	int gx = threadIdx.x + blockDim.x*blockIdx.x;
+	int gy = blockDim.y*blockIdx.y + threadIdx.y;
+
+
+	if(solver->Mesh.getDimensions().x() > gx  && solver->Mesh.getDimensions().y() > gy)
+	{
+		solver->initGrid();
+	}
+
+
+}
+
 
 
 template< typename MeshReal,
@@ -289,93 +353,119 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 
 	int gid = Entity.getIndex();
 
-	cudaDofVector2[gid] = INT_MAX*Sign(cudaDofVector[gid]);
-//
-//	if(abs(cudaDofVector[gid]) < 1.01*h)
-//		cudaDofVector2[gid] = cudaDofVector[gid];
+	cudaDofVector2[gid] = INT_MAX*Sign(cudaDofVector2[gid]);
 
-
-
-
-
-	if(i+1 < Mesh.getDimensions().x() && j+1 < Mesh.getDimensions().y() )
+	if (i >0 && j > 0 && i+1 < Mesh.getDimensions().x() && j+1 < Mesh.getDimensions().y())
 	{
-		if(cudaDofVector[Entity.getIndex()] > 0)
+		if(cudaDofVector2[gid]*cudaDofVector2[gid+1] <= 0 )
 		{
-			if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
-			{
-				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare1111(i,j);
-					else
-						setupSquare1110(i,j);
-				}
-				else
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare1101(i,j);
-					else
-						setupSquare1100(i,j);
-				}
-			}
-			else
-			{
-				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare1011(i,j);
-					else
-						setupSquare1010(i,j);
-				}
-				else
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare1001(i,j);
-					else
-						setupSquare1000(i,j);
-				}
-			}
+			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
+			cudaDofVector2[gid+1] = Sign(cudaDofVector2[gid+1])*0.5*h;
 		}
-		else
+		if( cudaDofVector2[gid]*cudaDofVector2[gid+Mesh.getDimensions().x()] <= 0 )
 		{
-			if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
-			{
-				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare0111(i,j);
-					else
-						setupSquare0110(i,j);
-				}
-				else
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare0101(i,j);
-					else
-						setupSquare0100(i,j);
-				}
-			}
-			else
-			{
-				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare0011(i,j);
-					else
-						setupSquare0010(i,j);
-				}
-				else
-				{
-					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
-						setupSquare0001(i,j);
-					else
-						setupSquare0000(i,j);
-				}
-			}
+			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
+			cudaDofVector2[gid+Mesh.getDimensions().x()] = Sign(cudaDofVector2[gid+Mesh.getDimensions().x()])*0.5*h;
 		}
 
+		if(cudaDofVector2[gid]*cudaDofVector2[gid-1] <= 0 )
+		{
+			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
+			cudaDofVector2[gid-1] = Sign(cudaDofVector2[gid-1])*0.5*h;
+		}
+		if( cudaDofVector2[gid]*cudaDofVector2[gid-Mesh.getDimensions().x()] <= 0 )
+		{
+			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
+			cudaDofVector2[gid-Mesh.getDimensions().x()] = Sign(cudaDofVector2[gid-Mesh.getDimensions().x()])*0.5*h;
+		}
 	}
+
+
+//
+
+
+
+
+
+
+//	if(i+1 < Mesh.getDimensions().x() && j+1 < Mesh.getDimensions().y() )
+//	{
+//		if(cudaDofVector[Entity.getIndex()] > 0)
+//		{
+//			if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
+//			{
+//				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare1111(i,j);
+//					else
+//						setupSquare1110(i,j);
+//				}
+//				else
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare1101(i,j);
+//					else
+//						setupSquare1100(i,j);
+//				}
+//			}
+//			else
+//			{
+//				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare1011(i,j);
+//					else
+//						setupSquare1010(i,j);
+//				}
+//				else
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare1001(i,j);
+//					else
+//						setupSquare1000(i,j);
+//				}
+//			}
+//		}
+//		else
+//		{
+//			if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  0 >()] > 0)
+//			{
+//				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare0111(i,j);
+//					else
+//						setupSquare0110(i,j);
+//				}
+//				else
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare0101(i,j);
+//					else
+//						setupSquare0100(i,j);
+//				}
+//			}
+//			else
+//			{
+//				if(cudaDofVector[neighbourEntities.template getEntityIndex< 0,  1 >()] > 0)
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare0011(i,j);
+//					else
+//						setupSquare0010(i,j);
+//				}
+//				else
+//				{
+//					if(cudaDofVector[neighbourEntities.template getEntityIndex< 1,  1 >()] > 0)
+//						setupSquare0001(i,j);
+//					else
+//						setupSquare0000(i,j);
+//				}
+//			}
+//		}
+//
+//	}
 
 	return true;
 
@@ -506,29 +596,7 @@ __global__ void runCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double
 		}
 	}
 
-
-
-
-
 }
-
-
-__global__ void initCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
-{
-
-
-	int gx = threadIdx.x + blockDim.x*blockIdx.x;
-	int gy = blockDim.y*blockIdx.y + threadIdx.y;
-
-
-	if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy)
-	{
-		solver->initGrid();
-	}
-
-
-}
-
 
 
 
@@ -536,21 +604,36 @@ __global__ void initCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, doubl
 __global__ void initSetupGridCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
 {
 	__shared__ double u0;
-	if(threadIdx.x+threadIdx.y == 0)
+	int gx = threadIdx.x + blockDim.x*blockIdx.x;
+	int gy = blockDim.y*blockIdx.y + threadIdx.y;
+
+	if(solver->Mesh.getDimensions().x() > gx && solver->Mesh.getDimensions().y() > gy)
 	{
-		if(blockIdx.x+blockIdx.y == 0)
-			*(solver->reinitialize) = 0;
 
-		solver->cudaStatusVector[blockIdx.x + gridDim.x*blockIdx.y] = 0;
+//		printf("Hello from  block = %d, thread = %d, x = %d, y = %d\n", blockIdx.x + gridDim.x*blockIdx.y,(blockDim.y*blockIdx.y + threadIdx.y)*solver->Mesh.getDimensions().x() + blockDim.x*blockIdx.x + threadIdx.x, threadIdx.x, threadIdx.y);
+		if(threadIdx.x+threadIdx.y == 0)
+		{
+//			printf("Hello from  block = %d, thread = %d, x = %d, y = %d\n", blockIdx.x + gridDim.x*blockIdx.y,(blockDim.y*blockIdx.y + threadIdx.y)*solver->Mesh.getDimensions().x() + blockDim.x*blockIdx.x + threadIdx.x, threadIdx.x, threadIdx.y);
 
-		u0 = solver->cudaDofVector2[(blockDim.y*blockIdx.y + 0)*blockDim.x*gridDim.x + blockDim.x*blockIdx.x + 0];
+			if(blockIdx.x+blockIdx.y == 0)
+				*(solver->reinitialize) = 0;
+
+			solver->cudaStatusVector[blockIdx.x + gridDim.x*blockIdx.y] = 0;
+
+			u0 = solver->cudaDofVector2[(blockDim.y*blockIdx.y + 0)*solver->Mesh.getDimensions().x() + blockDim.x*blockIdx.x + 0];
+		}
+		__syncthreads();
+
+		double u = solver->cudaDofVector2[(blockDim.y*blockIdx.y + threadIdx.y)*solver->Mesh.getDimensions().x() + blockDim.x*blockIdx.x + threadIdx.x];
+
+		if(u*u0 <=0.0)
+			atomicMax(&(solver->cudaStatusVector[blockIdx.x + gridDim.x*blockIdx.y]),1);
 	}
-	__syncthreads();
+//	if(threadIdx.x+threadIdx.y == 0)
 
-	double u = solver->cudaDofVector2[(blockDim.y*blockIdx.y + threadIdx.y)*blockDim.x*gridDim.x + blockDim.x*blockIdx.x + threadIdx.x];
+//	printf("Bye from  block = %d, thread = %d, x = %d, y = %d\n", blockIdx.x + gridDim.x*blockIdx.y,(blockDim.y*blockIdx.y + threadIdx.y)*solver->Mesh.getDimensions().x() + blockDim.x*blockIdx.x + threadIdx.x, threadIdx.x, threadIdx.y);
 
-	if(u*u0 <=0.0)
-		atomicMax(&(solver->cudaStatusVector[blockIdx.x + gridDim.x*blockIdx.y]),1);
+
 }
 
 
@@ -558,6 +641,7 @@ __global__ void initSetupGridCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 // run this with one thread per block
 __global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver)
 {
+//	printf("Hello\n");
 	if(solver->cudaStatusVector[blockIdx.x + gridDim.x*blockIdx.y] == 1)
 	{
 //			1 - with curve,  	2 - to the north of curve, 	4  - to the south of curve,
@@ -574,6 +658,8 @@ __global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, in
 			if(blockIdx.y < gridDim.y - 1)
 				atomicAdd(&(solver->cudaStatusVector[blockIdx.x + gridDim.x*(blockIdx.y + 1)]), 2);
 	}
+
+
 }
 
 
@@ -582,88 +668,72 @@ __global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, in
 
 __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, double tau)
 {
-	int gid = (blockDim.y*blockIdx.y + threadIdx.y)*blockDim.x*gridDim.x + blockDim.x*blockIdx.x + threadIdx.x;
+	int gid = (blockDim.y*blockIdx.y + threadIdx.y)*solver->Mesh.getDimensions().x()+ threadIdx.x;
 	int i = threadIdx.x + blockIdx.x*blockDim.x;
 	int j = threadIdx.y + blockIdx.y*blockDim.y;
 
-	int blockID = blockIdx.x + blockIdx.y*gridDim.x;
+//	if(i+j == 0)
+//		printf("Hello\n");
 
+	int blockID = blockIdx.x + blockIdx.y*gridDim.x; /*i/NARROWBAND_SUBGRID_SIZE + (j/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE);*/
 
-	if(solver->cudaStatusVector[blockID/*i/NARROWBAND_SUBGRID_SIZE + (j/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE)*/] != 0)
+	int status = solver->cudaStatusVector[blockID];
+
+	if(solver->Mesh.getDimensions().x() > i && solver->Mesh.getDimensions().y() > j)
 	{
-		tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(solver->Mesh);
-		Entity.setCoordinates(tnlStaticVector<2,double>(i,j));
-		Entity.refresh();
-		tnlNeighbourGridEntityGetter<tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
-		double value = solver->cudaDofVector2[Entity.getIndex()];
-		double xf,xb,yf,yb, tmp, fu;
 
-		if( i == 0 )
-			yb = yf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()];
-		else if( i == solver->Mesh.getDimensions().x() - 1 )
-			yb = yf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
-		else
+		if(status != 0)
 		{
-			yb =  solver->cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
-			yf = solver-> cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()];
+			tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(solver->Mesh);
+			Entity.setCoordinates(tnlStaticVector<2,double>(i,j));
+			Entity.refresh();
+			tnlNeighbourGridEntityGetter<tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities(Entity);
+			double value = solver->cudaDofVector2[Entity.getIndex()];
+			double xf,xb,yf,yb, grad, fu, a,b;
+
+			if( i == 0 || (threadIdx.x == 0 && !(status & 9)) )
+				yb = yf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()] - value;
+			else if( i == solver->Mesh.getDimensions().x() - 1 || (threadIdx.x == blockDim.x - 1 && !(status & 17)) )
+				yb = yf = value - solver->cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
+			else
+			{
+				yb =  value - solver->cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
+				yf = solver-> cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()] - value;
+			}
+
+			if( j == 0 || (threadIdx.y == 0 && !(status & 3)) )
+				xb = xf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()] - value;
+			else if( j == solver->Mesh.getDimensions().y() - 1  || (threadIdx.y == blockDim.y - 1 && !(status & 5)) )
+				xb = xf = value - solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0, -1 >()];
+			else
+			{
+				xb =  value - solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0, -1 >()];
+				xf = solver-> cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()] - value;
+			}
+
+
+
+			grad = sqrt(0.5 * (xf*xf + xb*xb    +   yf*yf + yb*yb ) )*solver->Mesh.template getSpaceStepsProducts< -1, 0 >();
+
+			fu = -1.0 * grad;
+
+			if((tau*fu+value)*value <=0 )
+			{
+				//			1 - with curve,  	2 - to the north of curve, 	4  - to the south of curve,
+				//								8 - to the east of curve, 	16 - to the west of curve.
+
+				if((threadIdx.x == 1 && !(status & 9)) && (blockIdx.x > 0) )
+					atomicMax(solver->reinitialize,1);
+				else if((threadIdx.x == blockDim.x - 2 && !(status & 17)) && (blockIdx.x < gridDim.x - 1) )
+					atomicMax(solver->reinitialize,1);
+				else if((threadIdx.y == 1 && !(status & 3)) && (blockIdx.y > 0) )
+					atomicMax(solver->reinitialize,1);
+				else if((threadIdx.y == blockDim.y - 2 && !(status & 5)) && (blockIdx.y < gridDim.y - 1) )
+					atomicMax(solver->reinitialize,1);
+			}
+
+			solver->cudaDofVector2[Entity.getIndex()]  = value+tau*fu;
 		}
-
-		if( j == 0 )
-			xb = xf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()];
-		else if( j == solver->Mesh.getDimensions().y() - 1 )
-			xb = xf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0, -1 >()];
-		else
-		{
-			xb =  solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0, -1 >()];
-			xf = solver-> cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()];
-		}
-
-
-		tmp = sqrt(0.5 * (xf*xf + xb*xb    +   yf*yf + yb*yb ) );
-
-		fu = 1.0 * tmp;
-
-		if((tau*fu+value)*value <=0 )
-		{
-			int status = solver->cudaStatusVector[blockID];
-//			1 - with curve,  	2 - to the north of curve, 	4  - to the south of curve,
-//								8 - to the east of curve, 	16 - to the west of curve.
-
-			if(threadIdx.x == 0 && !(status & 8) && (blockIdx.x > 0) )
-				atomicMax(solver->reinitialize,1);
-			else if(threadIdx.x == blockDim.x-1 && !(status & 16) && (blockIdx.x < gridDim.x - 1) )
-				atomicMax(solver->reinitialize,1);
-			else if(threadIdx.y == 0 && !(status & 2) && (blockIdx.y > 0) )
-				atomicMax(solver->reinitialize,1);
-			else if(threadIdx.y == blockDim.y-1 && !(status & 4) && (blockIdx.y < gridDim.y - 1) )
-				atomicMax(solver->reinitialize,1);
-
-//			if(blockIdx.x < gridDim.x - 1)
-//			{
-//				atomicMax( &cudaStatusVector[(i+2)/NARROWBAND_SUBGRID_SIZE + (j/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE)]  ,1);
-//				if(blockIdx.y < gridDim.y -1)
-//					atomicMax( &cudaStatusVector[(i+2)/NARROWBAND_SUBGRID_SIZE + (j+2/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE)]  ,1);
-//				if(blockIdx.y > 0)
-//					atomicMax( &cudaStatusVector[(i+2)/NARROWBAND_SUBGRID_SIZE + (j-2/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE)]  ,1);
-//
-//			}
-//			if(blockIdx.x > 0)
-//			{
-//				atomicMax( &cudaStatusVector[(i-2)/NARROWBAND_SUBGRID_SIZE + (j/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE)]  ,1);
-//				if(blockIdx.y < gridDim.y -1)
-//					atomicMax( &cudaStatusVector[(i-2)/NARROWBAND_SUBGRID_SIZE + (j+2/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE)]  ,1);
-//				if(blockIdx.y > 0)
-//					atomicMax( &cudaStatusVector[(i-2)/NARROWBAND_SUBGRID_SIZE + (j-2/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE)]  ,1);
-//
-//			}
-//			if(blockIdx.y < gridDim.y -1)
-//				atomicMax( &cudaStatusVector[i/NARROWBAND_SUBGRID_SIZE + ((j+2)/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE)]  ,1);
-//			if(blockIdx.y > 0)
-//				atomicMax( &cudaStatusVector[i/NARROWBAND_SUBGRID_SIZE + ((j-2)/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE)]  ,1);
-		}
-
-
-		solver->cudaDofVector2[Entity.getIndex()]  = value+tau*fu;
 	}
 }
 
