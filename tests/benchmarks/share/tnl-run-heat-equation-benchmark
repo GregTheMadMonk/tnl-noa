@@ -1,7 +1,7 @@
 #!/bin/bash
 
 device="cuda"
-dofSize=128
+dofSize=256
 dimension=2;
 proportions=2
 finalTime=1.0e-2
@@ -54,6 +54,15 @@ tnl-benchmark-heat-equation --device ${device} \
              
 echo "============================================================="              
 tnl-benchmark-simple-heat-equation --device ${device} \
+                                   --domain-x-size 2 \
+                                   --domain-y-size 2 \
+                                   --grid-x-size ${dofSize} \
+                                   --grid-y-size ${dofSize} \
+                                   --sigma ${sigma} \
+                                   --time-step ${timeStep} \
+                                   --final-time ${finalTime}       
+
+tnl-benchmark-simple-heat-equation-bug --device ${device} \
                                    --domain-x-size 2 \
                                    --domain-y-size 2 \
                                    --grid-x-size ${dofSize} \

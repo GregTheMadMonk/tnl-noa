@@ -472,7 +472,7 @@ getExplicitRHS( const RealType& time,
       if( this->cudaKernelType == "templated-compact" )
       {
 #ifdef HAVE_CUDA         
-         typedef typename MeshType::TestCell CellType;
+         typedef typename MeshType::Cell CellType;
          typedef typename CellType::CoordinatesType CoordinatesType;         
          MeshFunctionType u( mesh, uDofs );
          MeshFunctionType fu( mesh, fuDofs );
@@ -534,7 +534,7 @@ getExplicitRHS( const RealType& time,
          MeshFunctionType fu( mesh, fuDofs );
          tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
          //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
-         explicitUpdater.template update< typename Mesh::TestCell >( 
+         explicitUpdater.template update< typename Mesh::Cell >( 
             time,
             mesh,
             this->differentialOperator,

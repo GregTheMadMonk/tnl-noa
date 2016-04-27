@@ -16,20 +16,19 @@
  ***************************************************************************/
 
 #pragma once 
-
-#include "TestNeighbourGridEntitiesStorage.h"
-
-template< typename GridEntity,
-          int NeighbourEntityDimensions,
-          typename StencilStorage >
-class tnlNeighbourGridEntityGetter;
-
-template< typename GridEntityType >
-class tnlBoundaryGridEntityChecker;
-
-template< typename GridEntityType >
-class tnlGridEntityCenterGetter;
-
+ 
+template< typename GridEntity >
+class TestNeighbourGridEntitiesStorage
+{  
+   public:
+      
+      __cuda_callable__
+      TestNeighbourGridEntitiesStorage( const GridEntity& entity )
+      : entity( entity )
+      {}
+      
+      const GridEntity& entity;
+};
 
 template< typename Grid,          
           int EntityDimensions,
@@ -85,76 +84,28 @@ class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Co
       typedef TestGridEntity< GridType, entityDimensions, Config > ThisType;
       typedef TestNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
       
-      template< int NeighbourEntityDimensions = entityDimensions >
-      using NeighbourEntities = 
-         TestNeighbourGridEntityGetter<
-            TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
-                           entityDimensions,
-                           Config >,
-            NeighbourEntityDimensions >;
-
-
       __cuda_callable__ inline
-      TestGridEntity( const GridType& grid );
+      TestGridEntity( const GridType& grid )
+      : grid( grid ),
+        /*entityIndex( -1 ),*/
+        neighbourEntitiesStorage( *this )
+      {
+      }
+      
       
       __cuda_callable__ inline
       TestGridEntity( const GridType& grid,
                      const CoordinatesType& coordinates,
                      const EntityOrientationType& orientation = EntityOrientationType( 0 ),
-                     const EntityBasisType& basis = EntityBasisType( 1 ) );
-      
-      __cuda_callable__ inline
-      const CoordinatesType& getCoordinates() const;      
-      
-      __cuda_callable__ inline
-      CoordinatesType& getCoordinates();  
-      
-      __cuda_callable__ inline
-      void setCoordinates( const CoordinatesType& coordinates );
+                     const EntityBasisType& basis = EntityBasisType( 1 ) )
+      : grid( grid ),
+        /*entityIndex( -1 ),
+        coordinates( coordinates ),*/
+        neighbourEntitiesStorage( *this )
+        {
+        }
 
-      /***
-       * Call this method every time the coordinates are changed
-       * to recompute the mesh entity index. The reason for this strange
-       * mechanism is a performance.
-       */
-      __cuda_callable__ inline
-      //void setIndex( IndexType entityIndex );
-      void refresh();
-
-      __cuda_callable__ inline
-      Index getIndex() const;
-            
-      __cuda_callable__ inline
-      const EntityOrientationType getOrientation() const;
       
-      __cuda_callable__ inline
-      void setOrientation( const EntityOrientationType& orientation ){};
-      
-      __cuda_callable__ inline
-      const EntityBasisType getBasis() const;
-      
-      __cuda_callable__ inline
-      void setBasis( const EntityBasisType& basis ){};
-      
-      template< int NeighbourEntityDimensions = Dimensions >
-      __cuda_callable__ inline
-      const NeighbourEntities< NeighbourEntityDimensions >&
-      getNeighbourEntities() const;
-      
-      __cuda_callable__ inline
-      bool isBoundaryEntity() const;
-      
-      __cuda_callable__ inline
-      VertexType getCenter() const;
-      
-      __cuda_callable__ inline
-      const RealType& getMeasure() const;      
-      
-      __cuda_callable__ inline
-      const VertexType& getEntityProportions() const;      
-      
-      __cuda_callable__ inline
-      const GridType& getMesh() const;
 
    protected:
       
@@ -170,15 +121,9 @@ class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Co
       
       NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
       
-      //__cuda_callable__ inline
-      //TestGridEntity();
-      
-      friend class tnlBoundaryGridEntityChecker< ThisType >;
-      
-      friend class tnlGridEntityCenterGetter< ThisType >;
 };
 
 
-#include "TestGridEntity_impl.h"
+
 
 
