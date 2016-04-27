@@ -713,7 +713,47 @@ __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 
 
 
-			grad = sqrt(0.5 * (xf*xf + xb*xb    +   yf*yf + yb*yb ) )*solver->Mesh.template getSpaceStepsProducts< -1, 0 >();
+
+
+			   if(Sign(value) >= 0.0)
+			   {
+				   xf = solver->negativePart(xf);
+
+				   xb = solver->positivePart(xb);
+
+				   yf = solver->negativePart(yf);
+
+				   yb = solver->positivePart(yb);
+
+			   }
+			   else
+			   {
+
+				   xb = solver->negativePart(xb);
+
+				   xf = solver->positivePart(xf);
+
+				   yb = solver->negativePart(yb);
+
+				   yf = solver->positivePart(yf);
+			   }
+
+
+			 /*  if(xb > xf)
+				   a = xb;
+			   else
+				   a = xf;
+
+			   if(yb > yf)
+				   b = yb;
+			   else
+				   b = yf;*/
+
+
+
+			   grad = sqrt(/*0.5 **/ (xf*xf + xb*xb    +   yf*yf + yb*yb ) )*solver->Mesh.template getSpaceStepsProducts< -1, 0 >();
+
+//			   grad = sqrt(/*0.5 **/ (a*a    +   b*b ) )*solver->Mesh.template getSpaceStepsProducts< -1, 0 >();
 
 			fu = -1.0 * grad;
 
