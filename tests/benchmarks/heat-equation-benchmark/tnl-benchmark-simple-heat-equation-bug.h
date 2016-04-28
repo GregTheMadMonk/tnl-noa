@@ -199,13 +199,15 @@ template< typename Real, typename Index >
 __global__ void updateKernel( Real* u,
                               Real* aux,
                               Real* cudaBlockResidue,
-                              const Index dofs )
+                              const Index dofs,
+                              tnlGrid< 2, Real, tnlCuda, Index >* grid )
 {
-   typedef tnlGrid< 2, Real, tnlCuda, Index >  GridType;
-   
-   GridType grid;
-   
-   typename GridType::TestCell entity( grid ); // coordinates, entityOrientation, entityBasis );
+   typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
+   typedef typename GridType::TestCell EntityType;
+   typename GridType::CoordinatesType coordinates;
+   typename EntityType::EntityOrientationType entityOrientation;
+   typename EntityType::EntityBasisType entityBasis;
+   typename GridType::TestCell entity( *grid, coordinates, entityOrientation, entityBasis );
 
    
    const Index blockOffset = blockIdx.x * blockDim.x;
@@ -344,6 +346,17 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
    timer.start();
    Real time( 0.0 );   
    Index iteration( 0 );
+      
+      
+   typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
+   typedef typename GridType::VertexType VertexType;
+   GridType grid;
+   grid.setDimensions( gridXSize, gridYSize );
+   grid.setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   GridType* cuda_grid;
+   cudaMalloc( ( void** ) &cuda_grid, sizeof( GridType ) );
+   cudaMemcpy( cuda_grid, &grid, sizeof( GridType ), cudaMemcpyHostToDevice ); 
+
    while( time < finalTime )
    {
       computationTimer.start();
@@ -363,7 +376,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
        * Update
        */            
       //cout << "Update ... " << endl;
-      updateKernel<<< cudaUpdateBlocks, cudaUpdateBlockSize >>>( cuda_u, cuda_aux, cuda_max_du, dofsCount );
+      updateKernel<<< cudaUpdateBlocks, cudaUpdateBlockSize >>>( cuda_u, cuda_aux, cuda_max_du, dofsCount, cuda_grid );
       if( cudaGetLastError() != cudaSuccess )
       {
          cerr << "Update failed." << endl;
@@ -397,15 +410,16 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
    timer.stop();
    cudaMemcpy( u, cuda_u, dofsCount * sizeof( Real ), cudaMemcpyDeviceToHost );
    writeFunction( "final", u, gridXSize, gridYSize, hx, hy, domainXSize / 2.0, domainYSize / 2.0 );
+   cudaFree( cuda_grid );
 
    /****
     * Saving the result
     */
-   typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
-   typedef typename GridType::VertexType VertexType;
-   GridType grid;
-   grid.setDimensions( gridXSize, gridYSize );
-   grid.setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   //typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
+   //typedef typename GridType::VertexType VertexType;
+   //GridType grid;
+   //grid.setDimensions( gridXSize, gridYSize );
+   //grid.setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
    tnlVector< Real, tnlCuda, Index > vecU;
    vecU.bind( cuda_u, gridXSize * gridYSize );
    tnlMeshFunction< GridType > meshFunction;
