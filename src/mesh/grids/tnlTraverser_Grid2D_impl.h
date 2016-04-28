@@ -177,7 +177,7 @@ template< typename Real,
 void
 tnlTraverser< tnlGrid< 2, Real, Device, Index >, GridEntity, 1 >::
 processAllEntities( const GridType& grid,
-                         UserData& userData ) const
+                    UserData& userData ) const
 {
    /****
     * All faces

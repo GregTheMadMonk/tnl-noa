@@ -31,8 +31,7 @@ class TestNeighbourGridEntitiesStorage
 };
 
 template< typename Grid,          
-          int EntityDimensions,
-          typename Config >
+          int EntityDimensions >
 class TestGridEntity
 {
 };
@@ -42,9 +41,8 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index,          
-          int EntityDimensions,
-          typename Config >
-class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >
+          int EntityDimensions >
+class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >
 {
    public:
       static const int entityDimensions = EntityDimensions;
@@ -56,9 +54,8 @@ class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensio
 template< int Dimensions,
           typename Real,
           typename Device,
-          typename Index,
-          typename Config >
-class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >
+          typename Index >
+class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
 {
    public:
       
@@ -68,7 +65,7 @@ class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Co
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::VertexType VertexType;
-      typedef Config ConfigType;
+      //typedef Config ConfigType;
       
       static const int meshDimensions = GridType::meshDimensions;
       
@@ -81,7 +78,7 @@ class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Co
       
       typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
       typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
-      typedef TestGridEntity< GridType, entityDimensions, Config > ThisType;
+      typedef TestGridEntity< GridType, entityDimensions > ThisType;
       typedef TestNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
       
       __cuda_callable__ inline
