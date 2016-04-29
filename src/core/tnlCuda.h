@@ -42,7 +42,7 @@ class tnlCuda
 
    static tnlString getDeviceType();
 
-   __cuda_callable__ static inline tnlDeviceEnum getDevice();
+   __cuda_callable__ static inline tnlDeviceEnum getDevice();      
 
    __cuda_callable__ static inline int getMaxGridSize();
 
@@ -51,6 +51,8 @@ class tnlCuda
    __cuda_callable__ static inline int getWarpSize();
 
 #ifdef HAVE_CUDA
+   static int getDeviceId();
+   
    template< typename Index >
    __device__ static Index getGlobalThreadIdx( const Index gridIdx = 0 );
 #endif

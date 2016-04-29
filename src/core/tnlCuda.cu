@@ -41,6 +41,15 @@ bool tnlCuda::setup( const tnlParameterContainer& parameters,
 }
 */
 
+int tnlCuda::getDeviceId()
+{
+   int id( 0 );
+#ifdef HAVE_CUDA
+   cudaGetDevice( &id );
+#endif
+   return id;
+}
+
 bool tnlCuda::checkDevice( const char* file_name, int line )
 {
    cudaError error = cudaGetLastError();
