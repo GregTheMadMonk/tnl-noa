@@ -12,10 +12,10 @@
 
 template< typename Real,
           typename Index,
-          unsigned size,
+          unsigned Size,
           Index LogX,
           Index LogY >
-tnlRootNode< Real, Index, size, LogX, LogY >::tnlRootNode( tnlArea2D< Real >* area,
+tnlRootNode< Real, Index, Size, LogX, LogY >::tnlRootNode( tnlArea2D< Real >* area,
                                                            tnlCircle2D< Real >* circle,
                                                            unsigned nodesX,
                                                            unsigned nodesY,
@@ -24,16 +24,16 @@ tnlRootNode< Real, Index, size, LogX, LogY >::tnlRootNode( tnlArea2D< Real >* ar
 {
     this->nodesX = nodesX;
     this->nodesY = nodesY;
-    this->bitmaskArray = new tnlBitmaskArray< size >();
+    this->bitmaskArray = new tnlBitmaskArray< Size >();
     this->depth = depth;
 }
 
 template< typename Real,
           typename Index,
-          unsigned size, 
+          unsigned Size, 
           Index LogX,
           Index LogY >
-void tnlRootNode< Real, Index, size, LogX, LogY >::setNode()
+void tnlRootNode< Real, Index, Size, LogX, LogY >::setNode()
 {
     Real stepX = ( this->area->getEndX() - this->area->getStartX() ) / this->nodesX;
     Real stepY = ( this->area->getEndY() - this->area->getStartY() ) / this->nodesY;
@@ -56,10 +56,10 @@ void tnlRootNode< Real, Index, size, LogX, LogY >::setNode()
 
 template< typename Real,
           typename Index,
-          unsigned size,
+          unsigned Size,
           Index LogX,
           Index LogY >
-void tnlRootNode< Real, Index, size, LogX, LogY >::createTree()
+void tnlRootNode< Real, Index, Size, LogX, LogY >::createTree()
 {
     this->setNode(); // first we need to create root node
     for( Index i = 0; i < this->nodesY; i++ )
@@ -95,10 +95,10 @@ void tnlRootNode< Real, Index, size, LogX, LogY >::createTree()
 
 template< typename Real,
           typename Index,
-          unsigned size,
+          unsigned Size,
           Index LogX,
           Index LogY >
-void tnlRootNode< Real, Index, size, LogX, LogY >::write()
+void tnlRootNode< Real, Index, Size, LogX, LogY >::write()
 {
     for( Index i = 0; i < this->depth; i++ )
     {
@@ -120,7 +120,7 @@ void tnlRootNode< Real, Index, size, LogX, LogY >::write()
           << ", LogX=" << setw( 10 ) << LogX
           << ", LogY=" << setw( 10 ) << LogY 
           << std::endl << std::endl;
-        for( Index j = 0; j < size; j++ )
+        for( Index j = 0; j < Size; j++ )
         {
             if( this->level == i )
             {
@@ -140,13 +140,13 @@ void tnlRootNode< Real, Index, size, LogX, LogY >::write()
 
 template< typename Real,
           typename Index,
-          unsigned size,
+          unsigned Size,
           Index LogX,
           Index LogY >
-tnlRootNode< Real, Index, size, LogX, LogY >::~tnlRootNode()
+tnlRootNode< Real, Index, Size, LogX, LogY >::~tnlRootNode()
 {
     delete this->bitmaskArray;
-    for( Index i = 0; i < size; i++ ) 
+    for( Index i = 0; i < Size; i++ ) 
         delete this->children[ i ];
     delete [] this->children;
 }

@@ -39,8 +39,8 @@ void tnlNode< Real, Index, LogX, LogY >::setNode( Index splitX,
                                                   tnlBitmaskArray< LogX * LogY >* bitmaskArray )
 {
 
-    Index depthX = splitX * tnlVDBMath::power( LogX, this->level - 1 );
-    Index depthY = splitY * tnlVDBMath::power( LogY, this->level - 1 );
+    Index depthX = splitX * tnlVDBMath< Index >::power( LogX, this->level - 1 );
+    Index depthY = splitY * tnlVDBMath< Index >::power( LogY, this->level - 1 );
     Real stepX = ( Real ) this->area->getLengthX() / depthX;
     Real stepY = ( Real ) this->area->getLengthY() / depthY;
     Real startX = this->X * stepX;

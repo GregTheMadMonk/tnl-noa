@@ -5,35 +5,35 @@
 #include "tnlBitmask.h"
 #include "tnlBitmaskArray.h"
 
-template< unsigned size >
-tnlBitmaskArray< size >::tnlBitmaskArray()
+template< unsigned Size >
+tnlBitmaskArray< Size >::tnlBitmaskArray()
 {
-    this->length = size;
+    this->length = Size;
 }
 
-template< unsigned size >
-unsigned tnlBitmaskArray< size >::getSize()
+template< unsigned Size >
+unsigned tnlBitmaskArray< Size >::getSize()
 {
     return this->length;
 }
 
-template< unsigned size >
-void tnlBitmaskArray< size >::setIthBitmask( unsigned i,
+template< unsigned Size >
+void tnlBitmaskArray< Size >::setIthBitmask( unsigned i,
                                              tnlBitmask bitmask )
 {
-    assert( i < size );
+    assert( i < Size );
     this->bitmaskArray[ i ] = new tnlBitmask( bitmask );
 }
 
-template< unsigned size >
-tnlBitmask* tnlBitmaskArray< size >::getIthBitmask( unsigned i )
+template< unsigned Size >
+tnlBitmask* tnlBitmaskArray< Size >::getIthBitmask( unsigned i )
 {
-    assert( i < size );
+    assert( i < Size );
     return this->bitmaskArray[ i ];
 }
 
-template< unsigned size >
-tnlBitmaskArray< size >::~tnlBitmaskArray()
+template< unsigned Size >
+tnlBitmaskArray< Size >::~tnlBitmaskArray()
 {
     for( int i = 0; i < this->length; i++ )
         delete this->bitmaskArray[ i ];

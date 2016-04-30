@@ -1,14 +1,15 @@
 #ifndef _TNLVDBMATH_H_INCLUDED_
 #define _TNLVDBMATH_H_INCLUDED_
 
+template< typename Index >
 class tnlVDBMath
 {
 public:
-    static int power( int number,
-                      int exponent )
+    static Index power( Index number,
+                        Index exponent )
     {
-        int result = 1;
-        for( int i = 0; i < exponent; i++ )
+        Index result = 1;
+        for( Index i = 0; i < exponent; i++ )
             result *= number;
         return result;
     }

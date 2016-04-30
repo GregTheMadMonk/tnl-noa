@@ -3,7 +3,7 @@
 
 #include "tnlBitmask.h"
 
-template< unsigned size >
+template< unsigned Size >
 class tnlBitmaskArray
 {
 public:
@@ -19,7 +19,7 @@ public:
     ~tnlBitmaskArray();
 
 private:
-    tnlBitmask* bitmaskArray[ size ];
+    tnlBitmask* bitmaskArray[ Size ];
     unsigned length;
 };
 

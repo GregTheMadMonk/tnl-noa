@@ -5,7 +5,7 @@
 
 template< typename Real,
           typename Index,
-          unsigned size,
+          unsigned Size,
           Index LogX,
           Index LogY = LogX >
 class tnlRootNode : public tnlNode< Real, Index, LogX, LogY >
@@ -28,8 +28,8 @@ public:
 private:
     unsigned nodesX;
     unsigned nodesY;
-    tnlBitmaskArray< size >* bitmaskArray;
-    tnlNode< Real, Index, LogX, LogY >* children[ size ];
+    tnlBitmaskArray< Size >* bitmaskArray;
+    tnlNode< Real, Index, LogX, LogY >* children[ Size ];
     unsigned depth;
 };
 
