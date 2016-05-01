@@ -8,37 +8,35 @@
  ***************************************************************************/
 
 /***************************************************************************
-                          tnlDeviceObjectsContainer.h  -  description
+                          tnlDeviceObjectsContainer.cpp  -  description
                              -------------------
     begin                : Apr 29, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-#pragma once
+#include <core/tnlDeviceObjectsContainer.h>
 
-#include <vector>
-#include <list>
-#include <core/tnlDeviceObjectBase.h>
-#include <core/tnlAssert.h>
+tnlDeviceObjectsContainer::tnlDeviceObjectsContainer( int devicesCount )
+{
+   tnlAssert( devicesCount > 0, std::cerr << "devicesCount = " << devicesCount );
+   objectsOnDevices.resize( devicesCount );
+   this->devicesCount = devicesCount;
+}
 
-class tnlDeviceObjectsContainer
-{   
-  
-   public:
-   
-      tnlDeviceObjectsContainer( int devicesCount = 1 );
-      
-      void push( tnlDeviceObjectBase* object, int deviceId );
-      
-      bool synchronize();
-      
-   protected:
-      
-      typedef std::list< tnlDeviceObjectBase* > ListType;   
-      
-      std::vector< ListType > objectsOnDevices;
-      
-      int devicesCount;
-};
+void tnlDeviceObjectsContainer::push( tnlDeviceObjectBase* object, int deviceId )
+{
+   tnlAssert( deviceId >= 0 && deviceId < this->devicesCount,
+              std::cerr << "deviceId = " << deviceId << " devicesCount = " << this->devicesCount );
+   objectsOnDevices[ deviceId ].push_back( object );
+}
 
+bool tnlDeviceObjectsContainer::synchronize()
+{
+   for( int i = 0; i < this->objectsOnDevices.size(); i++ )
+      for( ListType::iterator it = objectsOnDevices[ i ].begin();
+           it != objectsOnDevices[ i ].end();
+           it++ )
+         ( *it )->synchronize();            
+
+}

@@ -23,6 +23,7 @@
 #include <core/tnlDevice.h>
 #include <core/tnlString.h>
 #include <core/tnlAssert.h>
+#include <core/tnlDeviceObjectsContainer.h>
 
 class tnlConfigDescription;
 class tnlParameterContainer;
@@ -100,6 +101,10 @@ class tnlCuda
       
    static bool setup( const tnlParameterContainer& parameters,
                       const tnlString& prefix = "" );
+   
+   static bool synchronizeObjects();
+   
+   static tnlDeviceObjectsContainer objectsContainer;
 
 
 };

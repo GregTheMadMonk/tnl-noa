@@ -82,50 +82,76 @@ class tnlDeviceObject< Object, tnlCuda > : public tnlDeviceObjectBase
 {   
    public:
       
-      tnlDeviceObject( Object& object )
+      tnlDeviceObject()
+      : modified( false ), device_pointer( 0 )
       {
-         this->host_pointer = &object;
-#ifdef HAVE_CUDA
-         cudaMalloc( ( void** ) &this->device_pointer, sizeof( Object ) );
-         deviceId = tnlCuda::getDeviceId();
-         tnlCuda::getDeviceObjectsContainer().enregister( this );
+#ifdef HAVE_CUDA         
+         tnlCuda::getDeviceObjectsContainer().push( this );
+#endif         
+      }
+      
+      tnlDeviceObject( Object& object )
+      : modified( true ), device_pointer( 0 )
+      {
+#ifdef HAVE_CUDA         
+         tnlCuda::getDeviceObjectsContainer().push( this );         
 #endif         
       }
 
-      
-      Object* operator->()
+      bool setObject( Object& object )
       {
-         return host_pointer;
+#ifdef HAVE_CUDA
+         this->host_pointer = &object;
+         if( this->device_pointer )
+            cudaFree( this->device_pointer );
+         cudaMalloc( ( void** ) &this->device_pointer, sizeof( Object ) );
+         if( ! checkCudaDevice )
+            return false;
+         deviceId = tnlCuda::getDeviceId();         
+         this->modified = true;
+         return true;
+#else
+         return false
+#endif                  
       }
       
-      const Object* operator->() const
+      template< typename Device >
+      const Object& object() const
       {
-         return host_pointer;
-      }
-      
-      const Object& get() const
-      {
-         return *host_pointer;
-      }
-      
-      Object& modify()
-      {
-         return *host_pointer;
-      }
-      
-      Object* getDevicePointer()
-      {
-         return device_pointer;
-      }
-      
-      const Object* getDevicePointer() const
-      {
-         return device_pointer;
-      }
+         tnlAssert( std::is_same< Device, tnlHost >::value ||
+                    std::is_same< Device, tnlCuda >::value, );
 
+         if( std::is_same< Device, tnlHost >::value )
+            return *this->pointer;
+         return *this->device_pointer;
+      }            
+      
+      Object& change()
+      {
+         this->modified = true;
+         return *this->pointer;
+      }            
+            
       bool synchronize()
       {
-         
+#ifdef HAVE_CUDA
+         if( this->modified )
+         {
+            cudaMemcpy( device_pointer, host_pointer, sizeof( Object ), cudaMemcpyHostToDevice );
+            return checkCudaDevice;
+         }
+#else
+         return false;
+#endif                  
+      }
+      
+      ~tnlDeviceObject()
+      {
+#ifdef HAVE_CUDA
+         tnlCuda::getDeviceObjectsContainer().pull( this );
+         if( this->device_pointer )
+            cudaFree( this->device_pointer );
+#endif         
       }
       
    protected:
@@ -133,5 +159,7 @@ class tnlDeviceObject< Object, tnlCuda > : public tnlDeviceObjectBase
       Object *host_pointer, *device_pointer;
       
       int deviceId;
+      
+      bool modified;
 };
 

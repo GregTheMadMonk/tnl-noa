@@ -12,6 +12,9 @@ set (headers tnlAssert.h
              tnlCudaDeviceInfo.h
              tnlDataElement.h
              tnlDevice.h
+             tnlDeviceObject.h
+             tnlDeviceObjectBase.h
+             tnlDeviceObjectsContainer.h
              tnlDynamicTypeTag.h
              tnlFeature.h
              tnlFile.h 
@@ -42,6 +45,7 @@ set (headers tnlAssert.h
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/core )
 set( common_SOURCES
      ${CURRENT_DIR}/tnlTimerRT.cpp
+     ${CURRENT_DIR}/tnlDeviceObjectsContainer.cpp
      ${CURRENT_DIR}/tnlFile.cpp
      ${CURRENT_DIR}/tnlFlopsCounter.cpp 
      ${CURRENT_DIR}/tnlLogger.cpp 
