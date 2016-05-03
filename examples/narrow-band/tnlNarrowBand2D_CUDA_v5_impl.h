@@ -16,7 +16,7 @@
 #ifndef TNLNARROWBAND2D_IMPL_H_
 #define TNLNARROWBAND2D_IMPL_H_
 
-#define NARROWBAND_SUBGRID_SIZE 16
+#define NARROWBAND_SUBGRID_SIZE 32
 
 #include "tnlNarrowBand.h"
 
