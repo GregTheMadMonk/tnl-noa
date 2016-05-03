@@ -274,7 +274,7 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: u
 	//			1 - with curve,  	2 - to the north of curve, 	4  - to the south of curve,
 	//								8 - to the east of curve, 	16 - to the west of curve.
 	int subgridID = i/NARROWBAND_SUBGRID_SIZE + (j/NARROWBAND_SUBGRID_SIZE) * statusGridSize;
-	if(/*cudaStatusVector[subgridID] != 0 &&*/ i<Mesh.getDimensions().x() && j < Mesh.getDimensions().y())
+	if(cudaStatusVector[subgridID] != 0 && i<Mesh.getDimensions().x() && j < Mesh.getDimensions().y())
 	{
 		tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 		Entity.setCoordinates(CoordinatesType(i,j));
