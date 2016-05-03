@@ -31,7 +31,7 @@
 template< typename SchemeHost, typename SchemeDevice, typename Device>
 tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::tnlParallelMapSolver()
 {
-	this->device = tnlCudaDevice;  /////////////// tnlCuda Device --- vypocet na GPU, tnlHostDevice   ---    vypocet na CPU
+	this->device = tnlHostDevice;  /////////////// tnlCuda Device --- vypocet na GPU, tnlHostDevice   ---    vypocet na CPU
 
 #ifdef HAVE_CUDA
 	if(this->device == tnlCudaDevice)
