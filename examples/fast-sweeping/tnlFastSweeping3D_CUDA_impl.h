@@ -132,7 +132,7 @@ bool tnlFastSweeping< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > ::
 {
 
 	int n = Mesh.getDimensions().x();
-	dim3 threadsPerBlock(1, 512);
+	dim3 threadsPerBlock(1, 1024);
 	dim3 numBlocks(8,1);
 
 
