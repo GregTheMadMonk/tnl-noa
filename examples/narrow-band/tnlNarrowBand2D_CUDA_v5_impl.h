@@ -273,8 +273,8 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: u
 {
 	//			1 - with curve,  	2 - to the north of curve, 	4  - to the south of curve,
 	//								8 - to the east of curve, 	16 - to the west of curve.
-	int subgridID = i/NARROWBAND_SUBGRID_SIZE + (j/NARROWBAND_SUBGRID_SIZE) * statusGridSize;
-	if(/*cudaStatusVector[subgridID] != 0 &&*/ i<Mesh.getDimensions().x() && j < Mesh.getDimensions().y())
+	int subgridID = i/NARROWBAND_SUBGRID_SIZE + (j/NARROWBAND_SUBGRID_SIZE) * ((Mesh.getDimensions().x() + NARROWBAND_SUBGRID_SIZE-1 ) / NARROWBAND_SUBGRID_SIZE);
+	if(/*cudaStatusVector[subgridID] != 0 &&*/ i<Mesh.getDimensions().x() && Mesh.getDimensions().y())
 	{
 		tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(Mesh);
 		Entity.setCoordinates(CoordinatesType(i,j));
@@ -283,9 +283,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: u
 		Real value = cudaDofVector2[Entity.getIndex()];
 		Real a,b, tmp;
 
-		if( i == 0 /*|| (i/NARROWBAND_SUBGRID_SIZE == 0 && !(cudaStatusVector[subgridID] & 9))*/ )
+		if( i == 0 /*|| (i/NARROWBAND_SUBGRID_SIZE == 0 && !(cudaStatusVector[subgridID] & 9)) */)
 			a = cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()];
-		else if( i == Mesh.getDimensions().x() - 1 /*|| (i/NARROWBAND_SUBGRID_SIZE == NARROWBAND_SUBGRID_SIZE - 1 && !(cudaStatusVector[subgridID] & 17))*/ )
+		else if( i == Mesh.getDimensions().x() - 1 /*|| (i/NARROWBAND_SUBGRID_SIZE == NARROWBAND_SUBGRID_SIZE - 1 && !(cudaStatusVector[subgridID] & 17)) */)
 			a = cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
 		else
 		{
@@ -293,9 +293,9 @@ void tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: u
 					 cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()] );
 		}
 
-		if( j == 0 /*|| (j/NARROWBAND_SUBGRID_SIZE == 0 && !(cudaStatusVector[subgridID] & 3))*/ )
+		if( j == 0/* || (j/NARROWBAND_SUBGRID_SIZE == 0 && !(cudaStatusVector[subgridID] & 3)) */)
 			b = cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()];
-		else if( j == Mesh.getDimensions().y() - 1 /* || (j/NARROWBAND_SUBGRID_SIZE == NARROWBAND_SUBGRID_SIZE - 1 && !(cudaStatusVector[subgridID] & 5)) */)
+		else if( j == Mesh.getDimensions().y() - 1 /* || (j/NARROWBAND_SUBGRID_SIZE == NARROWBAND_SUBGRID_SIZE - 1 && !(cudaStatusVector[subgridID] & 5))*/ )
 			b = cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()];
 		else
 		{
@@ -353,33 +353,32 @@ bool tnlNarrowBand< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: i
 
 	int gid = Entity.getIndex();
 
-	if(abs(cudaDofVector2[gid]) > 1.5*h)
-		cudaDofVector2[gid] = INT_MAX*Sign(cudaDofVector2[gid]);
+	cudaDofVector2[gid] = INT_MAX*Sign(cudaDofVector2[gid]);
 
-//	if (i >0 && j > 0 && i+1 < Mesh.getDimensions().x() && j+1 < Mesh.getDimensions().y())
-//	{
-//		if(cudaDofVector2[gid]*cudaDofVector2[gid+1] <= 0 )
-//		{
-//			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
-//			cudaDofVector2[gid+1] = Sign(cudaDofVector2[gid+1])*0.5*h;
-//		}
-//		if( cudaDofVector2[gid]*cudaDofVector2[gid+Mesh.getDimensions().x()] <= 0 )
-//		{
-//			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
-//			cudaDofVector2[gid+Mesh.getDimensions().x()] = Sign(cudaDofVector2[gid+Mesh.getDimensions().x()])*0.5*h;
-//		}
-//
-//		if(cudaDofVector2[gid]*cudaDofVector2[gid-1] <= 0 )
-//		{
-//			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
-//			cudaDofVector2[gid-1] = Sign(cudaDofVector2[gid-1])*0.5*h;
-//		}
-//		if( cudaDofVector2[gid]*cudaDofVector2[gid-Mesh.getDimensions().x()] <= 0 )
-//		{
-//			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
-//			cudaDofVector2[gid-Mesh.getDimensions().x()] = Sign(cudaDofVector2[gid-Mesh.getDimensions().x()])*0.5*h;
-//		}
-//	}
+	if (i >0 && j > 0 && i+1 < Mesh.getDimensions().x() && j+1 < Mesh.getDimensions().y())
+	{
+		if(cudaDofVector2[gid]*cudaDofVector2[gid+1] <= 0 )
+		{
+			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
+			cudaDofVector2[gid+1] = Sign(cudaDofVector2[gid+1])*0.5*h;
+		}
+		if( cudaDofVector2[gid]*cudaDofVector2[gid+Mesh.getDimensions().x()] <= 0 )
+		{
+			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
+			cudaDofVector2[gid+Mesh.getDimensions().x()] = Sign(cudaDofVector2[gid+Mesh.getDimensions().x()])*0.5*h;
+		}
+
+		if(cudaDofVector2[gid]*cudaDofVector2[gid-1] <= 0 )
+		{
+			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
+			cudaDofVector2[gid-1] = Sign(cudaDofVector2[gid-1])*0.5*h;
+		}
+		if( cudaDofVector2[gid]*cudaDofVector2[gid-Mesh.getDimensions().x()] <= 0 )
+		{
+			cudaDofVector2[gid] = Sign(cudaDofVector2[gid])*0.5*h;
+			cudaDofVector2[gid-Mesh.getDimensions().x()] = Sign(cudaDofVector2[gid-Mesh.getDimensions().x()])*0.5*h;
+		}
+	}
 
 
 //
@@ -648,9 +647,7 @@ __global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, in
 //			1 - with curve,  	2 - to the north of curve, 	4  - to the south of curve,
 //								8 - to the east of curve, 	16 - to the west of curve.
 			if(blockIdx.x > 0)
-			{
 				atomicAdd(&(solver->cudaStatusVector[blockIdx.x - 1 + gridDim.x*blockIdx.y]), 16);
-			}
 
 			if(blockIdx.x < gridDim.x - 1)
 				atomicAdd(&(solver->cudaStatusVector[blockIdx.x + 1 + gridDim.x*blockIdx.y]), 8);
@@ -685,7 +682,7 @@ __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 	if(solver->Mesh.getDimensions().x() > i && solver->Mesh.getDimensions().y() > j)
 	{
 
-		if(status != 0)
+//		if(status != 0)
 		{
 			tnlGridEntity< tnlGrid< 2,double, tnlHost, int >, 2, tnlGridEntityNoStencilStorage > Entity(solver->Mesh);
 			Entity.setCoordinates(tnlStaticVector<2,double>(i,j));
@@ -695,12 +692,12 @@ __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 			double xf,xb,yf,yb, grad, fu, a,b;
 			a = b = 0.0;
 
-			if( i == 0 || (threadIdx.x == 0 && !(status & 9)) )
+			if( i == 0 /*|| (threadIdx.x == 0 && !(status & 9)) */)
 			{
 				xb = value - solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()];
 				xf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()] - value;
 			}
-			else if( i == solver->Mesh.getDimensions().x() - 1 || (threadIdx.x == blockDim.x - 1 && !(status & 17)) )
+			else if( i == solver->Mesh.getDimensions().x() - 1 /*|| (threadIdx.x == blockDim.x - 1 && !(status & 17)) */)
 			{
 				xb = value - solver->cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()];
 				xf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< -1,  0 >()] - value;
@@ -711,12 +708,12 @@ __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 				xf = solver-> cudaDofVector2[neighbourEntities.template getEntityIndex< 1,  0 >()] - value;
 			}
 
-			if( j == 0 || (threadIdx.y == 0 && !(status & 3)) )
+			if( j == 0/* || (threadIdx.y == 0 && !(status & 3))*/ )
 			{
 				yb = value - solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()] ;
 				yf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  1 >()] - value;
 			}
-			else if( j == solver->Mesh.getDimensions().y() - 1  || (threadIdx.y == blockDim.y - 1 && !(status & 5)) )
+			else if( j == solver->Mesh.getDimensions().y() - 1  /*|| (threadIdx.y == blockDim.y - 1 && !(status & 5)) */)
 			{
 				yb = value - solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()];
 				yf = solver->cudaDofVector2[neighbourEntities.template getEntityIndex< 0,  -1 >()] - value;
@@ -732,7 +729,7 @@ __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 
 
 
-			   if(Sign(value) >= 0.0)
+			   if(Sign(value) > 0.0)
 			   {
 				   xf = solver->negativePart(xf);
 
@@ -774,20 +771,20 @@ __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 
 			fu = -1.0 * grad;
 
-			if((tau*fu+value)*value <=0 )
-			{
-				//			1 - with curve,  	2 - to the north of curve, 	4  - to the south of curve,
-				//								8 - to the east of curve, 	16 - to the west of curve.
-
-				if((threadIdx.x == 6 && !(status & 9)) && (blockIdx.x > 0) )
-					atomicMax(solver->reinitialize,1);
-				else if((threadIdx.x == blockDim.x - 7 && !(status & 17)) && (blockIdx.x < gridDim.x - 1) )
-					atomicMax(solver->reinitialize,1);
-				else if((threadIdx.y == 6 && !(status & 3)) && (blockIdx.y > 0) )
-					atomicMax(solver->reinitialize,1);
-				else if((threadIdx.y == blockDim.y - 7 && !(status & 5)) && (blockIdx.y < gridDim.y - 1) )
-					atomicMax(solver->reinitialize,1);
-			}
+//			if((tau*fu+value)*value <=0 )
+//			{
+//				//			1 - with curve,  	2 - to the north of curve, 	4  - to the south of curve,
+//				//								8 - to the east of curve, 	16 - to the west of curve.
+//
+//				if((threadIdx.x == 1 && !(status & 9)) && (blockIdx.x > 0) )
+//					atomicMax(solver->reinitialize,1);
+//				else if((threadIdx.x == blockDim.x - 2 && !(status & 17)) && (blockIdx.x < gridDim.x - 1) )
+//					atomicMax(solver->reinitialize,1);
+//				else if((threadIdx.y == 1 && !(status & 3)) && (blockIdx.y > 0) )
+//					atomicMax(solver->reinitialize,1);
+//				else if((threadIdx.y == blockDim.y - 2 && !(status & 5)) && (blockIdx.y < gridDim.y - 1) )
+//					atomicMax(solver->reinitialize,1);
+//			}
 
 			solver->cudaDofVector2[Entity.getIndex()]  += tau*fu;
 		}

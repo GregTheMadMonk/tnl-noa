@@ -190,6 +190,7 @@ __global__ void initCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, doubl
 
 __global__ void initSetupGridCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
 __global__ void initSetupGrid2CUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
+__global__ void initSetupGrid1_2CUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver);
 __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int >, double, int >* solver, double tau);
 //__global__ void initCUDA(tnlNarrowBand< tnlGrid< 3,double, tnlHost, int >, double, int >* solver);
 #endif

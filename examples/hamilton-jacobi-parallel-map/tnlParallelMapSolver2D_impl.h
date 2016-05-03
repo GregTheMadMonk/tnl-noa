@@ -904,6 +904,8 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runS
    double fu = 0.0;
 
    double finalTime = this->stopTime;
+   if(boundaryCondition == 0)
+	   finalTime*=2.0;
    __syncthreads();
 
    tnlGridEntity<MeshType, 2, tnlGridEntityNoStencilStorage > Entity(subMesh);

@@ -291,11 +291,11 @@ Real parallelGodunovMapScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, 
 {
 //	int gid = (blockDim.y*blockIdx.y + threadIdx.y)*blockDim.x*gridDim.x + blockDim.x*blockIdx.x + threadIdx.x;
 
-//	RealType signui;
-//	if(boundaryCondition == 0)
-//		signui = sign(u[cellIndex],/*(boundaryCondition != 0) * */this->epsilon);
-//	else
-	RealType signui = Sign(u[cellIndex]);
+	RealType signui;
+	if(boundaryCondition == 0)
+		signui = sign(u[cellIndex],/*(boundaryCondition != 0) * */this->epsilon);
+	else
+		signui = Sign(u[cellIndex]);
 
 //	RealType value;
 //	if(map[cellIndex] == 0.0)
