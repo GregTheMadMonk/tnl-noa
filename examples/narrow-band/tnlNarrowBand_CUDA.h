@@ -197,7 +197,7 @@ __global__ void runNarrowBandCUDA(tnlNarrowBand< tnlGrid< 2,double, tnlHost, int
 
 
 
-#include "tnlNarrowBand2D_CUDA_v4_impl.h"
+#include "tnlNarrowBand2D_CUDA_v5_impl.h"
 //											#include "tnlNarrowBand3D_CUDA_impl.h"
 
 #endif /* TNLNARROWBAND_H_ */
