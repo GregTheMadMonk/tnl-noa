@@ -1,6 +1,6 @@
 set( tnl_heat_equation_SOURCES     
      euler.cpp
-     euler.cu )
+     euler-cuda.cu )
                
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE(tnl-euler-2d${debugExt} euler.cu)
@@ -15,7 +15,7 @@ INSTALL( TARGETS tnl-euler-2d${debugExt}
          RUNTIME DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
         
-INSTALL( FILES tnl-run-euler-2d
+INSTALL( FILES run-euler
                ${tnl_heat_equation_SOURCES}
          DESTINATION share/tnl-${tnlVersion}/examples/inviscid-flow-2d )
 

@@ -281,7 +281,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Real tnlDenseMatrix< Real, Device, Index >::getElementFast( const IndexType row,
+const Real& tnlDenseMatrix< Real, Device, Index >::getElementFast( const IndexType row,
                                                             const IndexType column ) const
 {
    tnlAssert( row >= 0 && row < this->getRows() &&
