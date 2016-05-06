@@ -33,15 +33,23 @@ template< typename ConfigTag >class eulerConfig
             config.addEntryEnum< tnlString >( "neumann" );
             config.addEntryEnum< tnlString >( "mymixed" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
-         config.addEntry< double >( "left-density", "This sets a value of left density." );
-         config.addEntry< double >( "left-velocityX", "This sets a value of left_x velocity." );
-         config.addEntry< double >( "left-velocityY", "This sets a value of left_y velocity." );
-         config.addEntry< double >( "left-pressure", "This sets a value of left pressure." );
-         config.addEntry< double >( "riemann-border", "This sets a position of discontinuity." );
-         config.addEntry< double >( "right-density", "This sets a value of right density." );
-         config.addEntry< double >( "right-velocityX", "This sets a value of right_x velocity." );
-         config.addEntry< double >( "right-velocityY", "This sets a value of right_y velocity." );
-         config.addEntry< double >( "right-pressure", "This sets a value of right pressure." );
+         config.addEntry< double >( "left-up-density", "This sets a value of left up density." );
+         config.addEntry< double >( "left-up-velocityX", "This sets a value of left up x velocity." );
+         config.addEntry< double >( "left-up-velocityY", "This sets a value of left up y velocity." );
+         config.addEntry< double >( "left-up-pressure", "This sets a value of left up pressure." );
+         config.addEntry< double >( "left-down-density", "This sets a value of left down density." );
+         config.addEntry< double >( "left-down-velocityX", "This sets a value of left down x velocity." );
+         config.addEntry< double >( "left-down-velocityY", "This sets a value of left down y velocity." );
+         config.addEntry< double >( "left-down-pressure", "This sets a value of left down pressure." );
+         config.addEntry< double >( "riemann-border", "This sets a position of discontinuity cross." );
+         config.addEntry< double >( "right-up-density", "This sets a value of right density." );
+         config.addEntry< double >( "right-up-velocityX", "This sets a value of right_x velocity." );
+         config.addEntry< double >( "right-up-velocityY", "This sets a value of right_y velocity." );
+         config.addEntry< double >( "right-up-pressure", "This sets a value of right pressure." );
+         config.addEntry< double >( "right-down-density", "This sets a value of right density." );
+         config.addEntry< double >( "right-down-velocityX", "This sets a value of right_x velocity." );
+         config.addEntry< double >( "right-down-velocityY", "This sets a value of right_y velocity." );
+         config.addEntry< double >( "right-down-pressure", "This sets a value of right pressure." );
          config.addEntry< double >( "gamma", "This sets a value of gamma constant." );
 
          /****

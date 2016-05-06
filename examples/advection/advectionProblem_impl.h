@@ -341,7 +341,7 @@ getExplicitRHS( const RealType& time,
 		   RealType expValue;
 		   for (IndexType i = 1; i < count-2; i++)
 		   {
-			expValue = exp(-pow(this->size*i-0.2*size-step * tau * this->speedX,2));
+			expValue = exp(-pow(10/(size*count)*(size*i-0.2*size*count)-step * 10 * tau * this->speedX,2));
 			if ((i - step * tau * (count/this->schemeSize) * this -> speedX>0.4*count) && (i - step * tau * (count/this->schemeSize) * this -> speedX<0.5*count)) constantFunction=1; else constantFunction=0;
 			if (expValue>constantFunction) this->analyt[i] = expValue; else this->analyt[i] = constantFunction;
 		   };
@@ -353,7 +353,7 @@ getExplicitRHS( const RealType& time,
 		   for (IndexType i = 0; i < inverseSquareCount-1; i++)
                       for (IndexType j = 0; j < inverseSquareCount-1; j++)
 		      {
-			expValue = exp(-pow(this->size*i-0.2*size-step * tau * this->speedX,2)-pow(this->size*j-0.2*size-step * tau * this->speedY,2));
+			expValue = exp(-pow(10/(size*inverseSquareCount)*(size*i-0.2*size*inverseSquareCount)-step * 10 * tau * this->speedX,2)-pow(10/(size*inverseSquareCount)*(size*j-0.2*size*inverseSquareCount)-step * 10 * tau * this->speedY,2));
 			if ((i - step * tau * (inverseSquareCount/this->schemeSize) * this -> speedX>0.4*inverseSquareCount) && (i - step * tau * (inverseSquareCount/this->schemeSize) * this -> speedX<0.5*inverseSquareCount) 
                          && (j - step * tau * (inverseSquareCount/this->schemeSize) * this -> speedY>0.4*inverseSquareCount) && (j - step * tau * (inverseSquareCount/this->schemeSize) * this -> speedY<0.5*inverseSquareCount))
                         constantFunction=1; else constantFunction=0;
@@ -369,7 +369,7 @@ getExplicitRHS( const RealType& time,
 		   this->analyt[0] = 0;
 		   for (IndexType i = 1; i < count-2; i++)
 		   {
-			this->analyt[i] = exp(-pow(this->size*i-0.2*size-step * tau * this->speedX,2));
+			this->analyt[i] = exp(-pow(10/(size*count)*(size*i-0.2*size*count)-step * 10 * tau * this->speedX,2));
 		   };
 		   this->analyt[count-1] = 0;
 		}
@@ -379,7 +379,7 @@ getExplicitRHS( const RealType& time,
 		   for (IndexType i = 1; i < inverseSquareCount-1; i++)
 		      for (IndexType j = 1; j < inverseSquareCount-1; j++)
 		      {
-			   this->analyt[i * inverseSquareCount + j] = exp(-pow(this->size*i-0.2*size-step * tau * this->speedX,2)-pow(this->size*j-0.2*size-step * tau * this->speedY,2));
+			   this->analyt[i * inverseSquareCount + j] = exp(-pow(10/(size*inverseSquareCount)*(size*i-0.2*size*inverseSquareCount)-step * 10 * tau * this->speedX,2)-pow(10/(size*inverseSquareCount)*(size*j-0.2*size*inverseSquareCount)-step * 10 * tau * this->speedY,2));
 		      };
 		};
      }
