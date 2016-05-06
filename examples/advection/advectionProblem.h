@@ -26,6 +26,14 @@ class advectionProblem:
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
       static tnlString getTypeStatic();
+      int dimension;
+      tnlString choice;
+      RealType size;
+      int step = 0;
+      MeshFunctionType analyt;
+      RealType speedX;
+      RealType speedY;
+      RealType schemeSize;
 
       tnlString getPrologHeader() const;
 

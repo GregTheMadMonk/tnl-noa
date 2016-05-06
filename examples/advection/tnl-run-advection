@@ -14,7 +14,7 @@ tnl-advection-dbg --time-discretisation explicit \
               --snapshot-period 0.1 \
               --final-time 1.0 \
 	      --artifical-viscosity 1.0 \
-	      --begin sin \
+	      --begin exp \
 	      --advection-speedX 2.0 \
 
 tnl-view --mesh mesh.tnl --input-files *tnl     

@@ -8,6 +8,8 @@
 #include "LaxFridrichs.h"
 #include "advectionRhs.h"
 #include "advectionBuildConfigTag.h"
+#include "tnlRiemann1DBoundaryConditions.h"
+#include "tnlRiemann2DBoundaryConditions.h"
 
 typedef advectionBuildConfigTag BuildConfig;
 
@@ -30,11 +32,15 @@ template< typename ConfigTag >class advectionConfig
          config.addEntry< tnlString >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
             config.addEntryEnum< tnlString >( "dirichlet" );
             config.addEntryEnum< tnlString >( "neumann" );
+            config.addEntryEnum< tnlString >( "riemann1D" );
+            config.addEntryEnum< tnlString >( "riemann2D" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
 	 config.addEntry< double >( "artifical-viscosity", "This sets value of artifical viscosity (default 1)", 1.0);
 	 config.addEntry< tnlString >( "begin", "choose begin type", "sin");
-	    config.addEntryEnum< tnlString >( "sin");
-	    config.addEntryEnum< tnlString >( "sin_square");
+	    config.addEntryEnum< tnlString >( "exp");
+	    config.addEntryEnum< tnlString >( "exp_square");
+	    config.addEntryEnum< tnlString >( "square");
+	    config.addEntryEnum< tnlString >( "riemann");
 	 config.addEntry< double >( "advection-speedX", "This sets value of advection speed in X direction (default 1)" , 1.0);
 	 config.addEntry< double >( "advection-speedY", "This sets value of advection speed in Y direction (default 1)" , 1.0);
 	 config.addEntry< tnlString >( "move", "choose movement type", "advection");
@@ -102,10 +108,27 @@ class advectionSetter
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }
-          typedef tnlNeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
-          typedef advectionProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
-          SolverStarter solverStarter;
-          return solverStarter.template run< Problem >( parameters );
+          if( boundaryConditionsType == "riemann1D" )
+          {
+             typedef tnlRiemann1DBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+             typedef advectionProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+             SolverStarter solverStarter;
+             return solverStarter.template run< Problem >( parameters );
+          }
+          if( boundaryConditionsType == "riemann2D" )
+          {
+             typedef tnlRiemann2DBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+             typedef advectionProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+             SolverStarter solverStarter;
+             return solverStarter.template run< Problem >( parameters );
+          }
+          if( boundaryConditionsType == "neumann" )
+          {
+             typedef tnlNeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
+             typedef advectionProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+             SolverStarter solverStarter;
+             return solverStarter.template run< Problem >( parameters );
+          }
       }
 
 };

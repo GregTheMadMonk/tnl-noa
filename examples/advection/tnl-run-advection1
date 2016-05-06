@@ -17,7 +17,7 @@ tnl-grid-setup --dimensions 2 \
               --snapshot-period 0.1 \
               --final-time 1.0 \
 	      --artifical-viscosity 0.2 \
-	      --begin sin_square \
+	      --begin exp_square \
 	      --advection-speedX 2.0 \
 	      --advection-speedY 2.0 \
 
