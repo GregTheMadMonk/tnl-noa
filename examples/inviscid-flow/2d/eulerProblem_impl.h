@@ -143,7 +143,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
                uRho[j*sqrt(size)+i] = rhoLd;
                uRhoVelocityX[j*sqrt(size)+i] = rhoLd * velLdX;
                uRhoVelocityY[j*sqrt(size)+i] = rhoLd * velLdY;
-               uEnergy[j*sqrt(size)+i] = eL;
+               uEnergy[j*sqrt(size)+i] = eLd;
                velocity[j*sqrt(size)+i] = sqrt(pow(velLdX,2)+pow(velLdY,2));
                velocityX[j*sqrt(size)+i] = velLdX;
                velocityY[j*sqrt(size)+i] = velLdY;
@@ -153,8 +153,8 @@ setInitialCondition( const tnlParameterContainer& parameters,
          if ((i >= x0 * sqrt(size))&&(j < x0 * sqrt(size)) )
             {
                uRho[j*sqrt(size)+i] = rhoLu;
-               uRhoVelocityX[j*sqrt(size)+i] = rhoLu * velLXu;
-               uRhoVelocityY[j*sqrt(size)+i] = rhoLu * velLYu;
+               uRhoVelocityX[j*sqrt(size)+i] = rhoLu * velLuX;
+               uRhoVelocityY[j*sqrt(size)+i] = rhoLu * velLuY;
                uEnergy[j*sqrt(size)+i] = eLu;
                velocity[j*sqrt(size)+i] = sqrt(pow(velLuX,2)+pow(velLuY,2));
                velocityX[j*sqrt(size)+i] = velLuX;
@@ -164,7 +164,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
          else
          if ((i >= x0 * sqrt(size))&&(j >= x0 * sqrt(size)) )
             {
-               uRho[j*sqrt(size)+i] = rhoR;
+               uRho[j*sqrt(size)+i] = rhoRu;
                uRhoVelocityX[j*sqrt(size)+i] = rhoRu * velRuX;
                uRhoVelocityY[j*sqrt(size)+i] = rhoRu * velRuY;
                uEnergy[j*sqrt(size)+i] = eRu;

@@ -29,7 +29,7 @@ class advectionProblem:
       int dimension;
       tnlString choice;
       RealType size;
-      int step = 0;
+      long step = 0;
       MeshFunctionType analyt;
       RealType speedX;
       RealType speedY;

@@ -290,6 +290,7 @@ makeSnapshot( const RealType& time,
    FileNameBaseNumberEnding( "a-", step, 5, ".tnl", fileName );
    if( ! this->analyt.save( fileName ) )
       return false;
+cin.ignore();
    return true;
 }
 
@@ -310,6 +311,8 @@ getExplicitRHS( const RealType& time,
    typedef typename MeshType::Cell Cell;
    double count = mesh.template getEntitiesCount< Cell >();
    double inverseSquareCount = sqrt(count);
+   if (tau > 10e-9)
+      {
    if (this->choice == "square")
       {
 	   if (dimension == 1)
@@ -409,6 +412,12 @@ getExplicitRHS( const RealType& time,
 		      };
 		};
      };
+     };
+/*
+   cout << step << endl;
+   cout << tau << endl;
+   cout << this->speedX << endl;
+   cout << step * 10 * tau * this->speedX<< endl;*/
    this->bindDofs( mesh, _u );
    tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    MeshFunctionType u( mesh, _u ); 
