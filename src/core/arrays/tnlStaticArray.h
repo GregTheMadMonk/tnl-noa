@@ -20,6 +20,7 @@
 
 #include <core/tnlString.h>
 #include <core/tnlFile.h>
+#include <core/tnlDevice_Callable.h>
 
 //! Aliases for the coordinates
 // TODO: Remove this - it is here only because of some legact code
@@ -33,57 +34,57 @@ class tnlStaticArray
    typedef int     IndexType;
    enum { size = Size };
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray();
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray( const Element v[ Size ] );
 
    //! This sets all vector components to v
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray( const Element& v );
 
    //! Copy constructor
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray( const tnlStaticArray< Size, Element >& v );
 
    static tnlString getType();
 
-   __cuda_callable__
+   __device_callable__
    inline int getSize() const;
 
-   __cuda_callable__
+   __device_callable__
    inline Element* getData();
 
-   __cuda_callable__
+   __device_callable__
    inline const Element* getData() const;
 
-   __cuda_callable__
+   __device_callable__
    inline const Element& operator[]( int i ) const;
 
-   __cuda_callable__
+   __device_callable__
    inline Element& operator[]( int i );
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray< Size, Element >& operator = ( const tnlStaticArray< Size, Element >& array );
 
    template< typename Array >
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray< Size, Element >& operator = ( const Array& array );
 
    template< typename Array >
-   __cuda_callable__
+   __device_callable__
    inline bool operator == ( const Array& array ) const;
 
    template< typename Array >
-   __cuda_callable__
+   __device_callable__
    inline bool operator != ( const Array& array ) const;
          
    template< typename OtherElement >
-   __cuda_callable__
+   __device_callable__
    operator tnlStaticArray< Size, OtherElement >() const;
 
-   __cuda_callable__
+   __device_callable__
    inline void setValue( const ElementType& val );
 
    bool save( tnlFile& file ) const;
@@ -107,64 +108,64 @@ class tnlStaticArray< 1, Element >
    typedef int     IndexType;
    enum { size = 1 };
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray();
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray( const Element v[ size ] );
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray( const Element& v );
 
    //! Copy constructor
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray( const tnlStaticArray< size, Element >& v );
 
    static tnlString getType();
 
-   __cuda_callable__
+   __device_callable__
    inline int getSize() const;
 
-   __cuda_callable__
+   __device_callable__
    inline Element* getData();
 
-   __cuda_callable__
+   __device_callable__
    inline const Element* getData() const;
 
-   __cuda_callable__
+   __device_callable__
    inline const Element& operator[]( int i ) const;
 
-   __cuda_callable__
+   __device_callable__
    inline Element& operator[]( int i );
 
    //! Returns the first coordinate
-   __cuda_callable__
+   __device_callable__
    inline Element& x();
 
    //! Returns the first coordinate
-   __cuda_callable__
+   __device_callable__
    inline const Element& x() const;
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray< 1, Element >& operator = ( const tnlStaticArray< 1, Element >& array );
 
    template< typename Array >
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray< 1, Element >& operator = ( const Array& array );
 
    template< typename Array >
-   __cuda_callable__
+   __device_callable__
    inline bool operator == ( const Array& array ) const;
 
    template< typename Array >
-   __cuda_callable__
+   __device_callable__
    inline bool operator != ( const Array& array ) const;
    
    template< typename OtherElement >
-   __cuda_callable__
+   __device_callable__
    operator tnlStaticArray< 1, OtherElement >() const;   
 
-   __cuda_callable__
+   __device_callable__
    inline
    void setValue( const ElementType& val );
 
@@ -188,76 +189,76 @@ class tnlStaticArray< 2, Element >
    typedef int     IndexType;
    enum { size = 2 };
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray();
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray( const Element v[ size ] );
 
    //! This sets all vector components to v
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray( const Element& v );
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray( const Element& v1, const Element& v2 );
 
    //! Copy constructor
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray( const tnlStaticArray< size, Element >& v );
 
    static tnlString getType();
 
-   __cuda_callable__
+   __device_callable__
    inline int getSize() const;
 
-   __cuda_callable__
+   __device_callable__
    inline Element* getData();
 
-   __cuda_callable__
+   __device_callable__
    inline const Element* getData() const;
 
-   __cuda_callable__
+   __device_callable__
    inline const Element& operator[]( int i ) const;
 
-   __cuda_callable__
+   __device_callable__
    inline Element& operator[]( int i );
 
    //! Returns the first coordinate
-   __cuda_callable__
+   __device_callable__
    inline Element& x();
 
    //! Returns the first coordinate
-   __cuda_callable__
+   __device_callable__
    inline const Element& x() const;
 
    //! Returns the second coordinate
-   __cuda_callable__
+   __device_callable__
    inline Element& y();
 
    //! Returns the second coordinate
-   __cuda_callable__
+   __device_callable__
    inline const Element& y() const;
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray< 2, Element >& operator = ( const tnlStaticArray< 2, Element >& array );
 
    template< typename Array >
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray< 2, Element >& operator = ( const Array& array );
 
    template< typename Array >
-   __cuda_callable__
+   __device_callable__
    inline bool operator == ( const Array& array ) const;
 
    template< typename Array >
-   __cuda_callable__
+   __device_callable__
    inline bool operator != ( const Array& array ) const;
    
    template< typename OtherElement >
-   __cuda_callable__
+   __device_callable__
    operator tnlStaticArray< 2, OtherElement >() const;   
    
-   __cuda_callable__
+   __device_callable__
    inline void setValue( const ElementType& val );
 
    bool save( tnlFile& file ) const;
@@ -280,84 +281,84 @@ class tnlStaticArray< 3, Element >
    typedef int     IndexType;
    enum { size = 3 };
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray();
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray( const Element v[ size ] );
 
    //! This sets all vector components to v
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray( const Element& v );
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray( const Element& v1, const Element& v2, const Element& v3 );
 
    //! Copy constructor
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray( const tnlStaticArray< size, Element >& v );
 
    static tnlString getType();
 
-   __cuda_callable__
+   __device_callable__
    inline int getSize() const;
 
-   __cuda_callable__
+   __device_callable__
    inline Element* getData();
 
-   __cuda_callable__
+   __device_callable__
    inline const Element* getData() const;
 
-   __cuda_callable__
+   __device_callable__
    inline const Element& operator[]( int i ) const;
 
-   __cuda_callable__
+   __device_callable__
    inline Element& operator[]( int i );
 
    //! Returns the first coordinate
-   __cuda_callable__
+   __device_callable__
    inline Element& x();
 
    //! Returns the first coordinate
-   __cuda_callable__
+   __device_callable__
    inline const Element& x() const;
 
    //! Returns the second coordinate
-   __cuda_callable__
+   __device_callable__
    inline Element& y();
 
    //! Returns the second coordinate
-   __cuda_callable__
+   __device_callable__
    inline const Element& y() const;
 
    //! Returns the third coordinate
-   __cuda_callable__
+   __device_callable__
    inline Element& z();
 
    //! Returns the third coordinate
-   __cuda_callable__
+   __device_callable__
    inline const Element& z() const;
 
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray< 3, Element >& operator = ( const tnlStaticArray< 3, Element >& array );
 
    template< typename Array >
-   __cuda_callable__
+   __device_callable__
    inline tnlStaticArray< 3, Element >& operator = ( const Array& array );
 
    template< typename Array >
-   __cuda_callable__
+   __device_callable__
    inline bool operator == ( const Array& array ) const;
 
    template< typename Array >
-   __cuda_callable__
+   __device_callable__
    inline bool operator != ( const Array& array ) const;
    
    template< typename OtherElement >
-   __cuda_callable__
+   __device_callable__
    operator tnlStaticArray< 3, OtherElement >() const;
 
-   __cuda_callable__
+   __device_callable__
    inline void setValue( const ElementType& val );
 
    bool save( tnlFile& file ) const;

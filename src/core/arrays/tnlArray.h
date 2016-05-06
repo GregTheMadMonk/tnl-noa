@@ -187,5 +187,6 @@ template< typename Element, typename Device, typename Index >
 ostream& operator << ( ostream& str, const tnlArray< Element, Device, Index >& v );
 
 #include <core/arrays/tnlArray_impl.h>
+//#include <core/arrays/tnlArrayMIC_impl.h>
 
 #endif /* TNLARRAY_H_ */

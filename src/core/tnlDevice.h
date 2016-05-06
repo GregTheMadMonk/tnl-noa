@@ -18,6 +18,6 @@
 #ifndef TNLDEVICE_H_
 #define TNLDEVICE_H_
 
-enum tnlDeviceEnum { tnlHostDevice, tnlCudaDevice };
+enum tnlDeviceEnum { tnlHostDevice, tnlCudaDevice, tnlMICDevice };
 
 #endif /* TNLDEVICE_H_ */

@@ -41,3 +41,6 @@ if( BUILD_CUDA )
 
 endif()
 
+    ADD_EXECUTABLE( tnlSatanExperimentalTest${mpiExt}${debugExt} ${headers} tnlSatanExperimentalTest.cpp )
+    TARGET_LINK_LIBRARIES( tnlSatanExperimentalTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                           tnl${mpiExt}${debugExt}-0.1 )

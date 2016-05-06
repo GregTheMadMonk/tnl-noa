@@ -18,6 +18,9 @@
 #ifndef TNLFILE_IMPL_H
 #define	TNLFILE_IMPL_H
 
+#include "tnlFile.h"
+
+
 template< typename Type, typename Device >
 bool tnlFile :: read( Type* buffer )
 {
@@ -30,6 +33,10 @@ bool tnlFile :: write( const Type* buffer )
    return write< Type, Device, int >( buffer, 1 );
 };
 
+template< typename Type >
+struct satanHider{
+    Type *pointer;
+};
 
 template< typename Type, typename Device, typename Index >
 bool tnlFile :: read( Type* buffer,
@@ -53,6 +60,7 @@ bool tnlFile :: read( Type* buffer,
    const Index host_buffer_size = :: Min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
                                           elements );
    void* host_buffer( 0 );
+   //HOST
    if( Device :: getDeviceType() == "tnlHost" )
    {
       if( fread( buffer,
@@ -67,6 +75,7 @@ bool tnlFile :: read( Type* buffer,
       this->readElements = elements;
       return true;
    }
+   //CUDA
    if( Device :: getDeviceType() == "tnlCuda" )
    {
 #ifdef HAVE_CUDA
@@ -120,6 +129,48 @@ bool tnlFile :: read( Type* buffer,
       return false;
 #endif
    }
+   //MIC
+   /*
+   if( Device :: getDeviceType() == "tnlMIC" )
+   {
+       
+        Type * host_buffer = (Type *)malloc( sizeof( Type ) * host_buffer_size );
+        readElements = 0;
+        if( ! host_buffer )
+        {
+            cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
+              << this->getFileName() << "." << endl;
+         return false;
+        }
+
+        while( readElements < elements )
+        {
+           int transfer = :: Min( ( Index ) ( elements - readElements ), host_buffer_size );
+           size_t transfered = fread( host_buffer, sizeof( Type ), transfer, file );
+           if( transfered != transfer )
+           {
+              cerr << "I am not able to read the data from the file " << fileName << "." << endl;
+              cerr << transfered << " bytes were transfered. " << endl;
+              perror( "Fread ended with the error code" );
+              return false;
+            }
+           satanHider<Type> device_buff;
+           device_buff.pointer=buffer;
+          // #pragma offload target(mic) in(device_buff,readElements) in(host_buffer:length(transfer))
+           {
+               /*
+               for(int i=0;i<transfer;i++)
+                    device_buff.pointer[readElements+i]=host_buffer[i];
+                
+               memcpy(&(device_buff.pointer[readElements]),host_buffer, transfer*sizeof(Type) );
+           }
+           
+         readElements += transfer;
+      }
+      free( host_buffer );
+      return true;
+   }*/
+   
    return true;
 };
 
@@ -147,6 +198,7 @@ bool tnlFile ::  write( const Type* buffer,
    this->writtenElements = 0;
    const long int host_buffer_size = :: Min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
                                           elements );
+   //HOST
    if( Device :: getDeviceType() == "tnlHost" )
    {
       if( fwrite( buf,
@@ -161,6 +213,7 @@ bool tnlFile ::  write( const Type* buffer,
       this->writtenElements = elements;
       return true;
    }
+   //CUDA
    if( Device :: getDeviceType() == "tnlCuda" )
    {
 #ifdef HAVE_CUDA
@@ -212,6 +265,47 @@ bool tnlFile ::  write( const Type* buffer,
          return false;
 #endif
    }
+   //MIC
+   /*if( Device :: getDeviceType() == "tnlMIC" )
+   {
+         Type * host_buffer = (Type *)malloc( sizeof( Type ) * host_buffer_size );
+         if( ! host_buffer )
+         {
+            cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
+                 << this->getFileName() << "." << endl;
+            return false;
+         }
+
+         while( this->writtenElements < elements )
+         {
+            Index transfer = Min( elements - this->writtenElements, host_buffer_size );
+            
+           satanHider<const Type> device_buff;
+           device_buff.pointer=buffer;
+           //#pragma offload target(mic) in(device_buff,writtenElements) out(host_buffer:length(transfer))
+           {
+               //THIS SHOULD WORK... BUT NOT WHY?
+              /* for(int i=0;i<transfer;i++)
+                    host_buffer[i]=device_buff.pointer[writtenElements+i];
+               
+               
+               memcpy(host_buffer,&(device_buff.pointer[writtenElements]), transfer*sizeof(Type) );
+            }
+            
+           if( fwrite( host_buffer,
+                        sizeof( Type ),
+                        transfer,
+                        this->file ) != transfer )
+            {
+               cerr << "I am not able to write the data to the file " << fileName << "." << endl;
+               perror( "Fwrite ended with the error code" );
+               return false;
+            }
+            this->writtenElements += transfer;
+         }
+         free( host_buffer );
+         return true;
+   } */
    return true;
 };
 

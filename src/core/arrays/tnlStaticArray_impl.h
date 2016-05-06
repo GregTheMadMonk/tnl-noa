@@ -21,13 +21,13 @@
 #include <core/param-types.h>
 
 template< int Size, typename Element >
-__cuda_callable__
+__device_callable__
 inline tnlStaticArray< Size, Element >::tnlStaticArray()
 {
 };
 
 template< int Size, typename Element >
-__cuda_callable__
+__device_callable__
 inline tnlStaticArray< Size, Element >::tnlStaticArray( const Element v[ Size ] )
 {
    for( int i = 0; i < Size; i++ )
@@ -35,7 +35,7 @@ inline tnlStaticArray< Size, Element >::tnlStaticArray( const Element v[ Size ] 
 }
 
 template< int Size, typename Element >
-__cuda_callable__
+__device_callable__
 inline tnlStaticArray< Size, Element >::tnlStaticArray( const Element& v )
 {
    for( int i = 0; i < Size; i++ )
@@ -43,7 +43,7 @@ inline tnlStaticArray< Size, Element >::tnlStaticArray( const Element& v )
 }
 
 template< int Size, typename Element >
-__cuda_callable__
+__device_callable__
 inline tnlStaticArray< Size, Element >::tnlStaticArray( const tnlStaticArray< Size, Element >& v )
 {
    for( int i = 0; i < Size; i++ )
@@ -61,28 +61,28 @@ tnlString tnlStaticArray< Size, Element >::getType()
 }
 
 template< int Size, typename Element >
-__cuda_callable__
+__device_callable__
 inline int tnlStaticArray< Size, Element >::getSize() const
 {
    return size;
 }
 
 template< int Size, typename Element >
-__cuda_callable__
+__device_callable__
 inline Element* tnlStaticArray< Size, Element >::getData()
 {
    return data;
 }
 
 template< int Size, typename Element >
-__cuda_callable__
+__device_callable__
 inline const Element* tnlStaticArray< Size, Element >::getData() const
 {
    return data;
 }
 
 template< int Size, typename Element >
-__cuda_callable__
+__device_callable__
 inline const Element& tnlStaticArray< Size, Element >::operator[]( int i ) const
 {
    tnlAssert( i >= 0 && i < size,
@@ -91,7 +91,7 @@ inline const Element& tnlStaticArray< Size, Element >::operator[]( int i ) const
 }
 
 template< int Size, typename Element >
-__cuda_callable__
+__device_callable__
 inline Element& tnlStaticArray< Size, Element >::operator[]( int i )
 {
    tnlAssert( i >= 0 && i < size,
@@ -100,7 +100,7 @@ inline Element& tnlStaticArray< Size, Element >::operator[]( int i )
 }
 
 template< int Size, typename Element >
-__cuda_callable__
+__device_callable__
 inline tnlStaticArray< Size, Element >& tnlStaticArray< Size, Element >::operator = ( const tnlStaticArray< Size, Element >& array )
 {
    for( int i = 0; i < size; i++ )
@@ -110,7 +110,7 @@ inline tnlStaticArray< Size, Element >& tnlStaticArray< Size, Element >::operato
 
 template< int Size, typename Element >
    template< typename Array >
-__cuda_callable__
+__device_callable__
 inline tnlStaticArray< Size, Element >& tnlStaticArray< Size, Element >::operator = ( const Array& array )
 {
    for( int i = 0; i < size; i++ )
@@ -120,7 +120,7 @@ inline tnlStaticArray< Size, Element >& tnlStaticArray< Size, Element >::operato
 
 template< int Size, typename Element >
    template< typename Array >
-__cuda_callable__
+__device_callable__
 inline bool tnlStaticArray< Size, Element >::operator == ( const Array& array ) const
 {
    if( ( int ) size != ( int ) Array::size )
@@ -133,7 +133,7 @@ inline bool tnlStaticArray< Size, Element >::operator == ( const Array& array ) 
 
 template< int Size, typename Element >
    template< typename Array >
-__cuda_callable__
+__device_callable__
 inline bool tnlStaticArray< Size, Element >::operator != ( const Array& array ) const
 {
    return ! this->operator == ( array );
@@ -141,7 +141,7 @@ inline bool tnlStaticArray< Size, Element >::operator != ( const Array& array ) 
 
 template< int Size, typename Element >
    template< typename OtherElement >
-__cuda_callable__
+__device_callable__
 tnlStaticArray< Size, Element >::
 operator tnlStaticArray< Size, OtherElement >() const
 {
@@ -152,7 +152,7 @@ operator tnlStaticArray< Size, OtherElement >() const
 }
 
 template< int Size, typename Element >
-__cuda_callable__
+__device_callable__
 inline void tnlStaticArray< Size, Element >::setValue( const ElementType& val )
 {
    for( int i = 0; i < Size; i++ )

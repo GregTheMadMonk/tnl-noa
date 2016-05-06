@@ -31,6 +31,7 @@
 #include <core/tnlString.h>
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
+#include <core/tnlMIC.h>
 
 using namespace std;
 
@@ -79,7 +80,7 @@ class tnlFile
 	long int getReadElements() const
 	{
 	   return this->readElements;
-	}
+    	}
 
 	long int getWrittenElements() const
 	{

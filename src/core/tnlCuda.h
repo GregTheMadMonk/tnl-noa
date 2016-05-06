@@ -27,11 +27,7 @@
 class tnlConfigDescription;
 class tnlParameterContainer;
 
-#ifdef HAVE_CUDA
-#define __cuda_callable__ __device__ __host__
-#else
-#define __cuda_callable__
-#endif
+#include <core/tnlDevice_Callable.h>
 
 
 class tnlCuda

@@ -398,7 +398,7 @@ operator = ( const Array& array )
                 << "Target size: " << this->getSize() << endl );
    tnlArrayOperations< Device,
                        typename Array :: DeviceType > ::
-    template copyMemory< Element,
+                template copyMemory< Element, 
                          typename Array :: ElementType,
                          typename Array :: IndexType >
                        ( this->getData(),

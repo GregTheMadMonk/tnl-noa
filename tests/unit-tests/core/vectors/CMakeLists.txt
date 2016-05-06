@@ -26,3 +26,6 @@ ADD_EXECUTABLE( tnlStaticVectorTest${mpiExt}${debugExt} ${headers} tnlStaticVect
 TARGET_LINK_LIBRARIES( tnlStaticVectorTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                            tnl${mpiExt}${debugExt}-0.1 )
 
+ADD_EXECUTABLE( tnlSatanMICVectorExperimentalTest${mpiExt}${debugExt} ${headers} tnlSatanMICVectorExperimentalTest.cpp )
+TARGET_LINK_LIBRARIES( tnlSatanMICVectorExperimentalTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
+                                                           tnl${mpiExt}${debugExt}-0.1 )
