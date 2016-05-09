@@ -22,7 +22,7 @@
 #ifndef TNLARRAYMIC_IMPL_H
 #define TNLARRAYMIC_IMPL_H
 
-#ifdef ENABLE_MIC_SATAN
+#ifdef HAVE_MIC
 
 #include <core/tnlMIC.h>
 

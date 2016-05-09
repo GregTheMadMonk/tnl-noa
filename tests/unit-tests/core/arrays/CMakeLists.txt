@@ -40,7 +40,7 @@ if( BUILD_CUDA )
                                                               tnl${mpiExt}${debugExt}-${tnlVersion} )
 
 endif()
-
-    ADD_EXECUTABLE( tnlSatanExperimentalTest${mpiExt}${debugExt} ${headers} tnlSatanExperimentalTest.cpp )
+    ADD_EXECUTABLE( tnlSatanExperimentalTest${mpiExt}${debugExt} ${headers} tnlSatanExperimentalTest.cpp )   
     TARGET_LINK_LIBRARIES( tnlSatanExperimentalTest${mpiExt}${debugExt} ${CPPUNIT_LIBRARIES}
                                                            tnl${mpiExt}${debugExt}-0.1 )
+    TARGET_COMPILE_DEFINITIONS( tnlSatanExperimentalTest${mpiExt}${debugExt} PUBLIC -DHAVE_MIC )

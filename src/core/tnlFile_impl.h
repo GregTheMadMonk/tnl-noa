@@ -130,10 +130,9 @@ bool tnlFile :: read( Type* buffer,
 #endif
    }
    //MIC
-   /*
    if( Device :: getDeviceType() == "tnlMIC" )
    {
-       
+#ifdef HAVE_MIC           
         Type * host_buffer = (Type *)malloc( sizeof( Type ) * host_buffer_size );
         readElements = 0;
         if( ! host_buffer )
@@ -156,12 +155,12 @@ bool tnlFile :: read( Type* buffer,
             }
            satanHider<Type> device_buff;
            device_buff.pointer=buffer;
-          // #pragma offload target(mic) in(device_buff,readElements) in(host_buffer:length(transfer))
+           #pragma offload target(mic) in(device_buff,readElements) in(host_buffer:length(transfer))
            {
                /*
                for(int i=0;i<transfer;i++)
                     device_buff.pointer[readElements+i]=host_buffer[i];
-                
+                */                
                memcpy(&(device_buff.pointer[readElements]),host_buffer, transfer*sizeof(Type) );
            }
            
@@ -169,7 +168,8 @@ bool tnlFile :: read( Type* buffer,
       }
       free( host_buffer );
       return true;
-   }*/
+#endif
+   }
    
    return true;
 };
@@ -266,8 +266,9 @@ bool tnlFile ::  write( const Type* buffer,
 #endif
    }
    //MIC
-   /*if( Device :: getDeviceType() == "tnlMIC" )
+   if( Device :: getDeviceType() == "tnlMIC" )
    {
+#ifdef HAVE_MIC
          Type * host_buffer = (Type *)malloc( sizeof( Type ) * host_buffer_size );
          if( ! host_buffer )
          {
@@ -282,12 +283,12 @@ bool tnlFile ::  write( const Type* buffer,
             
            satanHider<const Type> device_buff;
            device_buff.pointer=buffer;
-           //#pragma offload target(mic) in(device_buff,writtenElements) out(host_buffer:length(transfer))
+           #pragma offload target(mic) in(device_buff,writtenElements) out(host_buffer:length(transfer))
            {
                //THIS SHOULD WORK... BUT NOT WHY?
-              /* for(int i=0;i<transfer;i++)
+               /*for(int i=0;i<transfer;i++)
                     host_buffer[i]=device_buff.pointer[writtenElements+i];
-               
+                */              
                
                memcpy(host_buffer,&(device_buff.pointer[writtenElements]), transfer*sizeof(Type) );
             }
@@ -305,7 +306,8 @@ bool tnlFile ::  write( const Type* buffer,
          }
          free( host_buffer );
          return true;
-   } */
+#endif
+   } 
    return true;
 };
 

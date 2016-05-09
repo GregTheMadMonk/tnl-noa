@@ -21,8 +21,12 @@
  *  11) tnlArrayMIC_impl.h --> support most functions, expect saving and loading.
  *  12) tnlArrayMIC_impl.h --> probably complete.
  * 
+ *  13) Solving problems with uncompilable library coused by #include <png.h> in tnlview. Define macro #HAVE_MIC 
+ *        and suurrond everithing MIC shit with IT.
+ * 
+ *  14) So reuse thist test once more.  
+ * 
  */
-
 
 #include <iostream>
 #include <core/arrays/tnlArray.h>
@@ -33,7 +37,10 @@
 //TUNE MACROS FOR YOUR FUNKY OUTPUT
 #define SATANVERBOSE
 
-#define SATANTEST(a) if((a)){cout << __LINE__ <<":\t OK" <<endl;}else{cout << __LINE__<<":\t FAIL" <<endl;}
+unsigned int errors=0;
+unsigned int success=0;
+#define SATANTEST(a) if((a)){cout << __LINE__ <<":\t OK" <<endl;success++;}else{cout << __LINE__<<":\t FAIL" <<endl;errors++;}
+#define SATANTESTRESULT cout<<"SUCCES: "<<success<<endl<<"ERRRORS: "<<errors<<endl;
 inline void SatanSay( const char * message)
 {
 #ifdef SATANVERBOSE
@@ -84,6 +91,12 @@ int main(void)
 		cout << "ICPC in USE" <<endl; //LOL
 	#endif
 
+	#ifdef HAVE_MIC
+		cout << "MIC in USE" <<endl; //LOL
+	#endif
+
+		
+
 //prepare arrays with data
 	tnlArray<double,tnlMIC,int> aa(10);
 	tnlArray<double,tnlMIC,int> ee(6);
@@ -105,70 +118,6 @@ for(int i=0;i<5;i++)
 	cc[i]=10+i;
 }
 
-tnlFile soubor;
-soubor.open("/home/hanousek/tnlArrayExperimentSave.bin",tnlWriteMode);
-cc.save(soubor);
-soubor.close();
-
-ee.bind(aa,5,5);
-ee.boundLoad("/home/hanousek/tnlArrayExperimentSave.bin");
-
-
-/*
-tnlFile soubor;
-soubor.open("/home/hanousek/tnlArrayExperimentSave.bin",tnlWriteMode);
-cc.save(soubor);
-soubor.close();
-
-cout << aa.getSize() << endl;
-for(int i=0;i<aa.getSize();i++)
-{
-	cout << aa.getElement(i)<<endl;
-}
-cout <<endl;*/
-/*
-tnlFile soubor;
-soubor.open("/home/hanousek/tnlArrayExperimentSave.bin",tnlWriteMode);
-aa.save(soubor);
-soubor.close();*/
-
-cout << aa.getSize() << endl;
-for(int i=0;i<aa.getSize();i++)
-{
-	cout << aa.getElement(i)<<endl;
-}
-cout <<endl;
-
-cout << ee.getSize() << endl;
-for(int i=0;i<ee.getSize();i++)
-{
-	cout << ee.getElement(i)<<endl;
-}
-cout <<endl;
-
-/*
-soubor.open("/home/hanousek/tnlArrayExperimentSave.bin",tnlReadMode);
-aa.load(soubor);
-soubor.close();
-
-cout << aa.getSize() << endl;
-for(int i=0;i<aa.getSize();i++)
-{
-	cout << aa.getElement(i)<<endl;
-}
-*/
-
-soubor.open("/home/hanousek/tnlArrayExperimentSave.bin",tnlReadMode);
-cc.load(soubor);
-soubor.close();
-
-cout << cc.getSize() << endl;
-for(int i=0;i<cc.getSize();i++)
-{
-	cout << cc.getElement(i)<<endl;
-}
-
-/*
 //prepare arrays for funky tests
 tnlArray<double,tnlMIC,int> bb(10);
 tnlArray<double,tnlMIC,int> dd(0);
@@ -235,7 +184,64 @@ SATANTEST(dd.getElement(1)==6);
 
 //Mylsím, že není zdaleka testováno vše...
 
-SATANTEST(false);
-*/
+///////////////////////////////////////////////////////////////////////////////
+
+SatanSay("File Array Test: \n");
+
+//prepare arrays with data
+
+aa.setSize(10);
+ee.setSize(6);
+cc.setSize(5);
+
+//fill it UP
+aa_params=aa.getParams();	
+#pragma offload target(mic) nocopy(aa) in(aa_params)
+{
+	aa.setParams(aa_params);
+	for(int i=0;i<aa.getSize();i++)
+	{
+		aa[i]=i;
+	}
+}
+
+for(int i=0;i<5;i++)
+{
+	cc[i]=10+i;
+}
+
+tnlFile soubor;
+soubor.open("/tmp/tnlArrayExperimentSave_cc.bin",tnlWriteMode);
+cc.save(soubor);
+soubor.close();
+
+soubor.open("/tmp/tnlArrayExperimentSave_aa.bin",tnlWriteMode);
+aa.save(soubor);
+soubor.close();
+
+ee.bind(aa,5,5);
+ee.boundLoad("/tmp/tnlArrayExperimentSave_cc.bin");
+
+SATANTEST( 10 == aa.getSize())
+for(int i=0;i<5;i++)
+{
+	SATANTEST(aa.getElement(i)==i)
+}
+for(int i=5;i<10;i++)
+{
+	SATANTEST(aa.getElement(i)==i+5)
+}
+
+soubor.open("/tmp/tnlArrayExperimentSave_aa.bin",tnlReadMode);
+cc.load(soubor);
+soubor.close();
+
+SATANTEST( 10 == cc.getSize())
+for(int i=0;i<cc.getSize();i++)
+{
+	SATANTEST(cc.getElement(i)==i)
+}
+
+	SATANTESTRESULT;
     return 0;
 }

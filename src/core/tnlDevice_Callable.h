@@ -22,7 +22,7 @@
 #endif
 
 //NEW, better  __device_callable__ --used only with MIC touch code
-#ifdef HAVE_ICPC 
+#ifdef HAVE_MIC 
     #define __device_callable__ __attribute__((target(mic)))
 #elif HAVE_CUDA
     #define __device_callable__ __device__ __host__

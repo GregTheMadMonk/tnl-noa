@@ -18,14 +18,17 @@
 //#include <core/tnlFile.h>
 #include <core/arrays/tnlArray.h>
 
-#include <png.h>
+//#include <png.h>
 
-
+using namespace std;
 
 //TUNE MACROS FOR YOUR FUNKY OUTPUT
 #define SATANVERBOSE
 
-#define SATANTEST(a) if((a)){cout << __LINE__ <<":\t OK" <<endl;}else{cout << __LINE__<<":\t FAIL" <<endl;}
+unsigned int errors=0;
+unsigned int success=0;
+#define SATANTEST(a) if((a)){cout << __LINE__ <<":\t OK" <<endl;success++;}else{cout << __LINE__<<":\t FAIL" <<endl;errors++;}
+#define SATANTESTRESULT cout<<"SUCCES: "<<success<<endl<<"ERRRORS: "<<errors<<endl;
 inline void SatanSay( const char * message)
 {
 #ifdef SATANVERBOSE
@@ -33,7 +36,7 @@ inline void SatanSay( const char * message)
 #endif
 }
 
-using namespace std;
+
 
 
 
@@ -44,24 +47,17 @@ int main(void)
 	#ifdef HAVE_ICPC
 		cout << "ICPC in USE" <<endl; //LOL
 	#endif
-/*
- 
-		tnlFile soubor;
-		soubor.open("/home/hanousek/pokus.tnl",tnlReadMode);
-		soubor.close();*/
-		
-		//tnlVector<> vct;
+
+	#ifdef HAVE_MIC
+		cout << "MIC in USE" <<endl; //LOL
+	#endif
+
 		tnlArray<double> arr;
 
-/*#pragma offload target(mic) 
+#pragma offload target(mic) 
 		{
 			cout << "Hello " <<endl;
 		}
-*/
-
-		//tnlVector<tnlMIC> aa(10);
-		
-		//cout << aa <<endl;
 
 		
     return 0;
