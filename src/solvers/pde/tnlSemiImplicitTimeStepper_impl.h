@@ -73,8 +73,6 @@ init( const MeshType& mesh )
    }
    if( ! this->rightHandSide.setSize( this->matrix.getRows() ) )
       return false;
-   this->linearSystemAssemblerTimer.reset();
-   this->linearSystemSolverTimer.reset();
    return true;
 }
 
@@ -177,8 +175,9 @@ solve( const RealType& time,
       if( verbose )
          cout << "                                                                  Solving the linear system for time " << t + currentTau << "             \r" << flush;
 
-      // TODO: add timer
+      this->preconditionerUpdateTimer.start();
       preconditioner.update( this->matrix );
+      this->preconditionerUpdateTimer.stop();
 
       this->linearSystemSolverTimer.start();
       if( ! this->linearSystemSolver->template solve< DofVectorType, tnlLinearResidueGetter< MatrixType, DofVectorType > >( this->rightHandSide, dofVector ) )
@@ -216,6 +215,7 @@ writeEpilog( tnlLogger& logger )
 {
    logger.writeParameter< double >( "Pre-iterate time:", this->preIterateTimer.getTime() );
    logger.writeParameter< double >( "Linear system assembler time:", this->linearSystemAssemblerTimer.getTime() );
+   logger.writeParameter< double >( "Preconditioner update time:", this->preconditionerUpdateTimer.getTime() );
    logger.writeParameter< double >( "Linear system solver time:", this->linearSystemSolverTimer.getTime() );
    logger.writeParameter< double >( "Post-iterate time:", this->postIterateTimer.getTime() );
    return true;
