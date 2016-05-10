@@ -53,8 +53,8 @@ class LaxFridrichsEnergy< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
 
-      __cuda_callable__
       template< typename MeshEntity >
+      __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;
@@ -113,8 +113,8 @@ class LaxFridrichsEnergy< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index 
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
 
-      __cuda_callable__
       template< typename MeshEntity >
+      __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;
@@ -173,8 +173,8 @@ class LaxFridrichsEnergy< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index 
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
 
-      __cuda_callable__
       template< typename MeshEntity >
+      __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;

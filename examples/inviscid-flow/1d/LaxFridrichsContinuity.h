@@ -47,8 +47,8 @@ class LaxFridrichsContinuity< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, In
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
 
-      __cuda_callable__
       template< typename MeshEntity >
+      __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;
@@ -102,8 +102,8 @@ class LaxFridrichsContinuity< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, In
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
 
-      __cuda_callable__
       template< typename MeshEntity >
+      __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;
@@ -157,8 +157,8 @@ class LaxFridrichsContinuity< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, In
                        const MeshEntity& entity,
                        const RealType& time = 0.0 ) const;
 
-      __cuda_callable__
       template< typename MeshEntity >
+      __cuda_callable__
       Index getLinearSystemRowLength( const MeshType& mesh,
                                       const IndexType& index,
                                       const MeshEntity& entity ) const;
