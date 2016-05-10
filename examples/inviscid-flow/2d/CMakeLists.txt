@@ -3,7 +3,7 @@ set( tnl_heat_equation_SOURCES
      euler-cuda.cu )
                
 IF( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE(tnl-euler-2d${debugExt} euler.cu)
+   CUDA_ADD_EXECUTABLE(tnl-euler-2d${debugExt} euler-cuda.cu)
    target_link_libraries (tnl-euler-2d${debugExt} tnl${debugExt}-${tnlVersion}  ${CUSPARSE_LIBRARY} )
 ELSE(  BUILD_CUDA )               
    ADD_EXECUTABLE(tnl-euler-2d${debugExt} euler.cpp)     

@@ -3,7 +3,7 @@ set( tnl_heat_equation_SOURCES
      advection.cu )
                
 IF( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE( tnl-advection{debugExt} advection.cu)   
+   CUDA_ADD_EXECUTABLE( tnl-advection${debugExt} advection.cu)   
    target_link_libraries( tnl-advection${debugExt} tnl${debugExt}-${tnlVersion}  ${CUSPARSE_LIBRARY} )
 ELSE(  BUILD_CUDA )               
    ADD_EXECUTABLE( tnl-advection${debugExt} advection.cpp)     
