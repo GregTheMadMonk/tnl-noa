@@ -230,7 +230,7 @@ writeEpilog( tnlLogger& logger )
    this->preIterateTimer.writeLog( logger, 1 );
    logger.writeParameter< const char* >( "Linear system assembler time:", "" );
    this->linearSystemAssemblerTimer.writeLog( logger, 1 );
-   logger.writeParameter< double >( "Preconditioner update time:", "" );
+   logger.writeParameter< const char* >( "Preconditioner update time:", "" );
    this->preconditionerUpdateTimer.writeLog( logger, 1 );
    logger.writeParameter< const char* >( "Linear system solver time:", "" );
    this->linearSystemSolverTimer.writeLog( logger, 1 );
