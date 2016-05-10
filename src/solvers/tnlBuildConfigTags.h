@@ -26,6 +26,7 @@
 #include <solvers/linear/krylov/tnlBICGStabSolver.h>
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
 #include <solvers/linear/krylov/tnlTFQMRSolver.h>
+#include <solvers/linear/tnlUmfpackWrapper.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 
 class tnlDefaultBuildConfigTag{};
@@ -150,6 +151,17 @@ public:
                                                                                  typename Matrix::IndexType > >
     using Template = tnlTFQMRSolver< Matrix, Preconditioner >;
 };
+
+#ifdef HAVE_UMFPACK
+class  tnlSemiImplicitUmfpackSolverTag
+{
+public:
+    template< typename Matrix, typename Preconditioner = tnlDummyPreconditioner< typename Matrix::RealType,
+                                                                                 typename Matrix::DeviceType,
+                                                                                 typename Matrix::IndexType > >
+    using Template = tnlUmfpackWrapper< Matrix, Preconditioner >;
+};
+#endif
 
 template< typename ConfigTag, typename SemiImplicitSolver > struct tnlConfigTagSemiImplicitSolver{ enum { enabled = true }; };
 

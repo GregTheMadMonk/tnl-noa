@@ -80,7 +80,7 @@ class tnlSemiImplicitTimeStepper
 
    RealType timeStep;
 
-   tnlTimer preIterateTimer, linearSystemAssemblerTimer, linearSystemSolverTimer, postIterateTimer;
+   tnlTimer preIterateTimer, linearSystemAssemblerTimer, preconditionerUpdateTimer, linearSystemSolverTimer, postIterateTimer;
    
    bool verbose;
    

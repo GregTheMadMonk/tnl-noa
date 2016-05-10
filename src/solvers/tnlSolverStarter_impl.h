@@ -29,6 +29,7 @@
 #include <solvers/linear/krylov/tnlBICGStabSolver.h>
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
 #include <solvers/linear/krylov/tnlTFQMRSolver.h>
+#include <solvers/linear/tnlUmfpackWrapper.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/preconditioners/tnlDiagonalPreconditioner.h>
 #include <solvers/pde/tnlExplicitTimeStepper.h>
@@ -197,6 +198,7 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
                        const tnlParameterContainer& parameters )
       {
          const tnlString& discreteSolver = parameters. getParameter< tnlString>( "discrete-solver" );
+#ifndef HAVE_UMFPACK
          if( discreteSolver != "sor" &&
              discreteSolver != "cg" &&
              discreteSolver != "bicgstab" &&
@@ -206,6 +208,18 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
             cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres or tfqmr." << endl;
             return false;
          }
+#else
+         if( discreteSolver != "sor" &&
+             discreteSolver != "cg" &&
+             discreteSolver != "bicgstab" &&
+             discreteSolver != "gmres" &&
+             discreteSolver != "tfqmr" &&
+             discreteSolver != "umfpack" )
+         {
+            cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres, tfqmr or umfpack." << endl;
+            return false;
+         }
+#endif
 
          if( discreteSolver == "sor" )
             return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitSORSolverTag, ConfigTag >::run( problem, parameters );
@@ -217,6 +231,10 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
             return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "tfqmr" )
             return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitTFQMRSolverTag, ConfigTag >::run( problem, parameters );
+#ifdef HAVE_UMFPACK
+         if( discreteSolver == "umfpack" )
+            return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitUmfpackSolverTag, ConfigTag >::run( problem, parameters );
+#endif
          return false;
       }
 };

@@ -32,7 +32,7 @@ __host__ __device__
 inline int tnlCuda::getMaxGridSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
-   return 65536;
+   return 65535;
 };
 
 #ifdef HAVE_CUDA
