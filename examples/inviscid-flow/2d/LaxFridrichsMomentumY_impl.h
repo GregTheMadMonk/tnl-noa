@@ -153,9 +153,9 @@ operator()( const MeshFunction& u,
    const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1 >(); 
    const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >(); 
    return (0.25 / this->tau) * ( u[ west ] + u[ east ] + u[ south ] + u[ north ] - 4.0 * u[ center ] ) 
-          - 0.5 * hyInverse * (( u[ east ] * this->velocityX[ east ] )
+          - 0.5 * hxInverse * (( u[ east ] * this->velocityX[ east ] )
 			      -( u[ west ] * this->velocityX[ west ] ))
-          - 0.5 * hxInverse * (( u[ north ] * this->velocityY[ north ] + this->pressure[ north ] )
+          - 0.5 * hyInverse * (( u[ north ] * this->velocityY[ north ] + this->pressure[ north ] )
 			      -( u[ south ] * this->velocityY[ south ] + this->pressure[ south ]));
 }
 

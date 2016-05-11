@@ -108,22 +108,26 @@ setInitialCondition( const tnlParameterContainer& parameters,
    RealType velLuX = parameters.getParameter< RealType >( "left-up-velocityX" );
    RealType velLuY = parameters.getParameter< RealType >( "left-up-velocityY" );
    RealType preLu = parameters.getParameter< RealType >( "left-up-pressure" );
-   RealType eLu = ( preLu / (gamma - 1) ) + 0.5 * rhoLu * pow(velLuX,2)+pow(velLuY,2);
+   RealType eLu = ( preLu / ( rhoLu * (gamma - 1) ) );
+   //RealType eLu = ( preLu / (gamma - 1) ) + 0.5 * rhoLu * pow(velLuX,2)+pow(velLuY,2);
    RealType rhoLd = parameters.getParameter< RealType >( "left-down-density" );
    RealType velLdX = parameters.getParameter< RealType >( "left-down-velocityX" );
    RealType velLdY = parameters.getParameter< RealType >( "left-down-velocityY" );
    RealType preLd = parameters.getParameter< RealType >( "left-down-pressure" );
-   RealType eLd = ( preLd / (gamma - 1) ) + 0.5 * rhoLd * pow(velLdX,2)+pow(velLdY,2);
+   RealType eLd = ( preLd / ( rhoLd * (gamma - 1) ) );
+   //RealType eLd = ( preLd / (gamma - 1) ) + 0.5 * rhoLd * pow(velLdX,2)+pow(velLdY,2);
    RealType rhoRu = parameters.getParameter< RealType >( "right-up-density" );
    RealType velRuX = parameters.getParameter< RealType >( "right-up-velocityX" );
    RealType velRuY = parameters.getParameter< RealType >( "right-up-velocityY" );
    RealType preRu = parameters.getParameter< RealType >( "right-up-pressure" );
-   RealType eRu = ( preRu / (gamma - 1) ) + 0.5 * rhoRu * pow(velRuX,2)+pow(velRuY,2);
+   RealType eRu = ( preRu / ( rhoRu * (gamma - 1) ) );
+   //RealType eRu = ( preRu / (gamma - 1) ) + 0.5 * rhoRu * pow(velRuX,2)+pow(velRuY,2);
    RealType rhoRd = parameters.getParameter< RealType >( "right-down-density" );
    RealType velRdX = parameters.getParameter< RealType >( "right-down-velocityX" );
    RealType velRdY = parameters.getParameter< RealType >( "right-down-velocityY" );
    RealType preRd = parameters.getParameter< RealType >( "right-down-pressure" );
-   RealType eRd = ( preRd / (gamma - 1) ) + 0.5 * rhoRd * pow(velRdX,2)+pow(velRdY,2);
+   RealType eRd = ( preRd / ( rhoRd * (gamma - 1) ) );
+   //RealType eRd = ( preRd / (gamma - 1) ) + 0.5 * rhoRd * pow(velRdX,2)+pow(velRdY,2);
    RealType x0 = parameters.getParameter< RealType >( "riemann-border" );
    int size = mesh.template getEntitiesCount< Cell >();
    uRho.bind(mesh, dofs, 0);
@@ -138,7 +142,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
    velocityY.bind(mesh, data, 3*size);
    for(IndexType j = 0; j < sqrt(size); j++)   
       for(IndexType i = 0; i < sqrt(size); i++)
-         if ((i < x0 * sqrt(size))&&(j < x0 * sqrt(size)) )
+         if ((i <= x0 * sqrt(size))&&(j <= x0 * sqrt(size)) )
             {
                uRho[j*sqrt(size)+i] = rhoLd;
                uRhoVelocityX[j*sqrt(size)+i] = rhoLd * velLdX;
@@ -150,7 +154,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
                pressure[j*sqrt(size)+i] = preLd;
             }
          else
-         if ((i >= x0 * sqrt(size))&&(j < x0 * sqrt(size)) )
+         if ((i <= x0 * sqrt(size))&&(j > x0 * sqrt(size)) )
             {
                uRho[j*sqrt(size)+i] = rhoLu;
                uRhoVelocityX[j*sqrt(size)+i] = rhoLu * velLuX;
@@ -162,7 +166,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
                pressure[j*sqrt(size)+i] = preLu;
             }
          else
-         if ((i >= x0 * sqrt(size))&&(j >= x0 * sqrt(size)) )
+         if ((i > x0 * sqrt(size))&&(j > x0 * sqrt(size)) )
             {
                uRho[j*sqrt(size)+i] = rhoRu;
                uRhoVelocityX[j*sqrt(size)+i] = rhoRu * velRuX;

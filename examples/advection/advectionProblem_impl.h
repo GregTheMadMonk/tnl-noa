@@ -173,7 +173,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
 		   for (IndexType i = 0; i < inverseSquareCount-1; i++)
 		      for (IndexType j = 0; j < inverseSquareCount-1; j++)
 		      {
-			   dofs[i * inverseSquareCount + j] = exp(-pow(10/(size*inverseSquareCount)*(size*i-0.2*size*inverseSquareCount),2)-pow(10/(size*inverseSquareCount)*(size*j-0.2*size*inverseSquareCount)*size,2));
+			   dofs[i * inverseSquareCount + j] = exp(-pow(10/(size*inverseSquareCount)*(size*i-0.2*size*inverseSquareCount),2)-pow(10/(size*inverseSquareCount)*(size*j-0.2*size*inverseSquareCount),2));
 		      };
 		};
      }
@@ -284,13 +284,14 @@ makeSnapshot( const RealType& time,
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
    this->bindDofs( mesh, dofs );
    tnlString fileName;
+   MeshFunctionType dofsh;
+   dofsh.bind(mesh,dofs);
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! dofs.save( fileName ) )
+   if( ! dofsh.save( fileName ) )
       return false;
    FileNameBaseNumberEnding( "a-", step, 5, ".tnl", fileName );
    if( ! this->analyt.save( fileName ) )
       return false;
-cin.ignore();
    return true;
 }
 
@@ -317,7 +318,7 @@ getExplicitRHS( const RealType& time,
       {
 	   if (dimension == 1)
 	       {
-		   this->analyt[0];
+		   this->analyt[0] = 0;
 		   for (IndexType i = 1; i < count-2; i++)
 		   {
 			if ((i - step * tau * (count/this->schemeSize) * this -> speedX>0.4*count) && (i - step * tau * (count/this->schemeSize) * this -> speedX<0.5*count)) analyt[i]=1; else analyt[i]=0;
@@ -331,7 +332,7 @@ getExplicitRHS( const RealType& time,
 		      {
 			if ((i - step * tau * (inverseSquareCount/this->schemeSize) * this -> speedX>0.4*inverseSquareCount) && (i - step * tau * (inverseSquareCount/this->schemeSize) * this -> speedX<0.5*inverseSquareCount) 
                          && (j - step * tau * (inverseSquareCount/this->schemeSize) * this -> speedY>0.4*inverseSquareCount) && (j - step * tau * (inverseSquareCount/this->schemeSize) * this -> speedY<0.5*inverseSquareCount))
-                        analyt[i]=1; else analyt[i]=0;
+                        analyt[i * inverseSquareCount + j]=1; else analyt[i * inverseSquareCount + j]=0;
 		      };
 		};
        }
@@ -379,8 +380,8 @@ getExplicitRHS( const RealType& time,
 	    else if (dimension == 2)
 	       {
                    count = sqrt(count);
-		   for (IndexType i = 1; i < inverseSquareCount-1; i++)
-		      for (IndexType j = 1; j < inverseSquareCount-1; j++)
+		   for (IndexType i = 0; i < inverseSquareCount-1; i++)
+		      for (IndexType j = 0; j < inverseSquareCount-1; j++)
 		      {
 			   this->analyt[i * inverseSquareCount + j] = exp(-pow(10/(size*inverseSquareCount)*(size*i-0.2*size*inverseSquareCount)-step * 10 * tau * this->speedX,2)-pow(10/(size*inverseSquareCount)*(size*j-0.2*size*inverseSquareCount)-step * 10 * tau * this->speedY,2));
 		      };
@@ -401,8 +402,8 @@ getExplicitRHS( const RealType& time,
 	    else if (dimension == 2)
 	       {
                    count = sqrt(count);
-		   for (IndexType i = 1; i < inverseSquareCount-1; i++)
-		      for (IndexType j = 1; j < inverseSquareCount-1; j++)
+		   for (IndexType i = 0; i < inverseSquareCount-1; i++)
+		      for (IndexType j = 0; j < inverseSquareCount-1; j++)
 		      {
 			   if (i - step * tau * (inverseSquareCount/this->schemeSize) * this -> speedX < 0.5*inverseSquareCount && 
                                j - step * tau * (inverseSquareCount/this->schemeSize) * this -> speedY < 0.5*inverseSquareCount) 

@@ -7,6 +7,7 @@
 #include "eulerProblem.h"
 #include "LaxFridrichs.h"
 #include "tnlMyMixedBoundaryConditions.h"
+#include "tnlMyNeumannBoundaryConditions.h"
 
 #include "eulerRhs.h"
 #include "eulerBuildConfigTag.h"
@@ -33,6 +34,7 @@ template< typename ConfigTag >class eulerConfig
             config.addEntryEnum< tnlString >( "dirichlet" );
             config.addEntryEnum< tnlString >( "neumann" );
             config.addEntryEnum< tnlString >( "mymixed" );
+            config.addEntryEnum< tnlString >( "myneumann" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< double >( "left-density", "This sets a value of left density." );
          config.addEntry< double >( "left-velocity", "This sets a value of left velocity." );
@@ -103,6 +105,13 @@ class eulerSetter
           if( boundaryConditionsType == "mymixed" )
           {
              typedef tnlMyMixedBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+             typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+             SolverStarter solverStarter;
+             return solverStarter.template run< Problem >( parameters );
+          }
+          if( boundaryConditionsType == "myneumann" )
+          {
+             typedef tnlMyNeumannBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
              typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );

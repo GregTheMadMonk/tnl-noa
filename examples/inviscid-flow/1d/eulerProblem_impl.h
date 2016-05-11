@@ -99,29 +99,27 @@ setInitialCondition( const tnlParameterContainer& parameters,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
 {
-   cout << endl << "get conditions from CML";
    typedef typename MeshType::Cell Cell;
    this->gamma = parameters.getParameter< RealType >( "gamma" );
    RealType rhoL = parameters.getParameter< RealType >( "left-density" );
    RealType velL = parameters.getParameter< RealType >( "left-velocity" );
    RealType preL = parameters.getParameter< RealType >( "left-pressure" );
-   RealType eL = ( preL / (gamma - 1) ) + 0.5 * rhoL * velL * velL;
+   RealType eL = ( preL / ( rhoL * (gamma - 1) ) );
+   //RealType eL = ( preL / (gamma - 1) ) + 0.5 * rhoL * velL * velL;
    RealType rhoR = parameters.getParameter< RealType >( "right-density" );
    RealType velR = parameters.getParameter< RealType >( "right-velocity" );
    RealType preR = parameters.getParameter< RealType >( "right-pressure" );
-   RealType eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * velR * velR;
+   RealType eR = ( preR / ( rhoR * (gamma - 1) ) );
+   //RealType eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * velR * velR;
    RealType x0 = parameters.getParameter< RealType >( "riemann-border" );
-   cout <<endl << gamma << " " << rhoL << " " << velL << " " << preL << " " << eL << " " << rhoR << " " << velR << " " << preR << " " << eR << " " << x0 << " " << gamma << endl;
    int count = mesh.template getEntitiesCount< Cell >();
-cout << count << endl;
    uRho.bind(mesh, dofs, 0);
    uRhoVelocity.bind(mesh, dofs, count);
    uEnergy.bind(mesh, dofs, 2 * count);
    tnlVector < RealType, DeviceType, IndexType > data;
    data.setSize(2*count);
    velocity.bind( mesh, data, 0);
-   pressure.bind( mesh, data, count );
-   cout << endl << "set conditions from CML"<< endl;   
+   pressure.bind( mesh, data, count );  
    for(IndexType i = 0; i < count; i++)
       if (i < x0 * count )
          {
@@ -139,13 +137,6 @@ cout << count << endl;
             velocity[i] = velR;
             pressure[i] = preR;
          };
-   cout << "dofs = " << dofs << endl;
-   cout << "velocity = " << velocity.getData() << endl;
-   cout << "pressure = " << pressure.getData() << endl;
-
-   getchar();
-  
-   
    /*
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
    if( ! dofs.load( initialConditionFile ) )
