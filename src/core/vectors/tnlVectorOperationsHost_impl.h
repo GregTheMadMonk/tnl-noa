@@ -454,7 +454,7 @@ addVectors( Vector1& v,
 #pragma omp parallel for if( tnlOmp::isEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif           
       for( Index i = 0; i < n; i ++ )
-         v[ i ] = thisMultiplicator * v[ i ] * multiplicator1 * v1[ i ] + multiplicator2 * v2[ i ];
+         v[ i ] = thisMultiplicator * v[ i ] + multiplicator1 * v1[ i ] + multiplicator2 * v2[ i ];
 }
 
 template< typename Vector >
