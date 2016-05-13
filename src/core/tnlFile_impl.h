@@ -19,6 +19,7 @@
 #define	TNLFILE_IMPL_H
 
 #include "tnlFile.h"
+#include <core/tnlMIC.h>
 
 
 template< typename Type, typename Device >
@@ -31,11 +32,6 @@ template< typename Type, typename Device >
 bool tnlFile :: write( const Type* buffer )
 {
    return write< Type, Device, int >( buffer, 1 );
-};
-
-template< typename Type >
-struct satanHider{
-    Type *pointer;
 };
 
 template< typename Type, typename Device, typename Index >

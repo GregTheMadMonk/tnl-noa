@@ -244,7 +244,7 @@ class tnlVectorOperations< tnlCuda >
                                           const typename Vector::IndexType end );
 };
 
-/*
+#ifdef HAVE_MIC
 template<>
 class tnlVectorOperations< tnlMIC >
 {
@@ -351,10 +351,12 @@ class tnlVectorOperations< tnlMIC >
    static void computeExclusivePrefixSum( Vector& v,
                                           const typename Vector::IndexType begin,
                                           const typename Vector::IndexType end );
-};*/
+};
+#endif
 
 #include <core/vectors/tnlVectorOperationsHost_impl.h>
 #include <core/vectors/tnlVectorOperationsCuda_impl.h>
-//#include <core/vectors/tnlVectorOperationsMIC_impl.h>
-
+#ifdef HAVE_MIC
+#include <core/vectors/tnlVectorOperationsMIC_impl.h>
+#endif
 #endif /* TNLVECTOROPERATIONS_H_ */

@@ -51,6 +51,10 @@ class tnlMIC
          }
 };
 
+template< typename Type >
+struct satanHider{
+    Type *pointer;
+};
 
 #endif /* TNLMIC_H */
 
