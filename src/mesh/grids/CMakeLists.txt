@@ -15,7 +15,9 @@ SET( headers tnlBoundaryGridEntityChecker.h
              tnlGridEntityMeasureGetter.h
              tnlGridEntityTopology.h
              tnlGridTraverser.h
-             tnlGridTraverser_impl.h
+             tnlGridTraverserHost_impl.h
+             tnlGridTraverserCUDA_impl.h
+             tnlGridTraverserMIC_impl.h
              tnlNeighbourGridEntitiesStorage.h
              tnlNeighbourGridEntityGetter1D_impl.h
              tnlNeighbourGridEntityGetter2D_impl.h

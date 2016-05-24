@@ -75,8 +75,10 @@ class tnlMeshFunction :
       
       const MeshType& getMesh() const;
       
+      __cuda_callable__
       const VectorType& getData() const;      
       
+      __cuda_callable__
       VectorType& getData();
       
       bool refresh( const RealType& time = 0.0 ) const;

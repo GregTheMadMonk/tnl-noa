@@ -85,6 +85,24 @@ getCompressedRowsLengths( const MeshType& mesh,
                const BoundaryConditions& boundaryConditions,
                CompressedRowsLengthsVector& rowLengths ) const
 {
+    
+   //TODO issame:value 
+   if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+   {
+      /*TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );
+      tnlTraverser< MeshType, EntityType > meshTraversal;
+      meshTraversal.template processBoundaryEntities< TraversalUserData,
+                                                      TraversalBoundaryEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+      meshTraversal.template processInteriorEntities< TraversalUserData,
+                                                      TraversalInteriorEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );*/
+       cout << "NOT impleneted YET - getCompressedRowsLength" <<endl;
+   } 
+    
+    
    if( DeviceType::DeviceType == ( int ) tnlHostDevice )
    {
       TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );
@@ -121,6 +139,31 @@ getCompressedRowsLengths( const MeshType& mesh,
       tnlCuda::freeFromDevice( kernelCompressedRowsLengths );
       checkCudaDevice;
    }
+   
+   if( DeviceType::DeviceType == ( int ) tnlMICDevice )
+   {
+      const DifferentialOperator* kernelDifferentialOperator = tnlMIC::passToDevice( differentialOperator );
+      const BoundaryConditions* kernelBoundaryConditions = tnlMIC::passToDevice( boundaryConditions );
+      CompressedRowsLengthsVector* kernelCompressedRowsLengths = tnlMIC::passToDevice( rowLengths );
+      TraversalUserData userData( *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelCompressedRowsLengths );
+      
+      tnlTraverser< MeshType, EntityType > meshTraversal;
+      meshTraversal.template processBoundaryEntities< TraversalUserData,
+                                                      TraversalBoundaryEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+      meshTraversal.template processInteriorEntities< TraversalUserData,
+                                                      TraversalInteriorEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+
+      tnlMIC::freeFromDevice( kernelDifferentialOperator );
+      tnlMIC::freeFromDevice( kernelBoundaryConditions );
+      tnlMIC::freeFromDevice( kernelCompressedRowsLengths );
+      
+   }
+   
+   
 }
 
 

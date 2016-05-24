@@ -16,7 +16,7 @@
  ***************************************************************************/
 #include <core/arrays/tnlSharedArray.h>
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+#ifdef NEDEFINOVANO //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
 template class tnlSharedArray< float, tnlHost, int >;

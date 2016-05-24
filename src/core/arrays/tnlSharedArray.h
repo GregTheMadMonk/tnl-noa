@@ -21,6 +21,12 @@
 #include <core/tnlObject.h>
 #include <core/tnlCuda.h>
 
+#include <core/arrays/tnlArray.h>
+
+#define tnlSharedArray tnlArray;
+
+/*
+
 class tnlFile;
 class tnlHost;
 class tnlCuda;
@@ -115,14 +121,14 @@ class tnlSharedArray : public tnlObject
 
    /*!
     * Returns true if non-zero size is set.
-    */
+   
    operator bool() const;
 
    //! This method measures data transfers done by this vector.
    /*!
     * Every time one touches this grid touches * size * sizeof( Real ) bytes are added
     * to transfered bytes in tnlStatistics.
-    */
+    
 #ifdef HAVE_NOT_CXX11
    template< typename IndexType2 >
    void touch( IndexType2 touches = 1 ) const;
@@ -154,4 +160,5 @@ ostream& operator << ( ostream& str, const tnlSharedArray< Element, Device, Inde
 
 #include <core/arrays/tnlSharedArray_impl.h>
 
+ */
 #endif /* TNLSHAREDARRAY_H_ */

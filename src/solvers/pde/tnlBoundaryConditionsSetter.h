@@ -70,7 +70,7 @@ class tnlBoundaryConditionsSetter
          public:
             
             template< typename GridEntity >
-            __cuda_callable__
+            __device_callable__
             static inline void processEntity( const MeshType& mesh,
                                               TraverserUserData& userData,
                                               const GridEntity& entity )

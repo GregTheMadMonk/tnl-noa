@@ -17,7 +17,7 @@
 
 #ifndef TNLSHAREDVECTOR_H_IMPLEMENTATION
 #define TNLSHAREDVECTOR_H_IMPLEMENTATION
-
+/*
 #include <core/vectors/tnlVectorOperations.h>
 
 template< typename Real,
@@ -413,9 +413,9 @@ extern template class tnlSharedVector< double, tnlCuda, long int >;
 extern template class tnlSharedVector< long double, tnlCuda, long int >;
 #endif
  #endif 
- */
+ *
 #endif
 
 #endif
-
+*/
 #endif /* TNLSHAREDVECTOR_H_IMPLEMENTATION */

@@ -27,6 +27,7 @@
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
 #include <solvers/linear/krylov/tnlTFQMRSolver.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
+#include <core/tnlMIC.h>
 
 class tnlDefaultBuildConfigTag{};
 
@@ -38,6 +39,10 @@ template< typename ConfigTag, typename Device > struct tnlConfigTagDevice{ enum 
 #ifndef HAVE_CUDA
 template< typename ConfigTag > struct tnlConfigTagDevice< ConfigTag, tnlCuda >{ enum { enabled = false }; };
 #endif
+#ifndef HAVE_MIC
+template< typename ConfigTag > struct tnlConfigTagDevice< ConfigTag, tnlMIC >{ enum { enabled = false }; };
+#endif
+
 
 /****
  * All real types are enabled by default.

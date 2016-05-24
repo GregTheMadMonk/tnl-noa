@@ -25,6 +25,7 @@
 #include <core/param-types.h>
 #include <core/arrays/tnlArrayOperations.h>
 #include <core/arrays/tnlArrayIO.h>
+#include <core/arrays/tnlStaticArray.h>
 
 #include "tnlArray.h"
 

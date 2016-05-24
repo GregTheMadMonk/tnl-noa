@@ -113,6 +113,47 @@ assembly( const RealType& time,
       tnlCuda::freeFromDevice( kernelMatrix );
       checkCudaDevice;
    }
+   
+   if( std::is_same< DeviceType, tnlMIC >::value )
+   {
+      const RealType* kernelTime = tnlMIC::passToDevice( time );
+      const RealType* kernelTau = tnlMIC::passToDevice( tau );
+      const DifferentialOperator* kernelDifferentialOperator = tnlMIC::passToDevice( differentialOperator );
+      const BoundaryConditions* kernelBoundaryConditions = tnlMIC::passToDevice( boundaryConditions );
+      const RightHandSide* kernelRightHandSide = tnlMIC::passToDevice( rightHandSide );
+      const MeshFunction* kernelU = tnlMIC::passToDevice( u );
+      DofVector* kernelB = tnlMIC::passToDevice( b );
+      MatrixType* kernelMatrix = tnlMIC::passToDevice( matrix );
+      TraverserUserData userData( *kernelTime,
+                                  *kernelTau,
+                                  *kernelDifferentialOperator,
+                                  *kernelBoundaryConditions,
+                                  *kernelRightHandSide,
+                                  *kernelU,
+                                  *kernelMatrix,
+                                  *kernelB );
+      
+      tnlTraverser< MeshType, EntityType > meshTraverser;
+      meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                      TraverserBoundaryEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+      meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                      TraverserInteriorEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+
+      
+      tnlMIC::freeFromDevice( kernelTime );
+      tnlMIC::freeFromDevice( kernelTau );
+      tnlMIC::freeFromDevice( kernelDifferentialOperator );
+      tnlMIC::freeFromDevice( kernelBoundaryConditions );
+      tnlMIC::freeFromDevice( kernelRightHandSide );
+      tnlMIC::freeFromDevice( kernelU );
+      tnlMIC::freeFromDevice( kernelB );
+      tnlMIC::freeFromDevice( kernelMatrix );
+   }
+   
 }
 
 #endif /* TNLLINEARSYSTEMASSEMBLER_IMPL_H_ */

@@ -23,6 +23,8 @@
 #include <mesh/grids/tnlTraverser_Grid2D.h>
 #include <mesh/grids/tnlTraverser_Grid3D.h>
 
+#include <execinfo.h>
+
 #include "tnlExplicitUpdater.h"
 
 template< typename Mesh,
@@ -46,6 +48,7 @@ update( const RealType& time,
                                            typename MeshFunction::DeviceType,
                                            typename MeshFunction::IndexType > >::value != true,
       "Error: I am getting tnlVector instead of tnlMeshFunction or similar object. You might forget to bind DofVector into tnlMeshFunction in you method getExplicitRHS."  );
+   //HOST
    if( std::is_same< DeviceType, tnlHost >::value )
    {
       TraverserUserData userData( time, differentialOperator, boundaryConditions, rightHandSide, u, fu );
@@ -60,6 +63,7 @@ update( const RealType& time,
                                                       userData );
 
    }
+   //CUDA
    if( std::is_same< DeviceType, tnlCuda >::value )
    {
       if( this->gpuTransferTimer ) 
@@ -72,7 +76,6 @@ update( const RealType& time,
       MeshFunction* kernelFu = tnlCuda::passToDevice( fu );
      if( this->gpuTransferTimer ) 
          this->gpuTransferTimer->stop();
-
       TraverserUserData userData( *kernelTime, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelFu );
       checkCudaDevice;
       tnlTraverser< MeshType, EntityType > meshTraverser;
@@ -100,6 +103,36 @@ update( const RealType& time,
       if( this->gpuTransferTimer ) 
          this->gpuTransferTimer->stop();
 
+   }
+   //MIC
+   if( std::is_same< DeviceType, tnlMIC >::value )
+   {  
+      
+      const RealType* kernelTime = tnlMIC::passToDevice( time );
+      const DifferentialOperator* kernelDifferentialOperator = tnlMIC::passToDevice( differentialOperator );
+      const BoundaryConditions* kernelBoundaryConditions = tnlMIC::passToDevice( boundaryConditions );
+      const RightHandSide* kernelRightHandSide = tnlMIC::passToDevice( rightHandSide );
+      MeshFunction* kernelU = tnlMIC::passToDevice( u );
+      MeshFunction* kernelFu = tnlMIC::passToDevice( fu );
+           
+      TraverserUserData userData( *kernelTime, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelFu );
+       
+      tnlTraverser< MeshType, EntityType > meshTraverser;
+      meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                      TraverserBoundaryEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+      meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                      TraverserInteriorEntitiesProcessor >
+                                                    ( mesh,
+                                                      userData );
+      
+      tnlMIC::freeFromDevice( kernelTime );
+      tnlMIC::freeFromDevice( kernelDifferentialOperator );
+      tnlMIC::freeFromDevice( kernelBoundaryConditions );
+      tnlMIC::freeFromDevice( kernelRightHandSide );
+      tnlMIC::freeFromDevice( kernelU );
+      tnlMIC::freeFromDevice( kernelFu );       
    }
 }
 

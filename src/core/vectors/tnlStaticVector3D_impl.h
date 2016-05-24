@@ -19,34 +19,34 @@
 #define TNLSTATICVECTOR3D_IMPL_H_
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 tnlStaticVector< 3, Real >::tnlStaticVector()
 {
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 tnlStaticVector< 3, Real >::tnlStaticVector( const Real v[ 3 ] )
 : tnlStaticArray< 3, Real >( v )
 {
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 tnlStaticVector< 3, Real >::tnlStaticVector( const Real& v )
 : tnlStaticArray< 3, Real >( v )
 {
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 tnlStaticVector< 3, Real >::tnlStaticVector( const Real& v1, const Real& v2, const Real& v3 )
 : tnlStaticArray< 3, Real >( v1, v2, v3 )
 {
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 tnlStaticVector< 3, Real >::tnlStaticVector( const tnlStaticVector< 3, Real >& v )
 : tnlStaticArray< 3, Real >( v )
 {
@@ -63,7 +63,7 @@ tnlString tnlStaticVector< 3, Real >::getType()
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 tnlStaticVector< 3, Real >& tnlStaticVector< 3, Real >::operator += ( const tnlStaticVector& v )
 {
    this->data[ 0 ] += v[ 0 ];
@@ -73,7 +73,7 @@ tnlStaticVector< 3, Real >& tnlStaticVector< 3, Real >::operator += ( const tnlS
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 tnlStaticVector< 3, Real >& tnlStaticVector< 3, Real >::operator -= ( const tnlStaticVector& v )
 {
    this->data[ 0 ] -= v[ 0 ];
@@ -83,7 +83,7 @@ tnlStaticVector< 3, Real >& tnlStaticVector< 3, Real >::operator -= ( const tnlS
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 tnlStaticVector< 3, Real >& tnlStaticVector< 3, Real >::operator *= ( const Real& c )
 {
    this->data[ 0 ] *= c;
@@ -93,7 +93,7 @@ tnlStaticVector< 3, Real >& tnlStaticVector< 3, Real >::operator *= ( const Real
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 tnlStaticVector< 3, Real > tnlStaticVector< 3, Real >::operator + ( const tnlStaticVector& u ) const
 {
    tnlStaticVector< 3, Real > res;
@@ -104,7 +104,7 @@ tnlStaticVector< 3, Real > tnlStaticVector< 3, Real >::operator + ( const tnlSta
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 tnlStaticVector< 3, Real > tnlStaticVector< 3, Real >::operator - ( const tnlStaticVector& u ) const
 {
    tnlStaticVector< 3, Real > res;
@@ -115,7 +115,7 @@ tnlStaticVector< 3, Real > tnlStaticVector< 3, Real >::operator - ( const tnlSta
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 tnlStaticVector< 3, Real > tnlStaticVector< 3, Real >::operator * ( const Real& c ) const
 {
    tnlStaticVector< 3, Real > res;
@@ -126,7 +126,7 @@ tnlStaticVector< 3, Real > tnlStaticVector< 3, Real >::operator * ( const Real& 
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 Real tnlStaticVector< 3, Real >::operator * ( const tnlStaticVector& u ) const
 {
    return this->data[ 0 ] * u[ 0 ] +
@@ -135,7 +135,7 @@ Real tnlStaticVector< 3, Real >::operator * ( const tnlStaticVector& u ) const
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 bool tnlStaticVector< 3, Real >::operator < ( const tnlStaticVector& v ) const
 {
    return ( this->data[ 0 ] < v[ 0 ] &&
@@ -144,7 +144,7 @@ bool tnlStaticVector< 3, Real >::operator < ( const tnlStaticVector& v ) const
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 bool tnlStaticVector< 3, Real >::operator <= ( const tnlStaticVector& v ) const
 {
    return ( this->data[ 0 ] <= v[ 0 ] &&
@@ -153,7 +153,7 @@ bool tnlStaticVector< 3, Real >::operator <= ( const tnlStaticVector& v ) const
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 bool tnlStaticVector< 3, Real >::operator > ( const tnlStaticVector& v ) const
 {
    return ( this->data[ 0 ] > v[ 0 ] &&
@@ -162,16 +162,33 @@ bool tnlStaticVector< 3, Real >::operator > ( const tnlStaticVector& v ) const
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 bool tnlStaticVector< 3, Real >::operator >= ( const tnlStaticVector& v ) const
 {
    return ( this->data[ 0 ] >= v[ 0 ] &&
             this->data[ 1 ] >= v[ 1 ] &&
             this->data[ 2 ] >= v[ 2 ] );
 }
+
+template<typename Real >
+__device_callable__
+inline tnlStaticVector< 3, Real >& tnlStaticVector< 3, Real >::operator = ( const tnlStaticVector< 3, Real >& vct )
+{
+    tnlStaticArray<3,Real>::operator =(vct);
+}
+
+template<typename Real >
+template< typename Vct >
+__device_callable__
+inline tnlStaticVector< 3, Real >& tnlStaticVector< 3, Real >::operator = ( const Vct& vct )
+{
+    tnlStaticArray<3,Real>::operator =(vct);
+}
+
+
 template< typename Real >
    template< typename OtherReal >
-__cuda_callable__
+__device_callable__
 tnlStaticVector< 3, Real >::
 operator tnlStaticVector< 3, OtherReal >() const
 {
@@ -183,7 +200,7 @@ operator tnlStaticVector< 3, OtherReal >() const
 }
 
 template< typename Real >
-__cuda_callable__
+__device_callable__
 tnlStaticVector< 3, Real >
 tnlStaticVector< 3, Real >::abs() const
 {

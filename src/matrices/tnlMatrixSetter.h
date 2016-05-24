@@ -18,6 +18,8 @@
 #ifndef TNLMATRIXSETTER_H_
 #define TNLMATRIXSETTER_H_
 
+#include <core/tnlDevice_Callable.h>
+
 template< typename DifferentialOperator,
           typename BoundaryConditions,
           typename CompressedRowsLengthsVector >
@@ -67,7 +69,7 @@ class tnlMatrixSetter
       public:
 
          template< int EntityDimension >
-         __cuda_callable__
+         __device_callable__
          static void processEntity( const MeshType& mesh,
                                     TraversalUserData& userData,
                                     const IndexType index )
@@ -83,7 +85,7 @@ class tnlMatrixSetter
       public:
 
          template< typename EntityType >
-         __cuda_callable__
+         __device_callable__
          static void processEntity( const MeshType& mesh,
                                     TraversalUserData& userData,
                                     const IndexType index )

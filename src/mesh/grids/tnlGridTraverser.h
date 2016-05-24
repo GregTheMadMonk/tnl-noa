@@ -88,6 +88,37 @@ class tnlGridTraverser< tnlGrid< 1, Real, tnlCuda, Index > >
 };
 
 /****
+ * 1D grid, tnlHMIC
+ */
+template< typename Real,           
+          typename Index >
+class tnlGridTraverser< tnlGrid< 1, Real, tnlMIC, Index > >
+{
+   public:
+      
+      typedef tnlGrid< 1, Real, tnlMIC, Index > GridType;
+      typedef Real RealType;
+      typedef tnlMIC DeviceType;
+      typedef Index IndexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      
+      template<
+         typename GridEntity,
+         typename EntitiesProcessor,
+         typename UserData,
+         bool processOnlyBoundaryEntities >
+      static void
+      processEntities(
+         const GridType& grid,
+         const CoordinatesType& begin,
+         const CoordinatesType& end,
+         const CoordinatesType& entityOrientation,
+         const CoordinatesType& entityBasis,
+         UserData& userData );
+};
+
+
+/****
  * 2D grid, tnlHost
  */
 template< typename Real,           
@@ -146,6 +177,38 @@ class tnlGridTraverser< tnlGrid< 2, Real, tnlCuda, Index > >
          const GridType& grid,
          const CoordinatesType& begin,
          const CoordinatesType& end,
+         const CoordinatesType& entityOrientation,
+         const CoordinatesType& entityBasis,         
+         UserData& userData );
+};
+
+/****
+ * 2D grid, tnlMIC
+ */
+template< typename Real,           
+          typename Index >
+class tnlGridTraverser< tnlGrid< 2, Real, tnlMIC, Index > >
+{
+   public:
+      
+      typedef tnlGrid< 2, Real, tnlMIC, Index > GridType;
+      typedef Real RealType;
+      typedef tnlMIC DeviceType;
+      typedef Index IndexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      
+      template<
+         typename GridEntity,
+         typename EntitiesProcessor,
+         typename UserData,
+         bool processOnlyBoundaryEntities,
+         int XOrthogonalBoundary = 1,
+         int YOrthogonalBoundary = 1 >
+      static void
+      processEntities(
+         const GridType& grid,
+         const CoordinatesType begin,
+         const CoordinatesType end,
          const CoordinatesType& entityOrientation,
          const CoordinatesType& entityBasis,         
          UserData& userData );
@@ -217,7 +280,42 @@ class tnlGridTraverser< tnlGrid< 3, Real, tnlCuda, Index > >
          UserData& userData );
 };
 
-#include <mesh/grids/tnlGridTraverser_impl.h>
+/****
+ * 3D grid, tnlMIC
+ */
+template< typename Real,           
+          typename Index >
+class tnlGridTraverser< tnlGrid< 3, Real, tnlMIC, Index > >
+{
+   public:
+      
+      typedef tnlGrid< 3, Real, tnlMIC, Index > GridType;
+      typedef Real RealType;
+      typedef tnlMIC DeviceType;
+      typedef Index IndexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      
+      template<
+         typename GridEntity,
+         typename EntitiesProcessor,
+         typename UserData,
+         bool processOnlyBoundaryEntities,
+         int XOrthogonalBoundary = 1,
+         int YOrthogonalBoundary = 1,
+         int ZOrthogonalBoundary = 1 >
+      static void
+      processEntities(
+         const GridType& grid,
+         const CoordinatesType& begin,
+         const CoordinatesType& end,
+         const CoordinatesType& entityOrientation,
+         const CoordinatesType& entityBasis,         
+         UserData& userData );
+};
+
+#include <mesh/grids/tnlGridTraverserHost_impl.h>
+#include <mesh/grids/tnlGridTraverserCUDA_impl.h>
+#include <mesh/grids/tnlGridTraverserMIC_impl.h>
 
 #endif	/* TNLGRIDTRAVERSER_H */
 

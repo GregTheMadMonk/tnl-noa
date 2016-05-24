@@ -24,6 +24,8 @@
 #include <mesh/grids/tnlGridEntityMeasureGetter.h>
 #include <mesh/grids/tnlGridEntity.h>
 
+#include <core/tnlDevice_Callable.h>
+
 
 /*template< int Dimensions,
           typename Real,
@@ -302,7 +304,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           typename Config >
-__cuda_callable__ inline
+__device_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
 tnlGridEntity( const GridType& grid )
 : grid( grid ),
@@ -319,7 +321,7 @@ template< int Dimensions,
           typename Device,
           typename Index,
           typename Config >
-__cuda_callable__ inline
+__device_callable__ inline
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
 tnlGridEntity( const GridType& grid,
                const CoordinatesType& coordinates,

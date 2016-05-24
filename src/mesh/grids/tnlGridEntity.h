@@ -84,6 +84,9 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       tnlGridEntity( const GridType& grid );
       
       __cuda_callable__ inline
+      ~tnlGridEntity(){};
+      
+      __cuda_callable__ inline
       tnlGridEntity( const GridType& grid,
                      const CoordinatesType& coordinates,
                      const EntityOrientationType& orientation,
@@ -211,6 +214,9 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Con
       tnlGridEntity( const GridType& grid );
       
       __cuda_callable__ inline
+      ~tnlGridEntity(){};
+      
+      __cuda_callable__ inline
       tnlGridEntity( const GridType& grid,
                      const CoordinatesType& coordinates,
                      const EntityOrientationType& orientation = EntityOrientationType( 0 ),
@@ -335,6 +341,9 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
 
       __cuda_callable__ inline
       tnlGridEntity( const GridType& grid );
+      
+      __cuda_callable__ inline
+      ~tnlGridEntity(){};
       
       __cuda_callable__ inline
       tnlGridEntity( const GridType& grid,

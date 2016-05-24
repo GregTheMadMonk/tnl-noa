@@ -100,7 +100,7 @@ class tnlNeighbourGridEntitiesStorage
       
       using BaseType::getNeighbourEntities;
       
-      __cuda_callable__
+      __device_callable__
       tnlNeighbourGridEntitiesStorage( const GridEntity& entity )
       : BaseType( entity )
       {}

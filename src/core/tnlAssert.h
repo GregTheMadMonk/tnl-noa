@@ -22,11 +22,15 @@
  * Debugging assert
  */
 
+#define NDEBUG
+
 #ifndef NDEBUG
+
 
 #include <iostream>
 #include <stdlib.h>
 #include <assert.h>
+#include <execinfo.h>
 
 #ifdef HAVE_CUDA
 #define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )                                    \
@@ -48,7 +52,17 @@
              << "Function: " << __PRETTY_FUNCTION__ << std::endl                                 \
              << "Line: " << __LINE__ << std::endl                                                \
              << "Diagnostics: ";                                                            \
-        ___tnl__assert_command;                                                             \
+        void *buffer[10];                                                                 \
+        int nptrs = backtrace(buffer, 10 );                                              \
+        char **strings=backtrace_symbols(buffer, nptrs);                                   \
+	if(strings!=NULL)                                                                   \
+	{                                                                                   \
+            std::cerr<<"=============BACKTRACE===================="<<std::endl;              \
+            for(int i=0;i<nptrs;i++)                                                   \
+               	std::cerr << strings[i]<<std::endl;                                             \
+            free(strings);                                                                 \
+        }                                                                                    \
+        ___tnl__assert_command;                                                              \
         throw EXIT_FAILURE;                                                                 \
 	}
 #endif /* HAVE_CUDA */

@@ -206,6 +206,66 @@ evaluateEntities( OutMeshFunction& meshFunction,
       tnlCuda::freeFromDevice( kernelInFunctionMultiplicator );            
       checkCudaDevice;
    }
+   if( std::is_same< MeshDeviceType, tnlMIC >::value )
+   {      
+     /* OutMeshFunction* kernelMeshFunction = tnlMIC::passToDevice( meshFunction );
+      InFunction* kernelFunction = tnlMIC::passToDevice( function );
+      RealType* kernelTime = tnlMIC::passToDevice( time );
+      RealType* kernelOutFunctionMultiplicator = tnlMIC::passToDevice( outFunctionMultiplicator );
+      RealType* kernelInFunctionMultiplicator = tnlMIC::passToDevice( inFunctionMultiplicator );
+      
+      TraverserUserData userData( kernelFunction, kernelTime, kernelMeshFunction, kernelOutFunctionMultiplicator, kernelInFunctionMultiplicator );
+      
+      tnlTraverser< MeshType, MeshEntityType > meshTraverser;
+      switch( entitiesType )
+      {
+         case all:            
+            if( outFunctionMultiplicator )
+               meshTraverser.template processAllEntities< TraverserUserData,
+                                                          AdditionEntitiesProcessor >
+                                                        ( meshFunction.getMesh(),
+                                                          userData );
+            else
+               meshTraverser.template processAllEntities< TraverserUserData,
+                                                         AssignmentEntitiesProcessor >
+                                                       ( meshFunction.getMesh(),
+                                                         userData );
+            break;
+         case interior:
+            if( outFunctionMultiplicator )
+               meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                               AdditionEntitiesProcessor >
+                                                             ( meshFunction.getMesh(),
+                                                               userData );
+            else
+               meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                               AssignmentEntitiesProcessor >
+                                                             ( meshFunction.getMesh(),
+                                                               userData );            
+            break;
+         case boundary:
+            if( outFunctionMultiplicator )
+               meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                               AdditionEntitiesProcessor >
+                                                             ( meshFunction.getMesh(),
+                                                               userData );
+            else
+               meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                               AssignmentEntitiesProcessor >
+                                                             ( meshFunction.getMesh(),
+                                                               userData );
+            break;         
+      }      
+
+            
+      tnlMIC::freeFromDevice( kernelMeshFunction );
+      tnlMIC::freeFromDevice( kernelFunction );
+      tnlMIC::freeFromDevice( kernelTime );
+      tnlMIC::freeFromDevice( kernelOutFunctionMultiplicator );
+      tnlMIC::freeFromDevice( kernelInFunctionMultiplicator );            
+      */
+       cout << "Not Implemented YET" <<endl;
+   }
 }
 
 #endif	/* TNLMESHFUNCTIONEVALUATOR_IMPL_H */

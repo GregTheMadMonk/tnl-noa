@@ -20,10 +20,27 @@
 
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
+#include <core/tnlMIC.h>
 
 template< typename DestinationDevice,
           typename SourceDevice = DestinationDevice >
 class tnlArrayOperations{};
+
+template<>
+class tnlArrayOperations< tnlMIC >
+{
+    public:
+   template< typename DestinationElement,
+             typename SourceElement,
+             typename Index >
+   static bool copyMemory( DestinationElement* destination,
+                           const SourceElement* source,
+                           const Index size )
+   {
+       cout << "Never Will be implemented tnlArrayOperations-copyMemory on MIC" <<endl;
+   };  
+    
+};
 
 template<>
 class tnlArrayOperations< tnlHost >

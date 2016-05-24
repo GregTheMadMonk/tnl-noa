@@ -168,7 +168,7 @@ class tnlNeighbourGridEntityGetter<
               cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-#ifndef HAVE_CUDA  // TODO: fix it -- does not work with nvcc
+#if !defined(HAVE_CUDA) && !defined(HAVE_ICPC)   // TODO: fix it -- does not work with nvcc         
          if( step < -stencilSize || step > stencilSize )
             return this->entity.getIndex() + step;
          return stencil[ stencilSize + step ];
@@ -193,7 +193,7 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__
       void refresh( const GridType& grid, const IndexType& entityIndex )
       {
-#ifndef HAVE_CUDA  // TODO: fix it -- does not work with nvcc         
+#if !defined(HAVE_CUDA) && !defined(HAVE_ICPC)   // TODO: fix it -- does not work with nvcc         
          tnlStaticFor< IndexType, -stencilSize, stencilSize + 1, StencilRefresher >::exec( *this, entityIndex );
 #endif         
       };      

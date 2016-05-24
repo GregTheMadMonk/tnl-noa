@@ -163,6 +163,23 @@ bool tnlStaticVector< Size, Real >::operator >= ( const tnlStaticVector& v ) con
 }
 
 template< int Size, typename Real >
+__device_callable__
+inline tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real >::operator = ( const tnlStaticVector< Size, Real >& vct )
+{
+    tnlStaticArray<Size,Real>::operator =(vct);
+}
+
+template< int Size, typename Real >
+template< typename Vct >
+__device_callable__
+inline tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real >::operator = ( const Vct& vct )
+{
+    tnlStaticArray<Size,Real>::operator =(vct);
+}
+
+
+
+template< int Size, typename Real >
    template< typename OtherReal >
 __device_callable__
 tnlStaticVector< Size, Real >::

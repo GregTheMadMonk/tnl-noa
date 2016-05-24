@@ -24,6 +24,7 @@
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
+#include <core/tnlMIC.h>
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
@@ -79,6 +80,9 @@ class tnlSolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
             return tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, tnlHost, ConfigTag >::run( parameters );
          if( device == "cuda" )
             return tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, tnlCuda, ConfigTag >::run( parameters );
+         if( device == "mic" )
+            return tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, tnlMIC, ConfigTag >::run( parameters );
+
          cerr << "The device '" << device << "' is not defined. " << endl;
          return false;
       }

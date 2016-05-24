@@ -91,6 +91,16 @@ class tnlStaticVector : public tnlStaticArray< Size, Real >
    
    __device_callable__
    ThisType abs() const;
+   
+   __device_callable__
+   inline tnlStaticVector< Size, Real >& operator = ( const tnlStaticVector< Size, Real >& vct );
+
+
+   template< typename Vct >
+   __device_callable__
+   inline tnlStaticVector< Size, Real >& operator = ( const Vct& Real );
+
+   
 };
 
 template< typename Real >
@@ -160,6 +170,15 @@ class tnlStaticVector< 1, Real > : public tnlStaticArray< 1, Real >
    
    __device_callable__
    ThisType abs() const;
+   
+   __device_callable__
+   inline tnlStaticVector< 1, Real >& operator = ( const tnlStaticVector< 1, Real >& vct );
+
+   template< typename Vct >
+   __device_callable__
+   inline tnlStaticVector< 1, Real >& operator = ( const Vct& Real );
+ 
+   
 };
 
 template< typename Real >
@@ -235,6 +254,13 @@ class tnlStaticVector< 2, Real > : public tnlStaticArray< 2, Real >
    
    __device_callable__
    ThisType abs() const;
+   
+   __device_callable__
+   inline tnlStaticVector< 2, Real >& operator = ( const tnlStaticVector< 2, Real >& vct );
+
+   template< typename Vct >
+   __device_callable__
+   inline tnlStaticVector< 2, Real >& operator = ( const Vct& Real );
 };
 
 template< typename Real >
@@ -310,6 +336,13 @@ class tnlStaticVector< 3, Real > : public tnlStaticArray< 3, Real >
    
    __device_callable__
    ThisType abs() const;
+   
+   __device_callable__
+   inline tnlStaticVector< 3, Real >& operator = ( const tnlStaticVector< 3, Real >& vct );
+
+   template< typename Vct >
+   __device_callable__
+   inline tnlStaticVector< 3, Real >& operator = ( const Vct& Real );
 };
 
 template< int Size, typename Real >

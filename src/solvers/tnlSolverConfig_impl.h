@@ -23,6 +23,7 @@
 #include <solvers/tnlDummyProblem.h>
 #include <solvers/pde/tnlExplicitTimeStepper.h>
 #include <solvers/pde/tnlPDESolver.h>
+#include <core/tnlMIC.h>
 
 template< typename ConfigTag,
           typename ProblemConfig >
@@ -56,6 +57,11 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
    if( tnlConfigTagDevice< ConfigTag, tnlCuda >::enabled )
       config.addEntryEnum( "cuda" );
 #endif
+#ifdef HAVE_MIC
+   if( tnlConfigTagDevice< ConfigTag, tnlMIC >::enabled )
+      config.addEntryEnum( "mic" );
+#endif
+   
 
    /****
     * Setup index type.

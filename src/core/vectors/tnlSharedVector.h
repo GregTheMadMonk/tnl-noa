@@ -22,7 +22,9 @@
 #include <core/vectors/tnlVector.h>
 #include <functions/tnlDomain.h>
 
-class tnlHost;
+#define tnlSharedVector tnlVector
+
+/*class tnlHost;
 
 template< typename Real = double,
            typename Device= tnlHost,
@@ -152,5 +154,5 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 };
 
 #include <core/vectors/tnlSharedVector_impl.h>
-
+*/
 #endif /* TNLSHAREDVECTOR_H_ */

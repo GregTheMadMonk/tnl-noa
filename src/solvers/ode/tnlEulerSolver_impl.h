@@ -18,6 +18,8 @@
 #ifndef tnlEulerSolver_implH
 #define tnlEulerSolver_implH
 
+#include <core/tnlMIC.h>
+
 #ifdef HAVE_CUDA
 template< typename RealType, typename Index >
 __global__ void updateUEuler( const Index size,
@@ -217,8 +219,32 @@ void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
       }
 #endif
    }
+   
+   //MIC
+   if( std::is_same< DeviceType, tnlMIC >::value )
+   {
+       
+//#ifdef HAVE_OPENMP
+//#pragma omp parallel for reduction(+:localResidue) firstprivate( _u, _k1, tau ) if( tnlHost::isOMPEnabled() )
+//#endif
+      satanHider<RealType> mu;
+      mu.pointer=_u;
+      satanHider<RealType> mk1;
+      mk1.pointer=_k1;
+    #pragma offload target(mic) in(mu,mk1,size) inout(localResidue)
+    {
+      for( IndexType i = 0; i < size; i ++ )
+      {
+         const RealType add = tau * mk1.pointer[ i ];
+         mu.pointer[ i ] += add;
+         localResidue += fabs( add );
+      }
+    }
+   }
+   
+   
    localResidue /= tau * ( RealType ) size;
-   :: MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this->solver_comm );
+   :: MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this->solver_comm ); 
 }
 
 #ifdef HAVE_CUDA

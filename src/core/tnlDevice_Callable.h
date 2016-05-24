@@ -13,7 +13,7 @@
 
 #ifndef TNLDEVICE_CALLABLE_H
 #define TNLDEVICE_CALLABLE_H
-
+/*
 //deprecated __cuda_callable__
 #ifdef HAVE_CUDA
     #define __cuda_callable__ __device__ __host__
@@ -29,6 +29,9 @@
 #else
     #define __device_callable__ 
 #endif
+*/
 
+#define __cuda_callable__ __attribute__((target(mic)))
+#define __device_callable__ __attribute__((target(mic)))
 #endif /* TNLDEVICE_CALLABLE_H */
 

@@ -54,7 +54,7 @@ set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE "" )
 get_filename_component( CXX_COMPILER_NAME ${CMAKE_CXX_COMPILER} NAME )
 if( CXX_COMPILER_NAME MATCHES "icpc" )
    message( "Intel compiler detected..."    )
-   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_ICPC -ww2568 -wd2571")	
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_ICPC -wd2568 -wd2571 -wd2570 -rdynamic")	
 endif()
 
 #####

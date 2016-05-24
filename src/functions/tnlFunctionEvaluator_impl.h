@@ -76,6 +76,38 @@ assignment( const Function& function,
       tnlCuda::freeFromDevice( kernelDofVectorCoefficient );
       checkCudaDevice;
    }
+   
+   if( std::is_same< DeviceType, tnlMIC >::value )
+   {
+     /* RealType* kernelTime = tnlMIC::passToDevice( time );
+      Function* kernelFunction = tnlMIC::passToDevice( function );
+      MeshFunction* kernelU = tnlMIC::passToDevice( u );
+      RealType* kernelFunctionCoefficient = tnlMIC::passToDevice( functionCoefficient );
+      RealType* kernelDofVectorCoefficient = tnlMIC::passToDevice( dofVectorCoefficient );
+      TraverserUserData userData( *kernelTime, *kernelFunction, *kernelU, *kernelFunctionCoefficient, *kernelDofVectorCoefficient );
+      
+      tnlTraverser< MeshType, MeshEntityType > meshTraverser;
+      meshTraverser.template processBoundaryEntities< TraverserUserData,
+                                                      TraverserEntitiesProcessor >
+                                                    ( u.getMesh(),
+                                                      userData );
+      meshTraverser.template processInteriorEntities< TraverserUserData,
+                                                      TraverserEntitiesProcessor >
+                                                    ( u.getMesh(),
+                                                      userData );
+
+
+      tnlMIC::freeFromDevice( kernelTime );
+      tnlMIC::freeFromDevice( kernelFunction );
+      tnlMIC::freeFromDevice( kernelU );
+      tnlMIC::freeFromDevice( kernelFunctionCoefficient );
+      tnlMIC::freeFromDevice( kernelDofVectorCoefficient );
+      */
+       
+       cout << "Not implemented YET " <<endl;
+       
+   }
+   
 }
 
 #endif /* SRC_FUNCTIONS_TNLFUNCTIONEVALUATOR_IMPL_H_ */

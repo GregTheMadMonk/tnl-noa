@@ -170,8 +170,8 @@ class tnlArray <Element, tnlMIC, Index> : public virtual tnlObject
       template< typename IndexType2 >
       void touch( IndexType2 touches = 1 ) const;
    #else
-    //  template< typename IndexType2 = Index >
-    //  void touch( IndexType2 touches = 1 ) const;
+      template< typename IndexType2 = Index >
+      void touch( IndexType2 touches = 1 ) const;
    #endif      
 
       //! Method for saving the object to a file as a binary data.
@@ -926,6 +926,14 @@ boundLoad( const tnlString& fileName )
    }
    return true;   
 }
+
+template< typename Element,
+           typename Index >
+   template< typename IndexType2 >
+void tnlArray< Element, tnlMIC, Index > :: touch( IndexType2 touches ) const
+{
+   //TODO: implement
+};
 
 #endif
 

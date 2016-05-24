@@ -18,6 +18,7 @@
 #ifndef TNLSHAREDARRAY_H_IMPLEMENTATION
 #define TNLSHAREDARRAY_H_IMPLEMENTATION
 
+/*
 #include <iostream>
 #include <core/tnlFile.h>
 #include <core/arrays/tnlArray.h>
@@ -467,9 +468,9 @@ extern template class tnlSharedArray< double, tnlCuda, int >;
 #ifdef INSTANTIATE_FLOAT
 extern template class tnlSharedArray< float, tnlCuda, long int >;
 #endif
-extern template class tnlSharedArray< double, tnlCuda, long int >;*/
+extern template class tnlSharedArray< double, tnlCuda, long int >;*
 #endif
 
 #endif
-
+*/
 #endif /* TNLSHAREDARRAY_H_IMPLEMENTATION */

@@ -109,7 +109,7 @@ int main(void)
 		aaa.computeExclusivePrefixSum();
 		cout << aa <<endl << aaa <<endl;
 		
-	/*	bb.computeExclusivePrefixSum(2,4);
+		bb.computeExclusivePrefixSum(2,4);
 		bbb.computeExclusivePrefixSum(2,4);
 		cout << bb <<endl << bbb <<endl;
 		
@@ -119,7 +119,7 @@ int main(void)
 		
 		cc.computePrefixSum(2,4);
 		ccc.computePrefixSum(2,4);
-		cout << cc <<endl << ccc <<endl;*/
+		cout << cc <<endl << ccc <<endl;
 		
     return 0;
 }

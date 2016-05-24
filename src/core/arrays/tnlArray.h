@@ -19,13 +19,13 @@
 #define TNLARRAY_H_
 
 #include <core/tnlObject.h>
-#include <core/arrays/tnlSharedArray.h>
+#include <core/arrays/tnlStaticArray.h>
 
 class tnlFile;
 class tnlHost;
 
-template< typename Element, typename Device, typename Index >
-class tnlSharedArray;
+//template< typename Element, typename Device, typename Index >
+//class tnlSharedArray;
 
 /****
  * Array handles memory allocation and sharing of the same data between more Arrays.

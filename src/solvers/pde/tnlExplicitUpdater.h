@@ -20,6 +20,7 @@
 
 #include <functions/tnlFunctionAdapter.h>
 #include <core/tnlTimer.h>
+#include <core/tnlDevice_Callable.h>
 
 template< typename Real,
           typename MeshFunction,
@@ -53,6 +54,7 @@ class tnlExplicitUpdaterTraverserUserData
         u( &u ),
         fu( &fu )
       {};
+         
 };
 
 
@@ -101,10 +103,12 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const GridEntity& entity )
             {
+                
                ( *userData.u )( entity ) = userData.boundaryConditions->operator()
                ( *userData.u,
                  entity,
                  *userData.time );
+               
             }
 
       };
@@ -121,6 +125,7 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const EntityType& entity )
             {
+                               
                ( *userData.fu)( entity ) = 
                   userData.differentialOperator->operator()(
                      *userData.u,
@@ -133,6 +138,7 @@ class tnlExplicitUpdater
                      *userData.rightHandSide,
                      entity,
                      *userData.time );
+                             
             }
       };
       
