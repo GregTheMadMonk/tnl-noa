@@ -248,6 +248,7 @@ void tnlStaticArray< 3, Element >::sort()
 }
 
 template< typename Element >
+__device_callable__
 ostream& tnlStaticArray< 3, Element >::write( ostream& str, const char* separator ) const
 {
    str << data[ 0 ] << separator << data[ 1 ] << separator << data[ 2 ];

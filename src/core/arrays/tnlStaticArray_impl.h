@@ -195,6 +195,7 @@ void tnlStaticArray< Size, Element >::sort()
 }
 
 template< int Size, typename Element >
+__device_callable__
 ostream& tnlStaticArray< Size, Element >::write( ostream& str, const char* separator ) const
 {
    for( int i = 0; i < Size - 1; i++ )
@@ -205,6 +206,7 @@ ostream& tnlStaticArray< Size, Element >::write( ostream& str, const char* separ
 
 
 template< int Size, typename Element >
+__device_callable__
 ostream& operator << ( ostream& str, const tnlStaticArray< Size, Element >& a )
 {
    a.write( str, "," );

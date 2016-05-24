@@ -22,8 +22,6 @@
  * Debugging assert
  */
 
-#define NDEBUG
-
 #ifndef NDEBUG
 
 
@@ -65,6 +63,7 @@
         ___tnl__assert_command;                                                              \
         throw EXIT_FAILURE;                                                                 \
 	}
+
 #endif /* HAVE_CUDA */
 #else /* #ifndef NDEBUG */
 #define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )

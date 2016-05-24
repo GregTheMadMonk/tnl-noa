@@ -374,9 +374,9 @@ class tnlStaticArray< 3, Element >
 
 };
 
-template< int Size, typename Element >
+/*template< int Size, typename Element >
 ostream& operator << ( ostream& str, const tnlStaticArray< Size, Element >& a );
-
+*/
 #include <core/arrays/tnlStaticArray_impl.h>
 #include <core/arrays/tnlStaticArray1D_impl.h>
 #include <core/arrays/tnlStaticArray2D_impl.h>

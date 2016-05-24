@@ -20,18 +20,22 @@
 #else
     #define __cuda_callable__ 
 #endif
-
-//NEW, better  __device_callable__ --used only with MIC touch code
-#ifdef HAVE_MIC 
-    #define __device_callable__ __attribute__((target(mic)))
-#elif HAVE_CUDA
-    #define __device_callable__ __device__ __host__
-#else
-    #define __device_callable__ 
-#endif
 */
 
-#define __cuda_callable__ __attribute__((target(mic)))
-#define __device_callable__ __attribute__((target(mic)))
+//NEW, not implemented yet 
+#ifdef HAVE_MIC 
+    #define __device_callable__ __attribute__((target(mic)))
+    #define __cuda_callable__ __attribute__((target(mic)))
+#elif HAVE_CUDA
+    #define __device_callable__ __device__ __host__
+    #define __cuda_callable__ __device__ __host__
+#else
+    #define __device_callable__ 
+    #define __cuda_callable__
+#endif
+
+
+//#define __cuda_callable__ __attribute__((target(mic)))
+//#define __device_callable__ __attribute__((target(mic)))
 #endif /* TNLDEVICE_CALLABLE_H */
 

@@ -66,7 +66,7 @@ mv ./initial.tnl init.tnl
                   --discrete-solver euler \
                   --snapshot-period 0.0005 \
                   --final-time 0.1 \
-                  --time-step 0.000001
+                  --time-step 0.00005
 
  ./tnl-view-dbg --mesh mesh.tnl \
           --input-files *.tnl \ 
