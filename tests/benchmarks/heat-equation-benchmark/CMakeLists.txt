@@ -20,8 +20,13 @@ ENDIF()
 INSTALL( TARGETS 
             tnl-benchmark-heat-equation${debugExt}
             tnl-benchmark-simple-heat-equation${debugExt}
-            tnl-benchmark-simple-heat-equation-bug${debugExt}
          RUNTIME DESTINATION bin )
+
+if( BUILD_CUDA )
+    INSTALL( TARGETS 
+                tnl-benchmark-simple-heat-equation-bug${debugExt}
+             RUNTIME DESTINATION bin )
+endif()
 
 
                                             

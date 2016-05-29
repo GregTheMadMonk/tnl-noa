@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include <utility>
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
 
@@ -25,11 +26,11 @@ class tnlUniquePointer
 {  
 };
 
-template< typename Object, typename Device, typename... Args >
-tnlUniquePointer< Object, Device >& makeUniquePointer( Args&& args )
+/*template< typename Object, typename Device, typename... Args >
+tnlUniquePointer< Object, Device >& tnlUniquePointer( Args&& args )
 {
    return
-}
+}*/
 
 template< typename Object >
 class tnlUniquePointer< Object, tnlHost >
@@ -41,14 +42,14 @@ class tnlUniquePointer< Object, tnlHost >
       typedef tnlUniquePointer< Object, tnlHost > ThisType;
          
       tnlUniquePointer()
-      : pointer( 0 )
-      {         
+      {
+         this->pointer = new Object();
       }
       
       template< typename... Args >
       void create( const Args&& args )
       {
-         this->pointer = new Object( args );
+         this->pointer = new Object( std::forward< Args >( args ) );
       }
       
       const Object& operator->() const
@@ -85,6 +86,8 @@ class tnlUniquePointer< Object, tnlHost >
       {
          if( this-> pointer )
             delete this->pointer;
+         this->pointer = ptr.pointer;
+         ptr.pointer= NULL;
       }
       
       ~tnlUniquePointer()

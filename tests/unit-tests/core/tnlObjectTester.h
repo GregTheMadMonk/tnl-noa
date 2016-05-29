@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlStringTester.h -  description
+                          tnlObjectTester.h -  description
                              -------------------
     begin                : Oct 4, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLOBJECTTESTER_H_
-#define TNLOBJECTTESTER_H_
+#pragma once
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -60,4 +59,3 @@ class tnlObjectTester : public CppUnit :: TestCase
 class tnlObjectTester{};
 #endif  /* HAVE_CPPUNIT */
 
-#endif /* TNLOBJECTTESTER_H_ */

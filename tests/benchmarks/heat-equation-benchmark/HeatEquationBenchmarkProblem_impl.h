@@ -438,6 +438,7 @@ getExplicitRHS( const RealType& time,
    }
    if( std::is_same< DeviceType, tnlCuda >::value )
    {
+      #ifdef HAVE_CUDA         
       if( this->cudaKernelType == "pure-c" )
       {
          const IndexType gridXSize = mesh.getDimensions().x();
@@ -471,7 +472,6 @@ getExplicitRHS( const RealType& time,
       }
       if( this->cudaKernelType == "templated-compact" )
       {
-#ifdef HAVE_CUDA         
          typedef typename MeshType::Cell CellType;
          typedef typename CellType::CoordinatesType CoordinatesType;         
          MeshFunctionType u( mesh, uDofs );
