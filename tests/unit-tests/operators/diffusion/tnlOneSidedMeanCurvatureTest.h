@@ -63,7 +63,7 @@ class tnlOneSidedMeanCurvatureTest
                                   RealType errors[ 3 ] )
       {
          this->setupMesh( meshSize );
-         ApproximateOperator approximateOperator( this->mesh );
+         ApproximateOperator approximateOperator( this->meshPointer );
          ExactOperatorType exactOperator;
          approximateOperator.setRegularizationEpsilon( 1.0 );
          exactOperator.setRegularizationEpsilon( 1.0 );         

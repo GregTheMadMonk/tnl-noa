@@ -22,6 +22,7 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <core/tnlLogger.h>
+#include <core/tnlSharedPointer.h>
 
 template< typename Problem,
           typename TimeStepper >
@@ -34,6 +35,7 @@ class tnlPDESolver : public tnlObject
       typedef typename TimeStepper::IndexType IndexType;
       typedef Problem ProblemType;
       typedef typename ProblemType::MeshType MeshType;
+      typedef tnlSharedPointer< MeshType, DeviceType > MeshPointer;
       typedef typename ProblemType::DofVectorType DofVectorType;
       typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
 
@@ -82,7 +84,7 @@ class tnlPDESolver : public tnlObject
 
    protected:
 
-      MeshType mesh;
+      MeshPointer meshPointer;
 
       DofVectorType dofs;
 

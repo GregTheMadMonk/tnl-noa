@@ -12,9 +12,7 @@ set (headers tnlAssert.h
              tnlCudaDeviceInfo.h
              tnlDataElement.h
              tnlDevice.h
-             tnlDeviceObject.h
-             tnlDeviceObjectBase.h
-             tnlDeviceObjectsContainer.h
+             tnlSmartPointersRegister.h
              tnlDynamicTypeTag.h
              tnlFeature.h
              tnlFile.h 
@@ -30,10 +28,13 @@ set (headers tnlAssert.h
              tnlStaticFor.h
              tnlStatistics.h 
              tnlString.h 
+             tnlSmartPointer.h
+             tnlSharedPointer.h
              tnlReal.h
              tnlTimer.h
              tnlTimerCPU.h  
-             tnlTimerRT.h    
+             tnlTimerRT.h  
+             tnlUniquePointer.h  
              mfilename.h 
              mfuncs.h 
              mpi-supp.h 
@@ -45,12 +46,12 @@ set (headers tnlAssert.h
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/core )
 set( common_SOURCES
      ${CURRENT_DIR}/tnlTimerRT.cpp
-     ${CURRENT_DIR}/tnlDeviceObjectsContainer.cpp
      ${CURRENT_DIR}/tnlFile.cpp
      ${CURRENT_DIR}/tnlFlopsCounter.cpp 
      ${CURRENT_DIR}/tnlLogger.cpp 
      ${CURRENT_DIR}/tnlObject.cpp
      ${CURRENT_DIR}/tnlStatistics.cpp
+     ${CURRENT_DIR}/tnlSmartPointersRegister.cpp
      ${CURRENT_DIR}/tnlString.cpp 
      ${CURRENT_DIR}/tnlTimer.cpp 
      ${CURRENT_DIR}/tnlTimerCPU.cpp      

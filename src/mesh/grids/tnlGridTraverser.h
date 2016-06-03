@@ -15,9 +15,9 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLGRIDTRAVERSER_H
-#define	TNLGRIDTRAVERSER_H
+#pragma once
 
+#include <core/tnlSharedPointer.h>
 
 /****
  * This is only a helper class for tnlTraverser specializations for tnlGrid.
@@ -37,6 +37,7 @@ class tnlGridTraverser< tnlGrid< 1, Real, tnlHost, Index > >
    public:
       
       typedef tnlGrid< 1, Real, tnlHost, Index > GridType;
+      typedef tnlSharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef tnlHost DeviceType;
       typedef Index IndexType;
@@ -49,7 +50,7 @@ class tnlGridTraverser< tnlGrid< 1, Real, tnlHost, Index > >
          bool processOnlyBoundaryEntities >
       static void
       processEntities(
-         const GridType& grid,
+         const GridPointer& gridPointer,
          const CoordinatesType& begin,
          const CoordinatesType& end,
          const CoordinatesType& entityOrientation,
@@ -67,6 +68,7 @@ class tnlGridTraverser< tnlGrid< 1, Real, tnlCuda, Index > >
    public:
       
       typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
+      typedef tnlSharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef tnlHost DeviceType;
       typedef Index IndexType;
@@ -79,7 +81,7 @@ class tnlGridTraverser< tnlGrid< 1, Real, tnlCuda, Index > >
          bool processOnlyBoundaryEntities  >
       static void
       processEntities(
-         const GridType& grid,
+         const GridPointer& gridPointer,
          const CoordinatesType& begin,
          const CoordinatesType& end,
          const CoordinatesType& entityOrientation,
@@ -97,6 +99,7 @@ class tnlGridTraverser< tnlGrid< 2, Real, tnlHost, Index > >
    public:
       
       typedef tnlGrid< 2, Real, tnlHost, Index > GridType;
+      typedef tnlSharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef tnlHost DeviceType;
       typedef Index IndexType;
@@ -111,7 +114,7 @@ class tnlGridTraverser< tnlGrid< 2, Real, tnlHost, Index > >
          int YOrthogonalBoundary = 1 >
       static void
       processEntities(
-         const GridType& grid,
+         const GridPointer& gridPointer,
          const CoordinatesType begin,
          const CoordinatesType end,
          const CoordinatesType& entityOrientation,
@@ -129,6 +132,7 @@ class tnlGridTraverser< tnlGrid< 2, Real, tnlCuda, Index > >
    public:
       
       typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
+      typedef tnlSharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef tnlHost DeviceType;
       typedef Index IndexType;
@@ -143,7 +147,7 @@ class tnlGridTraverser< tnlGrid< 2, Real, tnlCuda, Index > >
          int YOrthogonalBoundary = 1  >
       static void
       processEntities(
-         const GridType& grid,
+         const GridPointer& gridPointer,
          const CoordinatesType& begin,
          const CoordinatesType& end,
          const CoordinatesType& entityOrientation,
@@ -161,6 +165,7 @@ class tnlGridTraverser< tnlGrid< 3, Real, tnlHost, Index > >
    public:
       
       typedef tnlGrid< 3, Real, tnlHost, Index > GridType;
+      typedef tnlSharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef tnlHost DeviceType;
       typedef Index IndexType;
@@ -176,7 +181,7 @@ class tnlGridTraverser< tnlGrid< 3, Real, tnlHost, Index > >
          int ZOrthogonalBoundary = 1 >
       static void
       processEntities(
-         const GridType& grid,
+         const GridPointer& gridPointer,
          const CoordinatesType& begin,
          const CoordinatesType& end,
          const CoordinatesType& entityOrientation,
@@ -194,6 +199,7 @@ class tnlGridTraverser< tnlGrid< 3, Real, tnlCuda, Index > >
    public:
       
       typedef tnlGrid< 3, Real, tnlCuda, Index > GridType;
+      typedef tnlSharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef tnlHost DeviceType;
       typedef Index IndexType;
@@ -209,7 +215,7 @@ class tnlGridTraverser< tnlGrid< 3, Real, tnlCuda, Index > >
          int ZOrthogonalBoundary = 1 >
       static void
       processEntities(
-         const GridType& grid,
+         const GridPointer& gridPointer,
          const CoordinatesType& begin,
          const CoordinatesType& end,
          const CoordinatesType& entityOrientation,
@@ -218,6 +224,4 @@ class tnlGridTraverser< tnlGrid< 3, Real, tnlCuda, Index > >
 };
 
 #include <mesh/grids/tnlGridTraverser_impl.h>
-
-#endif	/* TNLGRIDTRAVERSER_H */
 

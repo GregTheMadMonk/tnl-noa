@@ -21,6 +21,8 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 
+tnlSmartPointersRegister tnlCuda::smartPointersRegister;
+
 tnlString tnlCuda :: getDeviceType()
 {
    return tnlString( "tnlCuda" );
@@ -69,5 +71,21 @@ bool tnlCuda::setup( const tnlParameterContainer& parameters,
    }
 #endif   
    return true;
+}
+
+void tnlCuda::insertSmartPointer( tnlSmartPointer* pointer )
+{
+    smartPointersRegister.insert( pointer, 0 );
+}
+
+void tnlCuda::removeSmartPointer( tnlSmartPointer* pointer )
+{
+    smartPointersRegister.remove( pointer, 0 );
+}
+
+   
+bool tnlCuda::synchronizeDevice( int deviceId )
+{
+    smartPointersRegister.synchronizeDevice( deviceId );
 }
 

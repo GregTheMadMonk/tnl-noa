@@ -34,17 +34,17 @@ class tnlUniquePointerTester : public CppUnit :: TestCase
       typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
    
    public:
-   tnlObjectTester(){};
+   tnlUniquePointerTester(){};
 
    virtual
-   ~tnlObjectTester(){};
+   ~tnlUniquePointerTester(){};
 
    static CppUnit :: Test* suite()
    {
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlUniquePointerTester" );
       CppUnit :: TestResult result;
 
-      suiteOfTests -> addTest( new TestCallerType( "testConstructor", &TesterType::setDomainTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "testConstructor", &TesterType::testConstructor ) );
       return suiteOfTests;
    }
 
@@ -52,13 +52,21 @@ class tnlUniquePointerTester : public CppUnit :: TestCase
    {
       typedef tnlStaticArray< 2, int  > TestType;
       
-      tnlUniquePointer< TestType > ptr1;
+      tnlUniquePointer< TestType, tnlHost > ptr1;
+      
+      ptr1->x() = 0;
+      ptr1->y() = 0;
       
       CPPUNIT_ASSERT( ptr1->x() == 0 && ptr1->y() == 0 );
       
-      tnlUniquePointer< TestType > ptr1( 1, 2 );
+      tnlUniquePointer< TestType, tnlHost > ptr2( 1, 2 );
+      
+      CPPUNIT_ASSERT( ptr2->x() == 1 && ptr2->y() == 2 );
+      
+      ptr1 = ptr2;
       
       CPPUNIT_ASSERT( ptr1->x() == 1 && ptr1->y() == 2 );
+      
    };
 
 };

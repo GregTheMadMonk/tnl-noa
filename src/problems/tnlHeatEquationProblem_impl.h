@@ -102,12 +102,12 @@ template< typename Mesh,
           typename DifferentialOperator >
 typename tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getDofs( const MeshType& mesh ) const
+getDofs( const MeshPointer& meshPointer ) const
 {
    /****
     * Set-up DOFs and supporting grid functions
     */
-   return mesh.template getEntitiesCount< typename MeshType::Cell >();
+   return meshPointer->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
@@ -116,11 +116,11 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-bindDofs( const MeshType& mesh,
+bindDofs( const MeshPointer& meshPointer,
           const DofVectorType& dofVector )
 {
-   const IndexType dofs = mesh.template getEntitiesCount< typename MeshType::Cell >();
-   this->u.bind( mesh, dofVector );
+   const IndexType dofs = meshPointer->template getEntitiesCount< typename MeshType::Cell >();
+   this->u.bind( meshPointer, dofVector );
 }
 
 template< typename Mesh,
@@ -130,11 +130,11 @@ template< typename Mesh,
 bool
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setInitialCondition( const tnlParameterContainer& parameters,
-                     const MeshType& mesh,
+                     const MeshPointer& meshPointer,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
 {
-   this->bindDofs( mesh, dofs );
+   this->bindDofs( meshPointer, dofs );
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
    if( ! this->u.boundLoad( initialConditionFile ) )
    {
@@ -151,17 +151,17 @@ template< typename Mesh,
    template< typename Matrix >          
 bool
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setupLinearSystem( const MeshType& mesh,
+setupLinearSystem( const MeshPointer& meshPointer,
                    Matrix& matrix )
 {
-   const IndexType dofs = this->getDofs( mesh );
+   const IndexType dofs = this->getDofs( meshPointer );
    typedef typename Matrix::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
    CompressedRowsLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
    tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >(
-      mesh,
+      *meshPointer,
       differentialOperator,
       boundaryCondition,
       rowLengths );
@@ -180,13 +180,13 @@ bool
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
-              const MeshType& mesh,
+              const MeshPointer& meshPointer,
               DofVectorType& dofs,
               MeshDependentDataType& meshDependentData )
 {
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
 
-   this->bindDofs( mesh, dofs );
+   this->bindDofs( meshPointer, dofs );
    //cout << "dofs = " << dofs << endl;
    tnlString fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
@@ -203,9 +203,9 @@ void
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
-                const MeshType& mesh,
+                const MeshPointer& meshPointer,
                 DofVectorType& uDofs,
-		          DofVectorType& fuDofs,
+                DofVectorType& fuDofs,
                 MeshDependentDataType& meshDependentData )
 {
    /****
@@ -218,13 +218,13 @@ getExplicitRHS( const RealType& time,
     */
    
    //cout << "u = " << u << endl;
-   this->bindDofs( mesh, uDofs );
-   MeshFunctionType fu( mesh, fuDofs );
+   this->bindDofs( meshPointer, uDofs );
+   MeshFunctionType fu( meshPointer, fuDofs );
    tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
    explicitUpdater.template update< typename Mesh::Cell >( 
       time,
-      mesh,
+      meshPointer,
       this->differentialOperator,
       this->boundaryCondition,
       this->rightHandSide,
@@ -255,13 +255,13 @@ void
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
-                      const MeshType& mesh,
+                      const MeshPointer& meshPointer,
                       const DofVectorType& dofs,                      
                       Matrix& matrix,
                       DofVectorType& b,
 		                MeshDependentDataType& meshDependentData )
 {
-   this->bindDofs( mesh, dofs );
+   this->bindDofs( meshPointer, dofs );
    tnlLinearSystemAssembler< Mesh,
                              MeshFunctionType,
                              DifferentialOperator,
@@ -273,7 +273,7 @@ assemblyLinearSystem( const RealType& time,
    systemAssembler.template assembly< typename Mesh::Cell >(
       time,
       tau,
-      mesh,
+      *meshPointer,
       this->differentialOperator,
       this->boundaryCondition,
       this->rightHandSide,

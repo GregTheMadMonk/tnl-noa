@@ -23,7 +23,7 @@
 #include <core/tnlDevice.h>
 #include <core/tnlString.h>
 #include <core/tnlAssert.h>
-#include <core/tnlDeviceObjectsContainer.h>
+#include <core/tnlSmartPointersRegister.h>
 
 class tnlConfigDescription;
 class tnlParameterContainer;
@@ -102,9 +102,15 @@ class tnlCuda
    static bool setup( const tnlParameterContainer& parameters,
                       const tnlString& prefix = "" );
    
-   static bool synchronizeObjects();
+   static void insertSmartPointer( tnlSmartPointer* pointer );
    
-   static tnlDeviceObjectsContainer objectsContainer;
+   static void removeSmartPointer( tnlSmartPointer* pointer );
+   
+   static bool synchronizeDevice( int deviceId = 0  );
+   
+   protected:
+   
+      static tnlSmartPointersRegister smartPointersRegister;
 
 
 };

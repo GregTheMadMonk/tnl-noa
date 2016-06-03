@@ -112,7 +112,7 @@ bool
 tnlExplicitTimeStepper< Problem, OdeSolver >::
 solve( const RealType& time,
        const RealType& stopTime,
-       const MeshType& mesh,
+       const MeshPointer& meshPointer,
        DofVectorType& dofVector,
        MeshDependentDataType& meshDependentData )
 {
@@ -124,11 +124,11 @@ solve( const RealType& time,
    this->odeSolver->setStopTime( stopTime );
    if( this->odeSolver->getMinIterations() )
       this->odeSolver->setMaxTau( ( stopTime - time ) / ( typename OdeSolver< Problem >::RealType ) this->odeSolver->getMinIterations() );
-   this->mesh = &mesh;
+   this->meshPointer = meshPointer;
    this->meshDependentData = &meshDependentData;
    if( ! this->odeSolver->solve( dofVector ) )
       return false;
-   this->problem->setExplicitBoundaryConditions( stopTime, *( this->mesh ), dofVector, *( this->meshDependentData ) );
+   this->problem->setExplicitBoundaryConditions( stopTime, this->meshPointer, dofVector, *( this->meshDependentData ) );
    mainTimer.stop();
    this->allIterations += this->odeSolver->getIterations();
    return true;
@@ -146,7 +146,7 @@ getExplicitRHS( const RealType& time,
    this->preIterateTimer.start();
    if( ! this->problem->preIterate( time,
                                     tau,
-                                    *( this->mesh),
+                                    this->meshPointer,
                                     u,
                                     *( this->meshDependentData ) ) )
    {
@@ -156,13 +156,13 @@ getExplicitRHS( const RealType& time,
    }
    this->preIterateTimer.stop();
    this->explicitUpdaterTimer.start();
-   this->problem->setExplicitBoundaryConditions( time, *( this->mesh ), u, *( this->meshDependentData ) );
-   this->problem->getExplicitRHS( time, tau, *( this->mesh ), u, fu, *( this->meshDependentData ) );
+   this->problem->setExplicitBoundaryConditions( time, this->meshPointer, u, *( this->meshDependentData ) );
+   this->problem->getExplicitRHS( time, tau, this->meshPointer, u, fu, *( this->meshDependentData ) );
    this->explicitUpdaterTimer.stop();
    this->postIterateTimer.start();
    if( ! this->problem->postIterate( time,
                                      tau,
-                                     *( this->mesh ),
+                                     this->meshPointer,
                                      u,
                                      *( this->meshDependentData ) ) )
    {

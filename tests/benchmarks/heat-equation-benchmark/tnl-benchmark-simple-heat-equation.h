@@ -394,13 +394,14 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
     */
    typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
    typedef typename GridType::VertexType VertexType;
-   GridType grid;
-   grid.setDimensions( gridXSize, gridYSize );
-   grid.setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   typedef tnlSharedPointer< GridType > GridPointer;
+   GridPointer gridPointer;
+   gridPointer->setDimensions( gridXSize, gridYSize );
+   gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
    tnlVector< Real, tnlCuda, Index > vecU;
    vecU.bind( cuda_u, gridXSize * gridYSize );
    tnlMeshFunction< GridType > meshFunction;
-   meshFunction.bind( grid, vecU );
+   meshFunction.bind( gridPointer, vecU );
    meshFunction.save( "simple-heat-equation-result.tnl" );
    
    /***
@@ -545,13 +546,13 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters,
     */
    typedef tnlGrid< 2, Real, tnlHost, Index > GridType;
    typedef typename GridType::VertexType VertexType;
-   GridType grid;
-   grid.setDimensions( gridXSize, gridYSize );
-   grid.setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
+   tnlSharedPointer< GridType > gridPointer;
+   gridPointer->setDimensions( gridXSize, gridYSize );
+   gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
    tnlVector< Real, tnlHost, Index > vecU;
    vecU.bind( u, gridXSize * gridYSize );
    tnlMeshFunction< GridType > meshFunction;
-   meshFunction.bind( grid, vecU );
+   meshFunction.bind( gridPointer, vecU );
    meshFunction.save( "simple-heat-equation-result.tnl" );
    
    /***

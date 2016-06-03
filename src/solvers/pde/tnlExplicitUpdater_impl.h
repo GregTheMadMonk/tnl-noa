@@ -34,7 +34,7 @@ template< typename Mesh,
 void
 tnlExplicitUpdater< Mesh, MeshFunction, DifferentialOperator, BoundaryConditions, RightHandSide >::
 update( const RealType& time,
-        const Mesh& mesh,
+        const MeshPointer& meshPointer,
         const DifferentialOperator& differentialOperator,        
         const BoundaryConditions& boundaryConditions,
         const RightHandSide& rightHandSide,
@@ -52,11 +52,11 @@ update( const RealType& time,
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
-                                                    ( mesh,
+                                                    ( meshPointer,
                                                       userData );
       meshTraverser.template processInteriorEntities< TraverserUserData,
                                                       TraverserInteriorEntitiesProcessor >
-                                                    ( mesh,
+                                                    ( meshPointer,
                                                       userData );
 
    }

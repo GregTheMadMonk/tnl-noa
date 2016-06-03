@@ -35,7 +35,7 @@ apply( const BoundaryConditions& boundaryConditions,
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
-                                                    ( u.getMesh(),
+                                                    ( u.getMeshPointer(),
                                                       userData );
    }
    if( std::is_same< DeviceType, tnlCuda >::value )
@@ -48,7 +48,7 @@ apply( const BoundaryConditions& boundaryConditions,
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
-                                                    ( u.getMesh(),
+                                                    ( u.getMeshPointer(),
                                                       userData );
       tnlCuda::freeFromDevice( kernelTime );
       tnlCuda::freeFromDevice( kernelBoundaryConditions );

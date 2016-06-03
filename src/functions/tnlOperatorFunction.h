@@ -157,7 +157,7 @@ class tnlOperatorFunction< Operator, PreimageFunction, void, false >
       
       tnlOperatorFunction( OperatorType& operator_,
                            PreimageFunctionType& preimageFunction )
-      :  operator_( operator_ ), imageFunction( preimageFunction.getMesh() ), preimageFunction( &preimageFunction )
+      :  operator_( operator_ ), imageFunction( preimageFunction.getMeshPointer() ), preimageFunction( &preimageFunction )
       {};
       
       const MeshType& getMesh() const { return this->imageFunction.getMesh(); };
@@ -169,7 +169,7 @@ class tnlOperatorFunction< Operator, PreimageFunction, void, false >
       void setPreimageFunction( PreimageFunction& preimageFunction )
       { 
          this->preimageFunction = &preimageFunction;
-         this->imageFunction.setMesh( preimageFunction.getMesh() );
+         this->imageFunction.setMesh( preimageFunction.getMeshPointer() );
       };
       
       const PreimageFunctionType& getPreimageFunction() const { return *this->preimageFunction; };
@@ -244,6 +244,7 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
       
       typedef Operator OperatorType;
       typedef typename OperatorType::MeshType MeshType;
+      typedef tnlSharedPointer< MeshType > MeshPointer;
       typedef typename OperatorType::RealType RealType;
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;
@@ -257,12 +258,14 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
       
       tnlOperatorFunction( OperatorType& operator_,
                            const BoundaryConditionsType& boundaryConditions,
-                           const MeshType& mesh )
+                           const MeshPointer& meshPointer )
       :  operator_( operator_ ),
          boundaryConditions( boundaryConditions ),
-         imageFunction( mesh ),
-         preimageFunction( 0 )
-      {};
+         imageFunction( meshPointer )//,
+         //preimageFunction( 0 )
+      {
+         this->preimageFunction = NULL;
+      };
       
       tnlOperatorFunction( OperatorType& operator_,
                            const BoundaryConditionsType& boundaryConditions,

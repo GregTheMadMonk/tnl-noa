@@ -32,7 +32,7 @@ template< typename Real,
              typename EntitiesProcessor >
 void
 tnlTraverser< tnlGrid< 1, Real, Device, Index >, GridEntity, 1 >::
-processBoundaryEntities( const GridType& grid,
+processBoundaryEntities( const GridPointer& gridPointer,
                          UserData& userData ) const
 {
    /****
@@ -41,9 +41,9 @@ processBoundaryEntities( const GridType& grid,
    static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
 
    tnlGridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true >(
-      grid,
+      gridPointer,
       CoordinatesType( 0 ),
-      grid.getDimensions() - CoordinatesType( 1 ),
+      gridPointer->getDimensions() - CoordinatesType( 1 ),
       CoordinatesType(),
       CoordinatesType(),
       userData );
@@ -57,7 +57,7 @@ template< typename Real,
              typename EntitiesProcessor >
 void
 tnlTraverser< tnlGrid< 1, Real, Device, Index >, GridEntity, 1 >::
-processInteriorEntities( const GridType& grid,
+processInteriorEntities( const GridPointer& gridPointer,
                          UserData& userData ) const
 {
    /****
@@ -66,9 +66,9 @@ processInteriorEntities( const GridType& grid,
    static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
 
    tnlGridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-      grid,
+      gridPointer,
       CoordinatesType( 1 ),
-      grid.getDimensions() - CoordinatesType( 2 ),
+      gridPointer->getDimensions() - CoordinatesType( 2 ),
       CoordinatesType(),
       CoordinatesType(),
       userData );
@@ -83,7 +83,7 @@ template< typename Real,
 void
 tnlTraverser< tnlGrid< 1, Real, Device, Index >, GridEntity, 1 >::
 processAllEntities(
-   const GridType& grid,
+   const GridPointer& gridPointer,
    UserData& userData ) const
 {
    /****
@@ -92,9 +92,9 @@ processAllEntities(
    static_assert( GridEntity::entityDimensions == 1, "The entity has wrong dimensions." );
 
    tnlGridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-      grid,
+      gridPointer,
       CoordinatesType( 0 ),
-      grid.getDimensions() - CoordinatesType( 1 ),
+      gridPointer->getDimensions() - CoordinatesType( 1 ),
       CoordinatesType(),
       CoordinatesType(),
       userData );
@@ -111,7 +111,7 @@ template< typename Real,
              typename EntitiesProcessor >
 void
 tnlTraverser< tnlGrid< 1, Real, Device, Index >, GridEntity, 0 >::
-processBoundaryEntities( const GridType& grid,
+processBoundaryEntities( const GridPointer& gridPointer,
                          UserData& userData ) const
 {
    /****
@@ -120,9 +120,9 @@ processBoundaryEntities( const GridType& grid,
    static_assert( GridEntity::entityDimensions == 0, "The entity has wrong dimensions." );
 
    tnlGridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, true >(
-      grid,
+      gridPointer,
       CoordinatesType( 0 ),
-      grid.getDimensions(),
+      gridPointer->getDimensions(),
       CoordinatesType(),
       CoordinatesType(),
       userData );
@@ -136,7 +136,7 @@ template< typename Real,
              typename EntitiesProcessor >
 void
 tnlTraverser< tnlGrid< 1, Real, Device, Index >, GridEntity, 0 >::
-processInteriorEntities( const GridType& grid,
+processInteriorEntities( const GridPointer& gridPointer,
                          UserData& userData ) const
 {
    /****
@@ -145,9 +145,9 @@ processInteriorEntities( const GridType& grid,
    static_assert( GridEntity::entityDimensions == 0, "The entity has wrong dimensions." );
 
    tnlGridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-      grid,
+      gridPointer,
       CoordinatesType( 1 ),
-      grid.getDimensions() - CoordinatesType( 1 ),
+      gridPointer->getDimensions() - CoordinatesType( 1 ),
       CoordinatesType(),
       CoordinatesType(),
       userData );
@@ -162,7 +162,7 @@ template< typename Real,
 void
 tnlTraverser< tnlGrid< 1, Real, Device, Index >, GridEntity, 0 >::
 processAllEntities(
-   const GridType& grid,
+   const GridPointer& gridPointer,
    UserData& userData ) const
 {
    /****
@@ -171,9 +171,9 @@ processAllEntities(
    static_assert( GridEntity::entityDimensions == 0, "The entity has wrong dimensions." );
 
    tnlGridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
-      grid,
+      gridPointer,
       CoordinatesType( 0 ),
-      grid.getDimensions(),
+      gridPointer->getDimensions(),
       CoordinatesType(),
       CoordinatesType(),
       userData );

@@ -20,6 +20,7 @@
 
 #include <functions/tnlFunctionAdapter.h>
 #include <core/tnlTimer.h>
+#include <core/tnlSharedPointer.h>
 
 template< typename Real,
           typename MeshFunction,
@@ -114,6 +115,7 @@ class tnlExplicitUpdater
 {
    public:
       typedef Mesh MeshType;
+      typedef tnlSharedPointer< MeshType > MeshPointer;
       typedef typename MeshFunction::RealType RealType;
       typedef typename MeshFunction::DeviceType DeviceType;
       typedef typename MeshFunction::IndexType IndexType;
@@ -133,7 +135,7 @@ class tnlExplicitUpdater
 
       template< typename EntityType >
       void update( const RealType& time,
-                   const MeshType& mesh,
+                   const MeshPointer& meshPointer,
                    const DifferentialOperator& differentialOperator,
                    const BoundaryConditions& boundaryConditions,
                    const RightHandSide& rightHandSide,

@@ -16,6 +16,7 @@ class HeatEquationBenchmarkProblem:
 {
    public:
 
+      typedef tnlSharedPointer< Mesh > MeshPointer;
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
@@ -38,7 +39,7 @@ class HeatEquationBenchmarkProblem:
       bool setup( const tnlParameterContainer& parameters );
 
       bool setInitialCondition( const tnlParameterContainer& parameters,
-                                const MeshType& mesh,
+                                const MeshPointer& meshPointer,
                                 DofVectorType& dofs,
                                 MeshDependentDataType& meshDependentData );
 
@@ -48,18 +49,18 @@ class HeatEquationBenchmarkProblem:
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
-                         const MeshType& mesh,
+                         const MeshPointer& meshPointer,
                          DofVectorType& dofs,
                          MeshDependentDataType& meshDependentData );
 
       IndexType getDofs( const MeshType& mesh ) const;
 
-      void bindDofs( const MeshType& mesh,
+      void bindDofs( const MeshPointer& meshPointer,
                      DofVectorType& dofs );
 
       void getExplicitRHS( const RealType& time,
                            const RealType& tau,
-                           const MeshType& mesh,
+                           const MeshPointer& meshPointer,
                            DofVectorType& _u,
                            DofVectorType& _fu,
                            MeshDependentDataType& meshDependentData );

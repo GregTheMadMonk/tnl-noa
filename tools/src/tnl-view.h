@@ -49,11 +49,11 @@ bool getOutputFileName( const tnlString& inputFileName,
 
 
 template< typename MeshFunction >
-bool writeMeshFunction( const typename MeshFunction::MeshType& mesh,
+bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
                         const tnlString& inputFileName,
                         const tnlParameterContainer& parameters  )
 {
-   MeshFunction function( mesh );
+   MeshFunction function( meshPointer );
    if( ! function.load( inputFileName ) )
    {
       std::cerr << "Unable to load mesh function from a file " << inputFileName << "." << std::endl;
@@ -73,49 +73,50 @@ bool writeMeshFunction( const typename MeshFunction::MeshType& mesh,
    return function.write( outputFileName, outputFormat );
 }
 
-template< typename Mesh,
+template< typename MeshPointer,
           int EntityDimensions,
           typename Real >
-bool setMeshFunctionRealType( const Mesh& mesh,
+bool setMeshFunctionRealType( const MeshPointer& meshPointer,
                               const tnlString& inputFileName,
                               const tnlParameterContainer& parameters  )
 {
-   return writeMeshFunction< tnlMeshFunction< Mesh, EntityDimensions, Real > >( mesh, inputFileName, parameters );
+   return writeMeshFunction< tnlMeshFunction< typename MeshPointer::ObjectType, EntityDimensions, Real > >( meshPointer, inputFileName, parameters );
 }
 
-template< typename Mesh,
+template< typename MeshPointer,
           int EntityDimensions >
-bool setMeshEntityType( const Mesh& mesh,
+bool setMeshEntityType( const MeshPointer& meshPointer,
                         const tnlString& inputFileName,
                         const tnlList< tnlString >& parsedObjectType,
                         const tnlParameterContainer& parameters )
 {
    if( parsedObjectType[ 3 ] == "float" )
-      return setMeshFunctionRealType< Mesh, EntityDimensions, float >( mesh, inputFileName, parameters );
+      return setMeshFunctionRealType< MeshPointer, EntityDimensions, float >( meshPointer, inputFileName, parameters );
    if( parsedObjectType[ 3 ] == "double" )
-      return setMeshFunctionRealType< Mesh, EntityDimensions, double >( mesh, inputFileName, parameters );
+      return setMeshFunctionRealType< MeshPointer, EntityDimensions, double >( meshPointer, inputFileName, parameters );
    if( parsedObjectType[ 3 ] == "long double" )
-      return setMeshFunctionRealType< Mesh, EntityDimensions, long double >( mesh, inputFileName, parameters );
+      return setMeshFunctionRealType< MeshPointer, EntityDimensions, long double >( meshPointer, inputFileName, parameters );
    std::cerr << "Unsupported arithmetics " << parsedObjectType[ 3 ] << " in mesh function " << inputFileName << std::endl;
    return false;
 }
 
 template< typename MeshReal,
           typename MeshIndex >
-bool setMeshEntityDimensions( const tnlGrid< 1, MeshReal, tnlHost, MeshIndex >& mesh,
+bool setMeshEntityDimensions( const tnlSharedPointer< tnlGrid< 1, MeshReal, tnlHost, MeshIndex > >& meshPointer,
                               const tnlString& inputFileName,
                               const tnlList< tnlString >& parsedObjectType,
                               const tnlParameterContainer& parameters )
 {
    typedef tnlGrid< 1, MeshReal, tnlHost, MeshIndex > Mesh;
+   typedef tnlSharedPointer< Mesh > MeshPointer;
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
    {
       case 0:
-         return setMeshEntityType< Mesh, 0 >( mesh, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 0 >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;      
       case 1:
-         return setMeshEntityType< Mesh, 1 >( mesh, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 1 >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;
       default:
          cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << endl;
@@ -125,23 +126,24 @@ bool setMeshEntityDimensions( const tnlGrid< 1, MeshReal, tnlHost, MeshIndex >& 
 
 template< typename MeshReal,
           typename MeshIndex >
-bool setMeshEntityDimensions( const tnlGrid< 2, MeshReal, tnlHost, MeshIndex >& mesh,
+bool setMeshEntityDimensions( const tnlSharedPointer< tnlGrid< 2, MeshReal, tnlHost, MeshIndex > >& meshPointer,
                               const tnlString& inputFileName,
                               const tnlList< tnlString >& parsedObjectType,
                               const tnlParameterContainer& parameters )
 {
    typedef tnlGrid< 2, MeshReal, tnlHost, MeshIndex > Mesh;
+   typedef tnlSharedPointer< Mesh > MeshPointer;
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
    {
       case 0:
-         return setMeshEntityType< Mesh, 0 >( mesh, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 0 >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;            
       case 1:
-         return setMeshEntityType< Mesh, 1 >( mesh, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 1 >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;
       case 2:
-         return setMeshEntityType< Mesh, 2 >( mesh, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 2 >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;
       default:
          cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << endl;
@@ -151,26 +153,27 @@ bool setMeshEntityDimensions( const tnlGrid< 2, MeshReal, tnlHost, MeshIndex >& 
 
 template< typename MeshReal,
           typename MeshIndex >
-bool setMeshEntityDimensions( const tnlGrid< 3, MeshReal, tnlHost, MeshIndex >& mesh,
+bool setMeshEntityDimensions( const tnlSharedPointer< tnlGrid< 3, MeshReal, tnlHost, MeshIndex > >& meshPointer,
                               const tnlString& inputFileName,
                               const tnlList< tnlString >& parsedObjectType,
                               const tnlParameterContainer& parameters )
 {
    typedef tnlGrid< 3, MeshReal, tnlHost, MeshIndex > Mesh;
+   typedef tnlSharedPointer< Mesh > MeshPointer;
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
    {
       case 0:
-         return setMeshEntityType< Mesh, 0 >( mesh, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 0 >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;      
       case 1:
-         return setMeshEntityType< Mesh, 1 >( mesh, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 1 >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;
       case 2:
-         return setMeshEntityType< Mesh, 2 >( mesh, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 2 >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;
       case 3:
-         return setMeshEntityType< Mesh, 3 >( mesh, inputFileName, parsedObjectType, parameters );
+         return setMeshEntityType< MeshPointer, 3 >( meshPointer, inputFileName, parsedObjectType, parameters );
          break;
       default:
          cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << endl;
@@ -178,23 +181,23 @@ bool setMeshEntityDimensions( const tnlGrid< 3, MeshReal, tnlHost, MeshIndex >& 
    }
 }
 
-template< typename Mesh >
-bool setMeshFunction( const Mesh& mesh,
+template< typename MeshPointer >
+bool setMeshFunction( const MeshPointer& meshPointer,
                       const tnlString& inputFileName,
                       const tnlList< tnlString >& parsedObjectType,
                       const tnlParameterContainer& parameters )
 {
-   if( parsedObjectType[ 1 ] != mesh.getSerializationType() )
+   if( parsedObjectType[ 1 ] != meshPointer->getSerializationType() )
    {
       cerr << "Incompatible mesh type for the mesh function " << inputFileName << "." << endl;
       return false;
    }
-   return setMeshEntityDimensions( mesh, inputFileName, parsedObjectType, parameters );
+   return setMeshEntityDimensions( meshPointer, inputFileName, parsedObjectType, parameters );
 }
 
 
-template< typename Mesh, typename Element, typename Real, typename Index, int Dimensions >
-bool convertObject( const Mesh& mesh,
+template< typename MeshPointer, typename Element, typename Real, typename Index, int Dimensions >
+bool convertObject( const MeshPointer& meshPointer,
                     const tnlString& inputFileName,
                     const tnlList< tnlString >& parsedObjectType,
                     const tnlParameterContainer& parameters )
@@ -216,7 +219,7 @@ bool convertObject( const Mesh& mesh,
       tnlVector< Element, tnlHost, Index > vector;
       if( ! vector. load( inputFileName ) )
          return false;
-      if( ! mesh. write( vector, outputFileName, outputFormat ) )
+      if( ! meshPointer->write( vector, outputFileName, outputFormat ) )
          return false;
    }
 
@@ -239,8 +242,8 @@ bool convertObject( const Mesh& mesh,
    return true;
 }
 
-template< typename Mesh, typename Element, typename Real, typename Index >
-bool setDimensions( const Mesh& mesh,
+template< typename MeshPointer, typename Element, typename Real, typename Index >
+bool setDimensions( const MeshPointer& meshPointer,
                     const tnlString& inputFileName,
                     const tnlList< tnlString >& parsedObjectType,
                     const tnlParameterContainer& parameters )
@@ -255,18 +258,18 @@ bool setDimensions( const Mesh& mesh,
    switch( dimensions )
    {
       case 1:
-         return convertObject< Mesh, Element, Real, Index, 1 >( mesh, inputFileName, parsedObjectType, parameters );
+         return convertObject< MeshPointer, Element, Real, Index, 1 >( meshPointer, inputFileName, parsedObjectType, parameters );
       case 2:
-         return convertObject< Mesh, Element, Real, Index, 2 >( mesh, inputFileName, parsedObjectType, parameters );
+         return convertObject< MeshPointer, Element, Real, Index, 2 >( meshPointer, inputFileName, parsedObjectType, parameters );
       case 3:
-         return convertObject< Mesh, Element, Real, Index, 3 >( mesh, inputFileName, parsedObjectType, parameters );
+         return convertObject< MeshPointer, Element, Real, Index, 3 >( meshPointer, inputFileName, parsedObjectType, parameters );
    }
    cerr << "Cannot convert objects with " << dimensions << " dimensions." << endl;
    return false;
 }
 
-template< typename Mesh, typename Element, typename Real >
-bool setIndexType( const Mesh& mesh,
+template< typename MeshPointer, typename Element, typename Real >
+bool setIndexType( const MeshPointer& meshPointer,
                    const tnlString& inputFileName,
                    const tnlList< tnlString >& parsedObjectType,
                    const tnlParameterContainer& parameters )
@@ -280,15 +283,15 @@ bool setIndexType( const Mesh& mesh,
       indexType = parsedObjectType[ 3 ];
 
    if( indexType == "int" )
-      return setDimensions< Mesh, Element, Real, int >( mesh, inputFileName, parsedObjectType, parameters );
+      return setDimensions< MeshPointer, Element, Real, int >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( indexType == "long-int" )
-      return setDimensions< Mesh, Element, Real, long int >( mesh, inputFileName, parsedObjectType, parameters );
+      return setDimensions< MeshPointer, Element, Real, long int >( meshPointer, inputFileName, parsedObjectType, parameters );
    cerr << "Unknown index type " << indexType << "." << endl;
    return false;
 }
 
-template< typename Mesh >
-bool setTupleType( const Mesh& mesh,
+template< typename MeshPointer >
+bool setTupleType( const MeshPointer& meshPointer,
                    const tnlString& inputFileName,
                    const tnlList< tnlString >& parsedObjectType,
                    const tnlList< tnlString >& parsedElementType,
@@ -300,45 +303,45 @@ bool setTupleType( const Mesh& mesh,
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlStaticVector< 1, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 1, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlStaticVector< 2, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 2, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlStaticVector< 3, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 3, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
    if( dataType == "double" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlStaticVector< 1, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 1, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlStaticVector< 2, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 2, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlStaticVector< 3, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 3, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
    if( dataType == "long double" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlStaticVector< 1, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 1, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlStaticVector< 2, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 2, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlStaticVector< 3, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 3, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
 }
 
-template< typename Mesh >
-bool setElementType( const Mesh& mesh,
+template< typename MeshPointer >
+bool setElementType( const MeshPointer& meshPointer,
                      const tnlString& inputFileName,
                      const tnlList< tnlString >& parsedObjectType,
                      const tnlParameterContainer& parameters )
@@ -355,11 +358,11 @@ bool setElementType( const Mesh& mesh,
 
 
    if( elementType == "float" )
-      return setIndexType< Mesh, float, float >( mesh, inputFileName, parsedObjectType, parameters );
+      return setIndexType< MeshPointer, float, float >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "double" )
-      return setIndexType< Mesh, double, double >( mesh, inputFileName, parsedObjectType, parameters );
+      return setIndexType< MeshPointer, double, double >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "long double" )
-      return setIndexType< Mesh, long double, long double >( mesh, inputFileName, parsedObjectType, parameters );
+      return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
    tnlList< tnlString > parsedElementType;
    if( ! parseObjectType( elementType, parsedElementType ) )
    {
@@ -367,7 +370,7 @@ bool setElementType( const Mesh& mesh,
       return false;
    }
    if( parsedElementType[ 0 ] == "tnlStaticVector" )
-      return setTupleType< Mesh >( mesh, inputFileName, parsedObjectType, parsedElementType, parameters );
+      return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedElementType, parameters );
 
    cerr << "Unknown element type " << elementType << "." << endl;
    return false;
@@ -379,14 +382,16 @@ bool processFiles( const tnlParameterContainer& parameters )
    int verbose = parameters. getParameter< int >( "verbose");
    tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
 
-   Mesh mesh;
+   typedef tnlSharedPointer< Mesh > MeshPointer;
+   MeshPointer meshPointer;
+   
    if( meshFile != "" )
-      if( ! mesh. load( meshFile ) )
+      if( ! meshPointer->load( meshFile ) )
       {
          cerr << "I am not able to load mesh from the file " << meshFile << "." << endl;
          return false;
       }
-   mesh. writeMesh( "mesh.asy", "asymptote" );
+   meshPointer->writeMesh( "mesh.asy", "asymptote" );
 
    bool checkOutputFile = parameters. getParameter< bool >( "check-output-file" );
    tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
@@ -434,9 +439,9 @@ bool processFiles( const tnlParameterContainer& parameters )
              parsedObjectType[ 0 ] == "tnlSharedMultiVector" ||      
              parsedObjectType[ 0 ] == "tnlSharedVector" ||
              parsedObjectType[ 0 ] == "tnlVector" )
-            setElementType< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );
+            setElementType< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
          if( parsedObjectType[ 0 ] == "tnlMeshFunction" )
-            setMeshFunction< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );
+            setMeshFunction< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
          if( verbose )
             cout << "[ OK ].  " << endl;
 

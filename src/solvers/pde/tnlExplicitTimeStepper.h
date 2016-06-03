@@ -23,7 +23,7 @@
 #include <config/tnlParameterContainer.h>
 #include <core/tnlTimer.h>
 #include <core/tnlLogger.h>
-
+#include <core/tnlSharedPointer.h>
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
@@ -37,6 +37,7 @@ class tnlExplicitTimeStepper
    typedef typename Problem::DeviceType DeviceType;
    typedef typename Problem::IndexType IndexType;
    typedef typename Problem::MeshType MeshType;
+   typedef tnlSharedPointer< MeshType > MeshPointer;
    typedef typename ProblemType::DofVectorType DofVectorType;
    typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
 
@@ -62,7 +63,7 @@ class tnlExplicitTimeStepper
 
    bool solve( const RealType& time,
                const RealType& stopTime,
-               const MeshType& mesh,
+               const MeshPointer& meshPointer,
                DofVectorType& dofVector,
                MeshDependentDataType& meshDependentData );
 
@@ -79,7 +80,7 @@ class tnlExplicitTimeStepper
 
    Problem* problem;
 
-   const MeshType* mesh;
+   MeshPointer meshPointer;
 
    RealType timeStep;
 

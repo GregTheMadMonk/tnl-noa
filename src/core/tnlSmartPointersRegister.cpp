@@ -8,35 +8,43 @@
  ***************************************************************************/
 
 /***************************************************************************
-                          tnlDeviceObjectsContainer.cpp  -  description
+                          tnlSmartPointersRegister.cpp  -  description
                              -------------------
     begin                : Apr 29, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-#include <core/tnlDeviceObjectsContainer.h>
+#include <iostream>
+#include <core/tnlSmartPointersRegister.h>
 
-tnlDeviceObjectsContainer::tnlDeviceObjectsContainer( int devicesCount )
+tnlSmartPointersRegister::tnlSmartPointersRegister( int devicesCount )
 {
    tnlAssert( devicesCount > 0, std::cerr << "devicesCount = " << devicesCount );
-   objectsOnDevices.resize( devicesCount );
+   pointersOnDevices.resize( devicesCount );
    this->devicesCount = devicesCount;
 }
 
-void tnlDeviceObjectsContainer::push( tnlDeviceObjectBase* object, int deviceId )
+void tnlSmartPointersRegister::insert( tnlSmartPointer* pointer, int deviceId )
 {
    tnlAssert( deviceId >= 0 && deviceId < this->devicesCount,
               std::cerr << "deviceId = " << deviceId << " devicesCount = " << this->devicesCount );
-   objectsOnDevices[ deviceId ].push_back( object );
+   std::cerr << "Inserting pointer " << pointer << " to the register..." << std::endl;
+   pointersOnDevices[ deviceId ].push_back( pointer );
 }
 
-bool tnlDeviceObjectsContainer::synchronize()
+void tnlSmartPointersRegister::remove( tnlSmartPointer* pointer, int deviceId )
 {
-   for( int i = 0; i < this->objectsOnDevices.size(); i++ )
-      for( ListType::iterator it = objectsOnDevices[ i ].begin();
-           it != objectsOnDevices[ i ].end();
-           it++ )
-         ( *it )->synchronize();            
+   tnlAssert( deviceId >= 0 && deviceId < this->devicesCount,
+              std::cerr << "deviceId = " << deviceId << " devicesCount = " << this->devicesCount );   
+   pointersOnDevices[ deviceId ].remove( pointer );
+}
 
+
+bool tnlSmartPointersRegister::synchronizeDevice( int deviceId )
+{
+   for( ListType::iterator it = pointersOnDevices[ deviceId ].begin();
+        it != pointersOnDevices[ deviceId ].end();
+        it++ )
+      ( *it )->synchronize();            
 }

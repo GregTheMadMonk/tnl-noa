@@ -39,13 +39,14 @@ class tnlApproximationError
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::VertexType VertexType;
+      typedef tnlSharedPointer< MeshType > MeshPointer;
       typedef tnlConstantFunction< MeshType::meshDimensions, RealType > ConstantFunctionType;
       typedef tnlDirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
 
       static void getError( const ExactOperator& exactOperator,
                             ApproximateOperator& approximateOperator,
                             const Function& function,
-                            const MeshType& mesh,
+                            const MeshPointer& meshPointer,
                             RealType& l1Error,
                             RealType& l2Error,
                             RealType& maxError,
@@ -57,13 +58,13 @@ class tnlApproximationError
          typedef tnlOperatorFunction< ApproximateOperator, MeshFunction > OperatorFunction;
          typedef tnlExactOperatorFunction< ExactOperator, Function > ExactOperatorFunction;
 
-         tnlMeshFunction< MeshType, MeshEntity::getDimensions() > exactU( mesh ), u( mesh ), v( mesh );
+         tnlMeshFunction< MeshType, MeshEntity::getDimensions() > exactU( meshPointer ), u( meshPointer ), v( meshPointer );
          OperatorFunction operatorFunction( approximateOperator, v );         
          ExactOperatorFunction exactOperatorFunction( exactOperator, function );
          DirichletBoundaryConditions boundaryConditions;
          BoundaryOperatorFunction boundaryOperatorFunction( boundaryConditions, u );
 
-         tnlString meshSizeString( mesh.getDimensions().x() );
+         tnlString meshSizeString( meshPointer->getDimensions().x() );
          tnlString dimensionsString;
          if( MeshType::getMeshDimensions() == 1 )
             dimensionsString = "1D-";

@@ -19,6 +19,7 @@
 #include <functions/tnlDomain.h>
 #include <functions/tnlMeshFunctionGnuplotWriter.h>
 #include <functions/tnlMeshFunctionVTKWriter.h>
+#include <core/tnlSharedPointer.h>
 
 #ifndef TNLMESHFUNCTION_H
 #define TNLMESHFUNCTION_H
@@ -34,7 +35,8 @@ class tnlMeshFunction :
    //               "Both mesh and vector of a mesh function must reside on the same device.");
    public:
       
-      typedef Mesh MeshType;      
+      typedef Mesh MeshType;
+      typedef tnlSharedPointer< MeshType > MeshPointer;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
       typedef Real RealType;
@@ -45,10 +47,12 @@ class tnlMeshFunction :
       
       tnlMeshFunction();
       
-      tnlMeshFunction( const MeshType& mesh );
+      tnlMeshFunction( const MeshPointer& meshPointer );      
+      
+      tnlMeshFunction( const ThisType& meshFunction );
       
       template< typename Vector >
-      tnlMeshFunction( const MeshType& mesh,
+      tnlMeshFunction( const MeshPointer& meshPointer,
                        Vector& data,
                        const IndexType& offset = 0 );
       
@@ -67,13 +71,17 @@ class tnlMeshFunction :
                   const tnlString& prefix = "" );      
       
       template< typename Vector >
-      void bind( const MeshType& mesh,
+      void bind( const MeshPointer& meshPointer,
                  const Vector& data,
                  const IndexType& offset = 0 );
       
-      void setMesh( const MeshType& mesh );
+      void setMesh( const MeshPointer& meshPointer );
       
+      template< typename Device = tnlHost >
+      __cuda_callable__
       const MeshType& getMesh() const;
+      
+      const MeshPointer& getMeshPointer() const;
       
       __cuda_callable__ const VectorType& getData() const;      
       
@@ -136,7 +144,7 @@ class tnlMeshFunction :
             
    protected:
       
-      const MeshType* mesh;
+      MeshPointer meshPointer;
       
       VectorType data;
       

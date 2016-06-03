@@ -20,6 +20,7 @@
 
 #include <problems/tnlProblem.h>
 #include <matrices/tnlCSRMatrix.h>
+#include <core/tnlSharedPointer.h>
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -35,6 +36,7 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
       using typename BaseType::IndexType;
 
       typedef Mesh MeshType;
+      typedef tnlSharedPointer< MeshType, Device > MeshPointer;
       typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
       typedef tnlVector< RealType, DeviceType, IndexType > MeshDependentDataType;
@@ -62,18 +64,18 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
 
       bool preIterate( const RealType& time,
                        const RealType& tau,
-                       const MeshType& mesh,
+                       const MeshPointer& meshPointer,
                        DofVectorType& dofs,
                        MeshDependentDataType& meshDependentData );
       
       void setExplicitBoundaryConditions( const RealType& time,
-                                          const MeshType& mesh,
+                                          const MeshPointer& meshPointer,
                                           DofVectorType& dofs,
                                           MeshDependentDataType& meshDependentData );
 
       bool postIterate( const RealType& time,
                         const RealType& tau,
-                        const MeshType& mesh,
+                        const MeshPointer& meshPointer,
                         DofVectorType& dofs,
                         MeshDependentDataType& meshDependentData );
 

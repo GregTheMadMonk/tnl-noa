@@ -8,37 +8,20 @@
  ***************************************************************************/
 
 /***************************************************************************
-                          tnlDeviceObjectsContainer.h  -  description
+                          tnlSharedPointer.h  -  description
                              -------------------
-    begin                : Apr 29, 2016
+    begin                : May 30, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 #pragma once
 
-#include <vector>
-#include <list>
-#include <core/tnlDeviceObjectBase.h>
-#include <core/tnlAssert.h>
-
-class tnlDeviceObjectsContainer
-{   
-  
+class tnlSmartPointer
+{
    public:
+      
+      virtual bool synchronize() = 0;
    
-      tnlDeviceObjectsContainer( int devicesCount = 1 );
-      
-      void push( tnlDeviceObjectBase* object, int deviceId );
-      
-      bool synchronize();
-      
-   protected:
-      
-      typedef std::list< tnlDeviceObjectBase* > ListType;   
-      
-      std::vector< ListType > objectsOnDevices;
-      
-      int devicesCount;
 };
 

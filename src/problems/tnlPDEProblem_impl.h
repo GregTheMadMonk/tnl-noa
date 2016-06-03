@@ -100,7 +100,7 @@ bool
 tnlPDEProblem< Mesh, Real, Device, Index >::
 preIterate( const RealType& time,
             const RealType& tau,
-            const MeshType& mesh,
+            const MeshPointer& meshPointer,
             DofVectorType& dofs,
             DofVectorType& auxDofs )
 {
@@ -114,7 +114,7 @@ template< typename Mesh,
 void
 tnlPDEProblem< Mesh, Real, Device, Index >::
 setExplicitBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
+                               const MeshPointer& meshPointer,
                                DofVectorType& dofs,
                                MeshDependentDataType& meshDependentData )
 {   
@@ -129,7 +129,7 @@ bool
 tnlPDEProblem< Mesh, Real, Device, Index >::
 postIterate( const RealType& time,
              const RealType& tau,
-             const MeshType& mesh,
+             const MeshPointer& meshPointer,
              DofVectorType& dofs,
              DofVectorType& auxDofs )
 {

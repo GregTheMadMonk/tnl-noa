@@ -41,6 +41,7 @@ class tnlPDEOperatorEocTest
       typedef TestFunction TestFunctionType;
       typedef ExactOperator ExactOperatorType;
       typedef typename ApproximateOperator::MeshType MeshType;
+      typedef tnlSharedPointer< MeshType > MeshPointer;
       typedef typename ApproximateOperator::RealType RealType;
       typedef typename ApproximateOperator::IndexType IndexType;
       
@@ -49,7 +50,7 @@ class tnlPDEOperatorEocTest
    
       void setupMesh( const IndexType meshSize )
       {
-         tnlPDEOperatorEocTestMeshSetter< MeshType >::setup( mesh, meshSize );
+         tnlPDEOperatorEocTestMeshSetter< MeshType >::setup( *meshPointer, meshSize );
       }
       
       void setupFunction()
@@ -71,7 +72,7 @@ class tnlPDEOperatorEocTest
          ::getError( exactOperator,
                      approximateOperator,
                      function,
-                     mesh,
+                     meshPointer,
                      errors[ 1 ], //l1Error,
                      errors[ 2 ], //l2Error,
                      errors[ 0 ], //maxError,
@@ -119,7 +120,7 @@ class tnlPDEOperatorEocTest
       
    protected:
       
-      MeshType mesh;
+      MeshPointer meshPointer;
       
       TestFunction function;               
 };

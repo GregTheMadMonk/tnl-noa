@@ -25,8 +25,8 @@
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlMeshFunction.h>
 
-template< typename Mesh, typename Element, typename Real, typename Index >
-bool computeDifferenceOfMeshFunctions( const Mesh& mesh, const tnlParameterContainer& parameters )
+template< typename MeshPointer, typename Element, typename Real, typename Index >
+bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const tnlParameterContainer& parameters )
 {
    bool verbose = parameters. getParameter< bool >( "verbose" );
    tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
@@ -53,8 +53,9 @@ bool computeDifferenceOfMeshFunctions( const Mesh& mesh, const tnlParameterConta
               << endl;
    if( verbose )
       cout << endl;
-
-   tnlMeshFunction< Mesh, Mesh::getMeshDimensions(), Real > v1( mesh ), v2( mesh ), diff( mesh );
+   
+   typedef typename MeshPointer::ObjectType Mesh;
+   tnlMeshFunction< Mesh, Mesh::getMeshDimensions(), Real > v1( meshPointer ), v2( meshPointer ), diff( meshPointer );
    Real totalL1Diff( 0.0 ), totalL2Diff( 0.0 ), totalMaxDiff( 0.0 );
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {
@@ -161,8 +162,8 @@ bool computeDifferenceOfMeshFunctions( const Mesh& mesh, const tnlParameterConta
 }
 
 
-template< typename Mesh, typename Element, typename Real, typename Index >
-bool computeDifferenceOfVectors( const Mesh& mesh, const tnlParameterContainer& parameters )
+template< typename MeshPointer, typename Element, typename Real, typename Index >
+bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const tnlParameterContainer& parameters )
 {
    bool verbose = parameters. getParameter< bool >( "verbose" );
    tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
@@ -254,9 +255,9 @@ bool computeDifferenceOfVectors( const Mesh& mesh, const tnlParameterContainer& 
          //if( snapshotPeriod != 0.0 )
          outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
       }
-      Real l1Diff = mesh.getDifferenceLpNorm( v1, v2, 1.0 );
-      Real l2Diff = mesh.getDifferenceLpNorm( v1, v2, 2.0 );
-      Real maxDiff = mesh.getDifferenceAbsMax( v1, v2 );
+      Real l1Diff = meshPointer->getDifferenceLpNorm( v1, v2, 1.0 );
+      Real l2Diff = meshPointer->getDifferenceLpNorm( v1, v2, 2.0 );
+      Real maxDiff = meshPointer->getDifferenceAbsMax( v1, v2 );
       if( snapshotPeriod != 0.0 )
       {
          totalL1Diff += snapshotPeriod * l1Diff;
@@ -295,18 +296,18 @@ bool computeDifferenceOfVectors( const Mesh& mesh, const tnlParameterContainer& 
    return true;
 }
 
-template< typename Mesh, typename Element, typename Real, typename Index >
-bool computeDifference( const Mesh& mesh, const tnlString& objectType, const tnlParameterContainer& parameters )
+template< typename MeshPointer, typename Element, typename Real, typename Index >
+bool computeDifference( const MeshPointer& meshPointer, const tnlString& objectType, const tnlParameterContainer& parameters )
 {
    if( objectType == "tnlMeshFunction" )
-      return computeDifferenceOfMeshFunctions< Mesh, Element, Real, Index >( mesh, parameters );
+      return computeDifferenceOfMeshFunctions< MeshPointer, Element, Real, Index >( meshPointer, parameters );
    if( objectType == "tnlVector" || objectType == "tnlSharedVector" )
-      return computeDifferenceOfVectors< Mesh, Element, Real, Index >( mesh, parameters );
+      return computeDifferenceOfVectors< MeshPointer, Element, Real, Index >( meshPointer, parameters );
 }
 
 
-template< typename Mesh, typename Element, typename Real >
-bool setIndexType( const Mesh& mesh,
+template< typename MeshPointer, typename Element, typename Real >
+bool setIndexType( const MeshPointer& meshPointer,
                    const tnlString& inputFileName,
                    const tnlList< tnlString >& parsedObjectType,
                    const tnlParameterContainer& parameters )
@@ -320,18 +321,18 @@ bool setIndexType( const Mesh& mesh,
       indexType = parsedObjectType[ 3 ];
 
    if(parsedObjectType[ 0 ] == "tnlMeshFunction" )
-      return computeDifference< Mesh, Element, Real, typename Mesh::IndexType >( mesh, parsedObjectType[ 0 ], parameters );
+      return computeDifference< MeshPointer, Element, Real, typename MeshPointer::ObjectType::IndexType >( meshPointer, parsedObjectType[ 0 ], parameters );
    
    if( indexType == "int" )
-      return computeDifference< Mesh, Element, Real, int >( mesh, parsedObjectType[ 0 ], parameters );
+      return computeDifference< MeshPointer, Element, Real, int >( meshPointer, parsedObjectType[ 0 ], parameters );
    if( indexType == "long-int" )
-      return computeDifference< Mesh, Element, Real, long int >( mesh, parsedObjectType[ 0 ], parameters );
+      return computeDifference< MeshPointer, Element, Real, long int >( meshPointer, parsedObjectType[ 0 ], parameters );
    cerr << "Unknown index type " << indexType << "." << endl;
    return false;
 }
 
-template< typename Mesh >
-bool setTupleType( const Mesh& mesh,
+template< typename MeshPointer >
+bool setTupleType( const MeshPointer& meshPointer,
                    const tnlString& inputFileName,
                    const tnlList< tnlString >& parsedObjectType,
                    const tnlList< tnlString >& parsedElementType,
@@ -343,45 +344,45 @@ bool setTupleType( const Mesh& mesh,
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlStaticVector< 1, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 1, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlStaticVector< 2, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 2, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlStaticVector< 3, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 3, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
    if( dataType == "double" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlStaticVector< 1, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 1, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlStaticVector< 2, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 2, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlStaticVector< 3, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 3, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
    if( dataType == "long double" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlStaticVector< 1, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 1, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlStaticVector< 2, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 2, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlStaticVector< 3, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, tnlStaticVector< 3, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
 }
 
-template< typename Mesh >
-bool setElementType( const Mesh& mesh,
+template< typename MeshPointer >
+bool setElementType( const MeshPointer& meshPointer,
                      const tnlString& inputFileName,
                      const tnlList< tnlString >& parsedObjectType,
                      const tnlParameterContainer& parameters )
@@ -399,11 +400,11 @@ bool setElementType( const Mesh& mesh,
 
 
    if( elementType == "float" )
-      return setIndexType< Mesh, float, float >( mesh, inputFileName, parsedObjectType, parameters );
+      return setIndexType< MeshPointer, float, float >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "double" )
-      return setIndexType< Mesh, double, double >( mesh, inputFileName, parsedObjectType, parameters );
+      return setIndexType< MeshPointer, double, double >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "long double" )
-      return setIndexType< Mesh, long double, long double >( mesh, inputFileName, parsedObjectType, parameters );
+      return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
    tnlList< tnlString > parsedElementType;
    if( ! parseObjectType( elementType, parsedElementType ) )
    {
@@ -411,7 +412,7 @@ bool setElementType( const Mesh& mesh,
       return false;
    }
    if( parsedElementType[ 0 ] == "tnlStaticVector" )
-      return setTupleType< Mesh >( mesh, inputFileName, parsedObjectType, parsedElementType, parameters );
+      return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedElementType, parameters );
 
    cerr << "Unknown element type " << elementType << "." << endl;
    return false;
@@ -428,10 +429,12 @@ bool processFiles( const tnlParameterContainer& parameters )
     * Reading the mesh
     */
    tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
+   
+   typedef tnlSharedPointer< Mesh > MeshPointer;
 
-   Mesh mesh;
+   MeshPointer meshPointer;
    if( meshFile != "" )
-      if( ! mesh. load( meshFile ) )
+      if( ! meshPointer->load( meshFile ) )
       {
          cerr << "I am not able to load mesh from the file " << meshFile << "." << endl;
          return false;
@@ -451,7 +454,7 @@ bool processFiles( const tnlParameterContainer& parameters )
          cerr << "Unable to parse object type " << objectType << "." << endl;
          return false;
       }
-      setElementType< Mesh >( mesh, inputFiles[ 0 ], parsedObjectType, parameters );
+      setElementType< MeshPointer >( meshPointer, inputFiles[ 0 ], parsedObjectType, parameters );
    }
 }
 

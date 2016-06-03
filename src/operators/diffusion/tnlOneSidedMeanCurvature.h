@@ -38,6 +38,7 @@ class tnlOneSidedMeanCurvature
    public:
             
       typedef Mesh MeshType;
+      typedef tnlSharedPointer< MeshType > MeshPointer;
       typedef Real RealType;
       typedef Index IndexType;
       typedef tnlFDMGradientNorm< MeshType, tnlForwardFiniteDifference, RealType, IndexType > GradientNorm;
@@ -49,9 +50,9 @@ class tnlOneSidedMeanCurvature
       typedef tnlOneSidedNonlinearDiffusion< Mesh, Nonlinearity, RealType, IndexType > NonlinearDiffusion;
       typedef tnlExactMeanCurvature< Mesh::getMeshDimensions(), RealType > ExactOperatorType;
       
-      tnlOneSidedMeanCurvature( const MeshType& mesh )
+      tnlOneSidedMeanCurvature( const MeshPointer& meshPointer )
       : nonlinearityOperator( gradientNorm ),
-        nonlinearity( nonlinearityOperator, nonlinearityBoundaryConditions, mesh ),
+        nonlinearity( nonlinearityOperator, nonlinearityBoundaryConditions, meshPointer ),
         nonlinearDiffusion( nonlinearity ){}
       
       static tnlString getType()

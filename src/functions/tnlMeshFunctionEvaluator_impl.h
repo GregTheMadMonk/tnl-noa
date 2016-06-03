@@ -113,36 +113,36 @@ evaluateEntities( OutMeshFunction& meshFunction,
             if( outFunctionMultiplicator )
                meshTraverser.template processAllEntities< TraverserUserData,
                                                           AdditionEntitiesProcessor >
-                                                        ( meshFunction.getMesh(),
+                                                        ( meshFunction.getMeshPointer(),
                                                           userData );
             else
                meshTraverser.template processAllEntities< TraverserUserData,
                                                          AssignmentEntitiesProcessor >
-                                                       ( meshFunction.getMesh(),
+                                                       ( meshFunction.getMeshPointer(),
                                                          userData );
             break;
          case interior:
             if( outFunctionMultiplicator )
                meshTraverser.template processInteriorEntities< TraverserUserData,
                                                                AdditionEntitiesProcessor >
-                                                             ( meshFunction.getMesh(),
+                                                             ( meshFunction.getMeshPointer(),
                                                                userData );
             else
                meshTraverser.template processInteriorEntities< TraverserUserData,
                                                                AssignmentEntitiesProcessor >
-                                                             ( meshFunction.getMesh(),
+                                                             ( meshFunction.getMeshPointer(),
                                                                userData );            
             break;
          case boundary:
             if( outFunctionMultiplicator )
                meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                                AdditionEntitiesProcessor >
-                                                             ( meshFunction.getMesh(),
+                                                             ( meshFunction.getMeshPointer(),
                                                                userData );
             else
                meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                                AssignmentEntitiesProcessor >
-                                                             ( meshFunction.getMesh(),
+                                                             ( meshFunction.getMeshPointer(),
                                                                userData );
             break;
       }
@@ -164,36 +164,36 @@ evaluateEntities( OutMeshFunction& meshFunction,
             if( outFunctionMultiplicator )
                meshTraverser.template processAllEntities< TraverserUserData,
                                                           AdditionEntitiesProcessor >
-                                                        ( meshFunction.getMesh(),
+                                                        ( meshFunction.getMeshPointer(),
                                                           userData );
             else
                meshTraverser.template processAllEntities< TraverserUserData,
                                                          AssignmentEntitiesProcessor >
-                                                       ( meshFunction.getMesh(),
+                                                       ( meshFunction.getMeshPointer(),
                                                          userData );
             break;
          case interior:
             if( outFunctionMultiplicator )
                meshTraverser.template processInteriorEntities< TraverserUserData,
                                                                AdditionEntitiesProcessor >
-                                                             ( meshFunction.getMesh(),
+                                                             ( meshFunction.getMeshPointer(),
                                                                userData );
             else
                meshTraverser.template processInteriorEntities< TraverserUserData,
                                                                AssignmentEntitiesProcessor >
-                                                             ( meshFunction.getMesh(),
+                                                             ( meshFunction.getMeshPointer(),
                                                                userData );            
             break;
          case boundary:
             if( outFunctionMultiplicator )
                meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                                AdditionEntitiesProcessor >
-                                                             ( meshFunction.getMesh(),
+                                                             ( meshFunction.getMeshPointer(),
                                                                userData );
             else
                meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                                AssignmentEntitiesProcessor >
-                                                             ( meshFunction.getMesh(),
+                                                             ( meshFunction.getMeshPointer(),
                                                                userData );
             break;         
       }      

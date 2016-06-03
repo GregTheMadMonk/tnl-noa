@@ -64,7 +64,7 @@ setup( const tnlParameterContainer& parameters,
     */
    const tnlString& meshFile = parameters.getParameter< tnlString >( "mesh" );
    cout << "Loading a mesh from the file " << meshFile << "...";
-   if( ! this->mesh.load( meshFile ) )
+   if( ! this->meshPointer->load( meshFile ) )
    {
       cerr << endl;
       cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
@@ -76,9 +76,9 @@ setup( const tnlParameterContainer& parameters,
    /****
     * Set DOFs (degrees of freedom)
     */
-   tnlAssert( problem->getDofs( this->mesh ) != 0, );
+   tnlAssert( problem->getDofs( this->meshPointer ) != 0, );
    cout << "Allocating dofs ... ";
-   if( ! this->dofs.setSize( problem->getDofs( this->mesh ) ) )
+   if( ! this->dofs.setSize( problem->getDofs( *this->meshPointer ) ) )
    {
       cerr << endl;
       cerr << "I am not able to allocate DOFs (degrees of freedom)." << endl;
@@ -86,20 +86,20 @@ setup( const tnlParameterContainer& parameters,
    }
    cout << " [ OK ]" << endl;
    this->dofs.setValue( 0.0 );
-   this->problem->bindDofs( this->mesh, this->dofs );
+   this->problem->bindDofs( this->meshPointer, this->dofs );
    
    /****
     * Set mesh dependent data
     */
-   this->problem->setMeshDependentData( this->mesh, this->meshDependentData );
-   this->problem->bindMeshDependentData( this->mesh, this->meshDependentData );
+   this->problem->setMeshDependentData( *this->meshPointer, this->meshDependentData );
+   this->problem->bindMeshDependentData( *this->meshPointer, this->meshDependentData );
    
    /***
     * Set-up the initial condition
     */
    cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! this->problem->setInitialCondition( parameters, this->mesh, this->dofs, this->meshDependentData ) )
+   if( ! this->problem->setInitialCondition( parameters, meshPointer, this->dofs, this->meshDependentData ) )
       return false;
    cout << " [ OK ]" << endl;
 
@@ -124,10 +124,10 @@ writeProlog( tnlLogger& logger,
    logger.writeHeader( problem->getPrologHeader() );
    problem->writeProlog( logger, parameters );
    logger.writeSeparator();
-   mesh.writeProlog( logger );
+   meshPointer->writeProlog( logger );
    logger.writeSeparator();
    logger.writeParameter< tnlString >( "Time discretisation:", "time-discretisation", parameters );
-   logger.writeParameter< double >( "Initial time step:", this->timeStep * pow( mesh.getSmallestSpaceStep(), this->timeStepOrder ) );
+   logger.writeParameter< double >( "Initial time step:", this->timeStep * pow( meshPointer->getSmallestSpaceStep(), this->timeStepOrder ) );
    logger.writeParameter< double >( "Initial time:", "initial-time", parameters );
    logger.writeParameter< double >( "Final time:", "final-time", parameters );
    logger.writeParameter< double >( "Snapshot period:", "snapshot-period", parameters );
@@ -323,7 +323,7 @@ solve()
    this->computeTimer->reset();
    
    this->ioTimer->start();
-   if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->meshDependentData ) )
+   if( ! this->problem->makeSnapshot( t, step, meshPointer, this->dofs, this->meshDependentData ) )
    {
       cerr << "Making the snapshot failed." << endl;
       return false;
@@ -335,20 +335,20 @@ solve()
     * Initialize the time stepper
     */
    this->timeStepper->setProblem( * ( this->problem ) );
-   this->timeStepper->init( this->mesh );
-   this->timeStepper->setTimeStep( this->timeStep * pow( mesh.getSmallestSpaceStep(), this->timeStepOrder ) );
+   this->timeStepper->init( this->meshPointer.getData() );
+   this->timeStepper->setTimeStep( this->timeStep * pow( this->meshPointer.getData().getSmallestSpaceStep(), this->timeStepOrder ) );
    while( step < allSteps )
    {
       RealType tau = Min( this->snapshotPeriod,
                           this->finalTime - t );
-      if( ! this->timeStepper->solve( t, t + tau, mesh, this->dofs, this->meshDependentData ) )
+      if( ! this->timeStepper->solve( t, t + tau, this->meshPointer, this->dofs, this->meshDependentData ) )
          return false;
       step ++;
       t += tau;
 
       this->ioTimer->start();
       this->computeTimer->stop();
-      if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->meshDependentData ) )
+      if( ! this->problem->makeSnapshot( t, step, this->meshPointer, this->dofs, this->meshDependentData ) )
       {
          cerr << "Making the snapshot failed." << endl;
          return false;

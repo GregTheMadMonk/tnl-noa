@@ -33,10 +33,10 @@ template< typename MeshType,
           int zDiff >
 bool renderFunction( const tnlParameterContainer& parameters )
 {
-   MeshType mesh;
+   tnlSharedPointer< MeshType > meshPointer;
    tnlString meshFile = parameters.getParameter< tnlString >( "mesh" );
    cout << "+ -> Loading mesh from " << meshFile << " ... " << endl;
-   if( ! mesh.load( meshFile ) )
+   if( ! meshPointer->load( meshFile ) )
       return false;
 
    typedef tnlTestFunction< MeshType::meshDimensions, RealType > FunctionType;
@@ -46,7 +46,7 @@ bool renderFunction( const tnlParameterContainer& parameters )
       return false;
    cout << "done." << endl;
    typedef tnlMeshFunction< MeshType, MeshType::meshDimensions > MeshFunctionType;
-   MeshFunctionType meshFunction( mesh );
+   MeshFunctionType meshFunction( meshPointer );
    //if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
    //   return false;
    

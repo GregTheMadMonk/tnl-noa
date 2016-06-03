@@ -51,6 +51,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
 
       using typename BaseType::MeshType;
+      using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
 
@@ -67,40 +68,40 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       bool setup( const tnlParameterContainer& parameters );
 
       bool setInitialCondition( const tnlParameterContainer& parameters,
-                                const MeshType& mesh,
+                                const MeshPointer& meshPointer,
                                 DofVectorType& dofs,
                                 MeshDependentDataType& meshDependentData );
 
       template< typename Matrix >
-      bool setupLinearSystem( const MeshType& mesh,
+      bool setupLinearSystem( const MeshPointer& meshPointer,
                               Matrix& matrix );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
-                         const MeshType& mesh,
+                         const MeshPointer& meshPointer,
                          DofVectorType& dofs,
                          MeshDependentDataType& meshDependentData );
 
-      IndexType getDofs( const MeshType& mesh ) const;
+      IndexType getDofs( const MeshPointer& meshPointer ) const;
 
-      void bindDofs( const MeshType& mesh,
+      void bindDofs( const MeshPointer& meshPointer,
                      const DofVectorType& dofs );
 
       void getExplicitRHS( const RealType& time,
                            const RealType& tau,
-                           const MeshType& mesh,
+                           const MeshPointer& meshPointer,
                            DofVectorType& _u,
-			   DofVectorType& _fu,
+			                  DofVectorType& _fu,
                            MeshDependentDataType& meshDependentData );
 
       template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
-                                 const MeshType& mesh,
+                                 const MeshPointer& meshPointer,
                                  const DofVectorType& dofs,                                 
                                  Matrix& matrix,
                                  DofVectorType& rightHandSide,
-				 MeshDependentDataType& meshDependentData );
+                                 MeshDependentDataType& meshDependentData );
 
 
       protected:
