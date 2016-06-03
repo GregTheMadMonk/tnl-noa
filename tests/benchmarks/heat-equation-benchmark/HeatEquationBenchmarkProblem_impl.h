@@ -86,13 +86,13 @@ template< typename Mesh,
           typename DifferentialOperator >
 typename HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getDofs( const MeshType& mesh ) const
+getDofs( const MeshPointer& meshPointer ) const
 {
    /****
     * Return number of  DOFs (degrees of freedom) i.e. number
     * of unknowns to be resolved by the main solver.
     */
-   return mesh.template getEntitiesCount< typename MeshType::Cell >();
+   return meshPointer->template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,

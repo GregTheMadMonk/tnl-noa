@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLMATRIXSETTER_H_
-#define TNLMATRIXSETTER_H_
+#pragma once
 
 template< typename DifferentialOperator,
           typename BoundaryConditions,
@@ -49,6 +48,7 @@ class tnlMatrixSetter
 {
    public:
    typedef Mesh MeshType;
+   typedef tnlSharedPointer< MeshType > MeshPointer;
    typedef typename MeshType::DeviceType DeviceType;
    typedef typename CompressedRowsLengthsVector::RealType IndexType;
    typedef tnlMatrixSetterTraversalUserData< DifferentialOperator,
@@ -56,24 +56,23 @@ class tnlMatrixSetter
                                              CompressedRowsLengthsVector > TraversalUserData;
 
    template< typename EntityType >
-   void getCompressedRowsLengths( const MeshType& mesh,
+   void getCompressedRowsLengths( const MeshPointer& meshPointer,
                        DifferentialOperator& differentialOperator,
                        BoundaryConditions& boundaryConditions,
                        CompressedRowsLengthsVector& rowLengths ) const;
-
 
    class TraversalBoundaryEntitiesProcessor
    {
       public:
 
-         template< int EntityDimension >
+         template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
-                                    TraversalUserData& userData,
-                                    const IndexType index )
+                                    TraversalUserData& userData,                                    
+                                    const EntityType& entity )
          {
-            ( *userData.rowLengths )[ index ] =
-                     userData.boundaryConditions->getLinearSystemRowLength( mesh, index );
+            ( *userData.rowLengths )[ entity.getIndex() ] =
+                     userData.boundaryConditions->getLinearSystemRowLength( mesh, entity.getIndex(), entity );
          }
 
    };
@@ -81,21 +80,22 @@ class tnlMatrixSetter
    class TraversalInteriorEntitiesProcessor
    {
       public:
-
+         
          template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraversalUserData& userData,
-                                    const IndexType index )
+                                    const EntityType& entity )
          {
-            ( *userData.rowLengths )[ index ] =
-                     userData.differentialOperator->getLinearSystemRowLength( mesh, index );
+            ( *userData.rowLengths )[ entity.getIndex() ] =
+                     userData.differentialOperator->getLinearSystemRowLength( mesh, entity.getIndex(), entity );
          }
-
    };
+
 
 };
 
+/*
 template< int Dimensions,
           typename Real,
           typename Device,
@@ -155,7 +155,6 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
    };
 
 };
+*/
 
 #include <matrices/tnlMatrixSetter_impl.h>
-
-#endif /* TNLMATRIXSETTER_H_ */

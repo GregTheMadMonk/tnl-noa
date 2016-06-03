@@ -49,7 +49,7 @@ class tnlExplicitTimeStepper
    bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
-   bool init( const MeshType& mesh );
+   bool init( const MeshPointer& meshPointer );
 
    void setSolver( OdeSolverType& odeSolver );
 

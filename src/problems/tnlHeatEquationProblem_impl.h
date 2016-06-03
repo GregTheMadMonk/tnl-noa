@@ -161,7 +161,7 @@ setupLinearSystem( const MeshPointer& meshPointer,
       return false;
    tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >(
-      *meshPointer,
+      meshPointer,
       differentialOperator,
       boundaryCondition,
       rowLengths );
@@ -273,7 +273,7 @@ assemblyLinearSystem( const RealType& time,
    systemAssembler.template assembly< typename Mesh::Cell >(
       time,
       tau,
-      *meshPointer,
+      meshPointer,
       this->differentialOperator,
       this->boundaryCondition,
       this->rightHandSide,

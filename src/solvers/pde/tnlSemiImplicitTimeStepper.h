@@ -32,6 +32,7 @@ class tnlSemiImplicitTimeStepper
    typedef typename Problem::DeviceType DeviceType;
    typedef typename Problem::IndexType IndexType;
    typedef typename Problem::MeshType MeshType;
+   typedef typename Problem::MeshPointer MeshPointer;
    typedef typename ProblemType::DofVectorType DofVectorType;
    typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
    typedef LinearSystemSolver LinearSystemSolverType;
@@ -46,7 +47,7 @@ class tnlSemiImplicitTimeStepper
    bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
-   bool init( const MeshType& mesh );
+   bool init( const MeshPointer& meshPointer );
 
    void setProblem( ProblemType& problem );
 
@@ -62,7 +63,7 @@ class tnlSemiImplicitTimeStepper
 
    bool solve( const RealType& time,
                const RealType& stopTime,
-               const MeshType& mesh,
+               const MeshPointer& meshPointer,
                DofVectorType& dofVector,
                MeshDependentDataType& meshDependentData );
    

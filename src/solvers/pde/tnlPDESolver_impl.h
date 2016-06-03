@@ -78,7 +78,7 @@ setup( const tnlParameterContainer& parameters,
     */
    tnlAssert( problem->getDofs( this->meshPointer ) != 0, );
    cout << "Allocating dofs ... ";
-   if( ! this->dofs.setSize( problem->getDofs( *this->meshPointer ) ) )
+   if( ! this->dofs.setSize( problem->getDofs( this->meshPointer ) ) )
    {
       cerr << endl;
       cerr << "I am not able to allocate DOFs (degrees of freedom)." << endl;
@@ -335,7 +335,7 @@ solve()
     * Initialize the time stepper
     */
    this->timeStepper->setProblem( * ( this->problem ) );
-   this->timeStepper->init( this->meshPointer.getData() );
+   this->timeStepper->init( this->meshPointer );
    this->timeStepper->setTimeStep( this->timeStep * pow( this->meshPointer.getData().getSmallestSpaceStep(), this->timeStepOrder ) );
    while( step < allSteps )
    {

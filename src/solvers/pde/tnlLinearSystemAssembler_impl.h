@@ -36,7 +36,7 @@ void
 tnlLinearSystemAssembler< Mesh, MeshFunction, DifferentialOperator, BoundaryConditions, RightHandSide, TimeDiscretisation, Matrix, DofVector >::
 assembly( const RealType& time,
           const RealType& tau,
-          const Mesh& mesh,
+          const MeshPointer& meshPointer,
           const DifferentialOperator& differentialOperator,
           const BoundaryConditions& boundaryConditions,
           const RightHandSide& rightHandSide,
@@ -66,11 +66,11 @@ assembly( const RealType& time,
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
-                                                    ( mesh,
+                                                    ( meshPointer,
                                                       userData );
       meshTraverser.template processInteriorEntities< TraverserUserData,
                                                       TraverserInteriorEntitiesProcessor >
-                                                    ( mesh,
+                                                    ( meshPointer,
                                                       userData );
    }
    if( std::is_same< DeviceType, tnlCuda >::value )
@@ -95,11 +95,11 @@ assembly( const RealType& time,
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
-                                                    ( mesh,
+                                                    ( meshPointer,
                                                       userData );
       meshTraverser.template processInteriorEntities< TraverserUserData,
                                                       TraverserInteriorEntitiesProcessor >
-                                                    ( mesh,
+                                                    ( meshPointer,
                                                       userData );
 
       checkCudaDevice;

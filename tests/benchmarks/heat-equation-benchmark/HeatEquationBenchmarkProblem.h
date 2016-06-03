@@ -16,7 +16,6 @@ class HeatEquationBenchmarkProblem:
 {
    public:
 
-      typedef tnlSharedPointer< Mesh > MeshPointer;
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
@@ -24,6 +23,7 @@ class HeatEquationBenchmarkProblem:
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
 
       using typename BaseType::MeshType;
+      using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
 
@@ -53,7 +53,7 @@ class HeatEquationBenchmarkProblem:
                          DofVectorType& dofs,
                          MeshDependentDataType& meshDependentData );
 
-      IndexType getDofs( const MeshType& mesh ) const;
+      IndexType getDofs( const MeshPointer& meshPointer ) const;
 
       void bindDofs( const MeshPointer& meshPointer,
                      DofVectorType& dofs );

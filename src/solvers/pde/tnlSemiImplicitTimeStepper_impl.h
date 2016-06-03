@@ -58,10 +58,10 @@ template< typename Problem,
           typename LinearSystemSolver >
 bool
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
-init( const MeshType& mesh )
+init( const MeshPointer& meshPointer )
 {
    cout << "Setting up the linear system...";
-   if( ! this->problem->setupLinearSystem( mesh, this->matrix ) )
+   if( ! this->problem->setupLinearSystem( meshPointer, this->matrix ) )
       return false;
    cout << " [ OK ]" << endl;
    if( this->matrix.getRows() == 0 || this->matrix.getColumns() == 0 )
@@ -138,7 +138,7 @@ bool
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 solve( const RealType& time,
        const RealType& stopTime,
-       const MeshType& mesh,
+       const MeshPointer& meshPointer,
        DofVectorType& dofVector,
        MeshDependentDataType& meshDependentData )
 {
@@ -156,7 +156,7 @@ solve( const RealType& time,
       this->preIterateTimer.start();
       if( ! this->problem->preIterate( t,
                                        currentTau,
-                                       mesh,
+                                       meshPointer,
                                        dofVector,
                                        meshDependentData ) )
       {
@@ -171,7 +171,7 @@ solve( const RealType& time,
       this->linearSystemAssemblerTimer.start();
       this->problem->assemblyLinearSystem( t,
                                            currentTau,
-                                           mesh,
+                                           meshPointer,
                                            dofVector,
                                            this->matrix,
                                            this->rightHandSide,
@@ -199,7 +199,7 @@ solve( const RealType& time,
       this->postIterateTimer.start();
       if( ! this->problem->postIterate( t,
                                         currentTau,
-                                        mesh,
+                                        meshPointer,
                                         dofVector,
                                         meshDependentData ) )
       {

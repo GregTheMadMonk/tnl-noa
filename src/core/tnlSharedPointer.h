@@ -279,7 +279,7 @@ class tnlSharedPointer< Object, tnlCuda > : public tnlSmartPointer
                if( this->cuda_pointer )
                   cudaFree( this->cuda_pointer );
 #endif         
-               std:cerr << "Deleting data..." << std::endl;
+               std::cerr << "Deleting data..." << std::endl;
             }
          }
          

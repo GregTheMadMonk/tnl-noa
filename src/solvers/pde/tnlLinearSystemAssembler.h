@@ -85,7 +85,8 @@ template< typename Mesh,
 class tnlLinearSystemAssembler
 {
    public:
-   typedef Mesh MeshType;
+   typedef typename MeshFunction::MeshType MeshType;
+   typedef typename MeshFunction::MeshPointer MeshPointer;
    typedef typename MeshFunction::RealType RealType;
    typedef typename MeshFunction::DeviceType DeviceType;
    typedef typename MeshFunction::IndexType IndexType;
@@ -101,7 +102,7 @@ class tnlLinearSystemAssembler
    template< typename EntityType >
    void assembly( const RealType& time,
                   const RealType& tau,
-                  const MeshType& mesh,
+                  const MeshPointer& meshPointer,
                   const DifferentialOperator& differentialOperator,
                   const BoundaryConditions& boundaryConditions,
                   const RightHandSide& rightHandSide,
