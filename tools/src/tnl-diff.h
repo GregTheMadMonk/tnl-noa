@@ -433,6 +433,7 @@ bool processFiles( const tnlParameterContainer& parameters )
    typedef tnlSharedPointer< Mesh > MeshPointer;
 
    MeshPointer meshPointer;
+   meshPointer.create();
    if( meshFile != "" )
       if( ! meshPointer->load( meshFile ) )
       {

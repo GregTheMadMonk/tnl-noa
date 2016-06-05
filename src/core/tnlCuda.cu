@@ -50,12 +50,13 @@ int tnlCuda::getDeviceId()
    return id;
 }
 
-bool tnlCuda::checkDevice( const char* file_name, int line )
-{
-   cudaError error = cudaGetLastError();
+bool tnlCuda::checkDevice( const char* file_name, int line, cudaError error )
+{   
    if( error == cudaSuccess )
       return true;
    cerr << "CUDA ERROR(" << error << ") at line " << line << " in " << file_name << ":" << endl;
+   cerr << cudaGetErrorString( error )  << endl;   
+   cerr << "Detailed description is: " << endl;
    switch( error )
    {
       // 1
@@ -424,6 +425,6 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
        break;
 
    }
-   //throw EXIT_FAILURE;
+   throw EXIT_FAILURE;
    return false;
 }

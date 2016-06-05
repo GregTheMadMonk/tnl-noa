@@ -47,6 +47,9 @@ class tnlPDEOperatorEocTest
       
       //static_assert( std::is_same< ExactOperatorType, void >::value,
       //   "Exact operator type is not defined (it is void in fact)." );
+
+      tnlPDEOperatorEocTest()
+      {}
    
       void setupMesh( const IndexType meshSize )
       {

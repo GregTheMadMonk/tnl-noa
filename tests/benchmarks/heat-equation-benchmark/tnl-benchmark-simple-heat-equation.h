@@ -396,6 +396,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
    typedef typename GridType::VertexType VertexType;
    typedef tnlSharedPointer< GridType > GridPointer;
    GridPointer gridPointer;
+   gridPointer.create();
    gridPointer->setDimensions( gridXSize, gridYSize );
    gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
    tnlVector< Real, tnlCuda, Index > vecU;
@@ -547,6 +548,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters,
    typedef tnlGrid< 2, Real, tnlHost, Index > GridType;
    typedef typename GridType::VertexType VertexType;
    tnlSharedPointer< GridType > gridPointer;
+   gridPointer.create();
    gridPointer->setDimensions( gridXSize, gridYSize );
    gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
    tnlVector< Real, tnlHost, Index > vecU;

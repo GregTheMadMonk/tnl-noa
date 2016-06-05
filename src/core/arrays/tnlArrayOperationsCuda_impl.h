@@ -30,8 +30,7 @@ bool tnlArrayOperations< tnlCuda >::allocateMemory( Element*& data,
                                                     const Index size )
 {
 #ifdef HAVE_CUDA
-   if( cudaMalloc( ( void** ) &data,
-                   ( size_t ) size * sizeof( Element ) ) != cudaSuccess )
+   if( cudaMalloc( ( void** ) &data, ( size_t ) size * sizeof( Element ) ) != cudaSuccess )
       data = 0;
    return checkCudaDevice;
 #else
@@ -200,6 +199,7 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory( DestinationElement* des
 {
    tnlAssert( destination, );
    tnlAssert( source, );
+
    #ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {

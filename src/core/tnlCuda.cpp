@@ -87,5 +87,6 @@ void tnlCuda::removeSmartPointer( tnlSmartPointer* pointer )
 bool tnlCuda::synchronizeDevice( int deviceId )
 {
     smartPointersRegister.synchronizeDevice( deviceId );
+    return checkCudaDevice;
 }
 

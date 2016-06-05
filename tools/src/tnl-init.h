@@ -34,6 +34,7 @@ template< typename MeshType,
 bool renderFunction( const tnlParameterContainer& parameters )
 {
    tnlSharedPointer< MeshType > meshPointer;
+   meshPointer.create();
    tnlString meshFile = parameters.getParameter< tnlString >( "mesh" );
    cout << "+ -> Loading mesh from " << meshFile << " ... " << endl;
    if( ! meshPointer->load( meshFile ) )

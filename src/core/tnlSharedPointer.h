@@ -37,20 +37,29 @@ class tnlSharedPointer< Object, tnlHost > : public tnlSmartPointer
       typedef tnlSharedPointer< Object, tnlHost > ThisType;
          
       explicit  tnlSharedPointer()
-      : counter( new int )
+      : counter( 0 ), pointer( 0 )
       {
-         std::cerr << "Creating new shared pointer..." << std::endl;
-         this->pointer = new Object();
-         *( this->counter ) = 1;
+      }
+      
+      tnlSharedPointer( const ThisType& pointer )
+      : pointer( pointer.pointer ),
+        counter( pointer.counter )
+      {
+         *counter++;
       }
       
       template< typename... Args >
-      explicit tnlSharedPointer( const Args... args )
-      : counter( new int )
-      {
+      bool create( const Args... args )
+      {         
          std::cerr << "Creating new shared pointer..." << std::endl;
+         this->free();
          this->pointer = new Object( args... );
+         this->counter = new int;
+         if( ! this->pointer || ! this->counter )
+            return false;
          *( this->counter ) = 1;
+         return true;
+         
       }
       
       const Object* operator->() const
@@ -119,11 +128,15 @@ class tnlSharedPointer< Object, tnlHost > : public tnlSmartPointer
       
       void free()
       {
+         if( ! this->pointer )
+            return;
          if( this->counter )
          {
-            if( ! --*( this->counter ) )               
+            if( ! --*( this->counter ) )
+            {
                delete this->pointer;
-            std::cerr << "Deleting data..." << std::endl;
+               std::cerr << "Deleting data..." << std::endl;
+            }
          }
 
       }
@@ -141,34 +154,42 @@ class tnlSharedPointer< Object, tnlCuda > : public tnlSmartPointer
       typedef Object ObjectType;
       typedef tnlHost DeviceType;
       typedef tnlSharedPointer< Object, tnlHost > ThisType;
-         
-      explicit tnlSharedPointer()
-      : modified( false ),
-        counter( new int )
+
+      explicit  tnlSharedPointer()
+      : counter( 0 ), cuda_pointer( 0 ), 
+        pointer( 0 ), modified( false )
       {
-         std::cerr << "Creating new shared pointer..." << std::endl;
-         this->pointer = new Object();
-         *( this->counter )= 1;
-#ifdef HAVE_CUDA         
-         cudaMalloc( ( void** )  &this->cuda_pointer, sizeof( Object ) );
-         cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( Object ), cudaMemcpyHostToDevice );
-         tnlCuda::insertSmartPointer( this );
-#endif         
       }
+                  
+      tnlSharedPointer( const ThisType& pointer )
+      : pointer( pointer.pointer ),
+        cuda_pointer( pointer.cuda_pointer ),
+        counter( pointer.counter ),
+        modified( pointer.modified )
+      {
+         *counter++;
+      }
+
       
       template< typename... Args >
-      explicit tnlSharedPointer( const Args... args )
-      : modified( false ),
-        counter( new int )
+      bool create( const Args... args )
       {
          std::cerr << "Creating new shared pointer..." << std::endl;
+         this->free();
+         this->modified = false;
+         this->counter= new int;
          this->pointer = new Object( args... );
-         *( this->counter )= 1;
+         if( ! this->pointer || ! this->counter )
+            return false;
+         *( this->counter )= 1;         
 #ifdef HAVE_CUDA         
          cudaMalloc( ( void** )  &this->cuda_pointer, sizeof( Object ) );
          cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( Object ), cudaMemcpyHostToDevice );
+         if( ! checkCudaDevice )
+            return false;
          tnlCuda::insertSmartPointer( this );
-#endif                  
+#endif
+         return true;
       }
       
       const Object* operator->() const
@@ -198,6 +219,8 @@ class tnlSharedPointer< Object, tnlCuda > : public tnlSmartPointer
       const Object& getData() const
       {
          static_assert( std::is_same< Device, tnlHost >::value || std::is_same< Device, tnlCuda >::value, "Only tnlHost or tnlCuda devices are accepted here." );
+         tnlAssert( this->pointer, );
+         tnlAssert( this->cuda_pointer, );
          if( std::is_same< Device, tnlHost >::value )
             return *( this->pointer );
          if( std::is_same< Device, tnlCuda >::value )
@@ -210,7 +233,7 @@ class tnlSharedPointer< Object, tnlCuda > : public tnlSmartPointer
          return *( this->pointer );
       }
       
-      const ThisType& operator=( ThisType&& ptr )
+      /*const ThisType& operator=( ThisType&& ptr )
       {
          if( this-> pointer )
             delete this->pointer;
@@ -227,10 +250,11 @@ class tnlSharedPointer< Object, tnlCuda > : public tnlSmartPointer
          ptr.modified = false;
          ptr.counter = NULL;
          return *this;
-      }
+      }*/
       
       const ThisType& operator=( const ThisType& ptr )
       {
+         std::cerr << "Op. = " << std::endl;
          this->free();
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
@@ -244,14 +268,16 @@ class tnlSharedPointer< Object, tnlCuda > : public tnlSmartPointer
       bool synchronize()
       {
 #ifdef HAVE_CUDA
-         if( this-> modified )
+         /*if( this->modified )
          {
             std::cerr << "Synchronizing data..." << std::endl;
-            cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( Object ), cudaMemcpyHostToDevice );
+            tnlAssert( this->pointer, );
+            tnlAssert( this->cuda_pointer, );
+            cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( ObjectType ), cudaMemcpyHostToDevice );
             if( ! checkCudaDevice )
                return false;
             return true;
-         }
+         }*/
 #else         
          return false;
 #endif         
@@ -269,6 +295,8 @@ class tnlSharedPointer< Object, tnlCuda > : public tnlSmartPointer
       
       void free()
       {
+         if( ! this->pointer )
+            return;
          if( this->counter )
          {
             if( ! --*( this->counter ) )
@@ -278,6 +306,7 @@ class tnlSharedPointer< Object, tnlCuda > : public tnlSmartPointer
 #ifdef HAVE_CUDA
                if( this->cuda_pointer )
                   cudaFree( this->cuda_pointer );
+               checkCudaDevice;
 #endif         
                std::cerr << "Deleting data..." << std::endl;
             }

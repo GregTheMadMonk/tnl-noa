@@ -92,9 +92,14 @@ class tnlCuda
 #endif
 
 #ifdef HAVE_CUDA
-   static bool checkDevice( const char* file_name, int line );
+   /****
+    * I do not know why, but it is more reliable to pass the error code instead
+    * of calling cudaGetLastError() inside the method.
+    * We recommend to use macro 'checkCudaDevice' defined bellow.
+    */
+   static bool checkDevice( const char* file_name, int line, cudaError error );
 #else
-   static bool checkDevice( const char* file_name, int line ) { return false;};
+   static bool checkDevice() { return false;};
 #endif
    
    static void configSetup( tnlConfigDescription& config, const tnlString& prefix = "" );
@@ -115,7 +120,11 @@ class tnlCuda
 
 };
 
-#define checkCudaDevice tnlCuda::checkDevice( __FILE__, __LINE__ )
+#ifdef HAVE_CUDA
+#define checkCudaDevice tnlCuda::checkDevice( __FILE__, __LINE__, cudaGetLastError() )
+#else
+#define checkCudaDevice tnlCuda::checkDevice()
+#endif
 
 #define tnlCudaSupportMissingMessage \
    std::cerr << "The CUDA support is missing in the source file " << __FILE__ << " at line " << __LINE__ << ". Please set WITH_CUDA=yes in the install script. " << std::endl;

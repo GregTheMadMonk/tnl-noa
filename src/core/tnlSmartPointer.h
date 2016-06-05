@@ -8,7 +8,7 @@
  ***************************************************************************/
 
 /***************************************************************************
-                          tnlSharedPointer.h  -  description
+                          tnlSmartPointer.h  -  description
                              -------------------
     begin                : May 30, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -21,7 +21,7 @@ class tnlSmartPointer
 {
    public:
       
-      virtual bool synchronize() = 0;
+      virtual bool synchronize() = 0;      
    
 };
 

@@ -80,7 +80,7 @@ typename Operation::IndexType reduceOnCudaDevice( Operation& operation,
    //tnlCudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
    if( ! cudaReductionBuffer.setSize( gridSize.x * sizeof( ResultType ) ) )
       return false;
-   output = cudaReductionBuffer.template getData< ResultType >();      
+   output = cudaReductionBuffer.template getData< ResultType >();
    IndexType shmem = blockSize.x * sizeof( ResultType );
    
    /***
