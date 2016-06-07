@@ -100,9 +100,9 @@ class tnlSharedPointer< Object, tnlHost > : public tnlSmartPointer
          this->counter = ptr.counter;
          *( this->counter )++;
          return *this;
-      }
+      }      
       
-      const ThisType& operator=( ThisType&& ptr )
+      const ThisType& operator=( const ThisType&& ptr )
       {
          if( this-> pointer )
             delete this->pointer;
@@ -153,7 +153,7 @@ class tnlSharedPointer< Object, tnlCuda > : public tnlSmartPointer
       
       typedef Object ObjectType;
       typedef tnlHost DeviceType;
-      typedef tnlSharedPointer< Object, tnlHost > ThisType;
+      typedef tnlSharedPointer< Object, tnlCuda > ThisType;
 
       explicit  tnlSharedPointer()
       : counter( 0 ), cuda_pointer( 0 ), 
@@ -254,7 +254,6 @@ class tnlSharedPointer< Object, tnlCuda > : public tnlSmartPointer
       
       const ThisType& operator=( const ThisType& ptr )
       {
-         std::cerr << "Op. = " << std::endl;
          this->free();
          this->pointer = ptr.pointer;
          this->cuda_pointer = ptr.cuda_pointer;
@@ -268,7 +267,7 @@ class tnlSharedPointer< Object, tnlCuda > : public tnlSmartPointer
       bool synchronize()
       {
 #ifdef HAVE_CUDA
-         /*if( this->modified )
+         if( this->modified )
          {
             std::cerr << "Synchronizing data..." << std::endl;
             tnlAssert( this->pointer, );
@@ -277,7 +276,7 @@ class tnlSharedPointer< Object, tnlCuda > : public tnlSmartPointer
             if( ! checkCudaDevice )
                return false;
             return true;
-         }*/
+         }
 #else         
          return false;
 #endif         
