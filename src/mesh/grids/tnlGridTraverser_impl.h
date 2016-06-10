@@ -302,6 +302,9 @@ tnlGridTraverser2D(
    typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
    typename GridType::CoordinatesType coordinates;
 
+   //if( threadIdx.x == 0 )
+   //   printf( "%d x %d \n ", grid->getDimensions().x(), grid->getDimensions().y() );
+   
    coordinates.x() = begin->x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    coordinates.y() = begin->y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
    

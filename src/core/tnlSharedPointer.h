@@ -269,7 +269,7 @@ class tnlSharedPointer< Object, tnlCuda > : public tnlSmartPointer
 #ifdef HAVE_CUDA
          if( this->modified )
          {
-            std::cerr << "Synchronizing data..." << std::endl;
+            //std::cerr << "Synchronizing data..." << std::endl;
             tnlAssert( this->pointer, );
             tnlAssert( this->cuda_pointer, );
             cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( ObjectType ), cudaMemcpyHostToDevice );

@@ -396,12 +396,12 @@ void
 tnlTestFunction< FunctionDimensions, Real, Device >::
 deleteFunction()
 {
-   if( Device::DeviceType == ( int ) tnlHostDevice )
+   if( std::is_same< Device, tnlHost >::value )
    {
       if( function )
          delete ( FunctionType * ) function;
    }
-   if( Device::DeviceType == ( int ) tnlCudaDevice )
+   if( std::is_same< Device, tnlCuda >::value )
    {
       if( function )
          tnlCuda::freeFromDevice( ( FunctionType * ) function );
@@ -455,12 +455,12 @@ void
 tnlTestFunction< FunctionDimensions, Real, Device >::
 copyFunction( const void* function )
 {
-   if( Device::DeviceType == ( int ) tnlHostDevice ) 
+   if( std::is_same< Device, tnlHost >::value ) 
    {
       FunctionType* f = new FunctionType;
       *f = * ( FunctionType* )function;
    }
-   if( Device::DeviceType == ( int ) tnlCudaDevice )
+   if( std::is_same< Device, tnlCuda >::value )
    {
       tnlAssert( false, );
       abort();
