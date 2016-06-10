@@ -31,6 +31,7 @@ tnlSemiImplicitTimeStepper()
   timeStep( 0 ),
   allIterations( 0 )
 {
+   this->matrixPointer.create();
 };
 
 template< typename Problem,
@@ -61,20 +62,20 @@ tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 init( const MeshPointer& meshPointer )
 {
    cout << "Setting up the linear system...";
-   if( ! this->problem->setupLinearSystem( meshPointer, this->matrix ) )
+   if( ! this->problem->setupLinearSystem( meshPointer, this->matrixPointer ) )
       return false;
    cout << " [ OK ]" << endl;
-   if( this->matrix.getRows() == 0 || this->matrix.getColumns() == 0 )
+   if( this->matrixPointer.getData().getRows() == 0 || this->matrixPointer.getData().getColumns() == 0 )
    {
       cerr << "The matrix for the semi-implicit time stepping was not set correctly." << endl;
-      if( ! this->matrix.getRows() )
+      if( ! this->matrixPointer->getRows() )
          cerr << "The matrix dimensions are set to 0 rows." << endl;
-      if( ! this->matrix.getColumns() )
+      if( ! this->matrixPointer->getColumns() )
          cerr << "The matrix dimensions are set to 0 columns." << endl;
       cerr << "Please check the method 'setupLinearSystem' in your solver." << endl;
       return false;
    }
-   if( ! this->rightHandSide.setSize( this->matrix.getRows() ) )
+   if( ! this->rightHandSide.setSize( this->matrixPointer.getData().getRows() ) )
       return false;
    this->linearSystemAssemblerTimer.reset();
    this->linearSystemSolverTimer.reset();
@@ -144,7 +145,7 @@ solve( const RealType& time,
 {
    tnlAssert( this->problem != 0, );
    RealType t = time;
-   this->linearSystemSolver->setMatrix( this->matrix );
+   this->linearSystemSolver->setMatrix( this->matrixPointer.getData() );
    PreconditionerType preconditioner;
    tnlSolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerType >
        ::run( *(this->linearSystemSolver), preconditioner );
@@ -173,7 +174,7 @@ solve( const RealType& time,
                                            currentTau,
                                            meshPointer,
                                            dofVector,
-                                           this->matrix,
+                                           this->matrixPointer,
                                            this->rightHandSide,
                                            meshDependentData );
       this->linearSystemAssemblerTimer.stop();
@@ -182,7 +183,7 @@ solve( const RealType& time,
          cout << "                                                                  Solving the linear system for time " << t + currentTau << "             \r" << flush;
 
       // TODO: add timer
-      preconditioner.update( this->matrix );
+      preconditioner.update( this->matrixPointer.getData() );
 
       this->linearSystemSolverTimer.start();
       if( ! this->linearSystemSolver->template solve< DofVectorType, tnlLinearResidueGetter< MatrixType, DofVectorType > >( this->rightHandSide, dofVector ) )

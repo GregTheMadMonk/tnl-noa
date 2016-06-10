@@ -90,8 +90,11 @@ tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOper
 setup( const tnlParameterContainer& parameters )
 {
    this->gpuTransferTimer.reset();
-   if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
-       ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
+   this->boundaryConditionPointer.create();
+   this->differentialOperatorPointer.create();
+   this->rightHandSidePointer.create();
+   if( ! this->boundaryConditionPointer->setup( parameters, "boundary-conditions-" ) ||
+       ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
       return false;
    return true;
 }
@@ -148,25 +151,26 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-   template< typename Matrix >          
+   template< typename MatrixPointer >          
 bool
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setupLinearSystem( const MeshPointer& meshPointer,
-                   Matrix& matrix )
+                   MatrixPointer& matrixPointer )
 {
    const IndexType dofs = this->getDofs( meshPointer );
-   typedef typename Matrix::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   CompressedRowsLengthsVectorType rowLengths;
-   if( ! rowLengths.setSize( dofs ) )
+   typedef typename MatrixPointer::ObjectType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
+   tnlSharedPointer< CompressedRowsLengthsVectorType > rowLengthsPointer;
+   rowLengthsPointer.create();
+   if( ! rowLengthsPointer->setSize( dofs ) )
       return false;
    tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >(
       meshPointer,
-      differentialOperator,
-      boundaryCondition,
-      rowLengths );
-   matrix.setDimensions( dofs, dofs );
-   if( ! matrix.setCompressedRowsLengths( rowLengths ) )
+      differentialOperatorPointer,
+      boundaryConditionPointer,
+      rowLengthsPointer );
+   matrixPointer->setDimensions( dofs, dofs );
+   if( ! matrixPointer->setCompressedRowsLengths( *rowLengthsPointer ) )
       return false;
    return true;
    //return tnlMultidiagonalMatrixSetter< Mesh >::setupMatrix( mesh, matrix );
@@ -225,9 +229,9 @@ getExplicitRHS( const RealType& time,
    explicitUpdater.template update< typename Mesh::Cell >( 
       time,
       meshPointer,
-      this->differentialOperator,
-      this->boundaryCondition,
-      this->rightHandSide,
+      this->differentialOperatorPointer,
+      this->boundaryConditionPointer,
+      this->rightHandSidePointer,
       this->u,
       fu );
    /*tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
@@ -274,9 +278,9 @@ assemblyLinearSystem( const RealType& time,
       time,
       tau,
       meshPointer,
-      this->differentialOperator,
-      this->boundaryCondition,
-      this->rightHandSide,
+      this->differentialOperatorPointer,
+      this->boundaryConditionPointer,
+      this->rightHandSidePointer,
       this->u,
       matrix,
       b );

@@ -37,11 +37,11 @@ tnlLinearSystemAssembler< Mesh, MeshFunction, DifferentialOperator, BoundaryCond
 assembly( const RealType& time,
           const RealType& tau,
           const MeshPointer& meshPointer,
-          const DifferentialOperator& differentialOperator,
-          const BoundaryConditions& boundaryConditions,
-          const RightHandSide& rightHandSide,
+          const DifferentialOperatorPointer& differentialOperatorPointer,
+          const BoundaryConditionsPointer& boundaryConditionsPointer,
+          const RightHandSidePointer& rightHandSidePointer,
           const MeshFunction& u,
-          MatrixType& matrix,
+          MatrixPointer& matrixPointer,
           DofVector& b ) const
 {
       static_assert( std::is_same< MeshFunction, 
@@ -50,18 +50,18 @@ assembly( const RealType& time,
                                            typename MeshFunction::IndexType > >::value != true,
       "Error: I am getting tnlVector instead of tnlMeshFunction or similar object. You might forget to bind DofVector into tnlMeshFunction in you method getExplicitRHS."  );
 
-   const IndexType maxRowLength = matrix.getMaxRowLength();
+   const IndexType maxRowLength = matrixPointer.template getData< tnlHost >().getMaxRowLength();
    tnlAssert( maxRowLength > 0, );
 
-   if( std::is_same< DeviceType, tnlHost >::value )
+   //if( std::is_same< DeviceType, tnlHost >::value )
    {
       TraverserUserData userData( time,
                                   tau,
-                                  differentialOperator,
-                                  boundaryConditions,
-                                  rightHandSide,
+                                  differentialOperatorPointer,
+                                  boundaryConditionsPointer,
+                                  rightHandSidePointer,
                                   u,
-                                  matrix,
+                                  matrixPointer,
                                   b );
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
@@ -73,7 +73,7 @@ assembly( const RealType& time,
                                                     ( meshPointer,
                                                       userData );
    }
-   if( std::is_same< DeviceType, tnlCuda >::value )
+   /*if( std::is_same< DeviceType, tnlCuda >::value )
    {
       RealType* kernelTime = tnlCuda::passToDevice( time );
       RealType* kernelTau = tnlCuda::passToDevice( tau );
@@ -112,7 +112,7 @@ assembly( const RealType& time,
       tnlCuda::freeFromDevice( kernelB );
       tnlCuda::freeFromDevice( kernelMatrix );
       checkCudaDevice;
-   }
+   }*/
 }
 
 #endif /* TNLLINEARSYSTEMASSEMBLER_IMPL_H_ */

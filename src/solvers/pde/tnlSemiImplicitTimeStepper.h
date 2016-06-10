@@ -38,6 +38,7 @@ class tnlSemiImplicitTimeStepper
    typedef LinearSystemSolver LinearSystemSolverType;
    typedef typename LinearSystemSolverType::PreconditionerType PreconditionerType;
    typedef typename ProblemType::MatrixType MatrixType;
+   typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
 
    tnlSemiImplicitTimeStepper();
 
@@ -73,7 +74,7 @@ class tnlSemiImplicitTimeStepper
 
    Problem* problem;
 
-   MatrixType matrix;
+   MatrixPointer matrixPointer;
 
    DofVectorType rightHandSide;
 

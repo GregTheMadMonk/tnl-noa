@@ -65,16 +65,20 @@ bool
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setup( const tnlParameterContainer& parameters )
 {
-   if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
-       ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
+   this->boundaryConditionPointer.create();
+   this->differentialOperatorPointer.create();
+   this->rightHandSidePointer.create();
+
+   if( ! this->boundaryConditionPointer->setup( parameters, "boundary-conditions-" ) ||
+       ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
       return false;
    this->cudaKernelType = parameters.getParameter< tnlString >( "cuda-kernel-type" );
 
    if( std::is_same< DeviceType, tnlCuda >::value )
    {
-      this->cudaBoundaryConditions = tnlCuda::passToDevice( this->boundaryCondition );
-      this->cudaRightHandSide = tnlCuda::passToDevice( this->rightHandSide );
-      this->cudaDifferentialOperator = tnlCuda::passToDevice( this->differentialOperator );
+      this->cudaBoundaryConditions = tnlCuda::passToDevice( *this->boundaryConditionPointer );
+      this->cudaRightHandSide = tnlCuda::passToDevice( *this->rightHandSidePointer );
+      this->cudaDifferentialOperator = tnlCuda::passToDevice( *this->differentialOperatorPointer );
    }
    
    return true;
@@ -144,8 +148,8 @@ setupLinearSystem( const MeshType& mesh,
       return false;
    tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >( mesh,
-                                                                          differentialOperator,
-                                                                          boundaryCondition,
+                                                                          differentialOperatorPointer,
+                                                                          boundaryConditionPointer,
                                                                           rowLengths );
    matrix.setDimensions( dofs, dofs );
    if( ! matrix.setCompressedRowsLengths( rowLengths ) )
@@ -494,7 +498,7 @@ getExplicitRHS( const RealType& time,
                boundaryConditionsTemplatedCompact< MeshType, CellType, BoundaryCondition, MeshFunctionType >
                   <<< cudaBlocks, cudaBlockSize >>>
                   ( meshPointer.template getData< DeviceType >(),
-                    boundaryCondition,
+                    boundaryConditionPointer.template getData< DeviceType >(),
                     u,
                     time,
                     begin,
@@ -511,8 +515,8 @@ getExplicitRHS( const RealType& time,
                heatEquationTemplatedCompact< MeshType, CellType, DifferentialOperator, RightHandSide, MeshFunctionType >
                   <<< cudaBlocks, cudaBlockSize >>>
                   ( meshPointer.template getData< DeviceType >(),
-                    differentialOperator,
-                    rightHandSide,
+                    differentialOperatorPointer.template getData< DeviceType >(),
+                    rightHandSidePointer.template getData< DeviceType >(),
                     u,
                     fu,
                     time,
@@ -537,9 +541,9 @@ getExplicitRHS( const RealType& time,
          explicitUpdater.template update< typename Mesh::Cell >( 
             time,
             meshPointer,
-            this->differentialOperator,
-            this->boundaryCondition,
-            this->rightHandSide,
+            this->differentialOperatorPointer,
+            this->boundaryConditionPointer,
+            this->rightHandSidePointer,
             u,
             fu );
             }

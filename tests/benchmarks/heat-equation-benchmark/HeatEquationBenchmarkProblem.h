@@ -21,6 +21,10 @@ class HeatEquationBenchmarkProblem:
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef tnlMeshFunction< Mesh > MeshFunctionType;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef tnlSharedPointer< DifferentialOperator > DifferentialOperatorPointer;
+      typedef tnlSharedPointer< BoundaryCondition > BoundaryConditionPointer;
+      typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
@@ -78,9 +82,9 @@ class HeatEquationBenchmarkProblem:
 
    protected:
 
-      DifferentialOperator differentialOperator;
-      BoundaryCondition boundaryCondition;
-      RightHandSide rightHandSide;
+      DifferentialOperatorPointer differentialOperatorPointer;
+      BoundaryConditionPointer boundaryConditionPointer;
+      RightHandSidePointer rightHandSidePointer;
       
       tnlString cudaKernelType;
       

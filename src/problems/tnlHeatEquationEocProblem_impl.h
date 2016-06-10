@@ -47,8 +47,11 @@ bool
 tnlHeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator  >::
 setup( const tnlParameterContainer& parameters )
 {
-   if( ! this->boundaryCondition.setup( parameters ) ||
-       ! this->rightHandSide.setup( parameters ) )
+   this->boundaryConditionPointer.create();
+   this->differentialOperatorPointer.create();
+   this->rightHandSidePointer.create();
+   if( ! this->boundaryConditionPointer->setup( parameters ) ||
+       ! this->rightHandSidePointer->setup( parameters ) )
       return false;
    return true;
 }

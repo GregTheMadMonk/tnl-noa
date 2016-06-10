@@ -35,9 +35,9 @@ void
 tnlExplicitUpdater< Mesh, MeshFunction, DifferentialOperator, BoundaryConditions, RightHandSide >::
 update( const RealType& time,
         const MeshPointer& meshPointer,
-        const DifferentialOperator& differentialOperator,        
-        const BoundaryConditions& boundaryConditions,
-        const RightHandSide& rightHandSide,
+        const DifferentialOperatorPointer& differentialOperatorPointer,        
+        const BoundaryConditionsPointer& boundaryConditionsPointer,
+        const RightHandSidePointer& rightHandSidePointer,
         MeshFunction& u,
         MeshFunction& fu ) const
 {
@@ -46,9 +46,9 @@ update( const RealType& time,
                                            typename MeshFunction::DeviceType,
                                            typename MeshFunction::IndexType > >::value != true,
       "Error: I am getting tnlVector instead of tnlMeshFunction or similar object. You might forget to bind DofVector into tnlMeshFunction in you method getExplicitRHS."  );
-   if( std::is_same< DeviceType, tnlHost >::value )
+   //if( std::is_same< DeviceType, tnlHost >::value )
    {
-      TraverserUserData userData( time, differentialOperator, boundaryConditions, rightHandSide, u, fu );
+      TraverserUserData userData( time, differentialOperatorPointer, boundaryConditionsPointer, rightHandSidePointer, u, fu );
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
@@ -60,7 +60,7 @@ update( const RealType& time,
                                                       userData );
 
    }
-   if( std::is_same< DeviceType, tnlCuda >::value )
+   /*if( std::is_same< DeviceType, tnlCuda >::value )
    {
       if( this->gpuTransferTimer ) 
          this->gpuTransferTimer->start();
@@ -100,7 +100,7 @@ update( const RealType& time,
       if( this->gpuTransferTimer ) 
          this->gpuTransferTimer->stop();
 
-   }
+   }*/
 }
 
 #endif /* TNLEXPLICITUPDATER_IMPL_H_ */

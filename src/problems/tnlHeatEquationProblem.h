@@ -49,6 +49,9 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       typedef tnlMeshFunction< Mesh > MeshFunctionType;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
+      typedef tnlSharedPointer< DifferentialOperator > DifferentialOperatorPointer;
+      typedef tnlSharedPointer< BoundaryCondition > BoundaryConditionPointer;
+      typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
@@ -108,11 +111,11 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
          
          MeshFunctionType u;
       
-         DifferentialOperator differentialOperator;
+         DifferentialOperatorPointer differentialOperatorPointer;
 
-         BoundaryCondition boundaryCondition;
+         BoundaryConditionPointer boundaryConditionPointer;
 
-         RightHandSide rightHandSide;
+         RightHandSidePointer rightHandSidePointer;
          
          tnlTimer gpuTransferTimer;
 };

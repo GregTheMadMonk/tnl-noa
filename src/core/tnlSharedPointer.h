@@ -24,12 +24,13 @@
 
 template< typename Object, typename Device = typename Object::DeviceType >
 class tnlSharedPointer
-{  
+{
+   static_assert( ! std::is_same< Device, void >::value, "The device cannot be void. You need to specify the device explicitly in your code." );
 };
 
 template< typename Object >
 class tnlSharedPointer< Object, tnlHost > : public tnlSmartPointer
-{
+{   
    public:
       
       typedef Object ObjectType;

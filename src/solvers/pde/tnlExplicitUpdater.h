@@ -30,48 +30,38 @@ template< typename Real,
 class tnlExplicitUpdaterTraverserUserData
 {
    public:
+      
+      typedef typename DifferentialOperator::DeviceType DeviceType;
+      typedef tnlSharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
+      typedef tnlSharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
+      typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
 
-      const DifferentialOperator* differentialOperator;
+      const DifferentialOperatorPointer differentialOperatorPointer;
 
-      const BoundaryConditions* boundaryConditions;
+      const BoundaryConditionsPointer boundaryConditionsPointer;
 
-      const RightHandSide* rightHandSide;
+      const RightHandSidePointer rightHandSidePointer;
 
       MeshFunction *u, *fu;
       
-      /*char data[ sizeof( DifferentialOperator ) + 
-                 sizeof( BoundaryConditions ) + 
-                 sizeof( RightHandSide ) +
-                 2 * sizeof( MeshFunction ) ];*/
-
       public:
 
          const Real* time;         
 
 
       tnlExplicitUpdaterTraverserUserData( const Real& time,
-                                           const DifferentialOperator& differentialOperator,
-                                           const BoundaryConditions& boundaryConditions,
-                                           const RightHandSide& rightHandSide,
+                                           const DifferentialOperatorPointer& differentialOperatorPointer,
+                                           const BoundaryConditionsPointer& boundaryConditionsPointer,
+                                           const RightHandSidePointer& rightHandSidePointer,
                                            MeshFunction& u,
                                            MeshFunction& fu )
       : time( &time ),
-        differentialOperator( &differentialOperator ),
-        boundaryConditions( &boundaryConditions ),
-        rightHandSide( &rightHandSide ),
+        differentialOperatorPointer( differentialOperatorPointer ),
+        boundaryConditionsPointer( boundaryConditionsPointer ),
+        rightHandSidePointer( rightHandSidePointer ),
         u( &u ),
         fu( &fu )
       {
-         /*char* ptr = data;
-         memcpy( ptr, &differentialOperator, sizeof( DifferentialOperator ) );
-         ptr +=  sizeof( DifferentialOperator );
-         memcpy( ptr, &boundaryConditions, sizeof( BoundaryConditions ) );
-         ptr += sizeof( BoundaryConditions );
-         memcpy( ptr, &rightHandSide, sizeof( RightHandSide ) );
-         ptr += sizeof( RightHandSide );
-         memcpy( ptr, &u, sizeof( MeshFunction ) );
-         ptr += sizeof( MeshFunction );
-         memcpy( ptr, &fu, sizeof( MeshFunction ) );*/
       };
       
       /*DifferentialOperator& differentialOperator()
@@ -125,6 +115,10 @@ class tnlExplicitUpdater
                                                    DifferentialOperator,
                                                    BoundaryConditions,
                                                    RightHandSide > TraverserUserData;
+      typedef tnlSharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
+      typedef tnlSharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
+      typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+
       
       tnlExplicitUpdater()
       : gpuTransferTimer( 0 ){}
@@ -137,9 +131,9 @@ class tnlExplicitUpdater
       template< typename EntityType >
       void update( const RealType& time,
                    const MeshPointer& meshPointer,
-                   const DifferentialOperator& differentialOperator,
-                   const BoundaryConditions& boundaryConditions,
-                   const RightHandSide& rightHandSide,
+                   const DifferentialOperatorPointer& differentialOperatorPointer,
+                   const BoundaryConditionsPointer& boundaryConditionsPointer,
+                   const RightHandSidePointer& rightHandSidePointer,
                    MeshFunction& u,
                    MeshFunction& fu ) const;      
       
@@ -153,7 +147,7 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const GridEntity& entity )
             {
-               ( *userData.u )( entity ) = ( *userData.boundaryConditions )
+               ( *userData.u )( entity ) = ( userData.boundaryConditionsPointer.template getData< DeviceType >() )
                ( *userData.u,
                  entity,
                  *userData.time );
@@ -174,15 +168,15 @@ class tnlExplicitUpdater
                                               const EntityType& entity )
             {
                ( *userData.fu )( entity ) =
-                  ( *userData.differentialOperator )(
-                     *userData.u,
+                  ( userData.differentialOperatorPointer.template getData< DeviceType >() )(
+                     *userData.u, 
                      entity,
                      *userData.time );
 
                typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
                (  *userData.fu )( entity ) += 
                   FunctionAdapter::getValue(
-                     *userData.rightHandSide,
+                     userData.rightHandSidePointer.template getData< DeviceType >(),
                      entity,
                      *userData.time );
             }
