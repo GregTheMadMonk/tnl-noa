@@ -38,8 +38,8 @@ update( const RealType& time,
         const DifferentialOperatorPointer& differentialOperatorPointer,        
         const BoundaryConditionsPointer& boundaryConditionsPointer,
         const RightHandSidePointer& rightHandSidePointer,
-        MeshFunction& u,
-        MeshFunction& fu ) const
+        MeshFunctionPointer& uPointer,
+        MeshFunctionPointer& fuPointer ) const
 {
    static_assert( std::is_same< MeshFunction, 
                                 tnlVector< typename MeshFunction::RealType,
@@ -48,7 +48,7 @@ update( const RealType& time,
       "Error: I am getting tnlVector instead of tnlMeshFunction or similar object. You might forget to bind DofVector into tnlMeshFunction in you method getExplicitRHS."  );
    //if( std::is_same< DeviceType, tnlHost >::value )
    {
-      TraverserUserData userData( time, differentialOperatorPointer, boundaryConditionsPointer, rightHandSidePointer, u, fu );
+      TraverserUserData userData( time, differentialOperatorPointer, boundaryConditionsPointer, rightHandSidePointer, uPointer, fuPointer );
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >

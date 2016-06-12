@@ -47,6 +47,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef tnlMeshFunction< Mesh > MeshFunctionType;
+      typedef tnlSharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
       typedef tnlSharedPointer< DifferentialOperator > DifferentialOperatorPointer;
@@ -109,7 +110,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
 
       protected:
          
-         MeshFunctionType u;
+         MeshFunctionPointer uPointer;
       
          DifferentialOperatorPointer differentialOperatorPointer;
 

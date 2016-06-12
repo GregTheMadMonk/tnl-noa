@@ -352,6 +352,8 @@ processEntities(
    //typename GridEntity::MeshType* kernelGrid = tnlCuda::passToDevice( *gridPointer );
    UserData* kernelUserData = tnlCuda::passToDevice( userData );
    checkCudaDevice;
+   
+   std::cerr << "User data size is " << sizeof( UserData ) << std::endl;
       
    dim3 cudaBlockSize( 16, 16 );
    dim3 cudaBlocks;

@@ -65,10 +65,6 @@ bool
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setup( const tnlParameterContainer& parameters )
 {
-   this->boundaryConditionPointer.create();
-   this->differentialOperatorPointer.create();
-   this->rightHandSidePointer.create();
-
    if( ! this->boundaryConditionPointer->setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
       return false;
@@ -534,8 +530,8 @@ getExplicitRHS( const RealType& time,
       {
          //if( !this->cudaMesh )
          //   this->cudaMesh = tnlCuda::passToDevice( &mesh );
-         MeshFunctionType u( meshPointer, uDofs );
-         MeshFunctionType fu( meshPointer, fuDofs );
+         MeshFunctionPointer uPointer( meshPointer, uDofs );
+         MeshFunctionPointer fuPointer( meshPointer, fuDofs );
          tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
          //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
          explicitUpdater.template update< typename Mesh::Cell >( 
@@ -544,8 +540,8 @@ getExplicitRHS( const RealType& time,
             this->differentialOperatorPointer,
             this->boundaryConditionPointer,
             this->rightHandSidePointer,
-            u,
-            fu );
+            uPointer,
+            fuPointer );
             }
    }
 }

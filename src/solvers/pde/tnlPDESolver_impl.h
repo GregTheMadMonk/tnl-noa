@@ -35,7 +35,6 @@ tnlPDESolver()
   ioTimer( 0 ),
   computeTimer( 0 )
 {
-   this->meshPointer.create();
 }
 
 template< typename Problem,

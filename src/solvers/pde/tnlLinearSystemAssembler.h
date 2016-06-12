@@ -137,7 +137,7 @@ class tnlLinearSystemAssembler
                  entity,
                  *userData.time + *userData.tau,
                  *userData.tau,
-                 *userData.matrixPointer.template getData< DeviceType >(),
+                 userData.matrixPointer.template modifyData< DeviceType >(),
                  *userData.b );
          }
    };
@@ -158,7 +158,7 @@ class tnlLinearSystemAssembler
                  entity,
                  *userData.time + *userData.tau,
                  *userData.tau,
-                 userData.matrixPointer.template getData< DeviceType >(), 
+                 userData.matrixPointer.template modifyData< DeviceType >(), 
                  *userData.b );
             
             typedef tnlFunctionAdapter< MeshType, RightHandSide > RhsFunctionAdapter;
@@ -167,7 +167,7 @@ class tnlLinearSystemAssembler
                ( userData.rightHandSidePointer.template getData< DeviceType >(),
                  entity,
                  *userData.time );
-            TimeDiscretisation::applyTimeDiscretisation( userData.matrixPointer.template getData< DeviceType >(),
+            TimeDiscretisation::applyTimeDiscretisation( userData.matrixPointer.template modifyData< DeviceType >(),
                                                          ( *userData.b )[ entity.getIndex() ],
                                                          entity.getIndex(),
                                                          MeshFunctionAdapter::getValue( *userData.u, entity, *userData.time ),

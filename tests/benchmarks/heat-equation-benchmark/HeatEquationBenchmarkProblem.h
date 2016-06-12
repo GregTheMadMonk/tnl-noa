@@ -20,6 +20,7 @@ class HeatEquationBenchmarkProblem:
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef tnlMeshFunction< Mesh > MeshFunctionType;
+      typedef tnlSharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef tnlSharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef tnlSharedPointer< BoundaryCondition > BoundaryConditionPointer;

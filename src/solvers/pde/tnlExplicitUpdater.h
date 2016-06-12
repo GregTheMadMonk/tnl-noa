@@ -35,6 +35,7 @@ class tnlExplicitUpdaterTraverserUserData
       typedef tnlSharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
       typedef tnlSharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
       typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      typedef tnlSharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
 
       const DifferentialOperatorPointer differentialOperatorPointer;
 
@@ -42,25 +43,25 @@ class tnlExplicitUpdaterTraverserUserData
 
       const RightHandSidePointer rightHandSidePointer;
 
-      MeshFunction *u, *fu;
+      MeshFunctionPointer uPointer, fuPointer;
       
       public:
 
-         const Real* time;         
+         const Real time;         
 
 
       tnlExplicitUpdaterTraverserUserData( const Real& time,
                                            const DifferentialOperatorPointer& differentialOperatorPointer,
                                            const BoundaryConditionsPointer& boundaryConditionsPointer,
                                            const RightHandSidePointer& rightHandSidePointer,
-                                           MeshFunction& u,
-                                           MeshFunction& fu )
-      : time( &time ),
+                                           MeshFunctionPointer& uPointer,
+                                           MeshFunctionPointer& fuPointer )
+      : time( time ),
         differentialOperatorPointer( differentialOperatorPointer ),
         boundaryConditionsPointer( boundaryConditionsPointer ),
         rightHandSidePointer( rightHandSidePointer ),
-        u( &u ),
-        fu( &fu )
+        uPointer( uPointer ),
+        fuPointer( fuPointer )
       {
       };
       
@@ -118,7 +119,7 @@ class tnlExplicitUpdater
       typedef tnlSharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
       typedef tnlSharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
       typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-
+      typedef tnlSharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
       
       tnlExplicitUpdater()
       : gpuTransferTimer( 0 ){}
@@ -134,8 +135,8 @@ class tnlExplicitUpdater
                    const DifferentialOperatorPointer& differentialOperatorPointer,
                    const BoundaryConditionsPointer& boundaryConditionsPointer,
                    const RightHandSidePointer& rightHandSidePointer,
-                   MeshFunction& u,
-                   MeshFunction& fu ) const;      
+                   MeshFunctionPointer& uPointer,
+                   MeshFunctionPointer& fuPointer ) const;      
       
       class TraverserBoundaryEntitiesProcessor
       {
@@ -147,10 +148,11 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const GridEntity& entity )
             {
-               ( *userData.u )( entity ) = ( userData.boundaryConditionsPointer.template getData< DeviceType >() )
-               ( *userData.u,
+               printf( "BC size %d ptr %p \n", sizeof( BoundaryConditions ), &userData.boundaryConditionsPointer.template getData< DeviceType >() );
+               ( userData.uPointer.template modifyData< DeviceType >() )( entity ) = ( userData.boundaryConditionsPointer.template getData< DeviceType >() )
+               ( userData.uPointer.template getData< DeviceType >(),
                  entity,
-                 *userData.time );
+                 userData.time );
             }
 
       };
@@ -167,7 +169,9 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const EntityType& entity )
             {
-               ( *userData.fu )( entity ) =
+               printf( "DIF.OP. size %d ptr %p \n", sizeof( DifferentialOperator ), &userData.differentialOperatorPointer.template getData< DeviceType >() );
+               printf( "RHS. size %d ptr %p \n", sizeof( RightHandSide ), &userData.rightHandSidePointer.template getData< DeviceType >() );
+               /*( *userData.fu )( entity ) =
                   ( userData.differentialOperatorPointer.template getData< DeviceType >() )(
                      *userData.u, 
                      entity,
@@ -179,6 +183,7 @@ class tnlExplicitUpdater
                      userData.rightHandSidePointer.template getData< DeviceType >(),
                      entity,
                      *userData.time );
+                */
             }
       };
       

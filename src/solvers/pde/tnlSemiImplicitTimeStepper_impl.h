@@ -31,7 +31,6 @@ tnlSemiImplicitTimeStepper()
   timeStep( 0 ),
   allIterations( 0 )
 {
-   this->matrixPointer.create();
 };
 
 template< typename Problem,

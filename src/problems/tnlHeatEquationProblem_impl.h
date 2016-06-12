@@ -89,10 +89,6 @@ bool
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setup( const tnlParameterContainer& parameters )
 {
-   this->gpuTransferTimer.reset();
-   this->boundaryConditionPointer.create();
-   this->differentialOperatorPointer.create();
-   this->rightHandSidePointer.create();
    if( ! this->boundaryConditionPointer->setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
       return false;
@@ -123,7 +119,7 @@ bindDofs( const MeshPointer& meshPointer,
           const DofVectorType& dofVector )
 {
    const IndexType dofs = meshPointer->template getEntitiesCount< typename MeshType::Cell >();
-   this->u.bind( meshPointer, dofVector );
+   this->uPointer->bind( meshPointer, dofVector );
 }
 
 template< typename Mesh,
@@ -139,7 +135,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
 {
    this->bindDofs( meshPointer, dofs );
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
-   if( ! this->u.boundLoad( initialConditionFile ) )
+   if( ! this->uPointer->boundLoad( initialConditionFile ) )
    {
       cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
       return false;
@@ -160,7 +156,6 @@ setupLinearSystem( const MeshPointer& meshPointer,
    const IndexType dofs = this->getDofs( meshPointer );
    typedef typename MatrixPointer::ObjectType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
    tnlSharedPointer< CompressedRowsLengthsVectorType > rowLengthsPointer;
-   rowLengthsPointer.create();
    if( ! rowLengthsPointer->setSize( dofs ) )
       return false;
    tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
@@ -194,7 +189,7 @@ makeSnapshot( const RealType& time,
    //cout << "dofs = " << dofs << endl;
    tnlString fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! this->u.save( fileName ) )
+   if( ! this->uPointer->save( fileName ) )
       return false;
    return true;
 }
@@ -223,7 +218,7 @@ getExplicitRHS( const RealType& time,
    
    //cout << "u = " << u << endl;
    this->bindDofs( meshPointer, uDofs );
-   MeshFunctionType fu( meshPointer, fuDofs );
+   MeshFunctionPointer fuPointer( meshPointer, fuDofs );
    tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
    explicitUpdater.template update< typename Mesh::Cell >( 
@@ -232,8 +227,8 @@ getExplicitRHS( const RealType& time,
       this->differentialOperatorPointer,
       this->boundaryConditionPointer,
       this->rightHandSidePointer,
-      this->u,
-      fu );
+      this->uPointer,
+      fuPointer );
    /*tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
    boundaryConditionsSetter.template apply< typename Mesh::Cell >(
       this->boundaryCondition,
@@ -254,14 +249,14 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-    template< typename Matrix >          
+    template< typename MatrixPointer >          
 void
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshPointer& meshPointer,
                       const DofVectorType& dofs,                      
-                      Matrix& matrix,
+                      MatrixPointer& matrixPointer,
                       DofVectorType& b,
 		                MeshDependentDataType& meshDependentData )
 {
@@ -272,7 +267,7 @@ assemblyLinearSystem( const RealType& time,
                              BoundaryCondition,
                              RightHandSide,
                              tnlBackwardTimeDiscretisation,
-                             Matrix,
+                             typename MatrixPointer::ObjectType,
                              DofVectorType > systemAssembler;
    systemAssembler.template assembly< typename Mesh::Cell >(
       time,
@@ -281,8 +276,8 @@ assemblyLinearSystem( const RealType& time,
       this->differentialOperatorPointer,
       this->boundaryConditionPointer,
       this->rightHandSidePointer,
-      this->u,
-      matrix,
+      this->uPointer,
+      matrixPointer,
       b );
    /*matrix.print( cout );
    cout << endl << b << endl;
