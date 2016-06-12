@@ -53,10 +53,12 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       typedef tnlSharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef tnlSharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
+      using typename BaseType::DofVectorPointer;
       using typename BaseType::MeshDependentDataType;
 
       static tnlString getTypeStatic();
@@ -78,7 +80,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
 
       template< typename Matrix >
       bool setupLinearSystem( const MeshPointer& meshPointer,
-                              Matrix& matrix );
+                              MatrixPointer& matrixPointer );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
@@ -102,9 +104,9 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
                                  const MeshPointer& meshPointer,
-                                 const DofVectorType& dofs,                                 
-                                 Matrix& matrix,
-                                 DofVectorType& rightHandSide,
+                                 const DofVectorPointer& dofsPointer,
+                                 MatrixPointer& matrixPointer,
+                                 DofVectorPointer& rightHandSidePointer,
                                  MeshDependentDataType& meshDependentData );
 
 

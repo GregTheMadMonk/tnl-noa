@@ -255,10 +255,10 @@ tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOper
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshPointer& meshPointer,
-                      const DofVectorType& dofs,                      
+                      const DofVectorPointer& dofsPointer,
                       MatrixPointer& matrixPointer,
-                      DofVectorType& b,
-		                MeshDependentDataType& meshDependentData )
+                      DofVectorPointer& bPointer,
+                      MeshDependentDataType& meshDependentData )
 {
    this->bindDofs( meshPointer, dofs );
    tnlLinearSystemAssembler< Mesh,
@@ -278,7 +278,7 @@ assemblyLinearSystem( const RealType& time,
       this->rightHandSidePointer,
       this->uPointer,
       matrixPointer,
-      b );
+      bPointer );
    /*matrix.print( cout );
    cout << endl << b << endl;
    cout << endl << u << endl;

@@ -36,7 +36,8 @@ class tnlLinearSystemAssemblerTraverserUserData
       typedef tnlSharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
       typedef tnlSharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
       typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-
+      typedef tnlSharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
+      typedef tnlSharedPointer< DofVector, DeviceType > DofVectorPointer;
 
       const Real* time;
 
@@ -50,9 +51,9 @@ class tnlLinearSystemAssemblerTraverserUserData
 
       const RightHandSidePointer rightHandSidePointer;
       
-      const MeshFunction *u;
+      const MeshFunctionPointer uPointer;
       
-      DofVector *b;
+      DofVectorPointer bPointer;
 
       MatrixPointer matrixPointer;
 
@@ -61,16 +62,16 @@ class tnlLinearSystemAssemblerTraverserUserData
                                                  const DifferentialOperatorPointer& differentialOperatorPointer,
                                                  const BoundaryConditionsPointer& boundaryConditionsPointer,
                                                  const RightHandSidePointer& rightHandSidePointer,
-                                                 const MeshFunction& u,
+                                                 const MeshFunctionPointer& uPointer,
                                                  MatrixPointer& matrixPointer,
-                                                 DofVector& b )
+                                                 DofVectorPointer& bPointer )
       : time( &time ),
         tau( &tau ),
         differentialOperatorPointer( differentialOperatorPointer ),
         boundaryConditionsPointer( boundaryConditionsPointer ),
         rightHandSidePointer( rightHandSidePointer ),
-        u( &u ),
-        b( &b ),
+        uPointer( uPointer ),
+        bPointer( bPointer ),
         matrixPointer( matrixPointer )
       {};
 
@@ -107,7 +108,10 @@ class tnlLinearSystemAssembler
    typedef tnlSharedPointer< Matrix, DeviceType > MatrixPointer;
    typedef tnlSharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
    typedef tnlSharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-   typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;   
+   typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+   typedef tnlSharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
+   typedef tnlSharedPointer< DofVector, DeviceType > DofVectorPointer;
+   
       
    template< typename EntityType >
    void assembly( const RealType& time,
@@ -116,9 +120,9 @@ class tnlLinearSystemAssembler
                   const DifferentialOperatorPointer& differentialOperatorPointer,
                   const BoundaryConditionsPointer& boundaryConditionsPointer,
                   const RightHandSidePointer& rightHandSidePointer,
-                  const MeshFunction& u,
+                  const MeshFunctionPointer& uPointer,
                   MatrixPointer& matrixPointer,
-                  DofVector& b ) const;
+                  DofVectorPointer& bPointer ) const;
 
    
       class TraverserBoundaryEntitiesProcessor

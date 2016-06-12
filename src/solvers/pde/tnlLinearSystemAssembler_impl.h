@@ -40,9 +40,9 @@ assembly( const RealType& time,
           const DifferentialOperatorPointer& differentialOperatorPointer,
           const BoundaryConditionsPointer& boundaryConditionsPointer,
           const RightHandSidePointer& rightHandSidePointer,
-          const MeshFunction& u,
+          const MeshFunctionPointer& uPointer,
           MatrixPointer& matrixPointer,
-          DofVector& b ) const
+          DofVectorPointer& bPointer ) const
 {
       static_assert( std::is_same< MeshFunction, 
                                 tnlVector< typename MeshFunction::RealType,
@@ -60,9 +60,9 @@ assembly( const RealType& time,
                                   differentialOperatorPointer,
                                   boundaryConditionsPointer,
                                   rightHandSidePointer,
-                                  u,
+                                  uPointer,
                                   matrixPointer,
-                                  b );
+                                  bPointer );
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >

@@ -48,7 +48,8 @@ class tnlOperatorFunctionTest
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef typename MeshType::VertexType VertexType;
    typedef tnlExpBumpFunction< MeshType::getMeshDimensions(), RealType > TestFunctionType;
-   typedef tnlMeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;   
+   typedef tnlMeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
+   typedef tnlSharedPointer< MeshType > MeshPointer;
 
    tnlOperatorFunctionTest(){};
 
@@ -67,22 +68,22 @@ class tnlOperatorFunctionTest
    
    void testWithNoBoundaryConditions()
    {
-      MeshType mesh;
+      MeshPointer meshPointer;
       typedef tnlOperatorFunction< Operator, MeshFunctionType, void, EvaluateOnFly > OperatorFunctionType;
-      mesh.setDimensions( CoordinatesType( 25 ) );
-      mesh.setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
+      meshPointer->setDimensions( CoordinatesType( 25 ) );
+      meshPointer->setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
       TestFunctionType testFunction;
       testFunction.setAmplitude( 1.0 );
       testFunction.setSigma( 1.0 );
-      MeshFunctionType f1( mesh );
+      MeshFunctionType f1( meshPointer );
       f1 = testFunction;
       OperatorType operator_;
       OperatorFunctionType operatorFunction( operator_, f1 );
       operatorFunction.refresh();
       //cerr << f1.getData() << endl;
-      for( IndexType i = 0; i < mesh.template getEntitiesCount< typename MeshType::Cell >(); i++ )
+      for( IndexType i = 0; i < meshPointer->template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
-         auto entity = mesh.template getEntity< typename MeshType::Cell >( i );
+         auto entity = meshPointer->template getEntity< typename MeshType::Cell >( i );
          entity.refresh();
          
          if( ! entity.isBoundaryEntity() )

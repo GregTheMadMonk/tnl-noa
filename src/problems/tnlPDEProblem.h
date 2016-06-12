@@ -36,9 +36,11 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
       using typename BaseType::IndexType;
 
       typedef Mesh MeshType;
-      typedef tnlSharedPointer< MeshType, Device > MeshPointer;
+      typedef tnlSharedPointer< MeshType, DeviceType > MeshPointer;
       typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef tnlSharedPointer< DofVectorType, DeviceType > DofVectorPointer;
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
+      typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
       typedef tnlVector< RealType, DeviceType, IndexType > MeshDependentDataType;
 
       /****
