@@ -28,12 +28,16 @@ benchmarkVectorOperations( Benchmark & benchmark,
 
     HostVector hostVector, hostVector2;
     CudaVector deviceVector, deviceVector2;
-    hostVector.setSize( size );
-    if( ! deviceVector.setSize( size ) )
+    if( ! hostVector.setSize( size ) ||
+        ! hostVector2.setSize( size ) ||
+        ! deviceVector.setSize( size ) ||
+        ! deviceVector2.setSize( size ) )
+    {
+        const char* msg = "error: allocation of vectors failed";
+        cerr << msg << endl;
+        benchmark.addErrorMessage( msg );
         return false;
-    hostVector2.setLike( hostVector );
-    if( ! deviceVector2.setLike( deviceVector ) )
-        return false;
+    }
 
     Real resultHost, resultDevice;
 
@@ -71,10 +75,21 @@ benchmarkVectorOperations( Benchmark & benchmark,
     auto multiplyCuda = [&]() {
         deviceVector *= 0.5;
     };
+#ifdef HAVE_CUBLAS
+    auto multiplyCublas = [&]() {
+        const Real alpha = 0.5;
+        cublasGscal( cublasHandle, size,
+                     &alpha,
+                     deviceVector.getData(), 1 );
+    };
+#endif
     benchmark.setOperation( "scalar multiplication", 2 * datasetSize );
     benchmark.time( reset1,
                     "CPU", multiplyHost,
                     "GPU", multiplyCuda );
+#ifdef HAVE_CUBLAS
+    benchmark.time( reset1, "cuBLAS", multiplyCublas );
+#endif
 
 
     auto addVectorHost = [&]() {
@@ -83,10 +98,22 @@ benchmarkVectorOperations( Benchmark & benchmark,
     auto addVectorCuda = [&]() {
         deviceVector.addVector( deviceVector2 );
     };
+#ifdef HAVE_CUBLAS
+    auto addVectorCublas = [&]() {
+        const Real alpha = 1.0;
+        cublasGaxpy( cublasHandle, size,
+                     &alpha,
+                     deviceVector2.getData(), 1,
+                     deviceVector.getData(), 1 );
+    };
+#endif
     benchmark.setOperation( "vector addition", 3 * datasetSize );
     benchmark.time( reset1,
                     "CPU", addVectorHost,
                     "GPU", addVectorCuda );
+#ifdef HAVE_CUBLAS
+    benchmark.time( reset1, "cuBLAS", addVectorCublas );
+#endif
 
 
     auto maxHost = [&]() {
@@ -119,10 +146,22 @@ benchmarkVectorOperations( Benchmark & benchmark,
     auto absMaxCuda = [&]() {
         resultDevice = deviceVector.absMax();
     };
+#ifdef HAVE_CUBLAS
+    auto absMaxCublas = [&]() {
+        int index = 0;
+        cublasIgamax( cublasHandle, size,
+                      deviceVector.getData(), 1,
+                      &index );
+        resultDevice = deviceVector.getElement( index );
+    };
+#endif
     benchmark.setOperation( "absMax", datasetSize );
     benchmark.time( reset1,
                     "CPU", absMaxHost,
                     "GPU", absMaxCuda );
+#ifdef HAVE_CUBLAS
+    benchmark.time( reset1, "cuBLAS", absMaxCublas );
+#endif
 
 
     auto absMinHost = [&]() {
@@ -131,10 +170,22 @@ benchmarkVectorOperations( Benchmark & benchmark,
     auto absMinCuda = [&]() {
         resultDevice = deviceVector.absMin();
     };
+#ifdef HAVE_CUBLAS
+    auto absMinCublas = [&]() {
+        int index = 0;
+        cublasIgamin( cublasHandle, size,
+                      deviceVector.getData(), 1,
+                      &index );
+        resultDevice = deviceVector.getElement( index );
+    };
+#endif
     benchmark.setOperation( "absMin", datasetSize );
     benchmark.time( reset1,
                     "CPU", absMinHost,
                     "GPU", absMinCuda );
+#ifdef HAVE_CUBLAS
+    benchmark.time( reset1, "cuBLAS", absMinCublas );
+#endif
 
 
     auto sumHost = [&]() {
@@ -155,10 +206,20 @@ benchmarkVectorOperations( Benchmark & benchmark,
     auto l1normCuda = [&]() {
         resultDevice = deviceVector.lpNorm( 1.0 );
     };
+#ifdef HAVE_CUBLAS
+    auto l1normCublas = [&]() {
+        cublasGasum( cublasHandle, size,
+                     deviceVector.getData(), 1,
+                     &resultDevice );
+    };
+#endif
     benchmark.setOperation( "l1 norm", datasetSize );
     benchmark.time( reset1,
                     "CPU", l1normHost,
                     "GPU", l1normCuda );
+#ifdef HAVE_CUBLAS
+    benchmark.time( reset1, "cuBLAS", l1normCublas );
+#endif
 
 
     auto l2normHost = [&]() {
@@ -167,10 +228,20 @@ benchmarkVectorOperations( Benchmark & benchmark,
     auto l2normCuda = [&]() {
         resultDevice = deviceVector.lpNorm( 2.0 );
     };
+#ifdef HAVE_CUBLAS
+    auto l2normCublas = [&]() {
+        cublasGnrm2( cublasHandle, size,
+                     deviceVector.getData(), 1,
+                     &resultDevice );
+    };
+#endif
     benchmark.setOperation( "l2 norm", datasetSize );
     benchmark.time( reset1,
                     "CPU", l2normHost,
                     "GPU", l2normCuda );
+#ifdef HAVE_CUBLAS
+    benchmark.time( reset1, "cuBLAS", l2normCublas );
+#endif
 
 
     auto l3normHost = [&]() {
@@ -202,11 +273,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
     benchmark.setOperation( "scalar product", 2 * datasetSize );
     benchmark.time( reset1,
                     "CPU", scalarProductHost,
-                    "GPU", scalarProductCuda
+                    "GPU", scalarProductCuda );
 #ifdef HAVE_CUBLAS
-                  , "cuBLAS", scalarProductCublas
+    benchmark.time( reset1, "cuBLAS", scalarProductCublas );
 #endif
-                  );
 
     /*
     cout << "Benchmarking prefix-sum:" << endl;

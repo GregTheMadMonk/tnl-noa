@@ -15,13 +15,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <sys/utsname.h>
-#include <time.h>
-#include <unistd.h>
-#include <fstream>
 #include <iomanip>
 #include <core/tnlLogger.h>
 #include <tnlConfig.h>
+#include <core/tnlSystemInfo.h>
 #include <core/tnlCudaDeviceInfo.h>
 
 tnlLogger :: tnlLogger( int _width,
@@ -53,106 +50,39 @@ void tnlLogger :: writeSeparator()
 
 bool tnlLogger :: writeSystemInformation( const tnlParameterContainer& parameters )
 {
-   char host_name[ 256 ];
-   struct utsname uts;
-   gethostname( host_name, 255 );
-   uname( &uts );
-   writeParameter< char* >( "Host name:", host_name );
-   writeParameter< char* >( "Architecture:", uts. machine );
-   fstream file;
-   file.open( "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq", ios::in );
-   int maxCpuFreq( 0 );
-   if( file )
-   {
-      char line[ 1024 ];
-      file.getline( line, 1024 );
-      maxCpuFreq = atoi( line );
-   }
-   else
-       cerr << "Unable to read information from /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq." << endl;
-   file.close();
-   file. open( "/proc/cpuinfo", ios :: in );
-   if( file )
-   {
-      char line[ 1024 ];
-      char* cpu_id;
-      char* cpu_model_name;
-      char* cpu_mhz;
-      char* cpu_cache;
-      tnlString modelName, Mhz, cache;
-      int cores( 0 ), siblings( 0 );
-      while( ! file. eof() )
-      {
-         int i;
-         file. getline( line, 1024 );
-         /*if( strncmp( line, "processor", strlen( "processor" ) ) == 0 )
-         {
-            i = strlen( "processor" );
-            while( line[ i ] != ':' && line[ i ] ) i ++;
-            cpu_id = &line[ i + 1 ];
-            writeParameter< char * >( "CPU Id.:", cpu_id );
-            continue;
-         }*/
-         if( strncmp( line, "model name", strlen( "model name" ) ) == 0 )
-         {
-            i = strlen( "model name" );
-            while( line[ i ] != ':' && line[ i ] ) i ++;
-            //cpu_model_name = &line[ i + 1 ];
-            modelName.setString( &line[ i + 1 ] );
-            //writeParameter< char * >( "Model name:", cpu_model_name );
-            continue;
-         }
-         if( strncmp( line, "cpu cores", strlen( "cpu cores" ) ) == 0 )
-         {
-            i = strlen( "cpu MHz" );
-            while( line[ i ] != ':' && line[ i ] ) i ++;
-            cores = atoi( &line[ i + 1 ] );
-            continue;
-         }
-         if( strncmp( line, "siblings", strlen( "siblings" ) ) == 0 )
-         {
-            i = strlen( "siblings" );
-            while( line[ i ] != ':' && line[ i ] ) i ++;
-            siblings = atoi( &line[ i + 1 ] );
-         }
-         /*if( strncmp( line, "cpu MHz", strlen( "cpu MHz" ) ) == 0 )
-         {
-            i = strlen( "cpu MHz" );
-            while( line[ i ] != ':' && line[ i ] ) i ++;
-            //cpu_mhz = &line[ i + 1 ];
-            Mhz.setString( &line[ i + 1 ] );
-            //writeParameter< char * >( "CPU MHz:", cpu_mhz );
-            continue;
-         }*/
-         if( strncmp( line, "cache size", strlen( "cache size" ) ) == 0 )
-         {
-            i = strlen( "cache size" );
-            while( line[ i ] != ':' && line[ i ] ) i ++;
-            //cpu_cache = &line[ i + 1 ];
-            cache.setString( &line[ i + 1 ] );
-            //writeParameter< char * >( "CPU cache:", cpu_cache );
-            continue;
-         }
-      }
-      int threadsPerCore = siblings / cores;
-      writeParameter< tnlString >( "CPU info", tnlString("") );
-      writeParameter< tnlString >( "Model name:", modelName, 1 );
-      writeParameter< int >( "Cores:", cores, 1 );
-      writeParameter< int >( "Threads per core:", threadsPerCore, 1 );
-      writeParameter< tnlString >( "Max clock rate (in MHz):", maxCpuFreq / 1000, 1 );
-      writeParameter< tnlString >( "Cache:", cache, 1 );
-    }
-   else
-      cerr << "Unable to read information from /proc/cpuinfo." << endl;
-   file.close();
+   tnlSystemInfo systemInfo;
+
+
+   writeParameter< tnlString >( "Host name:", systemInfo.getHostname() );
+   writeParameter< tnlString >( "Architecture:", systemInfo.getArchitecture() );
+   // FIXME: generalize for multi-socket systems, here we consider only the first found CPU
+   const int cpu_id = 0;
+   const int threads = systemInfo.getNumberOfThreads( cpu_id );
+   const int cores = systemInfo.getNumberOfCores( cpu_id );
+   int threadsPerCore = threads / cores;
+   writeParameter< tnlString >( "CPU info", tnlString("") );
+   writeParameter< tnlString >( "Model name:", systemInfo.getCPUModelName( cpu_id ), 1 );
+   writeParameter< int >( "Cores:", cores, 1 );
+   writeParameter< int >( "Threads per core:", threadsPerCore, 1 );
+   writeParameter< tnlString >( "Max clock rate (in MHz):", systemInfo.getCPUMaxFrequency( cpu_id ) / 1000, 1 );
+   tnlCacheSizes cacheSizes = systemInfo.getCPUCacheSizes( cpu_id );
+   tnlString cacheInfo = tnlString( cacheSizes.L1data ) + ", "
+                       + tnlString( cacheSizes.L1instruction ) + ", "
+                       + tnlString( cacheSizes.L2 ) + ", "
+                       + tnlString( cacheSizes.L3 );
+   writeParameter< tnlString >( "Cache (L1d, L1i, L2, L3):", cacheInfo, 1 );
    if( parameters.getParameter< tnlString >( "device" ) == "cuda" )
    {      
-      int devices = tnlCudaDeviceInfo::getNumberOfDevices();
       writeParameter< tnlString >( "CUDA GPU info", tnlString("") );   
-      writeParameter< int >( "Number of devices", devices,1 );
-      for( int i = 0; i < devices; i++ )
-      {
-        writeParameter< int >( "Device no.", i, 1 );       
+      // TODO: Printing all devices does not make sense, but in the future TNL
+      //       might use more than one device for computations. Printing only
+      //       the active device for now...
+//      int devices = tnlCudaDeviceInfo::getNumberOfDevices();
+//      writeParameter< int >( "Number of devices", devices, 1 );
+//      for( int i = 0; i < devices; i++ )
+//      {
+//        writeParameter< int >( "Device no.", i, 1 );
+        int i = tnlCudaDeviceInfo::getActiveDevice();
         writeParameter< tnlString >( "Name", tnlCudaDeviceInfo::getDeviceName( i ), 2 );
         tnlString deviceArch = tnlString( tnlCudaDeviceInfo::getArchitectureMajor( i ) ) + "." +
                                 tnlString( tnlCudaDeviceInfo::getArchitectureMinor( i ) );
@@ -165,22 +95,18 @@ bool tnlLogger :: writeSystemInformation( const tnlParameterContainer& parameter
         double memoryClockRate = ( double ) tnlCudaDeviceInfo::getMemoryClockRate( i ) / 1.0e3;
         writeParameter< double >( "Memory clock rate (in Mhz)", memoryClockRate, 2 );
         writeParameter< bool >( "ECC enabled", tnlCudaDeviceInfo::getECCEnabled( i ), 2 );         
-      }
+//      }
    }
-   writeParameter< char* >( "System:", uts. sysname );
-   writeParameter< char* >( "Release:", uts. release );
+   writeParameter< tnlString >( "System:", systemInfo.getSystemName() );
+   writeParameter< tnlString >( "Release:", systemInfo.getSystemRelease() );
    writeParameter< char* >( "TNL Compiler:", ( char* ) TNL_CPP_COMPILER_NAME );
    return true;
 }
 
 void tnlLogger :: writeCurrentTime( const char* label )
 {
-   time_t timeval;
-   time( &timeval );
-   tm *tm_ptr = localtime( &timeval );
-   char buf[ 256 ];
-   strftime( buf, 256, "%a %b %d %H:%M:%S\0", tm_ptr );
-   writeParameter< char* >( label, buf );
+   tnlSystemInfo systemInfo;
+   writeParameter< tnlString >( label, systemInfo.getCurrentTime() );
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION

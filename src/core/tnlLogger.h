@@ -18,9 +18,7 @@
 #ifndef mLoggerH
 #define mLoggerH
 
-#include <cstring>
 #include <ostream>
-#include <iomanip>
 #include <config/tnlParameterContainer.h>
 
 class tnlLogger
