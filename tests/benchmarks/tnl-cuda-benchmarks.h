@@ -163,7 +163,7 @@ main( int argc, char* argv[] )
         { "GPU architecture", deviceArch },
         { "GPU CUDA cores", tnlCudaDeviceInfo::getCudaCores( activeGPU ) },
         { "GPU clock rate (MHz)", (double) tnlCudaDeviceInfo::getClockRate( activeGPU ) / 1e3 },
-        { "GPU global memory (GB)", (double) tnlCudaDeviceInfo::getGlobalMemory( activeGPU ) / 1e3 },
+        { "GPU global memory (GB)", (double) tnlCudaDeviceInfo::getGlobalMemory( activeGPU ) / 1e9 },
         { "GPU memory clock rate (MHz)", (double) tnlCudaDeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 },
         { "GPU memory ECC enabled", tnlCudaDeviceInfo::getECCEnabled( activeGPU ) },
     };
