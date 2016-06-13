@@ -260,7 +260,7 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& bPointer,
                       MeshDependentDataType& meshDependentData )
 {
-   this->bindDofs( meshPointer, dofs );
+   this->bindDofs( meshPointer, dofsPointer );
    tnlLinearSystemAssembler< Mesh,
                              MeshFunctionType,
                              DifferentialOperator,

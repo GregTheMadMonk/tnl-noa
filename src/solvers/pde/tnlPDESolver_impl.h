@@ -78,15 +78,15 @@ setup( const tnlParameterContainer& parameters,
     */
    tnlAssert( problem->getDofs( this->meshPointer ) != 0, );
    cout << "Allocating dofs ... ";
-   if( ! this->dofs.setSize( problem->getDofs( this->meshPointer ) ) )
+   if( ! this->dofsPointer->setSize( problem->getDofs( this->meshPointer ) ) )
    {
       cerr << endl;
       cerr << "I am not able to allocate DOFs (degrees of freedom)." << endl;
       return false;
    }
    cout << " [ OK ]" << endl;
-   this->dofs.setValue( 0.0 );
-   this->problem->bindDofs( this->meshPointer, this->dofs );
+   this->dofsPointer->setValue( 0.0 );
+   this->problem->bindDofs( this->meshPointer, this->dofsPointer );
    
    /****
     * Set mesh dependent data
@@ -99,7 +99,7 @@ setup( const tnlParameterContainer& parameters,
     */
    cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! this->problem->setInitialCondition( parameters, meshPointer, this->dofs, this->meshDependentData ) )
+   if( ! this->problem->setInitialCondition( parameters, meshPointer, this->dofsPointer, this->meshDependentData ) )
       return false;
    cout << " [ OK ]" << endl;
 
@@ -323,7 +323,7 @@ solve()
    this->computeTimer->reset();
    
    this->ioTimer->start();
-   if( ! this->problem->makeSnapshot( t, step, meshPointer, this->dofs, this->meshDependentData ) )
+   if( ! this->problem->makeSnapshot( t, step, meshPointer, this->dofsPointer, this->meshDependentData ) )
    {
       cerr << "Making the snapshot failed." << endl;
       return false;
@@ -341,14 +341,14 @@ solve()
    {
       RealType tau = Min( this->snapshotPeriod,
                           this->finalTime - t );
-      if( ! this->timeStepper->solve( t, t + tau, this->meshPointer, this->dofs, this->meshDependentData ) )
+      if( ! this->timeStepper->solve( t, t + tau, this->meshPointer, this->dofsPointer, this->meshDependentData ) )
          return false;
       step ++;
       t += tau;
 
       this->ioTimer->start();
       this->computeTimer->stop();
-      if( ! this->problem->makeSnapshot( t, step, this->meshPointer, this->dofs, this->meshDependentData ) )
+      if( ! this->problem->makeSnapshot( t, step, this->meshPointer, this->dofsPointer, this->meshDependentData ) )
       {
          cerr << "Making the snapshot failed." << endl;
          return false;

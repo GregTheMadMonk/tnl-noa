@@ -102,7 +102,7 @@ template< typename Mesh,
 void
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 bindDofs( const MeshPointer& meshPointer,
-          DofVectorType& dofVector )
+          DofVectorPointer& dofsPointer )
 {
 }
 
@@ -114,11 +114,11 @@ bool
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setInitialCondition( const tnlParameterContainer& parameters,
                      const MeshPointer& meshPointer,
-                     DofVectorType& dofs,
+                     DofVectorPointer& dofsPointer,
                      MeshDependentDataType& meshDependentData )
 {
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
-   tnlMeshFunction< Mesh > u( meshPointer, dofs );
+   tnlMeshFunction< Mesh > u( meshPointer, dofsPointer );
    if( ! u.boundLoad( initialConditionFile ) )
    {
       cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
@@ -162,13 +162,13 @@ HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, Differenti
 makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshPointer& meshPointer,
-              DofVectorType& dofs,
+              DofVectorPointer& dofsPointer,
               MeshDependentDataType& meshDependentData )
 {
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
-   this->bindDofs( meshPointer, dofs );
+   this->bindDofs( meshPointer, dofsPointer );
    MeshFunctionType u;
-   u.bind( meshPointer, dofs );
+   u.bind( meshPointer, *dofsPointer );
    tnlString fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
    if( ! u.save( fileName ) )
@@ -390,8 +390,8 @@ HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, Differenti
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshPointer& meshPointer,
-                DofVectorType& uDofs,
-                DofVectorType& fuDofs,
+                DofVectorPointer& uDofsPointer,
+                DofVectorPointer& fuDofsPointer,
                 MeshDependentDataType& meshDependentData )
 {
    /****
@@ -409,8 +409,8 @@ getExplicitRHS( const RealType& time,
       const IndexType gridYSize = meshPointer->getDimensions().y();
       const RealType& hx_inv = meshPointer->template getSpaceStepsProducts< -2,  0 >();
       const RealType& hy_inv = meshPointer->template getSpaceStepsProducts<  0, -2 >();
-      RealType* u = uDofs.getData();
-      RealType* fu = fuDofs.getData();
+      RealType* u = uDofsPointer->getData();
+      RealType* fu = fuDofsPointer->getData();
       for( IndexType j = 0; j < gridYSize; j++ )
       {
          fu[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
@@ -530,8 +530,8 @@ getExplicitRHS( const RealType& time,
       {
          //if( !this->cudaMesh )
          //   this->cudaMesh = tnlCuda::passToDevice( &mesh );
-         MeshFunctionPointer uPointer( meshPointer, uDofs );
-         MeshFunctionPointer fuPointer( meshPointer, fuDofs );
+         MeshFunctionPointer uPointer( meshPointer, *uDofsPointer );
+         MeshFunctionPointer fuPointer( meshPointer, *fuDofsPointer );
          tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
          //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
          explicitUpdater.template update< typename Mesh::Cell >( 
@@ -550,15 +550,15 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-   template< typename Matrix >
+   template< typename MatrixPointer >
 void
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
-                      const MeshType& mesh,
-                      DofVectorType& _u,
-                      Matrix& matrix,
-                      DofVectorType& b,
+                      const MeshPointer& mesh,
+                      DofVectorPointer& _u,
+                      MatrixPointer& matrix,
+                      DofVectorPointer& b,
                       MeshDependentDataType& meshDependentData )
 {
    tnlLinearSystemAssembler< Mesh,
@@ -567,10 +567,12 @@ assemblyLinearSystem( const RealType& time,
                              BoundaryCondition,
                              RightHandSide,
                              tnlBackwardTimeDiscretisation,
-                             Matrix,
-                             DofVectorType > systemAssembler;
+                             typename MatrixPointer::ObjectType,
+                             typename DofVectorPointer::ObjectType > systemAssembler;
 
-   tnlMeshFunction< Mesh > u( mesh, _u );
+   typedef tnlMeshFunction< Mesh > MeshFunctionType;
+   typedef tnlSharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
+   MeshFunctionPointer u( mesh, *_u );
    systemAssembler.template assembly< typename Mesh::Cell >( time,
                                                              tau,
                                                              mesh,

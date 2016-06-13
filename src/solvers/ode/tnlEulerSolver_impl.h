@@ -75,7 +75,7 @@ const typename Problem :: RealType& tnlEulerSolver< Problem > :: getCFLCondition
 }
 
 template< typename Problem >
-bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
+bool tnlEulerSolver< Problem > :: solve( DofVectorPointer& u )
 {
    /****
     * First setup the supporting meshes k1...k5 and k_tmp.
@@ -170,7 +170,7 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
 };
 
 template< typename Problem >
-void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
+void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
                                                        RealType tau,
                                                        RealType& currentResidue )
 {

@@ -40,6 +40,7 @@ class tnlExplicitTimeStepper
    typedef tnlSharedPointer< MeshType > MeshPointer;
    typedef typename ProblemType::DofVectorType DofVectorType;
    typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
+   typedef tnlSharedPointer< DofVectorType, DeviceType > DofVectorPointer;
 
    tnlExplicitTimeStepper();
 
@@ -63,14 +64,14 @@ class tnlExplicitTimeStepper
 
    bool solve( const RealType& time,
                const RealType& stopTime,
-               const MeshPointer& meshPointer,
-               DofVectorType& dofVector,
+               const MeshPointer& mesh,
+               DofVectorPointer& dofVector,
                MeshDependentDataType& meshDependentData );
 
    void getExplicitRHS( const RealType& time,
                         const RealType& tau,
-                        DofVectorType& _u,
-                        DofVectorType& _fu );
+                        DofVectorPointer& _u,
+                        DofVectorPointer& _fu );
    
    bool writeEpilog( tnlLogger& logger );
 

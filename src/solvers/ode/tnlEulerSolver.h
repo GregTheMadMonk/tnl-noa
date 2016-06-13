@@ -23,6 +23,7 @@
 #include <solvers/ode/tnlExplicitSolver.h>
 #include <config/tnlParameterContainer.h>
 #include <core/tnlTimer.h>
+#include <core/tnlSharedPointer.h>
 
 template< typename Problem >
 class tnlEulerSolver : public tnlExplicitSolver< Problem >
@@ -34,6 +35,7 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem >
    typedef typename Problem :: RealType RealType;
    typedef typename Problem :: DeviceType DeviceType;
    typedef typename Problem :: IndexType IndexType;
+   typedef tnlSharedPointer< DofVectorType, DeviceType > DofVectorPointer;
 
 
    tnlEulerSolver();
@@ -50,15 +52,15 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem >
 
    const RealType& getCFLCondition() const;
 
-   bool solve( DofVectorType& u );
+   bool solve( DofVectorPointer& u );
 
    protected:
-   void computeNewTimeLevel( DofVectorType& u,
+   void computeNewTimeLevel( DofVectorPointer& u,
                              RealType tau,
                              RealType& currentResidue );
 
    
-   DofVectorType k1;
+   DofVectorPointer k1;
 
    RealType cflCondition;
    

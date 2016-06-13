@@ -39,6 +39,7 @@ class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
    typedef typename Problem :: RealType RealType;
    typedef typename Problem :: DeviceType DeviceType;
    typedef typename Problem :: IndexType IndexType;
+   typedef tnlSharedPointer< DofVectorType, DeviceType >  DofVectorPointer;
 
    tnlExplicitSolver();
 
@@ -74,7 +75,7 @@ class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
 
    void setTimerRT( tnlTimerRT* timer );
    
-   virtual bool solve( DofVectorType& u ) = 0;
+   virtual bool solve( DofVectorPointer& u ) = 0;
 
    void setTestingMode( bool testingMode );
 

@@ -29,7 +29,7 @@ class HeatEquationBenchmarkProblem:
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
-      using typename BaseType::DofVectorType;
+      using typename BaseType::DofVectorPointer;
       using typename BaseType::MeshDependentDataType;
 
       HeatEquationBenchmarkProblem();
@@ -45,7 +45,7 @@ class HeatEquationBenchmarkProblem:
 
       bool setInitialCondition( const tnlParameterContainer& parameters,
                                 const MeshPointer& meshPointer,
-                                DofVectorType& dofs,
+                                DofVectorPointer& dofsPointer,
                                 MeshDependentDataType& meshDependentData );
 
       template< typename Matrix >
@@ -55,28 +55,28 @@ class HeatEquationBenchmarkProblem:
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
                          const MeshPointer& meshPointer,
-                         DofVectorType& dofs,
+                         DofVectorPointer& dofsPointer,
                          MeshDependentDataType& meshDependentData );
 
       IndexType getDofs( const MeshPointer& meshPointer ) const;
 
       void bindDofs( const MeshPointer& meshPointer,
-                     DofVectorType& dofs );
+                     DofVectorPointer& dofsPointer );
 
       void getExplicitRHS( const RealType& time,
                            const RealType& tau,
                            const MeshPointer& meshPointer,
-                           DofVectorType& _u,
-                           DofVectorType& _fu,
+                           DofVectorPointer& _uPointer,
+                           DofVectorPointer& _fuPointer,
                            MeshDependentDataType& meshDependentData );
 
-      template< typename Matrix >
+      template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
-                                 const MeshType& mesh,
-                                 DofVectorType& dofs,
-                                 Matrix& matrix,
-                                 DofVectorType& rightHandSide,
+                                 const MeshPointer& mesh,
+                                 DofVectorPointer& dofs,
+                                 MatrixPointer& matrix,
+                                 DofVectorPointer& rightHandSide,
                                  MeshDependentDataType& meshDependentData );
       
       ~HeatEquationBenchmarkProblem();

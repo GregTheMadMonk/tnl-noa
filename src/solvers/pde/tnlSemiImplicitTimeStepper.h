@@ -33,12 +33,13 @@ class tnlSemiImplicitTimeStepper
    typedef typename Problem::IndexType IndexType;
    typedef typename Problem::MeshType MeshType;
    typedef typename Problem::MeshPointer MeshPointer;
-   typedef typename ProblemType::DofVectorType DofVectorType;
+   typedef typename ProblemType::DofVectorType DofVectorType;   
    typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
    typedef LinearSystemSolver LinearSystemSolverType;
    typedef typename LinearSystemSolverType::PreconditionerType PreconditionerType;
    typedef typename ProblemType::MatrixType MatrixType;
    typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
+   typedef tnlSharedPointer< DofVectorType, DeviceType > DofVectorPointer;
 
    tnlSemiImplicitTimeStepper();
 
@@ -65,7 +66,7 @@ class tnlSemiImplicitTimeStepper
    bool solve( const RealType& time,
                const RealType& stopTime,
                const MeshPointer& meshPointer,
-               DofVectorType& dofVector,
+               DofVectorPointer& dofVectorPointer,
                MeshDependentDataType& meshDependentData );
    
    bool writeEpilog( tnlLogger& logger );
@@ -76,7 +77,7 @@ class tnlSemiImplicitTimeStepper
 
    MatrixPointer matrixPointer;
 
-   DofVectorType rightHandSide;
+   DofVectorPointer rightHandSidePointer;
 
    LinearSystemSolver* linearSystemSolver;
 

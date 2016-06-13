@@ -115,7 +115,7 @@ void
 tnlPDEProblem< Mesh, Real, Device, Index >::
 setExplicitBoundaryConditions( const RealType& time,
                                const MeshPointer& meshPointer,
-                               DofVectorType& dofs,
+                               DofVectorPointer& dofs,
                                MeshDependentDataType& meshDependentData )
 {   
 }

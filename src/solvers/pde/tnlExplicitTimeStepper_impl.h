@@ -113,7 +113,7 @@ tnlExplicitTimeStepper< Problem, OdeSolver >::
 solve( const RealType& time,
        const RealType& stopTime,
        const MeshPointer& meshPointer,
-       DofVectorType& dofVector,
+       DofVectorPointer& dofVector,
        MeshDependentDataType& meshDependentData )
 {
    tnlAssert( this->odeSolver, );
@@ -126,7 +126,7 @@ solve( const RealType& time,
       this->odeSolver->setMaxTau( ( stopTime - time ) / ( typename OdeSolver< Problem >::RealType ) this->odeSolver->getMinIterations() );
    this->meshPointer = meshPointer;
    this->meshDependentData = &meshDependentData;
-   if( ! this->odeSolver->solve( dofVector ) )
+   if( ! this->odeSolver->solve( *dofVector ) )
       return false;
    this->problem->setExplicitBoundaryConditions( stopTime, this->meshPointer, dofVector, *( this->meshDependentData ) );
    mainTimer.stop();
@@ -140,8 +140,8 @@ void
 tnlExplicitTimeStepper< Problem, OdeSolver >::
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
-                DofVectorType& u,
-                DofVectorType& fu )
+                DofVectorPointer& u,
+                DofVectorPointer& fu )
 {
    this->preIterateTimer.start();
    if( ! this->problem->preIterate( time,

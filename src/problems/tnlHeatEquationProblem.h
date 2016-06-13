@@ -53,7 +53,6 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       typedef tnlSharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef tnlSharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-      typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
@@ -78,7 +77,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
                                 DofVectorType& dofs,
                                 MeshDependentDataType& meshDependentData );
 
-      template< typename Matrix >
+      template< typename MatrixPointer >
       bool setupLinearSystem( const MeshPointer& meshPointer,
                               MatrixPointer& matrixPointer );
 
@@ -100,7 +99,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
 			                  DofVectorType& _fu,
                            MeshDependentDataType& meshDependentData );
 
-      template< typename Matrix >
+      template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
                                  const MeshPointer& meshPointer,

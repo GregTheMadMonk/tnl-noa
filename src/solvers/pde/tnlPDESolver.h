@@ -38,6 +38,7 @@ class tnlPDESolver : public tnlObject
       typedef tnlSharedPointer< MeshType, DeviceType > MeshPointer;
       typedef typename ProblemType::DofVectorType DofVectorType;
       typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
+      typedef tnlSharedPointer< DofVectorType, DeviceType > DofVectorPointer;
 
       tnlPDESolver();
 
@@ -86,7 +87,7 @@ class tnlPDESolver : public tnlObject
 
       MeshPointer meshPointer;
 
-      DofVectorType dofs;
+      DofVectorPointer dofsPointer;
 
       MeshDependentDataType meshDependentData;
 
