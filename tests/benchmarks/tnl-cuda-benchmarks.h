@@ -18,6 +18,8 @@
 #ifndef TNLCUDABENCHMARKS_H_
 #define TNLCUDBENCHMARKS_H_
 
+#include <core/tnlSystemInfo.h>
+#include <core/tnlCudaDeviceInfo.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 
@@ -134,9 +136,36 @@ main( int argc, char* argv[] )
 
     // init benchmark and common metadata
     Benchmark benchmark( loops, verbose );
-    // TODO: add hostname, CPU info, GPU info, date, ...
+
+    // prepare global metadata
+    tnlSystemInfo systemInfo;
+    const int cpu_id = 0;
+    tnlCacheSizes cacheSizes = systemInfo.getCPUCacheSizes( cpu_id );
+    tnlString cacheInfo = tnlString( cacheSizes.L1data ) + ", "
+                        + tnlString( cacheSizes.L1instruction ) + ", "
+                        + tnlString( cacheSizes.L2 ) + ", "
+                        + tnlString( cacheSizes.L3 );
+    const int activeGPU = tnlCudaDeviceInfo::getActiveDevice();
+    const tnlString deviceArch = tnlString( tnlCudaDeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
+                                 tnlString( tnlCudaDeviceInfo::getArchitectureMinor( activeGPU ) );
     Benchmark::MetadataMap metadata {
-//        {"key", value},
+        { "host name", systemInfo.getHostname() },
+        { "architecture", systemInfo.getArchitecture() },
+        { "system", systemInfo.getSystemName() },
+        { "system release", systemInfo.getSystemRelease() },
+        { "start time", systemInfo.getCurrentTime() },
+        { "CPU model name", systemInfo.getCPUModelName( cpu_id ) },
+        { "CPU cores", systemInfo.getNumberOfCores( cpu_id ) },
+        { "CPU threads per core", systemInfo.getNumberOfThreads( cpu_id ) / systemInfo.getNumberOfCores( cpu_id ) },
+        { "CPU max frequency (MHz)", systemInfo.getCPUMaxFrequency( cpu_id ) / 1e3 },
+        { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
+        { "GPU name", tnlCudaDeviceInfo::getDeviceName( activeGPU ) },
+        { "GPU architecture", deviceArch },
+        { "GPU CUDA cores", tnlCudaDeviceInfo::getCudaCores( activeGPU ) },
+        { "GPU clock rate (MHz)", (double) tnlCudaDeviceInfo::getClockRate( activeGPU ) / 1e3 },
+        { "GPU global memory (GB)", (double) tnlCudaDeviceInfo::getGlobalMemory( activeGPU ) / 1e3 },
+        { "GPU memory clock rate (MHz)", (double) tnlCudaDeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 },
+        { "GPU memory ECC enabled", tnlCudaDeviceInfo::getECCEnabled( activeGPU ) },
     };
 
     if( precision == "all" || precision == "float" )
