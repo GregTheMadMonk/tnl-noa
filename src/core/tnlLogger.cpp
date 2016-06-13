@@ -73,12 +73,16 @@ bool tnlLogger :: writeSystemInformation( const tnlParameterContainer& parameter
    writeParameter< tnlString >( "Cache (L1d, L1i, L2, L3):", cacheInfo, 1 );
    if( parameters.getParameter< tnlString >( "device" ) == "cuda" )
    {      
-      int devices = tnlCudaDeviceInfo::getNumberOfDevices();
       writeParameter< tnlString >( "CUDA GPU info", tnlString("") );   
-      writeParameter< int >( "Number of devices", devices,1 );
-      for( int i = 0; i < devices; i++ )
-      {
-        writeParameter< int >( "Device no.", i, 1 );       
+      // TODO: Printing all devices does not make sense, but in the future TNL
+      //       might use more than one device for computations. Printing only
+      //       the active device for now...
+//      int devices = tnlCudaDeviceInfo::getNumberOfDevices();
+//      writeParameter< int >( "Number of devices", devices, 1 );
+//      for( int i = 0; i < devices; i++ )
+//      {
+//        writeParameter< int >( "Device no.", i, 1 );
+        int i = tnlCudaDeviceInfo::getActiveDevice();
         writeParameter< tnlString >( "Name", tnlCudaDeviceInfo::getDeviceName( i ), 2 );
         tnlString deviceArch = tnlString( tnlCudaDeviceInfo::getArchitectureMajor( i ) ) + "." +
                                 tnlString( tnlCudaDeviceInfo::getArchitectureMinor( i ) );
@@ -91,7 +95,7 @@ bool tnlLogger :: writeSystemInformation( const tnlParameterContainer& parameter
         double memoryClockRate = ( double ) tnlCudaDeviceInfo::getMemoryClockRate( i ) / 1.0e3;
         writeParameter< double >( "Memory clock rate (in Mhz)", memoryClockRate, 2 );
         writeParameter< bool >( "ECC enabled", tnlCudaDeviceInfo::getECCEnabled( i ), 2 );         
-      }
+//      }
    }
    writeParameter< tnlString >( "System:", systemInfo.getSystemName() );
    writeParameter< tnlString >( "Release:", systemInfo.getSystemRelease() );
