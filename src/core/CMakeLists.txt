@@ -27,6 +27,7 @@ set (headers tnlAssert.h
              tnlStaticFor.h
              tnlStatistics.h 
              tnlString.h 
+             tnlSystemInfo.h
              tnlReal.h
              tnlTimer.h
              tnlTimerCPU.h  
@@ -48,6 +49,7 @@ set( common_SOURCES
      ${CURRENT_DIR}/tnlObject.cpp
      ${CURRENT_DIR}/tnlStatistics.cpp
      ${CURRENT_DIR}/tnlString.cpp 
+     ${CURRENT_DIR}/tnlSystemInfo.cpp 
      ${CURRENT_DIR}/tnlTimer.cpp 
      ${CURRENT_DIR}/tnlTimerCPU.cpp      
      ${CURRENT_DIR}/mfilename.cpp 

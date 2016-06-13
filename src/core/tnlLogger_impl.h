@@ -19,6 +19,7 @@
 #define TNLLOGGER_IMPL_H_
 
 #include <sstream>
+#include <iomanip>
 
 template< typename T >
 void tnlLogger::writeParameter( const tnlString& label,
