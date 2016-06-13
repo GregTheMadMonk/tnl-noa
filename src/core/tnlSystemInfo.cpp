@@ -93,9 +93,13 @@ tnlSystemInfo::getCurrentTime( const char* format ) const
 {
    const std::time_t time_since_epoch = std::time( nullptr );
    std::tm* localtime = std::localtime( &time_since_epoch );
-   std::stringstream ss;
-   ss << std::put_time( localtime, format );
-   return tnlString( ss.str().c_str() );
+   // TODO: use std::put_time in the future (available since GCC 5)
+//   std::stringstream ss;
+//   ss << std::put_time( localtime, format );
+//   return tnlString( ss.str().c_str() );
+   char buffer[1024];
+   std::strftime( buffer, 1024, format, localtime );
+   return tnlString( buffer );
 }
 
 int
