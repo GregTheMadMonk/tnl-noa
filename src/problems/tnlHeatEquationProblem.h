@@ -74,7 +74,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
 
       bool setInitialCondition( const tnlParameterContainer& parameters,
                                 const MeshPointer& meshPointer,
-                                DofVectorType& dofs,
+                                DofVectorPointer& dofs,
                                 MeshDependentDataType& meshDependentData );
 
       template< typename MatrixPointer >
@@ -84,19 +84,19 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
                          const MeshPointer& meshPointer,
-                         DofVectorType& dofs,
+                         DofVectorPointer& dofs,
                          MeshDependentDataType& meshDependentData );
 
       IndexType getDofs( const MeshPointer& meshPointer ) const;
 
       void bindDofs( const MeshPointer& meshPointer,
-                     const DofVectorType& dofs );
+                     const DofVectorPointer& dofs );
 
       void getExplicitRHS( const RealType& time,
                            const RealType& tau,
                            const MeshPointer& meshPointer,
-                           DofVectorType& _u,
-			                  DofVectorType& _fu,
+                           DofVectorPointer& _u,
+		           DofVectorPointer& _fu,
                            MeshDependentDataType& meshDependentData );
 
       template< typename MatrixPointer >

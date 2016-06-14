@@ -67,7 +67,7 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
       bool preIterate( const RealType& time,
                        const RealType& tau,
                        const MeshPointer& meshPointer,
-                       DofVectorType& dofs,
+                       DofVectorPointer& dofs,
                        MeshDependentDataType& meshDependentData );
       
       void setExplicitBoundaryConditions( const RealType& time,
@@ -78,7 +78,7 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
       bool postIterate( const RealType& time,
                         const RealType& tau,
                         const MeshPointer& meshPointer,
-                        DofVectorType& dofs,
+                        DofVectorPointer& dofs,
                         MeshDependentDataType& meshDependentData );
 
       tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();

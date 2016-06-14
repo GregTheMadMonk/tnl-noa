@@ -76,6 +76,7 @@ class tnlOperatorFunction< Operator, MeshFunction, void, true >
       typedef typename OperatorType::IndexType IndexType;
       typedef typename OperatorType::ExactOperatorType ExactOperatorType;
       typedef tnlMeshFunction< MeshType, OperatorType::getPreimageEntitiesDimensions() > PreimageFunctionType;
+      typedef tnlSharedPointer< MeshType, DeviceType > MeshPointer;
       
       static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
       
@@ -91,6 +92,13 @@ class tnlOperatorFunction< Operator, MeshFunction, void, true >
          tnlAssert( this->preimageFunction, std::cerr << "The preimage function was not set." << std::endl );
          return this->preimageFunction->getMesh(); 
       };
+      
+      const MeshPointer& getMeshPointer() const
+      { 
+         tnlAssert( this->preimageFunction, std::cerr << "The preimage function was not set." << std::endl );
+         return this->preimageFunction->getMeshPointer(); 
+      };
+
       
       void setPreimageFunction( const FunctionType& preimageFunction ) { this->preimageFunction = &preimageFunction; }
       
@@ -147,11 +155,12 @@ class tnlOperatorFunction< Operator, PreimageFunction, void, false >
       typedef tnlMeshFunction< MeshType, Operator::getImageEntitiesDimensions() > ImageFunctionType;
       typedef tnlOperatorFunction< Operator, PreimageFunction, void, true > OperatorFunction;
       typedef typename OperatorType::ExactOperatorType ExactOperatorType;
+      typedef tnlSharedPointer< MeshType, DeviceType > MeshPointer;
       
       static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
       
       tnlOperatorFunction( OperatorType& operator_,
-                           const MeshType& mesh )
+                           const MeshPointer& mesh )
       :  operator_( operator_ ), imageFunction( mesh )
       {};
       
@@ -161,6 +170,8 @@ class tnlOperatorFunction< Operator, PreimageFunction, void, false >
       {};
       
       const MeshType& getMesh() const { return this->imageFunction.getMesh(); };
+      
+      const MeshPointer& getMeshPointer() const { return this->imageFunction.getMeshPointer(); };
       
       ImageFunctionType& getImageFunction() { return this->imageFunction; };
       
@@ -272,11 +283,13 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
                            const PreimageFunctionType& preimageFunction )
       :  operator_( operator_ ),
          boundaryConditions( boundaryConditions ),
-         imageFunction( preimageFunction.getMesh() ),
+         imageFunction( preimageFunction.getMeshPointer() ),
          preimageFunction( &preimageFunction )
       {};
       
       const MeshType& getMesh() const { return imageFunction.getMesh(); };
+      
+      const MeshPointer& getMeshPointer() const { return imageFunction.getMeshPointer(); };
       
       void setPreimageFunction( const PreimageFunction& preimageFunction )
       { 

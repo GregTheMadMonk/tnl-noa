@@ -53,7 +53,7 @@ class tnlPDEOperatorEocTest
    
       void setupMesh( const IndexType meshSize )
       {
-         tnlPDEOperatorEocTestMeshSetter< MeshType >::setup( *meshPointer, meshSize );
+         tnlPDEOperatorEocTestMeshSetter< MeshType >::setup( *mesh, meshSize );
       }
       
       void setupFunction()
@@ -75,7 +75,7 @@ class tnlPDEOperatorEocTest
          ::getError( exactOperator,
                      approximateOperator,
                      function,
-                     meshPointer,
+                     mesh,
                      errors[ 1 ], //l1Error,
                      errors[ 2 ], //l2Error,
                      errors[ 0 ], //maxError,
@@ -123,7 +123,7 @@ class tnlPDEOperatorEocTest
       
    protected:
       
-      MeshPointer meshPointer;
+      MeshPointer mesh;
       
       TestFunction function;               
 };

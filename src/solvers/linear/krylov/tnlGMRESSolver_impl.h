@@ -23,7 +23,6 @@ template< typename Matrix,
 tnlGMRESSolver< Matrix, Preconditioner > :: tnlGMRESSolver()
 : size( 0 ),
   restarting( 10 ),
-  matrix( 0 ),
   preconditioner( 0 )
 {
 };
@@ -73,9 +72,9 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: setRestarting( IndexType rest )
 
 template< typename Matrix,
           typename Preconditioner >
-void tnlGMRESSolver< Matrix, Preconditioner > :: setMatrix( const MatrixType& matrix )
+void tnlGMRESSolver< Matrix, Preconditioner > :: setMatrix( MatrixPointer& matrix )
 {
-   this->matrix = &matrix;
+   this->matrix = matrix;
 }
 
 template< typename Matrix,
@@ -87,10 +86,13 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: setPreconditioner( const Precon
 
 template< typename Matrix,
           typename Preconditioner >
- template< typename Vector, typename ResidueGetter >
-bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
+ template< typename VectorPointer, typename ResidueGetter >
+bool tnlGMRESSolver< Matrix, Preconditioner >::solve( const VectorPointer& bPtr, VectorPointer& xPtr )
 {
-   tnlAssert( matrix, cerr << "No matrix was set in tnlGMRESSolver. Call setMatrix() before solve()." << endl );
+   typedef typename VectorPointer::ObjectType VectorType;
+   const VectorType& b = *bPtr;
+   VectorType& x = *xPtr;
+
    if( restarting <= 0 )
    {
       cerr << "I have wrong value for the restarting of the GMRES solver. It is set to " << restarting

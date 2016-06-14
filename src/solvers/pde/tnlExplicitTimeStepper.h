@@ -81,7 +81,7 @@ class tnlExplicitTimeStepper
 
    Problem* problem;
 
-   MeshPointer meshPointer;
+   MeshPointer mesh;
 
    RealType timeStep;
 

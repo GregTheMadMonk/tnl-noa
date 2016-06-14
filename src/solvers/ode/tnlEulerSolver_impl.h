@@ -81,12 +81,12 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorPointer& u )
     * First setup the supporting meshes k1...k5 and k_tmp.
     */
    //timer.start();
-   if( ! k1. setLike( u ) )
+   if( ! k1->setLike( *u ) )
    {
       cerr << "I do not have enough memory to allocate a supporting grid for the Euler explicit solver." << endl;
       return false;
    }
-   k1. setValue( 0.0 );
+   k1->setValue( 0.0 );
 
 
    /****
@@ -117,7 +117,7 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorPointer& u )
       RealType maxResidue( 0.0 );
       if( this->cflCondition != 0.0 )
       {
-         maxResidue = k1. absMax();
+         maxResidue = k1->absMax();
          if( currentTau * maxResidue > this->cflCondition )
          {
             currentTau *= 0.9;
@@ -175,9 +175,9 @@ void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
                                                        RealType& currentResidue )
 {
    RealType localResidue = RealType( 0.0 );
-   const IndexType size = k1. getSize();
-   RealType* _u = u. getData();
-   RealType* _k1 = k1. getData();
+   const IndexType size = k1->getSize();
+   RealType* _u = u->getData();
+   RealType* _k1 = k1->getData();
 
    if( std::is_same< DeviceType, tnlHost >::value )
    {

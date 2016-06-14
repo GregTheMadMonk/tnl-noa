@@ -25,6 +25,7 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <core/tnlTimerRT.h>
+#include <core/tnlSharedPointer.h>
 #include <matrices/tnlDenseMatrix.h>
 #include <matrices/tnlTridiagonalMatrix.h>
 #include <matrices/tnlMultidiagonalMatrix.h>
@@ -77,20 +78,22 @@ void configSetup( tnlConfigDescription& config )
 
 template< typename Solver >
 bool benchmarkSolver( const tnlParameterContainer& parameters,
-                      const typename Solver::MatrixType& matrix)
+                      tnlSharedPointer< typename Solver::MatrixType >& matrix)
 {
    typedef typename Solver::MatrixType MatrixType;
    typedef typename MatrixType::RealType RealType;
    typedef typename MatrixType::DeviceType DeviceType;
    typedef typename MatrixType::IndexType IndexType;
    typedef tnlVector< RealType, DeviceType, IndexType > VectorType;
+   typedef tnlSharedPointer< VectorType > VectorPointer;
+   typedef tnlSharedPointer< MatrixType > MatrixPointer;
 
-   VectorType x, y, b;
-   x.setSize( matrix.getColumns() );
-   x.setValue( 1.0 / ( RealType ) matrix.getColumns() );
-   y.setSize( matrix.getColumns() );
-   b.setSize( matrix.getRows() );
-   matrix.vectorProduct( x, b );
+   VectorPointer x, y, b;
+   x->setSize( matrix->getColumns() );
+   x->setValue( 1.0 / ( RealType ) matrix->getColumns() );
+   y->setSize( matrix->getColumns() );
+   b->setSize( matrix->getRows() );
+   matrix->vectorProduct( *x, *b );
 
    Solver solver;
    tnlIterativeSolverMonitor< RealType, IndexType > monitor;
@@ -98,7 +101,7 @@ bool benchmarkSolver( const tnlParameterContainer& parameters,
    solver.setSolverMonitor( monitor );
    solver.setMatrix( matrix );
    solver.setConvergenceResidue( 1.0e-6 );
-   solver.template solve< VectorType, tnlLinearResidueGetter< MatrixType, VectorType > >( b, y );
+   solver.template solve< VectorPointer, tnlLinearResidueGetter< MatrixPointer, VectorPointer > >( b, y );
    cout << endl;
    return true;
 }
@@ -144,9 +147,10 @@ template< typename Matrix >
 bool resolveLinearSolver( const tnlParameterContainer& parameters )
 {
    const tnlString& solver = parameters.getParameter< tnlString >( "solver" );
+   typedef tnlSharedPointer< Matrix > MatrixPointer;
 
-   Matrix matrix;
-   if( ! readMatrix( parameters, matrix ) )
+   MatrixPointer matrix;
+   if( ! readMatrix( parameters, *matrix ) )
       return false;
 
    if( solver == "gmres" )

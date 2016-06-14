@@ -71,9 +71,9 @@ class tnlOperatorCompositionTest
    
    void test()
    {      
-      MeshType mesh;
-      mesh.setDimensions( CoordinatesType( 25 ) );
-      mesh.setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
+      tnlSharedPointer< MeshType > mesh;
+      mesh->setDimensions( CoordinatesType( 25 ) );
+      mesh->setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
       TestFunctionType testFunction;
       testFunction.setAmplitude( 1.0 );
       testFunction.setSigma( 1.0 );
@@ -103,9 +103,9 @@ class tnlOperatorCompositionTest
       f1.write( "operatorComposition", "gnuplot" );      */
       
       //CPPUNIT_ASSERT( operatorFunction2 == operatorFunction3 );
-      for( IndexType i = 0; i < mesh.template getEntitiesCount< typename MeshType::Cell >(); i++ )
+      for( IndexType i = 0; i < mesh->template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
-         auto entity = mesh.template getEntity< typename MeshType::Cell >( i );
+         auto entity = mesh->template getEntity< typename MeshType::Cell >( i );
          entity.refresh();
          //cerr << entity.getIndex() << " " << operatorFunction2( entity ) << " " << operatorFunction3( entity ) << endl;
          CPPUNIT_ASSERT( operatorFunction2( entity ) == operatorFunction3( entity ) );

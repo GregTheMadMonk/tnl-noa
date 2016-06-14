@@ -26,6 +26,7 @@
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlIterativeSolver.h>
 #include <solvers/linear/tnlLinearResidueGetter.h>
+#include <core/tnlSharedPointer.h>
 
 template< typename Matrix,
           typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
@@ -42,6 +43,8 @@ class tnlGMRESSolver : public tnlObject,
    typedef typename Matrix :: DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
+   typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
+   // TODO: make this: typedef tnlSharedPointer< const MatrixType, DeviceType > ConstMatrixPointer;
 
    tnlGMRESSolver();
 
@@ -55,18 +58,18 @@ class tnlGMRESSolver : public tnlObject,
 
    void setRestarting( IndexType rest );
 
-   void setMatrix( const MatrixType& matrix );
+   void setMatrix( MatrixPointer& matrix );
 
    void setPreconditioner( const Preconditioner& preconditioner );
 
 #ifdef HAVE_NOT_CXX11
-   template< typename Vector,
+   template< typename VectorPointer,
              typename ResidueGetter >
    bool solve( const Vector& b, Vector& x );
 #else
-   template< typename Vector,
-             typename ResidueGetter = tnlLinearResidueGetter< Matrix, Vector >  >
-   bool solve( const Vector& b, Vector& x );
+   template< typename VectorPointer,
+             typename ResidueGetter = tnlLinearResidueGetter< Matrix, VectorPointer >  >
+   bool solve( const VectorPointer& b, VectorPointer& x );
 #endif
 
    ~tnlGMRESSolver();
@@ -99,7 +102,7 @@ class tnlGMRESSolver : public tnlObject,
 
    IndexType size, restarting;
 
-   const MatrixType* matrix;
+   MatrixPointer matrix;
    const PreconditionerType* preconditioner;
 };
 

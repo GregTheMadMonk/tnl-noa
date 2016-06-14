@@ -74,9 +74,9 @@ const typename tnlSORSolver< Matrix, Preconditioner > :: RealType& tnlSORSolver<
 
 template< typename Matrix,
           typename Preconditioner >
-void tnlSORSolver< Matrix, Preconditioner > :: setMatrix( const MatrixType& matrix )
+void tnlSORSolver< Matrix, Preconditioner > :: setMatrix( MatrixPointer& matrix )
 {
-   this->matrix = &matrix;
+   this->matrix = matrix;
 }
 
 template< typename Matrix,
@@ -88,28 +88,28 @@ void tnlSORSolver< Matrix, Preconditioner > :: setPreconditioner( const Precondi
 
 
 template< typename Matrix, typename Preconditioner >
-   template< typename Vector, typename ResidueGetter >
-bool tnlSORSolver< Matrix, Preconditioner > :: solve( const Vector& b,
-                                                      Vector& x )
+   template< typename VectorPointer, typename ResidueGetter >
+bool tnlSORSolver< Matrix, Preconditioner > :: solve( const VectorPointer& b,
+                                                      VectorPointer& x )
 {
-   const IndexType size = matrix -> getRows();
+   const IndexType size = matrix -> getRows();   
 
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
 
-   RealType bNorm = b. lpNorm( ( RealType ) 2.0 );
+   RealType bNorm = b->lpNorm( ( RealType ) 2.0 );
 
    while( this->nextIteration() )
    {
       for( IndexType row = 0; row < size; row ++ )
-         matrix->performSORIteration( b,
+         matrix->performSORIteration( *b,
                                       row,
-                                      x,
+                                      *x,
                                       this->getOmega() );
-      this->setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
+      this->setResidue( ResidueGetter::getResidue( matrix, x, b, bNorm ) );
       this->refreshSolverMonitor();
    }
-   this->setResidue( ResidueGetter :: getResidue( *matrix, x, b, bNorm ) );
+   this->setResidue( ResidueGetter::getResidue( matrix, x, b, bNorm ) );
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
 };

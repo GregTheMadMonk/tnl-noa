@@ -20,6 +20,7 @@
 
 #include <math.h>
 #include <core/tnlObject.h>
+#include <core/tnlSharedPointer.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlIterativeSolver.h>
 #include <solvers/linear/tnlLinearResidueGetter.h>
@@ -40,6 +41,8 @@ class tnlSORSolver : public tnlObject,
    typedef typename Matrix :: DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
+   typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
+   // TODO: make this: typedef tnlSharedPointer< const MatrixType, DeviceType > ConstMatrixPointer; 
 
 
    tnlSORSolver();
@@ -56,18 +59,18 @@ class tnlSORSolver : public tnlObject,
 
    const RealType& getOmega() const;
 
-   void setMatrix( const MatrixType& matrix );
+   void setMatrix( MatrixPointer& matrix );
 
    void setPreconditioner( const Preconditioner& preconditioner );
 
 #ifdef HAVE_NOT_CXX11
-   template< typename Vector,
+   template< typename VectorPointer,
              typename ResidueGetter >
-   bool solve( const Vector& b, Vector& x );
+   bool solve( const VectorPointer& b, VectorPointer& x );
 #else
-   template< typename Vector,
-             typename ResidueGetter = tnlLinearResidueGetter< Matrix, Vector > >
-   bool solve( const Vector& b, Vector& x );
+   template< typename VectorPointer,
+             typename ResidueGetter = tnlLinearResidueGetter< MatrixPointer, VectorPointer > >
+   bool solve( const VectorPointer& b, VectorPointer& x );
 #endif   
 
    ~tnlSORSolver();
@@ -76,7 +79,7 @@ class tnlSORSolver : public tnlObject,
 
    RealType omega;
 
-   const MatrixType* matrix;
+   MatrixPointer matrix;
 
    const PreconditionerType* preconditioner;
 

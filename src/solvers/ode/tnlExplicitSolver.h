@@ -27,6 +27,7 @@
 #include <solvers/tnlIterativeSolver.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
+#include <core/tnlSharedPointer.h>
 
 template< class Problem >
 class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,

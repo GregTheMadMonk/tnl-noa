@@ -160,6 +160,24 @@ bind( const MeshPointer& meshPointer,
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
+   template< typename Vector >
+void
+tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
+bind( const MeshPointer& meshPointer,
+      const tnlSharedPointer< Vector >& data,
+      const IndexType& offset )
+{
+   this->meshPointer = meshPointer;
+   this->data.bind( *data, offset, meshPointer->template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimensions > >() );
+   tnlAssert( this->data.getSize() == this->meshPointer.getData().template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimensions > >(), 
+      std::cerr << "this->data.getSize() = " << this->data.getSize() << std::endl
+                << "this->mesh->template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimensions > >() = " << this->meshPointer->template getEntitiesCount< typename MeshType::template MeshEntity< MeshEntityDimensions > >() );   
+}
+
+
+template< typename Mesh,
+          int MeshEntityDimensions,
+          typename Real >
 void
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 setMesh( const MeshPointer& meshPointer )

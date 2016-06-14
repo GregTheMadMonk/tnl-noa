@@ -126,7 +126,7 @@ void tnlMersonSolver< Problem > :: setAdaptivity( const RealType& a )
 };
 
 template< typename Problem >
-bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
+bool tnlMersonSolver< Problem > :: solve( DofVectorPointer& u )
 {
    if( ! this->problem )
    {
@@ -136,22 +136,22 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
    /****
     * First setup the supporting meshes k1...k5 and kAux.
     */
-   if( ! k1. setLike( u ) ||
-       ! k2. setLike( u ) ||
-       ! k3. setLike( u ) ||
-       ! k4. setLike( u ) ||
-       ! k5. setLike( u ) ||
-       ! kAux. setLike( u ) )
+   if( ! k1->setLike( *u ) ||
+       ! k2->setLike( *u ) ||
+       ! k3->setLike( *u ) ||
+       ! k4->setLike( *u ) ||
+       ! k5->setLike( *u ) ||
+       ! kAux->setLike( *u ) )
    {
       cerr << "I do not have enough memory to allocate supporting grids for the Merson explicit solver." << endl;
       return false;
    }
-   k1. setValue( 0.0 );
-   k2. setValue( 0.0 );
-   k3. setValue( 0.0 );
-   k4. setValue( 0.0 );
-   k5. setValue( 0.0 );
-   kAux. setValue( 0.0 );
+   k1->setValue( 0.0 );
+   k2->setValue( 0.0 );
+   k3->setValue( 0.0 );
+   k4->setValue( 0.0 );
+   k5->setValue( 0.0 );
+   kAux->setValue( 0.0 );
 
 
    /****
@@ -234,37 +234,37 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
 };
 
 template< typename Problem >
-void tnlMersonSolver< Problem > :: computeKFunctions( DofVectorType& u,
-                                                      const RealType& time,
-                                                      RealType tau )
+void tnlMersonSolver< Problem >::computeKFunctions( DofVectorPointer& u,
+                                                    const RealType& time,
+                                                    RealType tau )
 {
-   IndexType size = u. getSize();
+   IndexType size = u->getSize();
 
-   RealType* _k1 = k1. getData();
-   RealType* _k2 = k2. getData();
-   RealType* _k3 = k3. getData();
-   RealType* _k4 = k4. getData();
-   RealType* _k5 = k5. getData();
-   RealType* _kAux = kAux. getData();
-   RealType* _u = u. getData();
+   RealType* _k1 = k1->getData();
+   RealType* _k2 = k2->getData();
+   RealType* _k3 = k3->getData();
+   RealType* _k4 = k4->getData();
+   RealType* _k5 = k5->getData();
+   RealType* _kAux = kAux->getData();
+   RealType* _u = u->getData();
 
    /****
     * Compute data transfers statistics
     */
 #ifdef HAVE_NOT_CXX11
-   k1. template touch< IndexType >( 4 );
-   k2. template touch< IndexType >( 1 );
-   k3. template touch< IndexType >( 2 );
-   k4. template touch< IndexType >( 1 );
-   kAux. template touch< IndexType >( 4 );
-   u. template touch< IndexType >( 4 );
+   k1->template touch< IndexType >( 4 );
+   k2->template touch< IndexType >( 1 );
+   k3->template touch< IndexType >( 2 );
+   k4->template touch< IndexType >( 1 );
+   kAux->template touch< IndexType >( 4 );
+   u->template touch< IndexType >( 4 );
 #else
-   k1. touch( 4 );
-   k2. touch( 1 );
-   k3. touch( 2 );
-   k4. touch( 1 );
-   kAux. touch( 4 );
-   u. touch( 4 );
+   k1->touch( 4 );
+   k2->touch( 1 );
+   k3->touch( 2 );
+   k4->touch( 1 );
+   kAux->touch( 4 );
+   u->touch( 4 );
 #endif
 
    RealType tau_3 = tau / 3.0;
@@ -359,30 +359,30 @@ void tnlMersonSolver< Problem > :: computeKFunctions( DofVectorType& u,
 template< typename Problem >
 typename Problem :: RealType tnlMersonSolver< Problem > :: computeError( const RealType tau )
 {
-   const IndexType size = k1. getSize();
-   const RealType* _k1 = k1. getData();
-   const RealType* _k3 = k3. getData();
-   const RealType* _k4 = k4. getData();
-   const RealType* _k5 = k5. getData();
-   RealType* _kAux = kAux. getData();
+   const IndexType size = k1->getSize();
+   const RealType* _k1 = k1->getData();
+   const RealType* _k3 = k3->getData();
+   const RealType* _k4 = k4->getData();
+   const RealType* _k5 = k5->getData();
+   RealType* _kAux = kAux->getData();
 
    /****
     * Compute data transfers statistics
     */
 #ifdef HAVE_NOT_CXX11
-   k1. template touch< IndexType >();
-   k3. template touch< IndexType >();
-   k4. template touch< IndexType >();
-   k5. template touch< IndexType >();
+   k1->template touch< IndexType >();
+   k3->template touch< IndexType >();
+   k4->template touch< IndexType >();
+   k5->template touch< IndexType >();
 #else
-   k1. touch();
-   k3. touch();
-   k4. touch();
-   k5. touch();
+   k1->touch();
+   k3->touch();
+   k4->touch();
+   k5->touch();
 #endif
 
    RealType eps( 0.0 ), maxEps( 0.0 );
-   if( DeviceType :: getDevice() == tnlHostDevice )
+   if( std::is_same< DeviceType, tnlHost >::value )
    {
       // TODO: implement OpenMP support
       for( IndexType i = 0; i < size; i ++  )
@@ -395,7 +395,7 @@ typename Problem :: RealType tnlMersonSolver< Problem > :: computeError( const R
          eps = Max( eps, err );
       }
    }
-   if( DeviceType :: getDevice() == tnlCudaDevice )
+   if( std::is_same< DeviceType, tnlCuda >::value )
    {
 #ifdef HAVE_CUDA
       dim3 cudaBlockSize( 512 );
@@ -425,33 +425,33 @@ typename Problem :: RealType tnlMersonSolver< Problem > :: computeError( const R
 }
 
 template< typename Problem >
-void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
-                                                        RealType tau,
-                                                        RealType& currentResidue )
+void tnlMersonSolver< Problem >::computeNewTimeLevel( DofVectorPointer& u,
+                                                      RealType tau,
+                                                      RealType& currentResidue )
 {
    RealType localResidue = RealType( 0.0 );
-   IndexType size = k1. getSize();
-   RealType* _u = u. getData();
-   RealType* _k1 = k1. getData();
-   RealType* _k4 = k4. getData();
-   RealType* _k5 = k5. getData();
+   IndexType size = k1->getSize();
+   RealType* _u = u->getData();
+   RealType* _k1 = k1->getData();
+   RealType* _k4 = k4->getData();
+   RealType* _k5 = k5->getData();
 
    /****
     * Compute data transfers statistics
     */
 #ifdef HAVE_NOT_CXX11
-   u. template touch< IndexType >();
-   k1. template touch< IndexType >();
-   k4. template touch< IndexType >();
-   k5. template touch< IndexType >();
+   u->template touch< IndexType >();
+   k1->template touch< IndexType >();
+   k4->template touch< IndexType >();
+   k5->template touch< IndexType >();
 #else
-   u. touch();
-   k1. touch();
-   k4. touch();
-   k5. touch();
+   u->touch();
+   k1->touch();
+   k4->touch();
+   k5->touch();
 #endif
 
-   if( DeviceType :: getDevice() == tnlHostDevice )
+   if( std::is_same< DeviceType, tnlHost >::value )
    {
 #ifdef HAVE_OPENMP
 #pragma omp parallel for reduction(+:localResidue) firstprivate( size, _u, _k1, _k4, _k5, tau ) if( tnlHost::isOMPEnabled() )
@@ -463,7 +463,7 @@ void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
          localResidue += fabs( ( RealType ) add );
       }
    }
-   if( DeviceType :: getDevice() == tnlCudaDevice )
+   if( std::is_same< DeviceType, tnlCuda >::value )
    {
 #ifdef HAVE_CUDA
       dim3 cudaBlockSize( 512 );
@@ -498,15 +498,15 @@ void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
 }
 
 template< typename Problem >
-void tnlMersonSolver< Problem > :: writeGrids( const DofVectorType& u )
+void tnlMersonSolver< Problem >::writeGrids( const DofVectorPointer& u )
 {
    cout << "Writing Merson solver grids ...";
-   u. save( "tnlMersonSolver-u.tnl" );
-   k1. save( "tnlMersonSolver-k1.tnl" );
-   k2. save( "tnlMersonSolver-k2.tnl" );
-   k3. save( "tnlMersonSolver-k3.tnl" );
-   k4. save( "tnlMersonSolver-k4.tnl" );
-   k5. save( "tnlMersonSolver-k5.tnl" );
+   u->save( "tnlMersonSolver-u.tnl" );
+   k1->save( "tnlMersonSolver-k1.tnl" );
+   k2->save( "tnlMersonSolver-k2.tnl" );
+   k3->save( "tnlMersonSolver-k3.tnl" );
+   k4->save( "tnlMersonSolver-k4.tnl" );
+   k5->save( "tnlMersonSolver-k5.tnl" );
    cout << " done. PRESS A KEY." << endl;
    getchar();
 }

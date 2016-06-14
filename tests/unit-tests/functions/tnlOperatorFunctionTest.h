@@ -96,11 +96,11 @@ class tnlOperatorFunctionTest
    
    void testWithBoundaryConditions()
    {
-      MeshType mesh;
+      tnlSharedPointer< MeshType > mesh;
       typedef tnlDirichletBoundaryConditions< MeshType > BoundaryConditionsType;
       typedef tnlOperatorFunction< Operator, MeshFunctionType, BoundaryConditionsType, EvaluateOnFly > OperatorFunctionType;
-      mesh.setDimensions( CoordinatesType( 25 ) );
-      mesh.setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
+      mesh->setDimensions( CoordinatesType( 25 ) );
+      mesh->setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
       TestFunctionType testFunction;
       testFunction.setAmplitude( 1.0 );
       testFunction.setSigma( 1.0 );      
@@ -111,9 +111,9 @@ class tnlOperatorFunctionTest
       OperatorFunctionType operatorFunction( operator_, boundaryConditions, f1 );
       operatorFunction.refresh();
       //cerr << f1.getData() << endl;
-      for( IndexType i = 0; i < mesh.template getEntitiesCount< typename MeshType::Cell >(); i++ )
+      for( IndexType i = 0; i < mesh->template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
-         auto entity = mesh.template getEntity< typename MeshType::Cell >( i );
+         auto entity = mesh->template getEntity< typename MeshType::Cell >( i );
          entity.refresh();
          if( entity.isBoundaryEntity() )
             CPPUNIT_ASSERT( boundaryConditions( f1, entity ) == operatorFunction( entity ) );

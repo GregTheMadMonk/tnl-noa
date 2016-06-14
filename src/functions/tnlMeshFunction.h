@@ -75,6 +75,12 @@ class tnlMeshFunction :
                  const Vector& data,
                  const IndexType& offset = 0 );
       
+      template< typename Vector >
+      void bind( const MeshPointer& meshPointer,
+                 const tnlSharedPointer< Vector >& dataPtr,
+                 const IndexType& offset = 0 );
+      
+      
       void setMesh( const MeshPointer& meshPointer );
       
       template< typename Device = tnlHost >

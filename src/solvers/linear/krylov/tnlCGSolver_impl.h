@@ -55,9 +55,9 @@ setup( const tnlParameterContainer& parameters,
 
 template< typename Matrix,
           typename Preconditioner >
-void tnlCGSolver< Matrix, Preconditioner > :: setMatrix( const MatrixType& matrix )
+void tnlCGSolver< Matrix, Preconditioner >::setMatrix( MatrixPointer& matrix )
 {
-   this->matrix = &matrix;
+   this->matrix = matrix;
 }
 
 template< typename Matrix,
@@ -69,10 +69,10 @@ void tnlCGSolver< Matrix, Preconditioner > :: setPreconditioner( const Precondit
 
 template< typename Matrix,
           typename Preconditioner >
-   template< typename Vector, typename ResidueGetter >
+   template< typename VectorPointer, typename ResidueGetter >
 bool
 tnlCGSolver< Matrix, Preconditioner >::
-solve( const Vector& b, Vector& x )
+solve( const VectorPointer& b, VectorPointer& x )
 {
    if( ! this->setSize( matrix->getRows() ) ) return false;
 
@@ -80,13 +80,13 @@ solve( const Vector& b, Vector& x )
    this->setResidue( this->getConvergenceResidue() + 1.0 );
 
    RealType alpha, beta, s1, s2;
-   RealType bNorm = b. lpNorm( ( RealType ) 2.0 );
+   RealType bNorm = b->lpNorm( ( RealType ) 2.0 );
 
    /****
     * r_0 = b - A x_0, p_0 = r_0
     */
-   this->matrix->vectorProduct( x, r );
-   r. addVector( b, 1.0, -1.0 );
+   this->matrix->vectorProduct( *x, r );
+   r. addVector( *b, 1.0, -1.0 );
    p = r;
 
    while( this->nextIteration() )
@@ -108,7 +108,7 @@ solve( const Vector& b, Vector& x )
       /****
        * 2. x_{j+1} = x_j + \alpha_j p_j
        */
-      x.addVector( p, alpha );
+      x->addVector( p, alpha );
       
       /****
        * 3. r_{j+1} = r_j - \alpha_j A * p_j
@@ -139,9 +139,9 @@ solve( const Vector& b, Vector& x )
       new_r.swap( r );
       
       if( this->getIterations() % 10 == 0 )
-         this->setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
+         this->setResidue( ResidueGetter::getResidue( matrix, b, x, bNorm ) );
    }
-   this->setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
+   this->setResidue( ResidueGetter::getResidue( matrix, b, x, bNorm ) );
    this->refreshSolverMonitor( true );
    return this->checkConvergence();
 };

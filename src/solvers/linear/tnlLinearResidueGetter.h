@@ -18,18 +18,19 @@
 #ifndef TNLLINEARRESIDUEGETTER_H_
 #define TNLLINEARRESIDUEGETTER_H_
 
-template< typename Matrix, typename Vector >
+template< typename MatrixPointer, typename VectorPointer >
 class tnlLinearResidueGetter
 {
    public:
 
-   typedef typename Matrix :: RealType RealType;
-   typedef typename Matrix :: DeviceType DeviceType;
-   typedef typename Matrix :: IndexType IndexType;
+      typedef typename MatrixPointer::ObjectType MatrixType;
+      typedef typename MatrixType::RealType RealType;
+      typedef typename MatrixType::DeviceType DeviceType;
+      typedef typename MatrixType::IndexType IndexType;
 
-   static RealType getResidue( const Matrix& matrix,
-                               const Vector& x,
-                               const Vector& b,
+   static RealType getResidue( const MatrixPointer& matrix,
+                               const VectorPointer& x,
+                               const VectorPointer& b,
                                RealType bNorm = 0 );
 };
 

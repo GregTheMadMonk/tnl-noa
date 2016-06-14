@@ -65,9 +65,9 @@ setup( const tnlParameterContainer& parameters,
 
 template< typename Matrix,
           typename Preconditioner >
-void tnlBICGStabSolver< Matrix, Preconditioner > :: setMatrix( const MatrixType& matrix )
+void tnlBICGStabSolver< Matrix, Preconditioner >::setMatrix( MatrixPointer& matrix )
 {
-   this->matrix = &matrix;
+   this->matrix = matrix;
 }
 
 template< typename Matrix,
@@ -79,10 +79,9 @@ void tnlBICGStabSolver< Matrix, Preconditioner > :: setPreconditioner( const Pre
 
 template< typename Matrix,
           typename Preconditioner >
-   template< typename Vector, typename ResidueGetter >
-bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
+   template< typename VectorPointer, typename ResidueGetter >
+bool tnlBICGStabSolver< Matrix, Preconditioner >::solve( const VectorPointer& b, VectorPointer& x )
 {
-   dbgFunctionName( "tnlBICGStabSolver", "Solve" );
    if( ! this->setSize( matrix->getRows() ) ) return false;
 
    this->resetIterations();
@@ -92,12 +91,10 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
    // r_0 = b - A x_0, p_0 = r_0
    // r^ast_0 = r_0
 
-   dbgCout( "Computing Ax" );
-   this->matrix -> vectorProduct( x, r );
+   this->matrix -> vectorProduct( *x, r );
 
    //if( bNorm == 0.0 ) bNorm = 1.0;
 
-   dbgCout( "Computing r_0, r_ast_0, p_0 and b_norm ..." );
    /*if( M )
    {
       M -> Solve( b, M_tmp );
@@ -115,10 +112,10 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
    }
    else*/
    {
-      r. addVector( b, 1.0, -1.0 );
+      r.addVector( *b, 1.0, -1.0 );
       p = r_ast = r;
-      rho = r. scalarProduct( r_ast );
-      bNorm = b. lpNorm( 2.0 );
+      rho = r.scalarProduct( r_ast );
+      bNorm = b->lpNorm( 2.0 );
    }
 
    while( this->nextIteration() )
@@ -135,7 +132,7 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
           this->matrix -> vectorProduct( p, Ap );
 
       //dbgCout( "Computing alpha" );
-      s2 = Ap. scalarProduct( r_ast );
+      s2 = Ap.scalarProduct( r_ast );
       if( s2 == 0.0 ) alpha = 0.0;
       else alpha = rho / s2;
 
@@ -164,7 +161,7 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
       /****
        * x_{j+1} = x_j + alpha_j * p_j + omega_j * s_j
        */
-      x.addVectors( p, alpha, s, omega );
+      x->addVectors( p, alpha, s, omega );
       
       /****
        * r_{j+1} = s_j - omega_j * A * s_j
@@ -190,7 +187,7 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
       residue /= bNorm;
       this->setResidue( residue );
       if( this->getIterations() % 10 == 0 )
-         this->setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
+         this->setResidue( ResidueGetter::getResidue( matrix, b, x, bNorm ) );
    }
    //this->setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    this->refreshSolverMonitor( true );

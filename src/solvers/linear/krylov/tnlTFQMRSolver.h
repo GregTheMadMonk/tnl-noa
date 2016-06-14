@@ -39,9 +39,11 @@ class tnlTFQMRSolver : public tnlObject,
 
    typedef typename Matrix :: RealType RealType;
    typedef typename Matrix :: IndexType IndexType;
-   typedef typename Matrix :: DeviceType Device;
+   typedef typename Matrix :: DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
+   typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
+   // TODO: make this: typedef tnlSharedPointer< const MatrixType, DeviceType > ConstMatrixPointer;
 
    public:
 
@@ -55,18 +57,18 @@ class tnlTFQMRSolver : public tnlObject,
    bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
-   void setMatrix( const MatrixType& matrix );
+   void setMatrix( MatrixPointer& matrix );
 
    void setPreconditioner( const Preconditioner& preconditioner );
 
 #ifdef HAVE_NOT_CXX11
-   template< typename Vector,
+   template< typename VectorPointer,
              typename ResidueGetter >
-   bool solve( const Vector& b, Vector& x );
+   bool solve( const VectorPointer& b, VectorPointer& x );
 #else
-   template< typename Vector,
-             typename ResidueGetter = tnlLinearResidueGetter< Matrix, Vector >  >
-   bool solve( const Vector& b, Vector& x );
+   template< typename VectorPointer,
+             typename ResidueGetter = tnlLinearResidueGetter< Matrix, VectorPointer >  >
+   bool solve( const VectorPointer& b, VectorPointer& x );
 #endif
 
    ~tnlTFQMRSolver();
@@ -75,11 +77,11 @@ class tnlTFQMRSolver : public tnlObject,
 
    bool setSize( IndexType size );
 
-   tnlVector< RealType, Device, IndexType >  d, r, w, u, v, r_ast, Au, M_tmp;
+   tnlVector< RealType, DeviceType, IndexType >  d, r, w, u, v, r_ast, Au, M_tmp;
 
    IndexType size;
 
-   const MatrixType* matrix;
+   MatrixPointer matrix;
    const PreconditionerType* preconditioner;
 };
 

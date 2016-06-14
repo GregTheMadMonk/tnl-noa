@@ -38,9 +38,12 @@ class tnlCGSolver : public tnlObject,
 
    typedef typename Matrix :: RealType RealType;
    typedef typename Matrix :: IndexType IndexType;
-   typedef typename Matrix :: DeviceType Device;
+   typedef typename Matrix :: DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
+   typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
+   typedef tnlSharedPointer< PreconditionerType, DeviceType > PreconditionerPointer;
+   // TODO: make this const
 
 
    tnlCGSolver();
@@ -53,7 +56,7 @@ class tnlCGSolver : public tnlObject,
    bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
-   void setMatrix( const MatrixType& matrix );
+   void setMatrix( MatrixPointer& matrix );
 
    void setPreconditioner( const Preconditioner& preconditioner );
 
@@ -62,9 +65,9 @@ class tnlCGSolver : public tnlObject,
              typename ResidueGetter >
    bool solve( const Vector& b, Vector& x );
 #else
-   template< typename Vector,
-             typename ResidueGetter = tnlLinearResidueGetter< Matrix, Vector >  >
-   bool solve( const Vector& b, Vector& x );
+   template< typename VectorPointer,
+             typename ResidueGetter = tnlLinearResidueGetter< Matrix, VectorPointer >  >
+   bool solve( const VectorPointer& b, VectorPointer& x );
 #endif
 
    ~tnlCGSolver();
@@ -73,10 +76,10 @@ class tnlCGSolver : public tnlObject,
 
    bool setSize( IndexType size );
 
-   tnlVector< RealType, Device, IndexType >  r, new_r, p, Ap;
+   tnlVector< RealType, DeviceType, IndexType >  r, new_r, p, Ap;
 
-   const MatrixType* matrix;
-   const PreconditionerType* preconditioner;
+   MatrixPointer matrix;
+   PreconditionerPointer preconditioner;
 };
 
 #include <solvers/linear/krylov/tnlCGSolver_impl.h>

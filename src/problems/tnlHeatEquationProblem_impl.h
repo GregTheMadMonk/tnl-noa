@@ -116,7 +116,7 @@ template< typename Mesh,
 void
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 bindDofs( const MeshPointer& meshPointer,
-          const DofVectorType& dofVector )
+          const DofVectorPointer& dofVector )
 {
    const IndexType dofs = meshPointer->template getEntitiesCount< typename MeshType::Cell >();
    this->uPointer->bind( meshPointer, dofVector );
@@ -130,7 +130,7 @@ bool
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setInitialCondition( const tnlParameterContainer& parameters,
                      const MeshPointer& meshPointer,
-                     DofVectorType& dofs,
+                     DofVectorPointer& dofs,
                      MeshDependentDataType& meshDependentData )
 {
    this->bindDofs( meshPointer, dofs );
@@ -180,7 +180,7 @@ tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOper
 makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshPointer& meshPointer,
-              DofVectorType& dofs,
+              DofVectorPointer& dofs,
               MeshDependentDataType& meshDependentData )
 {
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
@@ -203,8 +203,8 @@ tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOper
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshPointer& meshPointer,
-                DofVectorType& uDofs,
-                DofVectorType& fuDofs,
+                DofVectorPointer& uDofs,
+                DofVectorPointer& fuDofs,
                 MeshDependentDataType& meshDependentData )
 {
    /****

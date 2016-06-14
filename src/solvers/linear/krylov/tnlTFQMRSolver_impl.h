@@ -22,7 +22,6 @@ template< typename Matrix,
           typename Preconditioner >
 tnlTFQMRSolver< Matrix, Preconditioner > :: tnlTFQMRSolver()
 : size( 0 ),
-  matrix( 0 ),
   preconditioner( 0 )
 {
 }
@@ -58,9 +57,9 @@ setup( const tnlParameterContainer& parameters,
 
 template< typename Matrix,
           typename Preconditioner >
-void tnlTFQMRSolver< Matrix, Preconditioner > :: setMatrix( const MatrixType& matrix )
+void tnlTFQMRSolver< Matrix, Preconditioner > :: setMatrix( MatrixPointer& matrix )
 {
-   this->matrix = &matrix;
+   this->matrix = matrix;
 }
 
 template< typename Matrix,
@@ -72,10 +71,13 @@ void tnlTFQMRSolver< Matrix, Preconditioner > :: setPreconditioner( const Precon
 
 template< typename Matrix,
           typename Preconditioner >
-   template< typename Vector, typename ResidueGetter >
-bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
+   template< typename VectorPointer, typename ResidueGetter >
+bool tnlTFQMRSolver< Matrix, Preconditioner >::solve( const VectorPointer& bPtr, VectorPointer& xPtr )
 {
-   dbgFunctionName( "tnlTFQMRSolver", "Solve" );
+   typedef typename VectorPointer::ObjectType VectorType;
+   const VectorType& b = *bPtr;
+   VectorType& x = *xPtr;
+   
    if( ! this->setSize( matrix -> getRows() ) ) return false;
 
    RealType tau, theta, eta, rho, alpha, b_norm, w_norm;

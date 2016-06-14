@@ -101,8 +101,8 @@ tnlPDEProblem< Mesh, Real, Device, Index >::
 preIterate( const RealType& time,
             const RealType& tau,
             const MeshPointer& meshPointer,
-            DofVectorType& dofs,
-            DofVectorType& auxDofs )
+            DofVectorPointer& dofs,
+            MeshDependentDataType& meshDependentData )
 {
    return true;
 }
@@ -130,8 +130,8 @@ tnlPDEProblem< Mesh, Real, Device, Index >::
 postIterate( const RealType& time,
              const RealType& tau,
              const MeshPointer& meshPointer,
-             DofVectorType& dofs,
-             DofVectorType& auxDofs )
+             DofVectorPointer& dofs,
+             MeshDependentDataType& meshDependentData )
 {
    return true;
 }

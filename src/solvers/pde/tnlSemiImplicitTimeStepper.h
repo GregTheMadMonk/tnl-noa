@@ -75,7 +75,7 @@ class tnlSemiImplicitTimeStepper
 
    Problem* problem;
 
-   MatrixPointer matrixPointer;
+   MatrixPointer matrix;
 
    DofVectorPointer rightHandSidePointer;
 

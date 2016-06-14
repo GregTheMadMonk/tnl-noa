@@ -18,20 +18,24 @@
 #ifndef TNLLINEARRESIDUEGETTER_IMPL_H_
 #define TNLLINEARRESIDUEGETTER_IMPL_H_
 
-template< typename Matrix, typename Vector >
-typename tnlLinearResidueGetter< Matrix, Vector > :: RealType
-   tnlLinearResidueGetter< Matrix, Vector > :: getResidue( const Matrix& matrix,
-                                                           const Vector& x,
-                                                           const Vector& b,
-                                                           RealType bNorm )
+template< typename MatrixPointer, typename VectorPointer >
+typename tnlLinearResidueGetter< MatrixPointer, VectorPointer >::RealType
+tnlLinearResidueGetter< MatrixPointer, VectorPointer >::
+getResidue( const MatrixPointer& matrix,
+            const VectorPointer& xPtr,
+            const VectorPointer& bPtr,
+            RealType bNorm )
 {
-   const IndexType size = matrix. getRows();
+   typedef typename VectorPointer::ObjectType VectorType;
+   const VectorType& x = *xPtr;
+   const VectorType& b = *bPtr;
+   const IndexType size = matrix->getRows();   
    RealType res( 0.0 );
    if( bNorm == 0.0 )
-      bNorm = b. lpNorm( 2.0 );
+      bNorm = b.lpNorm( 2.0 );
    for( IndexType i = 0; i < size; i ++ )
    {
-      RealType err = fabs( matrix. rowVectorProduct( i, x ) - b[ i ] );
+      RealType err = fabs( matrix->rowVectorProduct( i, x ) - b[ i ] );
       res += err * err;
    }
    return sqrt( res ) / bNorm;

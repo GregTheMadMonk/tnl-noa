@@ -32,6 +32,7 @@ class tnlMersonSolver : public tnlExplicitSolver< Problem >
    typedef typename Problem :: RealType RealType;
    typedef typename Problem :: DeviceType DeviceType;
    typedef typename Problem :: IndexType IndexType;
+   typedef tnlSharedPointer< DofVectorType, DeviceType > DofVectorPointer;
 
    tnlMersonSolver();
 
@@ -45,7 +46,7 @@ class tnlMersonSolver : public tnlExplicitSolver< Problem >
 
    void setAdaptivity( const RealType& a );
 
-   bool solve( DofVectorType& u );
+   bool solve( DofVectorPointer& u );
 
    protected:
    
@@ -55,19 +56,19 @@ class tnlMersonSolver : public tnlExplicitSolver< Problem >
     * needs to correct u on the boundaries to be able to compute
     * the RHS.
     */
-   void computeKFunctions( DofVectorType& u,
+   void computeKFunctions( DofVectorPointer& u,
                            const RealType& time,
                            RealType tau );
 
    RealType computeError( const RealType tau );
 
-   void computeNewTimeLevel( DofVectorType& u,
+   void computeNewTimeLevel( DofVectorPointer& u,
                              RealType tau,
                              RealType& currentResidue );
 
-   void writeGrids( const DofVectorType& u );
+   void writeGrids( const DofVectorPointer& u );
 
-   DofVectorType k1, k2, k3, k4, k5, kAux;
+   DofVectorPointer k1, k2, k3, k4, k5, kAux;
 
    /****
     * This controls the accuracy of the solver
