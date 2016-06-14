@@ -182,7 +182,7 @@ solve( const RealType& time,
          cout << "                                                                  Solving the linear system for time " << t + currentTau << "             \r" << flush;
 
       // TODO: add timer
-      preconditioner.update( this->matrix.getData() );
+      preconditioner.update( this->matrix );
 
       this->linearSystemSolverTimer.start();
       if( ! this->linearSystemSolver->template solve< DofVectorPointer, tnlLinearResidueGetter< MatrixPointer, DofVectorPointer > >( this->rightHandSidePointer, dofVector ) )

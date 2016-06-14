@@ -58,7 +58,7 @@ class tnlCGSolver : public tnlObject,
 
    void setMatrix( MatrixPointer& matrix );
 
-   void setPreconditioner( const Preconditioner& preconditioner );
+   void setPreconditioner( const PreconditionerType& preconditioner );
 
 #ifdef HAVE_NOT_CXX11
    template< typename Vector,
@@ -79,7 +79,7 @@ class tnlCGSolver : public tnlObject,
    tnlVector< RealType, DeviceType, IndexType >  r, new_r, p, Ap;
 
    MatrixPointer matrix;
-   PreconditionerPointer preconditioner;
+   const PreconditionerType* preconditioner;
 };
 
 #include <solvers/linear/krylov/tnlCGSolver_impl.h>

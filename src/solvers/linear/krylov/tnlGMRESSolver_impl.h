@@ -34,8 +34,8 @@ tnlGMRESSolver< Matrix, Preconditioner >::
 getType() const
 {
    return tnlString( "tnlGMRESSolver< " ) +
-          this->matrix -> getType() + ", " +
-          this->preconditioner -> getType() + " >";
+          this->matrix->getType() + ", " +
+          this->preconditioner->getType() + " >";
 }
 
 template< typename Matrix,
@@ -79,7 +79,7 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: setMatrix( MatrixPointer& matri
 
 template< typename Matrix,
            typename Preconditioner >
-void tnlGMRESSolver< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
+void tnlGMRESSolver< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerType& preconditioner )
 {
    this->preconditioner = &preconditioner;
 }

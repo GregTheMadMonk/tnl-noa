@@ -20,7 +20,8 @@
 
 template< typename Matrix, typename Preconditioner >
 tnlSORSolver< Matrix, Preconditioner > :: tnlSORSolver()
-: omega( 1.0 )
+: omega( 1.0 ),
+  preconditioner( 0 )
 {
 }
 
@@ -81,7 +82,7 @@ void tnlSORSolver< Matrix, Preconditioner > :: setMatrix( MatrixPointer& matrix 
 
 template< typename Matrix,
            typename Preconditioner >
-void tnlSORSolver< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
+void tnlSORSolver< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerType& preconditioner )
 {
    this->preconditioner = &preconditioner;
 }

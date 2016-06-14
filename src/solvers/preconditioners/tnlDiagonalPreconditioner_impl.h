@@ -34,42 +34,43 @@ __global__ void elementwiseVectorDivisionKernel( const Real* left,
 #endif
 
 template< typename Real, typename Device, typename Index >
-   template< typename Matrix >
+   template< typename MatrixPointer >
 void
 tnlDiagonalPreconditioner< Real, Device, Index >::
-update( const Matrix& matrix )
+update( const MatrixPointer& matrix )
 {
 //   cout << getType() << "->setMatrix()" << endl;
 
-   tnlAssert( matrix.getRows() > 0 && matrix.getRows() == matrix.getColumns(), );
+   tnlAssert( matrix->getRows() > 0 && matrix->getRows() == matrix->getColumns(), );
 
-   if( diagonal.getSize() != matrix.getRows() )
-      diagonal.setSize( matrix.getRows() );
+   if( diagonal.getSize() != matrix->getRows() )
+      diagonal.setSize( matrix->getRows() );
 
-   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlHostDevice )
+   if( std::is_same< DeviceType, tnlHost >::value )
    {
       for( int i = 0; i < diagonal.getSize(); i++ ) {
-         diagonal[ i ] = matrix.getElement( i, i );
+         diagonal[ i ] = matrix->getElement( i, i );
       }
    }
-   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlCudaDevice )
+   if( std::is_same< DeviceType, tnlCuda >::value )
    {
 #ifdef HAVE_CUDA
-      Matrix* kernelMatrix = tnlCuda::passToDevice( matrix );
+      //Matrix* kernelMatrix = tnlCuda::passToDevice( matrix );
 
       const Index& size = diagonal.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
       cudaBlocks.x = Min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
 
+      tnlCuda::synchronizeDevice();
       matrixDiagonalToVectorKernel<<< cudaBlocks, cudaBlockSize >>>(
-            kernelMatrix,
+            matrix.template getData< tnlCuda >(),
             diagonal.getData(),
             size );
 
       checkCudaDevice;
-      tnlCuda::freeFromDevice( kernelMatrix );
-      checkCudaDevice;
+      //tnlCuda::freeFromDevice( kernelMatrix );
+      //checkCudaDevice;
 #endif
    }
 }

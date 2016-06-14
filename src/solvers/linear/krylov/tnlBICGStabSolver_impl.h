@@ -31,6 +31,7 @@ RealType computeBICGStabNewP( Vector& p,
 template< typename Matrix,
           typename Preconditioner >
 tnlBICGStabSolver< Matrix, Preconditioner > :: tnlBICGStabSolver()
+: preconditioner( 0 )
 {
 }
 
@@ -72,7 +73,7 @@ void tnlBICGStabSolver< Matrix, Preconditioner >::setMatrix( MatrixPointer& matr
 
 template< typename Matrix,
            typename Preconditioner >
-void tnlBICGStabSolver< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
+void tnlBICGStabSolver< Matrix, Preconditioner > :: setPreconditioner( const PreconditionerType& preconditioner )
 {
    this->preconditioner = &preconditioner;
 }

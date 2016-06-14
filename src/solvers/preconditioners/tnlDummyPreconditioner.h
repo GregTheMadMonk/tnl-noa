@@ -19,6 +19,7 @@
 #define TNLDUMMYPRECONDITIONER_H_
 
 #include <core/tnlObject.h>
+#include <core/tnlSharedPointer.h>
 
 template< typename Real, typename Device, typename Index >
 class tnlDummyPreconditioner
@@ -40,21 +41,26 @@ class tnlDummyPreconditioner
 template< typename LinearSolver, typename Preconditioner >
 class tnlSolverStarterSolverPreconditionerSetter
 {
-    public:
-        static void run( LinearSolver& solver, Preconditioner& preconditioner )
-        {
-            solver.setPreconditioner( preconditioner );
-        }
+   public:
+       
+      static void run( LinearSolver& solver, Preconditioner& preconditioner )
+      {
+         solver.setPreconditioner( preconditioner );
+      }
 };
 
 template< typename LinearSolver, typename Real, typename Device, typename Index >
 class tnlSolverStarterSolverPreconditionerSetter< LinearSolver, tnlDummyPreconditioner< Real, Device, Index > >
 {
-    public:
-        static void run( LinearSolver& solver, tnlDummyPreconditioner< Real, Device, Index >& preconditioner )
-        {
-            // do nothing
-        }
+   public:
+
+      typedef Device DeviceType;
+      typedef tnlDummyPreconditioner< Real, DeviceType, Index > PreconditionerType;
+   
+      static void run( LinearSolver& solver, PreconditionerType& preconditioner )
+      {
+         // do nothing
+      }
 };
 
 

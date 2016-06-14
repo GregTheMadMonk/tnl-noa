@@ -40,6 +40,7 @@ class tnlSemiImplicitTimeStepper
    typedef typename ProblemType::MatrixType MatrixType;
    typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
    typedef tnlSharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+   typedef tnlSharedPointer< PreconditionerType, DeviceType > PreconditionerPointer;
 
    tnlSemiImplicitTimeStepper();
 

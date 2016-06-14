@@ -45,6 +45,7 @@ class tnlBICGStabSolver : public tnlObject,
    typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
    // TODO: make this 'typedef tnlSharedPointer< const MatrixType, DeviceType > ConstMatrixPointer;'
 
+
    public:
 
    tnlBICGStabSolver();
@@ -59,7 +60,7 @@ class tnlBICGStabSolver : public tnlObject,
 
    void setMatrix( MatrixPointer& matrix );
 
-   void setPreconditioner( const Preconditioner& preconditioner );
+   void setPreconditioner( const PreconditionerType& preconditioner );
 
 #ifdef HAVE_NOT_CXX11
    template< typename VectorPointer,

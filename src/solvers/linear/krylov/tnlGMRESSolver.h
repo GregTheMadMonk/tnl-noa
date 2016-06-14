@@ -60,7 +60,7 @@ class tnlGMRESSolver : public tnlObject,
 
    void setMatrix( MatrixPointer& matrix );
 
-   void setPreconditioner( const Preconditioner& preconditioner );
+   void setPreconditioner( const PreconditionerType& preconditioner );
 
 #ifdef HAVE_NOT_CXX11
    template< typename VectorPointer,

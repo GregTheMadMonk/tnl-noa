@@ -21,6 +21,7 @@
 template< typename Matrix,
           typename Preconditioner >
 tnlCGSolver< Matrix, Preconditioner > :: tnlCGSolver()
+: preconditioner( 0 )
 {
 }
 
@@ -61,7 +62,7 @@ void tnlCGSolver< Matrix, Preconditioner >::setMatrix( MatrixPointer& matrix )
 }
 
 template< typename Matrix,
-           typename Preconditioner >
+          typename Preconditioner >
 void tnlCGSolver< Matrix, Preconditioner > :: setPreconditioner( const Preconditioner& preconditioner )
 {
    this->preconditioner = &preconditioner;

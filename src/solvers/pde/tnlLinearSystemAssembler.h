@@ -45,34 +45,34 @@ class tnlLinearSystemAssemblerTraverserUserData
 
       const Real* timeDiscretisationCoefficient;
 
-      const DifferentialOperatorPointer differentialOperatorPointer;
+      const DifferentialOperatorPointer differentialOperator;
 
-      const BoundaryConditionsPointer boundaryConditionsPointer;
+      const BoundaryConditionsPointer boundaryConditions;
 
-      const RightHandSidePointer rightHandSidePointer;
+      const RightHandSidePointer rightHandSide;
       
-      const MeshFunctionPointer uPointer;
+      const MeshFunctionPointer u;
       
-      DofVectorPointer bPointer;
+      DofVectorPointer b;
 
-      MatrixPointer matrixPointer;
+      MatrixPointer matrix;
 
       tnlLinearSystemAssemblerTraverserUserData( const Real& time,
                                                  const Real& tau,
-                                                 const DifferentialOperatorPointer& differentialOperatorPointer,
-                                                 const BoundaryConditionsPointer& boundaryConditionsPointer,
-                                                 const RightHandSidePointer& rightHandSidePointer,
-                                                 const MeshFunctionPointer& uPointer,
-                                                 MatrixPointer& matrixPointer,
-                                                 DofVectorPointer& bPointer )
+                                                 const DifferentialOperatorPointer& differentialOperator,
+                                                 const BoundaryConditionsPointer& boundaryConditions,
+                                                 const RightHandSidePointer& rightHandSide,
+                                                 const MeshFunctionPointer& u,
+                                                 MatrixPointer& matrix,
+                                                 DofVectorPointer& b )
       : time( &time ),
         tau( &tau ),
-        differentialOperatorPointer( differentialOperatorPointer ),
-        boundaryConditionsPointer( boundaryConditionsPointer ),
-        rightHandSidePointer( rightHandSidePointer ),
-        uPointer( uPointer ),
-        bPointer( bPointer ),
-        matrixPointer( matrixPointer )
+        differentialOperator( differentialOperator ),
+        boundaryConditions( boundaryConditions ),
+        rightHandSide( rightHandSide ),
+        u( u ),
+        b( b ),
+        matrix( matrix )
       {};
 
    protected:
@@ -136,12 +136,12 @@ class tnlLinearSystemAssembler
                                     const EntityType& entity )
          {
              ( *userData.b )[ entity.getIndex() ] = 0.0;           
-             userData.boundaryConditionsPointer.template getData< DeviceType >().setMatrixElements
+             userData.boundaryConditions.template getData< DeviceType >().setMatrixElements
                ( *userData.u,
                  entity,
                  *userData.time + *userData.tau,
                  *userData.tau,
-                 userData.matrixPointer.template modifyData< DeviceType >(),
+                 userData.matrix.template modifyData< DeviceType >(),
                  *userData.b );
          }
    };
@@ -157,21 +157,21 @@ class tnlLinearSystemAssembler
                                     const EntityType& entity )
          {
             ( *userData.b )[ entity.getIndex() ] = 0.0;            
-            userData.differentialOperatorPointer.template getData< DeviceType >().setMatrixElements
+            userData.differentialOperator.template getData< DeviceType >().setMatrixElements
                ( *userData.u,
                  entity,
                  *userData.time + *userData.tau,
                  *userData.tau,
-                 userData.matrixPointer.template modifyData< DeviceType >(), 
+                 userData.matrix.template modifyData< DeviceType >(), 
                  *userData.b );
             
             typedef tnlFunctionAdapter< MeshType, RightHandSide > RhsFunctionAdapter;
             typedef tnlFunctionAdapter< MeshType, MeshFunction > MeshFunctionAdapter;
             const RealType& rhs = RhsFunctionAdapter::getValue
-               ( userData.rightHandSidePointer.template getData< DeviceType >(),
+               ( userData.rightHandSide.template getData< DeviceType >(),
                  entity,
                  *userData.time );
-            TimeDiscretisation::applyTimeDiscretisation( userData.matrixPointer.template modifyData< DeviceType >(),
+            TimeDiscretisation::applyTimeDiscretisation( userData.matrix.template modifyData< DeviceType >(),
                                                          ( *userData.b )[ entity.getIndex() ],
                                                          entity.getIndex(),
                                                          MeshFunctionAdapter::getValue( *userData.u, entity, *userData.time ),
