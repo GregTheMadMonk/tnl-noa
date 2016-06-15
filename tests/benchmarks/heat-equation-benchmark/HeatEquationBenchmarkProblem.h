@@ -87,6 +87,8 @@ class HeatEquationBenchmarkProblem:
       BoundaryConditionPointer boundaryConditionPointer;
       RightHandSidePointer rightHandSidePointer;
       
+      MeshFunctionPointer fu, u;
+      
       tnlString cudaKernelType;
       
       MeshType* cudaMesh;
