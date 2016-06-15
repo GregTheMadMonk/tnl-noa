@@ -351,9 +351,7 @@ processEntities(
    CoordinatesType* kernelEntityBasis = tnlCuda::passToDevice( entityBasis );
    //typename GridEntity::MeshType* kernelGrid = tnlCuda::passToDevice( *gridPointer );
    UserData* kernelUserData = tnlCuda::passToDevice( userData );
-   checkCudaDevice;
-   
-   std::cerr << "User data size is " << sizeof( UserData ) << std::endl;
+   checkCudaDevice;   
       
    dim3 cudaBlockSize( 16, 16 );
    dim3 cudaBlocks;

@@ -371,7 +371,7 @@ class tnlSharedPointer< Object, tnlCuda, lazy, false > : public tnlSmartPointer
       template< typename... Args >
       bool recreate( Args... args )
       {
-         std::cerr << "Creating new shared pointer..." << std::endl;
+         //std::cerr << "Creating new shared pointer..." << std::endl;
          if( ! this->counter )
          {
             this->counter = new int;
@@ -500,7 +500,7 @@ class tnlSharedPointer< Object, tnlCuda, lazy, false > : public tnlSmartPointer
 #ifdef HAVE_CUDA
          if( this->modified )
          {
-            std::cerr << "Synchronizing data ( " << sizeof( ObjectType ) << " bytes ) to adress " << this->cuda_pointer << "..." << std::endl;
+            //std::cerr << "Synchronizing data ( " << sizeof( ObjectType ) << " bytes ) to adress " << this->cuda_pointer << "..." << std::endl;
             tnlAssert( this->pointer, );
             tnlAssert( this->cuda_pointer, );
             cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( ObjectType ), cudaMemcpyHostToDevice );            
@@ -539,7 +539,7 @@ class tnlSharedPointer< Object, tnlCuda, lazy, false > : public tnlSmartPointer
                   cudaFree( this->cuda_pointer );
                checkCudaDevice;
 #endif         
-               std::cerr << "Deleting data..." << std::endl;
+               //std::cerr << "Deleting data..." << std::endl;
             }
          }
          

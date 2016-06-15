@@ -389,9 +389,9 @@ void
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
-                const MeshPointer& meshPointer,
-                DofVectorPointer& uDofsPointer,
-                DofVectorPointer& fuDofsPointer,
+                const MeshPointer& mesh,
+                DofVectorPointer& uDofs,
+                DofVectorPointer& fuDofs,
                 MeshDependentDataType& meshDependentData )
 {
    /****
@@ -405,12 +405,12 @@ getExplicitRHS( const RealType& time,
 
    if( std::is_same< DeviceType, tnlHost >::value )
    {
-      const IndexType gridXSize = meshPointer->getDimensions().x();
-      const IndexType gridYSize = meshPointer->getDimensions().y();
-      const RealType& hx_inv = meshPointer->template getSpaceStepsProducts< -2,  0 >();
-      const RealType& hy_inv = meshPointer->template getSpaceStepsProducts<  0, -2 >();
-      RealType* u = uDofsPointer->getData();
-      RealType* fu = fuDofsPointer->getData();
+      const IndexType gridXSize = mesh->getDimensions().x();
+      const IndexType gridYSize = mesh->getDimensions().y();
+      const RealType& hx_inv = mesh->template getSpaceStepsProducts< -2,  0 >();
+      const RealType& hy_inv = mesh->template getSpaceStepsProducts<  0, -2 >();
+      RealType* u = uDofs->getData();
+      RealType* fu = fuDofs->getData();
       for( IndexType j = 0; j < gridYSize; j++ )
       {
          fu[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
@@ -441,17 +441,17 @@ getExplicitRHS( const RealType& time,
       #ifdef HAVE_CUDA         
       if( this->cudaKernelType == "pure-c" )
       {
-         const IndexType gridXSize = meshPointer->getDimensions().x();
-         const IndexType gridYSize = meshPointer->getDimensions().y();
-         const RealType& hx_inv = meshPointer->template getSpaceStepsProducts< -2,  0 >();
-         const RealType& hy_inv = meshPointer->template getSpaceStepsProducts<  0, -2 >();
+         const IndexType gridXSize = mesh->getDimensions().x();
+         const IndexType gridYSize = mesh->getDimensions().y();
+         const RealType& hx_inv = mesh->template getSpaceStepsProducts< -2,  0 >();
+         const RealType& hy_inv = mesh->template getSpaceStepsProducts<  0, -2 >();
 
          dim3 cudaBlockSize( 16, 16 );
          dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
                             gridYSize / 16 + ( gridYSize % 16 != 0 ) );
 
          int cudaErr;
-         boundaryConditionsKernel<<< cudaGridSize, cudaBlockSize >>>( uDofs.getData(), fuDofs.getData(), gridXSize, gridYSize );
+         boundaryConditionsKernel<<< cudaGridSize, cudaBlockSize >>>( uDofs->getData(), fuDofs->getData(), gridXSize, gridYSize );
          if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
          {
             cerr << "Setting of boundary conditions failed. " << cudaErr << endl;
@@ -463,7 +463,7 @@ getExplicitRHS( const RealType& time,
           */
          //cout << "Laplace operator ... " << endl;
          heatEquationKernel<<< cudaGridSize, cudaBlockSize >>>
-            ( uDofs.getData(), fuDofs.getData(), tau, hx_inv, hy_inv, gridXSize, gridYSize );
+            ( uDofs->getData(), fuDofs->getData(), tau, hx_inv, hy_inv, gridXSize, gridYSize );
          if( cudaGetLastError() != cudaSuccess )
          {
             cerr << "Laplace operator failed." << endl;
@@ -474,12 +474,12 @@ getExplicitRHS( const RealType& time,
       {
          typedef typename MeshType::Cell CellType;
          typedef typename CellType::CoordinatesType CoordinatesType;
-         MeshFunctionType u( meshPointer, uDofs );
-         MeshFunctionType fu( meshPointer, fuDofs );
+         MeshFunctionType u( mesh, uDofs );
+         MeshFunctionType fu( mesh, fuDofs );
          fu.getData().setValue( 1.0 );
          const CoordinatesType begin( 0,0 );
-         const CoordinatesType& end = meshPointer->getDimensions();
-         CellType cell( meshPointer.template getData< DeviceType >() );
+         const CoordinatesType& end = mesh->getDimensions();
+         CellType cell( mesh.template getData< DeviceType >() );
          dim3 cudaBlockSize( 16, 16 );
          dim3 cudaBlocks;
          cudaBlocks.x = tnlCuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
@@ -493,7 +493,7 @@ getExplicitRHS( const RealType& time,
             for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
                boundaryConditionsTemplatedCompact< MeshType, CellType, BoundaryCondition, MeshFunctionType >
                   <<< cudaBlocks, cudaBlockSize >>>
-                  ( meshPointer.template getData< DeviceType >(),
+                  ( mesh.template getData< DeviceType >(),
                     boundaryConditionPointer.template getData< DeviceType >(),
                     u,
                     time,
@@ -510,7 +510,7 @@ getExplicitRHS( const RealType& time,
             for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
                heatEquationTemplatedCompact< MeshType, CellType, DifferentialOperator, RightHandSide, MeshFunctionType >
                   <<< cudaBlocks, cudaBlockSize >>>
-                  ( meshPointer.template getData< DeviceType >(),
+                  ( mesh.template getData< DeviceType >(),
                     differentialOperatorPointer.template getData< DeviceType >(),
                     rightHandSidePointer.template getData< DeviceType >(),
                     u,
@@ -530,13 +530,13 @@ getExplicitRHS( const RealType& time,
       {
          //if( !this->cudaMesh )
          //   this->cudaMesh = tnlCuda::passToDevice( &mesh );
-         MeshFunctionPointer uPointer( meshPointer, *uDofsPointer );
-         MeshFunctionPointer fuPointer( meshPointer, *fuDofsPointer );
+         MeshFunctionPointer uPointer( mesh, uDofs );
+         MeshFunctionPointer fuPointer( mesh, fuDofs );
          tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
          //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
          explicitUpdater.template update< typename Mesh::Cell >( 
             time,
-            meshPointer,
+            mesh,
             this->differentialOperatorPointer,
             this->boundaryConditionPointer,
             this->rightHandSidePointer,

@@ -148,7 +148,6 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const GridEntity& entity )
             {
-               printf( "BC size %d ptr %p \n", sizeof( BoundaryConditions ), &userData.boundaryConditions.template getData< DeviceType >() );
                ( userData.u.template modifyData< DeviceType >() )( entity ) = ( userData.boundaryConditions.template getData< DeviceType >() )
                ( userData.u.template getData< DeviceType >(),
                  entity,
@@ -169,21 +168,18 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const EntityType& entity )
             {
-               printf( "DIF.OP. size %d ptr %p \n", sizeof( DifferentialOperator ), &userData.differentialOperator.template getData< DeviceType >() );
-               printf( "RHS. size %d ptr %p \n", sizeof( RightHandSide ), &userData.rightHandSide.template getData< DeviceType >() );
-               /*( *userData.fu )( entity ) =
-                  ( userData.differentialOperatorPointer.template getData< DeviceType >() )(
-                     *userData.u, 
+               ( userData.fu.template modifyData< tnlCuda >() )( entity ) =
+                  ( userData.differentialOperator.template getData< DeviceType >() )(
+                     userData.u.template getData< tnlCuda >(), 
                      entity,
-                     *userData.time );
+                     userData.time );
 
                typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               (  *userData.fu )( entity ) += 
+               (  userData.fu.template modifyData< tnlCuda >() )( entity ) += 
                   FunctionAdapter::getValue(
-                     userData.rightHandSidePointer.template getData< DeviceType >(),
+                     userData.rightHandSide.template getData< DeviceType >(),
                      entity,
-                     *userData.time );
-                */
+                     userData.time );
             }
       };
       

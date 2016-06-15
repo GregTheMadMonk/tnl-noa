@@ -64,7 +64,7 @@ update( const MatrixPointer& matrix )
 
       tnlCuda::synchronizeDevice();
       matrixDiagonalToVectorKernel<<< cudaBlocks, cudaBlockSize >>>(
-            matrix.template getData< tnlCuda >(),
+            &matrix.template getData< tnlCuda >(),
             diagonal.getData(),
             size );
 

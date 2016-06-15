@@ -416,7 +416,7 @@ typename Problem :: RealType tnlMersonSolver< Problem > :: computeError( const R
                                                               &_k5[ gridOffset ],
                                                               &_kAux[ gridOffset ] );
          cudaThreadSynchronize();
-         eps = Max( eps, kAux.max() );
+         eps = Max( eps, kAux->max() );
       }
 #endif
    }

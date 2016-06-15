@@ -29,7 +29,7 @@ void tnlSmartPointersRegister::insert( tnlSmartPointer* pointer, int deviceId )
 {
    tnlAssert( deviceId >= 0 && deviceId < this->devicesCount,
               std::cerr << "deviceId = " << deviceId << " devicesCount = " << this->devicesCount );
-   std::cerr << "Inserting pointer " << pointer << " to the register..." << std::endl;
+   //std::cerr << "Inserting pointer " << pointer << " to the register..." << std::endl;
    pointersOnDevices[ deviceId ].push_back( pointer );
 }
 
