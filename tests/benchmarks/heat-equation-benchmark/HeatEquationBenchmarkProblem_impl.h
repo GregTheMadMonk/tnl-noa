@@ -262,12 +262,12 @@ boundaryConditionsTemplatedCompact( const GridType* grid,
    }*/
    typedef typename GridEntity::IndexType IndexType;
    typedef typename GridEntity::RealType RealType;
-   RealType* _u = &u[ 0 ];
+   RealType* _u = &( *u )[ 0 ];
    const IndexType tidX = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    const IndexType tidY = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
    if( tidX == 0 || tidX == end.x() - 1 || tidY == 0 || tidY == end.y() - 1 )      
    {
-      _u[ tidY * grid.getDimensions().x() + tidX ] = 0.0;
+      _u[ tidY * grid->getDimensions().x() + tidX ] = 0.0;
    }   
 }
 
@@ -280,8 +280,8 @@ __global__ void
 heatEquationTemplatedCompact( const GridType* grid,
                               const DifferentialOperator* differentialOperator,
                               const RightHandSide* rightHandSide,
-                              MeshFunction* u,
-                              MeshFunction* fu,
+                              MeshFunction* _u,
+                              MeshFunction* _fu,
                               const typename GridType::RealType time,
                               const typename GridEntity::CoordinatesType begin,
                               const typename GridEntity::CoordinatesType end,
@@ -322,12 +322,14 @@ heatEquationTemplatedCompact( const GridType* grid,
    
    const IndexType tidX = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    const IndexType tidY = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
+   MeshFunction& u = *_u;
+   MeshFunction& fu = *_fu;
    if( tidX > 0 && tidX < end.x() - 1 && tidY > 0 && tidY < end.y() - 1 )      
    {
-      const IndexType& xSize = grid.getDimensions().x();
+      const IndexType& xSize = grid->getDimensions().x();
       const IndexType& c = tidY * xSize + tidX;
-      const RealType& hxSquareInverse = grid.template getSpaceStepsProducts< -2, 0 >(); 
-      const RealType& hySquareInverse = grid.template getSpaceStepsProducts< 0, -2 >(); 
+      const RealType& hxSquareInverse = grid->template getSpaceStepsProducts< -2, 0 >(); 
+      const RealType& hySquareInverse = grid->template getSpaceStepsProducts< 0, -2 >(); 
       fu[ c ] = ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ]  ) * hxSquareInverse +
                 ( u[ c - xSize ] - 2.0 * u[ c ] + u[ c + xSize ] ) * hySquareInverse;      
    }   
@@ -444,13 +446,14 @@ getExplicitRHS( const RealType& time,
          
          //std::cerr << "Setting boundary conditions..." << std::endl;
 
+         tnlCuda::synchronizeDevice();
          for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
             for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
                boundaryConditionsTemplatedCompact< MeshType, CellType, BoundaryCondition, MeshFunctionType >
                   <<< cudaBlocks, cudaBlockSize >>>
                   ( &mesh.template getData< tnlCuda >(),
                     &boundaryConditionPointer.template getData< tnlCuda >(),
-                    &u.template getData< tnlCuda >(),
+                    &u.template modifyData< tnlCuda >(),
                     time,
                     begin,
                     end,
@@ -468,8 +471,8 @@ getExplicitRHS( const RealType& time,
                   ( &mesh.template getData< DeviceType >(),
                     &differentialOperatorPointer.template getData< DeviceType >(),
                     &rightHandSidePointer.template getData< DeviceType >(),
-                    &u.template getData< DeviceType >(),
-                    &fu.template getData< DeviceType >(),
+                    &u.template modifyData< DeviceType >(),
+                    &fu.template modifyData< DeviceType >(),
                     time,
                     begin,
                     end,
