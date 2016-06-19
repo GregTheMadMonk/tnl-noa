@@ -244,7 +244,7 @@ boundaryConditionsTemplatedCompact( const GridType* grid,
                                     const typename GridType::IndexType gridXIdx,
                                     const typename GridType::IndexType gridYIdx )
 {
-   typename GridType::CoordinatesType coordinates;
+   /*typename GridType::CoordinatesType coordinates;
 
    coordinates.x() = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    coordinates.y() = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
@@ -259,8 +259,9 @@ boundaryConditionsTemplatedCompact( const GridType* grid,
       {
          ( *u )( entity ) = ( *boundaryConditions )( *u, entity, time );
       }
-   }
-   /*typedef typename GridEntity::IndexType IndexType;
+   }*/
+   
+   typedef typename GridEntity::IndexType IndexType;
    typedef typename GridEntity::RealType RealType;
    RealType* _u = &( *u )[ 0 ];
    const IndexType tidX = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
@@ -268,7 +269,7 @@ boundaryConditionsTemplatedCompact( const GridType* grid,
    if( tidX == 0 || tidX == end.x() - 1 || tidY == 0 || tidY == end.y() - 1 )      
    {
       _u[ tidY * grid->getDimensions().x() + tidX ] = 0.0;
-   }*/   
+   }
 }
 
 template< typename GridType,
@@ -300,8 +301,8 @@ heatEquationTemplatedCompact( const GridType* grid,
    
    GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
    
-   MeshFunction& u = *_u;
-   MeshFunction& fu = *_fu;
+   //MeshFunction& u = *_u;
+   //MeshFunction& fu = *_fu;
 
    //if( threadIdx.x == 0 )
    //   printf( "entity size = %d \n", sizeof( GridEntity ) );
@@ -310,14 +311,14 @@ heatEquationTemplatedCompact( const GridType* grid,
    {
       
       entity.refresh();
-      if( ! entity.isBoundaryEntity() )
+      /*if( ! entity.isBoundaryEntity() )
       {
          fu( entity ) = 
             ( *differentialOperator )( u, entity, time );
 
          typedef tnlFunctionAdapter< GridType, RightHandSide > FunctionAdapter;
          fu( entity ) +=  FunctionAdapter::getValue( *rightHandSide, entity, time );
-      }
+      }*/
    }
       
    //GridEntity entity( grid, coordinates, entityOrientation, entityBasis );
@@ -325,7 +326,7 @@ heatEquationTemplatedCompact( const GridType* grid,
    //entity.refresh();
    //typename GridType::TestCell entity( grid, coordinates, entityOrientation, entityBasis );
    
-   /*const IndexType tidX = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const IndexType tidX = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    const IndexType tidY = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
    MeshFunction& u = *_u;
    MeshFunction& fu = *_fu;
@@ -337,7 +338,7 @@ heatEquationTemplatedCompact( const GridType* grid,
       const RealType& hySquareInverse = grid->template getSpaceStepsProducts< 0, -2 >(); 
       fu[ c ] = ( u[ c - 1 ] - 2.0 * u[ c ] + u[ c + 1 ]  ) * hxSquareInverse +
                 ( u[ c - xSize ] - 2.0 * u[ c ] + u[ c + xSize ] ) * hySquareInverse;      
-   } */  
+   }
 }
 #endif
 
@@ -434,8 +435,8 @@ getExplicitRHS( const RealType& time,
       }
       if( this->cudaKernelType == "templated-compact" )
       {
-         //typedef typename MeshType::MeshEntity< 2 > CellType;
-         typedef typename MeshType::Cell CellType;
+         typedef typename MeshType::MeshEntity< 2 > CellType;
+         //typedef typename MeshType::Cell CellType;
          typedef typename CellType::CoordinatesType CoordinatesType;
          u->bind( mesh, uDofs );
          fu->bind( mesh, fuDofs );
