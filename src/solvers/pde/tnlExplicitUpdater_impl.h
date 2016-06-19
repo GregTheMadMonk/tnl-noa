@@ -48,7 +48,13 @@ update( const RealType& time,
       "Error: I am getting tnlVector instead of tnlMeshFunction or similar object. You might forget to bind DofVector into tnlMeshFunction in you method getExplicitRHS."  );
    //if( std::is_same< DeviceType, tnlHost >::value )
    {
-      TraverserUserData userData( time, differentialOperatorPointer, boundaryConditionsPointer, rightHandSidePointer, uPointer, fuPointer );
+      TraverserUserData userData( time,
+                                  differentialOperatorPointer.template getData< DeviceType >(),
+                                  boundaryConditionsPointer.template getData< DeviceType >(),
+                                  rightHandSidePointer.template getData< DeviceType >(),
+                                  uPointer.template modifyData< DeviceType >(),
+                                  fuPointer.template modifyData< DeviceType >(),
+                                  fuPointer.template modifyData< tnlHost >() );
       tnlTraverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >

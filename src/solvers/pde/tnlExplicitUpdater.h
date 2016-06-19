@@ -31,19 +31,21 @@ class tnlExplicitUpdaterTraverserUserData
 {
    public:
       
-      typedef typename DifferentialOperator::DeviceType DeviceType;
-      typedef tnlSharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
-      typedef tnlSharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-      typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-      typedef tnlSharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
+      /*typedef typename DifferentialOperator::DeviceType DeviceType;
+      /*typedef DifferentialOperator DifferentialOperator;
+      typedef BoundaryConditions BoundaryConditions;
+      typedef RightHandSide RightHandSide;
+      typedef MeshFunction MeshFunction;*/
 
-      const DifferentialOperatorPointer differentialOperator;
+      const DifferentialOperator* differentialOperator;
 
-      const BoundaryConditionsPointer boundaryConditions;
+      const BoundaryConditions* boundaryConditions;
 
-      const RightHandSidePointer rightHandSide;
+      const RightHandSide* rightHandSide;
 
-      MeshFunctionPointer u, fu;
+      MeshFunction *u, *fu;
+      
+      Real* _fu;
       
       public:
 
@@ -51,50 +53,21 @@ class tnlExplicitUpdaterTraverserUserData
 
 
       tnlExplicitUpdaterTraverserUserData( const Real& time,
-                                           const DifferentialOperatorPointer& differentialOperator,
-                                           const BoundaryConditionsPointer& boundaryConditions,
-                                           const RightHandSidePointer& rightHandSide,
-                                           MeshFunctionPointer& u,
-                                           MeshFunctionPointer& fu )
+                                           const DifferentialOperator& differentialOperator,
+                                           const BoundaryConditions& boundaryConditions,
+                                           const RightHandSide& rightHandSide,
+                                           MeshFunction& u,
+                                           MeshFunction& fu,
+                                           MeshFunction& __fu )
       : time( time ),
-        differentialOperator( differentialOperator ),
-        boundaryConditions( boundaryConditions ),
-        rightHandSide( rightHandSide ),
-        u( u ),
-        fu( fu )
+        differentialOperator( &differentialOperator ),
+        boundaryConditions( &boundaryConditions ),
+        rightHandSide( &rightHandSide ),
+        u( &u ),
+        fu( &fu ),
+        _fu( &__fu[ 0 ] )
       {
       };
-      
-      /*DifferentialOperator& differentialOperator()
-      {
-         return this->differentialOperator; //* ( DifferentialOperator* ) data;
-      }
-      
-      BoundaryConditions& boundaryConditions()
-      {
-         return this->boundaryConditions; //* ( BoundaryConditions* ) & data[ sizeof( DifferentialOperator ) ];
-      }
-      
-      RightHandSide& rightHandSide()
-      {
-         return this->rightHandSide; //* ( RightHandSide* ) & data[ sizeof( DifferentialOperator ) +
-                                     //        sizeof( BoundaryConditions ) ];
-      }
-      
-      MeshFunction& u()
-      {
-         return this->u; //* ( MeshFunction* ) & data[ sizeof( DifferentialOperator ) +
-                         //                   sizeof( BoundaryConditions ) + 
-                         //                   sizeof( RightHandSide )];
-      }
-      
-      MeshFunction& fu()
-      {
-         return this->fu; //* ( MeshFunction* ) & data[ sizeof( DifferentialOperator ) +
-                          //                  sizeof( BoundaryConditions ) + 
-                          //                  sizeof( RightHandSide ) + 
-                          //                  sizeof( MeshFunction ) ];
-      }*/
 };
 
 
@@ -148,10 +121,8 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const GridEntity& entity )
             {
-               ( userData.u.template modifyData< DeviceType >() )( entity ) = ( userData.boundaryConditions.template getData< DeviceType >() )
-               ( userData.u.template getData< DeviceType >(),
-                 entity,
-                 userData.time );
+               ( *userData.u )( entity ) = ( *userData.boundaryConditions )
+                  ( *userData.u, entity, userData.time );
             }
 
       };
@@ -168,18 +139,12 @@ class tnlExplicitUpdater
                                               TraverserUserData& userData,
                                               const EntityType& entity )
             {
-               ( userData.fu.template modifyData< tnlCuda >() )( entity ) =
-                  ( userData.differentialOperator.template getData< DeviceType >() )(
-                     userData.u.template getData< tnlCuda >(), 
-                     entity,
-                     userData.time );
+               ( *userData.fu )( entity ) =                
+                  ( *userData.differentialOperator )( *userData.u, entity, userData.time );
 
                typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               (  userData.fu.template modifyData< tnlCuda >() )( entity ) += 
-                  FunctionAdapter::getValue(
-                     userData.rightHandSide.template getData< DeviceType >(),
-                     entity,
-                     userData.time );
+               (  *userData.fu )( entity ) += 
+                  FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
             }
       };
       
