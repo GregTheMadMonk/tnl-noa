@@ -32,8 +32,6 @@
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
 
-using namespace std;
-
 enum tnlIOMode { tnlUndefinedMode = 0,
                  tnlReadMode = 1,
                  tnlWriteMode = 2 };

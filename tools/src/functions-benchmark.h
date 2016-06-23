@@ -18,11 +18,15 @@
 #ifndef FUNCTIONSBENCHMARK_H_
 #define FUNCTIONSBENCHMARK_H_
 
+#include <iostream>
 #include <math.h>
+
+#include <core/tnlTimerRT.h>
+#include <core/tnlTimerCPU.h>
 
 template< typename REAL > void benchmarkAddition( long int loops )
 {
-   cout << "Benchmarking addition on CPU ( " << loops << " loops ) ... " << flush;
+   std::cout << "Benchmarking addition on CPU ( " << loops << " loops ) ... " << std::flush;
    tnlTimerCPU cpu_timer;
 
    REAL a1 = 1.2;
@@ -38,12 +42,12 @@ template< typename REAL > void benchmarkAddition( long int loops )
    }
 
    double cpu_time = cpu_timer. getTime();
-   cout << " ( " << a1 + a2 + a3 + a4 << " ) " <<  cpu_time << "secs. " << 4.0 * ( ( double ) loops ) / cpu_time * 1.0e-9 << " GFLOPS." << endl;
+   std::cout << " ( " << a1 + a2 + a3 + a4 << " ) " <<  cpu_time << "secs. " << 4.0 * ( ( double ) loops ) / cpu_time * 1.0e-9 << " GFLOPS." << std::endl;
 }
 
 template< typename REAL > void benchmarkMultiplication( const long int loops )
 {
-   cout << "Benchmarking multiplication on CPU ( " << loops << " loops ) ... " << flush;
+   std::cout << "Benchmarking multiplication on CPU ( " << loops << " loops ) ... " << std::flush;
    tnlTimerCPU cpu_timer;
 
    REAL a1 = 1.0e9;
@@ -62,12 +66,12 @@ template< typename REAL > void benchmarkMultiplication( const long int loops )
    }
 
    double cpu_time = cpu_timer. getTime();
-   cout << " ( " << a1 * a2 * a3 * a4 << " ) " <<  cpu_time << "secs. " << 4.0 * ( ( double ) loops ) / cpu_time * 1.0e-9 << " GFLOPS." << endl;
+   std::cout << " ( " << a1 * a2 * a3 * a4 << " ) " <<  cpu_time << "secs. " << 4.0 * ( ( double ) loops ) / cpu_time * 1.0e-9 << " GFLOPS." << std::endl;
 }
 
 template< typename REAL > void benchmarkDivision( long int loops )
 {
-   cout << "Benchmarking division on CPU ( " << loops << " loops ) ... " << flush;
+   std::cout << "Benchmarking division on CPU ( " << loops << " loops ) ... " << std::flush;
    tnlTimerCPU cpu_timer;
 
    REAL a1( 1.0e9 );
@@ -84,12 +88,12 @@ template< typename REAL > void benchmarkDivision( long int loops )
    }
 
    double cpu_time = cpu_timer. getTime();
-   cout << " ( " << a1 / a2 / a3 / a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops / 2 ) / cpu_time * 1.0e-9 << " GFLOPS." << endl;
+   std::cout << " ( " << a1 / a2 / a3 / a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops / 2 ) / cpu_time * 1.0e-9 << " GFLOPS." << std::endl;
 }
 
 template< typename REAL > void benchmarkSqrt( long int loops )
 {
-   cout << "Benchmarking sqrt on CPU ( " << loops << " loops ) ... " << flush;
+   std::cout << "Benchmarking sqrt on CPU ( " << loops << " loops ) ... " << std::flush;
    tnlTimerCPU cpu_timer;
 
    REAL a1( 1.0e9 );
@@ -106,12 +110,12 @@ template< typename REAL > void benchmarkSqrt( long int loops )
    }
 
    double cpu_time = cpu_timer. getTime();
-   cout << " ( " << a1 + a2 + a3 + a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops / 2 ) / cpu_time * 1.0e-9 << " GFLOPS." << endl;
+   std::cout << " ( " << a1 + a2 + a3 + a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops / 2 ) / cpu_time * 1.0e-9 << " GFLOPS." << std::endl;
 }
 
 template< typename REAL > void benchmarkSin( long int loops )
 {
-   cout << "Benchmarking sin on CPU ( " << loops << " loops ) ... " << flush;
+   std::cout << "Benchmarking sin on CPU ( " << loops << " loops ) ... " << std::flush;
    tnlTimerCPU cpu_timer;
 
    REAL a1( 1.0e9 );
@@ -127,12 +131,12 @@ template< typename REAL > void benchmarkSin( long int loops )
    }
 
    double cpu_time = cpu_timer. getTime();
-   cout << " ( " << a1 + a2 + a3 + a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops ) / cpu_time * 1.0e-9 << " GFLOPS." << endl;
+   std::cout << " ( " << a1 + a2 + a3 + a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops ) / cpu_time * 1.0e-9 << " GFLOPS." << std::endl;
 }
 
 template< typename REAL > void benchmarkExp( long int loops )
 {
-   cout << "Benchmarking exp on CPU ( " << loops << " loops ) ... " << flush;
+   std::cout << "Benchmarking exp on CPU ( " << loops << " loops ) ... " << std::flush;
    tnlTimerCPU cpu_timer;
 
    REAL a1( 1.1 );
@@ -149,12 +153,12 @@ template< typename REAL > void benchmarkExp( long int loops )
    }
 
    double cpu_time = cpu_timer. getTime();
-   cout << " ( " << a1 + a2 + a3 + a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops) / cpu_time * 1.0e-9 << " GFLOPS." << endl;
+   std::cout << " ( " << a1 + a2 + a3 + a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops) / cpu_time * 1.0e-9 << " GFLOPS." << std::endl;
 }
 
 template< typename REAL > void benchmarkPow( long int loops )
 {
-   cout << "Benchmarking pow on CPU ( " << loops << " loops ) ... " << flush;
+   std::cout << "Benchmarking pow on CPU ( " << loops << " loops ) ... " << std::flush;
    tnlTimerCPU cpu_timer;
 
    REAL a1( 1.0e9 );
@@ -171,7 +175,7 @@ template< typename REAL > void benchmarkPow( long int loops )
    }
 
    double cpu_time = cpu_timer. getTime();
-   cout << " ( " << a1 + a2 + a3 + a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops) / cpu_time * 1.0e-9 << " GFLOPS." << endl;
+   std::cout << " ( " << a1 + a2 + a3 + a4 << " ) " << cpu_time << "secs. " << 4.0 * ( ( double ) loops) / cpu_time * 1.0e-9 << " GFLOPS." << std::endl;
 }
 
 

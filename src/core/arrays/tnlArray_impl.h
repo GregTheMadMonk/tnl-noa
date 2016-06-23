@@ -28,8 +28,6 @@
 
 #include "tnlArray.h"
 
-using namespace std;
-
 template< typename Element,
            typename Device,
            typename Index >
@@ -178,8 +176,8 @@ tnlArray< Element, Device, Index >::
 setSize( const Index size )
 {
    tnlAssert( size >= 0,
-              cerr << "You try to set size of tnlArray to negative value."
-                   << "New size: " << size << endl );
+              std::cerr << "You try to set size of tnlArray to negative value."
+                        << "New size: " << size << std::endl );
    if( this->size == size && allocationPointer && ! referenceCounter ) return true;
    this->releaseData();
    tnlArrayOperations< Device >::allocateMemory( this->allocationPointer, size );
@@ -187,8 +185,8 @@ setSize( const Index size )
    this->size = size;
    if( ! this->allocationPointer )
    {
-      cerr << "I am not able to allocate new array with size "
-           << ( double ) this->size * sizeof( ElementType ) / 1.0e9 << " GB." << endl;
+      std::cerr << "I am not able to allocate new array with size "
+                << ( double ) this->size * sizeof( ElementType ) / 1.0e9 << " GB." << std::endl;
       this->size = 0;
       return false;
    }   
@@ -204,8 +202,8 @@ tnlArray< Element, Device, Index >::
 setLike( const Array& array )
 {
    tnlAssert( array. getSize() >= 0,
-              cerr << "You try to set size of tnlArray to negative value."
-                   << "Array size: " << array. getSize() << endl );
+              std::cerr << "You try to set size of tnlArray to negative value."
+                        << "Array size: " << array. getSize() << std::endl );
    return setSize( array.getSize() );
 };
 
@@ -315,9 +313,9 @@ tnlArray< Element, Device, Index >::
 setElement( const Index& i, const Element& x )
 {
    tnlAssert( 0 <= i && i < this->getSize(),
-              cerr << "Wrong index for setElement method in tnlArray "
-                   << " index is " << i
-                   << " and array size is " << this->getSize() );
+              std::cerr << "Wrong index for setElement method in tnlArray "
+                        << " index is " << i
+                        << " and array size is " << this->getSize() );
    return tnlArrayOperations< Device > :: setMemoryElement( &( this->data[ i ] ), x );
 };
 
@@ -329,9 +327,9 @@ tnlArray< Element, Device, Index >::
 getElement( const Index& i ) const
 {
    tnlAssert( 0 <= i && i < this->getSize(),
-              cerr << "Wrong index for getElement method in tnlArray "
-                   << " index is " << i
-                   << " and array size is " << this->getSize() );
+              std::cerr << "Wrong index for getElement method in tnlArray "
+                        << " index is " << i
+                        << " and array size is " << this->getSize() );
    return tnlArrayOperations< Device > :: getMemoryElement( & ( this->data[ i ] ) );
 };
 
@@ -344,9 +342,9 @@ tnlArray< Element, Device, Index >::
 operator[] ( const Index& i )
 {
    tnlAssert( 0 <= i && i < this->getSize(),
-              cerr << "Wrong index for operator[] in tnlArray "
-                   << " index is " << i
-                   << " and array size is " << this->getSize() );
+              std::cerr << "Wrong index for operator[] in tnlArray "
+                        << " index is " << i
+                        << " and array size is " << this->getSize() );
    return this->data[ i ];
 };
 
@@ -359,9 +357,9 @@ tnlArray< Element, Device, Index >::
 operator[] ( const Index& i ) const
 {
    tnlAssert( 0 <= i && i < this->getSize(),
-              cerr << "Wrong index for operator[] in tnlArray "
-                   << " index is " << i
-                   << " and array size is " << this->getSize() );
+              std::cerr << "Wrong index for operator[] in tnlArray "
+                        << " index is " << i
+                        << " and array size is " << this->getSize() );
    return this->data[ i ];
 };
 
@@ -373,8 +371,8 @@ tnlArray< Element, Device, Index >::
 operator = ( const tnlArray< Element, Device, Index >& array )
 {
    tnlAssert( array. getSize() == this->getSize(),
-           cerr << "Source size: " << array. getSize() << endl
-                << "Target size: " << this->getSize() << endl );
+              std::cerr << "Source size: " << array. getSize() << std::endl
+                        << "Target size: " << this->getSize() << std::endl );
    tnlArrayOperations< Device > :: 
    template copyMemory< Element,
                         Element,
@@ -394,8 +392,8 @@ tnlArray< Element, Device, Index >::
 operator = ( const Array& array )
 {
    tnlAssert( array. getSize() == this->getSize(),
-           cerr << "Source size: " << array. getSize() << endl
-                << "Target size: " << this->getSize() << endl );
+              std::cerr << "Source size: " << array. getSize() << std::endl
+                        << "Target size: " << this->getSize() << std::endl );
    tnlArrayOperations< Device,
                        typename Array :: DeviceType > ::
     template copyMemory< Element,
@@ -498,8 +496,8 @@ bool tnlArray< Element, Device, Index > :: save( tnlFile& file ) const
 #endif
    if( this->size != 0 && ! tnlArrayIO< Element, Device, Index >::save( file, this->data, this->size ) )
    {
-      cerr << "I was not able to save " << this->getType()
-           << " with size " << this->getSize() << endl;
+      std::cerr << "I was not able to save " << this->getType()
+                << " with size " << this->getSize() << std::endl;
       return false;
    }
    return true;
@@ -524,7 +522,7 @@ load( tnlFile& file )
 #endif      
    if( _size < 0 )
    {
-      cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << endl;
+      std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;
       return false;
    }
    setSize( _size );
@@ -532,8 +530,8 @@ load( tnlFile& file )
    {
       if( ! tnlArrayIO< Element, Device, Index >::load( file, this->data, this->size ) )
       {
-         cerr << "I was not able to load " << this->getType()
-                    << " with size " << this->getSize() << endl;
+         std::cerr << "I was not able to load " << this->getType()
+                   << " with size " << this->getSize() << std::endl;
          return false;
       }
    }
@@ -559,7 +557,7 @@ boundLoad( tnlFile& file )
 #endif      
    if( _size < 0 )
    {
-      cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << endl;
+      std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;
       return false;
    }
    if( this->getSize() != 0 )
@@ -576,8 +574,8 @@ boundLoad( tnlFile& file )
    {
       if( ! tnlArrayIO< Element, Device, Index >::load( file, this->data, this->size ) )
       {
-         cerr << "I was not able to load " << this->getType()
-                    << " with size " << this->getSize() << endl;
+         std::cerr << "I was not able to load " << this->getType()
+                   << " with size " << this->getSize() << std::endl;
          return false;
       }
    }
@@ -594,14 +592,14 @@ boundLoad( const tnlString& fileName )
    tnlFile file;
    if( ! file. open( fileName, tnlReadMode ) )
    {
-      cerr << "I am not bale to open the file " << fileName << " for reading." << endl;
+      std::cerr << "I am not bale to open the file " << fileName << " for reading." << std::endl;
       return false;
    }
    if( ! this->boundLoad( file ) )
       return false;
    if( ! file. close() )
    {
-      cerr << "An error occurred when I was closing the file " << fileName << "." << endl;
+      std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
       return false;
    }
    return true;   

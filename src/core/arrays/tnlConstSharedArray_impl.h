@@ -25,8 +25,6 @@
 #include <core/mfuncs.h>
 #include <core/param-types.h>
 
-using namespace std;
-
 template< typename Element,
           typename Device,
           typename Index >
@@ -77,10 +75,10 @@ void tnlConstSharedArray< Element, Device, Index > :: bind( const Element* data,
                                                             const Index size )
 {
    tnlAssert( size >= 0,
-              cerr << "You try to set size of tnlConstSharedArray to negative value."
-                   << "New size: " << size << endl );
+              std::cerr << "You try to set size of tnlConstSharedArray to negative value."
+                        << "New size: " << size << std::endl );
    tnlAssert( data != 0,
-              cerr << "You try to use null pointer to data for tnlConstSharedArray." );
+              std::cerr << "You try to use null pointer to data for tnlConstSharedArray." );
 
    this->size = size;
    this->data = data;
@@ -138,9 +136,9 @@ template< typename Element,
 Element tnlConstSharedArray< Element, Device, Index > :: getElement( Index i ) const
 {
    tnlAssert( 0 <= i && i < this->getSize(),
-              cerr << "Wrong index for getElement method in tnlConstSharedArray with name "
-                   << " index is " << i
-                   << " and array size is " << this->getSize() );
+              std::cerr << "Wrong index for getElement method in tnlConstSharedArray with name "
+                        << " index is " << i
+                        << " and array size is " << this->getSize() );
    return tnlArrayOperations< Device >::getMemoryElement( &( this->data[ i ] ) );
 };
 
@@ -151,9 +149,9 @@ __cuda_callable__
 const Element& tnlConstSharedArray< Element, Device, Index > :: operator[] ( Index i ) const
 {
    tnlAssert( 0 <= i && i < this->getSize(),
-              cerr << "Wrong index for operator[] in tnlConstSharedArray with name "
-                   << " index is " << i
-                   << " and array size is " << this->getSize() );
+              std::cerr << "Wrong index for operator[] in tnlConstSharedArray with name "
+                        << " index is " << i
+                        << " and array size is " << this->getSize() );
    // TODO: add static assert - this does not make sense for tnlCudaDevice
    return tnlArrayOperations< Device >::getArrayElementReference( this->data, i );
 };
@@ -237,7 +235,7 @@ template< typename Element,
 bool tnlConstSharedArray< Element, Device, Index > :: save( tnlFile& file ) const
 {
    tnlAssert( this->size != 0,
-              cerr << "You try to save empty array." );
+              std::cerr << "You try to save empty array." );
    if( ! tnlObject :: save( file ) )
       return false;
 #ifdef HAVE_NOT_CXX11
@@ -248,8 +246,8 @@ bool tnlConstSharedArray< Element, Device, Index > :: save( tnlFile& file ) cons
       return false;
    if( ! file. write< Element, Device, Index >( this->data, this->size ) )
    {
-      cerr << "I was not able to WRITE tnlConstSharedArray " 
-           << " with size " << this->getSize() << endl;
+      std::cerr << "I was not able to WRITE tnlConstSharedArray " 
+                << " with size " << this->getSize() << std::endl;
       return false;
    }
    return true;

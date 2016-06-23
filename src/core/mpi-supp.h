@@ -21,8 +21,6 @@
 #include <iostream>
 #include <cstdlib>
 
-using namespace std;
-
 #ifdef HAVE_MPI
    #include <mpi.h>
 #else
@@ -108,7 +106,7 @@ template< class T > void MPIBcast( T& data,
 
 inline void MPIBcast( tnlString& data, int cout, int root, MPI_Comm comm = MPI_COMM_WORLD )
 {
-   cerr << "Call method MPIBcast of mString instead of function MPIBcast( mString&, ... ) " << endl;
+   std::cerr << "Call method MPIBcast of mString instead of function MPIBcast( mString&, ... ) " << std::endl;
    abort();    
 }
 #else
