@@ -21,6 +21,7 @@
 
 #include <core/tnlCuda.h>
 #include <mesh/tnlDimensionsTag.h>
+#include <mesh/grids/tnlNeighbourGridEntityGetter.h>
 
 template< typename GridEntity,
           int NeighbourEntityDimensions >

@@ -23,12 +23,13 @@
 
 #include <core/tnlCuda.h>
 #include <core/vectors/tnlStaticVector.h>
+#include <mesh/tnlGrid.h>
 
 
 using namespace std;
 
 
-class tnlGrid
+class tnlTestGrid
 {
    public:
 
@@ -53,7 +54,7 @@ class TestGridEntity
 {
    public:
       
-      typedef tnlGrid GridType;
+      typedef tnlTestGrid GridType;
       
       __device__ TestGridEntity( const GridType& grid )
       : grid( grid ), entity( *this )
@@ -67,7 +68,7 @@ class TestGridEntity
             
 };
 
-__global__ void testKernel( const tnlGrid* grid )
+__global__ void testKernel( const tnlTestGrid* grid )
 {   
    TestGridEntity entity( *grid );
 }
@@ -80,7 +81,7 @@ int main( int argc, char* argv[] )
    dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
                       gridYSize / 16 + ( gridYSize % 16 != 0 ) );
       
-   typedef tnlGrid GridType;
+   typedef tnlTestGrid GridType;
    typedef typename GridType::VertexType VertexType;
    typedef typename GridType::CoordinatesType CoordinatesType;      
    GridType grid;
