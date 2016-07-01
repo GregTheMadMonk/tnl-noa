@@ -28,33 +28,10 @@
 
 using namespace std;
 
-
-class tnlTestGrid
-{
-   public:
-
-   typedef tnlStaticVector< 2, double > VertexType;
-   typedef tnlStaticVector< 2, int > CoordinatesType;   
-   
-   CoordinatesType dimensions;
-   
-   int numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfFaces, numberOfVertices;
-
-   VertexType origin, proportions;
-   
-   VertexType spaceSteps;
-   
-   double spaceStepsProducts[ 5 ][ 5 ];
-   
-};
-
-
-
+template< typename GridType >
 class TestGridEntity
 {
-   public:
-      
-      typedef tnlTestGrid GridType;
+   public:      
       
       __device__ TestGridEntity( const GridType& grid )
       : grid( grid ), entity( *this )
@@ -67,6 +44,30 @@ class TestGridEntity
       const TestGridEntity& entity;
             
 };
+
+
+class tnlTestGrid
+{
+   public:
+   
+      typedef TestGridEntity< tnlTestGrid > Cell;
+      typedef tnlStaticVector< 2, double > VertexType;
+      typedef tnlStaticVector< 2, int > CoordinatesType;   
+
+      CoordinatesType dimensions;
+
+      int numberOfCells, numberOfNxFaces, numberOfNyFaces, numberOfFaces, numberOfVertices;
+
+      VertexType origin, proportions;
+
+      VertexType spaceSteps;
+
+      double spaceStepsProducts[ 5 ][ 5 ];
+   
+};
+
+
+
 
 template< typename GridType, typename GridEntity >
 __global__ void testKernel( const GridType* grid )
