@@ -24,8 +24,8 @@
 #include <mesh/grids/tnlNeighbourGridEntityGetter.h>
 
 // TODO: remove this
-#include <../tests/benchmarks/heat-equation-benchmark/tnlTestGridEntity.h>
-#include <../tests/benchmarks/heat-equation-benchmark/tnlTestNeighbourGridEntityGetter2D_impl.h>
+//#include <../tests/benchmarks/heat-equation-benchmark/tnlTestGridEntity.h>
+//#include <../tests/benchmarks/heat-equation-benchmark/tnlTestNeighbourGridEntityGetter2D_impl.h>
 /////
 
 template< typename Real,
@@ -56,10 +56,10 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    
 
    // TODO: remove this
-   template< int EntityDimensions, 
-             typename Config = tnlGridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimensions, Config >;
-   typedef TestMeshEntity< meshDimensions, tnlGridEntityCrossStencilStorage< 1 > > TestCell;
+   //template< int EntityDimensions, 
+   //          typename Config = tnlGridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
+   //using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimensions, Config >;
+   //typedef TestMeshEntity< meshDimensions, tnlGridEntityCrossStencilStorage< 1 > > TestCell;
    /////
    
    static constexpr int getMeshDimensions() { return meshDimensions; };
