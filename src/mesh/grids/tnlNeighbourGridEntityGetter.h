@@ -20,12 +20,12 @@
 
 #include <core/tnlAssert.h>
 
-enum tnlGridEntityStencilStorage
+/*enum tnlGridEntityStencilStorage
 { 
    tnlGridEntityNoStencil = 0,
    tnlGridEntityCrossStencil,
    tnlGridEntityFullStencil
-};
+};*/
 
 template< int storage >
 class tnlGridEntityStencilStorageTag

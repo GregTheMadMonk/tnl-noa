@@ -39,7 +39,6 @@ class tnlGridEntity
 {
 };
 
-
 template< int Dimensions,
           typename Real,
           typename Device,

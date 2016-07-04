@@ -19,9 +19,9 @@
 #define	TNLGRIDENTITYINDEXER_IMPL_H
 
 #include <mesh/grids/tnlGridEntityGetter.h>
-#include <mesh/grids/tnlGrid1D.h>
-#include <mesh/grids/tnlGrid2D.h>
-#include <mesh/grids/tnlGrid3D.h>
+//#include <mesh/grids/tnlGrid1D.h>
+//#include <mesh/grids/tnlGrid2D.h>
+//#include <mesh/grids/tnlGrid3D.h>
 
 
 /****

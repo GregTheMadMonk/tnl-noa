@@ -18,10 +18,14 @@
 #ifndef SRC_MESH_TNLGRID2D_H_
 #define SRC_MESH_TNLGRID2D_H_
 
-#include <mesh/tnlGrid.h>
+//#include <mesh/tnlGrid.h>
+#include <core/tnlLogger.h>
 #include <mesh/grids/tnlGridEntityTopology.h>
 #include <mesh/grids/tnlGridEntityGetter.h>
 #include <mesh/grids/tnlNeighbourGridEntityGetter.h>
+#include <mesh/grids/tnlGridEntity.h>
+#include <mesh/grids/tnlGridEntityConfig.h>
+
 
 // TODO: remove this
 //#include <../tests/benchmarks/heat-equation-benchmark/tnlTestGridEntity.h>
