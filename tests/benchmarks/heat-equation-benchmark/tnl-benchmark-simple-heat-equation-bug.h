@@ -224,16 +224,6 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       NeighbourGridEntityType getEntity() const
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() + CoordinatesType( stepX, stepY ) < entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
          return NeighbourGridEntityType( this->grid,
                                          CoordinatesType( entity.getCoordinates().x() + stepX,
                                                           entity.getCoordinates().y() + stepY ) );
@@ -243,16 +233,6 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() + CoordinatesType( stepX, stepY ) < entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
          return this->entity.getIndex() + stepY * entity.getMesh().getDimensions().x() + stepX;
       }
       
@@ -308,16 +288,6 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       NeighbourGridEntityType getEntity() const
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() + CoordinatesType( stepX, stepY ) < entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
             return NeighbourGridEntityType( this->entity.getMesh(),
                                             CoordinatesType( entity.getCoordinates().x() + stepX,
                                                              entity.getCoordinates().y() + stepY ) );
@@ -327,16 +297,6 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() + CoordinatesType( stepX, stepY ) < entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
 #ifndef HAVE_CUDA // TODO: fix this to work with CUDA         
          if( ( stepX != 0 && stepY != 0 ) ||
              ( stepX < -stencilSize || stepX > stencilSize ||
@@ -437,24 +397,6 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       NeighbourGridEntityType getEntity() const
       {
-         tnlAssert( ! stepX + ! stepY == 1,
-                    cerr << "Only one of the steps can be non-zero: stepX = " << stepX << " stepY = " << stepY );
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + 
-                       CoordinatesType( stepX + ( stepX < 0 ),
-                                        stepY + ( stepY < 0 ) ) >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() + 
-                       CoordinatesType( stepX + ( stepX < 0 ), 
-                                        stepY + ( stepY < 0 ) ) 
-                       < entity.getMesh().getDimensions() + CoordinatesType( Sign( stepX ), Sign( stepY ) ),
-              cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) ) = "
-                   << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) )
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
          return NeighbourGridEntityType( this->entity.getMesh(),
                                          CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
                                                           entity.getCoordinates().y() + stepY + ( stepY < 0 ) ),
@@ -517,23 +459,6 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       NeighbourGridEntityType getEntity() const
       {
-         tnlAssert( stepX != 0 && stepY != 0,
-                    cerr << " stepX = " << stepX << " stepY = " << stepY );
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + 
-                       CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) ) >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() + 
-                       CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) ) 
-                       < entity.getMesh().getDimensions() + CoordinatesType( Sign( stepX ), Sign( stepY ) ),
-              cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) ) = "
-                   << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) )
-                   << " entity.getMesh().getDimensions() + CoordinatesType( Sign( stepX ), Sign( stepY ) ) = " 
-                   << entity.getMesh().getDimensions()  + CoordinatesType( Sign( stepX ), Sign( stepY ) )
-                   << " EntityDimensions = " << EntityDimensions );
          return NeighbourGridEntityType( this->grid,
                                          CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
                                                           entity.getCoordinates().y() + stepY + ( stepY < 0 ) ) );
@@ -555,165 +480,6 @@ class tnlNeighbourGridEntityGetter<
       
       //tnlNeighbourGridEntityGetter(){};      
 };
-
-/****
- * +-----------------+---------------------------+-------------------+
- * | EntityDimenions | NeighbourEntityDimensions |  Stencil Storage  |       
- * +-----------------+---------------------------+-------------------+
- * |       1         |              2            |       None        |
- * +-----------------+---------------------------+-------------------+
- */
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Config,
-          typename StencilStorage >
-class tnlNeighbourGridEntityGetter< 
-   tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 1, Config >,
-   2,
-   StencilStorage >
-{
-   public:
-      
-      static const int EntityDimensions = 1;
-      static const int NeighbourEntityDimensions = 2;
-      typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, EntityDimensions, Config > GridEntityType;
-      typedef tnlGridEntity< GridType, NeighbourEntityDimensions, Config > NeighbourGridEntityType;
-      typedef Real RealType;
-      typedef Index IndexType;
-      typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef tnlGridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
-      typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
-
-      __cuda_callable__ inline
-      tnlNeighbourGridEntityGetter( const GridEntityType& entity )
-      : entity( entity )
-      {}
-      
-      template< int stepX, int stepY >
-      __cuda_callable__ inline
-      NeighbourGridEntityType getEntity() const
-      {
-         /*tnlAssert( ( ( !! stepX ) == ( !! entity.getOrientation().x() ) ) &&
-                    ( ( !! stepY ) == ( !! entity.getOrientation().y() ) ),
-                    cerr << "( stepX, stepY ) cannot be perpendicular to entity coordinates: stepX = " << stepX << " stepY = " << stepY
-                         << " entity.getOrientation() = " << entity.getOrientation() );*/
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < entity.getMesh().getDimensions() + entity.getOrientation(),
-              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() + entity.getOrientation() = " << entity.getMesh().getDimensions() + entity.getOrientation()
-                   << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + 
-                       CoordinatesType( stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ), 
-                                        stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ) ) >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() + 
-                       CoordinatesType( stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ), 
-                                        stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ) ) < entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 )  * ( entity.getOrientation().x() != 0.0 ), stepY + ( stepY < 0 ) * ( entity.getOrientation().y() != 0.0 ) ) = "
-                   << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) )
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
-         return NeighbourGridEntityType( this->entity.getMesh(),
-                     CoordinatesType( entity.getCoordinates().x() + stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ),
-                                      entity.getCoordinates().y() + stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ) ) );
-      }
-      
-      template< int stepX, int stepY >
-      __cuda_callable__ inline
-      IndexType getEntityIndex() const
-      {
-         return GridEntityGetter::getEntityIndex( this->entity.getMesh(), this->template getEntity< stepX, stepY >() );
-      }
-      
-      __cuda_callable__
-      void refresh( const GridType& grid, const IndexType& entityIndex ){};
-      
-   protected:
-
-      const GridEntityType& entity;
-};
-
-/****
- * +-----------------+---------------------------+-------------------+
- * | EntityDimenions | NeighbourEntityDimensions |  Stencil Storage  |       
- * +-----------------+---------------------------+-------------------+
- * |       0         |              0            |       None        |
- * +-----------------+---------------------------+-------------------+
- */
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Config,
-          typename StencilStorage >
-class tnlNeighbourGridEntityGetter< 
-   tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 0, Config >,
-   0,
-   StencilStorage >
-{
-   public:
-      
-      static const int EntityDimensions = 0;
-      static const int NeighbourEntityDimensions = 0;
-      typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, EntityDimensions, Config > GridEntityType;
-      typedef tnlGridEntity< GridType, NeighbourEntityDimensions, Config > NeighbourGridEntityType;
-      typedef Real RealType;
-      typedef Index IndexType;
-      typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef tnlGridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
-
-      __cuda_callable__ inline
-      tnlNeighbourGridEntityGetter( const GridEntityType& entity )
-      : entity( entity )
-      {}
-            
-      template< int stepX, int stepY >
-      __cuda_callable__ inline
-      NeighbourGridEntityType getEntity() const
-      {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() <= entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() + CoordinatesType( stepX, stepY ) <= entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
-         return NeighbourGridEntityType( this->grid,
-                                         CoordinatesType( entity.getCoordinates().x() + stepX,
-                                                          entity.getCoordinates().y() + stepY ) );
-      }
-      
-      template< int stepX, int stepY >
-      __cuda_callable__ inline
-      IndexType getEntityIndex() const
-      {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() <= entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + CoordinatesType( stepX, stepY ) >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() + CoordinatesType( stepX, stepY ) <= entity.getMesh().getDimensions(),
-              cerr << "entity.getCoordinates()  + CoordinatesType( stepX, stepY ) = " << entity.getCoordinates()  + CoordinatesType( stepX, stepY )
-                   << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
-                   << " EntityDimensions = " << EntityDimensions );
-         return this->entity.getIndex() + stepY * ( entity.getMesh().getDimensions().x() + 1 ) + stepX;
-      }
-      
-      __cuda_callable__
-      void refresh( const GridType& grid, const IndexType& entityIndex ){};
-
-   protected:
-
-      const GridEntityType& entity;
-      
-      //tnlNeighbourGridEntityGetter(){};      
-};
-
 
 
 //#include <mesh/grids/tnlNeighbourGridEntitiesStorage.h>
@@ -913,109 +679,33 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
       static const int meshDimensions = GridType::meshDimensions;
       
       static const int entityDimensions = EntityDimensions;
-            
-      constexpr static int getDimensions() { return EntityDimensions; };
-      
-      constexpr static int getMeshDimensions() { return meshDimensions; };
-      
-      typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
-      typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
-      typedef tnlGridEntity< GridType, entityDimensions, Config > ThisType;
-      typedef typename GridType::VertexType VertexType;
-      
-      typedef tnlNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
-      
-      template< int NeighbourEntityDimensions = entityDimensions >
-      using NeighbourEntities = 
-         tnlNeighbourGridEntityGetter<
-            tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
-                           EntityDimensions,
-                           Config >,
-            NeighbourEntityDimensions >;
-      
-      __cuda_callable__ inline
-      tnlGridEntity( const GridType& grid );
-      
-      __cuda_callable__ inline
-      tnlGridEntity( const GridType& grid,
-                     const CoordinatesType& coordinates,
-                     const EntityOrientationType& orientation,
-                     const EntityBasisType& basis );
-      
-      __cuda_callable__ inline
-      const CoordinatesType& getCoordinates() const;
-      
-      __cuda_callable__ inline
-      CoordinatesType& getCoordinates();
-      
-      __cuda_callable__ inline
-      void setCoordinates( const CoordinatesType& coordinates );
-
-      /***
-       * Call this method every time the coordinates are changed
-       * to recompute the mesh entity index. The reason for this strange
-       * mechanism is a performance.
-       */
-      __cuda_callable__ inline
-      //void setIndex( IndexType entityIndex );
-      void refresh();
-
-      __cuda_callable__ inline
-      Index getIndex() const;
-      
-      __cuda_callable__ inline
-      const EntityOrientationType& getOrientation() const;
-      
-      __cuda_callable__ inline
-      void setOrientation( const EntityOrientationType& orientation );
-      
-      __cuda_callable__ inline
-      const EntityBasisType& getBasis() const;
-      
-      __cuda_callable__ inline
-      EntityBasisType& getBasis();
-      
-      __cuda_callable__ inline
-      void setBasis( const EntityBasisType& basis );
-      
-      template< int NeighbourEntityDimensions = entityDimensions >
-      __cuda_callable__ inline
-      const NeighbourEntities< NeighbourEntityDimensions >&
-      getNeighbourEntities() const;
-      
-      __cuda_callable__ inline
-      bool isBoundaryEntity() const;
-      
-      __cuda_callable__ inline
-      VertexType getCenter() const;
-      
-      __cuda_callable__ inline
-      const RealType& getMeasure() const;
-      
-      __cuda_callable__ inline
-      const GridType& getMesh() const;
-      
-   protected:
-      
-      const GridType& grid;
-      
-      IndexType entityIndex;
-      
-      CoordinatesType coordinates;
-      
-      EntityOrientationType orientation;
-      
-      EntityBasisType basis;
-      
-      NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
-      
-      //__cuda_callable__ inline
-      //tnlGridEntity();
-      
-      friend class tnlBoundaryGridEntityChecker< ThisType >;
-      
-      friend class tnlGridEntityCenterGetter< ThisType >;
 };
+
+/****
+ * Specialization for vertices
+ */
+template< int Dimensions,
+          typename Real,
+          typename Device,
+          typename Index,
+          typename Config >
+class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
+{
+   public:
+      
+      typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
+      typedef GridType MeshType;
+      typedef typename GridType::RealType RealType;
+      typedef typename GridType::IndexType IndexType;
+      typedef typename GridType::CoordinatesType CoordinatesType;
+      typedef typename GridType::VertexType VertexType;
+      typedef Config ConfigType;
+      
+      static const int meshDimensions = GridType::meshDimensions;
+      
+      static const int entityDimensions = 0;      
+};
+
 
 /****
  * Specializations for cells
@@ -1061,22 +751,39 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Con
 
 
       __cuda_callable__ inline
-      tnlGridEntity( const GridType& grid );
-      
+      tnlGridEntity( const GridType& grid )
+      : grid( grid ),
+        entityIndex( -1 ),
+        neighbourEntitiesStorage( *this )
+      {
+         this->coordinates = CoordinatesType( ( Index ) 0 );
+         this->orientation = EntityOrientationType( ( Index ) 0 );
+         this->basis = EntityBasisType( ( Index ) 1 );
+      }
+            
       __cuda_callable__ inline
       tnlGridEntity( const GridType& grid,
                      const CoordinatesType& coordinates,
                      const EntityOrientationType& orientation = EntityOrientationType( 0 ),
-                     const EntityBasisType& basis = EntityBasisType( 1 ) );
+                     const EntityBasisType& basis = EntityBasisType( 1 ) )
+      : grid( grid ),
+        entityIndex( -1 ),
+        coordinates( coordinates ),
+        neighbourEntitiesStorage( *this )
+      {
+         this->orientation = EntityOrientationType( ( Index ) 0 );
+         this->basis = EntityBasisType( ( Index ) 1 );
+      }
+      
       
       __cuda_callable__ inline
-      const CoordinatesType& getCoordinates() const;      
+      const CoordinatesType& getCoordinates() const { return this->coordinates; };      
       
       __cuda_callable__ inline
-      CoordinatesType& getCoordinates();  
+      CoordinatesType& getCoordinates()  { return this->coordinates; };  
       
       __cuda_callable__ inline
-      void setCoordinates( const CoordinatesType& coordinates );
+      void setCoordinates( const CoordinatesType& coordinates ) {this->coordinates = coordinates;};
 
       /***
        * Call this method every time the coordinates are changed
@@ -1085,19 +792,22 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Con
        */
       __cuda_callable__ inline
       //void setIndex( IndexType entityIndex );
-      void refresh();
+      void refresh(){
+         this->entityIndex = this->grid.getEntityIndex( *this );
+         this->neighbourEntitiesStorage.refresh( this->grid, this->entityIndex );
+      };
 
       __cuda_callable__ inline
-      Index getIndex() const;
+      Index getIndex() const { return this->entityIndex; };
             
       __cuda_callable__ inline
-      const EntityOrientationType getOrientation() const;
+      const EntityOrientationType getOrientation() const {return EntityOrientationType( ( IndexType ) 0 );};
       
       __cuda_callable__ inline
       void setOrientation( const EntityOrientationType& orientation ){};
       
       __cuda_callable__ inline
-      const EntityBasisType getBasis() const;
+      const EntityBasisType getBasis() const { return EntityBasisType( ( IndexType ) 1 );};
       
       __cuda_callable__ inline
       void setBasis( const EntityBasisType& basis ){};
@@ -1105,10 +815,10 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Con
       template< int NeighbourEntityDimensions = Dimensions >
       __cuda_callable__ inline
       const NeighbourEntities< NeighbourEntityDimensions >&
-      getNeighbourEntities() const;
+      getNeighbourEntities() const { return neighbourEntitiesStorage.template getNeighbourEntities< NeighbourEntityDimensions >();};
       
       __cuda_callable__ inline
-      bool isBoundaryEntity() const;
+      bool isBoundaryEntity() const { return tnlBoundaryGridEntityChecker< ThisType >::isBoundaryEntity( *this );};
       
       __cuda_callable__ inline
       VertexType getCenter() const;
@@ -1144,555 +854,11 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Con
       friend class tnlGridEntityCenterGetter< ThisType >;
 };
 
-/****
- * Specialization for vertices
- */
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
-{
-   public:
-      
-      typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
-      typedef GridType MeshType;
-      typedef typename GridType::RealType RealType;
-      typedef typename GridType::IndexType IndexType;
-      typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef typename GridType::VertexType VertexType;
-      typedef Config ConfigType;
-      
-      static const int meshDimensions = GridType::meshDimensions;
-      
-      static const int entityDimensions = 0;
-      
-      constexpr static int getDimensions() { return entityDimensions; };
-      
-      constexpr static int getMeshDimensions() { return meshDimensions; };      
-      
-      typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
-      typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
-      typedef tnlGridEntity< GridType, entityDimensions, Config > ThisType;
-      typedef tnlNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
-      
-      template< int NeighbourEntityDimensions = entityDimensions >
-      using NeighbourEntities = 
-         tnlNeighbourGridEntityGetter<
-            tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
-                           entityDimensions,
-                           Config >,
-            NeighbourEntityDimensions >;
-
-
-      __cuda_callable__ inline
-      tnlGridEntity( const GridType& grid );
-      
-      __cuda_callable__ inline
-      tnlGridEntity( const GridType& grid,
-                     const CoordinatesType& coordinates,
-                     const EntityOrientationType& orientation,
-                     const EntityBasisType& basis );
-      
-      __cuda_callable__ inline
-      const CoordinatesType& getCoordinates() const;
-      
-      __cuda_callable__ inline
-      CoordinatesType& getCoordinates();
-      
-      __cuda_callable__ inline
-      void setCoordinates( const CoordinatesType& coordinates );
-
-      /***
-       * Call this method every time the coordinates are changed
-       * to recompute the mesh entity index. The reason for this strange
-       * mechanism is a performance.
-       */
-      __cuda_callable__ inline
-      //void setIndex( IndexType entityIndex );
-      void refresh();
-
-      __cuda_callable__ inline
-      Index getIndex() const;
-            
-      __cuda_callable__ inline
-      const EntityOrientationType getOrientation() const;     
-      
-      __cuda_callable__ inline
-      void setOrientation( const EntityOrientationType& orientation ){};
-      
-      __cuda_callable__ inline
-      const EntityBasisType getBasis() const;
-      
-      __cuda_callable__ inline
-      void setBasis( const EntityBasisType& basis ){};
-
-      
-      template< int NeighbourEntityDimensions = entityDimensions >
-      __cuda_callable__ inline
-      const NeighbourEntities< NeighbourEntityDimensions >&
-      getNeighbourEntities() const;
-      
-      __cuda_callable__ inline
-      bool isBoundaryEntity() const;
-      
-      __cuda_callable__ inline
-      VertexType getCenter() const;
-
-      __cuda_callable__ inline
-      const RealType getMeasure() const;      
-      
-      __cuda_callable__ inline
-      VertexType getEntityProportions() const;
-      
-      __cuda_callable__ inline
-      const GridType& getMesh() const;
-      
-   protected:
-      
-      const GridType& grid;
-      
-      IndexType entityIndex;      
-      
-      CoordinatesType coordinates;
-      
-      EntityOrientationType orientation;
-      
-      EntityBasisType basis;
-      
-      NeighbourGridEntitiesStorageType neighbourEntitiesStorage;
-            
-      friend class tnlBoundaryGridEntityChecker< ThisType >;
-      
-      friend class tnlGridEntityCenterGetter< ThisType >;
-};
 
 //#include <mesh/grids/tnlGridEntity.h>
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-tnlGridEntity( const tnlGrid< Dimensions, Real, Device, Index >& grid )
-: grid( grid ),
-  entityIndex( -1 ),
-  coordinates( 0 ),
-  orientation( 0 ),
-  basis( 0 ),
-  neighbourEntitiesStorage( *this )
-{
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-tnlGridEntity( const tnlGrid< Dimensions, Real, Device, Index >& grid,
-               const CoordinatesType& coordinates,
-               const EntityOrientationType& orientation,
-               const EntityBasisType& basis )
-: grid( grid ),
-  entityIndex( -1 ),
-  coordinates( coordinates ),
-  orientation( orientation ),
-  basis( basis ),
-  neighbourEntitiesStorage( *this )
-{  
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::CoordinatesType& 
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-getCoordinates() const
-{
-   return this->coordinates;
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::CoordinatesType& 
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-getCoordinates()
-{
-   return this->coordinates;
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-void
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-setCoordinates( const CoordinatesType& coordinates )
-{
-   this->coordinates = coordinates;
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-void
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-refresh()
-{
-   this->entityIndex = this->grid.getEntityIndex( *this );
-   this->neighbourEntitiesStorage.refresh( this->grid, this->entityIndex );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-Index
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-getIndex() const
-{
-   typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
-   typedef typename GridType::template MeshEntity< EntityDimensions > EntityType;
-   tnlAssert( this->entityIndex >= 0 &&
-              this-> entityIndex < grid.template getEntitiesCount< EntityType >(),
-              cerr << "this->entityIndex = " << this->entityIndex
-                   << " grid.template getEntitiesCount< EntityDimensions >() = " << grid.template getEntitiesCount< EntityType >() );
-   tnlAssert( this->entityIndex == grid.getEntityIndex( *this ),
-              cerr << "this->entityIndex = " << this->entityIndex
-                   << " grid.getEntityIndex( *this ) = " << grid.getEntityIndex( *this ) );
-   return this->entityIndex;
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::EntityOrientationType& 
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-getOrientation() const
-{
-   return this->orientation;
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-void 
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-setOrientation( const EntityOrientationType& orientation )
-{
-   this->orientation = orientation;
-   this->basis = EntityBasisType( 1 ) - tnlAbs( orientation );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::EntityBasisType& 
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-getBasis() const
-{
-   return this->basis;
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-void 
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-setBasis( const EntityBasisType& basis )
-{
-   this->basis = basis;
-   this->orientation = EntityOrientationType( 1 ) - tnlAbs( basis );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-   template< int NeighbourEntityDimensions >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::template NeighbourEntities< NeighbourEntityDimensions >&
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-getNeighbourEntities() const 
-{
-   return neighbourEntitiesStorage.template getNeighbourEntities< NeighbourEntityDimensions >();
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-bool
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-isBoundaryEntity() const
-{
-   return tnlBoundaryGridEntityChecker< ThisType >::isBoundaryEntity( *this );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-typename tnlGrid< Dimensions, Real, Device, Index >::VertexType
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-getCenter() const
-{
-   return tnlGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::RealType&
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-getMeasure() const
-{
-   return tnlGridEntityMeasureGetter< GridType, EntityDimensions >::getMeasure( this->getMesh(), *this );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          int EntityDimensions,
-          typename Config >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::GridType&
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-getMesh() const
-{
-   return this->grid;
-}
-
 /****
  * Specialization for cells
  */
-/*template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__ inline
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >::
-tnlGridEntity()
-{
-}*/
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
-tnlGridEntity( const GridType& grid )
-: grid( grid ),
-  entityIndex( -1 ),
-  neighbourEntitiesStorage( *this )
-{
-   this->coordinates = CoordinatesType( ( Index ) 0 );
-   this->orientation = EntityOrientationType( ( Index ) 0 );
-   this->basis = EntityBasisType( ( Index ) 1 );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
-tnlGridEntity( const GridType& grid,
-               const CoordinatesType& coordinates,
-               const EntityOrientationType& orientation,
-               const EntityBasisType& basis )
-: grid( grid ),
-  entityIndex( -1 ),
-  coordinates( coordinates ),
-  neighbourEntitiesStorage( *this )
-{
-   this->orientation = EntityOrientationType( ( Index ) 0 );
-   this->basis = EntityBasisType( ( Index ) 1 );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::CoordinatesType& 
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
-getCoordinates() const
-{
-   return this->coordinates;
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::CoordinatesType& 
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
-getCoordinates()
-{
-   return this->coordinates;
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-void
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
-setCoordinates( const CoordinatesType& coordinates )
-{
-   this->coordinates = coordinates;
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-void
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
-refresh()
-{
-   this->entityIndex = this->grid.getEntityIndex( *this );
-   this->neighbourEntitiesStorage.refresh( this->grid, this->entityIndex );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-Index
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
-getIndex() const
-{
-   tnlAssert( this->entityIndex >= 0 &&
-              this-> entityIndex < grid.template getEntitiesCount< ThisType >(),
-              cerr << "this->entityIndex = " << this->entityIndex
-                   << " grid.template getEntitiesCount< Dimensions >() = " << grid.template getEntitiesCount< ThisType >() );
-   tnlAssert( this->entityIndex == grid.getEntityIndex( *this ),
-              cerr << "this->index = " << this->entityIndex
-                   << " grid.getEntityIndex( *this ) = " << grid.getEntityIndex( *this ) );
-   return this->entityIndex;
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::EntityOrientationType 
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
-getOrientation() const
-{
-   return EntityOrientationType( ( IndexType ) 0 );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::EntityBasisType 
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
-getBasis() const
-{
-   return EntityBasisType( ( IndexType ) 1 );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-   template< int NeighbourEntityDimensions >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::template NeighbourEntities< NeighbourEntityDimensions >&
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
-getNeighbourEntities() const
-{
-   return neighbourEntitiesStorage.template getNeighbourEntities< NeighbourEntityDimensions >();
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-bool
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
-isBoundaryEntity() const
-{
-   return tnlBoundaryGridEntityChecker< ThisType >::isBoundaryEntity( *this );
-}
-
 template< int Dimensions,
           typename Real,
           typename Device,
@@ -1747,225 +913,6 @@ getMesh() const
 }
 
 
-/****
- * Specialization for vertices
- */
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-tnlGridEntity( const GridType& grid )
- : grid( grid ),
-   entityIndex( -1 ),
-   coordinates( 0 ),
-   orientation( 1 ),
-   basis( 0 ),
-   neighbourEntitiesStorage( *this )
-{
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-tnlGridEntity( const GridType& grid,
-               const CoordinatesType& coordinates,
-               const EntityOrientationType& orientation,
-               const EntityBasisType& basis )
-: grid( grid ),
-  entityIndex( -1 ),
-  coordinates( coordinates ),
-  neighbourEntitiesStorage( *this )
-{  
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::CoordinatesType& 
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-getCoordinates() const
-{
-   return this->coordinates;
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::CoordinatesType& 
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-getCoordinates()
-{
-   return this->coordinates;
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-void
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-setCoordinates( const CoordinatesType& coordinates )
-{
-   this->coordinates = coordinates;
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-void
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-refresh()
-{
-   this->entityIndex = this->grid.getEntityIndex( *this );
-   this->neighbourEntitiesStorage.refresh( this->grid, this->entityIndex );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-Index
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-getIndex() const
-{
-   typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
-   typedef typename GridType::Vertex Vertex;
-   tnlAssert( this->entityIndex >= 0 &&
-              this-> entityIndex < grid.template getEntitiesCount< Vertex >(),
-              cerr << "this->entityIndex = " << this->entityIndex
-                   << " grid.template getEntitiesCount< 0 >() = " << grid.template getEntitiesCount< Vertex >() );
-   tnlAssert( this->entityIndex == grid.getEntityIndex( *this ),
-              cerr << "this->entityIndex = " << this->entityIndex
-                   << " grid.getEntityIndex( *this ) = " << grid.getEntityIndex( *this ) );
-   return this->entityIndex;
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::EntityOrientationType
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-getOrientation() const
-{
-   return EntityOrientationType( ( IndexType ) 0 );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::EntityBasisType
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-getBasis() const
-{
-   return EntityBasisType( ( IndexType ) 0 );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-   template< int NeighbourEntityDimensions >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::template NeighbourEntities< NeighbourEntityDimensions >&
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-getNeighbourEntities() const
-{
-   return neighbourEntitiesStorage.template getNeighbourEntities< NeighbourEntityDimensions >();
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-bool
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-isBoundaryEntity() const
-{
-   return tnlBoundaryGridEntityChecker< ThisType >::isBoundaryEntity( *this );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-typename tnlGrid< Dimensions, Real, Device, Index >::VertexType
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-getCenter() const
-{
-   return tnlGridEntityCenterGetter< ThisType >::getEntityCenter( *this );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::RealType
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-getMeasure() const
-{
-   return 0.0;
-}
-
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::VertexType
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-getEntityProportions() const
-{
-   return VertexType( 0.0 );
-}
-
-template< int Dimensions,
-          typename Real,
-          typename Device,
-          typename Index,
-          typename Config >
-__cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::GridType&
-tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
-getMesh() const
-{
-   return this->grid;
-}
-
 //#include <mesh/grids/tnlGridEntityGetter_impl.h>
 /****
  * 2D grid
@@ -1989,11 +936,6 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 2 >
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
-                << " entityDimensions = " << entityDimensions );
-
          const CoordinatesType dimensions = grid.getDimensions();         
 
          return GridEntity
@@ -2008,11 +950,6 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 2 >
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < grid.getDimensions(),
-              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                   << " grid.getDimensions() = " << grid.getDimensions() );
-
          //const CoordinatesType coordinates = entity.getCoordinates();
          //const CoordinatesType dimensions = grid.getDimensions();
          
@@ -2040,12 +977,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 1 >
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
-      {
-         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
-                << " entityDimensions = " << entityDimensions );
-         
+      {         
          const CoordinatesType dimensions = grid.getDimensions();
 
          if( index < grid.numberOfNxFaces )
@@ -2069,13 +1001,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 1 >
       __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
-      {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < grid.getDimensions() + tnlAbs( entity.getOrientation() ),
-                 cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                      << " dimensions.x() = " << grid.getDimensions()
-                      << " tnlAbs( entity.getOrientation() ) = " << tnlAbs( entity.getOrientation() ) );
-                  
+      {                  
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
          
@@ -2104,11 +1030,6 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 0 >
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
       {
-         tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           cerr << " index = " << index
-                << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
-                << " entityDimensions = " << entityDimensions );
-
          const CoordinatesType dimensions = grid.getDimensions();
 
          const IndexType aux = dimensions.x() + 1;
@@ -2123,11 +1044,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 0 >
       __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
-      {
-         tnlAssert( entity.getCoordinates() >= 0 && entity.getCoordinates() <= grid.getDimensions(),
-            cerr << "entity.getCoordinates() = " << entity.getCoordinates()
-                 << " grid.getDimensions() = " << grid.getDimensions() );
-         
+      {         
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
          
@@ -2166,18 +1083,6 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    static constexpr int getMeshDimensions() { return meshDimensions; };
 
    tnlGrid();
-
-   static tnlString getType();
-
-   tnlString getTypeVirtual() const;
-
-   static tnlString getSerializationType();
-
-   virtual tnlString getSerializationTypeVirtual() const;
-
-   void setDimensions( const Index xSize, const Index ySize );
-
-   void setDimensions( const CoordinatesType& dimensions );
 
    __cuda_callable__
    inline const CoordinatesType& getDimensions() const;
@@ -2220,42 +1125,6 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    inline RealType getSmallestSpaceStep() const;
 
    
-   template< typename GridFunction >
-   typename GridFunction::RealType getAbsMax( const GridFunction& f ) const;
-
-   template< typename GridFunction >
-   typename GridFunction::RealType getLpNorm( const GridFunction& f,
-                                              const typename GridFunction::RealType& p ) const;
-
-   template< typename GridFunction >
-   typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
-                                                        const GridFunction& f2 ) const;
-
-   template< typename GridFunction >
-   typename GridFunction::RealType getDifferenceLpNorm( const GridFunction& f1,
-                                                        const GridFunction& f2,
-                                                        const typename GridFunction::RealType& p ) const;
-
-   //! Method for saving the object to a file as a binary data
-   bool save( tnlFile& file ) const;
-
-   //! Method for restoring the object from a file
-   bool load( tnlFile& file );
-
-   bool save( const tnlString& fileName ) const;
-
-   bool load( const tnlString& fileName );
-
-   bool writeMesh( const tnlString& fileName,
-                   const tnlString& format ) const;
-
-   template< typename MeshFunction >
-   bool write( const MeshFunction& function,
-               const tnlString& fileName,
-               const tnlString& format ) const;
-
-   void writeProlog( tnlLogger& logger );
-
    protected:
 
    __cuda_callable__
@@ -2291,46 +1160,10 @@ tnlGrid< 2, Real, Device, Index > :: tnlGrid()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlGrid< 2, Real, Device, Index > :: getType()
-{
-   return tnlString( "tnlGrid< " ) +
-          tnlString( getMeshDimensions() ) + ", " +
-          tnlString( ::getType< RealType >() ) + ", " +
-          tnlString( Device :: getDeviceType() ) + ", " +
-          tnlString( ::getType< IndexType >() ) + " >";
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
-tnlString tnlGrid< 2, Real, Device, Index > :: getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-tnlString tnlGrid< 2, Real, Device, Index > :: getSerializationType()
-{
-   return HostType::getType();
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-tnlString tnlGrid< 2, Real, Device, Index > :: getSerializationTypeVirtual() const
-{
-   return this->getSerializationType();
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
 __cuda_callable__
 void tnlGrid< 2, Real, Device, Index > :: computeSpaceSteps()
 {
-   if( this->getDimensions().x() > 0 && this->getDimensions().y() > 0 )
+   /*if( this->getDimensions().x() > 0 && this->getDimensions().y() > 0 )
    {
       this->spaceSteps.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
       this->spaceSteps.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
@@ -2381,33 +1214,7 @@ void tnlGrid< 2, Real, Device, Index > :: computeSpaceSteps()
             this->spaceStepsProducts[ i ][ j ] = auxX * auxY;         
          }
       }
-   }
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void tnlGrid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
-{
-   tnlAssert( xSize > 0, cerr << "xSize = " << xSize );
-   tnlAssert( ySize > 0, cerr << "ySize = " << ySize );
-
-   this->dimensions.x() = xSize;
-   this->dimensions.y() = ySize;
-   this->numberOfCells = xSize * ySize;
-   this->numberOfNxFaces = ySize * ( xSize + 1 );
-   this->numberOfNyFaces = xSize * ( ySize + 1 );
-   this->numberOfFaces = this->numberOfNxFaces + this->numberOfNyFaces;
-   this->numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
-   computeSpaceSteps();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void tnlGrid< 2, Real, Device, Index > :: setDimensions( const CoordinatesType& dimensions )
-{
-   return this->setDimensions( dimensions. x(), dimensions. y() );
+   }*/
 }
 
 template< typename Real,
@@ -2566,160 +1373,8 @@ Real tnlGrid< 2, Real, Device, Index > :: getSmallestSpaceStep() const
    return Min( this->spaceSteps.x(), this->spaceSteps.y() );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename GridFunction >
-      typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index >::getAbsMax( const GridFunction& f ) const
-{
-   return f.absMax();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename GridFunction >
-      typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index >::getLpNorm( const GridFunction& f1,
-                                                                 const typename GridFunction::RealType& p ) const
-{
-   typename GridFunction::RealType lpNorm( 0.0 );
-   Cell cell( *this );
-   for( cell.getCoordinates().y() = 0;
-        cell.getCoordinates().y() < getDimensions().y();
-        cell.getCoordinates().y()++ )
-      for( cell.getCoordinates().x() = 0;
-           cell.getCoordinates().x() < getDimensions().x();
-           cell.getCoordinates().x()++ )
-      {
-         IndexType c = this->getEntityIndex( cell );
-         lpNorm += pow( tnlAbs( f1[ c ] ), p );
-      }
-   lpNorm *= this->getSpaceSteps().x() * this->getSpaceSteps().y();
-   return pow( lpNorm, 1.0/p );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename GridFunction >
-      typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
-                                                                 const GridFunction& f2 ) const
-{
-   //return f1.differenceAbsMax( f2 );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename GridFunction >
-      typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
-                                                                 const GridFunction& f2,
-                                                                 const typename GridFunction::RealType& p ) const
-{
-   /*typename GridFunction::RealType lpNorm( 0.0 );
-   Cell cell( *this );
-   for( cell.getCoordinates().y() = 0;
-        cell.getCoordinates().y() < getDimensions().y();
-        cell.getCoordinates().y()++ )
-      for( cell.getCoordinates().x() = 0;
-           cell.getCoordinates().x() < getDimensions().x();
-           cell.getCoordinates().x()++ )
-      {
-         IndexType c = this->getEntityIndex( cell );
-         lpNorm += pow( tnlAbs( f1[ c ] - f2[ c ] ), p );
-      }
-   lpNorm *= this->getSpaceSteps().x() * this->getSpaceSteps().y();
-   return pow( lpNorm, 1.0 / p );*/
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: save( tnlFile& file ) const
-{
-   /*if( ! tnlObject::save( file ) )
-      return false;
-   if( ! this->origin.save( file ) ||
-       ! this->proportions.save( file ) ||
-       ! this->dimensions.save( file ) )
-   {
-      cerr << "I was not able to save the domain description of a tnlGrid." << endl;
-      return false;
-   }
-   return true;*/
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: load( tnlFile& file )
-{
-   /*if( ! tnlObject::load( file ) )
-      return false;
-   CoordinatesType dimensions;
-   if( ! this->origin.load( file ) ||
-       ! this->proportions.load( file ) ||
-       ! dimensions.load( file ) )
-   {
-      cerr << "I was not able to load the domain description of a tnlGrid." << endl;
-      return false;
-   }
-   this->setDimensions( dimensions );
-   return true;*/
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: save( const tnlString& fileName ) const
-{
-   return tnlObject :: save( fileName );
-};
-
-template< typename Real,
-           typename Device,
-           typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: load( const tnlString& fileName )
-{
-   return tnlObject :: load( fileName );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
-                                                     const tnlString& format ) const
-{
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
-   template< typename MeshFunction >
-bool tnlGrid< 2, Real, Device, Index > :: write( const MeshFunction& function,
-                                                 const tnlString& fileName,
-                                                 const tnlString& format ) const
-{
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
-void
-tnlGrid< 2, Real, Device, Index >::
-writeProlog( tnlLogger& logger )
-{
-}
 
 
-
-
-
-using namespace std;
 
 
 template< typename GridType, typename GridEntity >
