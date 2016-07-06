@@ -120,8 +120,7 @@ class tnlNeighbourGridEntitiesStorage
                     const typename GridEntity::GridType::IndexType& entityIndex )
       {
          BaseType::refresh( grid, entityIndex );
-      };
-      
+      };      
 };
 
 #endif	/* TNLNEIGHBOURGRIDENTIESSTORAGE_H */

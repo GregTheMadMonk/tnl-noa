@@ -356,8 +356,8 @@ heatEquationTemplatedCompact( const GridType* grid,
    coordinates.x() = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    coordinates.y() = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
    
-   TestEntity< GridType > entity( *grid, coordinates, entityOrientation, entityBasis );
-   //GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
+   //TestEntity< GridType > entity( *grid, coordinates, entityOrientation, entityBasis );
+   GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
    //const GridType* g = grid;
    
    //MeshFunction& u = *_u;
