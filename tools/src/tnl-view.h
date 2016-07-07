@@ -40,11 +40,13 @@ bool getOutputFileName( const tnlString& inputFileName,
       outputFileName += ".gplt";
       return true;
    }
-   else
+   if( outputFormat == "vtk" )
    {
-      cerr << "Unknown file format " << outputFormat << ".";
-      return false;
-   }
+      outputFileName += ".vtk";
+      return true;
+   }   
+   cerr << "Unknown file format " << outputFormat << ".";
+   return false;
 }
 
 

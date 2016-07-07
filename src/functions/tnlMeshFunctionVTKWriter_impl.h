@@ -288,7 +288,9 @@ bool
 tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
        ostream& str )
-{ 
+{
+   typedef typename MeshType::template MeshEntity< 0 > Vertex;
+   typedef typename MeshType::template MeshEntity< 1 > Face;
    writeHeader(function, str);
    
    const MeshType& mesh = function.getMesh();
@@ -297,7 +299,7 @@ write( const MeshFunctionType& function,
    const RealType originY = mesh.getOrigin().y();
    const RealType spaceStepY = mesh.getSpaceSteps().y();
    
-   str << "POINTS " << mesh.template getEntitiesCount<0>() << " float" << endl;
+   str << "POINTS " << mesh.template getEntitiesCount< Vertex >() << " float" << endl;
    
    for (int j = 0; j < ( mesh.getDimensions().y() + 1); j++)
    {
@@ -307,8 +309,8 @@ write( const MeshFunctionType& function,
         }
    }
    
-   str << endl << "CELLS " << mesh.template getEntitiesCount<1>() << " " << 
-          mesh.template getEntitiesCount<1>() * 3 << endl;
+   str << endl << "CELLS " << mesh.template getEntitiesCount< Face >() << " " << 
+          mesh.template getEntitiesCount< Face >() * 3 << endl;
    for (int j = 0; j < mesh.getDimensions().y(); j++)
    {
         for (int i = 0; i < ( mesh.getDimensions().x() + 1 ); i++)
@@ -325,13 +327,13 @@ write( const MeshFunctionType& function,
         }
    }
    
-   str << endl << "CELL_TYPES " << mesh.template getEntitiesCount<1>() << endl;
-   for (int i = 0; i < mesh.template getEntitiesCount<1>(); i++)
+   str << endl << "CELL_TYPES " << mesh.template getEntitiesCount< Face >() << endl;
+   for (int i = 0; i < mesh.template getEntitiesCount< Face >(); i++)
    {
        str << "3" << endl;
    }  
    
-   str << endl << "CELL_DATA " << mesh.template getEntitiesCount<1>() << endl;
+   str << endl << "CELL_DATA " << mesh.template getEntitiesCount< Face >() << endl;
    str << "SCALARS FaceslFunctionValues float 1" << endl;
    str << "LOOKUP_TABLE default" << endl;
 
@@ -402,6 +404,7 @@ tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Device, MeshInd
 write( const MeshFunctionType& function,
        ostream& str )
 {  
+   typedef typename MeshType::template MeshEntity< 0 > Vertex;
    writeHeader(function, str);
    
    const MeshType& mesh = function.getMesh();
@@ -409,8 +412,9 @@ write( const MeshFunctionType& function,
    const RealType spaceStepX = mesh.getSpaceSteps().x();
    const RealType originY = mesh.getOrigin().y();
    const RealType spaceStepY = mesh.getSpaceSteps().y();
+
    
-   str << "POINTS " << mesh.template getEntitiesCount<0>() << " float" << endl;
+   str << "POINTS " << mesh.template getEntitiesCount< Vertex >() << " float" << endl;
    
    for (int j = 0; j < ( mesh.getDimensions().y() + 1); j++)
    {
@@ -420,8 +424,8 @@ write( const MeshFunctionType& function,
         }
    }
    
-   str << endl << "CELLS " << mesh.template getEntitiesCount<0>() << " " << 
-          mesh.template getEntitiesCount<0>() * 2 << endl;
+   str << endl << "CELLS " << mesh.template getEntitiesCount< Vertex >() << " " << 
+          mesh.template getEntitiesCount< Vertex >() * 2 << endl;
    for (int j = 0; j < ( mesh.getDimensions().y() + 1 ); j++)
    {
         for (int i = 0; i < ( mesh.getDimensions().x() + 1 ); i++)
@@ -430,13 +434,13 @@ write( const MeshFunctionType& function,
         }
    }
    
-   str << endl << "CELL_TYPES " << mesh.template getEntitiesCount<0>() << endl;
-   for (int i = 0; i < mesh.template getEntitiesCount<0>(); i++)
+   str << endl << "CELL_TYPES " << mesh.template getEntitiesCount< Vertex >() << endl;
+   for (int i = 0; i < mesh.template getEntitiesCount< Vertex >(); i++)
    {
        str << "1" << endl;
    }  
    
-   str << endl << "CELL_DATA " << mesh.template getEntitiesCount<0>() << endl;
+   str << endl << "CELL_DATA " << mesh.template getEntitiesCount< Vertex >() << endl;
    str << "SCALARS VerticesFunctionValues float 1" << endl;
    str << "LOOKUP_TABLE default" << endl;
 
@@ -596,6 +600,8 @@ tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, MeshInd
 write( const MeshFunctionType& function,
        ostream& str )
 {  
+   typedef typename MeshType::template MeshEntity< 2 > Face;
+   typedef typename MeshType::template MeshEntity< 3 > Cell;
    writeHeader(function, str);
    
    const MeshType& mesh = function.getMesh();
@@ -605,8 +611,8 @@ write( const MeshFunctionType& function,
    const RealType spaceStepY = mesh.getSpaceSteps().y();
    const RealType originZ = mesh.getOrigin().z();
    const RealType spaceStepZ = mesh.getSpaceSteps().z();
-   const RealType entitiesCount = mesh.template getEntitiesCount<2>();
-   const RealType pointsCount = mesh.template getEntitiesCount<3>();
+   const RealType entitiesCount = mesh.template getEntitiesCount< Face >();
+   const RealType pointsCount = mesh.template getEntitiesCount< Cell >();
    
    str << "POINTS " << pointsCount << 
           " float" << endl;
@@ -772,6 +778,8 @@ tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, MeshInd
 write( const MeshFunctionType& function,
        ostream& str )
 {  
+   typedef typename MeshType::template MeshEntity< 1 > Edge;
+   typedef typename MeshType::template MeshEntity< 3 > Cell;
    writeHeader(function, str);
    
    const MeshType& mesh = function.getMesh();
@@ -781,8 +789,8 @@ write( const MeshFunctionType& function,
    const RealType spaceStepY = mesh.getSpaceSteps().y();
    const RealType originZ = mesh.getOrigin().z();
    const RealType spaceStepZ = mesh.getSpaceSteps().z();
-   const RealType entitiesCount = mesh.template getEntitiesCount<1>();
-   const RealType pointsCount = mesh.template getEntitiesCount<3>();
+   const RealType entitiesCount = mesh.template getEntitiesCount< Edge >();
+   const RealType pointsCount = mesh.template getEntitiesCount< Cell >();
    
    str << "POINTS " << pointsCount << 
           " float" << endl;
@@ -942,6 +950,7 @@ tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, MeshInd
 write( const MeshFunctionType& function,
        ostream& str )
 {  
+   typedef typename MeshType::template MeshEntity< 0 > Vertex;
    writeHeader(function, str);
    
    const MeshType& mesh = function.getMesh();
@@ -952,7 +961,7 @@ write( const MeshFunctionType& function,
    const RealType originZ = mesh.getOrigin().z();
    const RealType spaceStepZ = mesh.getSpaceSteps().z();
    
-   str << "POINTS " << mesh.template getEntitiesCount<0>() << " float" << endl;
+   str << "POINTS " << mesh.template getEntitiesCount< Vertex >() << " float" << endl;
    
    for (int k = 0; k <= mesh.getDimensions().y(); k++)
    {
@@ -966,8 +975,8 @@ write( const MeshFunctionType& function,
        }
    }
    
-   str << endl << "CELLS " << mesh.template getEntitiesCount<0>() << " " << 
-          mesh.template getEntitiesCount<0>() * 2 << endl;
+   str << endl << "CELLS " << mesh.template getEntitiesCount< Vertex >() << " " << 
+          mesh.template getEntitiesCount< Vertex >() * 2 << endl;
    for (int k = 0; k < ( mesh.getDimensions().z() + 1 ); k++)
    {
         for (int j = 0; j < ( mesh.getDimensions().y() + 1 ); j++)
@@ -979,13 +988,13 @@ write( const MeshFunctionType& function,
         }
    }
    
-   str << endl << "CELL_TYPES " << mesh.template getEntitiesCount<0>() << endl;
-   for (int i = 0; i < mesh.template getEntitiesCount<0>(); i++)
+   str << endl << "CELL_TYPES " << mesh.template getEntitiesCount< Vertex >() << endl;
+   for (int i = 0; i < mesh.template getEntitiesCount< Vertex >(); i++)
    {
        str << "1" << endl;
    }  
    
-   str << endl << "CELL_DATA " << mesh.template getEntitiesCount<0>() << endl;
+   str << endl << "CELL_DATA " << mesh.template getEntitiesCount< Vertex >() << endl;
    str << "SCALARS verticesFunctionValues float 1" << endl;
    str << "LOOKUP_TABLE default" << endl;
 
