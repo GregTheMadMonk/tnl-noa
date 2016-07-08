@@ -22,6 +22,7 @@
 #include <config/tnlConfigDescription.h>
 #include <solvers/ode/tnlExplicitSolver.h>
 #include <config/tnlParameterContainer.h>
+#include <core/tnlTimer.h>
 
 template< typename Problem >
 class tnlEulerSolver : public tnlExplicitSolver< Problem >
@@ -60,6 +61,8 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem >
    DofVectorType k1;
 
    RealType cflCondition;
+   
+   //tnlTimer timer, updateTimer;
 };
 
 #include <solvers/ode/tnlEulerSolver_impl.h>

@@ -122,8 +122,8 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
                 const RealType& thisRowMultiplicator = 1.0 );
 
    __cuda_callable__
-   Real getElementFast( const IndexType row,
-                        const IndexType column ) const;
+   const Real& getElementFast( const IndexType row,
+                               const IndexType column ) const;
 
    Real getElement( const IndexType row,
                     const IndexType column ) const;

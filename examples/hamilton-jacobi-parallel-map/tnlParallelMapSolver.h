@@ -186,7 +186,6 @@ __global__ void synchronizeCUDA2D(tnlParallelMapSolver<2, SchemeHost, SchemeDevi
 template <typename SchemeHost, typename SchemeDevice, typename Device>
 __global__ void synchronize2CUDA2D(tnlParallelMapSolver<2, SchemeHost, SchemeDevice, Device, double, int >* cudaSolver);
 
-#endif
 
 
 __device__
@@ -213,6 +212,7 @@ double atomicFabsMin(double* address, double val)
 	return __longlong_as_double(old);
 }
 
+#endif
 
 #include "tnlParallelMapSolver2D_impl.h"
 #endif /* TNLPARALLELMAPSOLVER_H_ */

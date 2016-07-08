@@ -24,8 +24,6 @@
 #include <math.h>
 #include <core/tnlFlopsCounter.h>
 
-using namespace std;
-
 template< class T > class tnlReal
 {
    T data;
@@ -425,7 +423,7 @@ template< class T > const tnlReal< T > log10( const tnlReal< T >& x )
 };
 
 template< class T >
-ostream& operator << ( ostream& str, const tnlReal< T >& v )
+std::ostream& operator << ( std::ostream& str, const tnlReal< T >& v )
 {
    str << v. Data();
    return str;

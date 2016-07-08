@@ -23,6 +23,8 @@
 #include <mesh/grids/tnlTraverser_Grid2D.h>
 #include <mesh/grids/tnlTraverser_Grid3D.h>
 
+#include "tnlExplicitUpdater.h"
+
 template< typename Mesh,
           typename MeshFunction,
           typename DifferentialOperator,
@@ -60,12 +62,17 @@ update( const RealType& time,
    }
    if( std::is_same< DeviceType, tnlCuda >::value )
    {
+      if( this->gpuTransferTimer ) 
+         this->gpuTransferTimer->start();
       RealType* kernelTime = tnlCuda::passToDevice( time );
       DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
       BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
       RightHandSide* kernelRightHandSide = tnlCuda::passToDevice( rightHandSide );
       MeshFunction* kernelU = tnlCuda::passToDevice( u );
       MeshFunction* kernelFu = tnlCuda::passToDevice( fu );
+     if( this->gpuTransferTimer ) 
+         this->gpuTransferTimer->stop();
+
       TraverserUserData userData( *kernelTime, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelFu );
       checkCudaDevice;
       tnlTraverser< MeshType, EntityType > meshTraverser;
@@ -78,7 +85,10 @@ update( const RealType& time,
                                                     ( mesh,
                                                       userData );
 
-      checkCudaDevice;
+      if( this->gpuTransferTimer ) 
+         this->gpuTransferTimer->start();
+      
+      checkCudaDevice;      
       tnlCuda::freeFromDevice( kernelTime );
       tnlCuda::freeFromDevice( kernelDifferentialOperator );
       tnlCuda::freeFromDevice( kernelBoundaryConditions );
@@ -86,6 +96,10 @@ update( const RealType& time,
       tnlCuda::freeFromDevice( kernelU );
       tnlCuda::freeFromDevice( kernelFu );
       checkCudaDevice;
+      
+      if( this->gpuTransferTimer ) 
+         this->gpuTransferTimer->stop();
+
    }
 }
 

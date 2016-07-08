@@ -20,6 +20,7 @@
 
 #include "tnlNarrowBand.h"
 
+#ifdef HAVE_CUDA
 __device__
 double fabsMin( double x, double y)
 {
@@ -43,7 +44,7 @@ double atomicFabsMin(double* address, double val)
 	} while (assumed != old);
 	return __longlong_as_double(old);
 }
-
+#endif
 
 template< typename MeshReal,
           typename Device,

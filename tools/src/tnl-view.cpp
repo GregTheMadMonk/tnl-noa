@@ -40,7 +40,7 @@ void setupConfig( tnlConfigDescription& config )
    config.addEntry        < double >              ( "scale", "Multiply the function by given number.", 1.0 );
    config.addEntry        < tnlString >           ( "output-format", "Output file format.", "gnuplot" );
       config.addEntryEnum  < tnlString >             ( "gnuplot" );
-      config.addEntryEnum  < tnlString >             ( "vti" );
+      config.addEntryEnum  < tnlString >             ( "vtk" );
    config.addEntry        < int >                 ( "verbose", "Set the verbosity of the program.", 1 );
 
    config.addDelimiter( "Matrix settings:" );

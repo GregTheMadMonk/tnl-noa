@@ -28,6 +28,7 @@ template<> inline tnlString getType< bool >() { return tnlString( "bool" ); };
 template<> inline tnlString getType< short int >() { return tnlString( "short int" ); };
 template<> inline tnlString getType< int >() { return tnlString( "int" ); };
 template<> inline tnlString getType< long int >() { return tnlString( "long int" ); };
+template<> inline tnlString getType< unsigned int >() { return tnlString( "unsigned int" ); };
 template<> inline tnlString getType< char >() { return tnlString( "char" ); };
 template<> inline tnlString getType< float >() { return tnlString( "float" ); };
 template<> inline tnlString getType< double >() { return tnlString( "double" ); };

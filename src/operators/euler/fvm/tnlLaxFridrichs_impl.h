@@ -53,7 +53,7 @@ template< typename Real,
           template< int, typename, typename, typename > class GridGeometry >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  >::bindMesh( const MeshType& mesh )
 {
-   this -> mesh = &mesh;
+   this->mesh = &mesh;
 }
 
 template< typename Real,
@@ -74,7 +74,7 @@ template< typename Real,
           template< int, typename, typename, typename > class GridGeometry >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRegularization( const RealType& epsilon )
 {
-   this -> regularizeEps = epsilon;
+   this->regularizeEps = epsilon;
 }
 
 template< typename Real,
@@ -84,7 +84,7 @@ template< typename Real,
           template< int, typename, typename, typename > class GridGeometry >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setViscosityCoefficient( const RealType& v )
 {
-   this -> viscosityCoefficient = v;
+   this->viscosityCoefficient = v;
 }
 
 template< typename Real,
@@ -106,7 +106,7 @@ template< typename Real,
    template< typename Vector >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRhoU1( Vector& rho_u1 )
 {
-   this -> rho_u1. bind( rho_u1 );
+   this->rho_u1. bind( rho_u1 );
 }
 
 template< typename Real,
@@ -117,7 +117,7 @@ template< typename Real,
    template< typename Vector >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRhoU2( Vector& rho_u2 )
 {
-   this -> rho_u2. bind( rho_u2 );
+   this->rho_u2. bind( rho_u2 );
 }
 
 template< typename Real,
@@ -139,7 +139,7 @@ template< typename Real,
    template< typename Vector >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setPressureGradient( Vector& grad_p )
 {
-   this -> pressureGradient = &grad_p;
+   this->pressureGradient = &grad_p;
 }
 
 template< typename Real,
@@ -157,10 +157,10 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureG
    tnlAssert( pressureGradient, cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
 
    const IndexType& c = centralVolume;
-   const IndexType e = this -> mesh -> getElementNeighbour( centralVolume,  1,  0 );
-   const IndexType w = this -> mesh -> getElementNeighbour( centralVolume, -1,  0 );
-   const IndexType n = this -> mesh -> getElementNeighbour( centralVolume,  0,  1 );
-   const IndexType s = this -> mesh -> getElementNeighbour( centralVolume,  0, -1 );
+   const IndexType e = this->mesh -> getElementNeighbour( centralVolume,  1,  0 );
+   const IndexType w = this->mesh -> getElementNeighbour( centralVolume, -1,  0 );
+   const IndexType n = this->mesh -> getElementNeighbour( centralVolume,  0,  1 );
+   const IndexType s = this->mesh -> getElementNeighbour( centralVolume,  0, -1 );
 
    const RealType u1_e = rho_u1[ e ] / regularize( rho[ e ] );
    const RealType u1_w = rho_u1[ w ] / regularize( rho[ w ] );
@@ -177,7 +177,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureG
     * Get the central volume and its neighbours (east, north, west, south) coordinates
     */
    CoordinatesType c_coordinates, e_coordinates, n_coordinates, w_coordinates, s_coordinates;
-   this -> mesh -> getElementCoordinates( c, c_coordinates );
+   this->mesh -> getElementCoordinates( c, c_coordinates );
    e_coordinates = n_coordinates = w_coordinates = s_coordinates = c_coordinates;
    e_coordinates. x() ++;
    w_coordinates. x() --;
@@ -187,20 +187,20 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureG
    /****
     * Get the volumes measure
     */
-   const RealType mu_D_c = this -> mesh -> getElementMeasure( c_coordinates );
-   const RealType mu_D_e = this -> mesh -> getElementMeasure( e_coordinates );
-   const RealType mu_D_n = this -> mesh -> getElementMeasure( n_coordinates );
-   const RealType mu_D_w = this -> mesh -> getElementMeasure( w_coordinates );
-   const RealType mu_D_s = this -> mesh -> getElementMeasure( s_coordinates );
+   const RealType mu_D_c = this->mesh -> getElementMeasure( c_coordinates );
+   const RealType mu_D_e = this->mesh -> getElementMeasure( e_coordinates );
+   const RealType mu_D_n = this->mesh -> getElementMeasure( n_coordinates );
+   const RealType mu_D_w = this->mesh -> getElementMeasure( w_coordinates );
+   const RealType mu_D_s = this->mesh -> getElementMeasure( s_coordinates );
 
    /****
     * Get the edge normals
     */
    VertexType e_normal, w_normal, n_normal, s_normal;
-   this -> mesh -> template getEdgeNormal<  1,  0 >( c_coordinates, e_normal );
-   this -> mesh -> template getEdgeNormal< -1,  0 >( c_coordinates, w_normal );
-   this -> mesh -> template getEdgeNormal<  0,  1 >( c_coordinates, n_normal );
-   this -> mesh -> template getEdgeNormal<  0, -1 >( c_coordinates, s_normal );
+   this->mesh -> template getEdgeNormal<  1,  0 >( c_coordinates, e_normal );
+   this->mesh -> template getEdgeNormal< -1,  0 >( c_coordinates, w_normal );
+   this->mesh -> template getEdgeNormal<  0,  1 >( c_coordinates, n_normal );
+   this->mesh -> template getEdgeNormal<  0, -1 >( c_coordinates, s_normal );
 
    /****
     * Compute the fluxes
@@ -245,7 +245,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureG
                               rho_f_n * n_normal. x() + rho_g_n * n_normal. y() +
                               rho_f_w * w_normal. x() + rho_g_w * w_normal. y() +
                               rho_f_s * s_normal. x() + rho_g_s * s_normal. y() )
-           + this -> viscosityCoefficient * 1.0 / ( 8.0 * tau ) * mu_D_c *
+           + this->viscosityCoefficient * 1.0 / ( 8.0 * tau ) * mu_D_c *
                             ( ( mu_D_c + mu_D_e ) * ( rho[ e ] - rho[ c ] ) +
                               ( mu_D_c + mu_D_n ) * ( rho[ n ] - rho[ c ] ) +
                               ( mu_D_c + mu_D_w ) * ( rho[ w ] - rho[ c ] ) +
@@ -258,7 +258,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureG
                                  rho_u1_f_n * n_normal. x() + rho_u1_g_n * n_normal. y() +
                                  rho_u1_f_w * w_normal. x() + rho_u1_g_w * w_normal. y() +
                                  rho_u1_f_s * s_normal. x() + rho_u1_g_s * s_normal. y() )
-              + this -> viscosityCoefficient * 1.0 / ( 8.0 * tau ) * mu_D_c *
+              + this->viscosityCoefficient * 1.0 / ( 8.0 * tau ) * mu_D_c *
                                ( ( mu_D_c + mu_D_e ) * ( rho_u1[ e ] - rho_u1[ c ] ) +
                                  ( mu_D_c + mu_D_n ) * ( rho_u1[ n ] - rho_u1[ c ] ) +
                                  ( mu_D_c + mu_D_w ) * ( rho_u1[ w ] - rho_u1[ c ] ) +
@@ -272,7 +272,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureG
                                  rho_u2_f_n * n_normal. x() + rho_u2_g_n * n_normal. y() +
                                  rho_u2_f_w * w_normal. x() + rho_u2_g_w * w_normal. y() +
                                  rho_u2_f_s * s_normal. x() + rho_u2_g_s * s_normal. y() )
-              + this -> viscosityCoefficient * 1.0 / ( 8.0 * tau ) * mu_D_c *
+              + this->viscosityCoefficient * 1.0 / ( 8.0 * tau ) * mu_D_c *
                                ( ( mu_D_c + mu_D_e ) * ( rho_u2[ e ] - rho_u2[ c ] ) +
                                  ( mu_D_c + mu_D_n ) * ( rho_u2[ n ] - rho_u2[ c ] ) +
                                  ( mu_D_c + mu_D_w ) * ( rho_u2[ w ] - rho_u2[ c ] ) +
@@ -287,7 +287,7 @@ template< typename Real,
           template< int, typename, typename, typename > class GridGeometry >
 Real tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: regularize( const Real& r ) const
 {
-   return r + ( ( r >= 0 ) - ( r < 0 ) ) * this -> regularizeEps;
+   return r + ( ( r >= 0 ) - ( r < 0 ) ) * this->regularizeEps;
 }
 
 /****
@@ -313,7 +313,7 @@ template< typename Real,
           typename PressureGradient >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: bindMesh( const MeshType& mesh )
 {
-   this -> mesh = &mesh;
+   this->mesh = &mesh;
 }
 
 template< typename Real,
@@ -322,7 +322,7 @@ template< typename Real,
           typename PressureGradient >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRegularization( const RealType& epsilon )
 {
-   this -> regularizeEps = epsilon;
+   this->regularizeEps = epsilon;
 }
 
 template< typename Real,
@@ -331,7 +331,7 @@ template< typename Real,
           typename PressureGradient >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setViscosityCoefficient( const RealType& v )
 {
-   this -> viscosityCoefficient = v;
+   this->viscosityCoefficient = v;
 }
 
 template< typename Real,
@@ -341,7 +341,7 @@ template< typename Real,
    template< typename Vector >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRho( Vector& rho )
 {
-   this -> rho. bind( rho );
+   this->rho. bind( rho );
 }
 
 template< typename Real,
@@ -351,7 +351,7 @@ template< typename Real,
    template< typename Vector >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRhoU1( Vector& rho_u1 )
 {
-   this -> rho_u1. bind( rho_u1 );
+   this->rho_u1. bind( rho_u1 );
 }
 
 template< typename Real,
@@ -361,7 +361,7 @@ template< typename Real,
    template< typename Vector >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRhoU2( Vector& rho_u2 )
 {
-   this -> rho_u2. bind( rho_u2 );
+   this->rho_u2. bind( rho_u2 );
 }
 
 template< typename Real,
@@ -391,7 +391,7 @@ template< typename Real,
    template< typename Vector >
 void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setPressureGradient( Vector& grad_p )
 {
-   this -> pressureGradient = &grad_p;
+   this->pressureGradient = &grad_p;
 }
 
 template< typename Real,
@@ -407,16 +407,16 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry 
    tnlAssert( mesh, cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
    tnlAssert( pressureGradient, cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
 
-   const IndexType& xSize = this -> mesh -> getDimensions(). x();
-   const IndexType& ySize = this -> mesh -> getDimensions(). y();
-   const RealType hx = this -> mesh -> getParametricStep(). x();
-   const RealType hy = this -> mesh -> getParametricStep(). y();
+   const IndexType& xSize = this->mesh -> getDimensions(). x();
+   const IndexType& ySize = this->mesh -> getDimensions(). y();
+   const RealType hx = this->mesh -> getParametricStep(). x();
+   const RealType hy = this->mesh -> getParametricStep(). y();
 
    const IndexType& c = centralVolume;
-   const IndexType e = this -> mesh -> getElementNeighbour( centralVolume,  1,  0 );
-   const IndexType w = this -> mesh -> getElementNeighbour( centralVolume, -1,  0 );
-   const IndexType n = this -> mesh -> getElementNeighbour( centralVolume,  0,  1 );
-   const IndexType s = this -> mesh -> getElementNeighbour( centralVolume,  0, -1 );
+   const IndexType e = this->mesh -> getElementNeighbour( centralVolume,  1,  0 );
+   const IndexType w = this->mesh -> getElementNeighbour( centralVolume, -1,  0 );
+   const IndexType n = this->mesh -> getElementNeighbour( centralVolume,  0,  1 );
+   const IndexType s = this->mesh -> getElementNeighbour( centralVolume,  0, -1 );
 
    /****
     * rho_t + ( rho u_1 )_x + ( rho u_2 )_y =  0
@@ -425,7 +425,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry 
    const RealType u1_w = rho_u1[ w ] / regularize( rho[ w ] );
    const RealType u2_n = rho_u2[ n ] / regularize( rho[ n ] );
    const RealType u2_s = rho_u2[ s ] / regularize( rho[ s ] );
-   rho_t = this -> viscosityCoefficient / tau * 0.25 * ( rho[ e ] + rho[ w ] + rho[ s ] + rho[ n ] - 4.0 * rho[ c ] )
+   rho_t = this->viscosityCoefficient / tau * 0.25 * ( rho[ e ] + rho[ w ] + rho[ s ] + rho[ n ] - 4.0 * rho[ c ] )
                - ( rho[ e ] * u1_e - rho[ w ] * u1_w ) / ( 2.0 * hx )
                - ( rho[ n ] * u2_n - rho[ s ] * u2_s ) / ( 2.0 * hy );
 
@@ -438,14 +438,14 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry 
    /****
     * ( rho * u1 )_t + ( rho * u1 * u1 )_x + ( rho * u1 * u2 )_y - p_x =  0
     */
-   rho_u1_t = this -> viscosityCoefficient / tau * 0.25 * ( rho_u1[ e ] + rho_u1[ w ] + rho_u1[ s ] + rho_u1[ n ] - 4.0 * rho_u1[ c ] )
+   rho_u1_t = this->viscosityCoefficient / tau * 0.25 * ( rho_u1[ e ] + rho_u1[ w ] + rho_u1[ s ] + rho_u1[ n ] - 4.0 * rho_u1[ c ] )
                    - ( rho_u1[ e ] * u1_e - rho_u1[ w ] * u1_w ) / ( 2.0 * hx )
                    - ( rho_u1[ n ] * u2_n - rho_u1[ s ] * u2_s ) / ( 2.0 * hy )
                    - grad_p. x();
    /****
     * ( rho * u2 )_t + ( rho * u2 * u1 )_x + ( rho * u2 * u2 )_y - p_y =  0
     */
-   rho_u2_t = this -> viscosityCoefficient / tau * 0.25 * ( rho_u2[ e ] + rho_u2[ w ] + rho_u2[ s ] + rho_u2[ n ] - 4.0 * rho_u2[ c ] )
+   rho_u2_t = this->viscosityCoefficient / tau * 0.25 * ( rho_u2[ e ] + rho_u2[ w ] + rho_u2[ s ] + rho_u2[ n ] - 4.0 * rho_u2[ c ] )
                    - ( rho_u2[ e ] * u1_e - rho_u2[ w ] * u1_w ) / ( 2.0 * hx )
                    - ( rho_u2[ n ] * u2_n - rho_u2[ s ] * u2_s ) / ( 2.0 * hy )
                    - grad_p. y();
@@ -465,16 +465,16 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry 
    tnlAssert( mesh, cerr << "No mesh has been binded with the Lax-Fridrichs scheme." );
    tnlAssert( pressureGradient, cerr << "No pressure gradient was set in the the Lax-Fridrichs scheme." )
 
-   const IndexType& xSize = this -> mesh -> getDimensions(). x();
-   const IndexType& ySize = this -> mesh -> getDimensions(). y();
-   const RealType hx = this -> mesh -> getParametricStep(). x();
-   const RealType hy = this -> mesh -> getParametricStep(). y();
+   const IndexType& xSize = this->mesh -> getDimensions(). x();
+   const IndexType& ySize = this->mesh -> getDimensions(). y();
+   const RealType hx = this->mesh -> getParametricStep(). x();
+   const RealType hy = this->mesh -> getParametricStep(). y();
 
    const IndexType& c = centralVolume;
-   const IndexType e = this -> mesh -> getElementNeighbour( centralVolume,  1,  0 );
-   const IndexType w = this -> mesh -> getElementNeighbour( centralVolume, -1,  0 );
-   const IndexType n = this -> mesh -> getElementNeighbour( centralVolume,  0,  1 );
-   const IndexType s = this -> mesh -> getElementNeighbour( centralVolume,  0, -1 );
+   const IndexType e = this->mesh -> getElementNeighbour( centralVolume,  1,  0 );
+   const IndexType w = this->mesh -> getElementNeighbour( centralVolume, -1,  0 );
+   const IndexType n = this->mesh -> getElementNeighbour( centralVolume,  0,  1 );
+   const IndexType s = this->mesh -> getElementNeighbour( centralVolume,  0, -1 );
 
    /****
     * rho_t + ( rho u_1 )_x + ( rho u_2 )_y =  0
@@ -483,7 +483,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry 
    const RealType u1_w = rho_u1[ w ] / regularize( rho[ w ] );
    const RealType u2_n = rho_u2[ n ] / regularize( rho[ n ] );
    const RealType u2_s = rho_u2[ s ] / regularize( rho[ s ] );
-   rho_t = this -> viscosityCoefficient / tau * 0.25 * ( rho[ e ] + rho[ w ] + rho[ s ] + rho[ n ] - 4.0 * rho[ c ] )
+   rho_t = this->viscosityCoefficient / tau * 0.25 * ( rho[ e ] + rho[ w ] + rho[ s ] + rho[ n ] - 4.0 * rho[ c ] )
                - ( rho[ e ] * u1_e - rho[ w ] * u1_w ) / ( 2.0 * hx )
                - ( rho[ n ] * u2_n - rho[ s ] * u2_s ) / ( 2.0 * hy );
 
@@ -496,14 +496,14 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry 
    /****
     * ( rho * u1 )_t + ( rho * u1 * u1 )_x + ( rho * u1 * u2 )_y - p_x =  0
     */
-   rho_u1_t = this -> viscosityCoefficient / tau * 0.25 * ( rho_u1[ e ] + rho_u1[ w ] + rho_u1[ s ] + rho_u1[ n ] - 4.0 * rho_u1[ c ] )
+   rho_u1_t = this->viscosityCoefficient / tau * 0.25 * ( rho_u1[ e ] + rho_u1[ w ] + rho_u1[ s ] + rho_u1[ n ] - 4.0 * rho_u1[ c ] )
                    - ( rho_u1[ e ] * u1_e - rho_u1[ w ] * u1_w ) / ( 2.0 * hx )
                    - ( rho_u1[ n ] * u2_n - rho_u1[ s ] * u2_s ) / ( 2.0 * hy )
                    - grad_p. x();
    /****
     * ( rho * u2 )_t + ( rho * u2 * u1 )_x + ( rho * u2 * u2 )_y - p_y =  0
     */
-   rho_u2_t = this -> viscosityCoefficient / tau * 0.25 * ( rho_u2[ e ] + rho_u2[ w ] + rho_u2[ s ] + rho_u2[ n ] - 4.0 * rho_u2[ c ] )
+   rho_u2_t = this->viscosityCoefficient / tau * 0.25 * ( rho_u2[ e ] + rho_u2[ w ] + rho_u2[ s ] + rho_u2[ n ] - 4.0 * rho_u2[ c ] )
                    - ( rho_u2[ e ] * u1_e - rho_u2[ w ] * u1_w ) / ( 2.0 * hx )
                    - ( rho_u2[ n ] * u2_n - rho_u2[ s ] * u2_s ) / ( 2.0 * hy )
                    - grad_p. y();
@@ -511,7 +511,7 @@ void tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry 
    /****
     * e_t + ( ( e + p ) * u )_x + ( ( e + p ) * v )_y = 0
     */
-   e_t = this -> viscosityCoefficient / tau * 0.25 * ( energy[ e ] + energy[ w ] + energy[ s ] + energy[ n ] - 4.0 * energy[ c ] )
+   e_t = this->viscosityCoefficient / tau * 0.25 * ( energy[ e ] + energy[ w ] + energy[ s ] + energy[ n ] - 4.0 * energy[ c ] )
               - ( ( energy[ e ] + p[ e ] ) * u1_e - ( energy[ w ] + p[ w ] ) * u1_w ) / ( 2.0 * hx )
               - ( ( energy[ n ] + p[ n ] ) * u2_n - ( energy[ s ] + p[ s ] ) * u2_s ) / ( 2.0 * hy );
 }
@@ -523,7 +523,7 @@ template< typename Real,
           typename PressureGradient >
 Real tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: regularize( const Real& r ) const
 {
-   return r + ( ( r >= 0 ) - ( r < 0 ) ) * this -> regularizeEps;
+   return r + ( ( r >= 0 ) - ( r < 0 ) ) * this->regularizeEps;
 }
 
 

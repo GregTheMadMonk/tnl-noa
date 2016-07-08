@@ -25,7 +25,14 @@ getNumberOfDevices()
 {
    return -1;
 }
-      
+
+int
+tnlCudaDeviceInfo::
+getActiveDevice()
+{
+   return -1;
+}
+
 tnlString
 tnlCudaDeviceInfo::
 getDeviceName( int deviceNum )
@@ -39,7 +46,7 @@ getArchitectureMajor( int deviceNum )
 {
     return 0;
 }
-      
+
 int
 tnlCudaDeviceInfo::
 getArchitectureMinor( int deviceNum )
@@ -53,7 +60,7 @@ getClockRate( int deviceNum )
 {
    return 0;
 }
-      
+
 size_t
 tnlCudaDeviceInfo::
 getGlobalMemory( int deviceNum )
@@ -96,5 +103,5 @@ getCudaCores( int deviceNum )
    return 0;
 }
 
-
 #endif
+

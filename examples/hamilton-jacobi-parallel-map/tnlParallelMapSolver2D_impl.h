@@ -602,7 +602,7 @@ void tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::stre
 		}
 
 
-		if(abs(this->u0[i-k]) < mesh.template getSpaceStepsProducts< 1, 0 >()+mesh.template getSpaceStepsProducts< 0, 1 >() )
+		if(fabs(this->u0[i-k]) < mesh.template getSpaceStepsProducts< 1, 0 >()+mesh.template getSpaceStepsProducts< 0, 1 >() )
 			this->work_u[i] = this->u0[i-k];
 		else
 			this->work_u[i] = Sign(this->u0[i-k])*MAP_SOLVER_MAX_VALUE;
@@ -766,7 +766,7 @@ tnlParallelMapSolver<2,SchemeHost, SchemeDevice, Device, double, int>::runSubgri
 
 
       if(maxResidue != 0.0)
-    	  currentTau =  abs(this -> cflCondition / maxResidue);
+    	  currentTau =  fabs(this -> cflCondition / maxResidue);
 
 
       if(currentTau > 1.0 * this->subMesh.template getSpaceStepsProducts< 1, 0 >())

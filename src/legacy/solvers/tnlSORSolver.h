@@ -69,13 +69,13 @@ tnlString tnlSORSolverOld< Real, Device, Index > :: getType() const
 template< typename Real, typename Device, typename Index >
 void tnlSORSolverOld< Real, Device, Index > :: setSOROmega( const Real& omega )
 {
-   this -> sorOmega = omega;
+   this->sorOmega = omega;
 }
 
 template< typename Real, typename Device, typename Index >
 Real tnlSORSolverOld< Real, Device, Index > :: getSOROmega( ) const
 {
-   return this -> sorOmega;
+   return this->sorOmega;
 }
 
 template< typename Real, typename Device, typename Index >
@@ -88,33 +88,33 @@ bool tnlSORSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, Dev
 {
    const Index size = A. getSize();
 
-   this -> iteration = 0;
-   this -> residue = max_residue + 1.0;;
+   this->iteration = 0;
+   this->residue = max_residue + 1.0;;
 
    Real bNorm = b. lpNorm( ( Real ) 2.0 );
 
-   while( this -> iteration < max_iterations &&
-          max_residue < this -> residue )
+   while( this->iteration < max_iterations &&
+          max_residue < this->residue )
    {
-      A. performSORIteration( this -> sorOmega,
+      A. performSORIteration( this->sorOmega,
                               b,
                               x,
                               0,
                               size );
-      if( this -> iteration % 10 == 0 )
+      if( this->iteration % 10 == 0 )
       {
-         this -> residue = this -> getResidue( A, b, x, bNorm );
-         if( this -> verbosity > 1 )
-            this -> printOut();
+         this->residue = this->getResidue( A, b, x, bNorm );
+         if( this->verbosity > 1 )
+            this->printOut();
       }
-      this -> iteration ++;
+      this->iteration ++;
    }
-   if( this -> verbosity > 0 )
+   if( this->verbosity > 0 )
    {
-      this -> residue = this -> getResidue( A, b, x, bNorm );
-      this -> printOut();
+      this->residue = this->getResidue( A, b, x, bNorm );
+      this->printOut();
    }
-   if( this -> iteration <= max_iterations ) return true;
+   if( this->iteration <= max_iterations ) return true;
    return false;
 };
 

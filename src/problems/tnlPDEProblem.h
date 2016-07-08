@@ -52,6 +52,9 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
 
       void writeProlog( tnlLogger& logger,
                         const tnlParameterContainer& parameters ) const;
+      
+      bool writeEpilog( tnlLogger& logger ) const;
+
 
       bool setMeshDependentData( const MeshType& mesh,
                                  MeshDependentDataType& meshDependentData );
@@ -64,6 +67,11 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
                        const MeshType& mesh,
                        DofVectorType& dofs,
                        MeshDependentDataType& meshDependentData );
+      
+      void setExplicitBoundaryConditions( const RealType& time,
+                                          const MeshType& mesh,
+                                          DofVectorType& dofs,
+                                          MeshDependentDataType& meshDependentData );
 
       bool postIterate( const RealType& time,
                         const RealType& tau,

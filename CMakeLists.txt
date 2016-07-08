@@ -12,7 +12,7 @@
 # Vladimir Klement
 # Jakub Klinkovsky
 
-cmake_minimum_required( VERSION 2.8.10 )
+cmake_minimum_required( VERSION 3.4 )
 
 project( tnl )
 
@@ -33,22 +33,28 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/lib )
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Debug/bin )
     set( debugExt -dbg )
-    set( CMAKE_CXX_FLAGS "${CXXFLAGS} -g ")
-    #AddCompilerFlag( "-g" )
 else()
     set( PROJECT_BUILD_PATH ${PROJECT_SOURCE_DIR}/Release/src )
     set( PROJECT_TESTS_PATH ${PROJECT_SOURCE_DIR}/Release/tests )
     set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Release/tools )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib)
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin)
-    #OptimizeForArchitecture()
-    AddCompilerFlag( "-O3 -march=native -DNDEBUG -g" )
 endif()
+
+# set Debug/Release options
+set( CMAKE_CXX_FLAGS "-std=c++11" )
+set( CMAKE_CXX_FLAGS_DEBUG "-g" )
+set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG" )
+#set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
+# pass -rdynamic only in Debug mode
+set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "" )
+set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG "-rdynamic" )
+set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE "" )
 
 get_filename_component( CXX_COMPILER_NAME ${CMAKE_CXX_COMPILER} NAME )
 if( CXX_COMPILER_NAME MATCHES "icpc" )
    message( "Intel compiler detected..."    )
-   AddCompilerFlag( "-DHAVE_ICPC" )
+   set( CMAKE_CXX_FLAGS "${CXXFLAGS} -DHAVE_ICPC ")
 endif()
 
 #####
@@ -60,8 +66,8 @@ if( WITH_CUDA STREQUAL "yes" )
         set( BUILD_CUDA TRUE)
         set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
         set(BUILD_SHARED_LIBS ON)
-        set(CUDA_SEPARABLE_COMPILATION ON)
-        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -DHAVE_CUDA )
+        set(CUDA_SEPARABLE_COMPILATION ON)        
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA  )
         #AddCompilerFlag( "-DHAVE_NOT_CXX11" ) # -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 " )
         set( ALL_CUDA_ARCHS -gencode arch=compute_20,code=sm_20
                             -gencode arch=compute_30,code=sm_30
@@ -102,18 +108,29 @@ if( WITH_CUDA STREQUAL "yes" )
                 set( CUDA_ARCH -gencode arch=compute_${WITH_CUDA_ARCH},code=sm_${WITH_CUDA_ARCH} )
             endif()
         endif()
-        set( CUDA_ADD_EXECUTABLE_OPTIONS ${CUDA_ARCH} )
-        set( CUDA_ADD_LIBRARY_OPTIONS ${CUDA_ARCH} -shared )
-        set( CUDA_LINKER_OPTIONS "-arch sm_20 -shared" )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} )
+        # TODO: this is necessary only due to a bug in cmake
+        set( CUDA_ADD_LIBRARY_OPTIONS -shared )
+        # TODO: workaround for a bug in cmake 3.5.0 (fixed in 3.5.1)
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -ccbin "${CMAKE_CXX_COMPILER}" )
+        set( CUDA_HOST_COMPILER "" )
 
         ####
         # Check for cuBLAS
         #
-        if( WITH_CUBLAS STREQUAL "yes" ) 
-            message( "Enabling CUBLAS." )
-            set( HAVE_CUBLAS TRUE)
-            set( HAVE_CUBLAS "#define HAVE_CUBLAS 1" )
-        endif( WITH_CUBLAS STREQUAL "yes" )       
+        if( NOT WITH_CUBLAS STREQUAL "no" )
+            find_path( CUBLAS_INCLUDE_DIR cublas_v2.h
+                       /usr/local/cuda/include
+                       ${CUDA_INCLUDE_DIR}
+                       DOC "CUBLAS headers." )
+            if( ${CUBLAS_INCLUDE_DIR} STREQUAL "CUBLAS_INCLUDE_DIR-NOTFOUND" )
+                message( "CUBLAS not found." )
+                set( HAVE_CUBLAS "//#define HAVE_CUBLAS 1" )
+            else()
+                message( "CUBLAS found. -- ${CUBLAS_INCLUDE_DIR}" )
+                set( HAVE_CUBLAS "#define HAVE_CUBLAS 1" )
+            endif()
+        endif( NOT WITH_CUBLAS STREQUAL "no" )
 
         ####
         # Check for CUSP
@@ -133,7 +150,6 @@ if( WITH_CUDA STREQUAL "yes" )
         # Check for CUSPARSE
         #
         if( NOT WITH_CUSPARSE STREQUAL "no" )
-        
            find_path( CUSPARSE_INCLUDE_DIR cusparse.h
                       /usr/local/cuda/include                   
                       ${CUDA_INCLUDE_DIR}  
@@ -147,16 +163,10 @@ if( WITH_CUDA STREQUAL "yes" )
                cuda_include_directories( ${CUSPARSE_INCLUDE_DIR} )
                set( CUSPARSE_LIBRARY "${CUDA_cusparse_LIBRARY}" )
            endif()            
-        endif( NOT WITH_CUSPARSE STREQUAL "no" )
-   
-    #else( CUDA_FOUND )
-    #  AddCompilerFlag( "-std=c++11" )         
+        endif( NOT WITH_CUSPARSE STREQUAL "no" )        
     endif( CUDA_FOUND )
-#else( WITH_CUDA STREQUAL "yes" )
-   #AddCompilerFlag( "-std=gnu++0x -ftree-vectorizer-verbose=1" )       
-   #AddCompilerFlag( "-std=c++11" )       
 endif( WITH_CUDA STREQUAL "yes" )
-AddCompilerFlag( "-std=c++11" )       
+
 
 ####
 # Check for OpenMP
@@ -164,7 +174,7 @@ AddCompilerFlag( "-std=c++11" )
 find_package( OpenMP ) 
 if( OPENMP_FOUND )
    message( "Compiler supports OpenMP." )
-   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp")
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP -fopenmp" )
 endif()
 
 ####
@@ -318,27 +328,27 @@ endif( WITH_TESTS STREQUAL "yes" )
 #
 if( WITH_TEMPLATE_INSTANTIATION STREQUAL "yes" )
    AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION " )
-endif()   
 
-if( INSTANTIATE_INT STREQUAL "yes" )
-   AddCompilerFlag( "-DINSTANTIATE_INT " )
-endif()   
+   if( INSTANTIATE_INT STREQUAL "yes" )
+      AddCompilerFlag( "-DINSTANTIATE_INT " )
+   endif()
 
-if( INSTANTIATE_LONG_INT STREQUAL "yes" )
-   AddCompilerFlag( "-DINSTANTIATE_LONG_INT " )
-endif()   
+   if( INSTANTIATE_LONG_INT STREQUAL "yes" )
+      AddCompilerFlag( "-DINSTANTIATE_LONG_INT " )
+   endif()
 
-if( INSTANTIATE_FLOAT STREQUAL "yes" )
-   AddCompilerFlag( "-DINSTANTIATE_FLOAT " )
-endif()   
+   if( INSTANTIATE_FLOAT STREQUAL "yes" )
+      AddCompilerFlag( "-DINSTANTIATE_FLOAT " )
+   endif()
 
-if( INSTANTIATE_DOUBLE STREQUAL "yes" )
-   AddCompilerFlag( "-DINSTANTIATE_DOUBLE " )
-endif()   
+   if( INSTANTIATE_DOUBLE STREQUAL "yes" )
+      AddCompilerFlag( "-DINSTANTIATE_DOUBLE " )
+   endif()
 
-if( INSTANTIATE_LONG_DOUBLE STREQUAL "yes" )
-   AddCompilerFlag( "-DINSTANTIATE_LONG_DOUBLE " )
-endif()   
+   if( INSTANTIATE_LONG_DOUBLE STREQUAL "yes" )
+      AddCompilerFlag( "-DINSTANTIATE_LONG_DOUBLE " )
+   endif()
+endif()
 
 set( CXX_TEST_FLAGS "-fprofile-arcs -ftest-coverage" )
 set( LD_TEST_FLAGS "-lgcov -coverage" )
@@ -388,3 +398,13 @@ set(CPACK_SOURCE_STRIP_FILES "Release")
 
 #set(CPACK_PACKAGE_EXECUTABLES "MyExecutable" "My Executable")
 INCLUDE( CPack )
+
+# Print compiler options
+message( "-- Compiler options:" )
+message( "   CMAKE_CXX_FLAGS = ${CMAKE_CXX_FLAGS}" )
+message( "   CMAKE_CXX_FLAGS_DEBUG = ${CMAKE_CXX_FLAGS_DEBUG}" )
+message( "   CMAKE_CXX_FLAGS_RELEASE = ${CMAKE_CXX_FLAGS_RELEASE}" )
+message( "   CMAKE_SHARED_LIBRARY_LINK_C_FLAGS = ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS}" )
+message( "   CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG = ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG}" )
+message( "   CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE = ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_RELEASE}" )
+message( "   CUDA_NVCC_FLAGS = ${CUDA_NVCC_FLAGS}" )

@@ -30,7 +30,11 @@ navierStokesSolverMonitor< Real, Index > :: navierStokesSolverMonitor()
 template< typename Real, typename Index >
 void navierStokesSolverMonitor< Real, Index > :: refresh()
 {
+<<<<<<< HEAD
    if( this -> verbose > 0 && this -> refresRate % this -> refreshRate == 0 )
+=======
+   if( this->verbose > 0 && this->refresRate % this->refreshRate == 0 )
+>>>>>>> develop
    {
       cout << "V=( " << uMax
            << " , " << uAvg

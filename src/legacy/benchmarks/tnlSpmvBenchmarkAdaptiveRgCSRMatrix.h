@@ -84,14 +84,14 @@ template< typename Real,
           typename Index>
 bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
 {
-   //tnlAssert( this -> groupSize > 0, cerr << "groupSize = " << this -> groupSize );
+   //tnlAssert( this->groupSize > 0, cerr << "groupSize = " << this->groupSize );
    if( Device :: getDevice() == tnlHostDevice )
    {
-      this -> matrix. tuneFormat( desiredChunkSize, cudaBlockSize );
-      if( ! this -> matrix. copyFrom( matrix ) )
+      this->matrix. tuneFormat( desiredChunkSize, cudaBlockSize );
+      if( ! this->matrix. copyFrom( matrix ) )
          return false;
       //matrix. printOut( cout, "text", 30 );
-      //this -> matrix. printOut( cout, "text", 30 );
+      //this->matrix. printOut( cout, "text", 30 );
    }
    if( Device :: getDevice() == tnlCudaDevice )
    {
@@ -99,13 +99,13 @@ bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const 
       tnlAdaptiveRgCSRMatrix< Real, tnlHost, Index > hostMatrix( "tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup : hostMatrix" );
       hostMatrix. tuneFormat( desiredChunkSize, cudaBlockSize );
       hostMatrix. copyFrom( matrix );
-      if( ! this -> matrix. copyFrom( hostMatrix ) )
+      if( ! this->matrix. copyFrom( hostMatrix ) )
          return false;
 #else
       return false;
 #endif
    }
-   this -> setupOk = true;
+   this->setupOk = true;
    return true;
 }
 
@@ -114,8 +114,8 @@ template< typename Real,
           typename Index>
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: tearDown()
 {
-   //this -> matrix. setSize( 0 );
-   //this -> matrix. setNonzeroElements( 0 );
+   //this->matrix. setSize( 0 );
+   //this->matrix. setNonzeroElements( 0 );
 }
 
 template< typename Real,
@@ -123,19 +123,19 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeProgress() const
 {
-   cout << left << setw( this -> formatColumnWidth - 15 ) << "Adap. Row-grouped CSR ";
+   cout << left << setw( this->formatColumnWidth - 15 ) << "Adap. Row-grouped CSR ";
    if( Device :: getDevice() == tnlCudaDevice )
-      cout << setw( 5 ) << this -> desiredChunkSize
-           << setw( 10 ) << this -> cudaBlockSize;
+      cout << setw( 5 ) << this->desiredChunkSize
+           << setw( 10 ) << this->cudaBlockSize;
    else
-      cout << setw( 15 ) << this -> desiredChunkSize;
-   cout << right << setw( this -> timeColumnWidth ) << setprecision( 2 ) << this -> getTime()
-        << right << setw( this -> iterationsColumnWidth ) << this -> getIterations()
-        << right << setw( this -> gflopsColumnWidth ) << setprecision( 2 ) << this -> getGflops();
-   if( this -> getBenchmarkWasSuccesful() )
-        cout << right << setw( this -> benchmarkStatusColumnWidth ) << " OK - maxError is " << this -> maxError << ". ";
+      cout << setw( 15 ) << this->desiredChunkSize;
+   cout << right << setw( this->timeColumnWidth ) << setprecision( 2 ) << this->getTime()
+        << right << setw( this->iterationsColumnWidth ) << this->getIterations()
+        << right << setw( this->gflopsColumnWidth ) << setprecision( 2 ) << this->getGflops();
+   if( this->getBenchmarkWasSuccesful() )
+        cout << right << setw( this->benchmarkStatusColumnWidth ) << " OK - maxError is " << this->maxError << ". ";
    else
-        cout << right << setw( this -> benchmarkStatusColumnWidth ) << "  FAILED";
+        cout << right << setw( this->benchmarkStatusColumnWidth ) << "  FAILED";
 #ifndef HAVE_CUDA
    if( Device :: getDevice() == tnlCudaDevice )
       tnlCudaSupportMissingMessage;;
@@ -152,13 +152,13 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTab
                                                                                     const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                                                                                     bool writeMatrixInfo  ) const
 {
-   if( this -> getBenchmarkWasSuccesful() )
+   if( this->getBenchmarkWasSuccesful() )
    {
       tnlString bgColor="#FFFFFF";
-      double speedUp = this -> getGflops() / csrGflops;
+      double speedUp = this->getGflops() / csrGflops;
       double rgCsrSpeedUp( 0.0 );
-      if( this -> bestRgCSRGflops )
-         rgCsrSpeedUp = this -> getGflops() / this -> bestRgCSRGflops;
+      if( this->bestRgCSRGflops )
+         rgCsrSpeedUp = this->getGflops() / this->bestRgCSRGflops;
       switch( desiredChunkSize )
       {
          case 1: bgColor = "#666666"; break;
@@ -179,20 +179,20 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTab
          tnlString matrixPdfFile = baseFileName + tnlString( ".pdf" );
          tnlString matrixHtmlFile = baseFileName + tnlString( ".html" );
          tnlAdaptiveRgCSRMatrix< Real > argCsrMatrix( inputMtxFile );
-         argCsrMatrix. tuneFormat( this -> desiredChunkSize,
-                                 this -> cudaBlockSize );
+         argCsrMatrix. tuneFormat( this->desiredChunkSize,
+                                 this->cudaBlockSize );
          argCsrMatrix. copyFrom( csrMatrix );
-         this -> printMatrixInHtml( matrixHtmlFile, argCsrMatrix );
+         this->printMatrixInHtml( matrixHtmlFile, argCsrMatrix );
          if( rgCsrSpeedUp > 1.0 )
             bgColor=getBgColorByRgCSRSpeedUp( rgCsrSpeedUp );
          logFile << "             <td bgcolor=" << bgColor << "> <a href=\"" << matrixPdfFile << "\">PDF</a>, <a href=\"" << matrixHtmlFile << "\">HTML</a></td> " << endl;
-         logFile << "             <td bgcolor=" << bgColor << "> " << this -> getArtificialZeroElements() << "</td>" << endl;
+         logFile << "             <td bgcolor=" << bgColor << "> " << this->getArtificialZeroElements() << "</td>" << endl;
       }
 
-      bgColor = this -> getBgColorBySpeedUp( speedUp );
+      bgColor = this->getBgColorBySpeedUp( speedUp );
       tnlString textColor = "#000000"; //getBgColorByRgCSRSpeedUp( rgCsrSpeedUp );
-      logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << this -> getTime() << "</font></td>" << endl;
-      logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << this -> getGflops() << "</font></td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << this->getTime() << "</font></td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << this->getGflops() << "</font></td>" << endl;
       logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << speedUp << "</font></td>" << endl;
 
    }
@@ -214,7 +214,7 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setDesiredChunkSize( const Index desiredChunkSize )
 {
-   this -> desiredChunkSize = desiredChunkSize;
+   this->desiredChunkSize = desiredChunkSize;
 }
 
 template< typename Real,
@@ -222,7 +222,7 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setCudaBlockSize( const Index cudaBlockSize )
 {
-   this -> cudaBlockSize = cudaBlockSize;
+   this->cudaBlockSize = cudaBlockSize;
 }
 
 template< typename Real,
@@ -230,7 +230,7 @@ template< typename Real,
           typename Index >
 Index tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 {
-   return this -> matrix. getArtificialZeroElements();
+   return this->matrix. getArtificialZeroElements();
 }
 
 template< typename Real,
@@ -238,7 +238,7 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setBestRgCSRGflops( const double& bestRgCSRGflops )
 {
-   this -> bestRgCSRGflops = bestRgCSRGflops;
+   this->bestRgCSRGflops = bestRgCSRGflops;
 }
 
 template< typename Real,

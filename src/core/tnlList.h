@@ -23,10 +23,10 @@
 #include <iostream>
 #include <core/tnlDataElement.h>
 #include <core/tnlString.h>
-#include <core/tnlFile.h>
+
 #include <core/param-types.h>
 
-using namespace :: std;
+class tnlFile;
 
 //! Template for double linked lists
 /*! To acces elements in the list one can use method getSize() and
@@ -46,397 +46,102 @@ using namespace :: std;
  */
 template< class T > class tnlList
 {
-   protected:
-
-   //! Pointer to the first element
-   tnlDataElement< T >* first;
-
-   //! Pointer to the last element
-   /*! We use pointer to last element while adding new element to keep order of elements
-    */
-   tnlDataElement< T >* last;
-   
-   //! List size
-   int size;
-
-   //! Iterator
-   mutable tnlDataElement< T >* iterator;
-
-   //! Iterator index
-   mutable int index;
 
    public:
-   typedef T ElementType;
 
-   //! Basic constructor
-   tnlList() 
-      : first( 0 ),
-        last( 0 ),
-        size( 0 ),
-        iterator( 0 ),
-        index( 0 ){};
+      typedef T ElementType;
 
-   //! Copy constructor
-   tnlList( const tnlList& list )
-      : first( 0 ),
-        last( 0 ),
-        size( 0 ),
-        iterator( 0 ),
-        index( 0 )
-   {
-      AppendList( list );
-   };
+      //! Basic constructor
+      tnlList();
 
-   //! Destructor
-   ~tnlList() { reset(); };
+      //! Copy constructor
+      tnlList( const tnlList& list );
 
-   static tnlString getType()
-   {
-      return tnlString( "tnlList< " ) + ::getType< T >() +  tnlString( " >" );
-   };
+      //! Destructor
+      ~tnlList();
 
-   //! If the list is empty return 'true'
-   bool isEmpty() const { return ! size; };
+      static tnlString getType();
+
+      //! If the list is empty return 'true'
+      bool isEmpty() const;
+
+      //! Return size of the list
+      int getSize() const;
+
+      //! Indexing operator
+      T& operator[] ( const int& ind );
+
+      //! Indexing operator for constant instances
+      const T& operator[] ( const int& ind ) const;
+
+      const tnlList& operator = ( const tnlList& lst );
+
+      //! Append new data element
+      bool Append( const T& data );
+
+      //! Prepend new data element
+      bool Prepend( const T& data );
+
+      //! Insert new data element at given position
+      bool Insert( const T& data, const int& ind );
+
+      //! Append copy of another list
+      bool AppendList( const tnlList< T >& lst );
+
+      //! Prepend copy of another list
+      bool PrependList( const tnlList< T >& lst );   
+
+      template< typename Array >
+      void toArray( Array& array );
+
+      //! Erase data element at given position
+      void Erase( const int& ind );
+
+      //! Erase data element with contained data at given position
+      void DeepErase( const int& ind );
+
+      //! Erase all data elements
+      void reset();
+
+      //! Erase all data elements with contained data
+      void DeepEraseAll();
+
+      //! Save the list in binary format
+      bool Save( tnlFile& file ) const;
+
+      //! Save the list in binary format using method save of type T
+      bool DeepSave( tnlFile& file ) const;
+
+      //! Load the list
+      bool Load( tnlFile& file );
+
+      //! Load the list using method Load of the type T
+      bool DeepLoad( tnlFile& file );
    
-   //! Return size of the list
-   int getSize() const { return size; };
+   protected:
 
-   //! Indexing operator
-   T& operator[] ( int ind )
-   {
-      tnlAssert( ind < size, );
-      //if( ! size ) return NULL;
-      // find fastest way to element with index i
-      // we can use iterator as it is set now or
-      // we can start from the first ro from the last
-      // element
-      //cout << "List operator[]: size = " << size
-      //     << " current index = " << index
-      //     << " index = " << ind << endl;
-      int iter_dist = abs( index - ind );
-      if( ! iterator ||
-          iter_dist > ind || 
-          iter_dist > size - ind )
-      {
-         // it is better to start from the first one or the last one
-         if( ind < size - ind )
-         {
-            // start from the first one
-            //cout << "Setting curent index to 0." << endl;
-            index = 0;
-            iterator = first;
-         }
-         else
-         {
-            //cout << "Setting curent index to size - 1." << endl;
-            index = size - 1;
-            iterator = last;
-         }
-      }
-      while( index != ind )
-      {
-         //cout << " current index = " << index
-         //     << " index = " << ind << endl;
-         if( ind < index ) 
-         {
-            iterator = iterator -> Previous();
-            index --;
-         }
-         else
-         {
-            iterator = iterator -> Next();
-            index ++;
-         }
-         tnlAssert( iterator, );
-      }
-      return iterator -> Data();
-   };
-   
-   //! Indexing operator for constant instances
-   const T& operator[] ( int ind ) const
-   {
-      return const_cast< tnlList< T >* >( this ) -> operator[]( ind );
-   }
+      //! Pointer to the first element
+      tnlDataElement< T >* first;
 
-   const tnlList& operator = ( const tnlList& lst )
-   {
-      AppendList( lst );
-      return( *this );
-   }
+      //! Pointer to the last element
+      /*! We use pointer to last element while adding new element to keep order of elements
+       */
+      tnlDataElement< T >* last;
 
-   //! Append new data element
-   bool Append( const T& data )
-   {
-      if( ! first )
-      {
-         tnlAssert( ! last, );
-         first = last = new tnlDataElement< T >( data );
-         if( ! first ) return false;
-      }
-      else 
-      {
-         tnlDataElement< T >* new_element =  new tnlDataElement< T >( data, last, 0 );
-         if( ! new_element ) return false;
-         tnlAssert( last, );
-         last = last -> Next() = new_element;
-      }
-      size ++;
-      return true;
-   };
+      //! List size
+      int size;
 
-   //! Prepend new data element
-   bool Prepend( const T& data )
-   {
-      if( ! first )
-      {
-         tnlAssert( ! last, );
-         first = last = new tnlDataElement< T >( data );
-         if( ! first ) return false;
-      }
-      else
-      {
-         tnlDataElement< T >* new_element =  new tnlDataElement< T >( data, 0, first );
-         if( ! new_element ) return false;
-         first = first -> Previous() = new_element; 
-      }
-      size ++;
-      index ++;
-      return true;
-   };
+      //! Iterator
+      mutable tnlDataElement< T >* iterator;
 
-   //! Insert new data element at given position
-   bool Insert( const T& data, int ind )
-   {
-      tnlAssert( ind <= size || ! size, );
-      if( ind == 0 ) return Prepend( data );
-      if( ind == size ) return Append( data );
-      operator[]( ind );
-      tnlDataElement< T >* new_el = 
-         new tnlDataElement< T >( data,
-                                iterator -> Previous(),
-                                iterator );
-      if( ! new_el ) return false;
-      iterator -> Previous() -> Next() = new_el;
-      iterator -> Previous() = new_el;
-      iterator = new_el;
-      size ++;
-      return true;
-   };
+      //! Iterator index
+      mutable int index;   
+      
 
-   //! Append copy of another list
-   bool AppendList( const tnlList< T >& lst )
-   {
-      int i;
-      for( i = 0; i < lst. getSize(); i ++ )
-      {
-         if( ! Append( lst[ i ] ) ) return false;
-      }
-      return true;
-   };
-   
-   //! Prepend copy of another list
-   bool PrependList( const tnlList< T >& lst )
-   
-   {
-      int i;
-      for( i = lst. getSize(); i > 0; i -- )
-         if( ! Prepend( lst[ i - 1 ] ) ) return false;
-      return true;
-   };
-
-   template< typename Array >
-   void toArray( Array& array )
-   {
-      tnlAssert( this->getSize() <= array.getSize(),
-                 cerr << "this->getSize() = " << this->getSize()
-                      << " array.getSize() = " << array.getSize() << endl; );
-      for( int i = 0; i < this->getSize(); i++ )
-         array[ i ] = ( *this )[ i ];
-   }
-
-   //! Erase data element at given position
-   void Erase( int ind )
-   {
-      operator[]( ind );
-      tnlDataElement< T >* tmp_it = iterator;
-      if( iterator -> Next() )
-         iterator -> Next() -> Previous() = iterator -> Previous();
-      if( iterator -> Previous() )
-        iterator -> Previous() -> Next() = iterator -> Next();
-      if( iterator -> Next() ) iterator = iterator -> Next();
-      else
-      {
-         iterator = iterator -> Previous();
-         index --;
-      }
-      if( first == tmp_it ) first = iterator;
-      if( last == tmp_it ) last = iterator;
-      delete tmp_it;
-      size --;
-   };
-
-   //! Erase data element with contained data at given position
-   void DeepErase( int ind )
-   {
-      operator[]( ind );
-      delete iterator -> Data();
-      Erase( ind );
-   };
-
-   //! Erase all data elements
-   void reset()
-   {
-      iterator = first;
-      tnlDataElement< T >* tmp_it;
-      while( iterator )
-      {
-    	   tnlAssert( iterator, );
-         tmp_it = iterator;
-         iterator = iterator -> Next();
-         delete tmp_it;
-      }
-      first = last = 0;
-      size = 0;
-   };
-
-   //! Erase all data elements with contained data
-   void DeepEraseAll()
-   {
-      iterator = first;
-      tnlDataElement< T >* tmp_it;
-      while( iterator )
-      {
-         tmp_it = iterator;
-         iterator = iterator -> Next();
-         delete tmp_it -> Data();
-         delete tmp_it;
-      }
-      first = last = 0;
-      size = 0;
-   };
-   
-   //! Save the list in binary format
-   bool Save( tnlFile& file ) const
-   {
-#ifdef HAVE_NOT_CXX11
-      file. write< const int, tnlHost >( &size );
-      for( int i = 0; i < size; i ++ )
-         if( ! file. write< int, tnlHost, int >( &operator[]( i ), 1 ) )
-            return false;
-      return true;
-#else
-      file. write( &size );
-      for( int i = 0; i < size; i ++ )
-         if( ! file. write( &operator[]( i ), 1 ) )
-            return false;
-      return true;
-
-#endif            
-   }
-
-   //! Save the list in binary format using method save of type T
-   bool DeepSave( tnlFile& file ) const
-   {
-#ifdef HAVE_NOT_CXX11
-      file. write< const int, tnlHost >( &size );
-      for( int i = 0; i < size; i ++ )
-         if( ! operator[]( i ). save( file ) ) return false;
-      return true;
-#else
-      file. write( &size );
-      for( int i = 0; i < size; i ++ )
-         if( ! operator[]( i ). save( file ) ) return false;
-      return true;
-#endif            
-   }
-
-   //! Load the list
-   bool Load( tnlFile& file )
-   {
-#ifdef HAVE_NOT_CXX11
-      reset();
-      int _size;
-      file. read< int, tnlHost >( &_size );
-      if( _size < 0 )
-      {
-         cerr << "The curve size is negative." << endl;
-         return false;
-      }
-      T t;
-      for( int i = 0; i < _size; i ++ )
-      {
-         if( ! file. read< T, tnlHost >( &t ) )
-            return false;
-         Append( t );
-      }
-      return true;
-#else
-      reset();
-      int _size;
-      file. read( &_size, 1 );
-      if( _size < 0 )
-      {
-         cerr << "The curve size is negative." << endl;
-         return false;
-      }
-      T t;
-      for( int i = 0; i < _size; i ++ )
-      {
-         if( ! file. read( &t, 1 ) )
-            return false;
-         Append( t );
-      }
-      return true;
-#endif            
-   };
-
-   //! Load the list using method Load of the type T
-   bool DeepLoad( tnlFile& file )
-   {
-#ifdef HAVE_NOT_CXX11
-      reset();
-      int _size;
-      file. read< int, tnlHost >( &_size );
-      if( _size < 0 )
-      {
-         cerr << "The list size is negative." << endl;
-         return false;
-      }
-      for( int i = 0; i < _size; i ++ )
-      {
-         T t;
-         if( ! t. load( file ) ) return false;
-         Append( t );
-      }
-      return true;
-#else
-      reset();
-      int _size;
-      file. read( &_size );
-      if( _size < 0 )
-      {
-         cerr << "The list size is negative." << endl;
-         return false;
-      }
-      for( int i = 0; i < _size; i ++ )
-      {
-         T t;
-         if( ! t. load( file ) ) return false;
-         Append( t );
-      }
-      return true;
-#endif            
-   };
-   
 };
 
+template< typename T > ostream& operator << ( ostream& str, const tnlList< T >& list );
 
-template< typename T > ostream& operator << ( ostream& str, const tnlList< T >& list )
-{
-   int i, size( list. getSize() );
-   for( i = 0; i < size; i ++ )
-      str << "Item " << i << ":" << list[ i ] << endl;
-   return str;
-};
+#include<core/tnlList_impl.h>
 
 #endif

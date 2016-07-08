@@ -66,6 +66,8 @@ class tnlMeshFunction :
       bool setup( const tnlParameterContainer& parameters,
                   const tnlString& prefix = "" );      
       
+      void bind( ThisType& meshFunction );
+      
       template< typename Vector >
       void bind( const MeshType& mesh,
                  const Vector& data,

@@ -19,8 +19,7 @@
 #define TNLSOLVERSTARTER_H_
 
 #include <config/tnlParameterContainer.h>
-#include <core/tnlTimerRT.h>
-#include <core/tnlTimerCPU.h>
+#include <core/tnlTimer.h>
 #include <ostream>
 
 template< typename MeshConfig >
@@ -45,9 +44,7 @@ class tnlSolverStarter
 
    int logWidth;
 
-   tnlTimerRT ioRtTimer, computeRtTimer, totalRtTimer;
-
-   tnlTimerCPU ioCpuTimer, computeCpuTimer, totalCpuTimer;
+   tnlTimer ioTimer, computeTimer, totalTimer;
 };
 
 #include <solvers/tnlSolverStarter_impl.h>

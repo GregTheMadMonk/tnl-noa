@@ -335,18 +335,19 @@ __global__ void synchronize2CUDA3D(tnlParallelEikonalSolver<3, SchemeHost, Schem
 #endif
 
 
-__device__
+#ifdef HAVE_CUDA
+__cuda_callable__
 double fabsMin( double x, double y)
 {
-	double fx = abs(x);
+	double fx = fabs(x);
 
-	if(Min(fx,abs(y)) == fx)
+	if(Min(fx,fabs(y)) == fx)
 		return x;
 	else
 		return y;
 }
 
-__device__
+__cuda_callable__
 double atomicFabsMin(double* address, double val)
 {
 	unsigned long long int* address_as_ull =
@@ -359,6 +360,7 @@ double atomicFabsMin(double* address, double val)
 	return __longlong_as_double(old);
 }
 
+#endif
 
 #include "tnlParallelEikonalSolver2D_impl.h"
 #include "tnlParallelEikonalSolver3D_impl.h"

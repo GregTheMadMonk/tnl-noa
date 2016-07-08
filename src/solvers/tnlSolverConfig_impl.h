@@ -118,6 +118,19 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
          config.addEntryEnum( "tfqmr" );
       if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitSORSolverTag >::enabled )
          config.addEntryEnum( "sor" );
+#ifdef HAVE_UMFPACK
+      if( tnlMeshConfigSemiImplicitSolver< MeshConfig, tnlSemiImplicitUmfpackSolverTag >::enabled )
+         config.addEntryEnum( "umfpack" );
+#endif
+   }
+   config.addEntry< tnlString >( "preconditioner", "The preconditioner for the discrete solver:", "none" );
+   config.addEntryEnum( "none" );
+   config.addEntryEnum( "diagonal" );
+   if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled ||
+       tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled )
+   {
+      config.addDelimiter( " === Iterative solvers parameters === " );
+      tnlIterativeSolver< double, int >::configSetup( config );
    }
    config.addEntry< tnlString >( "preconditioner", "The preconditioner for the discrete solver:", "none" );
    config.addEntryEnum( "none" );
@@ -156,7 +169,7 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
 
    config.addDelimiter( " === Logs and messages ===" );
    config.addEntry< int >( "verbose", "Set the verbose mode. The higher number the more messages are generated.", 1 );
-   config.addEntry< tnlString >( "log-file", "Log file for the computation." );
+   config.addEntry< tnlString >( "log-file", "Log file for the computation.", "log.txt" );
    config.addEntry< int >( "log-width", "Number of columns of the log table.", 80 );
    return true;
 

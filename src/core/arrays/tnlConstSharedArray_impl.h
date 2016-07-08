@@ -25,8 +25,6 @@
 #include <core/mfuncs.h>
 #include <core/param-types.h>
 
-using namespace std;
-
 template< typename Element,
           typename Device,
           typename Index >
@@ -77,13 +75,13 @@ void tnlConstSharedArray< Element, Device, Index > :: bind( const Element* data,
                                                             const Index size )
 {
    tnlAssert( size >= 0,
-              cerr << "You try to set size of tnlConstSharedArray to negative value."
-                   << "New size: " << size << endl );
+              std::cerr << "You try to set size of tnlConstSharedArray to negative value."
+                        << "New size: " << size << std::endl );
    tnlAssert( data != 0,
-              cerr << "You try to use null pointer to data for tnlConstSharedArray." );
+              std::cerr << "You try to use null pointer to data for tnlConstSharedArray." );
 
-   this -> size = size;
-   this -> data = data;
+   this->size = size;
+   this->data = data;
 };
 
 template< typename Element,
@@ -110,8 +108,8 @@ template< typename Element,
           typename Index >
 void tnlConstSharedArray< Element, Device, Index > :: swap( tnlConstSharedArray< Element, Device, Index >& array )
 {
-   :: swap( this -> size, array. size );
-   :: swap( this -> data, array. data );
+   :: swap( this->size, array. size );
+   :: swap( this->data, array. data );
 };
 
 template< typename Element,
@@ -119,8 +117,8 @@ template< typename Element,
           typename Index >
 void tnlConstSharedArray< Element, Device, Index > :: reset()
 {
-   this -> size = 0;
-   this -> data = 0;
+   this->size = 0;
+   this->data = 0;
 };
 
 template< typename Element,
@@ -129,7 +127,7 @@ template< typename Element,
 __cuda_callable__
 Index tnlConstSharedArray< Element, Device, Index > :: getSize() const
 {
-   return this -> size;
+   return this->size;
 }
 
 template< typename Element,
@@ -137,11 +135,11 @@ template< typename Element,
           typename Index >
 Element tnlConstSharedArray< Element, Device, Index > :: getElement( Index i ) const
 {
-   tnlAssert( 0 <= i && i < this -> getSize(),
-              cerr << "Wrong index for getElement method in tnlConstSharedArray with name "
-                   << " index is " << i
-                   << " and array size is " << this -> getSize() );
-   return tnlArrayOperations< Device >::getMemoryElement( &( this -> data[ i ] ) );
+   tnlAssert( 0 <= i && i < this->getSize(),
+              std::cerr << "Wrong index for getElement method in tnlConstSharedArray with name "
+                        << " index is " << i
+                        << " and array size is " << this->getSize() );
+   return tnlArrayOperations< Device >::getMemoryElement( &( this->data[ i ] ) );
 };
 
 template< typename Element,
@@ -150,12 +148,12 @@ template< typename Element,
 __cuda_callable__
 const Element& tnlConstSharedArray< Element, Device, Index > :: operator[] ( Index i ) const
 {
-   tnlAssert( 0 <= i && i < this -> getSize(),
-              cerr << "Wrong index for operator[] in tnlConstSharedArray with name "
-                   << " index is " << i
-                   << " and array size is " << this -> getSize() );
+   tnlAssert( 0 <= i && i < this->getSize(),
+              std::cerr << "Wrong index for operator[] in tnlConstSharedArray with name "
+                        << " index is " << i
+                        << " and array size is " << this->getSize() );
    // TODO: add static assert - this does not make sense for tnlCudaDevice
-   return tnlArrayOperations< Device >::getArrayElementReference( this -> data, i );
+   return tnlArrayOperations< Device >::getArrayElementReference( this->data, i );
 };
 
 template< typename Element,
@@ -184,14 +182,14 @@ template< typename Element,
    template< typename Array >
 bool tnlConstSharedArray< Element, Device, Index > :: operator == ( const Array& array ) const
 {
-   if( array. getSize() != this -> getSize() )
+   if( array. getSize() != this->getSize() )
       return false;
    return tnlArrayOperations< Device,
                               typename Array :: DeviceType > ::
     template compareMemory< typename Array :: ElementType,
                             Element,
                             typename Array :: IndexType >
-                          ( this -> getData(),
+                          ( this->getData(),
                             array. getData(),
                             array. getSize() );
 }
@@ -210,7 +208,7 @@ template< typename Element,
           typename Index >
 const Element* tnlConstSharedArray< Element, Device, Index > :: getData() const
 {
-   return this -> data;
+   return this->data;
 }
 
 template< typename Element,
@@ -236,20 +234,20 @@ template< typename Element,
           typename Index >
 bool tnlConstSharedArray< Element, Device, Index > :: save( tnlFile& file ) const
 {
-   tnlAssert( this -> size != 0,
-              cerr << "You try to save empty array." );
+   tnlAssert( this->size != 0,
+              std::cerr << "You try to save empty array." );
    if( ! tnlObject :: save( file ) )
       return false;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. write< const Index, Device >( &this -> size ) )
+   if( ! file. write< const Index, Device >( &this->size ) )
 #else
-   if( ! file. write( &this -> size ) )
+   if( ! file. write( &this->size ) )
 #endif
       return false;
-   if( ! file. write< Element, Device, Index >( this -> data, this -> size ) )
+   if( ! file. write< Element, Device, Index >( this->data, this->size ) )
    {
-      cerr << "I was not able to WRITE tnlConstSharedArray " 
-           << " with size " << this -> getSize() << endl;
+      std::cerr << "I was not able to WRITE tnlConstSharedArray " 
+                << " with size " << this->getSize() << std::endl;
       return false;
    }
    return true;

@@ -38,7 +38,7 @@ template< typename Real, typename Index >
 void tnlIterativeSolver< Real, Index> :: configSetup( tnlConfigDescription& config,
                                                       const tnlString& prefix )
 {
-   config.addEntry< int >   ( prefix + "max-iterations", "Maximal number of iterations the solver may perform.", 100000 );
+   config.addEntry< int >   ( prefix + "max-iterations", "Maximal number of iterations the solver may perform.", 100000000000 );
    config.addEntry< int >   ( prefix + "min-iterations", "Minimal number of iterations the solver must perform.", 0 );
    config.addEntry< double >( prefix + "convergence-residue", "Convergence occurs when the residue drops bellow this limit.", 1.0e-6 );
    config.addEntry< double >( prefix + "divergence-residue", "Divergence occurs when the residue exceeds given limit.", DBL_MAX );
@@ -60,39 +60,47 @@ bool tnlIterativeSolver< Real, Index> :: setup( const tnlParameterContainer& par
 template< typename Real, typename Index >
 void tnlIterativeSolver< Real, Index> :: setMaxIterations( const Index& maxIterations )
 {
-   this -> maxIterations = maxIterations;
+   this->maxIterations = maxIterations;
 }
 
 template< typename Real, typename Index >
 const Index& tnlIterativeSolver< Real, Index> :: getMaxIterations() const
 {
-   return this -> maxIterations;
+   return this->maxIterations;
 }
 
 template< typename Real, typename Index >
 void tnlIterativeSolver< Real, Index> :: setMinIterations( const Index& minIterations )
 {
-   this -> minIterations = minIterations;
+   this->minIterations = minIterations;
 }
 
 template< typename Real, typename Index >
 const Index& tnlIterativeSolver< Real, Index> :: getMinIterations() const
 {
-   return this -> minIterations;
+   return this->minIterations;
 }
 
 template< typename Real, typename Index >
 void tnlIterativeSolver< Real, Index> :: resetIterations()
 {
-   this -> currentIteration = 0;
+   this->currentIteration = 0;
 }
 
 template< typename Real, typename Index >
 bool tnlIterativeSolver< Real, Index> :: nextIteration()
 {
+   // this->checkNextIteration() must be called before the iteration counter is incremented
+   bool result = this->checkNextIteration();
+   this->currentIteration++;
+   return result;
+}
+
+template< typename Real, typename Index >
+bool tnlIterativeSolver< Real, Index> :: checkNextIteration()
+{
    // TODO: fix
    //tnlAssert( solverMonitor, );
-   this->currentIteration++;
    if( this->solverMonitor )
    {
       solverMonitor->setIterations( this->currentIteration );
@@ -103,9 +111,26 @@ bool tnlIterativeSolver< Real, Index> :: nextIteration()
 
    if( std::isnan( this->getResidue() ) || 
        this->getIterations() > this->getMaxIterations()  ||
-       ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() > this->getMinIterations() ) ||
-       ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() > this->minIterations ) ) 
+       ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() >= this->getMinIterations() ) ||
+       ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() >= this->getMinIterations() ) )
       return false;
+   
+   if( this->getResidue() > this->getDivergenceResidue() &&
+         this->getIterations() > this->minIterations )
+   {
+      cerr << endl  << "The residue has exceeded allowed tolerance " << this->getDivergenceResidue() << "." << endl;
+      return false;
+   }
+   if( this->getIterations() >= this->getMaxIterations() )
+   {
+      cerr << endl  << "The solver has exceeded maximal allowed number of iterations " << this->getMaxIterations() << "." << endl;
+      return false;
+   }
+   if( this->getResidue() > this->getConvergenceResidue() )
+   {
+      cerr << endl  << "The residue ( = " << this->getResidue() << " ) is too large( > " << this->getConvergenceResidue() << " )." << endl;
+      return false;
+   }
    return true;
 }
 
@@ -143,7 +168,7 @@ const Index&
 tnlIterativeSolver< Real, Index>::
 getIterations() const
 {
-   return this -> currentIteration;
+   return this->currentIteration;
 }
 
 template< typename Real, typename Index >
@@ -174,36 +199,36 @@ const Real& tnlIterativeSolver< Real, Index> :: getDivergenceResidue() const
 template< typename Real, typename Index >
 void tnlIterativeSolver< Real, Index> :: setResidue( const Real& residue )
 {
-   this -> currentResidue = residue;
+   this->currentResidue = residue;
 }
 
 template< typename Real, typename Index >
 const Real& tnlIterativeSolver< Real, Index> :: getResidue() const
 {
-   return this -> currentResidue;
+   return this->currentResidue;
 }
 
 template< typename Real, typename Index >
 void tnlIterativeSolver< Real, Index> :: setRefreshRate( const Index& refreshRate )
 {
-   this -> refreshRate = refreshRate;
+   this->refreshRate = refreshRate;
 }
 
 template< typename Real, typename Index >
 void tnlIterativeSolver< Real, Index> :: setSolverMonitor( tnlIterativeSolverMonitor< Real, Index >& solverMonitor )
 {
-   this -> solverMonitor = &solverMonitor;
+   this->solverMonitor = &solverMonitor;
 }
 
 template< typename Real, typename Index >
 void tnlIterativeSolver< Real, Index> :: refreshSolverMonitor( bool force )
 {
-   if( this -> solverMonitor )
+   if( this->solverMonitor )
    {
-      this -> solverMonitor -> setIterations( this -> getIterations() );
-      this -> solverMonitor -> setResidue( this -> getResidue() );
-      this -> solverMonitor -> setRefreshRate( this-> refreshRate );
-      this -> solverMonitor -> refresh( force );
+      this->solverMonitor -> setIterations( this->getIterations() );
+      this->solverMonitor -> setResidue( this->getResidue() );
+      this->solverMonitor -> setRefreshRate( this-> refreshRate );
+      this->solverMonitor -> refresh( force );
    }
 }
 

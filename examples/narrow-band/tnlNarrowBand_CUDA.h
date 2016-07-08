@@ -59,9 +59,9 @@ public:
 
 	tnlNarrowBand();
 
-	__host__ static tnlString getType();
-	__host__ bool init( const tnlParameterContainer& parameters );
-	__host__ bool run();
+        static tnlString getType();
+	bool init( const tnlParameterContainer& parameters );
+	bool run();
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -143,9 +143,9 @@ public:
 
 
 
-	__host__ static tnlString getType();
-	__host__ bool init( const tnlParameterContainer& parameters );
-	__host__ bool run();
+	static tnlString getType();
+	bool init( const tnlParameterContainer& parameters );
+	bool run();
 
 #ifdef HAVE_CUDA
 	__device__ bool initGrid(int i, int j, int k);

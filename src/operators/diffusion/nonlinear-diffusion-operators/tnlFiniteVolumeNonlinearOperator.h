@@ -52,7 +52,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >
              typename Vector,
              typename Matrix >
    __cuda_callable__
-      void updateLinearSystem( const RealType& time,
+      void setMatrixElements( const RealType& time,
                                const RealType& tau,
                                const MeshType& mesh,
                                const IndexType& index,
@@ -106,7 +106,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex 
              typename Vector,
              typename Matrix >
    __cuda_callable__
-      void updateLinearSystem( const RealType& time,
+      void setMatrixElements( const RealType& time,
                                const RealType& tau,
                                const MeshType& mesh,
                                const IndexType& index,
@@ -158,7 +158,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex 
              typename Vector,
              typename Matrix >
    __cuda_callable__
-      void updateLinearSystem( const RealType& time,
+      void setMatrixElements( const RealType& time,
                                const RealType& tau,
                                const MeshType& mesh,
                                const IndexType& index,

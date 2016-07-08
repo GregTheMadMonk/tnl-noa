@@ -106,7 +106,7 @@ class tnlOneSidedMeanCurvature
                 typename Vector,
                 typename Matrix >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
+      void setMatrixElements( const RealType& time,
                                const RealType& tau,
                                const MeshType& mesh,
                                const IndexType& index,
@@ -115,7 +115,7 @@ class tnlOneSidedMeanCurvature
                                Vector& b,
                                Matrix& matrix ) const
       {
-         this->nonlinearDiffusion.updateLinearSystem( time, tau, mesh, index, entity, u, b, matrix );
+         this->nonlinearDiffusion.setMatrixElements( time, tau, mesh, index, entity, u, b, matrix );
       }            
       
    protected:      

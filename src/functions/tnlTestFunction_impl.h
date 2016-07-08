@@ -24,7 +24,6 @@
 #include <functions/tnlSinBumpsFunction.h>
 #include <functions/tnlSinWaveFunction.h>
 
-// This is from origin/mean-curvature
 #include <functions/tnlConstantFunction.h>
 #include <functions/tnlExpBumpFunction.h>
 #include <functions/tnlSinBumpsFunction.h>
@@ -34,14 +33,6 @@
 #include <functions/initial_conditions/tnlTwinsFunction.h>
 #include <functions/initial_conditions/level_set_functions/tnlBlobFunction.h>
 #include <functions/initial_conditions/level_set_functions/tnlPseudoSquareFunction.h>
-
-// For hmailton-jacobi
-#include <functions/tnlSDFParaboloid.h>
-#include <functions/tnlSDFSinBumpsFunction.h>
-#include <functions/tnlSDFSinWaveFunction.h>
-#include <functions/tnlSDFParaboloidSDF.h>
-#include <functions/tnlSDFSinBumpsFunctionSDF.h>
-#include <functions/tnlSDFSinWaveFunctionSDF.h>
 
 template< int FunctionDimensions,
           typename Real,
@@ -72,12 +63,6 @@ configSetup( tnlConfigDescription& config,
       config.addEntryEnum( "twins" );
       config.addEntryEnum( "pseudoSquare" );
       config.addEntryEnum( "blob" );
-      config.addEntryEnum( "sdf-sin-wave" );
-      config.addEntryEnum( "sdf-sin-bumps" );
-      config.addEntryEnum( "sdf-sin-wave-sdf" );
-      config.addEntryEnum( "sdf-sin-bumps-sdf" );
-      config.addEntryEnum( "sdf-para" );
-      config.addEntryEnum( "sdf-para-sdf" );
    config.addEntry     < double >( prefix + "constant", "Value of the constant function.", 0.0 );
    config.addEntry     < double >( prefix + "wave-length", "Wave length of the sine based test functions.", 1.0 );
    config.addEntry     < double >( prefix + "wave-length-x", "Wave length of the sine based test functions.", 1.0 );
@@ -93,13 +78,8 @@ configSetup( tnlConfigDescription& config,
    config.addEntry     < double >( prefix + "waves-number-y", "Cut-off for the sine based test functions.", 0.0 );
    config.addEntry     < double >( prefix + "waves-number-z", "Cut-off for the sine based test functions.", 0.0 );
    config.addEntry     < double >( prefix + "sigma", "Sigma for the exp based test functions.", 1.0 );
-	config.addEntry     < double >( prefix + "offset", "Offset for paraboloids.", 1.0 );
-   config.addEntry     < double >( prefix + "coefficient", "Coefficient for paraboloids.", 1.0 );
-   config.addEntry     < double >( prefix + "x-centre", "x-centre for paraboloids.", 0.0 );
-   config.addEntry     < double >( prefix + "y-centre", "y-centre for paraboloids.", 0.0 );
-   config.addEntry     < double >( prefix + "z-centre", "z-centre for paraboloids.", 0.0 );
    config.addEntry     < double >( prefix + "diameter", "Diameter for the cylinder, flowerpot test functions.", 1.0 );
-  config.addEntry     < double >( prefix + "height", "Height of zero-level-set function for the blob, pseudosquare test functions.", 1.0 );
+   config.addEntry     < double >( prefix + "height", "Height of zero-level-set function for the blob, pseudosquare test functions.", 1.0 );
    config.addEntry     < tnlString >( prefix + "time-dependence", "Time dependence of the test function.", "none" );
       config.addEntryEnum( "none" );
       config.addEntryEnum( "linear" );
@@ -220,45 +200,6 @@ setup( const tnlParameterContainer& parameters,
       functionType = blob;
       return setupFunction< FunctionType >( parameters );
    }
-
-  if( testFunction == "sdf-para" )
-   {
-      typedef tnlSDFParaboloid< Dimensions, Real > FunctionType;
-      functionType = sdfParaboloid;
-      return setupFunction< FunctionType >( parameters );
-   }
-   if( testFunction == "sdf-sin-bumps" )
-   {
-      typedef tnlSDFSinBumpsFunction< Dimensions, Real > FunctionType;
-      functionType = sdfSinBumps;
-      return setupFunction< FunctionType >( parameters );
-   }
-   if( testFunction == "sdf-sin-wave" )
-   {
-      typedef tnlSDFSinWaveFunction< Dimensions, Real > FunctionType;
-      functionType = sdfSinWave;
-      return setupFunction< FunctionType >( parameters );
-   }
-   if( testFunction == "sdf-para-sdf" )
-   {
-      typedef tnlSDFParaboloidSDF< Dimensions, Real > FunctionType;
-      functionType = sdfParaboloidSDF;
-      return setupFunction< FunctionType >( parameters );
-   }
-   if( testFunction == "sdf-sin-bumps-sdf" )
-   {
-      typedef tnlSDFSinBumpsFunctionSDF< Dimensions, Real > FunctionType;
-      functionType = sdfSinBumpsSDF;
-      return setupFunction< FunctionType >( parameters );
-   }
-   if( testFunction == "sdf-sin-wave-sdf" )
-   {
-      typedef tnlSDFSinWaveFunctionSDF< Dimensions, Real > FunctionType;
-      functionType = sdfSinWaveSDF;
-      return setupFunction< FunctionType >( parameters );
-   }
-
-
    cerr << "Unknown function " << testFunction << endl;
    return false;
 }
@@ -309,25 +250,6 @@ operator = ( const tnlTestFunction& function )
       case blob:
          this->copyFunction< tnlBlobFunction< FunctionDimensions, Real > >( function.function );
          break;
-
-      case sdfParaboloid:
-         this->copyFunction< tnlSDFParaboloid< FunctionDimensions, Real > >( function.function );
-         break;
-      case sdfSinBumps:
-         this->copyFunction< tnlSDFSinBumpsFunction< FunctionDimensions, Real > >( function.function );
-         break;
-      case sdfSinWave:
-         this->copyFunction< tnlSDFSinWaveFunction< FunctionDimensions, Real > >( function.function );
-         break;
-      case sdfParaboloidSDF:
-         this->copyFunction< tnlSDFParaboloidSDF< FunctionDimensions, Real > >( function.function );
-         break;
-      case sdfSinBumpsSDF:
-         this->copyFunction< tnlSDFSinBumpsFunctionSDF< FunctionDimensions, Real > >( function.function );
-         break;
-      case sdfSinWaveSDF:
-         this->copyFunction< tnlSDFSinWaveFunctionSDF< FunctionDimensions, Real > >( function.function );
-         break;
       default:
          tnlAssert( false, );
          break;
@@ -368,50 +290,31 @@ getPartialDerivative( const VertexType& vertex,
    {
       case constant:
          return scale * ( ( tnlConstantFunction< Dimensions, Real >* ) function )->
-                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case expBump:
          return scale * ( ( tnlExpBumpFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinBumps:
          return scale * ( ( tnlSinBumpsFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinWave:
          return scale * ( ( tnlSinWaveFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case cylinder:
          return scale * ( ( tnlCylinderFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case flowerpot:
          return scale * ( ( tnlFlowerpotFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case twins:
          return scale * ( ( tnlTwinsFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case pseudoSquare:
          return scale * ( ( tnlPseudoSquareFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case blob:
          return scale * ( ( tnlBlobFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
-
-      case sdfParaboloid:
-         return scale * ( ( tnlSDFParaboloid< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
-      case sdfSinBumps:
-         return scale * ( ( tnlSDFSinBumpsFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
-      case sdfSinWave:
-         return scale * ( ( tnlSDFSinWaveFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
-      case sdfParaboloidSDF:
-         return scale * ( ( tnlSDFParaboloidSDF< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
-      case sdfSinBumpsSDF:
-         return scale * ( ( tnlSDFSinBumpsFunctionSDF< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
-      case sdfSinWaveSDF:
-         return scale * ( ( tnlSDFSinWaveFunctionSDF< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
+                  template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       default:
          return 0.0;
    }
@@ -479,26 +382,6 @@ getTimeDerivative( const VertexType& vertex,
          return scale * ( ( tnlBlobFunction< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
-
-
-      case sdfParaboloid:
-         return scale * ( ( tnlSDFParaboloid< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
-      case sdfSinBumps:
-         return scale * ( ( tnlSDFSinBumpsFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
-      case sdfSinWave:
-         return scale * ( ( tnlSDFSinWaveFunction< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
-      case sdfParaboloidSDF:
-         return scale * ( ( tnlSDFParaboloidSDF< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
-      case sdfSinBumpsSDF:
-         return scale * ( ( tnlSDFSinBumpsFunctionSDF< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
-      case sdfSinWaveSDF:
-         return scale * ( ( tnlSDFSinWaveFunctionSDF< Dimensions, Real >* ) function )->
-                  getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       default:
          return 0.0;
    }
@@ -560,22 +443,6 @@ deleteFunctions()
       case blob:
          deleteFunction< tnlBlobFunction< Dimensions, Real> >();
          break;
-
-      case sdfSinBumps:
-         deleteFunction< tnlSDFSinBumpsFunction< Dimensions, Real> >();
-         break;
-      case sdfSinWave:
-         deleteFunction< tnlSDFSinWaveFunction< Dimensions, Real> >();
-         break;
-      case sdfParaboloidSDF:
-         deleteFunction< tnlSDFParaboloidSDF< Dimensions, Real> >();
-         break;
-      case sdfSinBumpsSDF:
-         deleteFunction< tnlSDFSinBumpsFunctionSDF< Dimensions, Real> >();
-         break;
-      case sdfSinWaveSDF:
-         deleteFunction< tnlSDFSinWaveFunctionSDF< Dimensions, Real> >();
-         break;
    }
 }
 
@@ -608,17 +475,17 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 printFunction( ostream& str ) const
 {
    FunctionType* f = ( FunctionType* ) this->function;
-   switch( Device::DeviceType )
+   if( std::is_same< Device, tnlHost >::value )
    {
-      case tnlHostDevice:
-         str << *f;
-         return str;
-      case tnlCudaDevice:
-         tnlCuda::print( f, str );
-         return str;
-      default:
-         return str;
+      str << *f;
+      return str;
    }
+   if( std::is_same< Device, tnlCuda >::value )
+   {
+      tnlCuda::print( f, str );
+      return str;
+   }
+   return str;
 }
 
 template< int FunctionDimensions,
@@ -651,18 +518,6 @@ print( ostream& str ) const
          return printFunction< tnlPseudoSquareFunction< Dimensions, Real> >( str );
       case blob:
          return printFunction< tnlBlobFunction< Dimensions, Real> >( str );
-
-      case sdfSinBumps:
-         return printFunction< tnlSDFSinBumpsFunction< Dimensions, Real> >( str );
-      case sdfSinWave:
-         return printFunction< tnlSDFSinWaveFunction< Dimensions, Real> >( str );
-      case sdfParaboloidSDF:
-         return printFunction< tnlSDFParaboloidSDF< Dimensions, Real> >( str );
-      case sdfSinBumpsSDF:
-         return printFunction< tnlSDFSinBumpsFunctionSDF< Dimensions, Real> >( str );
-      case sdfSinWaveSDF:
-         return printFunction< tnlSDFSinWaveFunctionSDF< Dimensions, Real> >( str );
-
    }
    return str;
 }

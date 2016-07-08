@@ -48,7 +48,7 @@ template< typename Real,
           typename Index >
 tnlString tnlDenseMatrix< Real, Device, Index >::getTypeVirtual() const
 {
-   return this -> getType();
+   return this->getType();
 }
 
 template< typename Real,
@@ -281,8 +281,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Real tnlDenseMatrix< Real, Device, Index >::getElementFast( const IndexType row,
-                                                            const IndexType column ) const
+const Real& tnlDenseMatrix< Real, Device, Index >::getElementFast( const IndexType row,
+                                                                   const IndexType column ) const
 {
    tnlAssert( row >= 0 && row < this->getRows() &&
               column >= 0 && column < this->getColumns(),
@@ -932,7 +932,7 @@ class tnlDenseMatrixDeviceDependentCode< tnlHost >
                                  OutVector& outVector )
       {
 #ifdef HAVE_OPENMP
-#pragma omp parallel for
+#pragma omp parallel for if( tnlHost::isOMPEnabled() )
 #endif           
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );

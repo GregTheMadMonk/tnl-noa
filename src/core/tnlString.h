@@ -56,6 +56,8 @@ class tnlString
    tnlString( const tnlString& str );
 
    //! Convert number to a string
+   tnlString( unsigned number );
+
    tnlString( int number );
    
    tnlString( long int number );

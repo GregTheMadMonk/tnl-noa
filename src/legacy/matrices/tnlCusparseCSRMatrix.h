@@ -208,8 +208,8 @@ tnlString tnlCusparseCSRMatrix< Real, Device, Index > :: getType() const
 template< typename Real, typename Device, typename Index >
 bool tnlCusparseCSRMatrix< Real, Device, Index > :: setSize( Index new_size )
 {
-   this -> size = new_size;
-   if( ! row_offsets. setSize( this -> size + 1 ) )
+   this->size = new_size;
+   if( ! row_offsets. setSize( this->size + 1 ) )
       return false;
    row_offsets. setValue( 0 );
    return true;
@@ -221,7 +221,7 @@ bool tnlCusparseCSRMatrix< Real, Device, Index > :: setLike( const tnlCusparseCS
    dbgFunctionName( "tnlCusparseCSRMatrix< Real, Device, Index >", "setLike" );
    dbgCout( "Setting size to " << matrix. getSize() << "." );
 
-   this -> size = matrix. getSize();
+   this->size = matrix. getSize();
    if( ! nonzero_elements. setLike( matrix. nonzero_elements ) ||
        ! columns. setLike( matrix. columns ) ||
        ! row_offsets. setLike( matrix. row_offsets ) )
@@ -283,13 +283,13 @@ bool tnlCusparseCSRMatrix< Real, Device, Index > :: addToElement( Index row, Ind
 template< typename Real, typename Device, typename Index >
 bool tnlCusparseCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix )
 {
-   if( ! this -> setSize( csr_matrix. getSize() ) ||
-       ! this -> setNonzeroElements( csr_matrix. getNonzeroElements() ) )
+   if( ! this->setSize( csr_matrix. getSize() ) ||
+       ! this->setNonzeroElements( csr_matrix. getNonzeroElements() ) )
          return false;
 
-   this -> nonzero_elements = csr_matrix. nonzero_elements;
-   this -> columns = csr_matrix. columns;
-   this -> row_offsets = csr_matrix. row_offsets;
+   this->nonzero_elements = csr_matrix. nonzero_elements;
+   this->columns = csr_matrix. columns;
+   this->row_offsets = csr_matrix. row_offsets;
    return true;
 }
 
@@ -309,10 +309,10 @@ void tnlCusparseCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVect
 #ifdef HAVE_CUSPARSE
   cusparseSpmv( cusparseHandle,
                 cusparseMatDescr,
-                this -> getSize(),
-                this -> nonzero_elements. getData(),
-                this -> row_offsets. getData(),
-                this -> columns. getData(),
+                this->getSize(),
+                this->nonzero_elements. getData(),
+                this->row_offsets. getData(),
+                this->columns. getData(),
                 x. getData(),
                 b. getData() );
 #endif

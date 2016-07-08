@@ -77,8 +77,8 @@ bool tnlMultiVector< 1, Real, Device, Index > :: setDimensions( const tnlStaticV
 {
    tnlAssert( dimensions[ 0 ] > 0,
               cerr << " dimensions[ 0 ] = " << dimensions[ 0 ] );
-   this -> dimensions = dimensions;
-   return tnlVector< Real, Device, Index > :: setSize( this -> dimensions[ 0 ] );
+   this->dimensions = dimensions;
+   return tnlVector< Real, Device, Index > :: setSize( this->dimensions[ 0 ] );
 }
 
 template< typename Real, typename Device, typename Index >
@@ -91,21 +91,21 @@ bool tnlMultiVector< 1, Real, Device, Index > :: setLike( const tnlMultiVector& 
 template< typename Real, typename Device, typename Index >
 void tnlMultiVector< 1, Real, Device, Index > :: getDimensions( Index& xSize ) const
 {
-   xSize = this -> dimensions[ 0 ];
+   xSize = this->dimensions[ 0 ];
 }
 
 template< typename Real, typename Device, typename Index >
 const tnlStaticVector< 1, Index >& tnlMultiVector< 1, Real, Device, Index > :: getDimensions() const
 {
-   return this -> dimensions;
+   return this->dimensions;
 }
 
 template< typename Real, typename Device, typename Index >
 Index tnlMultiVector< 1, Real, Device, Index > :: getElementIndex( const Index i ) const
 {
-   tnlAssert( i >= 0 && i < this -> dimensions[ 0 ],
+   tnlAssert( i >= 0 && i < this->dimensions[ 0 ],
               cerr << "i = " << i
-                   << "this -> dimensions[ 0 ] " << this -> dimensions[ 0 ] );
+                   << "this->dimensions[ 0 ] " << this->dimensions[ 0 ] );
    return i;
 }
 
@@ -139,9 +139,9 @@ template< typename Real, typename Device, typename Index >
 bool tnlMultiVector< 1, Real, Device, Index > :: operator == ( const MultiVector& Vector ) const
 {
    // TODO: Static assert on dimensions
-   tnlAssert( this -> getDimensions() == Vector. getDimensions(),
+   tnlAssert( this->getDimensions() == Vector. getDimensions(),
               cerr << "You are attempting to compare two Vectors with different dimensions." << endl
-                   << "First Vector name dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "First Vector name dimensions are ( " << this->getDimensions() << " )" << endl
                    << "Second Vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
    return tnlVector< Real, Device, Index > :: operator == ( Vector );
 }
@@ -158,9 +158,9 @@ tnlMultiVector< 1, Real, Device, Index >&
    tnlMultiVector< 1, Real, Device, Index > :: operator = ( const tnlMultiVector< 1, Real, Device, Index >& Vector )
 {
    // TODO: Static assert on dimensions
-   tnlAssert( this -> getDimensions() == Vector. getDimensions(),
+   tnlAssert( this->getDimensions() == Vector. getDimensions(),
               cerr << "You are attempting to assign two Vectors with different dimensions." << endl
-                   << "First vector dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "First vector dimensions are ( " << this->getDimensions() << " )" << endl
                    << "Second vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
    tnlVector< Real, Device, Index > :: operator = ( Vector );
    return ( *this );
@@ -172,9 +172,9 @@ tnlMultiVector< 1, Real, Device, Index >&
    tnlMultiVector< 1, Real, Device, Index > :: operator = ( const MultiVector& Vector )
 {
    // TODO: Static assert on dimensions
-   tnlAssert( this -> getDimensions() == Vector. getDimensions(),
+   tnlAssert( this->getDimensions() == Vector. getDimensions(),
               cerr << "You are attempting to assign two Vectors with different dimensions." << endl
-                   << "First vector dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "First vector dimensions are ( " << this->getDimensions() << " )" << endl
                    << "Second vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
    tnlVector< Real, Device, Index > :: operator = ( Vector );
    return ( *this );

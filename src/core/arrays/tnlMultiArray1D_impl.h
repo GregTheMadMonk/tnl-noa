@@ -75,8 +75,8 @@ bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const tnlStati
 {
    tnlAssert( dimensions[ 0 ] > 0,
               cerr << " dimensions[ 0 ] = " << dimensions[ 0 ] );
-   this -> dimensions = dimensions;
-   return tnlArray< Element, Device, Index >::setSize( this -> dimensions[ 0 ] );
+   this->dimensions = dimensions;
+   return tnlArray< Element, Device, Index >::setSize( this->dimensions[ 0 ] );
 }
 
 template< typename Element, typename Device, typename Index >
@@ -97,22 +97,22 @@ template< typename Element, typename Device, typename Index >
 __cuda_callable__
 void tnlMultiArray< 1, Element, Device, Index > :: getDimensions( Index& xSize ) const
 {
-   xSize = this -> dimensions[ 0 ];
+   xSize = this->dimensions[ 0 ];
 }
 
 template< typename Element, typename Device, typename Index >
 __cuda_callable__
 const tnlStaticVector< 1, Index >& tnlMultiArray< 1, Element, Device, Index > :: getDimensions() const
 {
-   return this -> dimensions;
+   return this->dimensions;
 }
 
 template< typename Element, typename Device, typename Index >
 __cuda_callable__
 Index tnlMultiArray< 1, Element, Device, Index > :: getElementIndex( const Index i ) const
 {
-   tnlAssert( i >= 0 && i < this -> dimensions[ 0 ],
-              cerr << "i = " << i << " this -> dimensions[ 0 ] = " <<  this -> dimensions[ 0 ] );
+   tnlAssert( i >= 0 && i < this->dimensions[ 0 ],
+              cerr << "i = " << i << " this->dimensions[ 0 ] = " <<  this->dimensions[ 0 ] );
    return i;
 }
 
@@ -147,9 +147,9 @@ template< typename Element, typename Device, typename Index >
 bool tnlMultiArray< 1, Element, Device, Index > :: operator == ( const MultiArray& array ) const
 {
    // TODO: Static assert on dimensions
-   tnlAssert( this -> getDimensions() == array. getDimensions(),
+   tnlAssert( this->getDimensions() == array. getDimensions(),
               cerr << "You are attempting to compare two arrays with different dimensions." << endl
-                   << "First array dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "First array dimensions are ( " << this->getDimensions() << " )" << endl
                    << "Second array dimensions are ( " << array. getDimensions() << " )" << endl; );
    return tnlArray< Element, Device, Index > :: operator == ( array );
 }
@@ -166,9 +166,9 @@ tnlMultiArray< 1, Element, Device, Index >&
    tnlMultiArray< 1, Element, Device, Index > :: operator = ( const tnlMultiArray< 1, Element, Device, Index >& array )
 {
    // TODO: Static assert on dimensions
-   tnlAssert( this -> getDimensions() == array. getDimensions(),
+   tnlAssert( this->getDimensions() == array. getDimensions(),
               cerr << "You are attempting to assign two arrays with different dimensions." << endl
-                   << "First array dimensions are ( " << this -> getDimensions() << " )" << endl
+                   << "First array dimensions are ( " << this->getDimensions() << " )" << endl
                    << "Second array dimensions are ( " << array. getDimensions() << " )" << endl; );
    tnlArray< Element, Device, Index > :: operator = ( array );
    return ( *this );
@@ -180,7 +180,7 @@ tnlMultiArray< 1, Element, Device, Index >&
    tnlMultiArray< 1, Element, Device, Index > :: operator = ( const MultiArray& array )
 {
    // TODO: Static assert on dimensions
-   tnlAssert( this -> getDimensions() == array. getDimensions(),
+   tnlAssert( this->getDimensions() == array. getDimensions(),
               cerr << "You are attempting to assign two arrays with different dimensions." << endl
                    << "First array dimensions are ( " << this -> getDimensions() << " )" << endl
                    << "Second array dimensions are ( " << array. getDimensions() << " )" << endl; );

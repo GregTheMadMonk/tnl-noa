@@ -61,7 +61,7 @@ template< typename Real,
           typename Index >
 tnlString tnlGrid< 3, Real, Device, Index > :: getTypeVirtual() const
 {
-   return this -> getType();
+   return this->getType();
 }
 
 template< typename Real,
@@ -203,7 +203,7 @@ template< typename Real,
           typename Index >
 void tnlGrid< 3, Real, Device, Index > :: setDimensions( const CoordinatesType& dimensions )
 {
-   return this -> setDimensions( dimensions. x(), dimensions. y(), dimensions. z() );
+   return this->setDimensions( dimensions. x(), dimensions. y(), dimensions. z() );
 }
 
 template< typename Real,
@@ -213,7 +213,7 @@ __cuda_callable__ inline
 const typename tnlGrid< 3, Real, Device, Index > :: CoordinatesType&
    tnlGrid< 3, Real, Device, Index > :: getDimensions() const
 {
-   return this -> dimensions;
+   return this->dimensions;
 }
 
 template< typename Real,
@@ -423,7 +423,7 @@ template< typename Real,
               cell.getCoordinates().x() < getDimensions().x();
               cell.getCoordinates().x()++ )
          {
-            IndexType c = this -> getEntityIndex( cell );
+            IndexType c = this->getEntityIndex( cell );
             maxDiff = Max( maxDiff, tnlAbs( f1[ c ] - f2[ c ] ) );
          }
    return maxDiff;
@@ -528,10 +528,10 @@ bool tnlGrid< 3, Real, Device, Index > :: write( const MeshFunction& function,
                                                  const tnlString& fileName,
                                                  const tnlString& format ) const
 {
-   if( this -> template getEntitiesCount< Cell >() != function. getSize() )
+   if( this->template getEntitiesCount< Cell >() != function. getSize() )
    {
       cerr << "The size ( " << function. getSize() 
-           << " ) of a mesh function does not agree with the DOFs ( " << this -> template getEntitiesCount< Cell >() << " ) of a mesh." << endl;
+           << " ) of a mesh function does not agree with the DOFs ( " << this->template getEntitiesCount< Cell >() << " ) of a mesh." << endl;
       return false;
    }
    fstream file;

@@ -33,7 +33,7 @@ template< typename Real,
           typename Index >
 tnlVector< Real, Device, Index >::tnlVector( const Index size )
 {
-   this -> setSize( size );
+   this->setSize( size );
 }
 
 
@@ -291,7 +291,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlVector< Real, Device, Index >::scalarProduct( const Vector& v )
+Real tnlVector< Real, Device, Index >::scalarProduct( const Vector& v ) const
 {
    return tnlVectorOperations< Device >::getScalarProduct( *this, v );
 }

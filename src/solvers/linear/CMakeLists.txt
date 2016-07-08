@@ -3,6 +3,8 @@ ADD_SUBDIRECTORY( stationary )
 
 SET( headers tnlLinearResidueGetter.h
              tnlLinearResidueGetter_impl.h 
+             tnlUmfpackWrapper.h
+             tnlUmfpackWrapper_impl.h
    )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/solvers/linear )

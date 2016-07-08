@@ -122,13 +122,13 @@ bool tnlMersonSolver< Problem > :: setup( const tnlParameterContainer& parameter
 template< typename Problem >
 void tnlMersonSolver< Problem > :: setAdaptivity( const RealType& a )
 {
-   this -> adaptivity = a;
+   this->adaptivity = a;
 };
 
 template< typename Problem >
 bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
 {
-   if( ! this -> problem )
+   if( ! this->problem )
    {
       cerr << "No problem was set for the Merson ODE solver." << endl;
       return false;
@@ -165,7 +165,7 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
 
-   this -> refreshSolverMonitor();
+   this->refreshSolverMonitor();
 
    /****
     * Start the main loop
@@ -176,7 +176,7 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
        * Compute Runge-Kutta coefficients
        */
       computeKFunctions( u, time, currentTau );
-      if( this -> testingMode )
+      if( this->testingMode )
          writeGrids( u );
 
       /****
@@ -197,13 +197,13 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
           * When time is close to stopTime the new residue
           * may be inaccurate significantly.
           */
-         if( currentTau + time == this -> stopTime ) this->setResidue( lastResidue );
+         if( currentTau + time == this->stopTime ) this->setResidue( lastResidue );
          time += currentTau;
 
          if( ! this->nextIteration() )
             return false;
       }
-      this -> refreshSolverMonitor();
+      this->refreshSolverMonitor();
 
       /****
        * Compute the new time step.
@@ -212,22 +212,22 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
       {
          currentTau *= 0.8 * pow( adaptivity / eps, 0.2 );
          currentTau = Min( currentTau, this->getMaxTau() );
-         :: MPIBcast( currentTau, 1, 0, this -> solver_comm );
+         :: MPIBcast( currentTau, 1, 0, this->solver_comm );
       }
-      if( time + currentTau > this -> getStopTime() )
-         currentTau = this -> getStopTime() - time; //we don't want to keep such tau
-      else this -> tau = currentTau;
+      if( time + currentTau > this->getStopTime() )
+         currentTau = this->getStopTime() - time; //we don't want to keep such tau
+      else this->tau = currentTau;
 
 
       /****
        * Check stop conditions.
        */
       //cerr << "residue = " << residue << endl;
-      //cerr << "this -> getConvergenceResidue() = " << this -> getConvergenceResidue() << endl;
+      //cerr << "this->getConvergenceResidue() = " << this->getConvergenceResidue() << endl;
       if( time >= this->getStopTime() ||
-          ( this -> getConvergenceResidue() != 0.0 && this->getResidue() < this -> getConvergenceResidue() ) )
+          ( this->getConvergenceResidue() != 0.0 && this->getResidue() < this->getConvergenceResidue() ) )
       {
-         this -> refreshSolverMonitor();
+         this->refreshSolverMonitor();
          return true;
       }
    }
@@ -274,28 +274,28 @@ void tnlMersonSolver< Problem > :: computeKFunctions( DofVectorType& u,
       this->problem->getExplicitRHS( time, tau, u, k1 );
 
    #ifdef HAVE_OPENMP
-   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, tau, tau_3 )
+   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, tau, tau_3 ) if( tnlHost::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 1.0 / 3.0 * _k1[ i ] );
       this->problem->getExplicitRHS( time + tau_3, tau, kAux, k2 );
 
    #ifdef HAVE_OPENMP
-   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k2, tau, tau_3 )
+   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k2, tau, tau_3 ) if( tnlHost::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * 1.0 / 6.0 * ( _k1[ i ] + _k2[ i ] );
       this->problem->getExplicitRHS( time + tau_3, tau, kAux, k3 );
 
    #ifdef HAVE_OPENMP
-   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, tau, tau_3 )
+   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, tau, tau_3 ) if( tnlHost::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 0.125 * _k1[ i ] + 0.375 * _k3[ i ] );
       this->problem->getExplicitRHS( time + 0.5 * tau, tau, kAux, k4 );
 
    #ifdef HAVE_OPENMP
-   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, _k4, tau, tau_3 )
+   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, _k4, tau, tau_3 ) if( tnlHost::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 0.5 * _k1[ i ] - 1.5 * _k3[ i ] + 2.0 * _k4[ i ] );
@@ -420,7 +420,7 @@ typename Problem :: RealType tnlMersonSolver< Problem > :: computeError( const R
       }
 #endif
    }
-   :: MPIAllreduce( eps, maxEps, 1, MPI_MAX, this -> solver_comm );
+   :: MPIAllreduce( eps, maxEps, 1, MPI_MAX, this->solver_comm );
    return maxEps;
 }
 
@@ -454,7 +454,7 @@ void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
    if( DeviceType :: getDevice() == tnlHostDevice )
    {
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:localResidue) firstprivate( size, _u, _k1, _k4, _k5, tau )
+#pragma omp parallel for reduction(+:localResidue) firstprivate( size, _u, _k1, _k4, _k5, tau ) if( tnlHost::isOMPEnabled() )
 #endif
       for( IndexType i = 0; i < size; i ++ )
       {
@@ -493,7 +493,7 @@ void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
 #endif
    }
    localResidue /= tau * ( RealType ) size;
-   :: MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this -> solver_comm );
+   :: MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this->solver_comm );
 
 }
 

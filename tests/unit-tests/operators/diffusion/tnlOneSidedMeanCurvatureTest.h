@@ -40,7 +40,7 @@ class tnlOneSidedMeanCurvatureTest
       typedef typename ApproximateOperator::RealType RealType;
       typedef typename ApproximateOperator::IndexType IndexType;   
       
-      const IndexType coarseMeshSize[ 3 ] = { 1024, 256, 64 };
+      const IndexType coarseMeshSize[ 3 ] = { 128, 256, 64 };
       
       const RealType  eoc[ 3 ] =       { 2.0,  2.0,  2.0 };
       const RealType  tolerance[ 3 ] = { 0.05, 0.05, 0.05 };
@@ -65,6 +65,8 @@ class tnlOneSidedMeanCurvatureTest
          this->setupMesh( meshSize );
          ApproximateOperator approximateOperator( this->mesh );
          ExactOperatorType exactOperator;
+         approximateOperator.setRegularizationEpsilon( 1.0 );
+         exactOperator.setRegularizationEpsilon( 1.0 );         
          this->performTest( approximateOperator,
                             exactOperator,
                             errors,
@@ -128,7 +130,7 @@ bool setMesh()
 int main( int argc, char* argv[] )
 {
    const bool verbose( true );
-   const bool write( false );
+   const bool write( true );
    
    if( ! setMesh< tnlHost, write, verbose  >() )
       return EXIT_FAILURE;

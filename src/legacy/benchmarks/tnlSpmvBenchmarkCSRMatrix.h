@@ -51,15 +51,15 @@ class tnlSpmvBenchmarkCSRMatrix : public tnlSpmvBenchmark< Real, tnlHost, Index,
 template< typename Real, typename Index>
 bool tnlSpmvBenchmarkCSRMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
 {
-   this -> matrix = matrix;
+   this->matrix = matrix;
 
    const Index size = matrix. getSize();
    tnlVector< Real, tnlHost > refX( "ref-x", size ), refB( "ref-b", size), backwardRefB( "backwardRef-b", size);
    refX. setValue( 1.0 );
-   this -> matrix. vectorProduct( refX, refB );
-   this -> matrix. setBackwardSpMV( true );
-   this -> matrix. vectorProduct( refX, backwardRefB );
-   this -> matrix. setBackwardSpMV( false );
+   this->matrix. vectorProduct( refX, refB );
+   this->matrix. setBackwardSpMV( true );
+   this->matrix. vectorProduct( refX, backwardRefB );
+   this->matrix. setBackwardSpMV( false );
    Real error( 0.0 ), maxError( 0.0 );
    for( Index j = 0; j < refB. getSize(); j ++ )
    {
@@ -70,29 +70,29 @@ bool tnlSpmvBenchmarkCSRMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real
       maxError = Max( error, maxError );
    }
    forwardBackwardDifference = maxError;
-   this -> setupOk = true;
+   this->setupOk = true;
    return true;
 }
 
 template< typename Real, typename Index>
 void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: tearDown()
 {
-   this -> matrix. setSize( 0 );
+   this->matrix. setSize( 0 );
 }
 
 template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeProgress() const
 {
-   cout << left << setw( this -> formatColumnWidth ) << "CSR";
+   cout << left << setw( this->formatColumnWidth ) << "CSR";
    //   cout << left << setw( 25 ) << matrixFormat << setw( 5 ) << cudaBlockSize;
-   cout << right << setw( this -> timeColumnWidth ) << setprecision( 2 ) << this -> getTime()
-        << right << setw( this -> iterationsColumnWidth ) << this -> getIterations()
-        << right << setw( this -> gflopsColumnWidth ) << setprecision( 2 ) << this -> getGflops();
-   if( this -> getBenchmarkWasSuccesful() )
-        cout << right << setw( this -> benchmarkStatusColumnWidth ) << " OK - SpMV diff. " << getForwardBackwardDifference();
+   cout << right << setw( this->timeColumnWidth ) << setprecision( 2 ) << this->getTime()
+        << right << setw( this->iterationsColumnWidth ) << this->getIterations()
+        << right << setw( this->gflopsColumnWidth ) << setprecision( 2 ) << this->getGflops();
+   if( this->getBenchmarkWasSuccesful() )
+        cout << right << setw( this->benchmarkStatusColumnWidth ) << " OK - SpMV diff. " << getForwardBackwardDifference();
    else
-        cout << right << setw( this -> benchmarkStatusColumnWidth ) << " FAILED ";
+        cout << right << setw( this->benchmarkStatusColumnWidth ) << " FAILED ";
    cout << endl;
 }
 
@@ -104,10 +104,10 @@ void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeToLogTable( ostream& logFi
                                                                   const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                                                                   bool writeMatrixInfo  ) const
 {
-   if( this -> getBenchmarkWasSuccesful() )
+   if( this->getBenchmarkWasSuccesful() )
    {
-      logFile << "             <td> " << this -> getTime() << "</font></td>" << endl;
-      logFile << "             <td> " << this -> getGflops() << "</td>" << endl;
+      logFile << "             <td> " << this->getTime() << "</font></td>" << endl;
+      logFile << "             <td> " << this->getGflops() << "</td>" << endl;
    }
    else
    {

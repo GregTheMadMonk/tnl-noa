@@ -20,6 +20,7 @@
 
 #include <mesh/tnlDimensionsTag.h>
 #include <algorithm>
+#include <vector>
 
 template< typename MeshConfig >
 class tnlMeshInitializer;

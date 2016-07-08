@@ -57,7 +57,7 @@ template< typename Real,
            typename Index >
 tnlString tnlGrid< 2, Real, Device, Index > :: getTypeVirtual() const
 {
-   return this -> getType();
+   return this->getType();
 }
 
 template< typename Real,
@@ -397,7 +397,7 @@ bool tnlGrid< 2, Real, Device, Index > :: save( tnlFile& file ) const
       return false;
    if( ! this->origin.save( file ) ||
        ! this->proportions.save( file ) ||
-       ! this -> dimensions.save( file ) )
+       ! this->dimensions.save( file ) )
    {
       cerr << "I was not able to save the domain description of a tnlGrid." << endl;
       return false;
@@ -420,7 +420,7 @@ bool tnlGrid< 2, Real, Device, Index > :: load( tnlFile& file )
       cerr << "I was not able to load the domain description of a tnlGrid." << endl;
       return false;
    }
-   this -> setDimensions( dimensions );
+   this->setDimensions( dimensions );
    return true;
 };
 
@@ -456,20 +456,20 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
    if( format == "asymptote" )
    {
       file << "size( "
-           << this -> getProportions(). x() << "cm , "
-           << this -> getProportions(). y() << "cm );"
+           << this->getProportions(). x() << "cm , "
+           << this->getProportions(). y() << "cm );"
            << endl << endl;
       MeshEntity< 0 > vertex( *this );
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();
       VertexType v;
-      for( Index j = 0; j < this -> dimensions. y(); j ++ )
+      for( Index j = 0; j < this->dimensions. y(); j ++ )
       {
          file << "draw( ";
          vertexCoordinates.x() = 0;
          vertexCoordinates.y() = j;
          v = vertex.getCenter();
          file << "( " << v. x() << ", " << v. y() << " )";
-         for( Index i = 0; i < this -> dimensions. x(); i ++ )
+         for( Index i = 0; i < this->dimensions. x(); i ++ )
          {
             vertexCoordinates.x() = i + 1;
             vertexCoordinates.y() = j;
@@ -479,14 +479,14 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
          file << " );" << endl;
       }
       file << endl;
-      for( Index i = 0; i < this -> dimensions. x(); i ++ )
+      for( Index i = 0; i < this->dimensions. x(); i ++ )
       {
          file << "draw( ";
          vertexCoordinates.x() = i;
          vertexCoordinates.y() = 0;
          v = vertex.getCenter();
          file << "( " << v. x() << ", " << v. y() << " )";
-         for( Index j = 0; j < this -> dimensions. y(); j ++ )
+         for( Index j = 0; j < this->dimensions. y(); j ++ )
          {
             vertexCoordinates.x() = i;
             vertexCoordinates.y() = j + 1;
@@ -500,8 +500,8 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
       MeshEntity< 2 > cell( *this );
       CoordinatesType& cellCoordinates = cell.getCoordinates();
       const RealType cellMeasure = this->getSpaceSteps().x() * this->getSpaceSteps().y();
-      for( Index i = 0; i < this -> dimensions. x(); i ++ )
-         for( Index j = 0; j < this -> dimensions. y(); j ++ )
+      for( Index i = 0; i < this->dimensions. x(); i ++ )
+         for( Index j = 0; j < this->dimensions. y(); j ++ )
          {
             cellCoordinates.x() = i;
             cellCoordinates.y() = j;
@@ -510,18 +510,18 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
                  << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" << endl;
          }
 
-      for( Index i = 0; i < this -> dimensions. x(); i ++ )
-         for( Index j = 0; j < this -> dimensions. y(); j ++ )
+      for( Index i = 0; i < this->dimensions. x(); i ++ )
+         for( Index j = 0; j < this->dimensions. y(); j ++ )
          {
             VertexType v1, v2, c;
 
             /****
              * East edge normal
              */
-            /*v1 = this -> getVertex( CoordinatesType( i + 1, j ), v1 );
-            v2 = this -> getVertex( CoordinatesType( i + 1, j + 1 ), v2 );
+            /*v1 = this->getVertex( CoordinatesType( i + 1, j ), v1 );
+            v2 = this->getVertex( CoordinatesType( i + 1, j + 1 ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
-            this -> getEdgeNormal< 1, 0 >( CoordinatesType( i, j ), v );
+            this->getEdgeNormal< 1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
                  << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << endl;
@@ -529,10 +529,10 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
             /****
              * West edge normal
              */
-            /*this -> getVertex< -1, -1 >( CoordinatesType( i, j ), v1 );
-            this -> getVertex< -1, 1 >( CoordinatesType( i, j ), v2 );
+            /*this->getVertex< -1, -1 >( CoordinatesType( i, j ), v1 );
+            this->getVertex< -1, 1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
-            this -> getEdgeNormal< -1, 0 >( CoordinatesType( i, j ), v );
+            this->getEdgeNormal< -1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
                  << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;
@@ -540,10 +540,10 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
             /****
              * North edge normal
              */
-            /*this -> getVertex< 1, 1 >( CoordinatesType( i, j ), v1 );
-            this -> getVertex< -1, 1 >( CoordinatesType( i, j ), v2 );
+            /*this->getVertex< 1, 1 >( CoordinatesType( i, j ), v1 );
+            this->getVertex< -1, 1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
-            this -> getEdgeNormal< 0, 1 >( CoordinatesType( i, j ), v );
+            this->getEdgeNormal< 0, 1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
                  << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << endl;
@@ -551,10 +551,10 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
             /****
              * South edge normal
              */
-            /*this -> getVertex< 1, -1 >( CoordinatesType( i, j ), v1 );
-            this -> getVertex< -1, -1 >( CoordinatesType( i, j ), v2 );
+            /*this->getVertex< 1, -1 >( CoordinatesType( i, j ), v1 );
+            this->getVertex< -1, -1 >( CoordinatesType( i, j ), v2 );
             c = ( ( Real ) 0.5 ) * ( v1 + v2 );
-            this -> getEdgeNormal< 0, -1 >( CoordinatesType( i, j ), v );
+            this->getEdgeNormal< 0, -1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
                  << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;

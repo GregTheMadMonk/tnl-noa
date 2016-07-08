@@ -29,6 +29,7 @@
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include <matrices/tnlEllpackMatrix.h>
 #include <functions/tnlMeshFunction.h>
+#include <core/tnlTimer.h>
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -59,6 +60,9 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
 
       void writeProlog( tnlLogger& logger,
                         const tnlParameterContainer& parameters ) const;
+      
+      bool writeEpilog( tnlLogger& logger );
+
 
       bool setup( const tnlParameterContainer& parameters );
 
@@ -86,7 +90,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
                            const RealType& tau,
                            const MeshType& mesh,
                            DofVectorType& _u,
-		                	   DofVectorType& _fu,
+			   DofVectorType& _fu,
                            MeshDependentDataType& meshDependentData );
 
       template< typename Matrix >
@@ -108,6 +112,8 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
          BoundaryCondition boundaryCondition;
 
          RightHandSide rightHandSide;
+         
+         tnlTimer gpuTransferTimer;
 };
 
 #include <problems/tnlHeatEquationProblem_impl.h>

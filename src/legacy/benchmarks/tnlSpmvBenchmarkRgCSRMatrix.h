@@ -76,13 +76,13 @@ template< typename Real,
           typename Index>
 bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix )
 {
-   tnlAssert( this -> groupSize > 0, cerr << "groupSize = " << this -> groupSize );
+   tnlAssert( this->groupSize > 0, cerr << "groupSize = " << this->groupSize );
    if( Device :: getDevice() == tnlHostDevice )
    {
-      this -> matrix. tuneFormat( groupSize,
-                                  this -> useAdaptiveGroupSize,
-                                  this -> adaptiveGroupSizeStrategy );
-      if( ! this -> matrix. copyFrom( csrMatrix ) )
+      this->matrix. tuneFormat( groupSize,
+                                  this->useAdaptiveGroupSize,
+                                  this->adaptiveGroupSizeStrategy );
+      if( ! this->matrix. copyFrom( csrMatrix ) )
          return false;
    }
    if( Device :: getDevice() == tnlCudaDevice )
@@ -90,16 +90,16 @@ bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMa
 #ifdef HAVE_CUDA
       tnlRgCSRMatrix< Real, tnlHost, Index > hostMatrix( "tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup : hostMatrix" );
       hostMatrix. tuneFormat( groupSize,
-                              this -> useAdaptiveGroupSize,
-                              this -> adaptiveGroupSizeStrategy );
+                              this->useAdaptiveGroupSize,
+                              this->adaptiveGroupSizeStrategy );
       hostMatrix. copyFrom( csrMatrix );
-      if( ! this -> matrix. copyFrom( hostMatrix ) )
+      if( ! this->matrix. copyFrom( hostMatrix ) )
          return false;
 #else
       return false;
 #endif
    }
-   this -> setupOk = true;
+   this->setupOk = true;
    return true;
 }
 
@@ -108,7 +108,7 @@ template< typename Real,
           typename Index>
 void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: tearDown()
 {
-   this -> matrix. reset();
+   this->matrix. reset();
 }
 
 template< typename Real,
@@ -116,29 +116,29 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeProgress() const
 {
-   cout << left << setw( this -> formatColumnWidth - 15 ) << "Row-grouped CSR ";
+   cout << left << setw( this->formatColumnWidth - 15 ) << "Row-grouped CSR ";
    if( Device :: getDevice() == tnlCudaDevice )
    {
       if( useAdaptiveGroupSize )
          cout << setw( 5 ) << "Var.";
       else
-         cout << setw( 5 ) << this -> groupSize;
-      cout << setw( 10 ) << this -> cudaBlockSize;
+         cout << setw( 5 ) << this->groupSize;
+      cout << setw( 10 ) << this->cudaBlockSize;
    }
    else
    {
       if( useAdaptiveGroupSize )
          cout << setw( 15 ) << "Var.";
       else
-         cout << setw( 15 ) << this -> groupSize;
+         cout << setw( 15 ) << this->groupSize;
    }
-   cout << right << setw( this -> timeColumnWidth ) << setprecision( 2 ) << this -> getTime()
-        << right << setw( this -> iterationsColumnWidth ) << this -> getIterations()
-        << right << setw( this -> gflopsColumnWidth ) << setprecision( 2 ) << this -> getGflops();
-   if( this -> getBenchmarkWasSuccesful() )
-        cout << right << setw( this -> benchmarkStatusColumnWidth ) << "  OK  - maxError is " << this -> maxError << ". ";
+   cout << right << setw( this->timeColumnWidth ) << setprecision( 2 ) << this->getTime()
+        << right << setw( this->iterationsColumnWidth ) << this->getIterations()
+        << right << setw( this->gflopsColumnWidth ) << setprecision( 2 ) << this->getGflops();
+   if( this->getBenchmarkWasSuccesful() )
+        cout << right << setw( this->benchmarkStatusColumnWidth ) << "  OK  - maxError is " << this->maxError << ". ";
    else
-        cout << right << setw( this -> benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this -> maxError << ". ";
+        cout << right << setw( this->benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this->maxError << ". ";
 #ifndef HAVE_CUDA
    if( Device :: getDevice() == tnlCudaDevice )
       tnlCudaSupportMissingMessage;;
@@ -151,7 +151,7 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setGroupSize( const Index groupSize )
 {
-   this -> groupSize = groupSize;
+   this->groupSize = groupSize;
 }
 
 template< typename Real,
@@ -159,8 +159,8 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setCudaBlockSize( const Index cudaBlockSize )
 {
-   this -> matrix. setCUDABlockSize( cudaBlockSize );
-   this -> cudaBlockSize = cudaBlockSize;
+   this->matrix. setCUDABlockSize( cudaBlockSize );
+   this->cudaBlockSize = cudaBlockSize;
 }
 
 template< typename Real,
@@ -168,7 +168,7 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setUseAdaptiveGroupSize( bool useAdaptiveGroupSize )
 {
-   this -> useAdaptiveGroupSize = useAdaptiveGroupSize;
+   this->useAdaptiveGroupSize = useAdaptiveGroupSize;
 }
 
 template< typename Real,
@@ -176,7 +176,7 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy )
 {
-   this -> adaptiveGroupSizeStrategy = adaptiveGroupSizeStrategy;
+   this->adaptiveGroupSizeStrategy = adaptiveGroupSizeStrategy;
 }
 
 template< typename Real,
@@ -184,7 +184,7 @@ template< typename Real,
           typename Index >
 Index tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 {
-   return this -> matrix. getArtificialZeroElements();
+   return this->matrix. getArtificialZeroElements();
 }
 
 template< typename Real,
@@ -214,20 +214,20 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( ostr
       tnlString matrixHtmlFile( baseFileName );
       matrixHtmlFile += tnlString( ".html" );
       tnlRgCSRMatrix< Real > rgCsrMatrix( inputMtxFile );
-      rgCsrMatrix. tuneFormat( this -> groupSize,
-                               this -> useAdaptiveGroupSize,
-                               this -> adaptiveGroupSizeStrategy );
+      rgCsrMatrix. tuneFormat( this->groupSize,
+                               this->useAdaptiveGroupSize,
+                               this->adaptiveGroupSizeStrategy );
       rgCsrMatrix. copyFrom( csrMatrix );
-      this -> printMatrixInHtml( matrixHtmlFile, rgCsrMatrix );
+      this->printMatrixInHtml( matrixHtmlFile, rgCsrMatrix );
       logFile << "             <td bgcolor=" << bgColor << "> <a href=\"" << matrixPdfFile << "\">PDF</a>,<a href=\"" << matrixHtmlFile << "\"> HTML</a></td>" << endl;
-      logFile << "             <td bgcolor=" << bgColor << "> " << this -> getArtificialZeroElements() << "</td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << "> " << this->getArtificialZeroElements() << "</td>" << endl;
    }
-   if( this -> getBenchmarkWasSuccesful() )
+   if( this->getBenchmarkWasSuccesful() )
    {
-      const double speedUp = this -> getGflops() / csrGflops;
-      bgColor =  this -> getBgColorBySpeedUp( speedUp );
-      logFile << "             <td bgcolor=" << bgColor << ">" << this -> getTime() << "</td>" << endl;
-      logFile << "             <td bgcolor=" << bgColor << "> " << this -> getGflops() << "</td>" << endl;
+      const double speedUp = this->getGflops() / csrGflops;
+      bgColor =  this->getBgColorBySpeedUp( speedUp );
+      logFile << "             <td bgcolor=" << bgColor << ">" << this->getTime() << "</td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << "> " << this->getGflops() << "</td>" << endl;
       logFile << "             <td bgcolor=" << bgColor << "> " << speedUp << "</td>" << endl;
    }
    else
