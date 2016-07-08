@@ -14,8 +14,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GODUNOVEIKONAL_H_
-#define GODUNOVEIKONAL_H_
+#pragma once 
 
 #include <matrices/tnlCSRMatrix.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
@@ -62,16 +61,12 @@ public:
 	RealType negativePart(const RealType arg) const;
 
 	RealType sign(const RealType x, const RealType eps) const;
-
-    template< typename Vector >
- #ifdef HAVE_CUDA
-    __device__ __host__
- #endif
-    Real getValue( const MeshType& mesh,
-                   const IndexType cellIndex,
-                   const CoordinatesType& coordinates,
-                   const Vector& u,
-                   const RealType& time ) const;
+   
+   template< typename PreimageFunction, typename MeshEntity >
+   __cuda_callable__
+    Real operator()( const PreimageFunction& u,
+                     const MeshEntity& entity,
+                     const RealType& time = 0.0 ) const;
 
 	bool init( const tnlParameterContainer& parameters );
 
@@ -90,10 +85,6 @@ protected:
 };
 
 
-
-
-
-
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
@@ -102,47 +93,40 @@ template< typename MeshReal,
 class godunovEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 {
 
-public:
-	typedef Real RealType;
-	typedef Device DeviceType;
-	typedef Index IndexType;
-	typedef tnlGrid< 2, Real, Device, Index > MeshType;
-	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-	typedef typename MeshType::CoordinatesType CoordinatesType;
+   public:
+      typedef Real RealType;
+      typedef Device DeviceType;
+      typedef Index IndexType;
+      typedef tnlGrid< 2, Real, Device, Index > MeshType;
+      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
 
-	static tnlString getType();
+      static tnlString getType();
 
-    RealType positivePart(const RealType arg) const;
+      RealType positivePart(const RealType arg) const;
 
-    RealType negativePart(const RealType arg) const;
+      RealType negativePart(const RealType arg) const;
 
-    RealType sign(const RealType x, const Real eps) const;
+      RealType sign(const RealType x, const Real eps) const;
 
-    template< typename Vector >
- #ifdef HAVE_CUDA
-    __device__ __host__
- #endif
-    Real getValue( const MeshType& mesh,
-                   const IndexType cellIndex,
-                   const CoordinatesType& coordinates,
-                   const Vector& u,
-                   const RealType& time ) const;
+      template< typename PreimageFunction, typename MeshEntity >
+      __cuda_callable__
+       Real operator()( const PreimageFunction& u,
+                        const MeshEntity& entity,
+                        const RealType& time = 0.0 ) const;
 
-    bool init( const tnlParameterContainer& parameters );
+      bool init( const tnlParameterContainer& parameters );
 
+   protected:
 
-protected:
+      MeshType originalMesh;
 
- 	MeshType originalMesh;
+      DofVectorType dofVector;
 
-    DofVectorType dofVector;
+      RealType hx;
+      RealType hy;
 
-    RealType hx;
-    RealType hy;
-
-    RealType epsilon;
-
-
+      RealType epsilon;
 };
 
 
@@ -154,56 +138,49 @@ template< typename MeshReal,
 class godunovEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 {
 
-public:
-	typedef Real RealType;
-	typedef Device DeviceType;
-	typedef Index IndexType;
-	typedef tnlGrid< 3, Real, Device, Index > MeshType;
-	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-	typedef typename MeshType::CoordinatesType CoordinatesType;
+   public:
+      typedef Real RealType;
+      typedef Device DeviceType;
+      typedef Index IndexType;
+      typedef tnlGrid< 3, Real, Device, Index > MeshType;
+      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
-	static tnlString getType();
+      static tnlString getType();
 
-    RealType positivePart(const RealType arg) const;
+      RealType positivePart(const RealType arg) const;
 
-    RealType negativePart(const RealType arg) const;
+      RealType negativePart(const RealType arg) const;
 
-    RealType sign(const RealType x, const Real eps) const;
+      RealType sign(const RealType x, const Real eps) const;
 
-    template< typename Vector >
- #ifdef HAVE_CUDA
-    __device__ __host__
- #endif
-    Real getValue( const MeshType& mesh,
-                   const IndexType cellIndex,
-                   const CoordinatesType& coordinates,
-                   const Vector& u,
-                   const RealType& time ) const;
-
-    bool init( const tnlParameterContainer& parameters );
+      template< typename PreimageFunction, typename MeshEntity >
+      __cuda_callable__
+      Real operator()( const PreimageFunction& u,
+                       const MeshEntity& entity,
+                       const RealType& time = 0.0 ) const;
 
 
-protected:
+      bool init( const tnlParameterContainer& parameters );
 
- 	MeshType originalMesh;
 
-    DofVectorType dofVector;
+   protected:
 
-    RealType hx;
-    RealType hy;
-    RealType hz;
+      MeshType originalMesh;
 
-    RealType epsilon;
+      DofVectorType dofVector;
 
+      RealType hx;
+      RealType hy;
+      RealType hz;
+
+      RealType epsilon;
 
 };
 
+#include <operators/hamilton-jacobi/godunov-eikonal/godunovEikonal1D_impl.h>
+#include <operators/hamilton-jacobi/godunov-eikonal/godunovEikonal2D_impl.h>
+#include <operators/hamilton-jacobi/godunov-eikonal/godunovEikonal3D_impl.h>
 
 
-#include <operators/godunov-eikonal/godunovEikonal1D_impl.h>
-#include <operators/godunov-eikonal/godunovEikonal2D_impl.h>
-#include <operators/godunov-eikonal/godunovEikonal3D_impl.h>
-
-
-#endif /* GODUNOVEIKONAL_H_ */

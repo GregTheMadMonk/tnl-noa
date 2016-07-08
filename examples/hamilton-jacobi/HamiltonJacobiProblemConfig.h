@@ -15,20 +15,19 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef HAMILTONJACOBIPROBLEMCONFIG_H_
-#define HAMILTONJACOBIPROBLEMCONFIG_H_
+#pragma once 
 
 #include <config/tnlConfigDescription.h>
 
 template< typename ConfigTag >
-class hamiltonJacobiProblemConfig
+class HamiltonJacobiProblemConfig
 {
    public:
       static void configSetup( tnlConfigDescription& config )
       {
          config.addDelimiter( "Hamilton-Jacobi solver settings:" );
          config.addEntry        < tnlString > ( "problem-name", "This defines particular problem.", "hamilton-jacobi" );
-         config.addEntry       < tnlString > ( "scheme", "This defines scheme used for discretization.", "godunov" );
+         config.addEntry       < tnlString > ( "scheme", "This defines scheme used for discretization.", "upwind" );
          config.addEntryEnum( "godunov" );
          config.addEntryEnum( "upwind" );
          config.addEntryEnum( "godunov2" );
@@ -38,4 +37,3 @@ class hamiltonJacobiProblemConfig
       }
 };
 
-#endif /* HAMILTONJACOBIPROBLEMCONFIG_H_ */

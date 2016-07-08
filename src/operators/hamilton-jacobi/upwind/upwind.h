@@ -1,5 +1,5 @@
 /***************************************************************************
-                          upwindEikonal.h  -  description
+                          upwind.h  -  description
                              -------------------
     begin                : Jul 8 , 2014
     copyright            : (C) 2014 by Tomas Sobotik
@@ -14,8 +14,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef UPWINDEIKONAL_H_
-#define UPWINDEIKONAL_H_
+#ifndef UPWIND_H_
+#define UPWIND_H_
 
 #include <matrices/tnlCSRMatrix.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
@@ -29,8 +29,9 @@
 
 template< typename Mesh,
 		  typename Real,
-		  typename Index >
-class upwindEikonalScheme
+		  typename Index,
+		  typename Function >
+class upwindScheme
 {
 };
 
@@ -41,8 +42,9 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-class upwindEikonalScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+          typename Index,
+		  typename Function >
+class upwindScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, Function >
 {
 
 public:
@@ -52,6 +54,7 @@ public:
 	typedef tnlGrid< 1, Real, Device, Index > MeshType;
 	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
+
 
 
 	static tnlString getType();
@@ -77,6 +80,8 @@ public:
 
 protected:
 
+	Function f;
+
 	MeshType originalMesh;
 
 	DofVectorType dofVector;
@@ -97,8 +102,9 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-class upwindEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+          typename Index,
+		  typename Function >
+class upwindScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, Function >
 {
 
 public:
@@ -108,6 +114,8 @@ public:
 	typedef tnlGrid< 2, Real, Device, Index > MeshType;
 	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
+
+
 
 	static tnlString getType();
 
@@ -131,6 +139,8 @@ public:
 
 
 protected:
+
+	Function f;
 
  	MeshType originalMesh;
 
@@ -149,10 +159,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-class upwindEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+          typename Index,
+		  typename Function >
+class upwindScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, Function >
 {
-
 public:
 	typedef Real RealType;
 	typedef Device DeviceType;
@@ -160,6 +170,7 @@ public:
 	typedef tnlGrid< 3, Real, Device, Index > MeshType;
 	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
+
 
 
 	static tnlString getType();
@@ -180,10 +191,13 @@ public:
                    const Vector& u,
                    const RealType& time ) const;
 
+
     bool init( const tnlParameterContainer& parameters );
 
 
 protected:
+
+	Function f;
 
  	MeshType originalMesh;
 
@@ -195,13 +209,14 @@ protected:
 
     RealType epsilon;
 
+
 };
 
 
 
-#include <operators/upwind-eikonal/upwindEikonal1D_impl.h>
-#include <operators/upwind-eikonal/upwindEikonal2D_impl.h>
-#include <operators/upwind-eikonal/upwindEikonal3D_impl.h>
+#include <operators/hamilton-jacobi/upwind/upwind1D_impl.h>
+#include <operators/hamilton-jacobi/upwind/upwind2D_impl.h>
+#include <operators/hamilton-jacobi/upwind/upwind3D_impl.h>
 
 
-#endif /* UPWINDEIKONAL_H_ */
+#endif /* UPWIND_H_ */

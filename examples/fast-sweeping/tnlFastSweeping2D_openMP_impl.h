@@ -57,7 +57,7 @@ bool tnlFastSweeping< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > ::
 		   return false;
 	}
 
-	h = Mesh.getHx();
+	h = Mesh.getSpaceSteps().x();
 
 
 	const tnlString& exact_input = parameters.getParameter< tnlString >( "exact-input" );

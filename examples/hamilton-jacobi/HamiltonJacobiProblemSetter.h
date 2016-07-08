@@ -14,21 +14,10 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef HAMILTONJACOBIPROBLEMSETTER_H_
-#define HAMILTONJACOBIPROBLEMSETTER_H_
+#pragma once 
 
 #include <config/tnlParameterContainer.h>
-#include <mesh/tnlGrid.h>
-#include <functions/tnlConstantFunction.h>
-#include <operators/tnlNeumannReflectionBoundaryConditions.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
-#include "hamiltonJacobiProblemSolver.h"
-#include <operators/upwind-eikonal/upwindEikonal.h>
-#include <operators/godunov-eikonal/godunovEikonal.h>
-#include <operators/upwind/upwind.h>
-#include <operators/godunov/godunov.h>
-#include <functions/tnlSDFSign.h>
-#include <functions/tnlSDFGridValue.h>
+#include "HamiltonJacobiProblem.h"
 
 template< typename RealType,
 		  typename DeviceType,
@@ -36,12 +25,11 @@ template< typename RealType,
 		  typename MeshType,
 		  typename ConfigTag,
           typename SolverStarter >
-class hamiltonJacobiProblemSetter
+class HamiltonJacobiProblemSetter
 {
    public:
    static bool run( const tnlParameterContainer& parameters );
 };
 
-#include "hamiltonJacobiProblemSetter_impl.h"
+#include "HamiltonJacobiProblemSetter_impl.h"
 
-#endif /* HAMILTONJACOBIPROBLEMSETTER_H_ */

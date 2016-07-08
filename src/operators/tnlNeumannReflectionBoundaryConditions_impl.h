@@ -1,6 +1,4 @@
-#ifndef TNLNEUMANNREFLECTIONBOUNDARYCONDITIONS_IMPL_H
-#define	TNLNEUMANNREFLECTIONBOUNDARYCONDITIONS_IMPL_H
-
+#pragma once
 
 template< typename MeshReal,
           typename Device,
@@ -22,6 +20,15 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
+   template< typename EntityType,
+             typename MeshFunction >
+__cuda_callable__
+const Real
+tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+operator()( const MeshFunction& u,
+            const EntityType& entity,
+            const RealType& time ) const
+
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -36,7 +43,7 @@ setBoundaryConditions( const RealType& time,
 	tmp = coordinates;
 
    if(coordinates.x() == 0)
-	   tmp.x() = coordinates.x() + 2;
+	   tmp.x() = 1;
    else if(coordinates.x() == mesh. getDimensions().x() - 1)
 	   tmp.x() = coordinates.x() - 2;
 
@@ -63,6 +70,15 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
+   template< typename EntityType,
+             typename MeshFunction >
+__cuda_callable__
+const Real
+tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+operator()( const MeshFunction& u,
+            const EntityType& entity,
+            const RealType& time ) const
+
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif
@@ -109,6 +125,15 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
+   template< typename EntityType,
+             typename MeshFunction >
+__cuda_callable__
+const Real
+tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+operator()( const MeshFunction& u,
+            const EntityType& entity,
+            const RealType& time ) const
+
 #ifdef HAVE_CUDA
    __device__ __host__
 #endif

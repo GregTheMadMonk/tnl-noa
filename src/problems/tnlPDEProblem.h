@@ -20,6 +20,8 @@
 
 #include <problems/tnlProblem.h>
 #include <matrices/tnlCSRMatrix.h>
+#include <solvers/tnlSolverMonitor.h>
+#include <core/tnlLogger.h>
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          godunov3D_impl.h  -  description
+                          godunov2D_impl.h  -  description
                              -------------------
     begin                : Jul 8 , 2014
     copyright            : (C) 2014 by Tomas Sobotik
@@ -14,16 +14,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GODUNOVEIKONAL3D_IMPL_H_
-#define GODUNOVEIKONAL3D_IMPL_H_
+#ifndef GODUNOV2D_IMPL_H_
+#define GODUNOV2D_IMPL_H_
 
 
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-Real godunovEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: positivePart(const Real arg) const
+          typename Index,
+		  typename Function >
+Real godunovScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, Function >:: positivePart(const Real arg) const
 {
 	if(arg > 0.0)
 		return arg;
@@ -35,8 +36,9 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-Real  godunovEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: negativePart(const Real arg) const
+          typename Index,
+		  typename Function >
+Real  godunovScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, Function > :: negativePart(const Real arg) const
 {
 	if(arg < 0.0)
 		return arg;
@@ -48,8 +50,9 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-Real godunovEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: sign(const Real x, const Real eps) const
+          typename Index,
+		  typename Function >
+Real godunovScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, Function > :: sign(const Real x, const Real eps) const
 {
 	if(x > eps)
 		return 1.0;
@@ -65,13 +68,16 @@ Real godunovEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index
 
 
 
+
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-bool godunovEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index > :: init( const tnlParameterContainer& parameters )
+          typename Index,
+		  typename Function >
+bool godunovScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, Function > :: init( const tnlParameterContainer& parameters )
 {
+
 	   const tnlString& meshFile = parameters.getParameter< tnlString >( "mesh" );
 	   if( ! this->originalMesh.load( meshFile ) )
 	   {
@@ -79,17 +85,17 @@ bool godunovEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index
 		   return false;
 	   }
 
-
-	   hx = originalMesh.template getSpaceStepsProducts< 1, 0 >();
-	   hy = originalMesh.template getSpaceStepsProducts< 0, 1 >();
-	   hz = originalMesh.getHz();
+	   hx = originalMesh.getSpaceSteps().x();
+	   hy = originalMesh.getSpaceSteps().y();
 
 	   epsilon = parameters. getParameter< double >( "epsilon" );
 
 	   if(epsilon != 0.0)
-		   epsilon *=sqrt( hx*hx + hy*hy +hz*hz );
+		   epsilon *=sqrt( hx*hx + hy*hy );
 
-	//   dofVector. setSize( this->mesh.getDofs() );
+	   f.setup( parameters );
+
+//	   dofVector. setSize( this->mesh.getDofs() );
 
 	   return true;
 
@@ -100,8 +106,9 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-tnlString godunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index > :: getType()
+          typename Index,
+		  typename Function >
+tnlString godunovScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, Function > :: getType()
 {
    return tnlString( "tnlLinearDiffusion< " ) +
           MeshType::getType() + ", " +
@@ -109,34 +116,35 @@ tnlString godunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real,
           ::getType< Index >() + " >";
 }
 
+
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
+          typename Index,
+		  typename Function >
 template< typename Vector >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-Real godunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >:: getValue( const MeshType& mesh,
+Real godunovScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, Function >:: getValue( const MeshType& mesh,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType cellIndex,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const CoordinatesType& coordinates,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Vector& u,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time ) const
 {
-/*
-	RealType nabla, xb, xf, yb, yf, zb, zf, signui;
 
-	signui = sign(u[cellIndex],epsilon);
 
-	   if(signui > 0.0)
+	RealType nabla, xb, xf, yb, yf, fi;
+
+	fi = f.getValue(mesh.getCellCenter( coordinates ),time);
+
+	   if(fi > 0.0)
 	   {
 		   xf = negativePart((u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])/hx);
 		   xb = positivePart((u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])/hx);
 		   yf = negativePart((u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])/hy);
 		   yb = positivePart((u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])/hy);
-		   zf = negativePart((u[mesh.getCellZSuccessor( cellIndex )] - u[cellIndex])/hz);
-		   zb = positivePart((u[cellIndex] - u[mesh.getCellZPredecessor( cellIndex )])/hz);
 
 		   if(xb + xf > 0.0)
 			   xf = 0.0;
@@ -148,23 +156,16 @@ Real godunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Inde
 		   else
 			   yb = 0.0;
 
-		   if(zb + zf > 0.0)
-			   zf = 0.0;
-		   else
-			   zb = 0.0;
+		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
 
-		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb );
-
-		   return signui*(1.0 - nabla);
+		   return -1.0*fi*( nabla);
 	   }
-	   else if (signui < 0.0)
+	   else if (fi < 0.0)
 	   {
 		   xf = positivePart((u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])/hx);
 		   xb = negativePart((u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])/hx);
 		   yf = positivePart((u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])/hy);
 		   yb = negativePart((u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])/hy);
-		   zf = positivePart((u[mesh.getCellZSuccessor( cellIndex )] - u[cellIndex])/hz);
-		   zb = negativePart((u[cellIndex] - u[mesh.getCellZPredecessor( cellIndex )])/hz);
 
 		   if(xb + xf > 0.0)
 			   xb = 0.0;
@@ -176,21 +177,16 @@ Real godunovEikonalScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Inde
 		   else
 			   yf = 0.0;
 
-		   if(zb + zf > 0.0)
-			   zb = 0.0;
-		   else
-			   zf = 0.0;
+		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
 
-		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb );
-
-		   return signui*(1.0 - nabla);
+		   return -1.0*fi*( nabla);
 	   }
 	   else
-*/	   {
+	   {
 		   return 0.0;
 	   }
 
 }
 
 
-#endif /* GODUNOVEIKONAL3D_IMPL_H_ */
+#endif /* GODUNOV2D_IMPL_H_ */

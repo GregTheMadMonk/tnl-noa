@@ -1,5 +1,5 @@
 /***************************************************************************
-                          upwindEikonal1D_impl.h  -  description
+                          godunov1D_impl.h  -  description
                              -------------------
     begin                : Jul 8 , 2014
     copyright            : (C) 2014 by Tomas Sobotik
@@ -14,16 +14,18 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef UPWINDEIKONAL1D_IMPL_H_
-#define UPWINDEIKONAL1D_IMPL_H_
+#ifndef GODUNOV1D_IMPL_H_
+#define GODUNOV1D_IMPL_H_
+
 
 
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-Real upwindEikonalScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index > :: positivePart(const Real arg) const
+          typename Index,
+		  typename Function >
+Real godunovScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, Function > :: positivePart(const Real arg) const
 {
 	if(arg > 0.0)
 		return arg;
@@ -35,8 +37,9 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-Real  upwindEikonalScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index > :: negativePart(const Real arg) const
+          typename Index,
+		  typename Function >
+Real  godunovScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, Function > :: negativePart(const Real arg) const
 {
 	if(arg < 0.0)
 		return arg;
@@ -48,8 +51,9 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-Real upwindEikonalScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index > :: sign(const Real x, const Real eps) const
+          typename Index,
+		  typename Function >
+Real godunovScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, Function > :: sign(const Real x, const Real eps) const
 {
 	if(x > eps)
 		return 1.0;
@@ -65,14 +69,15 @@ Real upwindEikonalScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
 
 
 
+
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-bool upwindEikonalScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index > :: init( const tnlParameterContainer& parameters )
+          typename Index,
+		  typename Function >
+bool godunovScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, Function > :: init( const tnlParameterContainer& parameters )
 {
-
 	   const tnlString& meshFile = parameters.getParameter< tnlString >( "mesh" );
 	   if( ! this->originalMesh.load( meshFile ) )
 	   {
@@ -81,12 +86,14 @@ bool upwindEikonalScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
 	   }
 
 
-	   h = originalMesh.getHx();
+	   h = originalMesh.getSpaceSteps().x();
 
 	   epsilon = parameters. getParameter< double >( "epsilon" );
 
 	   if(epsilon != 0.0)
 		   epsilon *=h;
+
+	   f.setup( parameters );
 
 	   /*dofVector. setSize( this->mesh.getDofs() );*/
 
@@ -97,10 +104,11 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-tnlString upwindEikonalScheme< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index > :: getType()
+          typename Index,
+		  typename Function >
+tnlString godunovScheme< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, Function > :: getType()
 {
-   return tnlString( "upwindEikonalScheme< " ) +
+   return tnlString( "godunovScheme< " ) +
           MeshType::getType() + ", " +
           ::getType< Real >() + ", " +
           ::getType< Index >() + " >";
@@ -110,39 +118,50 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
+          typename Index,
+		  typename Function >
 template< typename Vector >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-Real upwindEikonalScheme< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >:: getValue( const MeshType& mesh,
+Real godunovScheme< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, Function >:: getValue( const MeshType& mesh,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType cellIndex,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const CoordinatesType& coordinates,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Vector& u,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time ) const
 {
 
-	RealType nabla, xb, xf, signui;
+	RealType nabla, xb, xf, fi;
 
-	signui = sign(u[cellIndex],epsilon);
+	fi = f.getValue(mesh.getCellCenter( coordinates ),time);
 
-	   if(signui > 0.0)
+	   if(fi > 0.0)
 	   {
 		   xf = negativePart((u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])/h);
 		   xb = positivePart((u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])/h);
 
+		   if(xb + xf > 0.0)
+			   xf = 0.0;
+		   else
+			   xb = 0.0;
+
 		   nabla = sqrt (xf*xf + xb*xb );
 
-		   return signui*(1.0 - nabla);
+		   return -fi*( nabla);
 	   }
-	   else if (signui < 0.0)
+	   else if (fi < 0.0)
 	   {
 		   xf = positivePart((u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])/h);
 		   xb = negativePart((u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])/h);
 
+		   if(xb + xf > 0.0)
+			   xb = 0.0;
+		   else
+			   xf = 0.0;
+
 		   nabla = sqrt (xf*xf + xb*xb );
 
-		   return signui*(1.0 - nabla);
+		   return -fi*( nabla);
 	   }
 	   else
 	   {
@@ -152,4 +171,4 @@ Real upwindEikonalScheme< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index
 }
 
 
-#endif /* UPWINDEIKONAL1D_IMPL_H_ */
+#endif /* GODUNOV1D_IMPL_H_ */

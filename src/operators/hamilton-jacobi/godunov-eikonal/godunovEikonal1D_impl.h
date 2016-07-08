@@ -14,9 +14,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef GODUNOVEIKONAL1D_IMPL_H_
-#define GODUNOVEIKONAL1D_IMPL_H_
-
+#pragma once
 
 
 template< typename MeshReal,
@@ -84,7 +82,7 @@ bool godunovEikonalScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index
 	   }
 
 
-	   h = originalMesh.template getSpaceStepsProducts< 1, 0 >();
+	   h = originalMesh.template getSpaceSteps().x();
 	   cout << "h = " << h << endl;
 
 	   epsilon = parameters. getParameter< double >( "epsilon" );
@@ -165,5 +163,3 @@ Real godunovEikonalScheme< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Inde
 
 }
 
-
-#endif /* GODUNOVEIKONAL1D_IMPL_H_ */

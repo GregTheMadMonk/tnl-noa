@@ -1,5 +1,5 @@
 /***************************************************************************
-                          hamiltonJacobiProblemSolver.h  -  description
+                          hamiltonJacobiProblem.h  -  description
                              -------------------
     begin                : Jul 8 , 2014
     copyright            : (C) 2014 by Tomas Sobotik
@@ -14,10 +14,9 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef HAMILTONJACOBIPROBLEMSOLVER_H_
-#define HAMILTONJACOBIPROBLEMSOLVER_H_
+#pragma once
 
-#include <matrices/tnlCSRMatrix.h>
+#include <problems/tnlPDEProblem.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlSolverMonitor.h>
 #include <core/tnlLogger.h>
@@ -25,13 +24,16 @@
 #include <core/vectors/tnlSharedVector.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
-#include <matrices/tnlCSRMatrix.h>
+#include <functions/tnlMeshFunction.h>
 
 template< typename Mesh,
-		  typename DifferentialOperator,
-		  typename BoundaryCondition,
-		  typename RightHandSide>
-class hamiltonJacobiProblemSolver
+		    typename DifferentialOperator,
+		    typename BoundaryCondition,
+		    typename RightHandSide>
+class HamiltonJacobiProblem : public tnlPDEProblem< Mesh,
+                                                    typename DifferentialOperator::RealType,
+                                                    typename Mesh::DeviceType,
+                                                    typename DifferentialOperator::IndexType  >
 {
 
    public:
@@ -39,11 +41,14 @@ class hamiltonJacobiProblemSolver
    typedef typename DifferentialOperator::RealType RealType;
    typedef typename Mesh::DeviceType DeviceType;
    typedef typename DifferentialOperator::IndexType IndexType;
-   typedef Mesh MeshType;
-   typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
-   typedef typename MatrixType::RowLengthsVector RowLengthsVectorType;
 
+   typedef tnlMeshFunction< Mesh > MeshFunctionType;
+   typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+   
+   using typename BaseType::MeshType;
+   using typename BaseType::DofVectorType;
+   using typename BaseType::MeshDependentDataType;
+   
    static tnlString getTypeStatic();
 
    tnlString getPrologHeader() const;
@@ -55,11 +60,14 @@ class hamiltonJacobiProblemSolver
 
    bool setInitialCondition( const tnlParameterContainer& parameters,
                              const MeshType& mesh,
-                             DofVectorType& dofs );
+                             DofVectorType& dofs,
+                             MeshDependentDataType& meshDependentData );
 
    bool makeSnapshot( const RealType& time,
                       const IndexType& step,
-                      const MeshType& mesh );
+                      const MeshType& mesh,
+                      DofVectorType& dofs,
+                      MeshDependentDataType& meshDependentData );
 
    IndexType getDofs( const MeshType& mesh ) const;
 
@@ -75,17 +83,20 @@ class hamiltonJacobiProblemSolver
                         const RealType& tau,
                         const MeshType& mesh,
                         DofVectorType& _u,
-                        DofVectorType& _fu );
+                        DofVectorType& _fu,
+                        MeshDependentDataType& meshDependentData );
 
    bool preIterate( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
-                    DofVectorType& u );
-
+                    DofVectorType& u,
+                    MeshDependentDataType& meshDependentData );
+   
    bool postIterate( const RealType& time,
-                    const RealType& tau,
-                    const MeshType& mesh,
-                    DofVectorType& u );
+                     const RealType& tau,
+                     const MeshType& mesh,
+                     DofVectorType& u,
+                     MeshDependentDataType& meshDependentData );
 
 
    tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();
@@ -95,7 +106,7 @@ class hamiltonJacobiProblemSolver
 
    tnlSharedVector< RealType, DeviceType, IndexType > solution;
 
-   tnlExplicitUpdater< Mesh, DofVectorType, DifferentialOperator, BoundaryCondition, RightHandSide  > explicitUpdater;
+   tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide  > explicitUpdater;
 
    DifferentialOperator differentialOperator;
 
@@ -107,9 +118,5 @@ class hamiltonJacobiProblemSolver
    bool tested;
 };
 
+#include "HamiltonJacobiProblem_impl.h"
 
-#include "hamiltonJacobiProblemSolver_impl.h"
-
-
-
-#endif /* HAMILTONJACOBIPROBLEMSOLVER_H_ */

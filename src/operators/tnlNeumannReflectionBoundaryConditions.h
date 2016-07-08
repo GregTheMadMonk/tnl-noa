@@ -1,5 +1,4 @@
-#ifndef TNLNEUMANNREFLECTIONBOUNDARYCONDITIONS_H
-#define	TNLNEUMANNREFLECTIONBOUNDARYCONDITIONS_H
+#pragma once
 
 #include <core/vectors/tnlStaticVector.h>
 #include <core/vectors/tnlSharedVector.h>
@@ -36,17 +35,12 @@ class tnlNeumannReflectionBoundaryConditions< tnlGrid< 1, MeshReal, Device, Mesh
    bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
 
-
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void setBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
-                               const IndexType index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
-                               DofVectorType& fu );
-
+   template< typename EntityType,
+             typename MeshFunction >
+   __cuda_callable__
+   const RealType operator()( const MeshFunction& u,
+                              const EntityType& entity,   
+                              const RealType& time = 0 ) const;
 
    CoordinatesType tmp;
 
@@ -76,15 +70,12 @@ class tnlNeumannReflectionBoundaryConditions< tnlGrid< 2, MeshReal, Device, Mesh
               const tnlString& prefix = "" );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void setBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
-                               const IndexType index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
-                               DofVectorType& fu );
+   template< typename EntityType,
+             typename MeshFunction >
+   __cuda_callable__
+   const RealType operator()( const MeshFunction& u,
+                              const EntityType& entity,   
+                              const RealType& time = 0 ) const;
 
 
    CoordinatesType tmp;
@@ -116,15 +107,12 @@ class tnlNeumannReflectionBoundaryConditions< tnlGrid< 3, MeshReal, Device, Mesh
               const tnlString& prefix = "" );
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-   void setBoundaryConditions( const RealType& time,
-                               const MeshType& mesh,
-                               const IndexType index,
-                               const CoordinatesType& coordinates,
-                               DofVectorType& u,
-                               DofVectorType& fu );
+   template< typename EntityType,
+             typename MeshFunction >
+   __cuda_callable__
+   const RealType operator()( const MeshFunction& u,
+                              const EntityType& entity,   
+                              const RealType& time = 0 ) const;
 
    private:
 

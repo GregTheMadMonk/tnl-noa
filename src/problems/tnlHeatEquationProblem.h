@@ -86,7 +86,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
                            const RealType& tau,
                            const MeshType& mesh,
                            DofVectorType& _u,
-			   DofVectorType& _fu,
+		                	   DofVectorType& _fu,
                            MeshDependentDataType& meshDependentData );
 
       template< typename Matrix >

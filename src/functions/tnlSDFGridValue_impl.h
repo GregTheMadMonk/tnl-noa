@@ -61,7 +61,7 @@ Real tnlSDFGridValue< Mesh, 1, Real >::getValue( const Vertex& v,
         									const Real& time) const
 {
 
-   const Real& x =  (v.x() - this->mesh.getOrigin().x()  ) / this->mesh.getHx();
+   const Real& x =  (v.x() - this->mesh.getOrigin().x()  ) / this->mesh.getSpaceSteps().x();
 
    if( XDiffOrder != 0 || YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
@@ -79,8 +79,8 @@ Real tnlSDFGridValue< Mesh, 2, Real >::getValue( const Vertex& v,
         									const Real& time) const
 {
 
-	   const IndexType& x = ((v.x() - this->mesh.getOrigin().x()) / this->mesh.getHx());
-	   const IndexType& y = ((v.y() - this->mesh.getOrigin().y()) / this->mesh.getHy());
+	   const IndexType& x = ((v.x() - this->mesh.getOrigin().x()) / this->mesh.getSpaceSteps().x());
+	   const IndexType& y = ((v.y() - this->mesh.getOrigin().y()) / this->mesh.getSpaceSteps().y());
 
 	   if( XDiffOrder != 0 || YDiffOrder != 0 || ZDiffOrder != 0 )
 	      return 0.0;
@@ -96,9 +96,9 @@ template< typename Mesh, typename Real >
 Real tnlSDFGridValue< Mesh, 3, Real >::getValue( const Vertex& v,
         									const Real& time) const
 {
-	   const Real& x = floor( (v.x() - this->mesh.getOrigin().x()) / this->mesh.getHx());
-	   const Real& y = floor( (v.y() - this->mesh.getOrigin().y()) / this->mesh.getHy());
-	   const Real& z = floor( (v.z() - this->mesh.getOrigin().z()) / this->mesh.getHz());
+	   const Real& x = floor( (v.x() - this->mesh.getOrigin().x()) / this->mesh.getSpaceSteps().x());
+	   const Real& y = floor( (v.y() - this->mesh.getOrigin().y()) / this->mesh.getSpaceSteps().y());
+	   const Real& z = floor( (v.z() - this->mesh.getOrigin().z()) / this->mesh.getSpaceSteps().z());
 	   if( XDiffOrder != 0 || YDiffOrder != 0 || ZDiffOrder != 0 )
 	      return 0.0;
 	   else

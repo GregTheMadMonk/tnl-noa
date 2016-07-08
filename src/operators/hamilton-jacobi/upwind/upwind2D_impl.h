@@ -1,5 +1,5 @@
 /***************************************************************************
-                          upwind3D_impl.h  -  description
+                          upwind2D_impl.h  -  description
                              -------------------
     begin                : Jul 8 , 2014
     copyright            : (C) 2014 by Tomas Sobotik
@@ -14,8 +14,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef UPWIND3D_IMPL_H_
-#define UPWIND3D_IMPL_H_
+#ifndef UPWIND2D_IMPL_H_
+#define UPWIND2D_IMPL_H_
 
 
 template< typename MeshReal,
@@ -24,7 +24,7 @@ template< typename MeshReal,
           typename Real,
           typename Index,
 		  typename Function >
-Real upwindScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, Function > :: positivePart(const Real arg) const
+Real upwindScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, Function >:: positivePart(const Real arg) const
 {
 	if(arg > 0.0)
 		return arg;
@@ -38,7 +38,7 @@ template< typename MeshReal,
           typename Real,
           typename Index,
 		  typename Function >
-Real  upwindScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, Function > :: negativePart(const Real arg) const
+Real  upwindScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, Function > :: negativePart(const Real arg) const
 {
 	if(arg < 0.0)
 		return arg;
@@ -52,7 +52,7 @@ template< typename MeshReal,
           typename Real,
           typename Index,
 		  typename Function >
-Real upwindScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, Function > :: sign(const Real x, const Real eps) const
+Real upwindScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, Function > :: sign(const Real x, const Real eps) const
 {
 	if(x > eps)
 		return 1.0;
@@ -67,13 +67,14 @@ Real upwindScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, Functi
 
 
 
+
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
           typename Index,
 		  typename Function >
-bool upwindScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, Function > :: init( const tnlParameterContainer& parameters )
+bool upwindScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, Function > :: init( const tnlParameterContainer& parameters )
 {
 
 	   const tnlString& meshFile = parameters.getParameter< tnlString >( "mesh" );
@@ -83,19 +84,17 @@ bool upwindScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, Functi
 		   return false;
 	   }
 
-
-	   hx = originalMesh.getHx();
-	   hy = originalMesh.getHy();
-	   hz = originalMesh.getHz();
+	   hx = originalMesh.getSpaceSteps().x();
+	   hy = originalMesh.getSpaceSteps().y();
 
 	   epsilon = parameters. getParameter< double >( "epsilon" );
 
 	   if(epsilon != 0.0)
-		   epsilon *=sqrt( hx*hx + hy*hy +hz*hz );
+		   epsilon *=sqrt( hx*hx + hy*hy );
 
 	   f.setup( parameters );
 
-	//   dofVector. setSize( this->mesh.getDofs() );
+//	   dofVector. setSize( this->mesh.getDofs() );
 
 	   return true;
 
@@ -108,13 +107,14 @@ template< typename MeshReal,
           typename Real,
           typename Index,
 		  typename Function >
-tnlString upwindScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, Function > :: getType()
+tnlString upwindScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, Function > :: getType()
 {
    return tnlString( "tnlLinearDiffusion< " ) +
           MeshType::getType() + ", " +
           ::getType< Real >() + ", " +
           ::getType< Index >() + " >";
 }
+
 
 template< typename MeshReal,
           typename Device,
@@ -126,14 +126,14 @@ template< typename Vector >
 #ifdef HAVE_CUDA
 __device__ __host__
 #endif
-Real upwindScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, Function >:: getValue( const MeshType& mesh,
+Real upwindScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, Function >:: getValue( const MeshType& mesh,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType cellIndex,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const CoordinatesType& coordinates,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Vector& u,
           	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time ) const
 {
 
-	RealType nabla, xb, xf, yb, yf, zb, zf, fi;
+	RealType nabla, xb, xf, yb, yf, fi;
 
 	fi = f.getValue(mesh.getCellCenter( coordinates ),time);
 
@@ -143,10 +143,8 @@ Real upwindScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, Funct
 		   xb = positivePart((u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])/hx);
 		   yf = negativePart((u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])/hy);
 		   yb = positivePart((u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])/hy);
-		   zf = negativePart((u[mesh.getCellZSuccessor( cellIndex )] - u[cellIndex])/hz);
-		   zb = positivePart((u[cellIndex] - u[mesh.getCellZPredecessor( cellIndex )])/hz);
 
-		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb );
+		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
 
 		   return -fi*( nabla);
 	   }
@@ -156,10 +154,8 @@ Real upwindScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, Funct
 		   xb = negativePart((u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])/hx);
 		   yf = positivePart((u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])/hy);
 		   yb = negativePart((u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])/hy);
-		   zf = positivePart((u[mesh.getCellZSuccessor( cellIndex )] - u[cellIndex])/hz);
-		   zb = negativePart((u[cellIndex] - u[mesh.getCellZPredecessor( cellIndex )])/hz);
 
-		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb + zf*zf + zb*zb );
+		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
 
 		   return -fi*( nabla);
 	   }
@@ -170,5 +166,4 @@ Real upwindScheme< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, Funct
 
 }
 
-
-#endif /* UPWIND3D_IMPL_H_ */
+#endif /* UPWIND2D_IMPL_H_ */

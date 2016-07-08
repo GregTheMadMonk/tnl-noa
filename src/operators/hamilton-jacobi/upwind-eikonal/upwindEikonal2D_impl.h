@@ -82,8 +82,8 @@ bool upwindEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index 
 	   }
 
 
-	   hx = originalMesh.getHx();
-	   hy = originalMesh.getHy();
+	   hx = originalMesh.getSpaceSteps().x();
+	   hy = originalMesh.getSpaceSteps().y();
 
 	   epsilon = parameters. getParameter< double >( "epsilon" );
 
@@ -116,48 +116,48 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-template< typename Vector >
-#ifdef HAVE_CUDA
-__device__ __host__
-#endif
-Real upwindEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >:: getValue( const MeshType& mesh,
-          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const IndexType cellIndex,
-          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const CoordinatesType& coordinates,
-          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Vector& u,
-          	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	  	 const Real& time ) const
+template< typename PreimageFunction,
+          typename EntityType >
+__cuda_callable__
+inline
+Real
+upwindEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+operator()( const PreimageFunction& u,
+            const EntityType& entity,
+            const Real& time ) const
 {
 
-	RealType nabla, xb, xf, yb, yf, signui;
+	RealType nabla, xb, xf, yb, yf, signui;         
+	signui = sign( u( entity ), epsilon );
+   
+   const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();   
+   const RealType& u_c = u[ entity.getIndex() ];
+   const RealType& u_e = u[ neighbourEntities.template getEntityIndex<  1,  0 >() ];
+   const RealType& u_w = u[ neighbourEntities.template getEntityIndex< -1,  0 >() ];
+   const RealType& u_n = u[ neighbourEntities.template getEntityIndex<  0,  1 >() ];
+   const RealType& u_s = u[ neighbourEntities.template getEntityIndex<  0, -1 >() ];
 
-	signui = sign(u[cellIndex],epsilon);
 
-	   if(signui > 0.0)
-	   {
-		   xf = negativePart((u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])/hx);
-		   xb = positivePart((u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])/hx);
-		   yf = negativePart((u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])/hy);
-		   yb = positivePart((u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])/hy);
-
-		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
-
-		   return signui*(1.0 - nabla);
-	   }
-	   else if (signui < 0.0)
-	   {
-		   xf = positivePart((u[mesh.getCellXSuccessor( cellIndex )] - u[cellIndex])/hx);
-		   xb = negativePart((u[cellIndex] - u[mesh.getCellXPredecessor( cellIndex )])/hx);
-		   yf = positivePart((u[mesh.getCellYSuccessor( cellIndex )] - u[cellIndex])/hy);
-		   yb = negativePart((u[cellIndex] - u[mesh.getCellYPredecessor( cellIndex )])/hy);
-
-		   nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
-
-		   return signui*(1.0 - nabla);
-	   }
-	   else
-	   {
-		   return 0.0;
-	   }
-
+   if(signui > 0.0)
+   {
+      xf = negativePart( ( u_e - u_c ) / hx );
+      xb = positivePart( ( u_c - u_w ) / hx );
+      yf = negativePart( ( u_n - u_c ) / hy );
+      yb = positivePart( ( u_c - u_s ) / hy );
+      nabla = sqrt( xf * xf + xb * xb + yf * yf + yb * yb );
+      return signui * ( 1.0 - nabla );
+   }
+   else if (signui < 0.0)
+   {
+      xf = positivePart( ( u_e - u_c ) / hx );
+      xb = negativePart( ( u_c - u_w ) / hx );
+      yf = positivePart( ( u_n - u_c ) / hy );
+      yb = negativePart( ( u_c - u_s ) / hy );
+      nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
+      return signui*(1.0 - nabla);
+   }
+   else
+      return 0.0;
 }
 
 #endif /* UPWINDEIKONAL2D_IMPL_H_ */

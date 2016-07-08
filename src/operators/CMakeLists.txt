@@ -3,10 +3,8 @@ ADD_SUBDIRECTORY( euler )
 ADD_SUBDIRECTORY( interpolants )
 ADD_SUBDIRECTORY( operator-Q )
 ADD_SUBDIRECTORY( operator-curvature )
-#ADD_SUBDIRECTORY( godunov )
-#ADD_SUBDIRECTORY( upwind )
-ADD_SUBDIRECTORY( godunov-eikonal )
-#ADD_SUBDIRECTORY( upwind-eikonal )
+ADD_SUBDIRECTORY( hamilton-jacobi )
+
 
 SET( headers tnlDirichletBoundaryConditions.h
              tnlDirichletBoundaryConditions_impl.h

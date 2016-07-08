@@ -1,5 +1,5 @@
 /***************************************************************************
-                          upwind.h  -  description
+                          upwindEikonal.h  -  description
                              -------------------
     begin                : Jul 8 , 2014
     copyright            : (C) 2014 by Tomas Sobotik
@@ -14,8 +14,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef UPWIND_H_
-#define UPWIND_H_
+#ifndef UPWINDEIKONAL_H_
+#define UPWINDEIKONAL_H_
 
 #include <matrices/tnlCSRMatrix.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
@@ -29,9 +29,8 @@
 
 template< typename Mesh,
 		  typename Real,
-		  typename Index,
-		  typename Function >
-class upwindScheme
+		  typename Index >
+class upwindEikonalScheme
 {
 };
 
@@ -42,9 +41,8 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index,
-		  typename Function >
-class upwindScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, Function >
+          typename Index >
+class upwindEikonalScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 {
 
 public:
@@ -56,7 +54,6 @@ public:
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
-
 	static tnlString getType();
 
 	RealType positivePart(const RealType arg) const;
@@ -65,22 +62,18 @@ public:
 
 	RealType sign(const RealType x, const RealType eps) const;
 
-    template< typename Vector >
- #ifdef HAVE_CUDA
-    __device__ __host__
- #endif
-    Real getValue( const MeshType& mesh,
-                   const IndexType cellIndex,
-                   const CoordinatesType& coordinates,
-                   const Vector& u,
-                   const RealType& time ) const;
+   
+   template< typename PreimageFunction, typename MeshEntity >
+   __cuda_callable__
+   Real operator()( const PreimageFunction& u,
+                    const MeshEntity& entity,
+                    const RealType& time = 0.0 ) const;
+
 
 	bool init( const tnlParameterContainer& parameters );
 
 
 protected:
-
-	Function f;
 
 	MeshType originalMesh;
 
@@ -102,9 +95,8 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index,
-		  typename Function >
-class upwindScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, Function >
+          typename Index >
+class upwindEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 {
 
 public:
@@ -115,8 +107,6 @@ public:
 	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
-
-
 	static tnlString getType();
 
     RealType positivePart(const RealType arg) const;
@@ -125,22 +115,17 @@ public:
 
     RealType sign(const RealType x, const Real eps) const;
 
-    template< typename Vector >
- #ifdef HAVE_CUDA
-    __device__ __host__
- #endif
-    Real getValue( const MeshType& mesh,
-                   const IndexType cellIndex,
-                   const CoordinatesType& coordinates,
-                   const Vector& u,
-                   const RealType& time ) const;
-
-    bool init( const tnlParameterContainer& parameters );
+    
+   template< typename PreimageFunction, typename MeshEntity >
+   __cuda_callable__
+   Real operator()( const PreimageFunction& u,
+                    const MeshEntity& entity,
+                    const RealType& time = 0.0 ) const;
+    
+   bool init( const tnlParameterContainer& parameters );
 
 
 protected:
-
-	Function f;
 
  	MeshType originalMesh;
 
@@ -159,10 +144,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index,
-		  typename Function >
-class upwindScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, Function >
+          typename Index >
+class upwindEikonalScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 {
+
 public:
 	typedef Real RealType;
 	typedef Device DeviceType;
@@ -170,7 +155,6 @@ public:
 	typedef tnlGrid< 3, Real, Device, Index > MeshType;
 	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
-
 
 
 	static tnlString getType();
@@ -181,23 +165,15 @@ public:
 
     RealType sign(const RealType x, const Real eps) const;
 
-    template< typename Vector >
- #ifdef HAVE_CUDA
-    __device__ __host__
- #endif
-    Real getValue( const MeshType& mesh,
-                   const IndexType cellIndex,
-                   const CoordinatesType& coordinates,
-                   const Vector& u,
-                   const RealType& time ) const;
+   template< typename PreimageFunction, typename MeshEntity >
+   __cuda_callable__
+    Real operator()( const PreimageFunction& u,
+                     const MeshEntity& entity,
+                     const RealType& time = 0.0 ) const;
 
-
-    bool init( const tnlParameterContainer& parameters );
-
+   bool init( const tnlParameterContainer& parameters );
 
 protected:
-
-	Function f;
 
  	MeshType originalMesh;
 
@@ -209,14 +185,13 @@ protected:
 
     RealType epsilon;
 
-
 };
 
 
 
-#include <operators/upwind/upwind1D_impl.h>
-#include <operators/upwind/upwind2D_impl.h>
-#include <operators/upwind/upwind3D_impl.h>
+#include <operators/hamilton-jacobi/upwind-eikonal/upwindEikonal1D_impl.h>
+#include <operators/hamilton-jacobi/upwind-eikonal/upwindEikonal2D_impl.h>
+#include <operators/hamilton-jacobi/upwind-eikonal/upwindEikonal3D_impl.h>
 
 
-#endif /* UPWIND_H_ */
+#endif /* UPWINDEIKONAL_H_ */

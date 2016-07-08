@@ -33,7 +33,7 @@ bool tnlSDFSign< Mesh, 1, Real, FunctionType, SignMod >::setup( const tnlParamet
    this->epsilon = parameters.getParameter< double >( "epsilon" );
    Mesh mesh;
    mesh.load(parameters.getParameter< tnlString >( "mesh" ));
-   this->epsilon*=mesh.getHx();
+   this->epsilon*=mesh.getSpaceSteps().x();
    this->function.setup(parameters, prefix);
 
    return true;
@@ -45,7 +45,7 @@ bool tnlSDFSign< Mesh, 2, Real, FunctionType, SignMod >::setup( const tnlParamet
    this->epsilon = parameters.getParameter< double >( "epsilon" );
    Mesh mesh;
    mesh.load(parameters.getParameter< tnlString >( "mesh" ));
-   this->epsilon=this->epsilon*sqrt(mesh.getHx()*mesh.getHx() + mesh.getHy()*mesh.getHy());
+   this->epsilon=this->epsilon*sqrt(mesh.getSpaceSteps().x()*mesh.getSpaceSteps().x() + mesh.getSpaceSteps().y()*mesh.getSpaceSteps().y());
    this->function.setup(parameters, prefix);
 
    return true;
@@ -57,7 +57,7 @@ bool tnlSDFSign< Mesh, 3, Real, FunctionType, SignMod >::setup( const tnlParamet
    this->epsilon = parameters.getParameter< double >( "epsilon" );
    Mesh mesh;
    mesh.load(parameters.getParameter< tnlString >( "mesh" ));
-   this->epsilon*=sqrt(mesh.getHx()*mesh.getHx() + mesh.getHy()*mesh.getHy() + mesh.getHz()*mesh.getHz());
+   this->epsilon*=sqrt(mesh.getSpaceSteps().x()*mesh.getSpaceSteps().x() + mesh.getSpaceSteps().y()*mesh.getSpaceSteps().y() + mesh.getSpaceSteps().z()*mesh.getSpaceSteps().z());
    this->function.setup(parameters, prefix);
 
    return true;

@@ -19,6 +19,7 @@
 #define TNLTRAVERSER_GRID1D_H_
 
 #include <mesh/tnlTraverser.h>
+#include <mesh/tnlGrid.h>
 
 template< typename Real,
           typename Device,

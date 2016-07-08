@@ -262,8 +262,8 @@ protected:
 
 
 //#include <operators/godunov-eikonal/parallelGodunovEikonal1D_impl.h>
-#include <operators/godunov-eikonal/parallelGodunovEikonal2D_impl.h>
-#include <operators/godunov-eikonal/parallelGodunovEikonal3D_impl.h>
+#include <operators/hamilton-jacobi/godunov-eikonal/parallelGodunovEikonal2D_impl.h>
+#include <operators/hamilton-jacobi/godunov-eikonal/parallelGodunovEikonal3D_impl.h>
 
 
 #endif /* PARALLELGODUNOVEIKONAL_H_ */

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          parallelGodunovMap.h  -  description
+                          godunov.h  -  description
                              -------------------
-    begin                : Dec 1 , 2014
+    begin                : Jul 8 , 2014
     copyright            : (C) 2014 by Tomas Sobotik
  ***************************************************************************/
 
@@ -14,8 +14,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef PARALLELGODUNOVMAP_H_
-#define PARALLELGODUNOVMAP_H_
+#ifndef GODUNOV_H_
+#define GODUNOV_H_
 
 #include <matrices/tnlCSRMatrix.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
@@ -25,14 +25,13 @@
 #include <core/vectors/tnlSharedVector.h>
 #include <core/mfilename.h>
 #include <mesh/tnlGrid.h>
-#include <core/tnlCuda.h>
-#include <mesh/grids/tnlGridEntity.h>
 
 
 template< typename Mesh,
 		  typename Real,
-		  typename Index >
-class parallelGodunovMapScheme
+		  typename Index,
+		  typename Function >
+class godunovScheme
 {
 };
 
@@ -43,10 +42,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-class parallelGodunovMapScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+          typename Index,
+		  typename Function >
+class godunovScheme< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, Function >
 {
-
 public:
 	typedef Real RealType;
 	typedef Device DeviceType;
@@ -56,21 +55,13 @@ public:
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
 	static tnlString getType();
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
 	RealType positivePart(const RealType arg) const;
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
 	RealType negativePart(const RealType arg) const;
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
 	RealType sign(const RealType x, const RealType eps) const;
 
     template< typename Vector >
@@ -81,16 +72,15 @@ public:
                    const IndexType cellIndex,
                    const CoordinatesType& coordinates,
                    const Vector& u,
-                   const RealType& time,
-                   const IndexType boundaryCondition) const;
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+                   const RealType& time ) const;
+
+
 	bool init( const tnlParameterContainer& parameters );
 
-   RealType epsilon;
 
 protected:
+
+	Function f;
 
 	MeshType originalMesh;
 
@@ -98,7 +88,7 @@ protected:
 
 	RealType h;
 
-
+	RealType epsilon;
 
 
 };
@@ -112,10 +102,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-class parallelGodunovMapScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+          typename Index,
+		  typename Function >
+class godunovScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, Function >
 {
-
 public:
 	typedef Real RealType;
 	typedef Device DeviceType;
@@ -123,21 +113,14 @@ public:
 	typedef tnlGrid< 2, Real, Device, Index > MeshType;
 	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
+
 	static tnlString getType();
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
     RealType positivePart(const RealType arg) const;
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
     RealType negativePart(const RealType arg) const;
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
     RealType sign(const RealType x, const Real eps) const;
 
     template< typename Vector >
@@ -148,39 +131,24 @@ public:
                    const IndexType cellIndex,
                    const CoordinatesType& coordinates,
                    const Vector& u,
-                   const RealType& time,
-                   const IndexType boundaryCondition,
-                   const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities,
-                   const Vector& map) const;
+                   const RealType& time ) const;
 
- #ifdef HAVE_CUDA
-    __device__
- #endif
-    Real getValueDev( const MeshType& mesh,
-                   const IndexType cellIndex,
-                   const CoordinatesType& coordinates,
-                   const RealType* u,
-                   const RealType& time,
-                   const IndexType boundaryCondition,
-                   const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 2, tnlGridEntityNoStencilStorage >,2> neighbourEntities,
-  	  	  	       const RealType* map) const;
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
-	bool init( const tnlParameterContainer& parameters );
 
-   RealType epsilon;
+    bool init( const tnlParameterContainer& parameters );
+
 
 protected:
+
+    Function f;
 
  	MeshType originalMesh;
 
     DofVectorType dofVector;
 
-    RealType hx, ihx;
-    RealType hy, ihy;
+    RealType hx;
+    RealType hy;
 
-
+    RealType epsilon;
 
 
 };
@@ -190,8 +158,9 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real,
-          typename Index >
-class parallelGodunovMapScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+          typename Index,
+		  typename Function >
+class godunovScheme< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, Function >
 {
 
 public:
@@ -202,21 +171,14 @@ public:
 	typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
+
 	static tnlString getType();
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
     RealType positivePart(const RealType arg) const;
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
     RealType negativePart(const RealType arg) const;
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
+
     RealType sign(const RealType x, const Real eps) const;
 
     template< typename Vector >
@@ -227,45 +189,33 @@ public:
                    const IndexType cellIndex,
                    const CoordinatesType& coordinates,
                    const Vector& u,
-                   const RealType& time,
-                   const IndexType boundaryCondition,
-  	  	  	       const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities  ) const;
+                   const RealType& time ) const;
 
-#ifdef HAVE_CUDA
-   __device__
-#endif
-   Real getValueDev( const MeshType& mesh,
-                  const IndexType cellIndex,
-                  const CoordinatesType& coordinates,
-                  const RealType* u,
-                  const RealType& time,
-                  const IndexType boundaryCondition,
- 	  	  	      const tnlNeighbourGridEntityGetter<tnlGridEntity< MeshType, 3, tnlGridEntityNoStencilStorage >,3> neighbourEntities) const;
 
-#ifdef HAVE_CUDA
-   __device__ __host__
-#endif
     bool init( const tnlParameterContainer& parameters );
 
-   RealType epsilon;
 
 protected:
+
+    Function f;
 
  	MeshType originalMesh;
 
     DofVectorType dofVector;
 
-    RealType hx, ihx;
-    RealType hy, ihy;
-    RealType hz, ihz;
+    RealType hx;
+    RealType hy;
+    RealType hz;
+
+    RealType epsilon;
 
 };
 
 
 
-//#include <operators/godunov-eikonal/parallelGodunovMap1D_impl.h>
-#include <operators/godunov-eikonal/parallelGodunovMap2D_impl.h>
-//#include <operators/godunov-eikonal/parallelGodunovMap3D_impl.h>
+#include <operators/hamilton-jacobi/godunov/godunov1D_impl.h>
+#include <operators/hamilton-jacobi/godunov/godunov2D_impl.h>
+#include <operators/hamilton-jacobi/godunov/godunov3D_impl.h>
 
 
-#endif /* PARALLELGODUNOVMAP_H_ */
+#endif /* GODUNOV_H_ */

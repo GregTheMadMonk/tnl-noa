@@ -18,7 +18,7 @@
 #include "parallelMapConfig.h"
 #include "MainBuildConfig.h"
 #include <solvers/tnlBuildConfigTags.h>
-#include <operators/godunov-eikonal/parallelGodunovMap.h>
+#include <operators/hamilton-jacobi/godunov-eikonal/parallelGodunovMap.h>
 #include <mesh/tnlGrid.h>
 #include <core/tnlDevice.h>
 #include <time.h>
