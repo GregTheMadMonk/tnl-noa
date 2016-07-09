@@ -25,21 +25,19 @@ SET( headers tnlConstantFunction.h
              tnlSinWaveFunction_impl.h
              tnlTestFunction.h             
              tnlTestFunction_impl.h 
-             tnlSDFSinBumpsFunction.h
-             tnlSDFSinBumpsFunctionSDF.h
+             tnlSinBumpsFunctionSDF.h
              tnlSDFSinWaveFunction.h 
 	     tnlSDFSinWaveFunctionSDF.h
-	     tnlSDFParaboloid.h 
-	     tnlSDFParaboloidSDF.h
+	     tnlParaboloid.h 
+	     tnlParaboloidSDF.h
 	     tnlSDFSchemeTest.h
 	     tnlSDFSign.h
 	     tnlSDFGridValue.h
-             tnlSDFSinBumpsFunction_impl.h
-	     tnlSDFSinBumpsFunctionSDF_impl.h
+	     tnlSinBumpsFunctionSDF_impl.h
              tnlSDFSinWaveFunction_impl.h 
 	     tnlSDFSinWaveFunctionSDF_impl.h
-	     tnlSDFParaboloid_impl.h
-	     tnlSDFParaboloidSDF_impl.h
+	     tnlParaboloid_impl.h
+	     tnlParaboloidSDF_impl.h
 	     tnlSDFSchemeTest_impl.h
 	     tnlSDFSign_impl.h
 	     tnlSDFGridValue_impl.h )

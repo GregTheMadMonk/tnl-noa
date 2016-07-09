@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSDFSinBumpsFunctionSDFSDF.h  -  description
+                          tnlParaboloidSDF.h  -  description
                              -------------------
     begin                : Oct 13, 2014
     copyright            : (C) 2014 by Tomas Sobotik
@@ -15,64 +15,61 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSDFSINBUMPSFUNCTIONSDF_H_
-#define TNLSDFSINBUMPSFUNCTIONSDF_H_
+#pragma once 
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlDomain.h>
 
-template< typename Vertex >
-class tnlSDFSinBumpsFunctionSDFBase : public tnlDomain< Vertex::size, SpaceDomain >
+template< int dimensions,
+          typename Real = double >
+class tnlParaboloidSDFBase : public tnlDomain< dimensions, SpaceDomain >
 {
    public:
 
-      typedef Vertex VertexType;
-      typedef typename Vertex::RealType RealType;
-      enum { Dimensions = VertexType::size };
+   tnlParaboloidSDFBase();
 
-      void setWaveLength( const VertexType& waveLength );
+   bool setup( const tnlParameterContainer& parameters,
+              const tnlString& prefix = "" );
 
-      const VertexType& getWaveLength() const;
+   void setXCentre( const Real& waveLength );
 
-      void setAmplitude( const RealType& amplitude );
+   Real getXCentre() const;
 
-      const RealType& getAmplitude() const;
+   void setYCentre( const Real& waveLength );
 
-      void setPhase( const VertexType& phase );
+   Real getYCentre() const;
 
-      const VertexType& getPhase() const;
+   void setZCentre( const Real& waveLength );
 
-      void setWavesNumber( const VertexType& wavesNumber );
+   Real getZCentre() const;
 
-      const VertexType& getWavesNumber() const;
+   void setCoefficient( const Real& coefficient );
+
+   Real getCoefficient() const;
+
+   void setOffset( const Real& offset );
+
+   Real getOffset() const;
 
    protected:
 
-      RealType amplitude;
-
-      VertexType waveLength, phase, wavesNumber;
+   Real xCentre, yCentre, zCentre, coefficient, offset;
 };
 
 template< int Dimensions, typename Real >
-class tnlSDFSinBumpsFunctionSDF
+class tnlParaboloidSDF
 {
 };
 
 template< typename Real >
-class tnlSDFSinBumpsFunctionSDF< 1, Real  > : public tnlSDFSinBumpsFunctionSDFBase< tnlStaticVector< 1, Real > >
+class tnlParaboloidSDF< 1, Real > : public tnlParaboloidSDFBase< 1, Real >
 {
    public:
 
       typedef Real RealType;
       typedef tnlStaticVector< 1, RealType > VertexType;
 
-
-      tnlSDFSinBumpsFunctionSDF();
-
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" );
-
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
@@ -86,26 +83,20 @@ class tnlSDFSinBumpsFunctionSDF< 1, Real  > : public tnlSDFSinBumpsFunctionSDFBa
       RealType getPartialDerivative( const VertexType& v,
                                      const Real& time = 0.0 ) const;
 
-   __cuda_callable__
-   RealType operator()( const VertexType& v,
-                        const Real& time = 0.0 ) const;
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
 
 };
 
 template< typename Real >
-class tnlSDFSinBumpsFunctionSDF< 2, Real > : public tnlSDFSinBumpsFunctionSDFBase< tnlStaticVector< 2, Real > >
+class tnlParaboloidSDF< 2, Real > : public tnlParaboloidSDFBase< 2, Real >
 {
    public:
 
       typedef Real RealType;
       typedef tnlStaticVector< 2, RealType > VertexType;
 
-
-      tnlSDFSinBumpsFunctionSDF();
-
-      bool setup( const tnlParameterContainer& parameters,
-                 const tnlString& prefix = "" );
-
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
@@ -119,24 +110,21 @@ class tnlSDFSinBumpsFunctionSDF< 2, Real > : public tnlSDFSinBumpsFunctionSDFBas
       RealType getPartialDerivative( const VertexType& v,
                                      const Real& time = 0.0 ) const;
 
-   __cuda_callable__
-   RealType operator()( const VertexType& v,
-                        const Real& time = 0.0 ) const;
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
 
 };
 
 template< typename Real >
-class tnlSDFSinBumpsFunctionSDF< 3, Real > : public tnlSDFSinBumpsFunctionSDFBase< tnlStaticVector< 3, Real > >
+class tnlParaboloidSDF< 3, Real > : public tnlParaboloidSDFBase< 3, Real >
 {
    public:
 
       typedef Real RealType;
       typedef tnlStaticVector< 3, RealType > VertexType;
 
-      tnlSDFSinBumpsFunctionSDF();
 
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -151,22 +139,20 @@ class tnlSDFSinBumpsFunctionSDF< 3, Real > : public tnlSDFSinBumpsFunctionSDFBas
       RealType getPartialDerivative( const VertexType& v,
                          const Real& time = 0.0 ) const;
 
-   __cuda_callable__
-   RealType operator()( const VertexType& v,
-                        const Real& time = 0.0 ) const;
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
 
 };
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlSDFSinBumpsFunctionSDF< Dimensions, Real >& f )
+ostream& operator << ( ostream& str, const tnlParaboloidSDF< Dimensions, Real >& f )
 {
-   str << "SDF Sin Bumps SDF. function: amplitude = " << f.getAmplitude()
-       << " wavelength = " << f.getWaveLength()
-       << " phase = " << f.getPhase();
+   str << "SDF Paraboloid SDF function: amplitude = " << f.getCoefficient()
+       << " offset = " << f.getOffset();
    return str;
 }
 
-#include <functions/tnlSDFSinBumpsFunctionSDF_impl.h>
+#include <functions/tnlParaboloidSDF_impl.h>
 
-#endif /* TNLSDFSINBUMPSFUNCTIONSDF_H_ */

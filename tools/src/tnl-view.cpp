@@ -38,7 +38,7 @@ void setupConfig( tnlConfigDescription& config )
    config.addEntry        < int >                 ( "output-y-size", "Y size of the output." );
    config.addEntry        < int >                 ( "output-z-size", "Z size of the output." );
    config.addEntry        < double >              ( "scale", "Multiply the function by given number.", 1.0 );
-   config.addEntry        < tnlString >           ( "output-format", "Output file format.", "gnuplot" );
+   config.addEntry        < tnlString >           ( "output-format", "Output file format.", "vtk" );
       config.addEntryEnum  < tnlString >             ( "gnuplot" );
       config.addEntryEnum  < tnlString >             ( "vtk" );
    config.addEntry        < int >                 ( "verbose", "Set the verbosity of the program.", 1 );

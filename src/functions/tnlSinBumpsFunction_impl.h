@@ -15,8 +15,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSINBUMPSFUNCTION_IMPL_H_
-#define TNLSINBUMPSFUNCTION_IMPL_H_
+/****
+ * Tomas Sobotik
+ */
+
+#pragma once 
 
 #include <functions/tnlSinBumpsFunction.h>
 
@@ -56,10 +59,21 @@ const Vertex& tnlSinBumpsFunctionBase< Vertex >::getPhase() const
    return this->phase;
 }
 
+template< typename Vertex >
+void tnlSinBumpsFunctionBase< Vertex >::setWavesNumber( const Vertex& wavesNumber )
+{
+   this->wavesNumber = wavesNumber;
+}
+
+template< typename Vertex >
+const Vertex& tnlSinBumpsFunctionBase< Vertex >::getWavesNumber() const
+{
+   return this->wavesNumber;
+}
+
 /***
  * 1D
  */
-
 template< typename Real >
 tnlSinBumpsFunction< 1, Real >::tnlSinBumpsFunction()
 {
@@ -72,6 +86,7 @@ bool tnlSinBumpsFunction< 1, Real >::setup( const tnlParameterContainer& paramet
    this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
    this->waveLength.x() = parameters.getParameter< double >( prefix + "wave-length-x" );
    this->phase.x() = parameters.getParameter< double >( prefix + "phase-x" );
+   this->wavesNumber.x() = ceil( parameters.getParameter< double >( prefix+"waves-number-x" ) );
    return true;
 }
 
@@ -86,9 +101,14 @@ tnlSinBumpsFunction< 1, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
-   const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
+   
+   const RealType& x = v.x();
+   const RealType xp = fabs( x ) + Sign( x ) * this->phase.x() * this->waveLength.x() / (2.0*M_PI);
+   if( this->wavesNumber.x() != 0.0 && xp > this->waveLength.x() * this->wavesNumber.x() )
+      return 0.0;
+  
    if( XDiffOrder == 0 )
       return this->amplitude * sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() );
    if( XDiffOrder == 1 )
@@ -112,7 +132,6 @@ operator()( const VertexType& v,
 /****
  * 2D
  */
-
 template< typename Real >
 tnlSinBumpsFunction< 2, Real >::tnlSinBumpsFunction()
 {
@@ -127,9 +146,10 @@ bool tnlSinBumpsFunction< 2, Real >::setup( const tnlParameterContainer& paramet
    this->waveLength.y() = parameters.getParameter< double >( prefix + "wave-length-y" );
    this->phase.x() = parameters.getParameter< double >( prefix + "phase-x" );
    this->phase.y() = parameters.getParameter< double >( prefix + "phase-y" );
+   this->wavesNumber.x() = ceil( parameters.getParameter< double >( prefix+"waves-number-x" ) );
+   this->wavesNumber.y() = ceil( parameters.getParameter< double >( prefix+"waves-number-y" ) );
    return true;
 }
-
 
 template< typename Real >
    template< int XDiffOrder,
@@ -141,10 +161,18 @@ tnlSinBumpsFunction< 2, Real>::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
-   const RealType& x = v.x();
-   const RealType& y = v.y();
    if( ZDiffOrder != 0 )
       return 0.0;
+
+   const RealType& x = v.x();
+   const RealType& y = v.y();
+   const RealType xp = fabs( x ) + Sign( x ) * this->phase.x() * this->waveLength.x() / (2.0*M_PI);
+   const RealType yp = fabs( y ) + Sign( y ) * this->phase.y() * this->waveLength.y() / (2.0*M_PI);
+   //std::cerr << "this->wavesNumber.x() = " << this->wavesNumber.x() << "fabs( x ) = " << fabs( x ) << " 2.0*M_PI * this->waveLength.x() * this->wavesNumber.x() = " << 2.0*M_PI * this->waveLength.x() * this->wavesNumber.x() << std::endl;
+   if( ( this->wavesNumber.x() != 0.0 && xp > this->waveLength.x() * this->wavesNumber.x() ) ||
+       ( this->wavesNumber.y() != 0.0 && yp > this->waveLength.y() * this->wavesNumber.y() ) )
+      return 0.0;
+   
    if( XDiffOrder == 0 && YDiffOrder == 0 )
       return this->amplitude *
              sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) *
@@ -175,7 +203,6 @@ operator()( const VertexType& v,
 /****
  * 3D
  */
-
 template< typename Real >
 tnlSinBumpsFunction< 3, Real >::tnlSinBumpsFunction()
 {
@@ -192,9 +219,11 @@ bool tnlSinBumpsFunction< 3, Real >::setup( const tnlParameterContainer& paramet
    this->phase.x() = parameters.getParameter< double >( prefix + "phase-x" );
    this->phase.y() = parameters.getParameter< double >( prefix + "phase-y" );
    this->phase.z() = parameters.getParameter< double >( prefix + "phase-z" );
+   this->wavesNumber.x() = ceil( parameters.getParameter< double >( prefix+"waves-number-x" ) );
+   this->wavesNumber.y() = ceil( parameters.getParameter< double >( prefix+"waves-number-y" ) );
+   this->wavesNumber.z() = ceil( parameters.getParameter< double >( prefix+"waves-number-z" ) );
    return true;
 }
-
 
 template< typename Real >
    template< int XDiffOrder,
@@ -209,6 +238,16 @@ getPartialDerivative( const VertexType& v,
    const RealType& x = v.x();
    const RealType& y = v.y();
    const RealType& z = v.z();
+   
+   const RealType xp = fabs( x ) + Sign( x ) * this->phase.x() * this->waveLength.x() / (2.0*M_PI);
+   const RealType yp = fabs( y ) + Sign( y ) * this->phase.y() * this->waveLength.y() / (2.0*M_PI);
+   const RealType zp = fabs( z ) + Sign( z ) * this->phase.z() * this->waveLength.z() / (2.0*M_PI);
+
+   if( ( this->wavesNumber.x() != 0.0 && xp > this->waveLength.x() * this->wavesNumber.x() ) ||
+       ( this->wavesNumber.y() != 0.0 && yp > this->waveLength.y() * this->wavesNumber.y() ) ||
+       ( this->wavesNumber.z() != 0.0 && zp > this->waveLength.z() * this->wavesNumber.z() ) )
+      return 0.0;
+   
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0)
       return this->amplitude *
              sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() ) *
@@ -244,6 +283,3 @@ operator()( const VertexType& v,
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
-
-
-#endif /* TNLSINBUMPSFUNCTION_IMPL_H_ */

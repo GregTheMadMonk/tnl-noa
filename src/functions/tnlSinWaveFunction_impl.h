@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSINWAVEFUNCTION_IMPL_H_
-#define TNLSINWAVEFUNCTION_IMPL_H_
+#pragma once
 
 #include <functions/tnlSinWaveFunction.h>
 
@@ -36,7 +35,7 @@ bool tnlSinWaveFunctionBase< dimensions, Real >::setup( const tnlParameterContai
    this->waveLength = parameters.getParameter< double >( prefix + "wave-length" );
    this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
    this->phase = parameters.getParameter< double >( prefix + "phase" );
-   parameters.getParameter< double >( prefix + "waves-number" );
+   this->wavesNumber = parameters.getParameter< double >( prefix + "waves-number" );
    return true;
 }
 
@@ -76,7 +75,27 @@ Real tnlSinWaveFunctionBase< dimensions, Real >::getPhase() const
    return this->phase;
 }
 
+template< int dimensions, typename Real >
+void tnlSinWaveFunctionBase< dimensions, Real >::setWavesNumber( const Real& wavesNumber )
+{
+   this->wavesNumber = wavesNumber;
+}
 
+template< int dimensions, typename Real >
+Real tnlSinWaveFunctionBase< dimensions, Real >::getWavesNumber() const
+{
+   return this->wavesNumber;
+}
+
+template< int dimensions, typename Real >
+bool tnlSinWaveFunctionBase< dimensions, Real >::isInsideWaves( const Real& distance ) const
+{
+   if( this->wavesNumber == 0.0 ||
+      distance + ( this->phase ) * ( this->waveLength ) / ( 2.0*M_PI ) < ( this->wavesNumber ) * (this->waveLength) )
+      return true;
+   return false;
+   
+}
 
 template< typename Real >
    template< int XDiffOrder,
@@ -88,24 +107,43 @@ tnlSinWaveFunction< 1, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
-   const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
+
+   const RealType& x = v.x();
+   const RealType distance = sqrt( x * x );
+   
    if( XDiffOrder == 0 )
    {
-      RealType arg = 2.0 * M_PI * x  / this->waveLength;
+      if( this->isInsideWaves( distance ) )
+         return this->amplitude * sin( this->phase + 2.0 * M_PI * distance / this->waveLength );
+	   else
+	      return distance + this->phase * this->waveLength / ( 2.0*M_PI ) - this->wavesNumber * this->waveLength;
+      
+      /*RealType arg = 2.0 * M_PI * x  / this->waveLength;
       if( this->wavesNumber )
       {
          if( tnlAbs( arg ) > this->wavesNumber )
             arg = Sign( x ) * this->wavesNumber;
       }
       //cout << "arg = " << arg << " amplitude = " << this->amplitude << " -> " << this->amplitude * sin( this->phase + arg ) << endl;
-      return this->amplitude * sin( this->phase + arg );
+      return this->amplitude * sin( this->phase + arg );*/
    }
    if( XDiffOrder == 1 )
-      return 2.0 * M_PI / this->waveLength * this->amplitude * cos( this->phase + 2.0 * M_PI * x / this->waveLength );
+   {
+      if( this->isInsideWaves( distance ) )
+         return 2.0 * M_PI / this->waveLength * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt(x*x) / this->waveLength );
+	   else return  x / distance;
+   }
    if( XDiffOrder == 2 )
-      return -4.0 * M_PI * M_PI / ( this->waveLength * this->waveLength ) * this->amplitude * sin( this->phase + 2.0 * M_PI * x / this->waveLength );
+   {
+      if( this->isInsideWaves( distance ) )
+         return -4.0 * M_PI * M_PI / ( this->waveLength * this->waveLength ) * this->amplitude * sin( this->phase + 2.0 * M_PI * x / this->waveLength );
+      else
+      {
+         tnlAssert( false, );
+      }
+   }
    return 0.0;
 }
 
@@ -131,25 +169,64 @@ tnlSinWaveFunction< 2, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
-   const RealType& x = v.x();
-   const RealType& y = v.y();
    if ( ZDiffOrder != 0 )
       return 0.0;
+
+   const RealType& x = v.x();
+   const RealType& y = v.y();
+   const RealType distance = sqrt( x * x + y * y);
+
    if( XDiffOrder == 0 && YDiffOrder == 0)
    {
-      return this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
+      if( this->isInsideWaves( distance ) )
+         return this->amplitude * sin( this->phase + 2.0 * M_PI * distance / this->waveLength );
+	   else
+	      return distance + this->phase * this->waveLength / ( 2.0*M_PI ) - this->wavesNumber * this->waveLength;
    }
+   
    if( XDiffOrder == 1 && YDiffOrder == 0 )
-      return 2.0 * M_PI * x / ( this->waveLength * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
-   if( XDiffOrder == 2 && YDiffOrder == 0 )
-      return 2.0 * M_PI * x * x / ( this->waveLength * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength ) - 4.0 * M_PI * M_PI * x * x / ( this->waveLength * this->waveLength * ( x * x + y * y ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
+   {
+	   if( this->isInsideWaves( distance ) )
+		   return 2.0 * M_PI / this->waveLength * this->amplitude * cos( this->phase * 2.0 * M_PI * distance / this->waveLength ) * x / distance;
+      return  x / distance;
+   }
    if( XDiffOrder == 0 && YDiffOrder == 1 )
-      return 2.0 * M_PI * y / ( this->waveLength * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
+   {
+	   if( this->isInsideWaves( distance ) )
+		   return 2.0 * M_PI / this->waveLength * this->amplitude * cos( this->phase * 2.0 * M_PI * distance / this->waveLength ) * y / distance;
+	   return y / distance;
+   }		
+   if( XDiffOrder == 1 && YDiffOrder == 0 )
+   {
+  	   if( this->isInsideWaves( distance ) )
+         return 2.0 * M_PI * x / ( this->waveLength * distance ) * this->amplitude * cos( this->phase + 2.0 * M_PI * distance / this->waveLength );
+      tnlAssert( false, "TODO: implement this" );
+   }
+   if( XDiffOrder == 2 && YDiffOrder == 0 )
+   {
+  	   if( this->isInsideWaves( distance ) )
+         return 2.0 * M_PI * x * x / ( this->waveLength * distance * distance * distance ) * this->amplitude * cos( this->phase + 2.0 * M_PI * distance / this->waveLength ) - 4.0 * M_PI * M_PI * x * x / ( this->waveLength * this->waveLength * ( x * x + y * y ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * distance / this->waveLength );
+      tnlAssert( false, "TODO: implement this" );
+   }
+   if( XDiffOrder == 0 && YDiffOrder == 1 )
+   {
+  	   if( this->isInsideWaves( distance ) )
+         return 2.0 * M_PI * y / ( this->waveLength * distance ) * this->amplitude * cos( this->phase + 2.0 * M_PI * distance / this->waveLength );
+      tnlAssert( false, "TODO: implement this" );
+   }
    if( XDiffOrder == 0 && YDiffOrder == 2 )
-      return 2.0 * M_PI * y * y / ( this->waveLength * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength ) - 4.0 * M_PI * M_PI * y * y / ( this->waveLength * this->waveLength * ( x * x + y * y ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
+   {
+  	   if( this->isInsideWaves( distance ) )
+         return 2.0 * M_PI * y * y / ( this->waveLength * distance * distance * distance ) * this->amplitude * cos( this->phase + 2.0 * M_PI * distance / this->waveLength ) - 4.0 * M_PI * M_PI * y * y / ( this->waveLength * this->waveLength * ( x * x + y * y ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * distance / this->waveLength );
+      tnlAssert( false, "TODO: implement this" );
+   }
    if( XDiffOrder == 1 && YDiffOrder == 1 )
-      return -4.0 * M_PI * M_PI * x * y / ( this->waveLength * this->waveLength * (x * x + y * y ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength ) 
-             - 2.0 * M_PI * this->amplitude * x * y * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y )  * (x * x + y * y ) * (x * x + y * y ) ) );
+   {
+  	   if( this->isInsideWaves( distance ) )
+         return -4.0 * M_PI * M_PI * x * y / ( this->waveLength * this->waveLength * (x * x + y * y ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * distance / this->waveLength ) 
+             - 2.0 * M_PI * this->amplitude * x * y * cos( this->phase + 2.0 * M_PI * distance / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y )  * (x * x + y * y ) * (x * x + y * y ) ) );
+      tnlAssert( false, "TODO: implement this" );
+   }
    return 0.0;
 }
 
@@ -177,31 +254,69 @@ getPartialDerivative( const VertexType& v,
    const RealType& x = v.x();
    const RealType& y = v.y();
    const RealType& z = v.z();
+   const RealType distance = sqrt( x * x + y * y + z * z );
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
    {
-      return this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
+      if( this->isInsideWaves( distance ) )
+         return this->amplitude * sin( this->phase + 2.0 * M_PI * distance / this->waveLength );
    }
    if( XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 0 )
-      return 2.0 * M_PI * x / ( this->waveLength * sqrt( x * x + y * y + z * z ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
+   {
+      if( this->isInsideWaves( distance ) )
+         return 2.0 * M_PI * x / ( this->waveLength * distance ) * this->amplitude * cos( this->phase + 2.0 * M_PI * distance / this->waveLength );
+		return x / distance;
+   }
    if( XDiffOrder == 2 && YDiffOrder == 0 && ZDiffOrder == 0 )
-      return 2.0 * M_PI * ( y * y + z * z ) / ( this->waveLength * sqrt( x * x + y * y + z * z ) * sqrt( x * x + y * y + z * z ) * sqrt( x * x + y * y + z * z ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) - 4.0 * M_PI * M_PI * x * x / ( this->waveLength * this->waveLength * ( x * x + y * y + z * z ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
+   {
+      if( this->isInsideWaves( distance ) )
+         return 2.0 * M_PI * ( y * y + z * z ) / ( this->waveLength * distance * distance * distance ) * this->amplitude * cos( this->phase + 2.0 * M_PI * distance / this->waveLength ) - 4.0 * M_PI * M_PI * x * x / ( this->waveLength * this->waveLength * ( x * x + y * y + z * z ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * distance / this->waveLength );
+      tnlAssert( false, "TODO: implement this" );
+   }
    if( XDiffOrder == 0 && YDiffOrder == 1 && ZDiffOrder == 0 )
-      return 2.0 * M_PI * y / ( this->waveLength * sqrt( x * x + y * y + z * z ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
+   {
+      if( this->isInsideWaves( distance ) )
+         return 2.0 * M_PI * y / ( this->waveLength * distance ) * this->amplitude * cos( this->phase + 2.0 * M_PI * distance / this->waveLength );
+		return y / distance;         
+   }
    if( XDiffOrder == 0 && YDiffOrder == 2 && ZDiffOrder == 0 )
-      return 2.0 * M_PI * ( x * x + z * z ) / ( this->waveLength * sqrt( x * x + y * y + z * z ) * sqrt( x * x + y * y + z * z ) * sqrt( x * x + y * y + z * z ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) - 4.0 * M_PI * M_PI * y * y / ( this->waveLength * this->waveLength * ( x * x + y * y + z * z ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
+   {
+      if( this->isInsideWaves( distance ) )
+         return 2.0 * M_PI * ( x * x + z * z ) / ( this->waveLength * distance * distance * distance ) * this->amplitude * cos( this->phase + 2.0 * M_PI * distance / this->waveLength ) - 4.0 * M_PI * M_PI * y * y / ( this->waveLength * this->waveLength * ( x * x + y * y + z * z ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * distance / this->waveLength );
+      tnlAssert( false, "TODO: implement this" );
+   }
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 1 )
-      return 2.0 * M_PI * z / ( this->waveLength * sqrt( x * x + y * y + z * z ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
+   {
+      if( this->isInsideWaves( distance ) )
+         return 2.0 * M_PI * z / ( this->waveLength * distance ) * this->amplitude * cos( this->phase + 2.0 * M_PI * distance / this->waveLength );
+		return z / distance;
+   }
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 2 )
-      return 2.0 * M_PI * ( x * x + y * y ) / ( this->waveLength * sqrt( x * x + y * y + z * z ) * sqrt( x * x + y * y + z * z ) * sqrt( x * x + y * y + z * z ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) - 4.0 * M_PI * M_PI * z * z / ( this->waveLength * this->waveLength * ( x * x + y * y + z * z ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ); 
+   {
+      if( this->isInsideWaves( distance ) )
+         return 2.0 * M_PI * ( x * x + y * y ) / ( this->waveLength * distance * distance * distance ) * this->amplitude * cos( this->phase + 2.0 * M_PI * distance / this->waveLength ) - 4.0 * M_PI * M_PI * z * z / ( this->waveLength * this->waveLength * ( x * x + y * y + z * z ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * distance / this->waveLength ); 
+      tnlAssert( false, "TODO: implement this" );
+   }
    if( XDiffOrder == 1 && YDiffOrder == 1 && ZDiffOrder == 0 )
-      return -4.0 * M_PI * M_PI * x * y / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) 
-             - 2.0 * M_PI * this->amplitude * x * y * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
+   {
+      if( this->isInsideWaves( distance ) )
+         return -4.0 * M_PI * M_PI * x * y / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * distance / this->waveLength ) 
+             - 2.0 * M_PI * this->amplitude * x * y * cos( this->phase + 2.0 * M_PI * distance / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
+      tnlAssert( false, "TODO: implement this" );
+   }
    if( XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 1 )
-      return -4.0 * M_PI * M_PI * x * z / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) 
-             - 2.0 * M_PI * this->amplitude * x * z * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
+   {
+      if( this->isInsideWaves( distance ) )
+         return -4.0 * M_PI * M_PI * x * z / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * distance / this->waveLength ) 
+                - 2.0 * M_PI * this->amplitude * x * z * cos( this->phase + 2.0 * M_PI * distance / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
+      tnlAssert( false, "TODO: implement this" );
+   }
    if( XDiffOrder == 0 && YDiffOrder == 1 && ZDiffOrder == 1 )
-      return -4.0 * M_PI * M_PI * z * y / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) 
-             - 2.0 * M_PI * this->amplitude * z * y * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
+   {
+      if( this->isInsideWaves( distance ) )
+         return -4.0 * M_PI * M_PI * z * y / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * distance / this->waveLength ) 
+                - 2.0 * M_PI * this->amplitude * z * y * cos( this->phase + 2.0 * M_PI * distance / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
+      tnlAssert( false, "TODO: implement this" );
+   }
    return 0.0;
 }
 
@@ -215,5 +330,3 @@ operator()( const VertexType& v,
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
-
-#endif /* TNLSINWAVEFUNCTION_IMPL_H_ */

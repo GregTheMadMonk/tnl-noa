@@ -1,6 +1,0 @@
-add_subdirectory( heat-equation )
-add_subdirectory( navier-stokes )
-#add_subdirectory( mean-curvature-flow )
-#add_subdirectory( hamilton-jacobi )
-#add_subdirectory( hamilton-jacobi-parallel )
-add_subdirectory( fast-sweeping )

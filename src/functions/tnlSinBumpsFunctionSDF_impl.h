@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSDFSinBumpsFunctionSDFSDF_impl.h  -  description
+                          tnlSinBumpsFunctionSDFSDF_impl.h  -  description
                              -------------------
     begin                : Oct 13, 2014
     copyright            : (C) 2014 by Tomas Sobotik
@@ -15,43 +15,42 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSDFSINBUMPSFUNCTIONSDF_IMPL_H_
-#define TNLSDFSINBUMPSFUNCTIONSDF_IMPL_H_
+#pragma once 
 
-#include <functions/tnlSDFSinBumpsFunctionSDF.h>
+#include <functions/tnlSinBumpsFunctionSDF.h>
 
 template< typename Vertex >
-void tnlSDFSinBumpsFunctionSDFBase< Vertex >::setWaveLength( const Vertex& waveLength )
+void tnlSinBumpsFunctionSDFBase< Vertex >::setWaveLength( const Vertex& waveLength )
 {
    this->waveLength = waveLength;
 }
 
 template< typename Vertex >
-const Vertex& tnlSDFSinBumpsFunctionSDFBase< Vertex >::getWaveLength() const
+const Vertex& tnlSinBumpsFunctionSDFBase< Vertex >::getWaveLength() const
 {
    return this->waveLength;
 }
 
 template< typename Vertex >
-void tnlSDFSinBumpsFunctionSDFBase< Vertex >::setAmplitude( const typename Vertex::RealType& amplitude )
+void tnlSinBumpsFunctionSDFBase< Vertex >::setAmplitude( const typename Vertex::RealType& amplitude )
 {
    this->amplitude = amplitude;
 }
 
 template< typename Vertex >
-const typename Vertex::RealType& tnlSDFSinBumpsFunctionSDFBase< Vertex >::getAmplitude() const
+const typename Vertex::RealType& tnlSinBumpsFunctionSDFBase< Vertex >::getAmplitude() const
 {
    return this->amplitude;
 }
 
 template< typename Vertex >
-void tnlSDFSinBumpsFunctionSDFBase< Vertex >::setPhase( const Vertex& phase )
+void tnlSinBumpsFunctionSDFBase< Vertex >::setPhase( const Vertex& phase )
 {
    this->phase = phase;
 }
 
 template< typename Vertex >
-const Vertex& tnlSDFSinBumpsFunctionSDFBase< Vertex >::getPhase() const
+const Vertex& tnlSinBumpsFunctionSDFBase< Vertex >::getPhase() const
 {
    return this->phase;
 }
@@ -61,12 +60,12 @@ const Vertex& tnlSDFSinBumpsFunctionSDFBase< Vertex >::getPhase() const
  */
 
 template< typename Real >
-tnlSDFSinBumpsFunctionSDF< 1, Real >::tnlSDFSinBumpsFunctionSDF()
+tnlSinBumpsFunctionSDF< 1, Real >::tnlSinBumpsFunctionSDF()
 {
 }
 
 template< typename Real >
-bool tnlSDFSinBumpsFunctionSDF< 1, Real >::setup( const tnlParameterContainer& parameters,
+bool tnlSinBumpsFunctionSDF< 1, Real >::setup( const tnlParameterContainer& parameters,
         const tnlString& prefix)
 {
    this->amplitude = parameters.getParameter< double >( prefix+"amplitude" );
@@ -85,23 +84,23 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-tnlSDFSinBumpsFunctionSDF< 1, Real >::
+tnlSinBumpsFunctionSDF< 1, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
-	   const RealType& x = v.x();
-	   RealType xp = sqrt(x*x) + Sign(x)*(this->phase.x())*(this->waveLength.x())/(2.0*M_PI);
-	   if (xp > this->wavesNumber.x()*this->waveLength.x() && this->wavesNumber.x() != 0.0 )
-		   return 0.0;
-	   if( YDiffOrder != 0 || ZDiffOrder != 0 )
-	      return 0.0;
-	   if( XDiffOrder == 0 )
-	      return Sign(xp - round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0)
-	  		    *(xp- round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0)
-	  		    *Sign(sin(this-> phase.x() + 2.0 * M_PI * x / this->waveLength.x()));
-	   if( XDiffOrder == 1 )
-	      return 1.0;
-	   return 0.0;
+   const RealType& x = v.x();
+   RealType xp = fabs( x ) + Sign( x ) * this->phase.x() * this->waveLength.x() / ( 2.0*M_PI );
+   if( this->wavesNumber.x() != 0.0 && xp > this->wavesNumber.x() * this->waveLength.x() )
+      return 0.0;
+   if( YDiffOrder != 0 || ZDiffOrder != 0 )
+      return 0.0;
+   if( XDiffOrder == 0 )
+      return Sign( xp - round( (2.0 * xp ) / this->waveLength.x() ) * this->waveLength.x() / 2.0 )
+          * ( xp- round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0)
+          * Sign(sin(this-> phase.x() + 2.0 * M_PI * x / this->waveLength.x()));
+   if( XDiffOrder == 1 )
+      return 1.0;
+   return 0.0;
 }
 
 /****
@@ -109,12 +108,12 @@ getPartialDerivative( const VertexType& v,
  */
 
 template< typename Real >
-tnlSDFSinBumpsFunctionSDF< 2, Real >::tnlSDFSinBumpsFunctionSDF()
+tnlSinBumpsFunctionSDF< 2, Real >::tnlSinBumpsFunctionSDF()
 {
 }
 
 template< typename Real >
-bool tnlSDFSinBumpsFunctionSDF< 2, Real >::setup( const tnlParameterContainer& parameters,
+bool tnlSinBumpsFunctionSDF< 2, Real >::setup( const tnlParameterContainer& parameters,
         const tnlString& prefix )
 {
    this->amplitude = parameters.getParameter< double >( prefix+"amplitude" );
@@ -138,16 +137,16 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-tnlSDFSinBumpsFunctionSDF< 2, Real >::
+tnlSinBumpsFunctionSDF< 2, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
 	   const RealType& x = v.x();
 	   const RealType& y = v.y();
-	   RealType xp = sqrt(x*x) + Sign(x)*(this->phase.x())*(this->waveLength.x())/(2.0*M_PI);
-	   RealType yp = sqrt(y*y) + Sign(y)*(this->phase.y())*(this->waveLength.y())/(2.0*M_PI);
-	   if ( (xp > this->wavesNumber.x()*this->waveLength.x() && this->wavesNumber.x() != 0.0 )  ||
-			(yp > this->wavesNumber.y()*this->waveLength.y() && this->wavesNumber.y() != 0.0 ) )
+	   RealType xp = sqrt(x*x) + Sign( x ) * this->phase.x() * this->waveLength.x() / (2.0*M_PI);
+	   RealType yp = sqrt(y*y) + Sign( y ) * this->phase.y() * this->waveLength.y() / (2.0*M_PI);
+	   if( ( xp > this->wavesNumber.x()*this->waveLength.x() && this->wavesNumber.x() != 0.0 )  ||
+			 ( yp > this->wavesNumber.y()*this->waveLength.y() && this->wavesNumber.y() != 0.0 ) )
 		   return 0.0;
 	   const RealType sx = Sign(xp - round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0)
 	  		  		    *(xp - round((2.0 * xp)/this->waveLength.x())* this->waveLength.x()/2.0);
@@ -171,12 +170,12 @@ getPartialDerivative( const VertexType& v,
  */
 
 template< typename Real >
-tnlSDFSinBumpsFunctionSDF< 3, Real >::tnlSDFSinBumpsFunctionSDF()
+tnlSinBumpsFunctionSDF< 3, Real >::tnlSinBumpsFunctionSDF()
 {
 }
 
 template< typename Real >
-bool tnlSDFSinBumpsFunctionSDF< 3, Real >::setup( const tnlParameterContainer& parameters,
+bool tnlSinBumpsFunctionSDF< 3, Real >::setup( const tnlParameterContainer& parameters,
         const tnlString& prefix )
 {
    this->amplitude = parameters.getParameter< double >( prefix+"amplitude" );
@@ -205,7 +204,7 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-tnlSDFSinBumpsFunctionSDF< 3, Real >::
+tnlSinBumpsFunctionSDF< 3, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -235,10 +234,8 @@ getPartialDerivative( const VertexType& v,
 	   if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
 	   {
 	      return sxyz * Sign( sin( this->phase.x() + 2.0 * M_PI * x / this->waveLength.x() )
-	      	  	  	  	  	* sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() )
+	      	  	     	  	* sin( this->phase.y() + 2.0 * M_PI * y / this->waveLength.y() )
 	      	  	  	  	  	* sin( this->phase.z() + 2.0 * M_PI * z / this->waveLength.z() ) );
 	   }
 	   return 0.0;
 }
-
-#endif /* TNLSDFSINBUMPSFUNCTIONSDF_IMPL_H_ */

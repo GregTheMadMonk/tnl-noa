@@ -15,8 +15,11 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSINBUMPSFUNCTION_H_
-#define TNLSINBUMPSFUNCTION_H_
+/****
+ * Tomas Sobotik
+ */
+
+#pragma once 
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
@@ -26,7 +29,7 @@ template< typename Vertex >
 class tnlSinBumpsFunctionBase : public tnlDomain< Vertex::size, SpaceDomain >
 {
    public:
-      
+
       typedef Vertex VertexType;
       typedef typename Vertex::RealType RealType;
       enum { Dimensions = VertexType::size };
@@ -43,11 +46,15 @@ class tnlSinBumpsFunctionBase : public tnlDomain< Vertex::size, SpaceDomain >
 
       const VertexType& getPhase() const;
 
+      void setWavesNumber( const VertexType& wavesNumber );
+
+      const VertexType& getWavesNumber() const;
+
    protected:
 
       RealType amplitude;
 
-      VertexType waveLength, phase;
+      VertexType waveLength, phase, wavesNumber;
 };
 
 template< int Dimensions, typename Real >
@@ -59,10 +66,9 @@ template< typename Real >
 class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStaticVector< 1, Real > >
 {
    public:
-      
-      typedef Real RealType;
-      typedef tnlStaticVector< 1, RealType > VertexType;      
 
+      typedef Real RealType;
+      typedef tnlStaticVector< 1, RealType > VertexType;
 
       tnlSinBumpsFunction();
 
@@ -81,11 +87,10 @@ class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStati
       __cuda_callable__
       RealType getPartialDerivative( const VertexType& v,
                                      const Real& time = 0.0 ) const;
-      
-   __cuda_callable__
-   RealType operator()( const VertexType& v,
-                        const Real& time = 0.0 ) const;
-      
+
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;      
 };
 
 template< typename Real >
@@ -95,7 +100,6 @@ class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStatic
 
       typedef Real RealType;
       typedef tnlStaticVector< 2, RealType > VertexType;      
-      
 
       tnlSinBumpsFunction();
 
@@ -164,6 +168,3 @@ ostream& operator << ( ostream& str, const tnlSinBumpsFunction< Dimensions, Real
 }
 
 #include <functions/tnlSinBumpsFunction_impl.h>
-
-
-#endif /* TNLSINBUMPSFUNCTION_H_ */

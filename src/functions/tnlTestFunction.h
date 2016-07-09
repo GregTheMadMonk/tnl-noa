@@ -32,6 +32,7 @@ class tnlTestFunction : public tnlDomain< FunctionDimensions, SpaceDomain >
    protected:
 
    enum TestFunctions{ constant,
+                       paraboloid,
                        expBump,
                        sinBumps,
                        sinWave,
@@ -40,12 +41,9 @@ class tnlTestFunction : public tnlDomain< FunctionDimensions, SpaceDomain >
 		                 twins,
                        pseudoSquare,
                        blob,
-   	   	           sdfParaboloid,
-   	   	           sdfSinWave,
-   	   	           sdfSinBumps,
-   	   	           sdfParaboloidSDF,
-   	   	           sdfSinWaveSDF,
-   	   	           sdfSinBumpsSDF };
+   	   	           paraboloidSDF,
+   	   	           sinWaveSDF,
+   	   	           sinBumpsSDF };
 
    enum TimeDependence { none,
                          linear,

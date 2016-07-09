@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSDFParaboloid.h  -  description
+                          tnlParaboloid.h  -  description
                              -------------------
     begin                : Oct 13, 2014
     copyright            : (C) 2014 by Tomas Sobotik
@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSDFPARABOLOID_H_
-#define TNLSDFPARABOLOID_H_
+#pragma once
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
@@ -24,11 +23,11 @@
 
 template< int dimensions,
           typename Real = double >
-class tnlSDFParaboloidBase : public tnlDomain< dimensions, SpaceDomain >
+class tnlParaboloidBase : public tnlDomain< dimensions, SpaceDomain >
 {
    public:
 
-   tnlSDFParaboloidBase();
+   tnlParaboloidBase();
 
    bool setup( const tnlParameterContainer& parameters,
               const tnlString& prefix = "" );
@@ -59,12 +58,12 @@ class tnlSDFParaboloidBase : public tnlDomain< dimensions, SpaceDomain >
 };
 
 template< int Dimensions, typename Real >
-class tnlSDFParaboloid
+class tnlParaboloid
 {
 };
 
 template< typename Real >
-class tnlSDFParaboloid< 1, Real > : public tnlSDFParaboloidBase< 1, Real >
+class tnlParaboloid< 1, Real > : public tnlParaboloidBase< 1, Real >
 {
    public:
 
@@ -91,7 +90,7 @@ class tnlSDFParaboloid< 1, Real > : public tnlSDFParaboloidBase< 1, Real >
 };
 
 template< typename Real >
-class tnlSDFParaboloid< 2, Real > : public tnlSDFParaboloidBase< 2, Real >
+class tnlParaboloid< 2, Real > : public tnlParaboloidBase< 2, Real >
 {
    public:
 
@@ -118,7 +117,7 @@ class tnlSDFParaboloid< 2, Real > : public tnlSDFParaboloidBase< 2, Real >
 };
 
 template< typename Real >
-class tnlSDFParaboloid< 3, Real > : public tnlSDFParaboloidBase< 3, Real >
+class tnlParaboloid< 3, Real > : public tnlParaboloidBase< 3, Real >
 {
    public:
 
@@ -148,14 +147,12 @@ class tnlSDFParaboloid< 3, Real > : public tnlSDFParaboloidBase< 3, Real >
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlSDFParaboloid< Dimensions, Real >& f )
+ostream& operator << ( ostream& str, const tnlParaboloid< Dimensions, Real >& f )
 {
    str << "SDF Paraboloid function: amplitude = " << f.getCoefficient()
        << " offset = " << f.getOffset();
    return str;
 }
 
-#include <functions/tnlSDFParaboloid_impl.h>
-
-#endif /* TNLSDFPARABOLOID_H_ */
+#include <functions/tnlParaboloid_impl.h>
 
