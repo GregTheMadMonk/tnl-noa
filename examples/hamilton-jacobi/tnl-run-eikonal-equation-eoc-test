@@ -8,11 +8,11 @@ sizes1D="16 32 64 128 256 512"
 sizes2D="16 32 64 128 256 512"
 #sizes2D="8"
 sizes3D="16 32 64 128"
-testFunctions="sin-bumps"
+testFunctions="sin-wave"
 snapshotPeriod=0.1
 finalTime=1.5
 solverName="tnl-hamilton-jacobi"
-#solverName="gdb --args tnl-heat-equation-eoc-test-dbg"
+#solverName="gdb --args tnl-hamilton-jacobi-dbg"
 #
 
 setupTestFunction()
@@ -23,15 +23,15 @@ setupTestFunction()
       origin=-1.0
       proportions=2.0
       amplitude=1.0
-      waveLength=1.0
-      waveLengthX=1.0
-      waveLengthY=1.0
-      waveLengthZ=1.0
-      wavesNumber=0.0
-      wavesNumberX=0.0
-      wavesNumberY=0.0
-      wavesNumberZ=0.0
-      phase=0.0
+      waveLength=0.25
+      waveLengthX=0.2
+      waveLengthY=0.2
+      waveLengthZ=0.2
+      wavesNumber=3.0
+      wavesNumberX=0.5
+      wavesNumberY=2.0
+      wavesNumberZ=3.0
+      phase=0.1
       phaseX=0.0
       phaseY=0.0
       phaseZ=0.0
@@ -75,7 +75,7 @@ setInitialCondition()
             --phase-z ${phaseZ} \
             --sigma ${sigma} 
    
-    tnl-init --test-function sdf-${testFunction} \
+    tnl-init --test-function ${testFunction}-sdf \
             --output-file final-u.tnl \
             --amplitude ${amplitude} \
             --wave-length ${waveLength} \

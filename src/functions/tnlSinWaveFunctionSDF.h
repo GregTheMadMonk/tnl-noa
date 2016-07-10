@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSDFSinBumpsFunction.h  -  description
+                          tnlSinWaveFunctionSDFSDF.h  -  description
                              -------------------
     begin                : Oct 13, 2014
     copyright            : (C) 2014 by Tomas Sobotik
@@ -15,64 +15,60 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSDFSINBUMPSFUNCTION_H_
-#define TNLSDFSINBUMPSFUNCTION_H_
+#pragma once
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlDomain.h>
 
-template< typename Vertex >
-class tnlSDFSinBumpsFunctionBase : public tnlDomain< Vertex::size, SpaceDomain >
+template< int dimensions,
+          typename Real = double >
+class tnlSinWaveFunctionSDFBase : public tnlDomain< dimensions, SpaceDomain >
 {
    public:
 
-      typedef Vertex VertexType;
-      typedef typename Vertex::RealType RealType;
-      enum { Dimensions = VertexType::size };
+      tnlSinWaveFunctionSDFBase();
 
-      void setWaveLength( const VertexType& waveLength );
+      bool setup( const tnlParameterContainer& parameters,
+                 const tnlString& prefix = "" );
 
-      const VertexType& getWaveLength() const;
+      void setWaveLength( const Real& waveLength );
 
-      void setAmplitude( const RealType& amplitude );
+      Real getWaveLength() const;
 
-      const RealType& getAmplitude() const;
+      void setAmplitude( const Real& amplitude );
 
-      void setPhase( const VertexType& phase );
+      Real getAmplitude() const;
 
-      const VertexType& getPhase() const;
+      void setPhase( const Real& phase );
 
-      void setWavesNumber( const VertexType& wavesNumber );
+      Real getPhase() const;
 
-      const VertexType& getWavesNumber() const;
+      void setWavesNumber( const Real& wavesNumber );
+
+      Real getWavesNumber() const;
 
    protected:
 
-      RealType amplitude;
-
-      VertexType waveLength, phase, wavesNumber;
+      __cuda_callable__
+      Real sinWaveFunctionSDF( const Real& r ) const;
+      
+      Real waveLength, amplitude, phase, wavesNumber;
 };
 
 template< int Dimensions, typename Real >
-class tnlSDFSinBumpsFunction
+class tnlSinWaveFunctionSDF
 {
 };
 
 template< typename Real >
-class tnlSDFSinBumpsFunction< 1, Real  > : public tnlSDFSinBumpsFunctionBase< tnlStaticVector< 1, Real > >
+class tnlSinWaveFunctionSDF< 1, Real > : public tnlSinWaveFunctionSDFBase< 1, Real >
 {
    public:
 
       typedef Real RealType;
       typedef tnlStaticVector< 1, RealType > VertexType;
 
-
-      tnlSDFSinBumpsFunction();
-
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" );
-
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
@@ -86,26 +82,20 @@ class tnlSDFSinBumpsFunction< 1, Real  > : public tnlSDFSinBumpsFunctionBase< tn
       RealType getPartialDerivative( const VertexType& v,
                                      const Real& time = 0.0 ) const;
 
-   __cuda_callable__
-   RealType operator()( const VertexType& v,
-                        const Real& time = 0.0 ) const;
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
 
 };
 
 template< typename Real >
-class tnlSDFSinBumpsFunction< 2, Real > : public tnlSDFSinBumpsFunctionBase< tnlStaticVector< 2, Real > >
+class tnlSinWaveFunctionSDF< 2, Real > : public tnlSinWaveFunctionSDFBase< 2, Real >
 {
    public:
 
       typedef Real RealType;
       typedef tnlStaticVector< 2, RealType > VertexType;
 
-
-      tnlSDFSinBumpsFunction();
-
-      bool setup( const tnlParameterContainer& parameters,
-                 const tnlString& prefix = "" );
-
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
@@ -119,24 +109,21 @@ class tnlSDFSinBumpsFunction< 2, Real > : public tnlSDFSinBumpsFunctionBase< tnl
       RealType getPartialDerivative( const VertexType& v,
                                      const Real& time = 0.0 ) const;
 
-   __cuda_callable__
-   RealType operator()( const VertexType& v,
-                        const Real& time = 0.0 ) const;
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
 
 };
 
 template< typename Real >
-class tnlSDFSinBumpsFunction< 3, Real > : public tnlSDFSinBumpsFunctionBase< tnlStaticVector< 3, Real > >
+class tnlSinWaveFunctionSDF< 3, Real > : public tnlSinWaveFunctionSDFBase< 3, Real >
 {
    public:
 
       typedef Real RealType;
       typedef tnlStaticVector< 3, RealType > VertexType;
 
-      tnlSDFSinBumpsFunction();
 
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -151,23 +138,21 @@ class tnlSDFSinBumpsFunction< 3, Real > : public tnlSDFSinBumpsFunctionBase< tnl
       RealType getPartialDerivative( const VertexType& v,
                          const Real& time = 0.0 ) const;
 
-   __cuda_callable__
-   RealType operator()( const VertexType& v,
-                        const Real& time = 0.0 ) const;
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
 
 };
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlSDFSinBumpsFunction< Dimensions, Real >& f )
+ostream& operator << ( ostream& str, const tnlSinWaveFunctionSDF< Dimensions, Real >& f )
 {
-   str << "SDF Sin Bumps. function: amplitude = " << f.getAmplitude()
+   str << "SDF Sin Wave SDF. function: amplitude = " << f.getAmplitude()
        << " wavelength = " << f.getWaveLength()
-       << " phase = " << f.getPhase();
+       << " phase = " << f.getPhase()
+       << " # of waves = " << f.getWavesNumber();
    return str;
 }
 
-#include <functions/tnlSDFSinBumpsFunction_impl.h>
-
-
-#endif /* TNLSDFSINBUMPSFUNCTION_H_ */
+#include <functions/tnlSinWaveFunctionSDF_impl.h>

@@ -138,7 +138,7 @@ getPartialDerivative( const VertexType& v,
    if( XDiffOrder == 2 )
    {
       if( this->isInsideWaves( distance ) )
-         return -4.0 * M_PI * M_PI / ( this->waveLength * this->waveLength ) * this->amplitude * sin( this->phase + 2.0 * M_PI * x / this->waveLength );
+         return -4.0 * M_PI * M_PI / ( this->waveLength * this->waveLength ) * this->amplitude * sin( this->phase + 2.0 * M_PI * x / this->waveLength );      
       else
       {
          tnlAssert( false, );

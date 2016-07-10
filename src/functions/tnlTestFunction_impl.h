@@ -34,7 +34,7 @@
  * The signed distance test functions
  */
 #include <functions/tnlSinBumpsFunctionSDF.h>
-#include <functions/tnlSDFSinWaveFunction.h>
+#include <functions/tnlSinWaveFunctionSDF.h>
 #include <functions/tnlParaboloidSDF.h>
 
 template< int FunctionDimensions,
@@ -238,7 +238,7 @@ setup( const tnlParameterContainer& parameters,
    }
    if( testFunction == "sin-wave-sdf" )
    {
-      typedef tnlSDFSinWaveFunction< Dimensions, Real > FunctionType;
+      typedef tnlSinWaveFunctionSDF< Dimensions, Real > FunctionType;
       functionType = sinWaveSDF;
       return setupFunction< FunctionType >( parameters );
    }
@@ -301,7 +301,7 @@ operator = ( const tnlTestFunction& function )
          this->copyFunction< tnlSinBumpsFunctionSDF< FunctionDimensions, Real > >( function.function );
          break;
       case sinWaveSDF:
-         this->copyFunction< tnlSDFSinWaveFunction< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< tnlSinWaveFunctionSDF< FunctionDimensions, Real > >( function.function );
          break;
       default:
          tnlAssert( false, );
@@ -375,7 +375,7 @@ getPartialDerivative( const VertexType& vertex,
          return scale * ( ( tnlSinBumpsFunctionSDF< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinWaveSDF:
-         return scale * ( ( tnlSDFSinWaveFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( tnlSinWaveFunctionSDF< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case paraboloidSDF:
          return scale * ( ( tnlParaboloidSDF< Dimensions, Real >* ) function )->
@@ -459,7 +459,7 @@ getTimeDerivative( const VertexType& vertex,
          return scale * ( ( tnlSinBumpsFunctionSDF< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinWaveSDF:
-         return scale * ( ( tnlSDFSinWaveFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( tnlSinWaveFunctionSDF< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       default:
          return 0.0;
@@ -533,7 +533,7 @@ deleteFunctions()
          deleteFunction< tnlSinBumpsFunctionSDF< Dimensions, Real> >();
          break;
       case sinWaveSDF:
-         deleteFunction< tnlSDFSinWaveFunction< Dimensions, Real> >();
+         deleteFunction< tnlSinWaveFunctionSDF< Dimensions, Real> >();
          break;
    }
 }
@@ -618,7 +618,7 @@ print( ostream& str ) const
       case sinBumpsSDF:
          return printFunction< tnlSinBumpsFunctionSDF< Dimensions, Real> >( str );
       case sinWaveSDF:
-         return printFunction< tnlSDFSinWaveFunction< Dimensions, Real> >( str );
+         return printFunction< tnlSinWaveFunctionSDF< Dimensions, Real> >( str );
    }
    return str;
 }

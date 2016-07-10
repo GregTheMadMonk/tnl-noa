@@ -21,7 +21,6 @@
 #include <solvers/tnlSolverMonitor.h>
 #include <core/tnlLogger.h>
 #include <core/vectors/tnlVector.h>
-#include <core/vectors/tnlSharedVector.h>
 #include <solvers/pde/tnlExplicitUpdater.h>
 #include <solvers/pde/tnlLinearSystemAssembler.h>
 #include <functions/tnlMeshFunction.h>
@@ -71,13 +70,8 @@ class HamiltonJacobiProblem : public tnlPDEProblem< Mesh,
 
    IndexType getDofs( const MeshType& mesh ) const;
 
-   IndexType getAuxiliaryDofs( const MeshType& mesh ) const;
-
    void bindDofs( const MeshType& mesh,
                   DofVectorType& dofs );
-
-   void bindAuxiliaryDofs( const MeshType& mesh,
-                           DofVectorType& auxiliaryDofs );
 
    void getExplicitRHS( const RealType& time,
                         const RealType& tau,
@@ -86,25 +80,9 @@ class HamiltonJacobiProblem : public tnlPDEProblem< Mesh,
                         DofVectorType& _fu,
                         MeshDependentDataType& meshDependentData );
 
-   bool preIterate( const RealType& time,
-                    const RealType& tau,
-                    const MeshType& mesh,
-                    DofVectorType& u,
-                    MeshDependentDataType& meshDependentData );
-   
-   bool postIterate( const RealType& time,
-                     const RealType& tau,
-                     const MeshType& mesh,
-                     DofVectorType& u,
-                     MeshDependentDataType& meshDependentData );
-
-
-   tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();
-
-
    protected:
 
-   tnlSharedVector< RealType, DeviceType, IndexType > solution;
+   MeshFunctionType solution;
 
    tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide  > explicitUpdater;
 
@@ -114,8 +92,8 @@ class HamiltonJacobiProblem : public tnlPDEProblem< Mesh,
 
    RightHandSide rightHandSide;
 
-   bool schemeTest;
-   bool tested;
+   //bool schemeTest;
+   //bool tested;
 };
 
 #include "HamiltonJacobiProblem_impl.h"

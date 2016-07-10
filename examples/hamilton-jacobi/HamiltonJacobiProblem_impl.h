@@ -55,9 +55,8 @@ template< typename Mesh,
 		  typename RightHandSide>
 bool HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide > :: setup( const tnlParameterContainer& parameters )
 {
-	   if( ! boundaryCondition.setup( parameters ) ||
-	       ! rightHandSide.setup( parameters ) )
-      return false;
+   this->boundaryCondition.getFunction().setConstant( 1.0 );
+   //this->rightHandSide.getFunction().setConstant( 0.0 );
    //return true;
 /*
    const tnlString& problemName = parameters. GetParameter< tnlString >( "problem-name" );
@@ -101,35 +100,12 @@ template< typename Mesh,
           typename HamiltonJacobi,
           typename BoundaryCondition,
           typename RightHandSide>
-typename HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide >::IndexType
-         HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide >::getAuxiliaryDofs( const MeshType& mesh ) const
-{
-   /****
-    * Set-up DOFs and supporting grid functions which will not appear in the discrete solver
-    */
-}
-
-template< typename Mesh,
-          typename HamiltonJacobi,
-          typename BoundaryCondition,
-          typename RightHandSide>
 void HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide >::
 bindDofs( const MeshType& mesh,
           DofVectorType& dofVector )
 {
-   const IndexType dofs = mesh.template getEntitiesCount< typename MeshType::Cell >();
-   this->solution.bind( dofVector.getData(), dofs );
-}
-
-
-template< typename Mesh,
-          typename HamiltonJacobi,
-          typename BoundaryCondition,
-          typename RightHandSide>
-void HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide >::
-bindAuxiliaryDofs( const MeshType& mesh,
-                   DofVectorType& auxiliaryDofVector )
-{
+   //const IndexType dofs = mesh.template getEntitiesCount< typename MeshType::Cell >();
+   this->solution.bind( mesh, dofVector );
 }
 
 template< typename Mesh,
@@ -143,15 +119,14 @@ setInitialCondition( const tnlParameterContainer& parameters,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData  )
 {
-	   this->bindDofs( mesh, dofs );
-	   const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
-	   if( ! this->solution.load( initialConditionFile ) )
-	   {
-	      cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
-	      return false;
-	   }
-	   return true;
-
+   this->bindDofs( mesh, dofs );
+   const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
+   if( ! this->solution.load( initialConditionFile ) )
+   {
+      cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
+      return false;
+   }
+   return true;
 }
 
 template< typename Mesh,
@@ -166,8 +141,6 @@ makeSnapshot( const RealType& time,
               DofVectorType& dofs,
               MeshDependentDataType& meshDependentData  )
 {
-
-
    cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
 
    tnlString fileName;
@@ -219,49 +192,3 @@ getExplicitRHS(  const RealType& time,
 	                                                            u,
 	                                                            fu );
 }
-
-template< typename Mesh,
-		  typename HamiltonJacobi,
-		  typename BoundaryCondition,
-		  typename RightHandSide>
-tnlSolverMonitor< typename HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide > :: RealType,
-                  typename HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide > ::  IndexType >*
-                  HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide >
-::  getSolverMonitor()
-{
-   return 0;
-}
-
-
-
-
-template< typename Mesh,
-          typename HamiltonJacobi,
-          typename BoundaryCondition,
-          typename RightHandSide >
-bool
-HamiltonJacobiProblem< Mesh, HamiltonJacobi, BoundaryCondition, RightHandSide >::
-preIterate( const RealType& time,
-             const RealType& tau,
-             const MeshType& mesh,
-             DofVectorType& u,
-             MeshDependentDataType& meshDependentData )
-{
-   return true;
-}
-
-template< typename Mesh,
-          typename HamiltonJacobi,
-          typename BoundaryCondition,
-          typename RightHandSide >
-bool
-HamiltonJacobiProblem< Mesh, HamiltonJacobi, BoundaryCondition, RightHandSide >::
-postIterate( const RealType& time,
-             const RealType& tau,
-             const MeshType& mesh,
-             DofVectorType& u,
-             MeshDependentDataType& meshDependentData )
-{
-   return true;
-}
-
