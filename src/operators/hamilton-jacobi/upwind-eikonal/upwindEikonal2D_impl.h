@@ -17,54 +17,7 @@
 #ifndef UPWINDEIKONAL2D_IMPL_H_
 #define UPWINDEIKONAL2D_IMPL_H_
 
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-Real upwindEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >:: positivePart(const Real arg) const
-{
-	if(arg > 0.0)
-		return arg;
-	return 0.0;
-}
-
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-Real  upwindEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: negativePart(const Real arg) const
-{
-	if(arg < 0.0)
-		return arg;
-	return 0.0;
-}
-
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-Real upwindEikonalScheme< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index > :: sign(const Real x, const Real eps) const
-{
-	if(x > eps)
-		return 1.0;
-	else if (x < -eps)
-		return (-1.0);
-
-	if ( eps == 0.0)
-		return 0.0;
-
-	return sin((M_PI*x)/(2.0*eps));
-}
-
-
-
-
+#include <functions/tnlFunctions.h>
 
 template< typename MeshReal,
           typename Device,
@@ -124,11 +77,13 @@ Real
 upwindEikonalScheme< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const PreimageFunction& u,
             const EntityType& entity,
-            const Real& time ) const
+            const Real& signU ) const
 {
 
-	RealType nabla, xb, xf, yb, yf, signui;         
-	signui = sign( u( entity ), epsilon );
+	RealType nabla, xb, xf, yb, yf; //, signui;         
+	//signui = sign( u( entity ), epsilon );
+   const RealType& hx_inv = entity.getMesh().template getSpaceStepsProducts< -1,  0 >();
+   const RealType& hy_inv = entity.getMesh().template getSpaceStepsProducts<  0 ,-1 >();
    
    const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();   
    const RealType& u_c = u[ entity.getIndex() ];
@@ -138,23 +93,25 @@ operator()( const PreimageFunction& u,
    const RealType& u_s = u[ neighbourEntities.template getEntityIndex<  0, -1 >() ];
 
 
-   if(signui > 0.0)
+   if( signU > 0.0 )
    {
-      xf = negativePart( ( u_e - u_c ) / hx );
-      xb = positivePart( ( u_c - u_w ) / hx );
-      yf = negativePart( ( u_n - u_c ) / hy );
-      yb = positivePart( ( u_c - u_s ) / hy );
+      xf = negativePart( ( u_e - u_c ) * hx_inv );
+      xb = positivePart( ( u_c - u_w ) * hx_inv );
+      yf = negativePart( ( u_n - u_c ) * hy_inv );
+      yb = positivePart( ( u_c - u_s ) * hy_inv );
       nabla = sqrt( xf * xf + xb * xb + yf * yf + yb * yb );
-      return signui * ( 1.0 - nabla );
+      //return signui * ( 1.0 - nabla );
+      return nabla;
    }
-   else if (signui < 0.0)
+   else if( signU < 0.0 )
    {
-      xf = positivePart( ( u_e - u_c ) / hx );
-      xb = negativePart( ( u_c - u_w ) / hx );
-      yf = positivePart( ( u_n - u_c ) / hy );
-      yb = negativePart( ( u_c - u_s ) / hy );
-      nabla = sqrt (xf*xf + xb*xb + yf*yf + yb*yb );
-      return signui*(1.0 - nabla);
+      xf = positivePart( ( u_e - u_c ) * hx_inv );
+      xb = negativePart( ( u_c - u_w ) * hx_inv );
+      yf = positivePart( ( u_n - u_c ) * hy_inv );
+      yb = negativePart( ( u_c - u_s ) * hy_inv );
+      nabla = sqrt( xf * xf + xb * xb + yf * yf + yb * yb );
+      //return signui * ( 1.0 - nabla );
+      return nabla;
    }
    else
       return 0.0;

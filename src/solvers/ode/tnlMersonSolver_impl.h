@@ -170,7 +170,7 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
    /****
     * Start the main loop
     */
-   while( 1 )
+   while( this->checkNextIteration() )
    {
       /****
        * Compute Runge-Kutta coefficients
@@ -224,13 +224,15 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
        */
       //cerr << "residue = " << residue << endl;
       //cerr << "this->getConvergenceResidue() = " << this->getConvergenceResidue() << endl;
-      if( time >= this->getStopTime() ||
-          ( this->getConvergenceResidue() != 0.0 && this->getResidue() < this->getConvergenceResidue() ) )
+      if( time >= this->getStopTime() )
       {
-         this->refreshSolverMonitor();
+         this->refreshSolverMonitor( true );
          return true;
       }
    }
+   this->refreshSolverMonitor( true );
+   return this->checkConvergence();
+
 };
 
 template< typename Problem >

@@ -38,7 +38,8 @@ SET( headers tnlConstantFunction.h
 	     tnlParaboloidSDF_impl.h
 	     tnlSDFSchemeTest_impl.h
 	     tnlSDFSign_impl.h
-	     tnlSDFGridValue_impl.h )
+	     tnlSDFGridValue_impl.h
+             tnlFunctions.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/functions )
 set( common_SOURCES

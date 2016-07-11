@@ -30,7 +30,7 @@ class tnlODESolverMonitor : public tnlIterativeSolverMonitor< Real, Index >
 
    tnlODESolverMonitor();
 
-   void refresh();
+   void refresh( bool force = false );
 
    void setTimeStep( const RealType& timeStep );
 

@@ -171,7 +171,7 @@ setSolverMonitor( tnlODESolverMonitor< RealType, IndexType >& solverMonitor )
 template< class Problem >
 void
 tnlExplicitSolver< Problem >::
-refreshSolverMonitor()
+refreshSolverMonitor( bool force )
 {
    if( this->solverMonitor )
    {
@@ -180,7 +180,7 @@ refreshSolverMonitor()
       this->solverMonitor->setTimeStep( this->getTau() );
       this->solverMonitor->setTime( this->getTime() );
       this->solverMonitor->setRefreshRate( this->refreshRate );
-      this->solverMonitor->refresh();
+      this->solverMonitor->refresh( force );
    }
 }
 

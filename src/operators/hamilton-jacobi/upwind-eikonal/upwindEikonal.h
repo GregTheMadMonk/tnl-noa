@@ -25,7 +25,7 @@
 #include <core/vectors/tnlSharedVector.h>
 #include <core/mfilename.h>
 #include <mesh/tnlGrid.h>
-
+#include <functions/tnlFunctions.h>
 
 template< typename Mesh,
 		  typename Real,
@@ -34,9 +34,9 @@ class upwindEikonalScheme
 {
 };
 
-
-
-
+/****
+ * 1D scheme
+ */
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
@@ -56,41 +56,41 @@ public:
 
 	static tnlString getType();
 
-	RealType positivePart(const RealType arg) const;
-
-	RealType negativePart(const RealType arg) const;
-
-	RealType sign(const RealType x, const RealType eps) const;
-
-   
    template< typename PreimageFunction, typename MeshEntity >
    __cuda_callable__
    Real operator()( const PreimageFunction& u,
                     const MeshEntity& entity,
-                    const RealType& time = 0.0 ) const;
+                    const RealType& signU ) const
+   {
+      const RealType& hx_inv = entity.getMesh().template getSpaceStepsProducts< -1 >();
+      const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
 
-
-	bool init( const tnlParameterContainer& parameters );
-
-
-protected:
-
-	MeshType originalMesh;
-
-	DofVectorType dofVector;
-
-	RealType h;
-
-	RealType epsilon;
-
-
+      const RealType& u_c = u[ entity.getIndex() ];
+      const RealType& u_e = u[ neighbourEntities.template getEntityIndex< 1 >() ];
+      const RealType& u_w = u[ neighbourEntities.template getEntityIndex< -1 >() ];
+      
+      if( signU > 0.0 )
+      {
+         const RealType& xf = negativePart( ( u_e - u_c ) * hx_inv );
+         const RealType& xb = positivePart( ( u_c - u_w ) * hx_inv );
+         return sqrt( xf * xf + xb * xb );
+      }
+      else if( signU < 0.0 )
+      {
+         const RealType& xf = negativePart( ( u_c - u_w ) * hx_inv );
+         const RealType& xb = positivePart( ( u_e - u_c ) * hx_inv );
+         return sqrt( xf * xf + xb * xb );
+      }
+      else
+      {
+         return 0.0;
+      }
+   };
 };
 
-
-
-
-
-
+/****
+ * 2D scheme
+ */
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
@@ -108,38 +108,46 @@ public:
 	typedef typename MeshType::CoordinatesType CoordinatesType;
 
 	static tnlString getType();
-
-    RealType positivePart(const RealType arg) const;
-
-    RealType negativePart(const RealType arg) const;
-
-    RealType sign(const RealType x, const Real eps) const;
-
     
    template< typename PreimageFunction, typename MeshEntity >
    __cuda_callable__
    Real operator()( const PreimageFunction& u,
                     const MeshEntity& entity,
-                    const RealType& time = 0.0 ) const;
-    
-   bool init( const tnlParameterContainer& parameters );
+                    const RealType& signU ) const
+   {   
+      const RealType& hx_inv = entity.getMesh().template getSpaceStepsProducts< -1,  0 >();
+      const RealType& hy_inv = entity.getMesh().template getSpaceStepsProducts<  0, -1 >();
 
-
-protected:
-
- 	MeshType originalMesh;
-
-    DofVectorType dofVector;
-
-    RealType hx;
-    RealType hy;
-
-    RealType epsilon;
-
-
+      const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();   
+      const RealType& u_c = u[ entity.getIndex() ];
+      const RealType& u_e = u[ neighbourEntities.template getEntityIndex<  1,  0 >() ];
+      const RealType& u_w = u[ neighbourEntities.template getEntityIndex< -1,  0 >() ];
+      const RealType& u_n = u[ neighbourEntities.template getEntityIndex<  0,  1 >() ];
+      const RealType& u_s = u[ neighbourEntities.template getEntityIndex<  0, -1 >() ];
+      if( signU > 0.0 )
+      {
+         const RealType xf = negativePart( ( u_e - u_c ) * hx_inv );
+         const RealType xb = positivePart( ( u_c - u_w ) * hx_inv );
+         const RealType yf = negativePart( ( u_n - u_c ) * hy_inv );
+         const RealType yb = positivePart( ( u_c - u_s ) * hy_inv );
+         return sqrt( xf * xf + xb * xb + yf * yf + yb * yb );
+      }
+      else if( signU < 0.0 )
+      {
+         const RealType xf = positivePart( ( u_e - u_c ) * hx_inv );
+         const RealType xb = negativePart( ( u_c - u_w ) * hx_inv );
+         const RealType yf = positivePart( ( u_n - u_c ) * hy_inv );
+         const RealType yb = negativePart( ( u_c - u_s ) * hy_inv );
+         return sqrt( xf * xf + xb * xb + yf * yf + yb * yb );
+      }
+      else
+         return 0.0;
+   }
 };
 
-
+/****
+ * 3D scheme
+ */
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
@@ -159,39 +167,51 @@ public:
 
 	static tnlString getType();
 
-    RealType positivePart(const RealType arg) const;
-
-    RealType negativePart(const RealType arg) const;
-
-    RealType sign(const RealType x, const Real eps) const;
-
    template< typename PreimageFunction, typename MeshEntity >
    __cuda_callable__
     Real operator()( const PreimageFunction& u,
                      const MeshEntity& entity,
-                     const RealType& time = 0.0 ) const;
+                     const RealType& signU ) const
+   {
+      const RealType& hx_inv = entity.getMesh().template getSpaceStepsProducts< -1,  0,  0 >();
+      const RealType& hy_inv = entity.getMesh().template getSpaceStepsProducts<  0, -1,  0 >();
+      const RealType& hz_inv = entity.getMesh().template getSpaceStepsProducts<  0,  0, -1 >();
 
-   bool init( const tnlParameterContainer& parameters );
+      const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+      const RealType& u_c = u[ entity.getIndex() ];
+      const RealType& u_e = u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ];
+      const RealType& u_w = u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ];
+      const RealType& u_n = u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ];
+      const RealType& u_s = u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ];
+      const RealType& u_t = u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ];
+      const RealType& u_b = u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ];
 
-protected:
-
- 	MeshType originalMesh;
-
-    DofVectorType dofVector;
-
-    RealType hx;
-    RealType hy;
-    RealType hz;
-
-    RealType epsilon;
-
+      if( signU > 0.0 )
+      {
+         const RealType xf = negativePart( ( u_e - u_c ) * hx_inv );
+         const RealType xb = positivePart( ( u_c - u_w ) * hx_inv );
+         const RealType yf = negativePart( ( u_n - u_c ) * hy_inv );
+         const RealType yb = positivePart( ( u_c - u_s ) * hy_inv );
+         const RealType zf = negativePart( ( u_t - u_c ) * hz_inv );
+         const RealType zb = positivePart( ( u_c - u_b ) * hz_inv );
+         return sqrt( xf * xf + xb * xb + yf * yf + yb * yb + zf * zf + zb * zb );
+      }
+      else if( signU < 0.0 )
+      {
+         const RealType xf = positivePart( ( u_e - u_c ) * hx_inv );
+         const RealType xb = negativePart( ( u_c - u_w ) * hx_inv );
+         const RealType yf = positivePart( ( u_n - u_c ) * hy_inv );
+         const RealType yb = negativePart( ( u_c - u_s ) * hy_inv );
+         const RealType zf = positivePart( ( u_t - u_c ) * hz_inv );
+         const RealType zb = negativePart( ( u_c - u_b ) * hz_inv );
+         return sqrt( xf * xf + xb * xb + yf * yf + yb * yb + zf * zf + zb * zb );
+      }
+      else
+         return 0.0;
+   };
 };
 
 
-
-#include <operators/hamilton-jacobi/upwind-eikonal/upwindEikonal1D_impl.h>
-#include <operators/hamilton-jacobi/upwind-eikonal/upwindEikonal2D_impl.h>
-#include <operators/hamilton-jacobi/upwind-eikonal/upwindEikonal3D_impl.h>
 
 
 #endif /* UPWINDEIKONAL_H_ */

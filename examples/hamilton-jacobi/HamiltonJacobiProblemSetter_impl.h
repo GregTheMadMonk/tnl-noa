@@ -24,8 +24,9 @@
 //#include <operators/hamilton-jacobi/godunov-eikonal/godunovEikonal.h>
 //#include <operators/hamilton-jacobi/upwind/upwind.h>
 //#include <operators/hamilton-jacobi/godunov/godunov.h>
-#include <functions/tnlSDFSign.h>
-#include <functions/tnlSDFGridValue.h>
+//#include <functions/tnlSDFSign.h>
+//#include <functions/tnlSDFGridValue.h>
+#include <operators/hamilton-jacobi/tnlEikonalOperator.h>
 
 
 template< typename RealType,
@@ -55,8 +56,9 @@ bool HamiltonJacobiProblemSetter< RealType, DeviceType, IndexType, MeshType, Con
 
       if( schemeName == "upwind" )
       {
-           typedef upwindEikonalScheme< MeshType, RealType, IndexType > Operator;
+           typedef upwindEikonalScheme< MeshType, RealType, IndexType > GradientNormOperator;
            typedef tnlConstantFunction< Dimensions, RealType > RightHandSide;
+           typedef tnlEikonalOperator< GradientNormOperator, RightHandSide > Operator;
            typedef HamiltonJacobiProblem< MeshType, Operator, BoundaryConditions, RightHandSide > Solver;
            return solverStarter.template run< Solver >( parameters );
       }

@@ -82,7 +82,7 @@ class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
 
    void setSolverMonitor( tnlODESolverMonitor< RealType, IndexType >& solverMonitor );
 
-   void refreshSolverMonitor();
+   void refreshSolverMonitor( bool force = false );
 
 protected:
     

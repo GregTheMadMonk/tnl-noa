@@ -78,7 +78,9 @@ bool HamiltonJacobiProblem< Mesh,HamiltonJacobi,BoundaryCondition,RightHandSide 
    this -> v. bind( & dofVector. getData()[ 1 * dofs ], dofs );
 
 */
-   return differentialOperator.init(parameters);
+   differentialOperator.getAnisotropy().setConstant( 1.0 ); //setup( parameters );
+   differentialOperator.setSmoothing( 1.0 );
+   return true;
 
 }
 
@@ -121,7 +123,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
 {
    this->bindDofs( mesh, dofs );
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
-   if( ! this->solution.load( initialConditionFile ) )
+   if( ! this->solution.boundLoad( initialConditionFile ) )
    {
       cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
       return false;
@@ -145,7 +147,7 @@ makeSnapshot( const RealType& time,
 
    tnlString fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! this -> solution.save( fileName ) )
+   if( ! this->solution.save( fileName ) )
 	   return false;
 
    return true;
@@ -191,4 +193,7 @@ getExplicitRHS(  const RealType& time,
 	                                                            this->rightHandSide,
 	                                                            u,
 	                                                            fu );
+   //fu.save( "fu.tnl" );
+   //std::cerr << "Enter." << std::endl;
+   //getchar();
 }

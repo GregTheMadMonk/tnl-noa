@@ -1,5 +1,4 @@
-#ifndef TNLNEUMANNBOUNDARYCONDITIONS_H
-#define	TNLNEUMANNBOUNDARYCONDITIONS_H
+#pragma once 
 
 #include <functions/tnlFunctionAdapter.h>
 #include <operators/tnlOperator.h>
@@ -24,16 +23,31 @@ class tnlNeumannBoundaryConditionsBase
       typedef Function FunctionType;
 
       static void configSetup( tnlConfigDescription& config,
-                               const tnlString& prefix = "" );
+                               const tnlString& prefix = "" )
+      {
+         Function::configSetup( config, prefix );
+      };
 
       bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" );
+                  const tnlString& prefix = "" )
+      {
+          return this->function.setup( parameters, prefix );
+      };
 
-      void setFunction( const FunctionType& function );
+      void setFunction( const FunctionType& function )
+      {
+         this->function = function;
+      };
       
-      FunctionType& getFunction();
+      FunctionType& getFunction()
+      {
+         return this->function;
+      };
 
-      const FunctionType& getFunction() const;
+      const FunctionType& getFunction() const
+      {
+         return this->function;
+      };
 
    protected:
 
@@ -83,7 +97,7 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, F
       const auto& neighbourEntities = entity.getNeighbourEntities();
       const IndexType& index = entity.getIndex();
       if( entity.getCoordinates().x() == 0 )
-         return u[ neighbourEntities.template getEntityIndex< 1 >() ] - entity.getMesh().getSpaceSteps().x() * 
+         return u[ neighbourEntities.template getEntityIndex< 1 >() ] + entity.getMesh().getSpaceSteps().x() * 
             tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
       else
          return u[ neighbourEntities.template getEntityIndex< -1 >() ] + entity.getMesh().getSpaceSteps().x() * 
@@ -120,7 +134,7 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, F
          {
             matrixRow.setElement( 0, index, 1.0 );
             matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 1 >(), -1.0 );
-            b[ index ] = - entity.getMesh().getSpaceSteps().x() * 
+            b[ index ] = entity.getMesh().getSpaceSteps().x() * 
                tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          else
@@ -178,7 +192,7 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, F
          const IndexType& index = entity.getIndex();
          if( entity.getCoordinates().x() == 0 )
          {
-            return u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] - entity.getMesh().getSpaceSteps().x() *
+            return u[ neighbourEntities.template getEntityIndex< 1, 0 >() ] + entity.getMesh().getSpaceSteps().x() *
                tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().x() == entity.getMesh().getDimensions().x() - 1 )
@@ -188,7 +202,7 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, F
          }
          if( entity.getCoordinates().y() == 0 )
          {
-            return u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - entity.getMesh().getSpaceSteps().y() *
+            return u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] + entity.getMesh().getSpaceSteps().y() *
                tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().y() == entity.getMesh().getDimensions().y() - 1 )
@@ -226,7 +240,7 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, F
          {
             matrixRow.setElement( 0, index,                                                1.0 );
             matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 1, 0 >(), -1.0 );
-            b[ index ] = - entity.getMesh().getSpaceSteps().x() *
+            b[ index ] = entity.getMesh().getSpaceSteps().x() *
                tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().x() == entity.getMesh().getDimensions().x() - 1 )
@@ -240,7 +254,7 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, F
          {
             matrixRow.setElement( 0, index,                                                1.0 );
             matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, 1 >(), -1.0 );
-            b[ index ] = - entity.getMesh().getSpaceSteps().y() *
+            b[ index ] = entity.getMesh().getSpaceSteps().y() *
                tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().y() == entity.getMesh().getDimensions().y() - 1 )
@@ -296,7 +310,7 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, F
          const IndexType& index = entity.getIndex();
          if( entity.getCoordinates().x() == 0 )
          {
-            return u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] - entity.getMesh().getSpaceSteps().x() *
+            return u[ neighbourEntities.template getEntityIndex< 1, 0, 0 >() ] + entity.getMesh().getSpaceSteps().x() *
                tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().x() == entity.getMesh().getDimensions().x() - 1 )
@@ -306,7 +320,7 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, F
          }
          if( entity.getCoordinates().y() == 0 )
          {
-            return u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] - entity.getMesh().getSpaceSteps().y() *
+            return u[ neighbourEntities.template getEntityIndex< 0, 1, 0 >() ] + entity.getMesh().getSpaceSteps().y() *
                tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().y() == entity.getMesh().getDimensions().y() - 1 )
@@ -316,7 +330,7 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, F
          }
          if( entity.getCoordinates().z() == 0 )
          {
-            return u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] - entity.getMesh().getSpaceSteps().z() *
+            return u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] + entity.getMesh().getSpaceSteps().z() *
                tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().z() == entity.getMesh().getDimensions().z() - 1 )
@@ -355,7 +369,7 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, F
          {
             matrixRow.setElement( 0, index,                                                   1.0 );
             matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 1, 0, 0 >(), -1.0 );
-            b[ index ] = - entity.getMesh().getSpaceSteps().x() *
+            b[ index ] = entity.getMesh().getSpaceSteps().x() *
                tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().x() == entity.getMesh().getDimensions().x() - 1 )
@@ -369,7 +383,7 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, F
          {
             matrixRow.setElement( 0, index,                                                   1.0 );
             matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, 1, 0 >(), -1.0 );
-            b[ index ] = - entity.getMesh().getSpaceSteps().y() * 
+            b[ index ] = entity.getMesh().getSpaceSteps().y() * 
                tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().y() == entity.getMesh().getDimensions().y() - 1 )
@@ -383,7 +397,7 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, F
          {
             matrixRow.setElement( 0, index,                                                   1.0 );
             matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, 0, 1 >(), -1.0 );
-            b[ index ] = - entity.getMesh().getSpaceSteps().z() *
+            b[ index ] = entity.getMesh().getSpaceSteps().z() *
                tnlFunctionAdapter< MeshType, FunctionType >::getValue( this->function, entity, time );
          }
          if( entity.getCoordinates().z() == entity.getMesh().getDimensions().z() - 1 )
@@ -407,7 +421,6 @@ ostream& operator << ( ostream& str, const tnlNeumannBoundaryConditions< Mesh, F
 }
 
 
-#include <operators/tnlNeumannBoundaryConditions_impl.h>
+//#include <operators/tnlNeumannBoundaryConditions_impl.h>
 
-#endif	/* TNLNEUMANNBOUNDARYCONDITIONS_H */
 

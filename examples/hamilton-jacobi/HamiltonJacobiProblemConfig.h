@@ -32,7 +32,7 @@ class HamiltonJacobiProblemConfig
          config.addEntryEnum( "upwind" );
          config.addEntryEnum( "godunov2" );
          config.addEntryEnum( "upwind2" );
-         config.addEntry        < double > ( "epsilon", "This defines epsilon for smoothening of sign().", 0.0 );
+         config.addEntry        < double > ( "epsilon", "This defines epsilon for smoothening of sign().", 3.0 );
          config.addEntry        < double > ( "-value", "Constant value of RHS.", 0.0 );
       }
 };

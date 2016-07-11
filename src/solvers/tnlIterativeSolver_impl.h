@@ -113,24 +113,7 @@ bool tnlIterativeSolver< Real, Index> :: checkNextIteration()
        this->getIterations() > this->getMaxIterations()  ||
        ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() >= this->getMinIterations() ) ||
        ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() >= this->getMinIterations() ) )
-      return false;
-   
-   if( this->getResidue() > this->getDivergenceResidue() &&
-         this->getIterations() > this->minIterations )
-   {
-      cerr << endl  << "The residue has exceeded allowed tolerance " << this->getDivergenceResidue() << "." << endl;
-      return false;
-   }
-   if( this->getIterations() >= this->getMaxIterations() )
-   {
-      cerr << endl  << "The solver has exceeded maximal allowed number of iterations " << this->getMaxIterations() << "." << endl;
-      return false;
-   }
-   if( this->getResidue() > this->getConvergenceResidue() )
-   {
-      cerr << endl  << "The residue ( = " << this->getResidue() << " ) is too large( > " << this->getConvergenceResidue() << " )." << endl;
-      return false;
-   }
+      return false;   
    return true;
 }
 
