@@ -3,12 +3,12 @@
 device="host"
 dimensions="1D 2D 3D"
 #dimensions="1D"
-sizes1D="16 32 64 128 256 512"
+sizes1D="16 32 64 128 256 512 1024 2048 4096"
 #sizes1D="256"
-sizes2D="16 32 64 128 256 512"
+sizes2D="16 32 64 128 256 512 1024"
 #sizes2D="8"
-sizes3D="16 32 64 128"
-testFunctions="sin-wave"
+sizes3D="16 32 64 128 256"
+testFunctions="paraboloid"
 snapshotPeriod=0.1
 finalTime=1.5
 solverName="tnl-hamilton-jacobi"
@@ -23,7 +23,7 @@ setupTestFunction()
       origin=-1.0
       proportions=2.0
       amplitude=1.0
-      waveLength=0.25
+      waveLength=0.2
       waveLengthX=0.2
       waveLengthY=0.2
       waveLengthZ=0.2
@@ -115,8 +115,8 @@ solve()
 computeError()
 {
    tnl-diff --mesh mesh.tnl \
-            --input-files exact-u-*.tnl u-*.tnl \
-            --mode halves \
+            --input-files final-u.tnl u-*.tnl \
+            --mode sequence \
             --snapshot-period ${snapshotPeriod} \
             --output-file errors.txt \
             --write-difference yes
