@@ -18,6 +18,7 @@
 #ifndef TNLGRIDTOPOLOGIES_H
 #define	TNLGRIDTOPOLOGIES_H
 
+
 template< typename Grid,
           int EntityDimensions,
           typename EntityOrientation_,

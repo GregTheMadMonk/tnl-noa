@@ -272,6 +272,60 @@ boundaryConditionsTemplatedCompact( const GridType* grid,
    }*/
 }
 
+template< typename EntityType, int Dimensions >
+struct EntityPointer : public EntityPointer< EntityType, Dimensions - 1 >
+{
+   __device__ EntityPointer( const EntityType* ptr )
+      : EntityPointer< EntityType, Dimensions - 1 >( ptr ), pointer( ptr )
+   {      
+   }
+   
+   const EntityType* pointer;
+};
+
+template< typename EntityType >
+struct EntityPointer< EntityType, 0 >
+{
+   __device__ inline EntityPointer( const EntityType* ptr )
+   :pointer( ptr )
+   {      
+   }
+
+   
+   const EntityType* pointer;
+};
+
+template< typename GridType >
+struct TestEntity
+{
+   typedef typename GridType::Cell::CoordinatesType CoordinatesType;
+   
+   __device__ inline TestEntity( const GridType& grid,
+               const typename GridType::Cell::CoordinatesType& coordinates,
+               const typename GridType::Cell::EntityOrientationType& orientation,
+               const typename GridType::Cell::EntityBasisType& basis )
+   : grid( grid ),
+      coordinates( coordinates ),
+      orientation( orientation ),
+      basis( basis ),
+      entityIndex( 0 ),
+      ptr( &grid )
+   {      
+   };
+  
+   const GridType& grid;
+   
+   EntityPointer< GridType, 2 > ptr; 
+   //TestEntity< GridType > *entity1, *entity2, *entity3;
+   
+   typename GridType::IndexType entityIndex;      
+   
+   const typename GridType::Cell::CoordinatesType coordinates;
+   const typename GridType::Cell::EntityOrientationType orientation;
+   const typename GridType::Cell::EntityBasisType basis;
+   
+};
+
 template< typename GridType,
           typename GridEntity,
           typename DifferentialOperator,
@@ -295,19 +349,24 @@ heatEquationTemplatedCompact( const GridType* grid,
    typedef typename GridType::IndexType IndexType;
    typedef typename GridType::RealType RealType;
 
+   //TestEntity< GridType > *entities = getSharedMemory< TestEntity< GridType > >();
+   //TestEntity< GridType >& entity = entities[ threadIdx.y * 16 + threadIdx.x ];
+   //new ( &entity ) TestEntity< GridType >( *grid, coordinates, entityOrientation, entityBasis );
    
    coordinates.x() = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    coordinates.y() = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
    
+   //TestEntity< GridType > entity( *grid, coordinates, entityOrientation, entityBasis );
    GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
+   //const GridType* g = grid;
    
    MeshFunction& u = *_u;
    MeshFunction& fu = *_fu;
 
    //if( threadIdx.x == 0 )
    //   printf( "entity size = %d \n", sizeof( GridEntity ) );
-   if( entity.getCoordinates().x() < end.x() &&
-       entity.getCoordinates().y() < end.y() )
+   //if( entity.getCoordinates().x() < end.x() &&
+   //    entity.getCoordinates().y() < end.y() )
    {
       
       entity.refresh();
@@ -437,6 +496,7 @@ getExplicitRHS( const RealType& time,
       {
          typedef typename MeshType::MeshEntity< 2 > CellType;
          //typedef typename MeshType::Cell CellType;
+         //std::cerr << "Size of entity is ... " << sizeof( TestEntity< MeshType > ) << " vs. " << sizeof( CellType ) << std::endl;
          typedef typename CellType::CoordinatesType CoordinatesType;
          u->bind( mesh, uDofs );
          fu->bind( mesh, fuDofs );
