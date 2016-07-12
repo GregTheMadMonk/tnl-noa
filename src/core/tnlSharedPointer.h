@@ -170,7 +170,7 @@ class tnlSharedPointer< Object, tnlHost, lazy, false > : public tnlSmartPointer
             if( ! --*( this->counter ) )
             {
                delete this->pointer;
-               std::cerr << "Deleting data..." << std::endl;
+               //std::cerr << "Deleting data..." << std::endl;
             }
          }
 
@@ -318,7 +318,7 @@ class tnlSharedPointer< Object, tnlHost, lazy, true > : public tnlSmartPointer
             if( ! --*( this->counter ) )
             {
                delete this->pointer;
-               std::cerr << "Deleting data..." << std::endl;
+               //std::cerr << "Deleting data..." << std::endl;
             }
          }
 
