@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlPDESolver_impl.h  -  description
+                          tnlTimeDependentPDESolver_impl.h  -  description
                              -------------------
     begin                : Jan 15, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,16 +15,14 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLPDESOLVER_IMPL_H_
-#define TNLPDESOLVER_IMPL_H_
+#pragma once 
 
-#include "tnlPDESolver.h"
-
+#include <solvers/pde/tnlTimeDependentPDESolver.h>
 
 template< typename Problem,
           typename TimeStepper >
-tnlPDESolver< Problem, TimeStepper >::
-tnlPDESolver()
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver()
 : timeStepper( 0 ),
   initialTime( 0.0 ),
   finalTime( 0.0 ),
@@ -40,7 +38,7 @@ tnlPDESolver()
 template< typename Problem,
           typename TimeStepper >
 void
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
@@ -55,7 +53,7 @@ configSetup( tnlConfigDescription& config,
 template< typename Problem,
           typename TimeStepper >
 bool
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
@@ -117,7 +115,7 @@ setup( const tnlParameterContainer& parameters,
 template< typename Problem,
           typename TimeStepper >
 bool
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 writeProlog( tnlLogger& logger,
              const tnlParameterContainer& parameters )
 {
@@ -158,7 +156,7 @@ writeProlog( tnlLogger& logger,
 template< typename Problem,
           typename TimeStepper >
 void
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 setTimeStepper( TimeStepper& timeStepper )
 {
    this->timeStepper = &timeStepper;
@@ -167,7 +165,7 @@ setTimeStepper( TimeStepper& timeStepper )
 template< typename Problem,
           typename TimeStepper >
 void
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 setProblem( ProblemType& problem )
 {
    this->problem = &problem;
@@ -176,7 +174,7 @@ setProblem( ProblemType& problem )
 template< typename Problem,
           typename TimeStepper >
 void
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 setInitialTime( const RealType& initialTime )
 {
    this->initialTime = initialTime;
@@ -185,7 +183,7 @@ setInitialTime( const RealType& initialTime )
 template< typename Problem,
           typename TimeStepper >
 const typename TimeStepper :: RealType&
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 getInitialTime() const
 {
    return this->initialTime;
@@ -195,7 +193,7 @@ getInitialTime() const
 template< typename Problem,
           typename TimeStepper >
 bool
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 setFinalTime( const RealType& finalTime )
 {
    if( finalTime <= this->initialTime )
@@ -210,7 +208,7 @@ setFinalTime( const RealType& finalTime )
 template< typename Problem,
           typename TimeStepper >
 const typename TimeStepper :: RealType&
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 getFinalTime() const
 {
    return this->finalTime;
@@ -219,7 +217,7 @@ getFinalTime() const
 template< typename Problem,
           typename TimeStepper >
 bool
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 setSnapshotPeriod( const RealType& period )
 {
    if( period <= 0 )
@@ -234,7 +232,7 @@ setSnapshotPeriod( const RealType& period )
 template< typename Problem,
           typename TimeStepper >
 const typename TimeStepper::RealType&
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 getSnapshotPeriod() const
 {
    return this->snapshotPeriod;
@@ -243,7 +241,7 @@ getSnapshotPeriod() const
 template< typename Problem,
           typename TimeStepper >
 bool
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 setTimeStep( const RealType& timeStep )
 {
    if( timeStep <= 0 )
@@ -258,7 +256,7 @@ setTimeStep( const RealType& timeStep )
 template< typename Problem,
           typename TimeStepper >
 const typename TimeStepper::RealType&
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 getTimeStep() const
 {
    return this->timeStep;
@@ -267,7 +265,7 @@ getTimeStep() const
 template< typename Problem,
           typename TimeStepper >
 bool
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 setTimeStepOrder( const RealType& timeStepOrder )
 {
    if( timeStepOrder < 0 )
@@ -282,27 +280,27 @@ setTimeStepOrder( const RealType& timeStepOrder )
 template< typename Problem,
           typename TimeStepper >
 const typename TimeStepper::RealType&
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 getTimeStepOrder() const
 {
    return this->timeStepOrder;
 }
 
 template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper > :: setIoTimer( tnlTimer& ioTimer )
+void tnlTimeDependentPDESolver< Problem, TimeStepper > :: setIoTimer( tnlTimer& ioTimer )
 {
    this->ioTimer = &ioTimer;
 }
 
 template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper > :: setComputeTimer( tnlTimer& computeTimer )
+void tnlTimeDependentPDESolver< Problem, TimeStepper > :: setComputeTimer( tnlTimer& computeTimer )
 {
    this->computeTimer = &computeTimer;
 }
 
 template< typename Problem, typename TimeStepper >
 bool
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 solve()
 {
    tnlAssert( timeStepper != 0,
@@ -362,11 +360,9 @@ solve()
 
 template< typename Problem, typename TimeStepper >
 bool
-tnlPDESolver< Problem, TimeStepper >::
+tnlTimeDependentPDESolver< Problem, TimeStepper >::
 writeEpilog( tnlLogger& logger ) const
 {
    return ( this->timeStepper->writeEpilog( logger ) &&
       this->problem->writeEpilog( logger ) );
 }
-
-#endif /* TNLPDESOLVER_IMPL_H_ */

@@ -20,12 +20,8 @@
 #include <functions/tnlConstantFunction.h>
 #include <operators/tnlNeumannBoundaryConditions.h>
 #include <operators/tnlDirichletBoundaryConditions.h>
-#include <operators/hamilton-jacobi/upwind-eikonal/upwindEikonal.h>
-//#include <operators/hamilton-jacobi/godunov-eikonal/godunovEikonal.h>
-//#include <operators/hamilton-jacobi/upwind/upwind.h>
-//#include <operators/hamilton-jacobi/godunov/godunov.h>
-//#include <functions/tnlSDFSign.h>
-//#include <functions/tnlSDFGridValue.h>
+#include <operators/hamilton-jacobi/upwindEikonal.h>
+#include <operators/hamilton-jacobi/godunovEikonal.h>
 #include <operators/hamilton-jacobi/tnlEikonalOperator.h>
 
 
@@ -62,31 +58,14 @@ bool HamiltonJacobiProblemSetter< RealType, DeviceType, IndexType, MeshType, Con
            typedef HamiltonJacobiProblem< MeshType, Operator, BoundaryConditions, RightHandSide > Solver;
            return solverStarter.template run< Solver >( parameters );
       }
-      /*else if ( schemeName == "godunov")
+      if( schemeName == "godunov" )
       {
-         typedef godunovEikonalScheme< MeshType, RealType, IndexType > Operator;
-         typedef tnlConstantFunction< Dimensions, RealType > RightHandSide;
-         typedef HamiltonJacobiProblem< MeshType, Operator, BoundaryConditions, RightHandSide > Solver;
-         return solverStarter.template run< Solver >( parameters );
-      }
-      else if( schemeName == "upwind2" )
-      {
-           typedef tnlSDFSign< MeshType, Dimensions, RealType, tnlSDFGridValue<MeshType, Dimensions, RealType>, 1 > Sign;
-           typedef tnlSDFSign< MeshType, Dimensions, RealType, tnlSDFGridValue<MeshType, Dimensions, RealType>, 1 > RightHandSide;
-           typedef upwindScheme< MeshType, RealType, IndexType, Sign > Operator;
+           typedef godunovEikonalScheme< MeshType, RealType, IndexType > GradientNormOperator;
+           typedef tnlConstantFunction< Dimensions, RealType > RightHandSide;
+           typedef tnlEikonalOperator< GradientNormOperator, RightHandSide > Operator;
            typedef HamiltonJacobiProblem< MeshType, Operator, BoundaryConditions, RightHandSide > Solver;
            return solverStarter.template run< Solver >( parameters );
-      }
-      else if ( schemeName == "godunov2")
-      {
-           typedef tnlSDFSign< MeshType, Dimensions, RealType, tnlSDFGridValue<MeshType, Dimensions, RealType>, 1 > Sign;
-           typedef tnlSDFSign< MeshType, Dimensions, RealType, tnlSDFGridValue<MeshType, Dimensions, RealType>, 1 > RightHandSide;
-         typedef godunovScheme< MeshType, RealType, IndexType, Sign > Operator;
-         typedef HamiltonJacobiProblem< MeshType, Operator, BoundaryConditions, RightHandSide > Solver;
-         return solverStarter.template run< Solver >( parameters );
-      }*/
-
-
+      }      
       else
          cerr << "Unknown scheme '" << schemeName << "'." << endl;
 

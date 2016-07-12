@@ -8,8 +8,8 @@ SET( headers tnlBackwardTimeDiscretisation.h
              tnlLinearSystemAssembler.h
              tnlLinearSystemAssembler_impl.h
              tnlNoTimeDiscretisation.h
-             tnlPDESolver.h
-             tnlPDESolver_impl.h
+             tnlTimeDependentPDESolver.h
+             tnlTimeDependentPDESolver_impl.h
              tnlSemiImplicitTimeStepper.h
              tnlSemiImplicitTimeStepper_impl.h )
 

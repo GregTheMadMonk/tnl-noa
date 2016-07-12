@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlPDESolver.h  -  description
+                          tnlTimeDependentPDESolver.h  -  description
                              -------------------
     begin                : Jan 15, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLPDESOLVER_H_
-#define TNLPDESOLVER_H_
+#pragma once
 
 #include <core/tnlObject.h>
 #include <config/tnlConfigDescription.h>
@@ -26,7 +25,7 @@
 
 template< typename Problem,
           typename TimeStepper >
-class tnlPDESolver : public tnlObject
+class tnlTimeDependentPDESolver : public tnlObject
 {
    public:
 
@@ -36,9 +35,9 @@ class tnlPDESolver : public tnlObject
       typedef Problem ProblemType;
       typedef typename ProblemType::MeshType MeshType;
       typedef typename ProblemType::DofVectorType DofVectorType;
-      typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
+      typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;            
 
-      tnlPDESolver();
+      tnlTimeDependentPDESolver();
 
       static void configSetup( tnlConfigDescription& config,
                                const tnlString& prefix = "" );
@@ -98,6 +97,5 @@ class tnlPDESolver : public tnlObject
       tnlTimer *ioTimer, *computeTimer;
 };
 
-#include <solvers/pde/tnlPDESolver_impl.h>
+#include <solvers/pde/tnlTimeDependentPDESolver_impl.h>
 
-#endif /* TNLPDESOLVER_H_ */

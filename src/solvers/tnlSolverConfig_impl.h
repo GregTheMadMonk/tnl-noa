@@ -22,7 +22,7 @@
 #include <solvers/tnlBuildConfigTags.h>
 #include <solvers/tnlDummyProblem.h>
 #include <solvers/pde/tnlExplicitTimeStepper.h>
-#include <solvers/pde/tnlPDESolver.h>
+#include <solvers/pde/tnlTimeDependentPDESolver.h>
 
 template< typename ConfigTag,
           typename ProblemConfig >
@@ -84,7 +84,7 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
     */
    config.addDelimiter( " === Time discretisation parameters ==== " );
    typedef tnlExplicitTimeStepper< DummyProblem, tnlEulerSolver > ExplicitTimeStepper;
-   tnlPDESolver< DummyProblem, ExplicitTimeStepper >::configSetup( config );
+   tnlTimeDependentPDESolver< DummyProblem, ExplicitTimeStepper >::configSetup( config );
    ExplicitTimeStepper::configSetup( config );
    if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled ||
        tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled ||

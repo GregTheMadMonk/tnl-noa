@@ -23,7 +23,10 @@
 #include <solvers/tnlSolverMonitor.h>
 #include <core/tnlLogger.h>
 
+enum tnlTimeDependence { TimeDependentProblem, TimeIndependentProblem };
+
 template< typename Mesh,
+          tnlTimeDependence TimeDependence = TimeDependentProblem,
           typename Real = typename Mesh::RealType,
           typename Device = typename Mesh::DeviceType,
           typename Index = typename Mesh::IndexType >
@@ -40,6 +43,8 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
       typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
       typedef tnlVector< RealType, DeviceType, IndexType > MeshDependentDataType;
+      
+      static constexpr tnlTimeDependence isTimeDependent() { return TimeDependence; };
 
       /****
        * This means that the time stepper will be set from the command line arguments.

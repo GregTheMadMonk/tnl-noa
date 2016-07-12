@@ -15,8 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef TNLSOLVERSTARTER_H_
-#define TNLSOLVERSTARTER_H_
+#pragma once
 
 #include <config/tnlParameterContainer.h>
 #include <core/tnlTimer.h>
@@ -36,9 +35,13 @@ class tnlSolverStarter
    bool writeEpilog( ostream& str, const Solver& solver );
 
    template< typename Problem, typename TimeStepper >
-   bool runPDESolver( Problem& problem,
-                      const tnlParameterContainer& parameters,
-                      TimeStepper& timeStepper );
+   bool runTimeDependentPDESolver( Problem& problem,
+                                   const tnlParameterContainer& parameters,
+                                   TimeStepper& timeStepper );
+   
+   template< typename Problem >
+   bool runTimeIndependentPDESolver( Problem& problem,
+                                     const tnlParameterContainer& parameters );
 
    protected:
 
@@ -48,5 +51,3 @@ class tnlSolverStarter
 };
 
 #include <solvers/tnlSolverStarter_impl.h>
-
-#endif /* TNLSOLVERSTARTER_H_ */

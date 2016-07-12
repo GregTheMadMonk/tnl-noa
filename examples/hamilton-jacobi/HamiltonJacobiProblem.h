@@ -30,70 +30,67 @@ template< typename Mesh,
 		    typename BoundaryCondition,
 		    typename RightHandSide>
 class HamiltonJacobiProblem : public tnlPDEProblem< Mesh,
+                                                    TimeDependentProblem,
                                                     typename DifferentialOperator::RealType,
                                                     typename Mesh::DeviceType,
                                                     typename DifferentialOperator::IndexType  >
 {
-
    public:
 
-   typedef typename DifferentialOperator::RealType RealType;
-   typedef typename Mesh::DeviceType DeviceType;
-   typedef typename DifferentialOperator::IndexType IndexType;
+      typedef typename DifferentialOperator::RealType RealType;
+      typedef typename Mesh::DeviceType DeviceType;
+      typedef typename DifferentialOperator::IndexType IndexType;
 
-   typedef tnlMeshFunction< Mesh > MeshFunctionType;
-   typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
-   
-   using typename BaseType::MeshType;
-   using typename BaseType::DofVectorType;
-   using typename BaseType::MeshDependentDataType;
-   
-   static tnlString getTypeStatic();
+      typedef tnlMeshFunction< Mesh > MeshFunctionType;
+      typedef tnlPDEProblem< Mesh, TimeDependentProblem, RealType, DeviceType, IndexType > BaseType;
 
-   tnlString getPrologHeader() const;
+      using typename BaseType::MeshType;
+      using typename BaseType::DofVectorType;
+      using typename BaseType::MeshDependentDataType;
 
-   void writeProlog( tnlLogger& logger,
-                     const tnlParameterContainer& parameters ) const;
+      static tnlString getTypeStatic();
 
-   bool setup( const tnlParameterContainer& parameters );
+      tnlString getPrologHeader() const;
 
-   bool setInitialCondition( const tnlParameterContainer& parameters,
-                             const MeshType& mesh,
-                             DofVectorType& dofs,
-                             MeshDependentDataType& meshDependentData );
+      void writeProlog( tnlLogger& logger,
+                        const tnlParameterContainer& parameters ) const;
 
-   bool makeSnapshot( const RealType& time,
-                      const IndexType& step,
-                      const MeshType& mesh,
-                      DofVectorType& dofs,
-                      MeshDependentDataType& meshDependentData );
+      bool setup( const tnlParameterContainer& parameters );
 
-   IndexType getDofs( const MeshType& mesh ) const;
+      bool setInitialCondition( const tnlParameterContainer& parameters,
+                                const MeshType& mesh,
+                                DofVectorType& dofs,
+                                MeshDependentDataType& meshDependentData );
 
-   void bindDofs( const MeshType& mesh,
-                  DofVectorType& dofs );
+      bool makeSnapshot( const RealType& time,
+                         const IndexType& step,
+                         const MeshType& mesh,
+                         DofVectorType& dofs,
+                         MeshDependentDataType& meshDependentData );
 
-   void getExplicitRHS( const RealType& time,
-                        const RealType& tau,
-                        const MeshType& mesh,
-                        DofVectorType& _u,
-                        DofVectorType& _fu,
-                        MeshDependentDataType& meshDependentData );
+      IndexType getDofs( const MeshType& mesh ) const;
+
+      void bindDofs( const MeshType& mesh,
+                     DofVectorType& dofs );
+
+      void getExplicitRHS( const RealType& time,
+                           const RealType& tau,
+                           const MeshType& mesh,
+                           DofVectorType& _u,
+                           DofVectorType& _fu,
+                           MeshDependentDataType& meshDependentData );
 
    protected:
 
-   MeshFunctionType solution;
+      MeshFunctionType solution;
 
-   tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide  > explicitUpdater;
+      tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide  > explicitUpdater;
 
-   DifferentialOperator differentialOperator;
+      DifferentialOperator differentialOperator;
 
-   BoundaryCondition boundaryCondition;
+      BoundaryCondition boundaryCondition;
 
-   RightHandSide rightHandSide;
-
-   //bool schemeTest;
-   //bool tested;
+      RightHandSide rightHandSide;
 };
 
 #include "HamiltonJacobiProblem_impl.h"

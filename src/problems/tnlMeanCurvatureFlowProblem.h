@@ -43,7 +43,7 @@ class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef tnlMeshFunction< Mesh > MeshFunctionType;
-      typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef tnlPDEProblem< Mesh, TimeDependentProblem, RealType, DeviceType, IndexType > BaseType;
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType> MatrixType;
 
       using typename BaseType::MeshType;

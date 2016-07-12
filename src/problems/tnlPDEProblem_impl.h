@@ -19,11 +19,12 @@
 #define TNLPDEPROBLEM_IMPL_H_
 
 template< typename Mesh,
+          tnlTimeDependence TimeDependence,
           typename Real,
           typename Device,
           typename Index >
 tnlString
-tnlPDEProblem< Mesh, Real, Device, Index >::
+tnlPDEProblem< Mesh, TimeDependence, Real, Device, Index >::
 getTypeStatic()
 {
    return tnlString( "tnlPDEProblem< " ) +
@@ -34,32 +35,35 @@ getTypeStatic()
 }
 
 template< typename Mesh,
+          tnlTimeDependence TimeDependence,
           typename Real,
           typename Device,
           typename Index >
 tnlString
-tnlPDEProblem< Mesh, Real, Device, Index >::
+tnlPDEProblem< Mesh, TimeDependence, Real, Device, Index >::
 getPrologHeader() const
 {
    return tnlString( "General PDE Problem" );
 }
 
 template< typename Mesh,
+          tnlTimeDependence TimeDependence,
           typename Real,
           typename Device,
           typename Index >
 void
-tnlPDEProblem< Mesh, Real, Device, Index >::
+tnlPDEProblem< Mesh, TimeDependence, Real, Device, Index >::
 writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
 {
 }
 
 template< typename Mesh,
+          tnlTimeDependence TimeDependence,
           typename Real,
           typename Device,
           typename Index >
 bool
-tnlPDEProblem< Mesh, Real, Device, Index >::
+tnlPDEProblem< Mesh, TimeDependence, Real, Device, Index >::
 writeEpilog( tnlLogger& logger ) const
 {
    return true;
@@ -67,11 +71,12 @@ writeEpilog( tnlLogger& logger ) const
 
 
 template< typename Mesh,
+          tnlTimeDependence TimeDependence,
           typename Real,
           typename Device,
           typename Index >
 bool
-tnlPDEProblem< Mesh, Real, Device, Index >::
+tnlPDEProblem< Mesh, TimeDependence, Real, Device, Index >::
 setMeshDependentData( const MeshType& mesh,
                       MeshDependentDataType& meshDependentData )
 {
@@ -82,22 +87,24 @@ setMeshDependentData( const MeshType& mesh,
 }
 
 template< typename Mesh,
+          tnlTimeDependence TimeDependence,
           typename Real,
           typename Device,
           typename Index >
 void
-tnlPDEProblem< Mesh, Real, Device, Index >::
+tnlPDEProblem< Mesh, TimeDependence, Real, Device, Index >::
 bindMeshDependentData( const MeshType& mesh,
                        MeshDependentDataType& meshDependentData )
 {
 }
 
 template< typename Mesh,
+          tnlTimeDependence TimeDependence,
           typename Real,
           typename Device,
           typename Index >
 bool
-tnlPDEProblem< Mesh, Real, Device, Index >::
+tnlPDEProblem< Mesh, TimeDependence, Real, Device, Index >::
 preIterate( const RealType& time,
             const RealType& tau,
             const MeshType& mesh,
@@ -108,11 +115,12 @@ preIterate( const RealType& time,
 }
 
 template< typename Mesh,
+          tnlTimeDependence TimeDependence,
           typename Real,
           typename Device,
           typename Index >
 void
-tnlPDEProblem< Mesh, Real, Device, Index >::
+tnlPDEProblem< Mesh, TimeDependence, Real, Device, Index >::
 setExplicitBoundaryConditions( const RealType& time,
                                const MeshType& mesh,
                                DofVectorType& dofs,
@@ -122,11 +130,12 @@ setExplicitBoundaryConditions( const RealType& time,
 
 
 template< typename Mesh,
+          tnlTimeDependence TimeDependence,
           typename Real,
           typename Device,
           typename Index >
 bool
-tnlPDEProblem< Mesh, Real, Device, Index >::
+tnlPDEProblem< Mesh, TimeDependence, Real, Device, Index >::
 postIterate( const RealType& time,
              const RealType& tau,
              const MeshType& mesh,
@@ -137,12 +146,13 @@ postIterate( const RealType& time,
 }
 
 template< typename Mesh,
+          tnlTimeDependence TimeDependence,
           typename Real,
           typename Device,
           typename Index >
-tnlSolverMonitor< typename tnlPDEProblem< Mesh, Real, Device, Index >::RealType,
-                  typename tnlPDEProblem< Mesh, Real, Device, Index >::IndexType >*
-tnlPDEProblem< Mesh, Real, Device, Index >::
+tnlSolverMonitor< typename tnlPDEProblem< Mesh, TimeDependence, Real, Device, Index >::RealType,
+                  typename tnlPDEProblem< Mesh, TimeDependence, Real, Device, Index >::IndexType >*
+tnlPDEProblem< Mesh, TimeDependence, Real, Device, Index >::
 getSolverMonitor()
 {
    return 0;

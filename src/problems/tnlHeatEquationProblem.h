@@ -37,6 +37,7 @@ template< typename Mesh,
           typename DifferentialOperator = tnlLinearDiffusion< Mesh,
                                                               typename BoundaryCondition::RealType > >
 class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
+                                                     TimeDependentProblem,
                                                      typename DifferentialOperator::RealType,
                                                      typename Mesh::DeviceType,
                                                      typename DifferentialOperator::IndexType  >
@@ -47,7 +48,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef tnlMeshFunction< Mesh > MeshFunctionType;
-      typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef tnlPDEProblem< Mesh, TimeDependentProblem, RealType, DeviceType, IndexType > BaseType;
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
 
       using typename BaseType::MeshType;

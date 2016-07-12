@@ -31,62 +31,62 @@ class tnlExplicitTimeStepper
 {
    public:
 
-   typedef Problem ProblemType;
-   typedef OdeSolver< tnlExplicitTimeStepper< Problem, OdeSolver > > OdeSolverType;
-   typedef typename Problem::RealType RealType;
-   typedef typename Problem::DeviceType DeviceType;
-   typedef typename Problem::IndexType IndexType;
-   typedef typename Problem::MeshType MeshType;
-   typedef typename ProblemType::DofVectorType DofVectorType;
-   typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
+      typedef Problem ProblemType;
+      typedef OdeSolver< tnlExplicitTimeStepper< Problem, OdeSolver > > OdeSolverType;
+      typedef typename Problem::RealType RealType;
+      typedef typename Problem::DeviceType DeviceType;
+      typedef typename Problem::IndexType IndexType;
+      typedef typename Problem::MeshType MeshType;
+      typedef typename ProblemType::DofVectorType DofVectorType;
+      typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
 
-   tnlExplicitTimeStepper();
+      tnlExplicitTimeStepper();
 
-   static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix = "" );
+      static void configSetup( tnlConfigDescription& config,
+                               const tnlString& prefix = "" );
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+      bool setup( const tnlParameterContainer& parameters,
+                 const tnlString& prefix = "" );
 
-   bool init( const MeshType& mesh );
+      bool init( const MeshType& mesh );
 
-   void setSolver( OdeSolverType& odeSolver );
+      void setSolver( OdeSolverType& odeSolver );
 
-   void setProblem( ProblemType& problem );
+      void setProblem( ProblemType& problem );
 
-   ProblemType* getProblem() const;
+      ProblemType* getProblem() const;
 
-   bool setTimeStep( const RealType& tau );
+      bool setTimeStep( const RealType& tau );
 
-   const RealType& getTimeStep() const;
+      const RealType& getTimeStep() const;
 
-   bool solve( const RealType& time,
-               const RealType& stopTime,
-               const MeshType& mesh,
-               DofVectorType& dofVector,
-               MeshDependentDataType& meshDependentData );
+      bool solve( const RealType& time,
+                  const RealType& stopTime,
+                  const MeshType& mesh,
+                  DofVectorType& dofVector,
+                  MeshDependentDataType& meshDependentData );
 
-   void getExplicitRHS( const RealType& time,
-                        const RealType& tau,
-                        DofVectorType& _u,
-                        DofVectorType& _fu );
-   
-   bool writeEpilog( tnlLogger& logger );
+      void getExplicitRHS( const RealType& time,
+                           const RealType& tau,
+                           DofVectorType& _u,
+                           DofVectorType& _fu );
+
+      bool writeEpilog( tnlLogger& logger );
 
    protected:
 
-   OdeSolverType* odeSolver;
+      OdeSolverType* odeSolver;
 
-   Problem* problem;
+      Problem* problem;
 
-   const MeshType* mesh;
+      const MeshType* mesh;
 
-   RealType timeStep;
+      RealType timeStep;
 
-   MeshDependentDataType* meshDependentData;
-   
-   tnlTimer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
-   
+      MeshDependentDataType* meshDependentData;
+
+      tnlTimer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
+
    long long int allIterations;
 };
 
