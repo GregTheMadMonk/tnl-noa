@@ -55,8 +55,14 @@ class tnlDirectEikonalProblem
 
       void bindDofs( const MeshType& mesh,
                      const DofVectorType& dofs );
+      
+      bool setInitialData( const tnlParameterContainer& parameters,
+                           const MeshType& mesh,
+                           DofVectorType& dofs,
+                           MeshDependentData& meshdependentData )
 
-      bool solve();
+      bool solve( const MeshType& mesh,
+                  DofVectorType& dosf );
 
 
       protected:

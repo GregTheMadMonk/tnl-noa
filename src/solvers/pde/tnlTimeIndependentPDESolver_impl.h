@@ -68,13 +68,23 @@ setup( const tnlParameterContainer& parameters,
    }
    cout << " [ OK ]" << endl;
    this->dofs.setValue( 0.0 );
-   this->problem->bindDofs( this->mesh, this->dofs );
+   this->problem->bindDofs( this->mesh, this->dofs );   
    
    /****
     * Set mesh dependent data
     */
    this->problem->setMeshDependentData( this->mesh, this->meshDependentData );
    this->problem->bindMeshDependentData( this->mesh, this->meshDependentData );
+   
+   /***
+    * Set-up the initial condition
+    */
+   cout << "Setting up the initial condition ... ";
+   typedef typename Problem :: DofVectorType DofVectorType;
+   if( ! this->problem->setInitialData( parameters, this->mesh, this->dofs, this->meshDependentData ) )
+      return false;
+   cout << " [ OK ]" << endl;
+   
    
    return true;
 }
@@ -144,7 +154,11 @@ solve()
 
    this->computeTimer->reset();
    this->computeTimer->start();
-   this->problem->solve();
+   if( ! this->problem->solve( this->mesh, this->dofs ) )
+   {
+      this->computeTimer->stop();
+      return false;
+   }
    this->computeTimer->stop();
    return true;
 }
