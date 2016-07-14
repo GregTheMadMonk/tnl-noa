@@ -15,6 +15,7 @@
 
 #include <problems/tnlPDEProblem.h>
 #include <functions/tnlMeshFunction.h>
+#include "tnlFastSweepingMethod.h"
 
 template< typename Mesh,
           typename Anisotropy,
@@ -59,7 +60,7 @@ class tnlDirectEikonalProblem
       bool setInitialData( const tnlParameterContainer& parameters,
                            const MeshType& mesh,
                            DofVectorType& dofs,
-                           MeshDependentData& meshdependentData )
+                           MeshDependentDataType& meshdependentData );
 
       bool solve( const MeshType& mesh,
                   DofVectorType& dosf );
@@ -68,6 +69,8 @@ class tnlDirectEikonalProblem
       protected:
          
          MeshFunctionType u;
+         
+         MeshFunctionType initialData;
 
 };
 

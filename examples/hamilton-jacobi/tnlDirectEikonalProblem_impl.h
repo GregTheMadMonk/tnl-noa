@@ -77,7 +77,7 @@ Index
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 getDofs( const MeshType& mesh ) const
 {
-   
+   return mesh.getEntitiesCount();
 }
 
 template< typename Mesh,
@@ -89,8 +89,22 @@ tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 bindDofs( const MeshType& mesh,
           const DofVectorType& dofs )
 {
+   this->u.bind( mesh, dofs );
+}
+
+bool
+setInitialData( const tnlParameterContainer& parameters,
+                const MeshType& mesh,
+                DofVectorType& dofs,
+                MeshDependentDataType& meshdependentData )
+{
+   tnlString inputFile = parameters.getParameter< tnlString >( "input-file" );
+   this->initialData.setMesh( mesh );
+   if( !this->initialData.boundLoad( inputFile ) )
+      return false;
    
 }
+
 
 template< typename Mesh,
           typename Anisotropy,
@@ -98,7 +112,8 @@ template< typename Mesh,
           typename Index >
 bool
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
-solve()
+solve( const MeshType& mesh,
+       DofVectorType& dosf )
 {
    
 }
