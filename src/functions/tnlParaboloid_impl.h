@@ -22,7 +22,7 @@
 template< int dimensions, typename Real >
 tnlParaboloidBase< dimensions, Real >::tnlParaboloidBase()
 : xCentre( 0 ), yCentre( 0 ), zCentre( 0 ),
-  coefficient( 1 ), offset ( 0 )
+  coefficient( 1 ), radius ( 0 )
 {
 }
 
@@ -34,7 +34,7 @@ bool tnlParaboloidBase< dimensions, Real >::setup( const tnlParameterContainer& 
    this->yCentre = parameters.getParameter< double >( "y-centre" );
    this->zCentre = parameters.getParameter< double >( "z-centre" );
    this->coefficient = parameters.getParameter< double >( "coefficient" );
-   this->offset = parameters.getParameter< double >( "offset" );
+   this->radius = parameters.getParameter< double >( "radius" );
 
    return true;
 }
@@ -89,13 +89,13 @@ Real tnlParaboloidBase< dimensions, Real >::getCoefficient() const
 template< int dimensions, typename Real >
 void tnlParaboloidBase< dimensions, Real >::setOffset( const Real& offset )
 {
-   this->offset = offset;
+   this->radius = offset;
 }
 
 template< int dimensions, typename Real >
 Real tnlParaboloidBase< dimensions, Real >::getOffset() const
 {
-   return this->offset;
+   return this->radius;
 }
 
 template< typename Real >
@@ -112,7 +112,7 @@ getPartialDerivative( const VertexType& v,
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 )
-      return this->coefficient * ( ( x - this -> xCentre ) * ( x - this -> xCentre ) - this->offset*this->offset );
+      return this->coefficient * ( ( x - this -> xCentre ) * ( x - this -> xCentre ) - this->radius*this->radius );
    if( XDiffOrder == 1 )
       return 2.0 * this->coefficient * ( x - this -> xCentre );
    return 0.0;
@@ -136,7 +136,7 @@ getPartialDerivative( const VertexType& v,
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
    {
       return this->coefficient * ( ( x - this -> xCentre ) * ( x - this -> xCentre )
-    		  	  	  	         + ( y - this -> yCentre ) * ( y - this -> yCentre ) - this->offset*this->offset );
+    		  	  	  	         + ( y - this -> yCentre ) * ( y - this -> yCentre ) - this->radius*this->radius );
    }
    if( XDiffOrder == 1 && YDiffOrder == 0)
 	   return 2.0 * this->coefficient * ( x - this -> xCentre );
@@ -166,7 +166,7 @@ getPartialDerivative( const VertexType& v,
    {
       return this->coefficient * ( ( x - this -> xCentre ) * ( x - this -> xCentre )
     		  	  	  	         + ( y - this -> yCentre ) * ( y - this -> yCentre )
-    		  	  	  	         + ( z - this -> zCentre ) * ( z - this -> zCentre ) - this->offset*this->offset );
+    		  	  	  	         + ( z - this -> zCentre ) * ( z - this -> zCentre ) - this->radius*this->radius );
    }
    if( XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 0)
 	   return 2.0 * this->coefficient * ( x - this -> xCentre );

@@ -37,5 +37,6 @@ Real negativePart( const Real& arg)
    return arg < 0.0 ? arg : 0.0;
 }
 
+
 #endif	/* TNLFUNCTIONS_H */
 

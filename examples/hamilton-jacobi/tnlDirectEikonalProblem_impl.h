@@ -32,7 +32,7 @@ tnlString
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 getPrologHeader() const
 {
-   
+   return tnlString( "Direct eikonal solver" );
 }
 
 template< typename Mesh,
@@ -55,7 +55,7 @@ bool
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 writeEpilog( tnlLogger& logger )
 {
-   
+   return true;
 }
 
 template< typename Mesh,
@@ -66,7 +66,7 @@ bool
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 setup( const tnlParameterContainer& parameters )
 {
-   
+   return true;
 }
 
 template< typename Mesh,
@@ -77,7 +77,7 @@ Index
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 getDofs( const MeshType& mesh ) const
 {
-   return mesh.getEntitiesCount();
+   return mesh.template getEntitiesCount< typename MeshType::Cell >();
 }
 
 template< typename Mesh,
@@ -92,7 +92,12 @@ bindDofs( const MeshType& mesh,
    this->u.bind( mesh, dofs );
 }
 
+template< typename Mesh,
+          typename Anisotropy,
+          typename Real,
+          typename Index >
 bool
+tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 setInitialData( const tnlParameterContainer& parameters,
                 const MeshType& mesh,
                 DofVectorType& dofs,
@@ -102,7 +107,7 @@ setInitialData( const tnlParameterContainer& parameters,
    this->initialData.setMesh( mesh );
    if( !this->initialData.boundLoad( inputFile ) )
       return false;
-   
+   return true;
 }
 
 
@@ -113,7 +118,8 @@ template< typename Mesh,
 bool
 tnlDirectEikonalProblem< Mesh, Anisotropy, Real, Index >::
 solve( const MeshType& mesh,
-       DofVectorType& dosf )
+       DofVectorType& dofs )
 {
-   
+   tnlFastSweepingMethod< MeshType, AnisotropyType > fsm;
+   fsm.solve( mesh, anisotropy, initialData );
 }

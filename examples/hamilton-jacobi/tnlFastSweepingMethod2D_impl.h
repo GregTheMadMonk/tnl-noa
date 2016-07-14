@@ -21,6 +21,7 @@ template< typename Real,
           typename Anisotropy >
 tnlFastSweepingMethod< tnlGrid< 2, Real, Device, Index >, Anisotropy >::
 tnlFastSweepingMethod()
+: maxIterations( 1 )
 {
    
 }
@@ -57,6 +58,65 @@ solve( const MeshType& mesh,
        const AnisotropyType& anisotropy,
        MeshFunctionType& u )
 {
+   MeshFunctionType aux;
+   aux.setMesh( mesh );
+   std::cout << "Initiating the interface cells ..." << std::endl;
+   BaseType::initInterface( u, aux );
+   aux.save( "aux.tnl" );
+
+   typename MeshType::Cell cell( mesh );
+      
+   for( cell.getCoordinates().y() = 0;
+        cell.getCoordinates().y() < mesh.getDimensions().y();
+        cell.getCoordinates().y()++ )
+	{
+      for( cell.getCoordinates().x() = 0;
+           cell.getCoordinates().x() < mesh.getDimensions().x();
+           cell.getCoordinates().x()++ )
+         {
+            cell.refresh();
+            this->updateValue( aux, cell );
+         }
+	}
    
+   for( cell.getCoordinates().y() = 0;
+        cell.getCoordinates().y() < mesh.getDimensions().y();
+        cell.getCoordinates().y()++ )
+	{
+      for( cell.getCoordinates().x() = mesh.getDimensions().x() - 1;
+           cell.getCoordinates().x() >= 0 ;
+           cell.getCoordinates().x()-- )		
+         {
+            cell.refresh();
+            this->updateValue( aux, cell );
+         }
+	}
+   
+   for( cell.getCoordinates().y() = mesh.getDimensions().y() - 1;
+        cell.getCoordinates().y() >= 0 ;
+        cell.getCoordinates().y()-- )
+	{
+      for( cell.getCoordinates().x() = 0;
+           cell.getCoordinates().x() < mesh.getDimensions().x();
+           cell.getCoordinates().x()++ )
+         {
+            cell.refresh();
+            this->updateValue( aux, cell );
+         }
+	}
+   
+   
+   for( cell.getCoordinates().y() = mesh.getDimensions().y() - 1;
+        cell.getCoordinates().y() >= 0;
+        cell.getCoordinates().y()-- )
+	{
+      for( cell.getCoordinates().x() = mesh.getDimensions().x() - 1;
+           cell.getCoordinates().x() >= 0 ;
+           cell.getCoordinates().x()-- )		
+         {
+            cell.refresh();
+            this->updateValue( aux, cell );
+         }
+	}
 }
 

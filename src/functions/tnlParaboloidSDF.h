@@ -54,7 +54,7 @@ class tnlParaboloidSDFBase : public tnlDomain< dimensions, SpaceDomain >
 
    protected:
 
-   Real xCentre, yCentre, zCentre, coefficient, offset;
+   Real xCentre, yCentre, zCentre, coefficient, radius;
 };
 
 template< int Dimensions, typename Real >

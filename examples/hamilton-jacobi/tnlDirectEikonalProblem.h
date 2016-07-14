@@ -35,6 +35,7 @@ class tnlDirectEikonalProblem
       typedef Index IndexType;
       typedef tnlMeshFunction< Mesh > MeshFunctionType;
       typedef tnlPDEProblem< Mesh, TimeIndependentProblem, RealType, DeviceType, IndexType > BaseType;
+      typedef Anisotropy AnisotropyType;
 
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
@@ -71,6 +72,8 @@ class tnlDirectEikonalProblem
          MeshFunctionType u;
          
          MeshFunctionType initialData;
+         
+         AnisotropyType anisotropy;
 
 };
 

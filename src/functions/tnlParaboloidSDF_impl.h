@@ -22,7 +22,7 @@
 template< int dimensions, typename Real >
 tnlParaboloidSDFBase< dimensions, Real >::tnlParaboloidSDFBase()
 : xCentre( 0 ), yCentre( 0 ), zCentre( 0 ),
-  coefficient( 1 ), offset ( 0 )
+  coefficient( 1 ), radius ( 0 )
 {
 }
 
@@ -34,7 +34,7 @@ bool tnlParaboloidSDFBase< dimensions, Real >::setup( const tnlParameterContaine
    this->yCentre = parameters.getParameter< double >( "y-centre" );
    this->zCentre = parameters.getParameter< double >( "z-centre" );
    this->coefficient = parameters.getParameter< double >( "coefficient" );
-   this->offset = parameters.getParameter< double >( "offset" );
+   this->radius = parameters.getParameter< double >( "radius" );
 
    return true;
 }
@@ -89,13 +89,13 @@ Real tnlParaboloidSDFBase< dimensions, Real >::getCoefficient() const
 template< int dimensions, typename Real >
 void tnlParaboloidSDFBase< dimensions, Real >::setOffset( const Real& offset )
 {
-   this->offset = offset;
+   this->radius = offset;
 }
 
 template< int dimensions, typename Real >
 Real tnlParaboloidSDFBase< dimensions, Real >::getOffset() const
 {
-   return this->offset;
+   return this->radius;
 }
 
 template< typename Real >
@@ -112,7 +112,7 @@ getPartialDerivative( const VertexType& v,
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 )
-      return sqrt( ( x - this -> xCentre ) * ( x - this -> xCentre ) ) - this->offset;
+      return sqrt( ( x - this -> xCentre ) * ( x - this -> xCentre ) ) - this->radius;
    if( XDiffOrder == 1 )
       return 1.0;
    return 0.0;
@@ -134,7 +134,7 @@ getPartialDerivative( const VertexType& v,
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
    {
       return sqrt ( ( x - this -> xCentre ) * ( x - this -> xCentre )
-    		  	  + ( y - this -> yCentre ) * ( y - this -> yCentre ) ) - this->offset;
+    		  	  + ( y - this -> yCentre ) * ( y - this -> yCentre ) ) - this->radius;
    }
    return 0.0;
 }
@@ -156,7 +156,7 @@ getPartialDerivative( const VertexType& v,
    {
       return sqrt( ( x - this -> xCentre ) * ( x - this -> xCentre )
     		  	 + ( y - this -> yCentre ) * ( y - this -> yCentre )
-    		  	 + ( z - this -> zCentre ) * ( z - this -> zCentre ) ) - this->offset;
+    		  	 + ( z - this -> zCentre ) * ( z - this -> zCentre ) ) - this->radius;
    }
    return 0.0;
 }

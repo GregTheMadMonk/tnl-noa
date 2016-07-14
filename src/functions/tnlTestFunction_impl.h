@@ -86,7 +86,7 @@ configSetup( tnlConfigDescription& config,
    config.addEntry     < double >( prefix + "waves-number-y", "Cut-off for the sine based test functions.", 0.0 );
    config.addEntry     < double >( prefix + "waves-number-z", "Cut-off for the sine based test functions.", 0.0 );
    config.addEntry     < double >( prefix + "sigma", "Sigma for the exp based test functions.", 1.0 );
-	config.addEntry     < double >( prefix + "offset", "Offset for paraboloids.", 1.0 );
+	config.addEntry     < double >( prefix + "radius", "Radius for paraboloids.", 1.0 );
    config.addEntry     < double >( prefix + "coefficient", "Coefficient for paraboloids.", 1.0 );
    config.addEntry     < double >( prefix + "x-centre", "x-centre for paraboloids.", 0.0 );
    config.addEntry     < double >( prefix + "y-centre", "y-centre for paraboloids.", 0.0 );

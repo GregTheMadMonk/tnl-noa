@@ -166,6 +166,7 @@ tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 setMesh( const MeshType& mesh )
 {
    this->mesh = &mesh;
+   this->data.setSize( mesh.template getEntitiesCount< typename Mesh::template MeshEntity< MeshEntityDimensions > >() );
 }
 
 template< typename Mesh,

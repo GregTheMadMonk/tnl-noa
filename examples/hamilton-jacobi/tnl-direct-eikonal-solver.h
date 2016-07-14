@@ -32,6 +32,7 @@ class tnlDirectEikonalSolverConfig
       static void configSetup( tnlConfigDescription& config )
       {
          config.addDelimiter( "Direct eikonal equation solver settings:" );
+         config.addRequiredEntry< tnlString >( "input-file", "Input file." );
       };
 };
 
