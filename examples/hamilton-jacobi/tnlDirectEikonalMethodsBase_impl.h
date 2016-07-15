@@ -117,7 +117,7 @@ updateCell( MeshFunctionType& u,
    const MeshType& mesh = cell.getMesh();
   
    const RealType& h = mesh.getSpaceSteps().x(); 
-   const RealType& value = u( cell );
+   const RealType value = u( cell );
    Real a,b, tmp;
 
    if( cell.getCoordinates().x() == 0 )
@@ -153,6 +153,10 @@ updateCell( MeshFunctionType& u,
              << " Sign( value ) * h = " << Sign( value ) * h
              << " ArgAbsMin( a, b ) + Sign( value ) * h = " << ArgAbsMin( a, b ) + Sign( value ) * h           
              << " tmp = " << tmp << std::endl;
+      tmp = ArgAbsMin( a, b ) + Sign( value ) * h;
+      tmp = ArgAbsMin( a, b ) + Sign( value ) * h;
+      tmp = ArgAbsMin( a, b ) + Sign( value ) * h;
+      std::cerr << " tmp = " << tmp << std::endl;
 
    }
    else
