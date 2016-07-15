@@ -59,9 +59,12 @@ solve( const MeshType& mesh,
        MeshFunctionType& u )
 {
    MeshFunctionType aux;
+   InterfaceMapType interfaceMap;
    aux.setMesh( mesh );
+   interfaceMap.setMesh( mesh );
    std::cout << "Initiating the interface cells ..." << std::endl;
-   BaseType::initInterface( u, aux );
-   aux.save( "aux.tnl" );
+   BaseType::initInterface( u, aux, interfaceMap );
+   aux.save( "aux-ini.tnl" );
+
 }
 

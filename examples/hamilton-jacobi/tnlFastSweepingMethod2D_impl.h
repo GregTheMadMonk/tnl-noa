@@ -59,9 +59,11 @@ solve( const MeshType& mesh,
        MeshFunctionType& u )
 {
    MeshFunctionType aux;
+   InterfaceMapType interfaceMap;
    aux.setMesh( mesh );
+   interfaceMap.setMesh( mesh );
    std::cout << "Initiating the interface cells ..." << std::endl;
-   BaseType::initInterface( u, aux );
+   BaseType::initInterface( u, aux, interfaceMap );
    aux.save( "aux-ini.tnl" );
 
    typename MeshType::Cell cell( mesh );
@@ -74,11 +76,13 @@ solve( const MeshType& mesh,
            cell.getCoordinates().x() < mesh.getDimensions().x();
            cell.getCoordinates().x()++ )
          {
-            std::cerr << "1 -> ";
+            //std::cerr << "1 -> ";
             cell.refresh();
-            this->updateCell( aux, cell );
+            if( ! interfaceMap( cell ) )
+               this->updateCell( aux, cell );
          }
 	}
+   aux.save( "aux-1.tnl" );
    
    for( cell.getCoordinates().y() = 0;
         cell.getCoordinates().y() < mesh.getDimensions().y();
@@ -88,11 +92,13 @@ solve( const MeshType& mesh,
            cell.getCoordinates().x() >= 0 ;
            cell.getCoordinates().x()-- )		
          {
-            std::cerr << "2 -> ";
+            //std::cerr << "2 -> ";
             cell.refresh();
-            this->updateCell( aux, cell );
+            if( ! interfaceMap( cell ) )            
+               this->updateCell( aux, cell );
          }
 	}
+   aux.save( "aux-2.tnl" );
    
    for( cell.getCoordinates().y() = mesh.getDimensions().y() - 1;
         cell.getCoordinates().y() >= 0 ;
@@ -102,11 +108,13 @@ solve( const MeshType& mesh,
            cell.getCoordinates().x() < mesh.getDimensions().x();
            cell.getCoordinates().x()++ )
          {
-            std::cerr << "3 -> ";
+            //std::cerr << "3 -> ";
             cell.refresh();
-            this->updateCell( aux, cell );
+            if( ! interfaceMap( cell ) )            
+               this->updateCell( aux, cell );
          }
       }
+   aux.save( "aux-3.tnl" );
    
    
    for( cell.getCoordinates().y() = mesh.getDimensions().y() - 1;
@@ -117,12 +125,12 @@ solve( const MeshType& mesh,
            cell.getCoordinates().x() >= 0 ;
            cell.getCoordinates().x()-- )		
          {
-            std::cerr << "4 -> ";
+            //std::cerr << "4 -> ";
             cell.refresh();
-            this->updateCell( aux, cell );
+            if( ! interfaceMap( cell ) )            
+               this->updateCell( aux, cell );
          }
-      }
-   
-   aux.save( "aux-fin.tnl" );
+      }   
+   aux.save( "aux-4.tnl" );
 }
 

@@ -26,13 +26,15 @@ class tnlDirectEikonalMethodsBase< tnlGrid< 1, Real, Device, Index > >
       typedef Real RealType;
       typedef Device DevcieType;
       typedef Index IndexType;
+      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef tnlMeshFunction< MeshType, 1, bool > InterfaceMapType;
       
-      template< typename MeshFunction >
-      void initInterface( const MeshFunction& input,
-                          MeshFunction& output );
+      void initInterface( const MeshFunctionType& input,
+                          MeshFunctionType& output,
+                          InterfaceMapType& interfaceMap );
       
-      template< typename MeshFunction, typename MeshEntity >
-      void updateCell( MeshFunction& u,
+      template< typename MeshEntity >
+      void updateCell( MeshFunctionType& u,
                        const MeshEntity& cell );
       
 };
@@ -50,13 +52,14 @@ class tnlDirectEikonalMethodsBase< tnlGrid< 2, Real, Device, Index > >
       typedef Device DevcieType;
       typedef Index IndexType;
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef tnlMeshFunction< MeshType, 2, bool > InterfaceMapType;
+
+      void initInterface( const MeshFunctionType& input,
+                          MeshFunctionType& output,
+                          InterfaceMapType& interfaceMap );
       
-      template< typename MeshFunction >
-      void initInterface( const MeshFunction& input,
-                          MeshFunction& output );
-      
-      template< typename MeshFunction, typename MeshEntity >
-      void updateCell( MeshFunction& u,
+      template< typename MeshEntity >
+      void updateCell( MeshFunctionType& u,
                        const MeshEntity& cell );
 };
 
@@ -72,13 +75,14 @@ class tnlDirectEikonalMethodsBase< tnlGrid< 3, Real, Device, Index > >
       typedef Device DevcieType;
       typedef Index IndexType;
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef tnlMeshFunction< MeshType, 3, bool > InterfaceMapType;
+
+      void initInterface( const MeshFunctionType& input,
+                          MeshFunctionType& output,
+                          InterfaceMapType& interfaceMap );
       
-      template< typename MeshFunction >
-      void initInterface( const MeshFunction& input,
-                          MeshFunction& output );
-      
-      template< typename MeshFunction, typename MeshEntity >
-      void updateCell( MeshFunction& u,
+      template< typename MeshEntity >
+      void updateCell( MeshFunctionType& u,
                        const MeshEntity& cell );      
 };
 

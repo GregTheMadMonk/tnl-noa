@@ -39,8 +39,10 @@ class tnlFastSweepingMethod< tnlGrid< 1, Real, Device, Index >, Anisotropy >
       typedef tnlHost DeviceType;
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
       typedef tnlDirectEikonalMethodsBase< tnlGrid< 1, Real, Device, Index > > BaseType;
+      
+      using typename BaseType::InterfaceMapType;
+      using typename BaseType::MeshFunctionType;
       
       tnlFastSweepingMethod();
       
@@ -74,9 +76,11 @@ class tnlFastSweepingMethod< tnlGrid< 2, Real, Device, Index >, Anisotropy >
       typedef tnlHost DeviceType;
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
-      typedef tnlDirectEikonalMethodsBase< tnlGrid< 2, Real, Device, Index > > BaseType;            
-      
+      typedef tnlDirectEikonalMethodsBase< tnlGrid< 2, Real, Device, Index > > BaseType;
+
+      using typename BaseType::InterfaceMapType;
+      using typename BaseType::MeshFunctionType;
+
       tnlFastSweepingMethod();
       
       const IndexType& getMaxIterations() const;
@@ -109,8 +113,10 @@ class tnlFastSweepingMethod< tnlGrid< 3, Real, Device, Index >, Anisotropy >
       typedef tnlHost DeviceType;
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
-      typedef tnlDirectEikonalMethodsBase< tnlGrid< 3, Real, Device, Index > > BaseType;            
+      typedef tnlDirectEikonalMethodsBase< tnlGrid< 3, Real, Device, Index > > BaseType;
+      
+      using typename BaseType::InterfaceMapType;
+      using typename BaseType::MeshFunctionType;
       
       tnlFastSweepingMethod();
       

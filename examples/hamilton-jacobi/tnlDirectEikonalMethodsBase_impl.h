@@ -13,11 +13,11 @@
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename MeshFunction >
 void
 tnlDirectEikonalMethodsBase< tnlGrid< 1, Real, Device, Index > >::
-initInterface( const MeshFunction& input,
-               MeshFunction& output )
+initInterface( const MeshFunctionType& input,
+               MeshFunctionType& output,
+               InterfaceMapType& interfaceMap  )
 {
    const MeshType& mesh = input.getMesh();
    typedef typename MeshType::Cell Cell;
@@ -27,26 +27,35 @@ initInterface( const MeshFunction& input,
         cell.getCoordinates().x() ++ )
    {
       cell.refresh();
-      const auto& neighbours = cell.getNeighbourEntities();
-      //const IndexType& c = cell.getIndex();
-      const IndexType e = neighbours.template getEntityIndex<  1 >();
-      const IndexType w = neighbours.template getEntityIndex< -1 >();
-      const RealType& c = input( cell );
-      if( c * input[ e ] <= 0 || c * input[ w ] <= 0 )
-         output[ cell.getIndex() ] = c;
-      else output[ cell.getIndex() ] =
-         c > 0 ? tnlTypeInfo< RealType >::getMaxValue() :
-                -tnlTypeInfo< RealType >::getMaxValue();
+      const RealType& c = input( cell );      
+      if( ! cell.isBoundaryEntity()  )
+      {
+         const auto& neighbours = cell.getNeighbourEntities();
+         //const IndexType& c = cell.getIndex();
+         const IndexType e = neighbours.template getEntityIndex<  1 >();
+         const IndexType w = neighbours.template getEntityIndex< -1 >();
+
+         if( c * input[ e ] <= 0 || c * input[ w ] <= 0 )
+         {
+            output[ cell.getIndex() ] = c;
+            interfaceMap[ cell.getIndex() ] = true;
+            continue;
+         }
+      }
+      output[ cell.getIndex() ] =
+      c > 0 ? tnlTypeInfo< RealType >::getMaxValue() :
+             -tnlTypeInfo< RealType >::getMaxValue();
+      interfaceMap[ cell.getIndex() ] = false;
    }
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename MeshFunction, typename MeshEntity >
+   template< typename MeshEntity >
 void
 tnlDirectEikonalMethodsBase< tnlGrid< 1, Real, Device, Index > >::
-updateCell( MeshFunction& u,
+updateCell( MeshFunctionType& u,
             const MeshEntity& cell )
 {
 }
@@ -55,11 +64,11 @@ updateCell( MeshFunction& u,
 template< typename Real,
           typename Device,
           typename Index >
-      template< typename MeshFunction >
 void
 tnlDirectEikonalMethodsBase< tnlGrid< 2, Real, Device, Index > >::
-initInterface( const MeshFunction& input,
-               MeshFunction& output )
+initInterface( const MeshFunctionType& input,
+               MeshFunctionType& output,
+               InterfaceMapType& interfaceMap  )
 {
    const MeshType& mesh = input.getMesh();
    typedef typename MeshType::Cell Cell;
@@ -84,22 +93,24 @@ initInterface( const MeshFunction& input,
                 c * input[ n ] <= 0 || c * input[ s ] <= 0 )
             {
                output[ cell.getIndex() ] = c;
+               interfaceMap[ cell.getIndex() ] = true;
                continue;
             }
          }
          output[ cell.getIndex() ] =
             c > 0 ? tnlTypeInfo< RealType >::getMaxValue() :
-                   -tnlTypeInfo< RealType >::getMaxValue();         
+                   -tnlTypeInfo< RealType >::getMaxValue();  
+         interfaceMap[ cell.getIndex() ] = false;
       }
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename MeshFunction, typename MeshEntity >
+   template< typename MeshEntity >
 void
 tnlDirectEikonalMethodsBase< tnlGrid< 2, Real, Device, Index > >::
-updateCell( MeshFunction& u,
+updateCell( MeshFunctionType& u,
             const MeshEntity& cell )
 {
    const auto& neighbourEntities = cell.template getNeighbourEntities< 2 >();
@@ -129,24 +140,27 @@ updateCell( MeshFunction& u,
                      u[ neighbourEntities.template getEntityIndex< 0,   1 >() ] );
    }
 
+   if( fabs( a ) == tnlTypeInfo< Real >::getMaxValue() || 
+       fabs( a ) == tnlTypeInfo< Real >::getMaxValue() )
+      return;
    if( fabs( a - b ) >= h )
       tmp = ArgAbsMin( a, b ) + Sign( value ) * h;
    else
       tmp = 0.5 * ( a + b + Sign( value ) * sqrt( 2.0 * h * h - ( a - b ) * ( a - b ) ) );
 
    u[ cell.getIndex() ] = ArgAbsMin( value, tmp );
-   std::cerr << ArgAbsMin( value, tmp ) << " ";   
+   //std::cerr << ArgAbsMin( value, tmp ) << " ";   
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename MeshFunction >
 void
 tnlDirectEikonalMethodsBase< tnlGrid< 3, Real, Device, Index > >::
-initInterface( const MeshFunction& input,
-               MeshFunction& output )
+initInterface( const MeshFunctionType& input,
+               MeshFunctionType& output,
+               InterfaceMapType& interfaceMap  )
 {
    const MeshType& mesh = input.getMesh();
    typedef typename MeshType::Cell Cell;
@@ -162,32 +176,41 @@ initInterface( const MeshFunction& input,
               cell.getCoordinates().x() ++ )
          {
             cell.refresh();
-            auto neighbours = cell.getNeighbourEntities();
-            //const IndexType& c = cell.getIndex();
-            const IndexType e = neighbours.template getEntityIndex<  1,  0,  0 >();
-            const IndexType w = neighbours.template getEntityIndex< -1,  0,  0 >();
-            const IndexType n = neighbours.template getEntityIndex<  0,  1,  0 >();
-            const IndexType s = neighbours.template getEntityIndex<  0, -1,  0 >();
-            const IndexType t = neighbours.template getEntityIndex<  0,  0,  1 >();
-            const IndexType b = neighbours.template getEntityIndex<  0,  0, -1 >();
             const RealType& c = input( cell );
-            if( c * input[ e ] <= 0 || c * input[ w ] <= 0 ||
-                c * input[ n ] <= 0 || c * input[ s ] <= 0 ||
-                c * input[ t ] <= 0 || c * input[ b ] <= 0 )
-               output[ cell.getIndex() ] = c;
-            else output[ cell.getIndex() ] =
+            if( ! cell.isBoundaryEntity() )
+            {
+               auto neighbours = cell.getNeighbourEntities();
+               //const IndexType& c = cell.getIndex();
+               const IndexType e = neighbours.template getEntityIndex<  1,  0,  0 >();
+               const IndexType w = neighbours.template getEntityIndex< -1,  0,  0 >();
+               const IndexType n = neighbours.template getEntityIndex<  0,  1,  0 >();
+               const IndexType s = neighbours.template getEntityIndex<  0, -1,  0 >();
+               const IndexType t = neighbours.template getEntityIndex<  0,  0,  1 >();
+               const IndexType b = neighbours.template getEntityIndex<  0,  0, -1 >();
+
+               if( c * input[ e ] <= 0 || c * input[ w ] <= 0 ||
+                   c * input[ n ] <= 0 || c * input[ s ] <= 0 ||
+                   c * input[ t ] <= 0 || c * input[ b ] <= 0 )
+               {
+                  output[ cell.getIndex() ] = c;
+                  interfaceMap[ cell.getIndex() ] = true;
+                  continue;
+               }
+            }
+            output[ cell.getIndex() ] =
                c > 0 ? tnlTypeInfo< RealType >::getMaxValue() :
                       -tnlTypeInfo< RealType >::getMaxValue();
+            interfaceMap[ cell.getIndex() ] = false;
          }
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename MeshFunction, typename MeshEntity >
+   template< typename MeshEntity >
 void
 tnlDirectEikonalMethodsBase< tnlGrid< 3, Real, Device, Index > >::
-updateCell( MeshFunction& u,
+updateCell( MeshFunctionType& u,
             const MeshEntity& cell )
 {
    
