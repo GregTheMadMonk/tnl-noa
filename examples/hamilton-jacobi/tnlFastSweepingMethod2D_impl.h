@@ -84,7 +84,7 @@ solve( const MeshType& mesh,
 	}
    aux.save( "aux-1.tnl" );
    
-   for( cell.getCoordinates().y() = 0;
+   /*for( cell.getCoordinates().y() = 0;
         cell.getCoordinates().y() < mesh.getDimensions().y();
         cell.getCoordinates().y()++ )
 	{
@@ -131,6 +131,6 @@ solve( const MeshType& mesh,
                this->updateCell( aux, cell );
          }
       }   
-   aux.save( "aux-4.tnl" );
+   aux.save( "aux-4.tnl" );*/
 }
 

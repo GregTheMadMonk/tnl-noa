@@ -140,11 +140,21 @@ updateCell( MeshFunctionType& u,
                      u[ neighbourEntities.template getEntityIndex< 0,   1 >() ] );
    }
 
-   if( fabs( a ) == tnlTypeInfo< Real >::getMaxValue() || 
-       fabs( a ) == tnlTypeInfo< Real >::getMaxValue() )
+   if( fabs( a ) == tnlTypeInfo< Real >::getMaxValue() && 
+       fabs( b ) == tnlTypeInfo< Real >::getMaxValue() )
       return;
-   if( fabs( a - b ) >= h )
+   if( fabs( a ) == tnlTypeInfo< Real >::getMaxValue() ||
+       fabs( b ) == tnlTypeInfo< Real >::getMaxValue() ||
+       fabs( a - b ) >= h )
+   {
       tmp = ArgAbsMin( a, b ) + Sign( value ) * h;
+         std::cerr << "a = " << a << " b = " << b << " h = " << h 
+             << " ArgAbsMin( a, b ) = " << ArgAbsMin( a, b ) << " Sign( value ) = " << Sign( value )
+             << " Sign( value ) * h = " << Sign( value ) * h
+             << " ArgAbsMin( a, b ) + Sign( value ) * h = " << ArgAbsMin( a, b ) + Sign( value ) * h           
+             << " tmp = " << tmp << std::endl;
+
+   }
    else
       tmp = 0.5 * ( a + b + Sign( value ) * sqrt( 2.0 * h * h - ( a - b ) * ( a - b ) ) );
 
