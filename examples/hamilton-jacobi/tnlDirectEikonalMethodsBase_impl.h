@@ -8,6 +8,7 @@
 #pragma once
 
 #include <core/tnlTypeInfo.h>
+#include <functions/tnlFunctions.h>
 
 template< typename Real,
           typename Device,
@@ -48,38 +49,6 @@ tnlDirectEikonalMethodsBase< tnlGrid< 1, Real, Device, Index > >::
 updateCell( MeshFunction& u,
             const MeshEntity& cell )
 {
-	const auto& neighbourEntities = cell.getNeighbourEntities< 2 >();
-   const MeshType& mesh = cell.getMesh();
-   
-	const RealType& value = u( cell );
-	Real a,b, tmp;
-
-	if( cell.getCoordinates().x() == 0 )
-		a = u[ neighbourEntities.template getEntityIndex< 1,  0 >() ];
-	else if( cell.getCoordinates().x() == mesh.getDimensions().x() - 1 )
-		a = u[ neighbourEntities.template getEntityIndex< -1,  0 >() ];
-	else
-	{
-		a = fabsMin( u[ neighbourEntities.template getEntityIndex< -1,  0 >() ],
-				       u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] );
-	}
-
-	if( cell.getCoordinates().y() == 0 )
-		b = u[ neighbourEntities.template getEntityIndex< 0,  1 >()];
-	else if( cell.getCoordinates().y() == mesh.getDimensions().y() - 1 )
-		b = u[ neighbourEntities.template getEntityIndex< 0,  -1 >() ];
-	else
-	{
-		b = fabsMin( u[ neighbourEntities.template getEntityIndex< 0,  -1 >() ],
-				       u[ neighbourEntities.template getEntityIndex< 0,   1 >() ] );
-	}
-
-	if( fabs( a - b ) >= h )
-		tmp = fabsMin( a, b ) + Sign( value ) * h;
-	else
-		tmp = 0.5 * (a + b + Sign(value)*sqrt(2.0 * h * h - (a - b) * (a - b) ) );
-	
-   u[ cell.getIndex() ] = fabsMin( value, tmp );
 }
 
 
@@ -133,7 +102,40 @@ tnlDirectEikonalMethodsBase< tnlGrid< 2, Real, Device, Index > >::
 updateCell( MeshFunction& u,
             const MeshEntity& cell )
 {
-   
+   const auto& neighbourEntities = cell.template getNeighbourEntities< 2 >();
+   const MeshType& mesh = cell.getMesh();
+  
+   const RealType& h = mesh.getSpaceSteps().x(); 
+   const RealType& value = u( cell );
+   Real a,b, tmp;
+
+   if( cell.getCoordinates().x() == 0 )
+      a = u[ neighbourEntities.template getEntityIndex< 1,  0 >() ];
+   else if( cell.getCoordinates().x() == mesh.getDimensions().x() - 1 )
+      a = u[ neighbourEntities.template getEntityIndex< -1,  0 >() ];
+   else
+   {
+      a = ArgAbsMin( u[ neighbourEntities.template getEntityIndex< -1,  0 >() ],
+                     u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] );
+   }
+
+   if( cell.getCoordinates().y() == 0 )
+      b = u[ neighbourEntities.template getEntityIndex< 0,  1 >()];
+   else if( cell.getCoordinates().y() == mesh.getDimensions().y() - 1 )
+      b = u[ neighbourEntities.template getEntityIndex< 0,  -1 >() ];
+   else
+   {
+      b = ArgAbsMin( u[ neighbourEntities.template getEntityIndex< 0,  -1 >() ],
+                     u[ neighbourEntities.template getEntityIndex< 0,   1 >() ] );
+   }
+
+   if( fabs( a - b ) >= h )
+      tmp = ArgAbsMin( a, b ) + Sign( value ) * h;
+   else
+      tmp = 0.5 * ( a + b + Sign( value ) * sqrt( 2.0 * h * h - ( a - b ) * ( a - b ) ) );
+
+   u[ cell.getIndex() ] = ArgAbsMin( value, tmp );
+   std::cerr << ArgAbsMin( value, tmp ) << " ";   
 }
 
 

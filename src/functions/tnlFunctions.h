@@ -5,8 +5,7 @@
  * Created on July 11, 2016, 6:01 PM
  */
 
-#ifndef TNLFUNCTIONS_H
-#define	TNLFUNCTIONS_H
+#pragma once
 
 #include <core/tnlCuda.h>
 
@@ -37,6 +36,17 @@ Real negativePart( const Real& arg)
    return arg < 0.0 ? arg : 0.0;
 }
 
+template< typename Real >
+__cuda_callable__
+Real ArgAbsMin( const Real& x, const Real& y )
+{
+   return fabs( x ) < fabs( y ) ?  x : y;
+}
 
-#endif	/* TNLFUNCTIONS_H */
+template< typename Real >
+__cuda_callable__
+Real ArgAbsMax( const Real& x, const Real& y )
+{
+   return fabs( x ) > fabs( y ) ?  x : y;
+}
 
