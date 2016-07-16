@@ -118,7 +118,7 @@ updateCell( MeshFunctionType& u,
   
    const RealType& h = mesh.getSpaceSteps().x(); 
    const RealType value = u( cell );
-   Real a,b, tmp;
+   Real a, b, tmp;
 
    if( cell.getCoordinates().x() == 0 )
       a = u[ neighbourEntities.template getEntityIndex< 1,  0 >() ];
@@ -148,7 +148,7 @@ updateCell( MeshFunctionType& u,
        fabs( a - b ) >= h )
    {
       tmp = ArgAbsMin( a, b ) + Sign( value ) * h;
-         std::cerr << "a = " << a << " b = " << b << " h = " << h 
+      /*   std::cerr << "a = " << a << " b = " << b << " h = " << h 
              << " ArgAbsMin( a, b ) = " << ArgAbsMin( a, b ) << " Sign( value ) = " << Sign( value )
              << " Sign( value ) * h = " << Sign( value ) * h
              << " ArgAbsMin( a, b ) + Sign( value ) * h = " << ArgAbsMin( a, b ) + Sign( value ) * h           
@@ -156,7 +156,9 @@ updateCell( MeshFunctionType& u,
       tmp = ArgAbsMin( a, b ) + Sign( value ) * h;
       tmp = ArgAbsMin( a, b ) + Sign( value ) * h;
       tmp = ArgAbsMin( a, b ) + Sign( value ) * h;
+      res = ArgAbsMin( a, b ) + Sign( value ) * h;
       std::cerr << " tmp = " << tmp << std::endl;
+      std::cerr << " res = " << res << std::endl;*/
 
    }
    else

@@ -285,7 +285,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-typename tnlGrid< 2, Real, Device, Index >::VertexType
+const typename tnlGrid< 2, Real, Device, Index >::VertexType&
 tnlGrid< 2, Real, Device, Index >::
 getSpaceSteps() const
 {
