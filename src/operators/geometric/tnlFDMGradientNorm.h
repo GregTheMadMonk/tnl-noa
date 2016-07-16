@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLFDMGRADIENTNORM_H
 #define	TNLFDMGRADIENTNORM_H
@@ -25,7 +18,7 @@
 template< typename Mesh,
           template< typename, int, int, int, typename, typename > class DifferenceOperatorTemplate = tnlForwardFiniteDifference,
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType > 
+          typename Index = typename Mesh::IndexType >
 class tnlFDMGradientNorm
 {
 };
@@ -40,18 +33,18 @@ class tnlFDMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, DifferenceOp
    : public tnlOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >,
                          MeshInteriorDomain, 1, 1, Real, Index >
 {
-   public: 
-   
+   public:
+ 
    typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlExactGradientNorm< 1, RealType > ExactOperatorType;
-   
+ 
    template< typename MeshEntity = typename MeshType::Cell >
    using XDifferenceOperatorType = DifferenceOperatorTemplate< typename MeshEntity::MeshType, 1, 0, 0, Real, Index >;
-   
+ 
    tnlFDMGradientNorm()
    : epsSquare( 0.0 ){}
 
@@ -71,16 +64,16 @@ class tnlFDMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, DifferenceOp
    {
       XDifferenceOperatorType< MeshEntity > XDifference;
       const RealType u_x = XDifference( u, entity );
-      return sqrt( this->epsSquare + u_x * u_x );          
+      return sqrt( this->epsSquare + u_x * u_x );
    }
-                
+ 
    void setEps( const Real& eps )
    {
       this->epsSquare = eps*eps;
    }
-      
+ 
    private:
-   
+ 
    RealType epsSquare;
 };
 
@@ -95,15 +88,15 @@ class tnlFDMGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, DifferenceOp
    : public tnlOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >,
                          MeshInteriorDomain, 2, 2, Real, Index >
 {
-   public: 
-   
+   public:
+ 
       typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef tnlExactGradientNorm< 2, RealType > ExactOperatorType;
-      
+ 
       template< typename MeshEntity >
       using XDifferenceOperatorType = DifferenceOperatorTemplate< typename MeshEntity::MeshType, 1, 0, 0, Real, Index >;
       template< typename MeshEntity >
@@ -132,7 +125,7 @@ class tnlFDMGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, DifferenceOp
          YDifferenceOperatorType< MeshEntity > YDifference;
          const RealType u_x = XDifference( u, entity );
          const RealType u_y = YDifference( u, entity );
-         return sqrt( this->epsSquare + u_x * u_x + u_y * u_y );       
+         return sqrt( this->epsSquare + u_x * u_x + u_y * u_y );
       }
 
 
@@ -140,10 +133,10 @@ class tnlFDMGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, DifferenceOp
       void setEps( const Real& eps )
       {
          this->epsSquare = eps*eps;
-      }   
-   
+      }
+ 
    private:
-   
+ 
       RealType epsSquare;
 };
 
@@ -158,15 +151,15 @@ class tnlFDMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, DifferenceO
    : public tnlOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >,
                          MeshInteriorDomain, 3, 3, Real, Index >
 {
-   public: 
-   
+   public:
+ 
       typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef tnlExactGradientNorm< 3, RealType > ExactOperatorType;
-   
+ 
       template< typename MeshEntity >
       using XDifferenceOperatorType = DifferenceOperatorTemplate< typename MeshEntity::MeshType, 1, 0, 0, Real, Index >;
       template< typename MeshEntity >
@@ -174,16 +167,16 @@ class tnlFDMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, DifferenceO
       template< typename MeshEntity >
       using ZDifferenceOperatorType = DifferenceOperatorTemplate< typename MeshEntity::MeshType, 0, 0, 1, Real, Index >;
 
-   
+ 
       tnlFDMGradientNorm()
-      : epsSquare( 0.0 ){}   
+      : epsSquare( 0.0 ){}
 
       static tnlString getType()
       {
          return tnlString( "tnlFDMGradientNorm< " ) +
             MeshType::getType() + ", " +
             ::getType< Real >() + ", " +
-            ::getType< Index >() + " >";      
+            ::getType< Index >() + " >";
       }
 
       template< typename MeshFunction, typename MeshEntity >
@@ -199,17 +192,17 @@ class tnlFDMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, DifferenceO
          const RealType u_x = XDifference( u, entity );
          const RealType u_y = YDifference( u, entity );
          const RealType u_z = ZDifference( u, entity );
-         return sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );             
+         return sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );
       }
 
 
       void setEps(const Real& eps)
       {
          this->epsSquare = eps*eps;
-      }   
-   
+      }
+ 
    private:
-   
+ 
       RealType epsSquare;
 };
 

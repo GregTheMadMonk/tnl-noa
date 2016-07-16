@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <core/tnlObject.h>
 #include <debug/tnlDebug.h>
@@ -51,9 +44,9 @@ bool tnlObject :: save( tnlFile& file ) const
 {
 #ifdef HAVE_NOT_CXX11
    if( ! file. write< const char, tnlHost, int >( magic_number, strlen( magic_number ) ) )
-#else      
+#else
    if( ! file. write( magic_number, strlen( magic_number ) ) )
-#endif      
+#endif
       return false;
    if( ! this->getSerializationTypeVirtual().save( file ) ) return false;
    return true;
@@ -138,9 +131,9 @@ bool getObjectType( tnlFile& file, tnlString& type )
    char mn[ 10 ];
 #ifdef HAVE_NOT_CXX11
    if( ! file. read< char, tnlHost, int >( mn, strlen( magic_number ) ) )
-#else      
+#else
    if( ! file. read( mn, strlen( magic_number ) ) )
-#endif      
+#endif
    {
       cerr << "Unable to read file " << file. getFileName() << " ... " << endl;
       return false;

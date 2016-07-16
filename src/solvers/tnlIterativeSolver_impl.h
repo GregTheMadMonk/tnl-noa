@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLITERATIVESOLVER_IMPL_H_
 #define TNLITERATIVESOLVER_IMPL_H_
@@ -109,7 +102,7 @@ bool tnlIterativeSolver< Real, Index> :: checkNextIteration()
          solverMonitor->refresh();
    }
 
-   if( std::isnan( this->getResidue() ) || 
+   if( std::isnan( this->getResidue() ) ||
        this->getIterations() > this->getMaxIterations()  ||
        ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() >= this->getMinIterations() ) ||
        ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() >= this->getMinIterations() ) )

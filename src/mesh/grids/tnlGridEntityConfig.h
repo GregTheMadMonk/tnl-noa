@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLGRIDENTITYCONFIG_H
 #define	TNLGRIDENTITYCONFIG_H
@@ -28,9 +21,9 @@
  *  XOX    or   XXOXX   etc.
  *   X            X
  *                X
- * 
+ *
  * or all neighbour entities like this
- * 
+ *
  *           XXXXX
  *  XXX      XXXXX
  *  XOX  or  XXOXX  etc.
@@ -41,13 +34,13 @@
 class tnlGridEntityNoStencilStorage
 {
    public:
-      
+ 
       template< typename GridEntity >
       constexpr static bool neighbourEntityStorage( int neighbourEntityStorage )
       {
          return tnlGridEntityNoStencil;
       }
-      
+ 
       constexpr static int getStencilSize()
       {
          return 0;
@@ -58,16 +51,16 @@ template< int stencilSize = 1 >
 class tnlGridEntityCrossStencilStorage
 {
    public:
-      
+ 
       template< typename GridEntity >
       constexpr static bool neighbourEntityStorage( const int neighbourEntityDimensions )
       {
          //return tnlGridEntityNoStencil;
          return ( GridEntity::entityDimensions == GridEntity::GridType::meshDimensions &&
                   neighbourEntityDimensions == GridEntity::GridType::meshDimensions )
-                * tnlGridEntityCrossStencil;         
+                * tnlGridEntityCrossStencil;
       }
-            
+ 
       constexpr static int getStencilSize()
       {
          return stencilSize;

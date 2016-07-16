@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlCGSolver_implH
 #define tnlCGSolver_implH
@@ -104,12 +97,12 @@ solve( const Vector& b, Vector& x )
        */
       if( s2 == 0.0 ) alpha = 0.0;
       else alpha = s1 / s2;
-      
+ 
       /****
        * 2. x_{j+1} = x_j + \alpha_j p_j
        */
       x.addVector( p, alpha );
-      
+ 
       /****
        * 3. r_{j+1} = r_j - \alpha_j A * p_j
        */
@@ -137,7 +130,7 @@ solve( const Vector& b, Vector& x )
        * 6. r_{j+1} = new_r
        */
       new_r.swap( r );
-      
+ 
       if( this->getIterations() % 10 == 0 )
          this->setResidue( ResidueGetter :: getResidue( *matrix, b, x, bNorm ) );
    }

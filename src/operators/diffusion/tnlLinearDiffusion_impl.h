@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLLINEARDIFFUSION_IMP_H
 #define	TNLLINEARDIFFUSION_IMP_H
@@ -65,7 +58,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename MeshEntity >          
+   template< typename MeshEntity >
 __cuda_callable__
 inline
 Index
@@ -105,7 +98,7 @@ setMatrixElements( const PreimageFunction& u,
    const RealType lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2 >();
    matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1 >(),      - lambdaX );
    matrixRow.setElement( 1, index,                                              2.0 * lambdaX );
-   matrixRow.setElement( 2, neighbourEntities.template getEntityIndex< 1 >(),       - lambdaX );   
+   matrixRow.setElement( 2, neighbourEntities.template getEntityIndex< 1 >(),       - lambdaX );
 }
 
 template< typename MeshReal,
@@ -253,7 +246,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename EntityType >          
+   template< typename EntityType >
 __cuda_callable__
 inline
 Index
@@ -286,7 +279,7 @@ setMatrixElements( const PreimageFunction& u,
                    Vector& b ) const
 {
    static_assert( MeshEntity::entityDimensions == 3, "Wrong mesh entity dimensions." );
-   static_assert( PreimageFunction::getEntitiesDimensions() == 3, "Wrong preimage function" );   
+   static_assert( PreimageFunction::getEntitiesDimensions() == 3, "Wrong preimage function" );
    const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
    const IndexType& index = entity.getIndex();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );

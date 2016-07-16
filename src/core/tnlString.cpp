@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <cstring>
 #include <string.h>
@@ -316,7 +309,7 @@ bool tnlString :: load( istream& file )
       delete[] string;
       string = NULL;
    }
-   if( ! string ) 
+   if( ! string )
    {
       //dbgCout( "Reallocating string..." );
       length = STRING_PAGE * ( _length / STRING_PAGE + 1 );
@@ -339,15 +332,15 @@ bool tnlString :: save( tnlFile& file ) const
    int len = strlen( string );
 #ifdef HAVE_NOT_CXX11
    if( ! file. write< int, tnlHost >( &len ) )
-#else      
+#else
    if( ! file. write( &len ) )
-#endif      
+#endif
       return false;
 #ifdef HAVE_NOT_CXX11
    if( ! file. write< char, tnlHost, int >( string, len ) )
-#else      
+#else
    if( ! file. write( string, len ) )
-#endif      
+#endif
       return false;
    return true;
 }
@@ -357,9 +350,9 @@ bool tnlString :: load( tnlFile& file )
    int _length;
 #ifdef HAVE_NOT_CXX11
    if( ! file. read< int, tnlHost >( &_length ) )
-#else      
+#else
    if( ! file. read( &_length ) )
-#endif      
+#endif
    {
       cerr << "I was not able to read tnlString length." << endl;
       return false;
@@ -386,7 +379,7 @@ bool tnlString :: load( tnlFile& file )
    if( ! file. read< char, tnlHost, int >( string, _length ) )
 #else
    if( ! file. read( string, _length ) )
-#endif      
+#endif
    {
       cerr << "I was not able to read a tnlString with a length " << length << "." << endl;
       return false;
@@ -415,8 +408,8 @@ void tnlString :: MPIBcast( int root, MPI_Comm comm )
          string = new char[ length ];
       }
    }
-   
-   MPI_Bcast( string, len + 1, MPI_CHAR, root, comm );  
+ 
+   MPI_Bcast( string, len + 1, MPI_CHAR, root, comm );
    dbgExpr( iproc );
    dbgExpr( string );
 #endif

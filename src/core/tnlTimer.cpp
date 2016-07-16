@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <core/tnlTimer.h>
 
@@ -54,21 +47,21 @@ void tnlTimer::stop()
       /****
        * Real time
        */
-#ifdef HAVE_TIME      
+#ifdef HAVE_TIME
       struct timeval tp;
       int rtn = gettimeofday( &tp, NULL );
       this->totalRealTime += ( double ) tp. tv_sec + 1.0e-6 * ( double ) tp. tv_usec - this->initialRealTime;
 #endif
-      
+ 
       /****
        * CPU time
        */
-#ifdef HAVE_SYS_RESOURCE_H      
+#ifdef HAVE_SYS_RESOURCE_H
       rusage initUsage;
       getrusage(  RUSAGE_SELF, &initUsage );
       this->totalCPUTime += initUsage. ru_utime. tv_sec + 1.0e-6 * ( double ) initUsage. ru_utime. tv_usec - this->initialCPUTime;
-#endif      
-      
+#endif
+ 
       /****
        * CPU cycles
        */
@@ -96,12 +89,12 @@ void tnlTimer::start()
    getrusage( RUSAGE_SELF, &initUsage );
    this->initialCPUTime = initUsage. ru_utime. tv_sec + 1.0e-6 * ( double ) initUsage. ru_utime. tv_usec;
 #endif
-   
+ 
    /****
     * CPU cycles
     */
    this->initialCPUCycles = this->rdtsc();
-   
+ 
    this->stopState = false;
 }
 

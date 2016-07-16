@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef SRC_MESH_TNLGRID3D_H_
 #define SRC_MESH_TNLGRID3D_H_
@@ -38,10 +31,10 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    typedef tnlGrid< 3, Real, tnlHost, Index > HostType;
    typedef tnlGrid< 3, Real, tnlCuda, Index > CudaType;
    typedef tnlGrid< 3, Real, Device, Index > ThisType;
-   
+ 
    static const int meshDimensions = 3;
 
-   template< int EntityDimensions, 
+   template< int EntityDimensions,
              typename Config = tnlGridEntityCrossStencilStorage< 1 > >
    using MeshEntity = tnlGridEntity< ThisType, EntityDimensions, Config >;
 
@@ -80,33 +73,33 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    template< typename EntityType >
    __cuda_callable__
    inline IndexType getEntitiesCount() const;
-   
+ 
    template< typename EntityType >
    __cuda_callable__
    inline EntityType getEntity( const IndexType& entityIndex ) const;
-   
+ 
    template< typename EntityType >
    __cuda_callable__
    inline Index getEntityIndex( const EntityType& entity ) const;
-   
+ 
    template< typename EntityType >
    __cuda_callable__
    RealType getEntityMeasure( const EntityType& entity ) const;
-      
+ 
    __cuda_callable__
    RealType getCellMeasure() const;
 
    __cuda_callable__
    inline VertexType getSpaceSteps() const;
-   
+ 
    template< int xPow, int yPow, int zPow >
    __cuda_callable__
    inline const RealType& getSpaceStepsProducts() const;
 
-   
+ 
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
-      
+ 
    template< typename GridFunction >
    typename GridFunction::RealType getAbsMax( const GridFunction& f ) const;
 
@@ -148,7 +141,7 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    void computeSpaceSteps();
 
    CoordinatesType dimensions;
-   
+ 
    IndexType numberOfCells,
           numberOfNxFaces, numberOfNyFaces, numberOfNzFaces, numberOfNxAndNyFaces, numberOfFaces,
           numberOfDxEdges, numberOfDyEdges, numberOfDzEdges, numberOfDxAndDyEdges, numberOfEdges,
@@ -157,14 +150,14 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    VertexType origin, proportions;
 
    IndexType cellZNeighboursStep;
-   
+ 
    VertexType spaceSteps;
-   
+ 
    RealType spaceStepsProducts[ 5 ][ 5 ][ 5 ];
 
    template< typename, typename, int >
    friend class tnlGridEntityGetter;
-      
+ 
    template< typename, int, typename >
    friend class tnlNeighbourGridEntityGetter;
 };

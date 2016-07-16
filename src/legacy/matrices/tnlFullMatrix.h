@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlFullMatrixH
 #define tnlFullMatrixH
@@ -51,7 +44,7 @@ class tnlFullMatrix : public tnlMatrix< Real, Device, Index >,
    Index getNonzeroElements() const;
 
    Index getSize() const;
-   
+ 
    Real getElement( Index i, Index j ) const;
 
    bool setElement( Index i, Index j, const Real& v );
@@ -296,7 +289,7 @@ void MatrixProduct( const tnlFullMatrix< Real, tnlHost, Index >& m1,
       {
          Real res( 0.0 );
          for( Index k = 0; k < size; k ++ )
-            res += m1( i, k ) * m2( k, j ); 
+            res += m1( i, k ) * m2( k, j );
          result( i, j ) = res;
       }
 };

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMESHENTITYREFERENCEORIENTATION_H
 #define	TNLMESHENTITYREFERENCEORIENTATION_H
@@ -39,7 +32,7 @@ class tnlMeshEntityReferenceOrientation
             this->cornerIdsMap.insert( std::make_pair( referenceCornerIds[i], i ) );
          }
       }
-      
+ 
       static tnlString getType(){};
 
       EntityOrientation createOrientation( const SeedType& seed ) const

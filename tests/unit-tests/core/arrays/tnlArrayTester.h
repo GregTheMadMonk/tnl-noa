@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLARRAYTESTER_H_
 #define TNLARRAYTESTER_H_
@@ -94,7 +87,7 @@ class tnlArrayTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( u.getSize() == 10 );
       CPPUNIT_ASSERT( v.getSize() == 10 );
    }
-   
+ 
    void testBind()
    {
       Array u( 10 ), v;
@@ -107,14 +100,14 @@ class tnlArrayTester : public CppUnit :: TestCase
       u.reset();
       CPPUNIT_ASSERT( u.getSize() == 0 );
       CPPUNIT_ASSERT( v.getElement( 0 ) == 50 );
-      
+ 
       ElementType data[ 10 ] = { 1, 2, 3, 4, 5, 6, 7, 8, 10 };
       u.bind( data, 10 );
       CPPUNIT_ASSERT( u.getElement( 1 ) == 2 );
       v.bind( u );
       CPPUNIT_ASSERT( v.getElement( 1 ) == 2 );
       u.reset();
-      v.setElement( 1, 3 );      
+      v.setElement( 1, 3 );
       v.reset();
       CPPUNIT_ASSERT( data[ 1 ] == 3 );
    }

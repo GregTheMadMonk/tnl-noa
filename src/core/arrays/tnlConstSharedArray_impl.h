@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLCONSTSHAREDARRAY_IMPL_H_
 #define TNLCONSTSHAREDARRAY_IMPL_H_
@@ -100,7 +93,7 @@ void tnlConstSharedArray< Element, Device, Index > :: bind( const Array& array,
       this->size = array. getSize();
    else
       this->size = size;
-   
+ 
 };
 
 template< typename Element,
@@ -246,7 +239,7 @@ bool tnlConstSharedArray< Element, Device, Index > :: save( tnlFile& file ) cons
       return false;
    if( ! file. write< Element, Device, Index >( this->data, this->size ) )
    {
-      std::cerr << "I was not able to WRITE tnlConstSharedArray " 
+      std::cerr << "I was not able to WRITE tnlConstSharedArray "
                 << " with size " << this->getSize() << std::endl;
       return false;
    }

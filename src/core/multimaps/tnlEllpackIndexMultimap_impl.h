@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLELLPACKINDEXMULTIMAP_IMPL_H
 #define	TNLELLPACKINDEXMULTIMAP_IMPL_H
@@ -37,7 +30,7 @@ tnlString tnlEllpackIndexMultimap< Index, Device > :: getType()
    return tnlString( "tnlEllpackIndexMultimap< ") +
           Device :: getDeviceType() +
           tnlString( ", " ) +
-          tnlString( ::getType< Index >() ) +                    
+          tnlString( ::getType< Index >() ) +
           tnlString( " >" );
 }
 
@@ -50,7 +43,7 @@ tnlString tnlEllpackIndexMultimap< Index, Device >::getTypeVirtual() const
 
 template< typename Index,
           typename Device >
-void 
+void
 tnlEllpackIndexMultimap< Index, Device >::
 setRanges( const IndexType inputs,
                const IndexType outputs )
@@ -87,8 +80,8 @@ allocate( const ValuesAllocationVectorType& portsCount )
               cerr << "portsCount.getSize() =  " << portsCount.getSize()
                    << "this->inputs = " << this->keysRange );
    this->valuesMaxCount = portsCount.max();
-   
-   tnlAssert( this->valuesMaxCount >= 0 && this->valuesMaxCount <= this->valuesRange, 
+ 
+   tnlAssert( this->valuesMaxCount >= 0 && this->valuesMaxCount <= this->valuesRange,
               cerr << "this->portsMaxCount = " << this->valuesMaxCount
                    << " this->outputs = " << this->valuesRange );
    this->values.setSize( this->keysRange * this->valuesMaxCount );
@@ -96,7 +89,7 @@ allocate( const ValuesAllocationVectorType& portsCount )
 
 template< typename Index,
           typename Device >
-typename tnlEllpackIndexMultimap< Index, Device >::ValuesAccessorType 
+typename tnlEllpackIndexMultimap< Index, Device >::ValuesAccessorType
 tnlEllpackIndexMultimap< Index, Device >::
 getValues( const IndexType& inputIndex )
 {

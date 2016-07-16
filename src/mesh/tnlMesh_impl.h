@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 
 #ifndef TNLMESH_IMPL_H
@@ -38,7 +31,7 @@ getTypeVirtual() const
    return this->getType();
 }
 
-template< typename MeshConfig >   
+template< typename MeshConfig >
 constexpr int
 tnlMesh< MeshConfig >::
 getDimensions()
@@ -46,7 +39,7 @@ getDimensions()
    return dimensions;
 }
 
-template< typename MeshConfig >   
+template< typename MeshConfig >
    template< int Dimensions >
 bool
 tnlMesh< MeshConfig >::
@@ -55,16 +48,16 @@ entitiesAvalable() const
    return MeshTraits::template EntityTraits< Dimensions >::available;
 }
 
-template< typename MeshConfig >   
+template< typename MeshConfig >
    template< int Dimensions >
-typename tnlMesh< MeshConfig >::GlobalIndexType 
+typename tnlMesh< MeshConfig >::GlobalIndexType
 tnlMesh< MeshConfig >::
 getNumberOfEntities() const
 {
    return entitiesStorage.getNumberOfEntities( tnlDimensionsTag< Dimensions >() );
 }
 
-template< typename MeshConfig >   
+template< typename MeshConfig >
 typename tnlMesh< MeshConfig >::GlobalIndexType
 tnlMesh< MeshConfig >::
 template getNumberOfCells() const
@@ -72,7 +65,7 @@ template getNumberOfCells() const
    return entitiesStorage.getNumberOfEntities( tnlDimensionsTag< dimensions >() );
 }
 
-template< typename MeshConfig >   
+template< typename MeshConfig >
 typename tnlMesh< MeshConfig >::CellType&
 tnlMesh< MeshConfig >::
 getCell( const GlobalIndexType cellIndex )
@@ -80,7 +73,7 @@ getCell( const GlobalIndexType cellIndex )
    return entitiesStorage.getEntity( tnlDimensionsTag< dimensions >(), cellIndex );
 }
 
-template< typename MeshConfig >   
+template< typename MeshConfig >
 const typename tnlMesh< MeshConfig >::CellType&
 tnlMesh< MeshConfig >::
 getCell( const GlobalIndexType cellIndex ) const
@@ -105,7 +98,7 @@ getEntity( const GlobalIndexType entityIndex ) const
 {
    return entitiesStorage.getEntity( tnlDimensionsTag< Dimensions >(), entityIndex );
 }
-   
+ 
 template< typename MeshConfig >
 bool
 tnlMesh< MeshConfig >::
@@ -156,20 +149,20 @@ typename tnlMesh< MeshConfig >::template EntityTraits< DimensionsTag::value >::S
 tnlMesh< MeshConfig >::
 entitiesArray()
 {
-   return entitiesStorage.entitiesArray( DimensionsTag() ); 
+   return entitiesStorage.entitiesArray( DimensionsTag() );
 }
 
 template< typename MeshConfig >
    template< typename DimensionsTag, typename SuperDimensionsTag >
-typename tnlMesh< MeshConfig >::MeshTraits::GlobalIdArrayType& 
+typename tnlMesh< MeshConfig >::MeshTraits::GlobalIdArrayType&
 tnlMesh< MeshConfig >::
 superentityIdsArray()
 {
-   return entitiesStorage.template superentityIdsArray< SuperDimensionsTag >( DimensionsTag() ); 
+   return entitiesStorage.template superentityIdsArray< SuperDimensionsTag >( DimensionsTag() );
 }
 
 template< typename MeshConfig >
-bool 
+bool
 tnlMesh< MeshConfig >::
 init( const typename tnlMesh< MeshConfig >::MeshTraits::PointArrayType& points,
       const typename tnlMesh< MeshConfig >::MeshTraits::CellSeedArrayType& cellSeeds )

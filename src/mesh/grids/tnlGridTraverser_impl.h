@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLGRIDTRAVERSER_IMPL_H
 #define	TNLGRIDTRAVERSER_IMPL_H
@@ -21,8 +14,8 @@
 /****
  * 1D traverser, host
  */
-template< typename Real,           
-          typename Index >      
+template< typename Real,
+          typename Index >
    template<
       typename GridEntity,
       typename EntitiesProcessor,
@@ -35,11 +28,11 @@ processEntities(
    const CoordinatesType& begin,
    const CoordinatesType& end,
    const CoordinatesType& entityOrientation,
-   const CoordinatesType& entityBasis,   
+   const CoordinatesType& entityBasis,
    UserData& userData )
 {
 
-   
+ 
    GridEntity entity( grid );
    entity.setOrientation( entityOrientation );
    entity.setBasis( entityBasis );
@@ -73,25 +66,25 @@ template< typename Real,
           typename GridEntity,
           typename UserData,
           typename EntitiesProcessor >
-__global__ void 
+__global__ void
 tnlGridTraverser1D(
    const tnlGrid< 1, Real, tnlCuda, Index >* grid,
    UserData* userData,
    const typename GridEntity::CoordinatesType* begin,
    const typename GridEntity::CoordinatesType* end,
    const typename GridEntity::CoordinatesType* entityOrientation,
-   const typename GridEntity::CoordinatesType* entityBasis,   
+   const typename GridEntity::CoordinatesType* entityBasis,
    const Index gridIdx )
 {
    typedef Real RealType;
    typedef Index IndexType;
    typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
    typename GridType::CoordinatesType coordinates;
-   
+ 
    coordinates.x() = begin->x() + ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   
+ 
    GridEntity entity( *grid, coordinates, *entityOrientation, *entityBasis );
-   
+ 
    if( coordinates.x() <= end->x() )
    {
       //if( ! processOnlyBoundaryEntities || entity.isBoundaryEntity() )
@@ -107,7 +100,7 @@ template< typename Real,
           typename GridEntity,
           typename UserData,
           typename EntitiesProcessor >
-__global__ void 
+__global__ void
 tnlGridBoundaryTraverser1D(
    const tnlGrid< 1, Real, tnlCuda, Index >* grid,
    UserData* userData,
@@ -120,16 +113,16 @@ tnlGridBoundaryTraverser1D(
    typedef Index IndexType;
    typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
    typename GridType::CoordinatesType coordinates;
-   
+ 
    if( threadIdx.x == 0 )
-   {   
+   {
       coordinates.x() = begin->x();
       GridEntity entity( *grid, coordinates, *entityOrientation, *entityBasis );
       entity.refresh();
       EntitiesProcessor::processEntity( entity.getMesh(), *userData, entity );
    }
    if( threadIdx.x == 1 )
-   {   
+   {
       coordinates.x() = end->x();
       GridEntity entity( *grid, coordinates, *entityOrientation, *entityBasis );
       entity.refresh();
@@ -139,8 +132,8 @@ tnlGridBoundaryTraverser1D(
 
 #endif
 
-template< typename Real,           
-          typename Index >      
+template< typename Real,
+          typename Index >
    template<
       typename GridEntity,
       typename EntitiesProcessor,
@@ -153,17 +146,17 @@ processEntities(
    const CoordinatesType& begin,
    const CoordinatesType& end,
    const CoordinatesType& entityOrientation,
-   const CoordinatesType& entityBasis,   
+   const CoordinatesType& entityBasis,
    UserData& userData )
 {
-#ifdef HAVE_CUDA   
+#ifdef HAVE_CUDA
    CoordinatesType* kernelBegin = tnlCuda::passToDevice( begin );
    CoordinatesType* kernelEnd = tnlCuda::passToDevice( end );
    CoordinatesType* kernelEntityOrientation = tnlCuda::passToDevice( entityOrientation );
    CoordinatesType* kernelEntityBasis = tnlCuda::passToDevice( entityBasis );
    typename GridEntity::MeshType* kernelGrid = tnlCuda::passToDevice( grid );
    UserData* kernelUserData = tnlCuda::passToDevice( userData );
-      
+ 
    if( processOnlyBoundaryEntities )
    {
       dim3 cudaBlockSize( 2 );
@@ -211,8 +204,8 @@ processEntities(
 /****
  * 2D traverser, host
  */
-template< typename Real,           
-          typename Index >      
+template< typename Real,
+          typename Index >
    template<
       typename GridEntity,
       typename EntitiesProcessor,
@@ -227,7 +220,7 @@ processEntities(
    const CoordinatesType begin,
    const CoordinatesType end,
    const CoordinatesType& entityOrientation,
-   const CoordinatesType& entityBasis,      
+   const CoordinatesType& entityBasis,
    UserData& userData )
 {
    GridEntity entity( grid );
@@ -263,7 +256,7 @@ processEntities(
    }
    else
    {
-//#pragma omp parallel for firstprivate( entity, begin, end ) if( tnlHost::isOMPEnabled() )      
+//#pragma omp parallel for firstprivate( entity, begin, end ) if( tnlHost::isOMPEnabled() )
       for( entity.getCoordinates().y() = begin.y();
            entity.getCoordinates().y() <= end.y();
            entity.getCoordinates().y() ++ )
@@ -287,14 +280,14 @@ template< typename Real,
           typename UserData,
           typename EntitiesProcessor,
           bool processOnlyBoundaryEntities >
-__global__ void 
+__global__ void
 tnlGridTraverser2D(
    const tnlGrid< 2, Real, tnlCuda, Index >* grid,
    UserData* userData,
    const typename GridEntity::CoordinatesType* begin,
    const typename GridEntity::CoordinatesType* end,
    const typename GridEntity::CoordinatesType* entityOrientation,
-   const typename GridEntity::CoordinatesType* entityBasis,   
+   const typename GridEntity::CoordinatesType* entityBasis,
    const Index gridXIdx,
    const Index gridYIdx )
 {
@@ -302,8 +295,8 @@ tnlGridTraverser2D(
    typename GridType::CoordinatesType coordinates;
 
    coordinates.x() = begin->x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = begin->y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
-   
+   coordinates.y() = begin->y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
+ 
    GridEntity entity( *grid, coordinates, *entityOrientation, *entityBasis );
 
    if( entity.getCoordinates().x() <= end->x() &&
@@ -311,7 +304,7 @@ tnlGridTraverser2D(
    {
       entity.refresh();
       if( ! processOnlyBoundaryEntities || entity.isBoundaryEntity() )
-      {         
+      {
          EntitiesProcessor::processEntity
          ( *grid,
            *userData,
@@ -321,8 +314,8 @@ tnlGridTraverser2D(
 }
 #endif
 
-template< typename Real,           
-          typename Index >      
+template< typename Real,
+          typename Index >
    template<
       typename GridEntity,
       typename EntitiesProcessor,
@@ -340,14 +333,14 @@ processEntities(
    const CoordinatesType& entityBasis,
    UserData& userData )
 {
-#ifdef HAVE_CUDA   
+#ifdef HAVE_CUDA
    CoordinatesType* kernelBegin = tnlCuda::passToDevice( begin );
    CoordinatesType* kernelEnd = tnlCuda::passToDevice( end );
    CoordinatesType* kernelEntityOrientation = tnlCuda::passToDevice( entityOrientation );
    CoordinatesType* kernelEntityBasis = tnlCuda::passToDevice( entityBasis );
    typename GridEntity::MeshType* kernelGrid = tnlCuda::passToDevice( grid );
    UserData* kernelUserData = tnlCuda::passToDevice( userData );
-      
+ 
    dim3 cudaBlockSize( 16, 16 );
    dim3 cudaBlocks;
    cudaBlocks.x = tnlCuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
@@ -367,9 +360,9 @@ processEntities(
               kernelEntityBasis,
               gridXIdx,
               gridYIdx );
-      
+ 
    cudaThreadSynchronize();
-   checkCudaDevice;   
+   checkCudaDevice;
    tnlCuda::freeFromDevice( kernelGrid );
    tnlCuda::freeFromDevice( kernelBegin );
    tnlCuda::freeFromDevice( kernelEnd );
@@ -383,8 +376,8 @@ processEntities(
 /****
  * 3D traverser, host
  */
-template< typename Real,           
-          typename Index >      
+template< typename Real,
+          typename Index >
    template<
       typename GridEntity,
       typename EntitiesProcessor,
@@ -400,7 +393,7 @@ processEntities(
    const CoordinatesType& begin,
    const CoordinatesType& end,
    const CoordinatesType& entityOrientation,
-   const CoordinatesType& entityBasis,      
+   const CoordinatesType& entityBasis,
    UserData& userData )
 {
    GridEntity entity( grid );
@@ -483,14 +476,14 @@ template< typename Real,
           typename UserData,
           typename EntitiesProcessor,
           bool processOnlyBoundaryEntities >
-__global__ void 
+__global__ void
 tnlGridTraverser3D(
    const tnlGrid< 3, Real, tnlCuda, Index >* grid,
    UserData* userData,
    const typename GridEntity::CoordinatesType* begin,
    const typename GridEntity::CoordinatesType* end,
    const typename GridEntity::CoordinatesType* entityOrientation,
-   const typename GridEntity::CoordinatesType* entityBasis,   
+   const typename GridEntity::CoordinatesType* entityBasis,
    const Index gridXIdx,
    const Index gridYIdx,
    const Index gridZIdx )
@@ -499,18 +492,18 @@ tnlGridTraverser3D(
    typename GridType::CoordinatesType coordinates;
 
    coordinates.x() = begin->x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = begin->y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
-   coordinates.z() = begin->z() + ( gridZIdx * tnlCuda::getMaxGridSize() + blockIdx.z ) * blockDim.z + threadIdx.z;  
-   
+   coordinates.y() = begin->y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
+   coordinates.z() = begin->z() + ( gridZIdx * tnlCuda::getMaxGridSize() + blockIdx.z ) * blockDim.z + threadIdx.z;
+ 
    GridEntity entity( *grid, coordinates, *entityOrientation, *entityBasis );
 
    if( entity.getCoordinates().x() <= end->x() &&
-       entity.getCoordinates().y() <= end->y() && 
+       entity.getCoordinates().y() <= end->y() &&
        entity.getCoordinates().z() <= end->z() )
    {
       entity.refresh();
       if( ! processOnlyBoundaryEntities || entity.isBoundaryEntity() )
-      {         
+      {
          EntitiesProcessor::processEntity
          ( *grid,
            *userData,
@@ -520,8 +513,8 @@ tnlGridTraverser3D(
 }
 #endif
 
-template< typename Real,           
-          typename Index >      
+template< typename Real,
+          typename Index >
    template<
       typename GridEntity,
       typename EntitiesProcessor,
@@ -540,14 +533,14 @@ processEntities(
    const CoordinatesType& entityBasis,
    UserData& userData )
 {
-#ifdef HAVE_CUDA   
+#ifdef HAVE_CUDA
    CoordinatesType* kernelBegin = tnlCuda::passToDevice( begin );
    CoordinatesType* kernelEnd = tnlCuda::passToDevice( end );
    CoordinatesType* kernelEntityOrientation = tnlCuda::passToDevice( entityOrientation );
    CoordinatesType* kernelEntityBasis = tnlCuda::passToDevice( entityBasis );
    typename GridEntity::MeshType* kernelGrid = tnlCuda::passToDevice( grid );
    UserData* kernelUserData = tnlCuda::passToDevice( userData );
-      
+ 
    dim3 cudaBlockSize( 8, 8, 8 );
    dim3 cudaBlocks;
    cudaBlocks.x = tnlCuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
@@ -572,7 +565,7 @@ processEntities(
                  gridYIdx,
                  gridZIdx );
    cudaThreadSynchronize();
-   checkCudaDevice;   
+   checkCudaDevice;
    tnlCuda::freeFromDevice( kernelGrid );
    tnlCuda::freeFromDevice( kernelBegin );
    tnlCuda::freeFromDevice( kernelEnd );

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMESHTRAITS_H_
 #define TNLMESHTRAITS_H_
@@ -36,36 +29,36 @@ template< typename MeshConfig,
 class tnlMeshTraits
 {
    public:
-      
+ 
       static const int meshDimensions = MeshConfig::CellTopology::dimensions;
-      static const int worldDimensions = MeshConfig::worldDimensions;     
+      static const int worldDimensions = MeshConfig::worldDimensions;
 
       typedef Device                                                               DeviceType;
       typedef typename MeshConfig::GlobalIndexType                                 GlobalIndexType;
-      typedef typename MeshConfig::LocalIndexType                                  LocalIndexType;      
-            
+      typedef typename MeshConfig::LocalIndexType                                  LocalIndexType;
+ 
       typedef typename MeshConfig::CellTopology                                    CellTopology;
       typedef tnlMeshEntity< MeshConfig, CellTopology >                            CellType;
       typedef tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >                   VertexType;
       typedef tnlStaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
       typedef tnlMeshEntitySeed< MeshConfig, CellTopology >                        CellSeedType;
-      
+ 
       typedef tnlArray< PointType, tnlHost, GlobalIndexType >                      PointArrayType;
       typedef tnlArray< CellSeedType, tnlHost, GlobalIndexType >                   CellSeedArrayType;
       typedef tnlArray< GlobalIndexType, tnlHost, GlobalIndexType >                GlobalIdArrayType;
       typedef tnlConstSharedArray< GlobalIndexType, tnlHost, LocalIndexType >      IdArrayAccessorType;
       typedef tnlConstSharedArray< LocalIndexType, tnlHost, LocalIndexType >       IdPermutationArrayAccessorType;
-      
-      template< int Dimensions > using EntityTraits = 
+ 
+      template< int Dimensions > using EntityTraits =
          tnlMeshEntityTraits< MeshConfig, Dimensions >;
-      
+ 
       template< typename EntityTopology, int SubDimensions > using SubentityTraits =
          tnlMeshSubentityTraits< MeshConfig, EntityTopology, SubDimensions >;
-      
+ 
       template< typename EntityTopology, int SuperDimensions > using SuperentityTraits =
          tnlMeshSuperentityTraits< MeshConfig, EntityTopology, SuperDimensions >;
-      
-      
+ 
+ 
       typedef tnlDimensionsTag< meshDimensions >                                   DimensionsTag;
 
 };

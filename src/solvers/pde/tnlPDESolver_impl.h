@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLPDESOLVER_IMPL_H_
 #define TNLPDESOLVER_IMPL_H_
@@ -87,13 +80,13 @@ setup( const tnlParameterContainer& parameters,
    cout << " [ OK ]" << endl;
    this->dofs.setValue( 0.0 );
    this->problem->bindDofs( this->mesh, this->dofs );
-   
+ 
    /****
     * Set mesh dependent data
     */
    this->problem->setMeshDependentData( this->mesh, this->meshDependentData );
    this->problem->bindMeshDependentData( this->mesh, this->meshDependentData );
-   
+ 
    /***
     * Set-up the initial condition
     */
@@ -254,7 +247,7 @@ setTimeStep( const RealType& timeStep )
    this->timeStep = timeStep;
    return true;
 }
-   
+ 
 template< typename Problem,
           typename TimeStepper >
 const typename TimeStepper::RealType&
@@ -321,13 +314,13 @@ solve()
 
    this->ioTimer->reset();
    this->computeTimer->reset();
-   
+ 
    this->ioTimer->start();
    if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->meshDependentData ) )
    {
       cerr << "Making the snapshot failed." << endl;
       return false;
-   }   
+   }
    this->ioTimer->stop();
    this->computeTimer->start();
 

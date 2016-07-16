@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMESHTESTER_H_
 #define TNLMESHTESTER_H_
@@ -49,7 +42,7 @@ class TestTriangleMeshConfig : public tnlMeshConfigBase< tnlMeshTriangleTopology
 class TestQuadrilateralMeshConfig : public tnlMeshConfigBase< tnlMeshQuadrilateralTopology >
 {
    public:
-      
+ 
       static constexpr bool entityStorage( int dimensions ) { return true; };
       template< typename MeshEntity > static constexpr bool subentityStorage( MeshEntity, int SubentityDimensions ) { return true; };
       template< typename MeshEntity > static constexpr bool subentityOrientationStorage( MeshEntity, int SubentityDimensions ) { return ( SubentityDimensions % 2 != 0 ); };
@@ -136,7 +129,7 @@ class tnlMeshTester : public CppUnit :: TestCase
        meshBuilder.setPoint( 1, PointType( 1.0, 0.0 ) );
        meshBuilder.setPoint( 2, PointType( 0.0, 1.0 ) );
        meshBuilder.setPoint( 3, PointType( 1.0, 1.0 ) );
-       
+ 
        meshBuilder.setCellsCount( 2 );
        meshBuilder.getCellSeed( 0 ).setCornerId( 0, 0 );
        meshBuilder.getCellSeed( 0 ).setCornerId( 1, 1 );
@@ -145,7 +138,7 @@ class tnlMeshTester : public CppUnit :: TestCase
        meshBuilder.getCellSeed( 1 ).setCornerId( 1, 2 );
        meshBuilder.getCellSeed( 1 ).setCornerId( 2, 3 );
        meshBuilder.build( mesh );
-      
+ 
        CPPUNIT_ASSERT( mesh.getNumberOfEntities< 2 >() == 2 );
        CPPUNIT_ASSERT( mesh.getNumberOfEntities< 1 >() == 5 );
        CPPUNIT_ASSERT( mesh.getNumberOfEntities< 0 >() == 4 );
@@ -164,7 +157,7 @@ class tnlMeshTester : public CppUnit :: TestCase
       typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshEdgeTopology > EdgeMeshEntityType;
       typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshVertexTopology > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
-      typedef tnlMesh< TestTetrahedronMeshConfig > TestTetrahedronMesh;      
+      typedef tnlMesh< TestTetrahedronMeshConfig > TestTetrahedronMesh;
       TestTetrahedronMesh mesh;
       tnlMeshBuilder< TestTetrahedronMesh > meshBuilder;
       meshBuilder.setPointsCount( 13 );
@@ -205,7 +198,7 @@ class tnlMeshTester : public CppUnit :: TestCase
        *  12        6        3        5
        *  12        3        6       10
        */
-      
+ 
       meshBuilder.setCellsCount( 18 );
        //  12        8        7        5
       meshBuilder.getCellSeed( 0 ).setCornerId( 0, 12 );
@@ -218,85 +211,85 @@ class tnlMeshTester : public CppUnit :: TestCase
       meshBuilder.getCellSeed( 1 ).setCornerId( 1, 7 );
       meshBuilder.getCellSeed( 1 ).setCornerId( 2, 8 );
       meshBuilder.getCellSeed( 1 ).setCornerId( 3, 10 );
-                 
+ 
        //  12       11        8        9
       meshBuilder.getCellSeed( 2 ).setCornerId( 0, 12 );
       meshBuilder.getCellSeed( 2 ).setCornerId( 1, 11 );
       meshBuilder.getCellSeed( 2 ).setCornerId( 2, 8 );
       meshBuilder.getCellSeed( 2 ).setCornerId( 3, 9 );
-                 
+ 
        //  10       11        2        8
       meshBuilder.getCellSeed( 3 ).setCornerId( 0, 10 );
       meshBuilder.getCellSeed( 3 ).setCornerId( 1, 11 );
       meshBuilder.getCellSeed( 3 ).setCornerId( 2, 2 );
       meshBuilder.getCellSeed( 3 ).setCornerId( 3, 8 );
-                 
+ 
        //  12        7        6        5
       meshBuilder.getCellSeed( 4 ).setCornerId( 0, 12 );
       meshBuilder.getCellSeed( 4 ).setCornerId( 1, 7 );
       meshBuilder.getCellSeed( 4 ).setCornerId( 2, 6 );
       meshBuilder.getCellSeed( 4 ).setCornerId( 3, 5 );
-                 
+ 
        //   9       12        5        8
       meshBuilder.getCellSeed( 5 ).setCornerId( 0, 9 );
       meshBuilder.getCellSeed( 5 ).setCornerId( 1, 12 );
       meshBuilder.getCellSeed( 5 ).setCornerId( 2, 5 );
       meshBuilder.getCellSeed( 5 ).setCornerId( 3, 8 );
-                 
+ 
        //  12       11        9        3
       meshBuilder.getCellSeed( 6 ).setCornerId( 0, 12 );
       meshBuilder.getCellSeed( 6 ).setCornerId( 1, 11 );
       meshBuilder.getCellSeed( 6 ).setCornerId( 2, 9 );
       meshBuilder.getCellSeed( 6 ).setCornerId( 3, 3 );
-                 
+ 
        //   9        4       11        8
       meshBuilder.getCellSeed( 7 ).setCornerId( 0, 9 );
       meshBuilder.getCellSeed( 7 ).setCornerId( 1, 4 );
       meshBuilder.getCellSeed( 7 ).setCornerId( 2, 11 );
       meshBuilder.getCellSeed( 7 ).setCornerId( 3, 8 );
-                
+ 
        //  12        9        5        3
       meshBuilder.getCellSeed( 8 ).setCornerId( 0, 12 );
       meshBuilder.getCellSeed( 8 ).setCornerId( 1, 9 );
       meshBuilder.getCellSeed( 8 ).setCornerId( 2, 5 );
       meshBuilder.getCellSeed( 8 ).setCornerId( 3, 3 );
-                 
+ 
        //   1        2        0       11
       meshBuilder.getCellSeed( 9 ).setCornerId( 0, 1 );
       meshBuilder.getCellSeed( 9 ).setCornerId( 1, 2 );
       meshBuilder.getCellSeed( 9 ).setCornerId( 2, 0 );
       meshBuilder.getCellSeed( 9 ).setCornerId( 3, 11 );
-                 
+ 
        //   8       11        2        4
       meshBuilder.getCellSeed( 10 ).setCornerId( 0, 8 );
       meshBuilder.getCellSeed( 10 ).setCornerId( 1, 11 );
       meshBuilder.getCellSeed( 10 ).setCornerId( 2, 2 );
       meshBuilder.getCellSeed( 10 ).setCornerId( 3, 4 );
-                 
+ 
        //   1        2       11        4
       meshBuilder.getCellSeed( 11 ).setCornerId( 0, 1 );
       meshBuilder.getCellSeed( 11 ).setCornerId( 1, 2 );
       meshBuilder.getCellSeed( 11 ).setCornerId( 2, 11 );
       meshBuilder.getCellSeed( 11 ).setCornerId( 3, 4 );
-                 
+ 
        //   9        4        1       11
       meshBuilder.getCellSeed( 12 ).setCornerId( 0, 9 );
       meshBuilder.getCellSeed( 12 ).setCornerId( 1, 4 );
       meshBuilder.getCellSeed( 12 ).setCornerId( 2, 1 );
       meshBuilder.getCellSeed( 12 ).setCornerId( 3, 11 );
-                 
+ 
        //  10       11        8       12
       meshBuilder.getCellSeed( 13 ).setCornerId( 0, 10 );
       meshBuilder.getCellSeed( 13 ).setCornerId( 1, 11 );
       meshBuilder.getCellSeed( 13 ).setCornerId( 2, 8 );
       meshBuilder.getCellSeed( 13 ).setCornerId( 3, 12 );
-                 
+ 
        //  12        6        7       10
       meshBuilder.getCellSeed( 14 ).setCornerId( 0, 12 );
       meshBuilder.getCellSeed( 14 ).setCornerId( 1, 6 );
       meshBuilder.getCellSeed( 14 ).setCornerId( 2, 7 );
       meshBuilder.getCellSeed( 14 ).setCornerId( 3, 10 );
-                 
+ 
        //  10       11       12        3
       meshBuilder.getCellSeed( 15 ).setCornerId( 0, 10 );
       meshBuilder.getCellSeed( 15 ).setCornerId( 1, 11 );
@@ -308,13 +301,13 @@ class tnlMeshTester : public CppUnit :: TestCase
       meshBuilder.getCellSeed( 16 ).setCornerId( 1, 6 );
       meshBuilder.getCellSeed( 16 ).setCornerId( 2, 3 );
       meshBuilder.getCellSeed( 16 ).setCornerId( 3, 5 );
-                 
+ 
        //  12        3        6       10
       meshBuilder.getCellSeed( 17 ).setCornerId( 0, 12 );
       meshBuilder.getCellSeed( 17 ).setCornerId( 1, 3 );
       meshBuilder.getCellSeed( 17 ).setCornerId( 2, 6 );
       meshBuilder.getCellSeed( 17 ).setCornerId( 3, 10 );
-      
+ 
       meshBuilder.build( mesh );
 
       /*CPPUNIT_ASSERT( mesh.save( "mesh.tnl" ) );
@@ -339,7 +332,7 @@ class tnlMeshTester : public CppUnit :: TestCase
 
       typedef tnlMesh< TestTriangleMeshConfig > TestTriangleMesh;
       tnlMesh< TestTriangleMeshConfig > mesh;
-      tnlMeshBuilder< TestTriangleMesh > meshBuilder;      
+      tnlMeshBuilder< TestTriangleMesh > meshBuilder;
       meshBuilder.setPointsCount( numberOfVertices );
       meshBuilder.setCellsCount( numberOfCells );
 
@@ -378,7 +371,7 @@ class tnlMeshTester : public CppUnit :: TestCase
 
    void regularMeshOfQuadrilateralsTest()
    {
-#ifdef UNDEF      
+#ifdef UNDEF
       typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshQuadrilateralTopology > QuadrilateralMeshEntityType;
       typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshEdgeTopology > EdgeMeshEntityType;
       typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshVertexTopology > VertexMeshEntityType;
@@ -425,12 +418,12 @@ class tnlMeshTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( mesh2.load( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh == mesh2 );
       //mesh.print( cout );
-#endif      
+#endif
    }
 
    void regularMeshOfHexahedronsTest()
    {
-#ifdef UNDEF      
+#ifdef UNDEF
       typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshHexahedronTopology > HexahedronMeshEntityType;
       typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshEdgeTopology > EdgeMeshEntityType;
       typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshVertexTopology > VertexMeshEntityType;
@@ -489,7 +482,7 @@ class tnlMeshTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( mesh2.load( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh == mesh2 );*/
       //mesh.print( cout );
-#endif      
+#endif
    }
 
 

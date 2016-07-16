@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLFINITEDIFFERENCES_IMPL_H_
 #define TNLFINITEDIFFERENCES_IMPL_H_
@@ -125,7 +118,7 @@ Real tnlFiniteDifferences< tnlGrid< 2, Real, Device, Index > >::getDifference( c
                                                                                const GridFunction& function )
 {
    if( ZDifferenceOrder > 0 )
-      return 0.0;   
+      return 0.0;
    auto neighbourEntities = cell.getNeighbourEntities();
    IndexType cellIndex = grid.getEntityIndex( cell );
    if( XDifferenceOrder == 1 )
@@ -206,7 +199,7 @@ Real tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index > >::getDifference( c
                function[ neighbourEntities.template getEntityIndex< -1, 0, 0 >( cellIndex ) ] ) / (  hx * hx );
    }
    if( YDifferenceOrder == 1 )
-   {      
+   {
       const RealType hy = grid.getSpaceSteps().y();
       return ( function[ neighbourEntities.template getEntityIndex< 0, YDifferenceDirection, 0 >( cellIndex ) ] -
                function[ cellIndex ] ) / ( YDifferenceDirection * hy );

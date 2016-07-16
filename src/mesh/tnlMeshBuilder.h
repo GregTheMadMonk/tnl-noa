@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMESHBUILDER_H
 #define	TNLMESHBUILDER_H
@@ -42,14 +35,14 @@ class tnlMeshBuilder
       pointsSet.setValue( false );
       return true;
    }
-   
+ 
    bool setCellsCount( const GlobalIndexType& cellsCount )
    {
       tnlAssert( 0 <= cellsCount, cerr << "cellsCount = " << cellsCount );
       this->cellSeeds.setSize( cellsCount );
       return true;
    }
-   
+ 
    GlobalIndexType getPointsCount() const { return this->points.getSize(); }
 	
    GlobalIndexType getCellsCount() const  { return this->cellSeeds.getSize(); }
@@ -66,7 +59,7 @@ class tnlMeshBuilder
    CellSeedType& getCellSeed( GlobalIndexType index )
    {
       tnlAssert( 0 <= index && index < getCellsCount(), cerr << "Index = " << index );
-  
+ 
       return this->cellSeeds[ index ];
    }
 

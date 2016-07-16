@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNL_BENCHMARK_SIMPLE_HEAT_EQUATION_H
 #define	TNL_BENCHMARK_SIMPLE_HEAT_EQUATION_H
@@ -195,17 +188,17 @@ __global__ void boundaryConditionsKernel( const Real* u, Real* aux,
    if( i == 0 && j < gridYSize )
       aux[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
    if( i == gridXSize - 1 && j < gridYSize )
-      aux[ j * gridXSize + gridXSize - 2 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
+      aux[ j * gridXSize + gridXSize - 2 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];
    if( j == 0 && i < gridXSize )
       aux[ j * gridXSize ] = 0.0; //u[ j * gridXSize + 1 ];
    if( j == gridYSize -1  && i < gridXSize )
-      aux[ j * gridXSize + gridXSize - 2 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];      
-    
+      aux[ j * gridXSize + gridXSize - 2 ] = 0.0; //u[ j * gridXSize + gridXSize - 1 ];
+ 
 }
 
 
 template< typename Real, typename Index >
-__global__ void heatEquationKernel( const Real* u, 
+__global__ void heatEquationKernel( const Real* u,
                                     Real* aux,
                                     const Real tau,
                                     const Real hx_inv,
@@ -232,10 +225,10 @@ __global__ void updateKernel( Real* u,
 {
    const Index blockOffset = blockIdx.x * blockDim.x;
    Index idx = blockOffset + threadIdx.x;
-   
+ 
    if( idx < dofs )
       u[ idx ] += aux[ idx ];
-   
+ 
    __syncthreads();
 
    const Index rest = dofs - blockOffset;
@@ -284,10 +277,10 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
    const Index dofsCount = gridXSize * gridYSize;
    dim3 cudaUpdateBlocks( dofsCount / 256 + ( dofsCount % 256 != 0 ) );
    dim3 cudaUpdateBlockSize( 256 );
-   
+ 
    /****
     * Initiation
-    */   
+    */
    Real* u = new Real[ dofsCount ];
    Real* aux = new Real[ dofsCount ];
    Real* max_du = new Real[ cudaUpdateBlocks.x ];
@@ -296,7 +289,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
       cerr << "I am not able to allocate grid function for grid size " << gridXSize << "x" << gridYSize << "." << endl;
       return false;
    }
-   
+ 
    const Real hx = domainXSize / ( Real ) gridXSize;
    const Real hy = domainYSize / ( Real ) gridYSize;
    const Real hx_inv = 1.0 / ( hx * hx );
@@ -307,7 +300,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
       if( verbose )
          cout << "Setting tau to " << tau << "." << endl;
    }
-   
+ 
    /****
     * Initial condition
     */
@@ -316,12 +309,12 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
    for( Index j = 0; j < gridYSize; j++ )
       for( Index i = 0; i < gridXSize; i++ )
       {
-         const Real x = i * hx - domainXSize / 2.0;      
-         const Real y = j * hy - domainYSize / 2.0;      
+         const Real x = i * hx - domainXSize / 2.0;
+         const Real y = j * hy - domainYSize / 2.0;
          u[ j * gridXSize + i ] = exp( - sigma * ( x * x + y * y ) );
       }
    writeFunction( "initial", u, gridXSize, gridYSize, hx, hy );
-   
+ 
    /****
     * Allocate data on the CUDA device
     */
@@ -336,7 +329,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
       cerr << "Allocation failed. " << cudaErr << endl;
       return false;
    }
-   
+ 
    /****
     * Explicit Euler solver
     */
@@ -348,16 +341,16 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
    cout << "Setting block size to " << cudaBlockSize.x << "," << cudaBlockSize.y << "," << cudaBlockSize.z << endl;
 
    if( verbose )
-      cout << "Starting the solver main loop..." << endl;   
+      cout << "Starting the solver main loop..." << endl;
    tnlTimerRT timer;
    timer.reset();
    timer.start();
-   Real time( 0.0 );   
+   Real time( 0.0 );
    Index iteration( 0 );
    while( time < finalTime )
    {
       const Real timeLeft = finalTime - time;
-      const Real currentTau = tau < timeLeft ? tau : timeLeft;      
+      const Real currentTau = tau < timeLeft ? tau : timeLeft;
 
       /****
        * Neumann boundary conditions
@@ -369,7 +362,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
          cerr << "Setting of boundary conditions failed. " << cudaErr << endl;
          return false;
       }
-                    
+ 
       /****
        * Laplace operator
        */
@@ -381,10 +374,10 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
          cerr << "Laplace operator failed." << endl;
          return false;
       }
-            
+ 
       /****
        * Update
-       */            
+       */
       //cout << "Update ... " << endl;
       updateKernel<<< cudaUpdateBlocks, cudaUpdateBlockSize >>>( cuda_u, cuda_aux, cuda_max_du, dofsCount );
       if( cudaGetLastError() != cudaSuccess )
@@ -405,19 +398,19 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
          const Real a = fabs( max_du[ i ] );
          absMax = a > absMax ? a : absMax;
       }
-            
+ 
       time += currentTau;
       iteration++;
       if( verbose && iteration % 1000 == 0 )
          cout << "Iteration: " << iteration << "\t Time:" << time << "    \r" << flush;
    }
    timer.stop();
-   if( verbose )      
+   if( verbose )
       cout << endl << "Finished..." << endl;
    cout << "Computation time is " << timer.getTime() << " sec. i.e. " << timer.getTime() / ( double ) iteration << "sec. per iteration." << endl;
    cudaMemcpy( u, cuda_u, dofsCount * sizeof( Real ), cudaMemcpyDeviceToHost );
    writeFunction( "final", u, gridXSize, gridYSize, hx, hy );
-   
+ 
    /***
     * Freeing allocated memory
     */
@@ -444,10 +437,10 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
    Real tau = parameters.getParameter< double >( "time-step" );
    const Real finalTime = parameters.getParameter< double >( "final-time" );
    const bool verbose = parameters.getParameter< bool >( "verbose" );
-   
+ 
    /****
     * Initiation
-    */   
+    */
    Real* __restrict__ u = new Real[ gridXSize * gridYSize ];
    Real* __restrict__ aux = new Real[ gridXSize * gridYSize ];
    if( ! u || ! aux )
@@ -466,7 +459,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
       if( verbose )
          cout << "Setting tau to " << tau << "." << endl;
    }
-   
+ 
    /****
     * Initial condition
     */
@@ -475,11 +468,11 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
    for( Index j = 0; j < gridYSize; j++ )
       for( Index i = 0; i < gridXSize; i++ )
       {
-         const Real x = i * hx - domainXSize / 2.0;      
-         const Real y = j * hy - domainYSize / 2.0;      
+         const Real x = i * hx - domainXSize / 2.0;
+         const Real y = j * hy - domainYSize / 2.0;
          u[ j * gridXSize + i ] = exp( - sigma * ( x * x + y * y ) );
       }
-   
+ 
    /****
     * Explicit Euler solver
     */
@@ -487,7 +480,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
       cout << "Starting the solver main loop..." << endl;
    tnlTimer timer, computationTimer, updateTimer;
    timer.start();
-   Real time( 0.0 );   
+   Real time( 0.0 );
    Index iteration( 0 );
    while( time < finalTime )
    {
@@ -508,7 +501,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
          aux[ i ] = 0.0; //u[ gridXSize + i ];
          aux[ ( gridYSize - 1 ) * gridXSize + i ] = 0.0; //u[ ( gridYSize - 2 ) * gridXSize + i ];
       }
-      
+ 
       /*for( Index j = 1; j < gridYSize - 1; j++ )
          for( Index i = 1; i < gridXSize - 1; i++ )
          {
@@ -529,7 +522,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
                                      ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
          }
       computationTimer.stop();
-      
+ 
       updateTimer.start();
       Real absMax( 0.0 ), residue( 0.0 );
       for( Index i = 0; i < dofsCount; i++ )
@@ -537,18 +530,18 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
          const Real add = currentTau * aux[ i ];
          u[ i ] += add;
          residue += fabs( add );
-         /*const Real a = fabs( aux[ i ] );         
+         /*const Real a = fabs( aux[ i ] );
          absMax = a > absMax ? a : absMax;*/
       }
       updateTimer.stop();
-      
+ 
       time += currentTau;
       iteration++;
       if( verbose && iteration % 10000 == 0 )
          cout << "Iteration: " << iteration << "\t \t Time:" << time << "    \r" << flush;
    }
    timer.stop();
-   if( verbose )      
+   if( verbose )
       cout << endl << "Finished..." << endl;
    tnlLogger logger( 72, std::cout );
    logger.writeSeparator();
@@ -559,7 +552,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
    logger.writeParameter< const char* >( "Euler solver update:", "" );
    updateTimer.writeLog( logger, 1 );
    logger.writeSeparator();
-   
+ 
    /***
     * Freeing allocated memory
     */
@@ -575,9 +568,9 @@ int main( int argc, char* argv[] )
    tnlConfigDescription config;
    config.addEntry< tnlString >( "device", "Device the computation will run on.", "host" );
       config.addEntryEnum< tnlString >( "host" );
-#ifdef HAVE_CUDA      
+#ifdef HAVE_CUDA
       config.addEntryEnum< tnlString >( "cuda" );
-#endif      
+#endif
    config.addEntry< int >( "grid-x-size", "Grid size along x-axis.", 100 );
    config.addEntry< int >( "grid-y-size", "Grid size along y-axis.", 100 );
    config.addEntry< double >( "domain-x-size", "Domain size along x-axis.", 2.0 );
@@ -586,11 +579,11 @@ int main( int argc, char* argv[] )
    config.addEntry< double >( "time-step", "Time step. By default it is proportional to one over space step square.", 0.0 );
    config.addEntry< double >( "final-time", "Final time of the simulation.", 1.0 );
    config.addEntry< bool >( "verbose", "Verbose mode.", true );
-   
+ 
    tnlParameterContainer parameters;
    if( ! parseCommandLine( argc, argv, config, parameters ) )
       return EXIT_FAILURE;
-   
+ 
    tnlString device = parameters.getParameter< tnlString >( "device" );
    if( device == "host" &&
        ! solveHeatEquationHost< double, int >( parameters  ) )
@@ -598,9 +591,9 @@ int main( int argc, char* argv[] )
 #ifdef HAVE_CUDA
    if( device == "cuda" &&
        ! solveHeatEquationCuda< double, int >( parameters  ) )
-      return EXIT_FAILURE;   
-#endif      
-   return EXIT_SUCCESS;   
+      return EXIT_FAILURE;
+#endif
+   return EXIT_SUCCESS;
 }
 
 

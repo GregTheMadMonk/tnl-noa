@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 
 #ifndef TNLGRIDENTITY_IMPL_H
@@ -72,7 +65,7 @@ tnlGridEntity( const tnlGrid< Dimensions, Real, Device, Index >& grid,
   orientation( orientation ),
   basis( basis ),
   neighbourEntitiesStorage( *this )
-{  
+{
 }
 
 template< int Dimensions,
@@ -82,7 +75,7 @@ template< int Dimensions,
           int EntityDimensions,
           typename Config >
 __cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::CoordinatesType& 
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::CoordinatesType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
 getCoordinates() const
 {
@@ -96,7 +89,7 @@ template< int Dimensions,
           int EntityDimensions,
           typename Config >
 __cuda_callable__ inline
-typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::CoordinatesType& 
+typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::CoordinatesType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
 getCoordinates()
 {
@@ -162,7 +155,7 @@ template< int Dimensions,
           int EntityDimensions,
           typename Config >
 __cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::EntityOrientationType& 
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::EntityOrientationType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
 getOrientation() const
 {
@@ -176,7 +169,7 @@ template< int Dimensions,
           int EntityDimensions,
           typename Config >
 __cuda_callable__ inline
-void 
+void
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
 setOrientation( const EntityOrientationType& orientation )
 {
@@ -191,7 +184,7 @@ template< int Dimensions,
           int EntityDimensions,
           typename Config >
 __cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::EntityBasisType& 
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::EntityBasisType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
 getBasis() const
 {
@@ -205,7 +198,7 @@ template< int Dimensions,
           int EntityDimensions,
           typename Config >
 __cuda_callable__ inline
-void 
+void
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
 setBasis( const EntityBasisType& basis )
 {
@@ -223,7 +216,7 @@ template< int Dimensions,
 __cuda_callable__ inline
 const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::template NeighbourEntities< NeighbourEntityDimensions >&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Config >::
-getNeighbourEntities() const 
+getNeighbourEntities() const
 {
    return neighbourEntitiesStorage.template getNeighbourEntities< NeighbourEntityDimensions >();
 }
@@ -340,7 +333,7 @@ template< int Dimensions,
           typename Index,
           typename Config >
 __cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::CoordinatesType& 
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::CoordinatesType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
 getCoordinates() const
 {
@@ -353,7 +346,7 @@ template< int Dimensions,
           typename Index,
           typename Config >
 __cuda_callable__ inline
-typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::CoordinatesType& 
+typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::CoordinatesType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
 getCoordinates()
 {
@@ -413,7 +406,7 @@ template< int Dimensions,
           typename Index,
           typename Config >
 __cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::EntityOrientationType 
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::EntityOrientationType
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
 getOrientation() const
 {
@@ -426,7 +419,7 @@ template< int Dimensions,
           typename Index,
           typename Config >
 __cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::EntityBasisType 
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::EntityBasisType
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >::
 getBasis() const
 {
@@ -549,7 +542,7 @@ tnlGridEntity( const GridType& grid,
   entityIndex( -1 ),
   coordinates( coordinates ),
   neighbourEntitiesStorage( *this )
-{  
+{
 }
 
 template< int Dimensions,
@@ -558,7 +551,7 @@ template< int Dimensions,
           typename Index,
           typename Config >
 __cuda_callable__ inline
-const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::CoordinatesType& 
+const typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::CoordinatesType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
 getCoordinates() const
 {
@@ -571,7 +564,7 @@ template< int Dimensions,
           typename Index,
           typename Config >
 __cuda_callable__ inline
-typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::CoordinatesType& 
+typename tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::CoordinatesType&
 tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >::
 getCoordinates()
 {

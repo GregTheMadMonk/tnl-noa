@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLDENSEMATRIX_IMPL_H_
 #define TNLDENSEMATRIX_IMPL_H_
@@ -750,10 +743,10 @@ void tnlDenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matr
    tnlAssert( this->getColumns() == matrix.getRows() &&
               this->getRows() == matrix.getColumns(),
                cerr << "This matrix columns: " << this->getColumns() << endl
-                    << "This matrix rows: " << this->getRows() << endl                    
+                    << "This matrix rows: " << this->getRows() << endl
                     << "That matrix columns: " << matrix.getColumns() << endl
                     << "That matrix rows: " << matrix.getRows() << endl );
-   
+ 
    if( Device::getDevice() == tnlHostDevice )
    {
       const IndexType& rows = matrix.getRows();
@@ -933,7 +926,7 @@ class tnlDenseMatrixDeviceDependentCode< tnlHost >
       {
 #ifdef HAVE_OPENMP
 #pragma omp parallel for if( tnlHost::isOMPEnabled() )
-#endif           
+#endif
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
       }

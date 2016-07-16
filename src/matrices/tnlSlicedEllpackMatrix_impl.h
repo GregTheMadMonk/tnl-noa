@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLSLICEDELLPACKMATRIX_IMPL_H_
 #define TNLSLICEDELLPACKMATRIX_IMPL_H_
@@ -757,7 +750,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
       {
 #ifdef HAVE_OPENMP
 #pragma omp parallel for if( tnlHost::isOMPEnabled() )
-#endif           
+#endif
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
       }
@@ -777,8 +770,8 @@ __global__ void tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKerne
 }
 #endif
 
-#ifdef HAVE_CUDA    
-template< 
+#ifdef HAVE_CUDA
+template<
    typename Real,
    typename Index,
    int SliceSize >
@@ -799,7 +792,7 @@ __global__ void tnlSlicedEllpackMatrixVectorProductCudaKernel(
       return;
    const Index sliceIdx = rowIdx / SliceSize;
    const Index slicePointer = slicePointers[ sliceIdx ];
-   const Index rowLength = sliceCompressedRowsLengths[ sliceIdx ];   
+   const Index rowLength = sliceCompressedRowsLengths[ sliceIdx ];
    Index i = slicePointer + rowIdx - sliceIdx * SliceSize;
    const Index rowEnd = i + rowLength * SliceSize;
    Real result( 0.0 );
@@ -811,7 +804,7 @@ __global__ void tnlSlicedEllpackMatrixVectorProductCudaKernel(
       result += values[ i ] * inVector[ columnIndex ];
       i += SliceSize;
    }
-   outVector[ rowIdx ] = result;   
+   outVector[ rowIdx ] = result;
 }
 #endif
 
@@ -902,7 +895,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlCuda >
                                  OutVector& outVector )
       {
          //tnlMatrixVectorProductCuda( matrix, inVector, outVector );
-         #ifdef HAVE_CUDA    
+         #ifdef HAVE_CUDA
             typedef tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize > Matrix;
             typedef typename Matrix::IndexType IndexType;
             //Matrix* kernel_this = tnlCuda::passToDevice( matrix );

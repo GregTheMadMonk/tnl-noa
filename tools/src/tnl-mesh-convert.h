@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNL_MESH_CONVERT_H_
 #define TNL_MESH_CONVERT_H_
@@ -49,7 +42,7 @@ bool convertMesh( const tnlParameterContainer& parameters )
    cout << mesh << endl;
    cout << "Writing the mesh to a file " << outputFileName << "." << endl;
    if( outputFileExt == "tnl" )
-   {         
+   {
       if( ! mesh.save( outputFileName ) )
       {
          cerr << "I am not able to write the mesh into the file " << outputFileName << "." << endl;
@@ -61,22 +54,22 @@ bool convertMesh( const tnlParameterContainer& parameters )
       if( ! tnlMeshWriterVTKLegacy::write( outputFileName, mesh, true ) )
       {
          cerr << "I am not able to write the mesh into the file " << outputFileName << "." << endl;
-         return false;         
+         return false;
       }
       return true;
-   }   
+   }
 }
 
 bool readNetgenMesh( const tnlParameterContainer& parameters )
 {
    const tnlString& inputFileName = parameters.getParameter< tnlString >( "input-file" );
-   
+ 
    tnlMeshReaderNetgen meshReader;
    if( ! meshReader.detectMesh( inputFileName ) )
       return false;
 
    cout << "Reading mesh with " << meshReader.getDimensions() << " dimensions..." << endl;
-   
+ 
    if( meshReader.getDimensions() == 2 )
    {
       if( meshReader.getVerticesInCell() == 3 )
@@ -90,7 +83,7 @@ bool readNetgenMesh( const tnlParameterContainer& parameters )
          typedef tnlMesh< tnlMeshConfigBase< tnlMeshQuadrilateralTopology > > MeshType;
          cout << "Mesh consisting of quadrilaterals was detected ... " << endl;
          return convertMesh< tnlMeshReaderNetgen, MeshType >( parameters );
-      }            
+      }
    }
    if( meshReader.getDimensions() == 3 )
    {

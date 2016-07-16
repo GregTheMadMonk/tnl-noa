@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLCHUNKEDELLPACKMATRIX_IMPL_H_
 #define TNLCHUNKEDELLPACKMATRIX_IMPL_H_
@@ -1337,14 +1330,14 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlCuda >
    public:
 
       typedef tnlCuda Device;
-      
+ 
       template< typename Real,
                 typename Index >
       static void resolveSliceSizes( tnlChunkedEllpackMatrix< Real, Device, Index >& matrix,
                                      const typename tnlChunkedEllpackMatrix< Real, Device, Index >::CompressedRowsLengthsVector& rowLengths )
       {
       }
-      
+ 
       template< typename Index >
       __cuda_callable__
       static void initChunkTraverse( const Index sliceOffset,
@@ -1365,7 +1358,7 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlCuda >
       }
 
       template< typename Real,
-                typename Index, 
+                typename Index,
                 typename InVector,
                 typename OutVector >
       static void vectorProduct( const tnlChunkedEllpackMatrix< Real, Device, Index >& matrix,

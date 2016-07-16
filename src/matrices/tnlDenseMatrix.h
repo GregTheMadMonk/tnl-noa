@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLDENSEMATRIX_H_
 #define TNLDENSEMATRIX_H_
@@ -169,7 +162,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
                        const Matrix2& matrix2,
                        const RealType& matrix1Multiplicator = 1.0,
                        const RealType& matrix2Multiplicator = 1.0 );
-#endif   
+#endif
 
 #ifdef HAVE_NOT_CXX11
    template< typename Matrix, int tileDim >

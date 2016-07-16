@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMESHENTITYTRAITS_H_
 #define TNLMESHENTITYTRAITS_H_
@@ -62,7 +55,7 @@ class tnlMeshEntityOrientationNeeded< MeshConfig, DimensionsTag, DimensionsTag >
 template< typename MeshConfig,
           int Dimensions >
 class tnlMeshEntityTraits
-{   
+{
    public:
 
       static const bool storageEnabled = MeshConfig::entityStorage( Dimensions );
@@ -71,7 +64,7 @@ class tnlMeshEntityTraits
       typedef typename MeshConfig::GlobalIndexType                                 GlobalIndexType;
       typedef typename MeshConfig::LocalIndexType                                  LocalIndexType;
       typedef typename tnlMeshEntityTopology< MeshConfig, Dimensions >::Topology   EntityTopology;
-      
+ 
       typedef tnlMeshEntity< MeshConfig, EntityTopology >                          EntityType;
       typedef tnlMeshEntitySeed< MeshConfig, EntityTopology >                      SeedType;
       typedef tnlMeshEntityReferenceOrientation< MeshConfig, EntityTopology >      ReferenceOrientationType;

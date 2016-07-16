@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
@@ -29,7 +22,7 @@ void configSetup( tnlConfigDescription& config )
    config.addDelimiter( "General parameters" );
    config.addList < tnlString >( "input-images",  "Input images for conversion to .tnl files." );
    config.addList < tnlString >( "input-files",   "Input .tnl files for conversion to images." );
-   config.addEntry        < tnlString >( "image-format",  "Output images file format.", "pgm" );   
+   config.addEntry        < tnlString >( "image-format",  "Output images file format.", "pgm" );
    config.addEntry        < tnlString >( "mesh-file",     "Mesh file.", "mesh.tnl" );
    config.addEntry        < bool >     ( "one-mesh-file", "Generate only one mesh file. All the images dimensions must be the same.", true );
    config.addEntry        < int >      ( "roi-top",       "Top (smaller number) line of the region of interest.", -1 );
@@ -43,9 +36,9 @@ void configSetup( tnlConfigDescription& config )
 bool processImages( const tnlParameterContainer& parameters )
 {
     const tnlList< tnlString >& inputImages = parameters.getParameter< tnlList< tnlString > >( "input-images" );
-    tnlString meshFile = parameters.getParameter< tnlString >( "mesh-file" );    
+    tnlString meshFile = parameters.getParameter< tnlString >( "mesh-file" );
     bool verbose = parameters.getParameter< bool >( "verbose" );
-    
+ 
     typedef tnlGrid< 2, double, tnlHost, int > GridType;
     GridType grid;
     tnlVector< double, tnlHost, int > vector;
@@ -67,7 +60,7 @@ bool processImages( const tnlParameterContainer& parameters )
             cout << "Writing grid to file " << meshFile << endl;
             grid.save( meshFile );
          }
-         else 
+         else
             if( ! roi.check( &pgmImage ) )
                return false;
          if( ! pgmImage.read( roi, grid, vector ) )
@@ -93,7 +86,7 @@ bool processImages( const tnlParameterContainer& parameters )
             cout << "Writing grid to file " << meshFile << endl;
             grid.save( meshFile );
          }
-         else 
+         else
             if( ! roi.check( &pgmImage ) )
                return false;
          if( ! pngImage.read( roi, grid, vector ) )
@@ -119,7 +112,7 @@ bool processImages( const tnlParameterContainer& parameters )
             cout << "Writing grid to file " << meshFile << endl;
             grid.save( meshFile );
          }
-         else 
+         else
             if( ! roi.check( &jpegImage ) )
                return false;
          if( ! jpegImage.read( roi, grid, vector ) )
@@ -139,9 +132,9 @@ bool processTNLFiles( const tnlParameterContainer& parameters )
 {
    const tnlList< tnlString >& inputFiles = parameters.getParameter< tnlList< tnlString > >( "input-files" );
    const tnlString& imageFormat = parameters.getParameter< tnlString >( "image-format" );
-   tnlString meshFile = parameters.getParameter< tnlString >( "mesh-file" );    
+   tnlString meshFile = parameters.getParameter< tnlString >( "mesh-file" );
    bool verbose = parameters.getParameter< bool >( "verbose" );
-    
+ 
    tnlGrid< 2, double, tnlHost, int > grid;
    if( ! grid.load( meshFile ) )
    {
@@ -193,7 +186,7 @@ bool processTNLFiles( const tnlParameterContainer& parameters )
          image.close();
       }
 
-   }     
+   }
 }
 
 int main( int argc, char* argv[] )

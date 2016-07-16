@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLGRIDENTITYINDEXER_IMPL_H
 #define	TNLGRIDENTITYINDEXER_IMPL_H
@@ -32,24 +25,24 @@ template< typename Real,
           typename Index,
           typename GridEntity,
           int EntityDimensions >
-class tnlGridEntityGetter< 
+class tnlGridEntityGetter<
    tnlGrid< 1, Real, Device, Index >,
    GridEntity,
    EntityDimensions >
 {
    public:
-      
+ 
       static const int entityDimensions = EntityDimensions;
-      
+ 
       typedef tnlGrid< 1, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       //typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
-      
+ 
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
-      {         
+      {
          tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
               cerr << " index = " << index
                    << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
@@ -60,7 +53,7 @@ class tnlGridEntityGetter<
               typename GridEntity::EntityOrientationType( 0 ),
               typename GridEntity::EntityBasisType( EntityDimensions ) );
       }
-      
+ 
       __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
@@ -84,14 +77,14 @@ template< typename Real,
 class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 2 >
 {
    public:
-      
+ 
       static const int entityDimensions = 2;
-      
+ 
       typedef tnlGrid< 2, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       //typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
-      
+ 
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
@@ -101,7 +94,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 2 >
                 << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
 
-         const CoordinatesType dimensions = grid.getDimensions();         
+         const CoordinatesType dimensions = grid.getDimensions();
 
          return GridEntity
             ( grid,
@@ -110,7 +103,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 2 >
               typename GridEntity::EntityOrientationType( 0, 0 ),
               typename GridEntity::EntityBasisType( 1, 1 ) );
       }
-      
+ 
       __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
@@ -122,11 +115,11 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 2 >
 
          //const CoordinatesType coordinates = entity.getCoordinates();
          //const CoordinatesType dimensions = grid.getDimensions();
-         
+ 
          return entity.getCoordinates().y() * grid.getDimensions().x() + entity.getCoordinates().x();
       }
-      
-      
+ 
+ 
 };
 
 template< typename Real,
@@ -136,14 +129,14 @@ template< typename Real,
 class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 1 >
 {
    public:
-      
+ 
       static const int entityDimensions = 1;
-      
+ 
       typedef tnlGrid< 2, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       //typedef typename GridType::template GridEntity< entityDimensions, EntityConfig > GridEntity;
-      
+ 
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
@@ -152,7 +145,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 1 >
            cerr << " index = " << index
                 << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
-         
+ 
          const CoordinatesType dimensions = grid.getDimensions();
 
          if( index < grid.numberOfNxFaces )
@@ -172,7 +165,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 1 >
               typename GridEntity::EntityOrientationType( 0, 1 ),
               typename GridEntity::EntityBasisType( 1, 0 ) );
       }
-      
+ 
       __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
@@ -182,10 +175,10 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 1 >
                  cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                       << " dimensions.x() = " << grid.getDimensions()
                       << " tnlAbs( entity.getOrientation() ) = " << tnlAbs( entity.getOrientation() ) );
-                  
+ 
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
-         
+ 
          if( entity.getOrientation().x() )
             return coordinates.y() * ( dimensions.x() + 1 ) + coordinates.x();
          return grid.numberOfNxFaces + coordinates.y() * dimensions.x() + coordinates.x();
@@ -199,14 +192,14 @@ template< typename Real,
 class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 0 >
 {
    public:
-      
+ 
       static const int entityDimensions = 0;
-      
+ 
       typedef tnlGrid< 2, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       //typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
-      
+ 
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
@@ -221,12 +214,12 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 0 >
          const IndexType aux = dimensions.x() + 1;
          return GridEntity
             ( grid,
-              CoordinatesType( index % aux, 
+              CoordinatesType( index % aux,
                                index / aux ),
               typename GridEntity::EntityOrientationType( 0, 0 ),
               typename GridEntity::EntityBasisType( 0, 0 ) );
       }
-      
+ 
       __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
@@ -234,10 +227,10 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 0 >
          tnlAssert( entity.getCoordinates() >= 0 && entity.getCoordinates() <= grid.getDimensions(),
             cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                  << " grid.getDimensions() = " << grid.getDimensions() );
-         
+ 
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
-         
+ 
          return coordinates.y() * ( dimensions.x() + 1 ) + coordinates.x();
       }
 };
@@ -252,14 +245,14 @@ template< typename Real,
 class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 3 >
 {
    public:
-      
+ 
       static const int entityDimensions = 3;
-      
+ 
       typedef tnlGrid< 3, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       //typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
-      
+ 
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
@@ -279,7 +272,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 3 >
               typename GridEntity::EntityOrientationType( 0, 0, 0 ),
               typename GridEntity::EntityBasisType( 1, 1, 1 ) );
       }
-      
+ 
       __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
@@ -291,7 +284,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 3 >
 
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
-         
+ 
          return ( coordinates.z() * dimensions.y() + coordinates.y() ) *
             dimensions.x() + coordinates.x();
       }
@@ -304,14 +297,14 @@ template< typename Real,
 class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 2 >
 {
    public:
-      
+ 
       static const int entityDimensions = 2;
-      
+ 
       typedef tnlGrid< 3, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       //typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
-      
+ 
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
@@ -322,7 +315,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 2 >
                 << " entityDimensions = " << entityDimensions );
 
          const CoordinatesType dimensions = grid.getDimensions();
-         
+ 
          if( index < grid.numberOfNxFaces )
          {
             const IndexType aux = dimensions.x() + 1;
@@ -355,7 +348,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 2 >
               typename GridEntity::EntityOrientationType( 0, 0, 1 ),
               typename GridEntity::EntityBasisType( 1, 1, 0 ) );
       }
-      
+ 
       __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
@@ -365,23 +358,23 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 2 >
                  cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                       << " dimensions.x() = " << grid.getDimensions()
                       << " tnlAbs( entity.getOrientation() ) = " << tnlAbs( entity.getOrientation() ) );
-         
+ 
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
 
-         
+ 
          if( entity.getOrientation().x() )
          {
-            return ( coordinates.z() * dimensions.y() + coordinates.y() ) * 
+            return ( coordinates.z() * dimensions.y() + coordinates.y() ) *
                ( dimensions.x() + 1 ) + coordinates.x();
          }
          if( entity.getOrientation().y() )
          {
-            return grid.numberOfNxFaces + 
-               ( coordinates.z() * ( dimensions.y() + 1 ) + coordinates.y() ) * 
+            return grid.numberOfNxFaces +
+               ( coordinates.z() * ( dimensions.y() + 1 ) + coordinates.y() ) *
                dimensions.x() + coordinates.x();
          }
-         return grid.numberOfNxAndNyFaces + 
+         return grid.numberOfNxAndNyFaces +
             ( coordinates.z() * dimensions.y() + coordinates.y() ) *
             dimensions.x() + coordinates.x();
       }
@@ -394,14 +387,14 @@ template< typename Real,
 class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 1 >
 {
    public:
-      
+ 
       static const int entityDimensions = 1;
-      
+ 
       typedef tnlGrid< 3, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       //typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
-      
+ 
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
@@ -410,7 +403,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 1 >
            cerr << " index = " << index
                 << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
-         
+ 
          const CoordinatesType dimensions = grid.getDimensions();
 
          if( index < grid.numberOfDxEdges )
@@ -448,29 +441,29 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 1 >
               typename GridEntity::EntityOrientationType( 0, 0, 0 ),
               typename GridEntity::EntityBasisType( 0, 0, 1 ) );
       }
-      
+ 
       __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() < grid.getDimensions() + 
+                    entity.getCoordinates() < grid.getDimensions() +
                        CoordinatesType( 1, 1, 1 ) - entity.getBasis(),
             cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                  << " dimensions.x() = " << grid.getDimensions()
                  << " CoordinatesType( 1, 1, 1 ) - entity.getBasis() = " << CoordinatesType( 1, 1, 1 ) - entity.getBasis() );
-         
+ 
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
-         
+ 
          if( entity.getBasis().x() )
-            return ( coordinates.z() * ( dimensions.y() + 1 ) + 
-                     coordinates.y() ) * dimensions.x() + coordinates.x();   
+            return ( coordinates.z() * ( dimensions.y() + 1 ) +
+                     coordinates.y() ) * dimensions.x() + coordinates.x();
          if( entity.getBasis().y() )
-            return grid.numberOfDxEdges + 
+            return grid.numberOfDxEdges +
                ( coordinates.z() * dimensions.y() + coordinates.y() ) * ( dimensions.x() + 1 ) +
                coordinates.x();
-         return grid.numberOfDxAndDyEdges + 
+         return grid.numberOfDxAndDyEdges +
             ( coordinates.z() * ( dimensions.y() + 1 ) + coordinates.y() ) * ( dimensions.x() + 1 ) +
             coordinates.x();
 
@@ -484,14 +477,14 @@ template< typename Real,
 class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 0 >
 {
    public:
-      
+ 
       static const int entityDimensions = 0;
-      
+ 
       typedef tnlGrid< 3, Real, Device, Index > GridType;
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       //typedef typename GridType::template GridEntity< entityDimensions > GridEntity;
-      
+ 
       __cuda_callable__ inline
       static GridEntity getEntity( const GridType& grid,
                                    const IndexType& index )
@@ -502,7 +495,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 0 >
                 << " entityDimensions = " << entityDimensions );
 
          const CoordinatesType dimensions = grid.getDimensions();
-         
+ 
          const IndexType auxX = dimensions.x() + 1;
          const IndexType auxY = dimensions.y() + 1;
          return GridEntity
@@ -513,7 +506,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 0 >
               typename GridEntity::EntityOrientationType( 0, 0, 0 ),
               typename GridEntity::EntityBasisType( 0, 0, 0 ) );
       }
-      
+ 
       __cuda_callable__ inline
       static IndexType getEntityIndex( const GridType& grid,
                                        const GridEntity& entity )
@@ -521,12 +514,12 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 0 >
          tnlAssert( entity.getCoordinates() >= 0 && entity.getCoordinates() <= grid.getDimensions(),
             cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                  << " grid.getDimensions() = " << grid.getDimensions() );
-         
+ 
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
-         
-         return ( coordinates.z() * ( dimensions.y() + 1 ) + coordinates.y() ) * 
-                ( dimensions.x() + 1 ) + 
+ 
+         return ( coordinates.z() * ( dimensions.y() + 1 ) + coordinates.y() ) *
+                ( dimensions.x() + 1 ) +
                 coordinates.x();
       }
 };

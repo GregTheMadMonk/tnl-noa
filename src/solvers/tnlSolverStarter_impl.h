@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLSOLVERSTARTER_IMPL_H_
 #define TNLSOLVERSTARTER_IMPL_H_
@@ -515,7 +508,7 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
 {
    this->totalTimer.reset();
    this->totalTimer.start();
-   
+ 
 
    /****
     * Set-up the PDE solver
@@ -589,7 +582,7 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Stop timers
     */
-   this->computeTimer.stop();   
+   this->computeTimer.stop();
    this->totalTimer.stop();
 
    /****
@@ -623,13 +616,13 @@ bool tnlSolverStarter< ConfigTag > :: writeEpilog( ostream& str, const Solver& s
    logger.writeSeparator();
    logger.writeCurrentTime( "Finished at:" );
    if( ! solver.writeEpilog( logger ) )
-      return false;   
+      return false;
    logger.writeParameter< const char* >( "Compute time:", "" );
-   this->computeTimer.writeLog( logger, 1 );   
+   this->computeTimer.writeLog( logger, 1 );
    logger.writeParameter< const char* >( "I/O time:", "" );
    this->ioTimer.writeLog( logger, 1 );
    logger.writeParameter< const char* >( "Total time:", "" );
-   this->totalTimer.writeLog( logger, 1 );   
+   this->totalTimer.writeLog( logger, 1 );
    char buf[ 256 ];
    sprintf( buf, "%f %%", 100 * ( ( double ) this->totalTimer.getCPUTime() ) / this->totalTimer.getRealTime() );
    logger.writeParameter< char* >( "CPU usage:", buf );

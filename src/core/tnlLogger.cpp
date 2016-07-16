@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <iomanip>
 #include <core/tnlLogger.h>
@@ -30,7 +23,7 @@ tnlLogger :: tnlLogger( int _width,
 
 void tnlLogger :: writeHeader( const tnlString& title )
 {
-   int fill = stream. fill(); 
+   int fill = stream. fill();
    int titleLength = title. getLength();
    stream << "+" << setfill( '-' ) << setw( width ) << "+" << endl;
    stream << "|" << setfill( ' ' ) << setw( width ) << "|" << endl;
@@ -43,7 +36,7 @@ void tnlLogger :: writeHeader( const tnlString& title )
 
 void tnlLogger :: writeSeparator()
 {
-   int fill = stream. fill(); 
+   int fill = stream. fill();
    stream << "+" << setfill( '-' ) << setw( width ) << "+" << endl;
    stream. fill( fill );
 }
@@ -72,8 +65,8 @@ bool tnlLogger :: writeSystemInformation( const tnlParameterContainer& parameter
                        + tnlString( cacheSizes.L3 );
    writeParameter< tnlString >( "Cache (L1d, L1i, L2, L3):", cacheInfo, 1 );
    if( parameters.getParameter< tnlString >( "device" ) == "cuda" )
-   {      
-      writeParameter< tnlString >( "CUDA GPU info", tnlString("") );   
+   {
+      writeParameter< tnlString >( "CUDA GPU info", tnlString("") );
       // TODO: Printing all devices does not make sense, but in the future TNL
       //       might use more than one device for computations. Printing only
       //       the active device for now...
@@ -87,14 +80,14 @@ bool tnlLogger :: writeSystemInformation( const tnlParameterContainer& parameter
         tnlString deviceArch = tnlString( tnlCudaDeviceInfo::getArchitectureMajor( i ) ) + "." +
                                 tnlString( tnlCudaDeviceInfo::getArchitectureMinor( i ) );
         writeParameter< tnlString >( "Architecture", deviceArch, 2 );
-        writeParameter< int >( "CUDA cores", tnlCudaDeviceInfo::getCudaCores( i ), 2 );         
+        writeParameter< int >( "CUDA cores", tnlCudaDeviceInfo::getCudaCores( i ), 2 );
         double clockRate = ( double ) tnlCudaDeviceInfo::getClockRate( i ) / 1.0e3;
         writeParameter< double >( "Clock rate (in MHz)", clockRate, 2 );
         double globalMemory = ( double ) tnlCudaDeviceInfo::getGlobalMemory( i ) / 1.0e9;
-        writeParameter< double >( "Global memory (in GB)", globalMemory, 2 );         
+        writeParameter< double >( "Global memory (in GB)", globalMemory, 2 );
         double memoryClockRate = ( double ) tnlCudaDeviceInfo::getMemoryClockRate( i ) / 1.0e3;
         writeParameter< double >( "Memory clock rate (in Mhz)", memoryClockRate, 2 );
-        writeParameter< bool >( "ECC enabled", tnlCudaDeviceInfo::getECCEnabled( i ), 2 );         
+        writeParameter< bool >( "ECC enabled", tnlCudaDeviceInfo::getECCEnabled( i ), 2 );
 //      }
    }
    writeParameter< tnlString >( "System:", systemInfo.getSystemName() );

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef CUDA_PREFIX_SUM_IMPL_H_
 #define CUDA_PREFIX_SUM_IMPL_H_
@@ -218,7 +211,7 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
    /****
     * Run the kernel.
     */
-   size_t sharedDataSize = elementsInBlock + 
+   size_t sharedDataSize = elementsInBlock +
                            elementsInBlock / tnlCuda::getNumberOfSharedMemoryBanks() + 2;
    size_t sharedMemory = ( sharedDataSize + blockSize + tnlCuda::getWarpSize()  ) * sizeof( DataType );
    cudaFirstPhaseBlockPrefixSum< DataType, Operation, Index >

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLGRID3D_IMPL_H_
 #define TNLGRID3D_IMPL_H_
@@ -91,11 +84,11 @@ void tnlGrid< 3, Real, Device, Index > :: computeSpaceSteps()
    {
       this->spaceSteps.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
       this->spaceSteps.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
-      this->spaceSteps.z() = this->proportions.z() / ( Real ) this->getDimensions().z();      
-      const RealType& hx = this->spaceSteps.x(); 
+      this->spaceSteps.z() = this->proportions.z() / ( Real ) this->getDimensions().z();
+      const RealType& hx = this->spaceSteps.x();
       const RealType& hy = this->spaceSteps.y();
-      const RealType& hz = this->spaceSteps.z();      
-      
+      const RealType& hz = this->spaceSteps.z();
+ 
       Real auxX, auxY, auxZ;
       for( int i = 0; i < 5; i++ )
       {
@@ -156,8 +149,8 @@ void tnlGrid< 3, Real, Device, Index > :: computeSpaceSteps()
                   case 4:
                      auxZ = hz * hz;
                      break;
-               }            
-               this->spaceStepsProducts[ i ][ j ][ k ] = auxX * auxY * auxZ;         
+               }
+               this->spaceStepsProducts[ i ][ j ][ k ] = auxX * auxY * auxZ;
             }
          }
       }
@@ -192,7 +185,7 @@ void tnlGrid< 3, Real, Device, Index > :: setDimensions( const Index xSize, cons
                          this->numberOfDyEdges +
                          this->numberOfDzEdges;
    this->numberOfVertices = ( xSize + 1 ) * ( ySize + 1 ) * ( zSize + 1 );
-   
+ 
    this->cellZNeighboursStep = xSize * ySize;
 
    computeSpaceSteps();
@@ -253,23 +246,23 @@ template< typename Real,
    template< typename EntityType >
 __cuda_callable__  inline
 Index
-tnlGrid< 3, Real, Device, Index >:: 
+tnlGrid< 3, Real, Device, Index >::
 getEntitiesCount() const
 {
    static_assert( EntityType::entityDimensions <= 3 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
-   
+ 
    switch( EntityType::entityDimensions )
    {
       case 3:
          return this->numberOfCells;
       case 2:
-         return this->numberOfFaces;         
+         return this->numberOfFaces;
       case 1:
-         return this->numberOfEdges;                  
+         return this->numberOfEdges;
       case 0:
          return this->numberOfVertices;
-   }            
+   }
    return -1;
 }
 
@@ -284,7 +277,7 @@ getEntity( const IndexType& entityIndex ) const
 {
    static_assert( EntityType::entityDimensions <= 3 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
-   
+ 
    return tnlGridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
 
@@ -299,7 +292,7 @@ getEntityIndex( const EntityType& entity ) const
 {
    static_assert( EntityType::entityDimensions <= 3 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
-   
+ 
    return tnlGridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
 
@@ -341,16 +334,16 @@ template< typename Real,
           typename Device,
           typename Index >
    template< int xPow, int yPow, int zPow >
-__cuda_callable__ inline 
-const Real& 
+__cuda_callable__ inline
+const Real&
 tnlGrid< 3, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
-   tnlAssert( xPow >= -2 && xPow <= 2, 
+   tnlAssert( xPow >= -2 && xPow <= 2,
               cerr << " xPow = " << xPow );
-   tnlAssert( yPow >= -2 && yPow <= 2, 
+   tnlAssert( yPow >= -2 && yPow <= 2,
               cerr << " yPow = " << yPow );
-   tnlAssert( zPow >= -2 && zPow <= 2, 
+   tnlAssert( zPow >= -2 && zPow <= 2,
               cerr << " zPow = " << zPow );
 
    return this->spaceStepsProducts[ zPow + 2 ][ yPow + 2 ][ xPow + 2 ];
@@ -530,7 +523,7 @@ bool tnlGrid< 3, Real, Device, Index > :: write( const MeshFunction& function,
 {
    if( this->template getEntitiesCount< Cell >() != function. getSize() )
    {
-      cerr << "The size ( " << function. getSize() 
+      cerr << "The size ( " << function. getSize()
            << " ) of a mesh function does not agree with the DOFs ( " << this->template getEntitiesCount< Cell >() << " ) of a mesh." << endl;
       return false;
    }

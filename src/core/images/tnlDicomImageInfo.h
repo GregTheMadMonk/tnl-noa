@@ -2,21 +2,14 @@
                           tnlDicomImageInfo.h  -  description
                              -------------------
     begin                : Jul 19, 2015
-    copyright            : (C) 2015 by Tomas Oberhuber et al.                                       
-     
+    copyright            : (C) 2015 by Tomas Oberhuber et al.
+ 
      Tomas Oberhuber     tomas.oberhuber@fjfi.cvut.cz
      Jiri Kafka          kafka9@seznam.cz
      Pavel Neskudla
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLDICOMIMAGEINFO_H
 #define TNLDICOMIMAGEINFO_H
@@ -58,43 +51,43 @@ struct PixelSpacing
 class tnlDicomImageInfo
 {
    public:
-      
+ 
       inline tnlDicomImageInfo( tnlDicomHeader &tnlDicomHeader);
-       
+ 
       inline virtual ~tnlDicomImageInfo();
 
       inline ImagePositionToPatient getImagePositionToPatient();
-      
+ 
       inline ImageOrientationToPatient getImageOrientationToPatient();
-       
+ 
       inline double getSliceThickness();
-       
+ 
       inline double getSliceLocation();
-       
+ 
       inline PixelSpacing getPixelSpacing();
-       
+ 
       inline int getNumberOfSlices();
 
    private:
-      
+ 
       tnlDicomHeader &dicomHeader;
-       
+ 
       bool retrieveInfo();
-       
+ 
       bool isObjectRetrieved;
 
       double sliceLocation;
-       
+ 
       double sliceThickness;
-       
+ 
       ImagePositionToPatient imagePositionToPatient;
-       
+ 
       ImageOrientationToPatient imageOrientationToPatient;
-              
+ 
       PixelSpacing pixelSpacing;
-       
+ 
       int numberOfSlices;
-       
+ 
       int width, height, depth;
 };
 

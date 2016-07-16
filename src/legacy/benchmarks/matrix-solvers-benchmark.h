@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef MATRIXSOLVERSBENCHMARK_H_
 #define MATRIXSOLVERSBENCHMARK_H_
@@ -87,9 +80,9 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
    solverMonitor. resetTimers();
 #ifdef HAVE_NOT_CXX11
    solver. template solve< Vector, tnlLinearResidueGetter< Matrix, Vector > >( b, x );
-#else   
+#else
    solver. solve( b, x );
-#endif   
+#endif
 
    bool solverConverged( solver. getResidue() < maxResidue );
    const tnlString& logFileName = parameters. getParameter< tnlString >( "log-file" );

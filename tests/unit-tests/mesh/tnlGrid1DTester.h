@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TESTS_UNIT_TESTS_MESH_TNLGRID1DTESTER_H_
 #define TESTS_UNIT_TESTS_MESH_TNLGRID1DTESTER_H_
@@ -58,7 +51,7 @@ class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCas
       const IndexType xSize( 13 );
       GridType grid;
       grid.setDimensions( xSize );
-      
+ 
       typename GridType::Cell cell( grid );
       for( cell.getCoordinates().x() = 0;
            cell.getCoordinates().x() < xSize;
@@ -76,7 +69,7 @@ class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCas
       GridType grid;
       grid.setDimensions( xSize );
 
-      typename GridType::Vertex vertex( grid );      
+      typename GridType::Vertex vertex( grid );
       for( vertex.getCoordinates().x() = 0;
            vertex.getCoordinates().x() < xSize;
            vertex.getCoordinates().x()++ )

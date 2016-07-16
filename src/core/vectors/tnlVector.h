@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLVECTOR_H_
 #define TNLVECTOR_H_
@@ -73,7 +66,7 @@ class tnlVector : public tnlArray< Real, Device, Index >
    tnlVector< Real, Device, Index >& operator += ( const Vector& vector );
 
    tnlVector< Real, Device, Index >& operator *= ( const RealType& c );
-   
+ 
    tnlVector< Real, Device, Index >& operator /= ( const RealType& c );
 
    Real max() const;

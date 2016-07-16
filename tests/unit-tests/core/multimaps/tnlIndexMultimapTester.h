@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLINDEXMULTIMAPTESTER_H_
 #define TNLINDEXMULTIMAPTESTER_H_
@@ -95,9 +88,9 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
       typedef tnlIndexMultimapTester< IndexMultimapType, IndexMultimapSetup >              TesterType;
       typedef tnlIndexMultimapTesterSetter< IndexMultimapType, IndexMultimapSetup > IndexMultimapSetter;
       typedef typename CppUnit::TestCaller< TesterType >                 TestCallerType;
-      
+ 
       typedef typename IndexMultimapType::ValuesAllocationVectorType  ValuesAllocationVectorType;
-      typedef typename IndexMultimapType::ValuesAccessorType                  ValuesAccessorType; 
+      typedef typename IndexMultimapType::ValuesAccessorType                  ValuesAccessorType;
 
       tnlIndexMultimapTester(){};
 
@@ -169,7 +162,7 @@ class tnlIndexMultimapTester : public CppUnit :: TestCase
          IndexMultimapType n;
          IndexMultimapSetter::setup( n );
          n.setRanges( 10, 10 );
-         
+ 
          ValuesAllocationVectorType portsAllocationVector;
          portsAllocationVector.setSize( n.getKeysRange() );
          portsAllocationVector.setValue( 7 );

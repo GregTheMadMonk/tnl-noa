@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
@@ -56,17 +49,17 @@ class tnlFileTester : public CppUnit :: TestCase
          return;
       }
       int intData( 5 );
-#ifdef HAVE_NOT_CXX11      
+#ifdef HAVE_NOT_CXX11
       file. write< int, tnlHost >( &intData );
-#else      
+#else
       file. write( &intData );
-#endif      
+#endif
       double doubleData[ 3 ] = { 1.0, 2.0, 3.0 };
 #ifdef HAVE_NOT_CXX11
       file. write< double, tnlHost >( doubleData, 3 );
 #else
       file. write( doubleData, 3 );
-#endif      
+#endif
       if( ! file. close() )
       {
          cerr << "Unable to close the file test-file.tnl" << endl;
@@ -83,10 +76,10 @@ class tnlFileTester : public CppUnit :: TestCase
 #ifdef HAVE_NOT_CXX11
       file. read< int, tnlHost >( &newIntData );
       file. read< double, tnlHost >( newDoubleData, 3 );
-#else            
+#else
       file. read( &newIntData, 1 );
       file. read( newDoubleData, 3 );
-#endif      
+#endif
 
       CPPUNIT_ASSERT( newIntData == intData );
       for( int i = 0; i < 3; i ++ )

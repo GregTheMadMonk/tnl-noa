@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLEXACTOPERATORCURVATURE_IMPL_H_
 #define TNLEXACTOPERATORCURVATURE_IMPL_H_
@@ -70,8 +63,8 @@ getValue( const Function& function,
         return 0.0;
    if (XDiffOrder == 0 && YDiffOrder == 0 )
         return ( function.template getValue< 2, 0, 0, Vertex >( v, time ) * function.template getValue< 0, 2, 0, Vertex >( v, time ) )
-               /ExactOperatorQ::template getValue< 0, 0, 0 >( function, v, time, eps ) - ( function.template getValue< 1, 0, 0, Vertex >( v, time ) * 
-               ExactOperatorQ::template getValue< 1, 0, 0 >( function, v, time, eps ) + function.template getValue< 0, 1, 0, Vertex >( v, time ) * 
+               /ExactOperatorQ::template getValue< 0, 0, 0 >( function, v, time, eps ) - ( function.template getValue< 1, 0, 0, Vertex >( v, time ) *
+               ExactOperatorQ::template getValue< 1, 0, 0 >( function, v, time, eps ) + function.template getValue< 0, 1, 0, Vertex >( v, time ) *
                ExactOperatorQ::template getValue< 0, 1, 0 >( function, v, time, eps ) )
                 / ( ExactOperatorQ::template getValue< 0, 0, 0 >( function, v, time, eps ) * ExactOperatorQ::template getValue< 0, 0, 0 >( function, v, time, eps ) );
    return 0;

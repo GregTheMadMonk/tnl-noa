@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 
 #ifndef TNLONESIDEDNONLINEARDIFFUSION_H
@@ -39,8 +32,8 @@ template< typename MeshReal,
           typename Index >
 class tnlOneSidedNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Nonlinearity, Real, Index >
 {
-   public: 
-   
+   public:
+ 
       typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
@@ -52,15 +45,15 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, N
 
       tnlOneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
-      
+ 
       static tnlString getType()
       {
          return tnlString( "tnlOneSidedNonlinearDiffusion< " ) +
             MeshType::getType() + ", " +
             Nonlinearity::getType() + "," +
             ::getType< Real >() + ", " +
-            ::getType< Index >() + " >";         
-      }     
+            ::getType< Index >() + " >";
+      }
 
       template< typename MeshFunction,
                 typename MeshEntity >
@@ -80,7 +73,7 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, N
          const RealType u_x_b = ( u_c - u[ west ] );
          return ( u_x_f * this->nonlinearity[ center ] -
                   u_x_b * this->nonlinearity[ west ] ) * hx_div;
-         
+ 
       }
 
       template< typename MeshEntity >
@@ -113,7 +106,7 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, N
          const RealType& nonlinearity_center = this->nonlinearity[ center ];
          const RealType& nonlinearity_west = this->nonlinearity[ west ];
          const RealType aCoef = -lambda_x * nonlinearity_west;
-         const RealType bCoef = lambda_x * ( nonlinearity_center + nonlinearity_west );              
+         const RealType bCoef = lambda_x * ( nonlinearity_center + nonlinearity_west );
          const RealType cCoef = -lambda_x * nonlinearity_center;
          matrixRow.setElement( 0, west,   aCoef );
          matrixRow.setElement( 1, center, bCoef );
@@ -121,7 +114,7 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, N
       }
 
    public:
-       
+ 
       const Nonlinearity& nonlinearity;
 };
 
@@ -134,27 +127,27 @@ template< typename MeshReal,
           typename Index >
 class tnlOneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Nonlinearity, Real, Index >
 {
-   public: 
-   
+   public:
+ 
       typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Nonlinearity NonlinearityType;
-      typedef tnlExactNonlinearDiffusion< MeshType::getMeshDimensions(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;      
+      typedef tnlExactNonlinearDiffusion< MeshType::getMeshDimensions(), typename Nonlinearity::ExactOperatorType, Real > ExactOperatorType;
 
       tnlOneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
-      : nonlinearity( nonlinearity ){}      
-      
+      : nonlinearity( nonlinearity ){}
+ 
       static tnlString getType()
       {
          return tnlString( "tnlOneSidedNonlinearDiffusion< " ) +
             MeshType::getType() + ", " +
             Nonlinearity::getType() + "," +
             ::getType< Real >() + ", " +
-            ::getType< Index >() + " >";         
-      }      
+            ::getType< Index >() + " >";
+      }
 
       template< typename MeshFunction,
                 typename MeshEntity >
@@ -171,13 +164,13 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, 
          const IndexType& east = neighbourEntities.template getEntityIndex<  1, 0 >();
          const IndexType& west = neighbourEntities.template getEntityIndex< -1, 0 >();
          const IndexType& north = neighbourEntities.template getEntityIndex< 0,  1 >();
-         const IndexType& south = neighbourEntities.template getEntityIndex< 0, -1 >();         
+         const IndexType& south = neighbourEntities.template getEntityIndex< 0, -1 >();
          const RealType& u_c = u[ center ];
          const RealType u_x_f = ( u[ east ] - u_c );
          const RealType u_x_b = ( u_c - u[ west ] );
          const RealType u_y_f = ( u[ north ] - u_c );
          const RealType u_y_b = ( u_c - u[ south ] );
-         
+ 
          const RealType& nonlinearity_center = this->nonlinearity[ center ];
          return ( u_x_f * nonlinearity_center - u_x_b * this->nonlinearity[ west ] ) * hx_div +
                 ( u_y_f * nonlinearity_center - u_y_b * this->nonlinearity[ south ] ) * hy_div;
@@ -210,7 +203,7 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, 
          const IndexType& east  = neighbourEntities.template getEntityIndex<  1,  0 >();
          const IndexType& west  = neighbourEntities.template getEntityIndex< -1,  0 >();
          const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1 >();
-         const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >();                  
+         const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1 >();
          const RealType lambda_x = tau * entity.getMesh().template getSpaceStepsProducts< -2,  0 >();
          const RealType lambda_y = tau * entity.getMesh().template getSpaceStepsProducts<  0, -2 >();
          const RealType& nonlinearity_center = this->nonlinearity[ center ];
@@ -226,11 +219,11 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, 
          matrixRow.setElement( 1, west,   bCoef );
          matrixRow.setElement( 2, center, cCoef );
          matrixRow.setElement( 3, east,   dCoef );
-         matrixRow.setElement( 4, north,  eCoef );         
+         matrixRow.setElement( 4, north,  eCoef );
       }
-   
+ 
    public:
-       
+ 
       const Nonlinearity& nonlinearity;
 };
 
@@ -243,8 +236,8 @@ template< typename MeshReal,
           typename Index >
 class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Nonlinearity, Real, Index >
 {
-   public: 
-   
+   public:
+ 
       typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
@@ -255,14 +248,14 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
 
       tnlOneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
-      
+ 
       static tnlString getType()
       {
          return tnlString( "tnlOneSidedNonlinearDiffusion< " ) +
             MeshType::getType() + ", " +
             Nonlinearity::getType() + "," +
             ::getType< Real >() + ", " +
-            ::getType< Index >() + " >";         
+            ::getType< Index >() + " >";
       }
 
       template< typename MeshFunction,
@@ -283,21 +276,21 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
          const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1,  0 >();
          const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1,  0 >();
          const IndexType& up    = neighbourEntities.template getEntityIndex<  0,  0,  1 >();
-         const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >();         
-         
+         const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >();
+ 
          const RealType& u_c = u[ center ];
          const RealType u_x_f = ( u[ east ] - u_c );
          const RealType u_x_b = ( u_c - u[ west ] );
          const RealType u_y_f = ( u[ north ] - u_c );
          const RealType u_y_b = ( u_c - u[ south ] );
          const RealType u_z_f = ( u[ up ] - u_c );
-         const RealType u_z_b = ( u_c - u[ down ] );         
-         
+         const RealType u_z_b = ( u_c - u[ down ] );
+ 
          const RealType& nonlinearity_center = this->nonlinearity[ center ];
          return ( u_x_f * nonlinearity_center - u_x_b * this->nonlinearity[ west ] ) * hx_div +
                 ( u_y_f * nonlinearity_center - u_y_b * this->nonlinearity[ south ] ) * hx_div +
                 ( u_z_f * nonlinearity_center - u_z_b * this->nonlinearity[ down ] ) * hz_div;
-         
+ 
       }
 
       template< typename MeshEntity >
@@ -329,9 +322,9 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
          const IndexType& north = neighbourEntities.template getEntityIndex<  0,  1,  0 >();
          const IndexType& south = neighbourEntities.template getEntityIndex<  0, -1,  0 >();
          const IndexType& up    = neighbourEntities.template getEntityIndex<  0,  0,  1 >();
-         const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >();                  
-         
-         
+         const IndexType& down  = neighbourEntities.template getEntityIndex<  0,  0, -1 >();
+ 
+ 
          const RealType lambda_x = tau * entity.getMesh().template getSpaceStepsProducts< -2,  0,  0 >();
          const RealType lambda_y = tau * entity.getMesh().template getSpaceStepsProducts<  0, -2,  0 >();
          const RealType lambda_z = tau * entity.getMesh().template getSpaceStepsProducts<  0,  0, -2 >();
@@ -356,9 +349,9 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
          matrixRow.setElement( 5, north,  fCoef );
          matrixRow.setElement( 5, up,     gCoef );
       }
-     
+ 
    public:
-       
+ 
       const Nonlinearity& nonlinearity;
 };
 

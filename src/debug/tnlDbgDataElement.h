@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef __TNLDBGDATAELEMENT_H__
 #define __TNLDBGDATAELEMENT_H__
@@ -39,10 +32,10 @@ template< class T > class tnlDbgDataElement
         previous( 0 ){};
 
    //! Constructor with given data and possibly pointer to next element
-   tnlDbgDataElement( const T& dt, 
+   tnlDbgDataElement( const T& dt,
                       tnlDbgDataElement< T >* prv = 0,
                       tnlDbgDataElement< T >* nxt = 0 )
-      : data( dt ), 
+      : data( dt ),
         next( nxt ),
         previous( prv ){};
 

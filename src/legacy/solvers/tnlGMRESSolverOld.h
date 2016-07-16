@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlGMRESSolverOldH
 #define tnlGMRESSolverOldH
@@ -90,7 +83,7 @@ tnlGMRESSolverOld< Real, Device, Index > :: tnlGMRESSolverOld( const tnlString& 
   restarting( 0 )
 {
 };
-   
+ 
 template< typename Real, typename Device, typename Index >
 tnlString tnlGMRESSolverOld< Real, Device, Index > :: getType() const
 {
@@ -129,7 +122,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
 
 
    Index i, j = 1, k, l;
-   
+ 
    Index _size = size;
 
    Real *r = _r. getData();
@@ -184,7 +177,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
 
       /****
        * v = 0
-       */   
+       */
       _v. setValue( ( Real ) 0.0 );
 
       /***
@@ -192,10 +185,10 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
        */
       vi. bind( _v. getData(), size );
       vi. alphaXPlusY( ( Real ) 1.0 / beta, _r );
-                
+ 
       _s. setValue( ( Real ) 0.0 );
       _s[ 0 ] = beta;
-      
+ 
 
 
       //dbgCout( " ----------- Starting m-loop -----------------" );
@@ -207,12 +200,12 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
           */
          if( precond )
          {
-            A. vectorProduct( vi, _M_tmp );            
+            A. vectorProduct( vi, _M_tmp );
             precond -> Solve( M_tmp, w );
          }
          else
              A. vectorProduct( vi, _w );
-         
+ 
          for( k = 0; k <= i; k++ )
          {
             vk. bind( &( _v. getData()[ k * _size ] ), _size );
@@ -221,7 +214,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
              */
             Real H_k_i = vk. scalarProduct( _w );
             H[ k + i * ( m + 1 ) ] = H_k_i;
-            
+ 
             /****
              * w = w - H_{k,i} v_k
              */

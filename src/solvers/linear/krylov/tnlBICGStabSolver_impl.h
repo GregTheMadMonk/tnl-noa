@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlBICGStabSolver_implH
 #define tnlBICGStabSolver_implH
@@ -165,7 +158,7 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
        * x_{j+1} = x_j + alpha_j * p_j + omega_j * s_j
        */
       x.addVectors( p, alpha, s, omega );
-      
+ 
       /****
        * r_{j+1} = s_j - omega_j * A * s_j
        */
