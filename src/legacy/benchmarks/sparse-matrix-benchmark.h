@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef SPARSEMATRIXBENCHMARK_H_
 #define SPARSEMATRIXBENCHMARK_H_
@@ -130,7 +123,7 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
     */
    const long int nonzeroElements = csrMatrix. getNumberOfNonzeroMatrixElements();
    if( verbose )
-      cout << "Matrix rows: " << csrMatrix.getRows() 
+      cout << "Matrix rows: " << csrMatrix.getRows()
            << " Matrix columns: " << csrMatrix.getColumns()
            << " Non-zero elements: " << nonzeroElements << endl;
 

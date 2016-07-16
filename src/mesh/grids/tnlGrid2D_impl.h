@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLGRID2D_IMPL_H_
 #define TNLGRID2D_IMPL_H_
@@ -86,9 +79,9 @@ void tnlGrid< 2, Real, Device, Index > :: computeSpaceSteps()
    {
       this->spaceSteps.x() = this->proportions.x() / ( Real ) this->getDimensions().x();
       this->spaceSteps.y() = this->proportions.y() / ( Real ) this->getDimensions().y();
-      const RealType& hx = this->spaceSteps.x(); 
+      const RealType& hx = this->spaceSteps.x();
       const RealType& hy = this->spaceSteps.y();
-      
+ 
       Real auxX, auxY;
       for( int i = 0; i < 5; i++ )
       {
@@ -130,7 +123,7 @@ void tnlGrid< 2, Real, Device, Index > :: computeSpaceSteps()
                   auxY = hy * hy;
                   break;
             }
-            this->spaceStepsProducts[ i ][ j ] = auxX * auxY;         
+            this->spaceStepsProducts[ i ][ j ] = auxX * auxY;
          }
       }
    }
@@ -186,7 +179,7 @@ void tnlGrid< 2, Real, Device, Index > :: setDomain( const VertexType& origin,
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__ inline 
+__cuda_callable__ inline
 const typename tnlGrid< 2, Real, Device, Index >::VertexType&
 tnlGrid< 2, Real, Device, Index >::getOrigin() const
 {
@@ -196,7 +189,7 @@ tnlGrid< 2, Real, Device, Index >::getOrigin() const
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__ inline 
+__cuda_callable__ inline
 const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
    tnlGrid< 2, Real, Device, Index > :: getProportions() const
 {
@@ -207,23 +200,23 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename EntityType >
-__cuda_callable__ inline 
+__cuda_callable__ inline
 Index
-tnlGrid< 2, Real, Device, Index >:: 
+tnlGrid< 2, Real, Device, Index >::
 getEntitiesCount() const
 {
    static_assert( EntityType::entityDimensions <= 2 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
-   
+ 
    switch( EntityType::entityDimensions )
    {
       case 2:
          return this->numberOfCells;
       case 1:
-         return this->numberOfFaces;         
+         return this->numberOfFaces;
       case 0:
          return this->numberOfVertices;
-   }            
+   }
    return -1;
 }
 
@@ -231,14 +224,14 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename EntityType >
-__cuda_callable__ inline 
+__cuda_callable__ inline
 EntityType
 tnlGrid< 2, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
    static_assert( EntityType::entityDimensions <= 2 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
-   
+ 
    return tnlGridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
 
@@ -246,14 +239,14 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename EntityType >
-__cuda_callable__ inline 
+__cuda_callable__ inline
 Index
 tnlGrid< 2, Real, Device, Index >::
 getEntityIndex( const EntityType& entity ) const
 {
    static_assert( EntityType::entityDimensions <= 2 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
-   
+ 
    return tnlGridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
 
@@ -296,14 +289,14 @@ template< typename Real,
           typename Device,
           typename Index >
    template< int xPow, int yPow  >
-__cuda_callable__ inline 
-const Real& 
+__cuda_callable__ inline
+const Real&
 tnlGrid< 2, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
-   tnlAssert( xPow >= -2 && xPow <= 2, 
+   tnlAssert( xPow >= -2 && xPow <= 2,
               cerr << " xPow = " << xPow );
-   tnlAssert( yPow >= -2 && yPow <= 2, 
+   tnlAssert( yPow >= -2 && yPow <= 2,
               cerr << " yPow = " << yPow );
 
    return this->spaceStepsProducts[ yPow + 2 ][ xPow + 2 ];
@@ -575,8 +568,8 @@ bool tnlGrid< 2, Real, Device, Index > :: write( const MeshFunction& function,
 {
    if( this->template getEntitiesCount< Cell >() != function. getSize() )
    {
-      cerr << "The size ( " << function. getSize() 
-           << " ) of a mesh function does not agree with the DOFs ( " 
+      cerr << "The size ( " << function. getSize()
+           << " ) of a mesh function does not agree with the DOFs ( "
            << this->template getEntitiesCount< Cell >() << " ) of a mesh." << endl;
       return false;
    }

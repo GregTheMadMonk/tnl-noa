@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLFLOWERPOTFUNCTION_IMPL_H_
 #define TNLFLOWERPOTFUNCTION_IMPL_H_
@@ -31,7 +24,7 @@ setup( const tnlParameterContainer& parameters,
    return true;
 }
 
-template< typename Real, 
+template< typename Real,
           int Dimensions >
 void tnlFlowerpotFunctionBase< Real, Dimensions >::setDiameter( const Real& sigma )
 {
@@ -62,7 +55,7 @@ tnlFlowerpotFunction< 1, Real >::tnlFlowerpotFunction()
 }
 
 template< typename Real >
-   template< int XDiffOrder, 
+   template< int XDiffOrder,
              int YDiffOrder,
              int ZDiffOrder,
              typename Vertex >

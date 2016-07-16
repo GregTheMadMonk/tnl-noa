@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLARRAYOPERATIONSCUDA_IMPL_H_
 #define TNLARRAYOPERATIONSCUDA_IMPL_H_
@@ -271,7 +264,7 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( const Element1* dest
    }
    Index compared( 0 );
    while( compared < size )
-   {      
+   {
       Index transfer = Min( size - compared, tnlCuda::getGPUTransferBufferSize() );
       if( cudaMemcpy( ( void* ) host_buffer,
                       ( void* ) & ( source[ compared ] ),

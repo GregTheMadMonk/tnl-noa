@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLHOSTL_H_
 #define TNLHOSTL_H_
@@ -54,9 +47,9 @@ void tnlHost::disableOMP()
 void tnlHost::setMaxThreadsCount( int maxThreadsCount_ )
 {
    maxThreadsCount = maxThreadsCount_;
-#ifdef HAVE_OPENMP   
+#ifdef HAVE_OPENMP
    omp_set_num_threads( maxThreadsCount );
-#endif   
+#endif
 }
 
 int tnlHost::getMaxThreadsCount()
@@ -69,14 +62,14 @@ int tnlHost::getMaxThreadsCount()
    return 0;
 #endif
 }
-      
+ 
 int tnlHost::getThreadIdx()
 {
 #ifdef HAVE_OPENMP
    return omp_get_thread_num();
 #else
    return 0;
-#endif  
+#endif
 }
 
 void tnlHost::configSetup( tnlConfigDescription& config, const tnlString& prefix )
@@ -88,9 +81,9 @@ void tnlHost::configSetup( tnlConfigDescription& config, const tnlString& prefix
    config.addEntry< bool >( prefix + "omp-enabled", "Enable support of OpenMP (not supported on this system).", false );
    config.addEntry<  int >( prefix + "omp-max-threads", "Set maximum number of OpenMP threads (not supported on this system).", 0 );
 #endif
-   
+ 
 }
-      
+ 
 bool tnlHost::setup( const tnlParameterContainer& parameters,
                     const tnlString& prefix )
 {

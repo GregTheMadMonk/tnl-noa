@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef mpi_suppH
 #define mpi_suppH
@@ -107,7 +100,7 @@ template< class T > void MPIBcast( T& data,
 inline void MPIBcast( tnlString& data, int cout, int root, MPI_Comm comm = MPI_COMM_WORLD )
 {
    std::cerr << "Call method MPIBcast of mString instead of function MPIBcast( mString&, ... ) " << std::endl;
-   abort();    
+   abort();
 }
 #else
 template< class T > void MPIBcast( T&,
@@ -126,9 +119,9 @@ template< typename T > void MPIReduce( T& data,
                                        int root,
                                        MPI_Comm comm )
 {
-   MPI_Reduce( &data, 
-               &reduced_data, 
-               count, 
+   MPI_Reduce( &data,
+               &reduced_data,
+               count,
                MPIDataType( data ),
                op,
                root,
@@ -153,9 +146,9 @@ template< typename T > void MPIAllreduce( T& data,
                                           MPI_Op op,
                                           MPI_Comm comm )
 {
-   MPI_Allreduce( &data, 
-                  &reduced_data, 
-                  count, 
+   MPI_Allreduce( &data,
+                  &reduced_data,
+                  count,
                   MPIDataType( data ),
                   op,
                   comm );

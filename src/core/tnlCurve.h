@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlCurveH
 #define tnlCurveH
@@ -33,47 +26,47 @@ template< class T > class tnlCurveElement
    public:
    tnlCurveElement() {};
 
-   tnlCurveElement( const T& pos, 
+   tnlCurveElement( const T& pos,
                   bool _speparator = false )
       : position( pos ),
         separator( _speparator ) {};
-   
+ 
    bool save( tnlFile& file ) const
    {
-#ifdef HAVE_NOT_CXX11      
+#ifdef HAVE_NOT_CXX11
       if( ! file. write< const T, tnlHost >( &position ) )
          return false;
       if( ! file. write< const bool, tnlHost >( &separator ) )
          return false;
       return true;
-#else      
+#else
       if( ! file. write( &position ) )
          return false;
       if( ! file. write( &separator ) )
          return false;
       return true;
-#endif      
+#endif
    };
-   
+ 
    bool load( tnlFile& file )
    {
-#ifdef HAVE_NOT_CXX11      
+#ifdef HAVE_NOT_CXX11
       if( ! file. read< T, tnlHost >( &position ) )
          return false;
       if( ! file. read< bool, tnlHost >( &separator ) )
          return false;
       return true;
-#else      
+#else
       if( ! file. read( &position ) )
          return false;
       if( ! file. read( &separator ) )
          return false;
       return true;
-#endif      
+#endif
    };
-   
+ 
    T position;
-   
+ 
    bool separator;
 };
 
@@ -108,7 +101,7 @@ template< class T > class tnlCurve : public tnlObject, public tnlList< tnlCurveE
    {
       tnlList< tnlCurveElement< T > >::reset();
    };
-   
+ 
    //! Method for saving the object to a file as a binary data
    bool save( tnlFile& file ) const
    {
@@ -135,7 +128,7 @@ template< class T > class tnlCurve : public tnlObject, public tnlList< tnlCurveE
    bool load( const tnlString& fileName )
    {
       return tnlObject :: load( fileName );
-   };   
+   };
 
 };
 
@@ -163,7 +156,7 @@ template< class T > bool Write( const tnlCurve< T >& curve,
          if( curve[ i ]. separator )
             str << endl;
          else
-            str << setprecision( 12 ) 
+            str << setprecision( 12 )
                 << curve[ i ]. position[ 0 ] << " "
                 << curve[ i ]. position[ 1 ] << endl;
          for( j = 0; j < step; j ++ )

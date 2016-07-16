@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLGRIDTRAVERSER_H
 #define	TNLGRIDTRAVERSER_H
@@ -24,24 +17,24 @@
  */
 template< typename Grid >
 class tnlGridTraverser
-{   
+{
 };
 
 /****
  * 1D grid, tnlHost
  */
-template< typename Real,           
+template< typename Real,
           typename Index >
 class tnlGridTraverser< tnlGrid< 1, Real, tnlHost, Index > >
 {
    public:
-      
+ 
       typedef tnlGrid< 1, Real, tnlHost, Index > GridType;
       typedef Real RealType;
       typedef tnlHost DeviceType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      
+ 
       template<
          typename GridEntity,
          typename EntitiesProcessor,
@@ -60,18 +53,18 @@ class tnlGridTraverser< tnlGrid< 1, Real, tnlHost, Index > >
 /****
  * 1D grid, tnlCuda
  */
-template< typename Real,           
+template< typename Real,
           typename Index >
 class tnlGridTraverser< tnlGrid< 1, Real, tnlCuda, Index > >
 {
    public:
-      
+ 
       typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
       typedef Real RealType;
       typedef tnlHost DeviceType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      
+ 
       template<
          typename GridEntity,
          typename EntitiesProcessor,
@@ -83,25 +76,25 @@ class tnlGridTraverser< tnlGrid< 1, Real, tnlCuda, Index > >
          const CoordinatesType& begin,
          const CoordinatesType& end,
          const CoordinatesType& entityOrientation,
-         const CoordinatesType& entityBasis,         
+         const CoordinatesType& entityBasis,
          UserData& userData );
 };
 
 /****
  * 2D grid, tnlHost
  */
-template< typename Real,           
+template< typename Real,
           typename Index >
 class tnlGridTraverser< tnlGrid< 2, Real, tnlHost, Index > >
 {
    public:
-      
+ 
       typedef tnlGrid< 2, Real, tnlHost, Index > GridType;
       typedef Real RealType;
       typedef tnlHost DeviceType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      
+ 
       template<
          typename GridEntity,
          typename EntitiesProcessor,
@@ -115,25 +108,25 @@ class tnlGridTraverser< tnlGrid< 2, Real, tnlHost, Index > >
          const CoordinatesType begin,
          const CoordinatesType end,
          const CoordinatesType& entityOrientation,
-         const CoordinatesType& entityBasis,         
+         const CoordinatesType& entityBasis,
          UserData& userData );
 };
 
 /****
  * 2D grid, tnlCuda
  */
-template< typename Real,           
+template< typename Real,
           typename Index >
 class tnlGridTraverser< tnlGrid< 2, Real, tnlCuda, Index > >
 {
    public:
-      
+ 
       typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
       typedef Real RealType;
       typedef tnlHost DeviceType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      
+ 
       template<
          typename GridEntity,
          typename EntitiesProcessor,
@@ -147,25 +140,25 @@ class tnlGridTraverser< tnlGrid< 2, Real, tnlCuda, Index > >
          const CoordinatesType& begin,
          const CoordinatesType& end,
          const CoordinatesType& entityOrientation,
-         const CoordinatesType& entityBasis,         
+         const CoordinatesType& entityBasis,
          UserData& userData );
 };
 
 /****
  * 3D grid, tnlHost
  */
-template< typename Real,           
+template< typename Real,
           typename Index >
 class tnlGridTraverser< tnlGrid< 3, Real, tnlHost, Index > >
 {
    public:
-      
+ 
       typedef tnlGrid< 3, Real, tnlHost, Index > GridType;
       typedef Real RealType;
       typedef tnlHost DeviceType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      
+ 
       template<
          typename GridEntity,
          typename EntitiesProcessor,
@@ -180,25 +173,25 @@ class tnlGridTraverser< tnlGrid< 3, Real, tnlHost, Index > >
          const CoordinatesType& begin,
          const CoordinatesType& end,
          const CoordinatesType& entityOrientation,
-         const CoordinatesType& entityBasis,         
+         const CoordinatesType& entityBasis,
          UserData& userData );
 };
 
 /****
  * 3D grid, tnlCuda
  */
-template< typename Real,           
+template< typename Real,
           typename Index >
 class tnlGridTraverser< tnlGrid< 3, Real, tnlCuda, Index > >
 {
    public:
-      
+ 
       typedef tnlGrid< 3, Real, tnlCuda, Index > GridType;
       typedef Real RealType;
       typedef tnlHost DeviceType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      
+ 
       template<
          typename GridEntity,
          typename EntitiesProcessor,
@@ -213,7 +206,7 @@ class tnlGridTraverser< tnlGrid< 3, Real, tnlCuda, Index > >
          const CoordinatesType& begin,
          const CoordinatesType& end,
          const CoordinatesType& entityOrientation,
-         const CoordinatesType& entityBasis,         
+         const CoordinatesType& entityBasis,
          UserData& userData );
 };
 

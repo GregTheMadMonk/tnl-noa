@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlEulerSolver_implH
 #define tnlEulerSolver_implH
@@ -166,7 +159,7 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
          currentTau /= 0.95;
          currentTau = Min( currentTau, this->getMaxTau() );
       }
-   }   
+   }
 };
 
 template< typename Problem >
@@ -244,7 +237,7 @@ __global__ void updateUEuler( const Index size,
 
    computeBlockResidue( du,
                         cudaBlockResidue,
-                        n );   
+                        n );
 }
 #endif
 

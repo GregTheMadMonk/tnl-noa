@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLEXPLICITUPDATER_IMPL_H_
 #define TNLEXPLICITUPDATER_IMPL_H_
@@ -35,13 +28,13 @@ void
 tnlExplicitUpdater< Mesh, MeshFunction, DifferentialOperator, BoundaryConditions, RightHandSide >::
 update( const RealType& time,
         const Mesh& mesh,
-        const DifferentialOperator& differentialOperator,        
+        const DifferentialOperator& differentialOperator,
         const BoundaryConditions& boundaryConditions,
         const RightHandSide& rightHandSide,
         MeshFunction& u,
         MeshFunction& fu ) const
 {
-   static_assert( std::is_same< MeshFunction, 
+   static_assert( std::is_same< MeshFunction,
                                 tnlVector< typename MeshFunction::RealType,
                                            typename MeshFunction::DeviceType,
                                            typename MeshFunction::IndexType > >::value != true,
@@ -62,7 +55,7 @@ update( const RealType& time,
    }
    if( std::is_same< DeviceType, tnlCuda >::value )
    {
-      if( this->gpuTransferTimer ) 
+      if( this->gpuTransferTimer )
          this->gpuTransferTimer->start();
       RealType* kernelTime = tnlCuda::passToDevice( time );
       DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
@@ -70,7 +63,7 @@ update( const RealType& time,
       RightHandSide* kernelRightHandSide = tnlCuda::passToDevice( rightHandSide );
       MeshFunction* kernelU = tnlCuda::passToDevice( u );
       MeshFunction* kernelFu = tnlCuda::passToDevice( fu );
-     if( this->gpuTransferTimer ) 
+     if( this->gpuTransferTimer )
          this->gpuTransferTimer->stop();
 
       TraverserUserData userData( *kernelTime, *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelRightHandSide, *kernelU, *kernelFu );
@@ -85,10 +78,10 @@ update( const RealType& time,
                                                     ( mesh,
                                                       userData );
 
-      if( this->gpuTransferTimer ) 
+      if( this->gpuTransferTimer )
          this->gpuTransferTimer->start();
-      
-      checkCudaDevice;      
+ 
+      checkCudaDevice;
       tnlCuda::freeFromDevice( kernelTime );
       tnlCuda::freeFromDevice( kernelDifferentialOperator );
       tnlCuda::freeFromDevice( kernelBoundaryConditions );
@@ -96,8 +89,8 @@ update( const RealType& time,
       tnlCuda::freeFromDevice( kernelU );
       tnlCuda::freeFromDevice( kernelFu );
       checkCudaDevice;
-      
-      if( this->gpuTransferTimer ) 
+ 
+      if( this->gpuTransferTimer )
          this->gpuTransferTimer->stop();
 
    }

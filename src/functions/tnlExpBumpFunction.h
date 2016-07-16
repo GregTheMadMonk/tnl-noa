@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLEXPBUMPFUNCTION_H_
 #define TNLEXPBUMPFUNCTION_H_
@@ -27,11 +20,11 @@ template< int dimensions,
 class tnlExpBumpFunctionBase : public tnlDomain< dimensions, SpaceDomain >
 {
    public:
-     
+ 
       typedef Real RealType;
-      
+ 
       tnlExpBumpFunctionBase();
-      
+ 
       bool setup( const tnlParameterContainer& parameters,
                  const tnlString& prefix = "" );
 
@@ -58,9 +51,9 @@ template< typename Real >
 class tnlExpBumpFunction< 1, Real > : public tnlExpBumpFunctionBase< 1, Real >
 {
    public:
-     
+ 
       typedef Real RealType;
-      typedef tnlStaticVector< 1, RealType > VertexType;      
+      typedef tnlStaticVector< 1, RealType > VertexType;
 
       static tnlString getType();
 
@@ -74,11 +67,11 @@ class tnlExpBumpFunction< 1, Real > : public tnlExpBumpFunctionBase< 1, Real >
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif   
-   __cuda_callable__ 
+#endif
+   __cuda_callable__
    RealType getPartialDerivative( const VertexType& v,
                                   const Real& time = 0.0 ) const;
-      
+ 
    __cuda_callable__
    RealType operator()( const VertexType& v,
                         const RealType& time = 0.0 ) const;
@@ -90,7 +83,7 @@ class tnlExpBumpFunction< 2, Real > : public tnlExpBumpFunctionBase< 2, Real >
    public:
  
       typedef Real RealType;
-      typedef tnlStaticVector< 2, RealType > VertexType;      
+      typedef tnlStaticVector< 2, RealType > VertexType;
 
       static tnlString getType();
 
@@ -108,21 +101,21 @@ class tnlExpBumpFunction< 2, Real > : public tnlExpBumpFunctionBase< 2, Real >
    __cuda_callable__ inline
    RealType getPartialDerivative( const VertexType& v,
                                   const Real& time = 0.0 ) const;
-      
+ 
    __cuda_callable__
    RealType operator()( const VertexType& v,
-                        const Real& time = 0.0 ) const;                            
+                        const Real& time = 0.0 ) const;
 };
 
 template< typename Real >
 class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< 3, Real >
 {
    public:
-      
+ 
       typedef Real RealType;
-      typedef tnlStaticVector< 3, RealType > VertexType;      
+      typedef tnlStaticVector< 3, RealType > VertexType;
 
-    
+ 
       static tnlString getType();
 
       tnlExpBumpFunction();
@@ -135,15 +128,15 @@ class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< 3, Real >
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
-#endif   
+#endif
    __cuda_callable__
    RealType getPartialDerivative( const VertexType& v,
                                   const Real& time = 0.0 ) const;
-      
+ 
    __cuda_callable__
    RealType operator()( const VertexType& v,
                         const Real& time = 0.0 ) const;
-      
+ 
 };
 
 template< int Dimensions,

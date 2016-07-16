@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlPETSCSolverH
 #define tnlPETSCSolverH
@@ -66,7 +59,7 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
       cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
 #endif
    };
-   
+ 
    void PrintOut()
    {
 #ifdef HAVE_PETSC
@@ -84,7 +77,7 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
 
    bool Solve( const tnlMatrix< T >& A,
                const T* b,
-               T* x, 
+               T* x,
                const double& max_residue,
                const int max_iterations,
                tnlPreconditioner< T >* precond = 0 )
@@ -98,12 +91,12 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
 
       MatAssemblyBegin( matrix, MAT_FINAL_ASSEMBLY );
       MatAssemblyEnd( matrix, MAT_FINAL_ASSEMBLY );
-      
+ 
       const int size = petsc_matrix -> getSize();
 
       VecCreateSeqWithArray( MPI_COMM_SELF, size, x, &petsc_x );
       VecCreateSeqWithArray( MPI_COMM_SELF, size, b, &petsc_b );
-      
+ 
       T normb;
       int i;
       for( i = 0; i < size; i ++ )
@@ -111,9 +104,9 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
          normb += b[ i ] * b[ i ];
       }
       normb = sqrt( normb );
-      
+ 
       KSPGMRESSetCGSRefinementType( petsc_solver, KSP_GMRES_CGS_REFINE_IFNEEDED );
-      
+ 
       KSPMonitorSet( petsc_solver, PETSCSolverMonitorCallback< T >, this, PETSC_NULL );
 
       KSPSetTolerances( petsc_solver, max_residue, PETSC_DEFAULT, PETSC_DEFAULT, max_iterations );
@@ -126,7 +119,7 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
       //PCFactorSetUseDropTolerance( pc, 1.0e-10, 0.1, 100 );
       PCFactorSetShiftPd( pc, PETSC_TRUE );
 
-      KSPSolve( petsc_solver, petsc_b, petsc_x); 
+      KSPSolve( petsc_solver, petsc_b, petsc_x);
 
       VecDestroy( petsc_x );
       VecDestroy( petsc_b );
@@ -134,15 +127,15 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
       PetscInt its;
       KSPGetIterationNumber( petsc_solver, &its );
       tnlMatrixSolver< T > :: iteration = its;
-      
+ 
       if( tnlMatrixSolver< T > :: iteration < 0 ) return false;
-      
+ 
       PetscReal res;
       KSPGetResidualNorm( petsc_solver, &res );
       tnlMatrixSolver< T > :: residue = res / normb;
-      
+ 
       //KSPDestroy( petsc_solver );
-      
+ 
       return true;
 #else
       cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
@@ -167,7 +160,7 @@ template< typename T > inline PetscErrorCode PETSCSolverMonitorCallback( KSP ksp
 {
    tnlPETSCSolver< T >* petsc_solver = ( tnlPETSCSolver< T > * ) ctx;
    petsc_solver -> PrintOut();
-      
+ 
    return 0;
 }
 #endif

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 
 #ifndef TNLTIMER_H
@@ -24,7 +17,7 @@
 class tnlTimer
 {
    public:
-   
+ 
       tnlTimer();
 
       void reset();
@@ -38,18 +31,18 @@ class tnlTimer
       double getCPUTime();
 
       unsigned long long int getCPUCycles();
-      
+ 
       bool writeLog( tnlLogger& logger, int logLevel = 0 );
-         
+ 
    protected:
 
    double initialRealTime, totalRealTime,
           initialCPUTime, totalCPUTime;
-   
+ 
    unsigned long long int initialCPUCycles, totalCPUCycles;
-   
+ 
    bool stopState;
-   
+ 
    inline unsigned long long rdtsc()
    {
      unsigned hi, lo;

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLTWOSIDEDGRADIENTNORM_H
 #define	TNLTWOSIDEDGRADIENTNORM_H
@@ -25,7 +18,7 @@
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
-          typename Index = typename Mesh::IndexType > 
+          typename Index = typename Mesh::IndexType >
 class tnlTwoSidedGradientNorm
 {
 };
@@ -39,15 +32,15 @@ class tnlTwoSidedGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
    : public tnlOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >,
                          MeshInteriorDomain, 1, 1, Real, Index >
 {
-   public: 
-   
+   public:
+ 
    typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlExactGradientNorm< 1, RealType > ExactOperatorType;
-   
+ 
    tnlTwoSidedGradientNorm()
    : epsSquare( 0.0 ){}
 
@@ -69,16 +62,16 @@ class tnlTwoSidedGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
       tnlBackwardFiniteDifference< typename MeshEntity::MeshType, 1, 0, 0, Real, Index > XBackwardDifference;
       const RealType u_x_f = XForwardDifference( u, entity );
       const RealType u_x_b = XBackwardDifference( u, entity );
-      return sqrt( this->epsSquare + 0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b ) );          
+      return sqrt( this->epsSquare + 0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b ) );
    }
-                
+ 
    void setEps( const Real& eps )
    {
       this->epsSquare = eps*eps;
    }
-      
+ 
    private:
-   
+ 
    RealType epsSquare;
 };
 
@@ -92,15 +85,15 @@ class tnlTwoSidedGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
    : public tnlOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >,
                          MeshInteriorDomain, 2, 2, Real, Index >
 {
-   public: 
-   
+   public:
+ 
    typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlExactGradientNorm< 2, RealType > ExactOperatorType;
-   
+ 
    tnlTwoSidedGradientNorm()
    : epsSquare( 0.0 ){}
 
@@ -113,13 +106,13 @@ class tnlTwoSidedGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
          ::getType< Index >() + " >";
 
    }
-      
+ 
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
    Real operator()( const MeshFunction& u,
                     const MeshEntity& entity,
                     const Real& time = 0.0 ) const
-   {      
+   {
       tnlForwardFiniteDifference< typename MeshEntity::MeshType, 1, 0, 0, Real, Index > XForwardDifference;
       tnlForwardFiniteDifference< typename MeshEntity::MeshType, 0, 1, 0, Real, Index > YForwardDifference;
       tnlBackwardFiniteDifference< typename MeshEntity::MeshType, 1, 0, 0, Real, Index > XBackwardDifference;
@@ -128,20 +121,20 @@ class tnlTwoSidedGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
       const RealType u_x_b = XBackwardDifference( u, entity );
       const RealType u_y_f = YForwardDifference( u, entity );
       const RealType u_y_b = YBackwardDifference( u, entity );
-      
+ 
       return sqrt( this->epsSquare +
-         0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b + 
-                 u_y_f * u_y_f + u_y_b * u_y_b ) );          
+         0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b +
+                 u_y_f * u_y_f + u_y_b * u_y_b ) );
    }
-           
+ 
    void setEps( const Real& eps )
    {
       this->epsSquare = eps*eps;
-   }   
-   
-   
+   }
+ 
+ 
    private:
-   
+ 
    RealType epsSquare;
 };
 
@@ -155,24 +148,24 @@ class tnlTwoSidedGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, 
    : public tnlOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >,
                          MeshInteriorDomain, 3, 3, Real, Index >
 {
-   public: 
-   
+   public:
+ 
    typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlExactGradientNorm< 3, RealType > ExactOperatorType;
-   
+ 
    tnlTwoSidedGradientNorm()
-   : epsSquare( 0.0 ){}   
+   : epsSquare( 0.0 ){}
 
    static tnlString getType()
    {
       return tnlString( "tnlTwoSidedGradientNorm< " ) +
          MeshType::getType() + ", " +
          ::getType< Real >() + ", " +
-         ::getType< Index >() + " >";      
+         ::getType< Index >() + " >";
    }
 
    template< typename MeshFunction, typename MeshEntity >
@@ -193,22 +186,22 @@ class tnlTwoSidedGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, 
       const RealType u_y_b = YBackwardDifference( u, entity );
       const RealType u_z_f = ZForwardDifference( u, entity );
       const RealType u_z_b = ZBackwardDifference( u, entity );
-      
+ 
       return sqrt( this->epsSquare +
          0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b +
                  u_y_f * u_y_f + u_y_b * u_y_b +
-                 u_z_f * u_z_f + u_z_b * u_z_b ) );          
-      
+                 u_z_f * u_z_f + u_z_b * u_z_b ) );
+ 
    }
-   
-        
+ 
+ 
    void setEps(const Real& eps)
    {
       this->epsSquare = eps*eps;
-   }   
-   
+   }
+ 
    private:
-   
+ 
    RealType epsSquare;
 };
 

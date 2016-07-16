@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <fstream>
 #include <iomanip>
@@ -155,7 +148,7 @@ bool tnlConfigDescription :: checkMissingEntries( tnlParameterContainer& paramet
    for( i = 0; i < size; i ++ )
    {
       const char* entry_name = entries[ i ] -> name. getString();
-      if( entries[ i ] -> required && 
+      if( entries[ i ] -> required &&
           ! parameter_container. checkParameter( entry_name ) )
          missingParameters.Append( entry_name );
    }

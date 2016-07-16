@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLAPPROXIMATIONERROR_H_
 #define TNLAPPROXIMATIONERROR_H_
@@ -33,7 +26,7 @@ template< typename ExactOperator,
 class tnlApproximationError
 {
    public:
-   
+ 
       typedef typename ApproximateOperator::RealType RealType;
       typedef typename ApproximateOperator::MeshType MeshType;
       typedef typename MeshType::DeviceType DeviceType;
@@ -58,7 +51,7 @@ class tnlApproximationError
          typedef tnlExactOperatorFunction< ExactOperator, Function > ExactOperatorFunction;
 
          tnlMeshFunction< MeshType, MeshEntity::getDimensions() > exactU( mesh ), u( mesh ), v( mesh );
-         OperatorFunction operatorFunction( approximateOperator, v );         
+         OperatorFunction operatorFunction( approximateOperator, v );
          ExactOperatorFunction exactOperatorFunction( exactOperator, function );
          DirichletBoundaryConditions boundaryConditions;
          BoundaryOperatorFunction boundaryOperatorFunction( boundaryConditions, u );
@@ -91,19 +84,19 @@ class tnlApproximationError
          {
             cerr << "Error in operator refreshing." << endl;
             return;
-         }         
+         }
          u = operatorFunction;
          tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
          if( writeFunctions )
             u.write( "approximate-result-" + dimensionsString + meshSizeString, "gnuplot" ) ;
 
          //cerr << "Evaluate difference ... " << endl;
-         u -= exactU;   
+         u -= exactU;
          tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
          if( writeFunctions )
             u.write( "difference-" + dimensionsString + meshSizeString, "gnuplot" ) ;
          l1Error = u.getLpNorm( 1.0 );
-         l2Error = u.getLpNorm( 2.0 );   
+         l2Error = u.getLpNorm( 2.0 );
          maxError = u.getMaxNorm();
       }
 };

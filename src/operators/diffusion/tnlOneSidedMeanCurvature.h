@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLONESIDEDTOTALVARIATIONMINIMIZATION_H
 #define	TNLONESIDEDTOTALVARIATIONMINIMIZATION_H
@@ -36,7 +29,7 @@ class tnlOneSidedMeanCurvature
    : public tnlOperator< Mesh, MeshInteriorDomain, Mesh::getMeshDimensions(), Mesh::getMeshDimensions(), Real, Index >
 {
    public:
-            
+ 
       typedef Mesh MeshType;
       typedef Real RealType;
       typedef Index IndexType;
@@ -48,40 +41,40 @@ class tnlOneSidedMeanCurvature
       typedef tnlOperatorFunction< NonlinearityOperator, NonlinearityMeshFunction, NonlinearityBoundaryConditions, EvaluateNonlinearityOnFly > Nonlinearity;
       typedef tnlOneSidedNonlinearDiffusion< Mesh, Nonlinearity, RealType, IndexType > NonlinearDiffusion;
       typedef tnlExactMeanCurvature< Mesh::getMeshDimensions(), RealType > ExactOperatorType;
-      
+ 
       tnlOneSidedMeanCurvature( const MeshType& mesh )
       : nonlinearityOperator( gradientNorm ),
         nonlinearity( nonlinearityOperator, nonlinearityBoundaryConditions, mesh ),
         nonlinearDiffusion( nonlinearity ){}
-      
+ 
       static tnlString getType()
       {
          return tnlString( "tnlOneSidedMeanCurvature< " ) +
             MeshType::getType() + ", " +
             ::getType< Real >() + ", " +
-            ::getType< Index >() + " >";         
+            ::getType< Index >() + " >";
       }
-      
+ 
       void setRegularizationEpsilon( const RealType& eps )
       {
          this->gradientNorm.setEps( eps );
       }
-      
+ 
       void setPreimageFunction( typename Nonlinearity::PreimageFunctionType& preimageFunction )
       {
          this->nonlinearity.setPreimageFunction( preimageFunction );
       }
-      
+ 
       bool refresh( const RealType& time = 0.0 )
       {
          return this->nonlinearity.refresh( time );
       }
-      
+ 
       bool deepRefresh( const RealType& time = 0.0 )
       {
          return this->nonlinearity.deepRefresh( time );
-      }      
-      
+      }
+ 
       template< typename MeshFunction,
                 typename MeshEntity >
       __cuda_callable__
@@ -116,19 +109,19 @@ class tnlOneSidedMeanCurvature
                                Matrix& matrix ) const
       {
          this->nonlinearDiffusion.setMatrixElements( time, tau, mesh, index, entity, u, b, matrix );
-      }            
-      
-   protected:      
-      
+      }
+ 
+   protected:
+ 
       NonlinearityBoundaryConditions nonlinearityBoundaryConditions;
-      
+ 
       GradientNorm gradientNorm;
 
       NonlinearityOperator nonlinearityOperator;
-      
+ 
       Nonlinearity nonlinearity;
-      
-      NonlinearDiffusion nonlinearDiffusion;            
+ 
+      NonlinearDiffusion nonlinearDiffusion;
 };
 
 #endif	/* TNLONESIDEDTOTALVARIATIONMINIMIZATION_H */

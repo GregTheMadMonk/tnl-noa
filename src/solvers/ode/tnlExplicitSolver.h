@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlExplicitSolverH
 #define tnlExplicitSolverH
@@ -33,7 +26,7 @@ class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
                                                      typename Problem::IndexType >
 {
    public:
-   
+ 
    typedef Problem ProblemType;
    typedef typename Problem :: DofVectorType DofVectorType;
    typedef typename Problem :: RealType RealType;
@@ -53,13 +46,13 @@ class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
    void setTime( const RealType& t );
 
    const RealType& getTime() const;
-   
+ 
    void setStopTime( const RealType& stopTime );
 
    RealType getStopTime() const;
 
    void setTau( const RealType& tau );
-   
+ 
    const RealType& getTau() const;
 
    void setMaxTau( const RealType& maxTau );
@@ -67,13 +60,13 @@ class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
    const RealType& getMaxTau() const;
 
    void setMPIComm( MPI_Comm comm );
-  
+ 
    void setVerbose( IndexType v );
 
    void setTimerCPU( tnlTimerCPU* timer );
 
    void setTimerRT( tnlTimerRT* timer );
-   
+ 
    virtual bool solve( DofVectorType& u ) = 0;
 
    void setTestingMode( bool testingMode );
@@ -85,7 +78,7 @@ class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
    void refreshSolverMonitor();
 
 protected:
-    
+ 
    /****
     * Current time of the parabolic problem.
     */
@@ -108,7 +101,7 @@ protected:
    IndexType verbosity;
 
    tnlTimerCPU* cpu_timer;
-   
+ 
    tnlTimerRT* rt_timer;
 
    bool testingMode;

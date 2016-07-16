@@ -6,19 +6,12 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
  
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #include <core/cuda/cuda-prefix-sum.h>
-         
+ 
 template bool cudaPrefixSum( const int size,
                              const int blockSize,
                              const int *deviceInput,
@@ -85,5 +78,5 @@ template bool cudaPrefixSum( const long int size,
                              tnlParallelReductionSum< long double, long int >& operation,
                              const enumPrefixSumType prefixSumType );
 #endif
-#endif 
+#endif
 #endif

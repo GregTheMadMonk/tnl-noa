@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLARRAY_H_IMPLEMENTATION
 #define TNLARRAY_H_IMPLEMENTATION
@@ -63,7 +56,7 @@ tnlArray( Element* data,
   data( data ),
   allocationPointer( 0 ),
   referenceCounter( 0 )
-{   
+{
 }
 
 template< typename Element,
@@ -94,15 +87,15 @@ tnlArray( tnlArray< Element, Device, Index >& array,
       else
       {
          this->referenceCounter = array.referenceCounter = new int;
-         *this->referenceCounter = 2;            
+         *this->referenceCounter = 2;
       }
-   }   
+   }
 }
 
 template< typename Element,
           typename Device,
           typename Index >
-tnlString 
+tnlString
 tnlArray< Element, Device, Index >::
 getType()
 {
@@ -116,7 +109,7 @@ getType()
 template< typename Element,
            typename Device,
            typename Index >
-tnlString 
+tnlString
 tnlArray< Element, Device, Index >::
 getTypeVirtual() const
 {
@@ -136,7 +129,7 @@ getSerializationType()
 template< typename Element,
            typename Device,
            typename Index >
-tnlString 
+tnlString
 tnlArray< Element, Device, Index >::
 getSerializationTypeVirtual() const
 {
@@ -160,8 +153,8 @@ releaseData() const
       }
    }
    else
-      if( allocationPointer )      
-         tnlArrayOperations< Device >::freeMemory( this->allocationPointer );   
+      if( allocationPointer )
+         tnlArrayOperations< Device >::freeMemory( this->allocationPointer );
    this->allocationPointer = 0;
    this->data = 0;
    this->size = 0;
@@ -189,7 +182,7 @@ setSize( const Index size )
                 << ( double ) this->size * sizeof( ElementType ) / 1.0e9 << " GB." << std::endl;
       this->size = 0;
       return false;
-   }   
+   }
    return true;
 };
 
@@ -210,14 +203,14 @@ setLike( const Array& array )
 template< typename Element,
            typename Device,
            typename Index >
-void 
+void
 tnlArray< Element, Device, Index >::
 bind( Element* data,
       const Index size )
 {
    this->releaseData();
    this->data = data;
-   this->size = size;   
+   this->size = size;
 }
 
 template< typename Element,
@@ -233,7 +226,7 @@ bind( const tnlArray< Element, Device, Index >& array,
               std::cerr << " begin = " << begin << " array.getSize() = " << array.getSize() );
    tnlAssert( begin + size  <= array.getSize(),
               std::cerr << " begin = " << begin << " size = " << size <<  " array.getSize() = " << array.getSize() );
-   
+ 
    this->releaseData();
    if( size )
       this->size = size;
@@ -254,7 +247,7 @@ bind( const tnlArray< Element, Device, Index >& array,
          *this->referenceCounter = 2;
          //std::cerr << "Allocating reference counter " << this->referenceCounter << std::endl;
       }
-   }   
+   }
 }
 
 template< typename Element,
@@ -274,7 +267,7 @@ bind( tnlStaticArray< Size, Element >& array )
 template< typename Element,
           typename Device,
           typename Index >
-void 
+void
 tnlArray< Element, Device, Index >::
 swap( tnlArray< Element, Device, Index >& array )
 {
@@ -287,7 +280,7 @@ swap( tnlArray< Element, Device, Index >& array )
 template< typename Element,
           typename Device,
           typename Index >
-void 
+void
 tnlArray< Element, Device, Index >::
 reset()
 {
@@ -298,7 +291,7 @@ template< typename Element,
           typename Device,
           typename Index >
 __cuda_callable__
-Index 
+Index
 tnlArray< Element, Device, Index >::
 getSize() const
 {
@@ -352,7 +345,7 @@ template< typename Element,
            typename Device,
            typename Index >
 __cuda_callable__
-inline const Element& 
+inline const Element&
 tnlArray< Element, Device, Index >::
 operator[] ( const Index& i ) const
 {
@@ -373,7 +366,7 @@ operator = ( const tnlArray< Element, Device, Index >& array )
    tnlAssert( array. getSize() == this->getSize(),
               std::cerr << "Source size: " << array. getSize() << std::endl
                         << "Target size: " << this->getSize() << std::endl );
-   tnlArrayOperations< Device > :: 
+   tnlArrayOperations< Device > ::
    template copyMemory< Element,
                         Element,
                         Index >
@@ -490,7 +483,7 @@ bool tnlArray< Element, Device, Index > :: save( tnlFile& file ) const
 #ifdef HAVE_NOT_CXX11
    if( ! file. write< const Index, tnlHost >( &this->size ) )
       return false;
-#else            
+#else
    if( ! file. write( &this->size ) )
       return false;
 #endif
@@ -516,10 +509,10 @@ load( tnlFile& file )
 #ifdef HAVE_NOT_CXX11
    if( ! file. read< Index, tnlHost >( &_size ) )
       return false;
-#else   
+#else
    if( ! file. read( &_size ) )
       return false;
-#endif      
+#endif
    if( _size < 0 )
    {
       std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;
@@ -551,10 +544,10 @@ boundLoad( tnlFile& file )
 #ifdef HAVE_NOT_CXX11
    if( ! file. read< Index, tnlHost >( &_size ) )
       return false;
-#else   
+#else
    if( ! file. read( &_size ) )
       return false;
-#endif      
+#endif
    if( _size < 0 )
    {
       std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;
@@ -602,7 +595,7 @@ boundLoad( const tnlString& fileName )
       std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
       return false;
    }
-   return true;   
+   return true;
 }
 
 template< typename Element,

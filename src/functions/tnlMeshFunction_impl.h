@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <core/tnlAssert.h>
 #include <functions/tnlMeshFunction.h>
@@ -54,13 +47,13 @@ tnlMeshFunction( const MeshType& mesh,
                  Vector& data,
                  const IndexType& offset )
 {
-   this->bind( mesh, data, offset );   
+   this->bind( mesh, data, offset );
 }
 
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-tnlString 
+tnlString
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getType()
 {
@@ -74,7 +67,7 @@ getType()
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-tnlString 
+tnlString
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getTypeVirtual() const
 {
@@ -84,7 +77,7 @@ getTypeVirtual() const
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-tnlString 
+tnlString
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getSerializationType()
 {
@@ -98,7 +91,7 @@ getSerializationType()
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-tnlString 
+tnlString
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getSerializationTypeVirtual() const
 {
@@ -113,7 +106,7 @@ tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
-   config.addEntry< tnlString >( prefix + "file", "Dataset for the mesh function." );   
+   config.addEntry< tnlString >( prefix + "file", "Dataset for the mesh function." );
 }
 
 template< typename Mesh,
@@ -171,7 +164,7 @@ setMesh( const MeshType& mesh )
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::MeshType& 
+const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::MeshType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getMesh() const
 {
@@ -181,7 +174,7 @@ getMesh() const
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::VectorType& 
+const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::VectorType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getData() const
 {
@@ -191,7 +184,7 @@ getData() const
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::VectorType& 
+typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::VectorType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getData()
 {
@@ -204,7 +197,7 @@ template< typename Mesh,
 bool
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 refresh( const RealType& time ) const
-{  
+{
    return true;
 }
 
@@ -221,7 +214,7 @@ deepRefresh( const RealType& time ) const
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-   template< typename EntityType >          
+   template< typename EntityType >
 typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getValue( const EntityType& meshEntity ) const
@@ -234,7 +227,7 @@ template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
    template< typename EntityType >
-void 
+void
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 setValue( const EntityType& meshEntity,
           const RealType& value )
@@ -248,7 +241,7 @@ template< typename Mesh,
           typename Real >
    template< typename EntityType >
 __cuda_callable__
-typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType& 
+typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator()( const EntityType& meshEntity,
             const RealType& time )
@@ -262,7 +255,7 @@ template< typename Mesh,
           typename Real >
    template< typename EntityType >
 __cuda_callable__
-const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType& 
+const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator()( const EntityType& meshEntity,
             const RealType& time ) const
@@ -275,10 +268,10 @@ template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
 __cuda_callable__
-typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType& 
+typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator[]( const IndexType& meshEntityIndex )
-{   
+{
    return this->data[ meshEntityIndex ];
 }
 
@@ -286,7 +279,7 @@ template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
 __cuda_callable__
-const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType& 
+const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator[]( const IndexType& meshEntityIndex ) const
 {
@@ -351,7 +344,7 @@ getMaxNorm() const
 
 template< typename Mesh,
           int MeshEntityDimensions,
-          typename Real >      
+          typename Real >
 bool
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 save( tnlFile& file ) const
@@ -370,7 +363,7 @@ load( tnlFile& file )
 {
    if( ! tnlObject::load( file ) )
       return false;
-   return this->data.load( file );   
+   return this->data.load( file );
 }
 
 template< typename Mesh,
@@ -382,7 +375,7 @@ boundLoad( tnlFile& file )
 {
    if( ! tnlObject::load( file ) )
       return false;
-   return this->data.boundLoad( file );   
+   return this->data.boundLoad( file );
 }
 
 template< typename Mesh,
@@ -406,7 +399,7 @@ write( const tnlString& fileName,
       return tnlMeshFunctionGnuplotWriter< ThisType >::write( *this, file );
    return true;
 }
-      
+ 
 
 
 #endif	/* TNLMESHFUNCTION_IMPL_H */

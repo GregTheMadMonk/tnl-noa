@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlPETSCMatrixH
 #define tnlPETSCMatrixH
@@ -66,7 +59,7 @@ template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
    {
       return tnlMatrixClass :: petsc;
    };
-   
+ 
    void GetData( Mat& _matrix )
    {
 #ifdef HAVE_PETSC
@@ -75,7 +68,7 @@ template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
       cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
 #endif
    }
-   
+ 
    int getSize() const
    {
       return size;
@@ -124,10 +117,10 @@ template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
       return false;
 #endif
    };
-   
+ 
    T rowProduct( const int row,
                  const tnlVector< T >& vec ) const {};
-   
+ 
    void vectorProduct( const tnlVector< T >&* vec,
                        tnlVector< T >&* result ) const
    {
@@ -135,20 +128,20 @@ template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
       Vec petsc_vec, petsc_res;
       VecCreateSeqWithArray( MPI_COMM_SELF, size, vec, &petsc_vec );
       VecCreateSeqWithArray( MPI_COMM_SELF, size, result, &petsc_res );
-      
+ 
       MatAssemblyBegin( matrix, MAT_FINAL_ASSEMBLY );
       MatAssemblyEnd( matrix, MAT_FINAL_ASSEMBLY );
-      
+ 
       MatMult( matrix, petsc_vec, petsc_res );
-      
+ 
       VecDestroy( petsc_vec );
       VecDestroy( petsc_res );
 #else
       cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
 #endif
-      
+ 
    };
-   
+ 
    T getRowL1Norm( int row ) const {};
 
    void multiplyRow( int row, const T& value ) {};

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <config/tnlParameterContainer.h>
 #include <core/tnlCurve.h>
@@ -36,7 +29,7 @@ int main( int argc, char* argv[] )
 {
    tnlParameterContainer parameters;
    tnlConfigDescription conf_desc;
-   
+ 
    setupConfig( conf_desc );
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
@@ -64,7 +57,7 @@ int main( int argc, char* argv[] )
    {
       const char* input_file = input_files[ i ]. getString();
       cout << "Processing file " << input_file << " ... " << flush;
-          
+ 
       tnlFile file;
       if( ! file. open( input_files[ i ], tnlReadMode ) )
       {

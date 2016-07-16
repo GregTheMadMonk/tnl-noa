@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMESHREADERNETGEN_H_
 #define TNLMESHREADERNETGEN_H_
@@ -32,7 +25,7 @@ class tnlMeshReaderNetgen
 
       tnlMeshReaderNetgen()
       : dimensions( 0 ){}
-      
+ 
    bool detectMesh( const tnlString& fileName )
    {
       fstream inputFile( fileName.getString() );
@@ -49,7 +42,7 @@ class tnlMeshReaderNetgen
        * Skip whitespaces
        */
       inputFile >> ws;
-      
+ 
       /****
        * Skip number of vertices
        */
@@ -59,7 +52,7 @@ class tnlMeshReaderNetgen
       iss.str( line );
       long int numberOfVertices;
       iss >> numberOfVertices;
-      
+ 
       //cout << "There are " << numberOfVertices << " vertices." << endl;
 
       /****
@@ -77,7 +70,7 @@ class tnlMeshReaderNetgen
          iss >> aux;
          this->dimensions++;
       }
-      
+ 
       /****
        * Skip vertices
        */
@@ -92,12 +85,12 @@ class tnlMeshReaderNetgen
          }
          verticesRead++;
       }
-      
+ 
       /****
        * Skip whitespaces
        */
       inputFile >> ws;
-         
+ 
       /****
        * Get number of cells
        */
@@ -107,7 +100,7 @@ class tnlMeshReaderNetgen
       iss.str( line );
       iss >> numberOfCells;
       //cout << "There are " << numberOfCells << " cells." << endl;
-      
+ 
       /****
        * Get number of vertices in a cell
        */
@@ -132,7 +125,7 @@ class tnlMeshReaderNetgen
    {
       typedef typename MeshType::PointType PointType;
       typedef tnlMeshBuilder< MeshType > MeshBuilder;
-      
+ 
       const int dimensions = PointType::size;
 
       fstream inputFile( fileName.getString() );
@@ -232,16 +225,16 @@ class tnlMeshReaderNetgen
        return true;
    }
 
-   int getDimensions() const 
+   int getDimensions() const
    {
-      return this->dimensions;      
+      return this->dimensions;
    }
-   
+ 
    int getVerticesInCell() const
    {
       return this->verticesInCell;
    }
-   
+ 
    protected:
 
       int dimensions, verticesInCell;

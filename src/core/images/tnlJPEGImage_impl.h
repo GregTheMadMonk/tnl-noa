@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLJPEGIMAGE_IMPL_H
 #define	TNLJPEGIMAGE_IMPL_H
@@ -38,7 +31,7 @@ inline void my_error_exit( j_common_ptr cinfo )
 
 template< typename Index >
 tnlJPEGImage< Index >::
-tnlJPEGImage() : 
+tnlJPEGImage() :
    fileOpen( false )
 {
 }
@@ -50,8 +43,8 @@ readHeader()
 {
 #ifdef HAVE_JPEG_H
    this->decinfo.err = jpeg_std_error(&jerr.pub);
-   this->jerr.pub.error_exit = my_error_exit; 
-   
+   this->jerr.pub.error_exit = my_error_exit;
+ 
    /***
     * Prepare the long jump back from libjpeg.
     */
@@ -64,20 +57,20 @@ readHeader()
       jpeg_destroy_decompress( &this->decinfo );
       return false;
    }
-   
+ 
    jpeg_create_decompress( &this->decinfo );
    jpeg_stdio_src( &this->decinfo, this->file );
    if( jpeg_read_header( &this->decinfo, true ) != JPEG_HEADER_OK )
       return false;
    this->height = this->decinfo.image_height;
    this->width = this->decinfo.image_width;
-   this->components = this->decinfo.num_components; 
+   this->components = this->decinfo.num_components;
    //this->color_space = this->cinfo.jpeg_color_space;
    //cout << this->height << " x " << this->width << " : " << this->components << " " << this->color_space << endl;
 #else
    cerr << "TNL was not compiled with support of JPEG. You may still use PGM format." << endl;
    return false;
-#endif   
+#endif
 }
 
 template< typename Index >
@@ -111,7 +104,7 @@ read( const tnlRegionOfInterest< Index > roi,
 #ifdef HAVE_JPEG_H
    typedef tnlGrid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
-   
+ 
    /***
     * Prepare the long jump back from libjpeg.
     */
@@ -124,14 +117,14 @@ read( const tnlRegionOfInterest< Index > roi,
       jpeg_destroy_decompress( &this->decinfo );
       return false;
    }
-      
+ 
    jpeg_start_decompress( &this->decinfo );
    int row_stride = this->decinfo.output_width * this->decinfo.output_components;
    JSAMPARRAY row = ( *( this->decinfo.mem->alloc_sarray ) )( ( j_common_ptr ) &this->decinfo,
                                                               JPOOL_IMAGE,
                                                               row_stride,
                                                               1 );	
-   
+ 
    Index i( 0 ), j;
    while( this->decinfo.output_scanline < this->decinfo.output_height)
    {
@@ -140,7 +133,7 @@ read( const tnlRegionOfInterest< Index > roi,
       {
          if( !roi.isIn( i, j ) )
             continue;
-     
+ 
          cell.getCoordinates().x() =  j - roi.getLeft();
          cell.getCoordinates().y() = roi.getBottom() - 1 - i;
          //Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
@@ -177,7 +170,7 @@ read( const tnlRegionOfInterest< Index > roi,
 #else
    //cerr << "TNL was not compiled with support of JPEG. You may still use PGM format." << endl;
    return false;
-#endif      
+#endif
 }
 
 template< typename Index >
@@ -200,7 +193,7 @@ writeHeader( const tnlGrid< 2, Real, Device, Index >& grid )
 #else
    //cerr << "TNL was not compiled with support of JPEG. You may still use PGM format." << endl;
    return false;
-#endif    
+#endif
 }
 
 template< typename Index >
@@ -236,7 +229,7 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
    typedef tnlGrid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
 
-#ifdef HAVE_JPEG_H   
+#ifdef HAVE_JPEG_H
    Index i( 0 ), j;
    JSAMPROW row[1];
    row[ 0 ] = new JSAMPLE[ grid.getDimensions().x() ];
@@ -251,18 +244,18 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
          //Index cellIndex = grid.getCellIndex( CoordinatesType( j,
          //                                     grid.getDimensions().y() - 1 - i ) );
 
-         row[ 0 ][ j ] = 255 * vector.getElement( cell.getIndex() );         
+         row[ 0 ][ j ] = 255 * vector.getElement( cell.getIndex() );
       }
       jpeg_write_scanlines( &this->cinfo, row, 1 );
       i++;
-   }   
+   }
    jpeg_finish_compress( &this->cinfo );
    jpeg_destroy_compress( &this->cinfo );
    delete[] row[ 0 ];
    return true;
 #else
    return false;
-#endif   
+#endif
 }
 
 

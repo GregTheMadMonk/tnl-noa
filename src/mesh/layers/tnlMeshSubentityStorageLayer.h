@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMESHSUBENTITYSTORAGELAYER_H_
 #define TNLMESHSUBENTITYSTORAGELAYER_H_
@@ -26,7 +19,7 @@
 template< typename MeshConfig,
           typename EntityTopology,
           typename DimensionsTag,
-          bool SubentityStorage = 
+          bool SubentityStorage =
             tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionsTag::value >::storageEnabled,
           bool SubentityOrientationStorage =
             tnlMeshTraits< MeshConfig >::template SubentityTraits< EntityTopology, DimensionsTag::value >::orientationEnabled >
@@ -146,18 +139,18 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
 
    using BaseType::subentityIdsArray;
    IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
-   
+ 
    using BaseType::subentityOrientation;
    IdPermutationArrayAccessorType subentityOrientation( DimensionsTag, LocalIndexType index) const
    {
       tnlAssert( 0 <= index && index < SubentityTraits::count, );
-       
+ 
       return this->subentityOrientations[ index ].getSubvertexPermutation();
    }
 
    using BaseType::subentityOrientationsArray;
 	OrientationArrayType& subentityOrientationsArray( DimensionsTag ) { return this->subentityOrientations; }
-   
+ 
    private:
       IdArrayType subentitiesIndices;
 
@@ -182,7 +175,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
                                          typename DimensionsTag::Decrement > BaseType;
 
    protected:
-   
+ 
    static const int Dimensions = DimensionsTag::value;
    typedef tnlMeshTraits< MeshConfig >                                                   MeshTraits;
    typedef typename MeshTraits::template SubentityTraits< EntityTopology, Dimensions >   SubentityTraits;
@@ -268,10 +261,10 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
 
    using BaseType::subentityIdsArray;
    IdArrayType& subentityIdsArray( DimensionsTag ) { return this->subentitiesIndices; }
-   
+ 
    using BaseType::subentityOrientationsArray;
    void subentityOrientationsArray() {}
-   
+ 
    private:
       IdArrayType subentitiesIndices;
 };
@@ -369,9 +362,9 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
    }
 
    IdArrayType& subentityIdsArray( DimensionsTag ) { return this->verticesIndices; }
-   
+ 
    protected:
-      
+ 
       /***
        *  Necessary because of 'using TBase::...;' in the derived classes
        */

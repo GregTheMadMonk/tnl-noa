@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMULTIARRAY_H_
 #define TNLMULTIARRAY_H_
@@ -62,7 +55,7 @@ class tnlMultiArray< 1, Element, Device, Index > : public tnlArray< Element, Dev
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
    bool setLike( const MultiArray& v );
-   
+ 
    void reset();
 
    __cuda_callable__ Index getElementIndex( const Index i ) const;

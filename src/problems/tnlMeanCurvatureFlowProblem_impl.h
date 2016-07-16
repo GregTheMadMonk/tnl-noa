@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMEANCURVATUREFLOWPROBLEM_IMPL_H_
 #define TNLMEANCURVATUREFLOWPROBLEM_IMPL_H_
@@ -131,7 +124,7 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-template< typename Matrix >          
+template< typename Matrix >
 bool
 tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setupLinearSystem( const MeshType& mesh,
@@ -147,7 +140,7 @@ setupLinearSystem( const MeshType& mesh,
       mesh,
       differentialOperator,
       boundaryCondition,
-      rowLengths 
+      rowLengths
    );
    matrix.setDimensions( dofs, dofs );
    if( ! matrix.setCompressedRowsLengths( rowLengths ) )
@@ -201,7 +194,7 @@ getExplicitRHS( const RealType& time,
     */
 
 //   this->differentialOperator.computeFirstGradient(mesh,time,u);
-   
+ 
    //cout << "u = " << u << endl;
    //this->bindDofs( mesh, u );
    MeshFunctionType u( mesh, inDofs );
@@ -216,7 +209,7 @@ getExplicitRHS( const RealType& time,
       this->rightHandSide,
       u,
       fu );
-   
+ 
    tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
    boundaryConditionsSetter.template apply< typename Mesh::Cell >(
       this->boundaryCondition,
@@ -234,7 +227,7 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-template< typename Matrix >          
+template< typename Matrix >
 void
 tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
@@ -246,12 +239,12 @@ assemblyLinearSystem( const RealType& time,
                       MeshDependentDataType& meshDependentData )
 {
    MeshFunctionType u( mesh, dofsU );
-   tnlLinearSystemAssembler< Mesh, 
-			     MeshFunctionType, 
-			     DifferentialOperator, 
-			     BoundaryCondition, 
-			     RightHandSide, 
-			     tnlBackwardTimeDiscretisation, 
+   tnlLinearSystemAssembler< Mesh,
+			     MeshFunctionType,
+			     DifferentialOperator,
+			     BoundaryCondition,
+			     RightHandSide,
+			     tnlBackwardTimeDiscretisation,
 			     MatrixType,
 			     DofVectorType > systemAssembler;
    systemAssembler.template assembly< typename Mesh::Cell >(

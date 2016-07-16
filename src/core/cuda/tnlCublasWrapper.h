@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLCUBLASWARPER_H
 #define	TNLCUBLASWARPER_H
@@ -22,7 +15,7 @@
 #include <cublas_v2.h>
 #endif
 
-template< typename Real1, 
+template< typename Real1,
           typename Real2,
           typename Index >
 class tnlCublasWrapper
@@ -31,7 +24,7 @@ class tnlCublasWrapper
         static bool dot( const Real1* v1, const Real2* v2, const Index size, Real1& result)
         {
             return false;
-        }        
+        }
 };
 
 #if defined HAVE_CUBLAS && defined HAVE_CUDA
@@ -48,7 +41,7 @@ class tnlCublasWrapper< float, float, Index >
             cublasSdot( handle, size, v1, 1, v2, 1, &result );
             cublasDestroy( handle );
             return false;
-        }        
+        }
 };
 
 template< typename Index >
@@ -62,9 +55,9 @@ class tnlCublasWrapper< double, double, Index >
             cublasDdot( handle, size, v1, 1, v2, 1, &result );
             cublasDestroy( handle );
             return false;
-        }        
+        }
 };
-#endif            
+#endif
 
 #endif	/* TNLCUBLASWARPER_H */
 

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLDIRICHLETBOUNDARYCONDITIONS_H_
 #define TNLDIRICHLETBOUNDARYCONDITIONS_H_
@@ -53,7 +46,7 @@ class tnlDirichletBoundaryConditions
       {
          Function::configSetup( config, prefix );
       }
-      
+ 
       bool setup( const tnlParameterContainer& parameters,
                   const tnlString& prefix = "" )
       {
@@ -69,7 +62,7 @@ class tnlDirichletBoundaryConditions
       {
          return this->function;
       }
-      
+ 
       const Function& getFunction() const
       {
          return this->function;
@@ -79,7 +72,7 @@ class tnlDirichletBoundaryConditions
                 typename MeshFunction >
       __cuda_callable__
       const RealType operator()( const MeshFunction& u,
-                                 const EntityType& entity,                            
+                                 const EntityType& entity,
                                  const RealType& time = 0 ) const
       {
          //static_assert( EntityType::getDimensions() == MeshEntitiesDimensions, "Wrong mesh entity dimensions." );
@@ -112,12 +105,12 @@ class tnlDirichletBoundaryConditions
          matrixRow.setElement( 0, index, 1.0 );
          b[ index ] = tnlFunctionAdapter< MeshType, Function >::getValue( this->function, entity, time );
       }
-   
+ 
 
    protected:
 
       Function function;
-   
+ 
    //static_assert( Device::DeviceType == Function::Device::DeviceType );
 };
 

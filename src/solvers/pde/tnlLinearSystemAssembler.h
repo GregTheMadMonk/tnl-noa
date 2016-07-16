@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLLINEARSYSTEMASSEMBLER_H_
 #define TNLLINEARSYSTEMASSEMBLER_H_
@@ -44,9 +37,9 @@ class tnlLinearSystemAssemblerTraverserUserData
       const BoundaryConditions* boundaryConditions;
 
       const RightHandSide* rightHandSide;
-      
+ 
       const MeshFunction *u;
-      
+ 
       DofVector *b;
 
       Matrix *matrix;
@@ -91,13 +84,13 @@ class tnlLinearSystemAssembler
    typedef typename MeshFunction::IndexType IndexType;
    typedef Matrix MatrixType;
    typedef tnlLinearSystemAssemblerTraverserUserData< RealType,
-                                                      MeshFunction,                                                      
+                                                      MeshFunction,
                                                       DifferentialOperator,
                                                       BoundaryConditions,
                                                       RightHandSide,
                                                       MatrixType,
                                                       DofVector > TraverserUserData;
-      
+ 
    template< typename EntityType >
    void assembly( const RealType& time,
                   const RealType& tau,
@@ -109,18 +102,18 @@ class tnlLinearSystemAssembler
                   MatrixType& matrix,
                   DofVector& b ) const;
 
-   
+ 
       class TraverserBoundaryEntitiesProcessor
    {
       public:
-         
-         template< typename EntityType >         
+ 
+         template< typename EntityType >
          __cuda_callable__
          static void processEntity( const MeshType& mesh,
                                     TraverserUserData& userData,
                                     const EntityType& entity )
          {
-             ( *userData.b )[ entity.getIndex() ] = 0.0;           
+             ( *userData.b )[ entity.getIndex() ] = 0.0;
              userData.boundaryConditions->setMatrixElements
                ( *userData.u,
                  entity,
@@ -141,15 +134,15 @@ class tnlLinearSystemAssembler
                                     TraverserUserData& userData,
                                     const EntityType& entity )
          {
-            ( *userData.b )[ entity.getIndex() ] = 0.0;            
+            ( *userData.b )[ entity.getIndex() ] = 0.0;
             userData.differentialOperator->setMatrixElements
                ( *userData.u,
                  entity,
                  *userData.time + *userData.tau,
                  *userData.tau,
-                 *userData.matrix, 
+                 *userData.matrix,
                  *userData.b );
-            
+ 
             typedef tnlFunctionAdapter< MeshType, RightHandSide > RhsFunctionAdapter;
             typedef tnlFunctionAdapter< MeshType, MeshFunction > MeshFunctionAdapter;
             const RealType& rhs = RhsFunctionAdapter::getValue

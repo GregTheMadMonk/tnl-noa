@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLIDENTITYOPERATOR_H
 #define	TNLIDENTITYOPERATOR_H
@@ -25,14 +18,14 @@ class tnlIdentityOperator
    : public tnlDomain< MeshFunction::getDimensions(), MeshFunction::getDomainType() >
 {
    public:
-      
+ 
       typedef typename MeshFunction::MeshType MeshType;
       typedef typename MeshFunction::RealType RealType;
       typedef typename MeshFunction::IndexType IndexType;
-      
+ 
       tnlOperatorComposition( const MeshFunction& meshFunction )
       : meshFunction( meshFunction ) {};
-      
+ 
       template< typename MeshEntity >
       __cuda_callable__
       RealType operator()(
@@ -44,11 +37,11 @@ class tnlIdentityOperator
             "Mesh function and operator have both different number of dimensions." );
          return this->meshFunction( meshEntity, time );
       }
-      
-   
+ 
+ 
    protected:
-      
-      const MeshFunction& meshFunction;      
+ 
+      const MeshFunction& meshFunction;
 };
 
 #endif	/* TNLIDENTITYOPERATOR_H */

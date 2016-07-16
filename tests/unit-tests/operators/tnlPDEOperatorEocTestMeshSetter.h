@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLPDEOPERATOREOCTESTMESHSETTER_H
 #define	TNLPDEOPERATOREOCTESTMESHSETTER_H
@@ -31,14 +24,14 @@ template< typename Real,
 class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 1, Real, Device, Index > >
 {
    public:
-      
+ 
       typedef tnlGrid< 1, Real, Device, Index > MeshType;
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      
+ 
       static bool setup( MeshType& mesh, const IndexType meshSize )
       {
          VertexType origin, proportions;
@@ -60,14 +53,14 @@ template< typename Real,
 class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 2, Real, Device, Index > >
 {
    public:
-      
+ 
       typedef tnlGrid< 2, Real, Device, Index > MeshType;
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      
+ 
       static bool setup( MeshType& mesh, const IndexType meshSize )
       {
          VertexType origin, proportions;
@@ -80,7 +73,7 @@ class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 2, Real, Device, Index > >
          CoordinatesType dimensions;
          dimensions.x() = meshSize;
          dimensions.y() = meshSize;
-         mesh.setDimensions( dimensions );         
+         mesh.setDimensions( dimensions );
 
          return true;
       }
@@ -92,7 +85,7 @@ template< typename Real,
 class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 3, Real, Device, Index > >
 {
    public:
-      
+ 
       typedef tnlGrid< 3, Real, Device, Index > MeshType;
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
@@ -100,7 +93,7 @@ class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 3, Real, Device, Index > >
       typedef Device DeviceType;
       typedef Index IndexType;
 
-      static bool setup( MeshType& mesh, const IndexType meshSize )      
+      static bool setup( MeshType& mesh, const IndexType meshSize )
       {
          VertexType origin, proportions;
          origin.x() = -1.0;
@@ -115,8 +108,8 @@ class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 3, Real, Device, Index > >
          dimensions.x() = meshSize;
          dimensions.y() = meshSize;
          dimensions.z() = meshSize;
-         mesh.setDimensions( dimensions );         
-         
+         mesh.setDimensions( dimensions );
+ 
          return true;
       }
 };

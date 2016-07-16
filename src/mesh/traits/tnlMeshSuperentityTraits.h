@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMESHSUPERENTITYTRAITS_H_
 #define TNLMESHSUPERENTITYTRAITS_H_
@@ -34,7 +27,7 @@ template< typename MeshConfig,
 class tnlMeshSuperentityTraits
 {
    public:
-   
+ 
    typedef typename MeshConfig::GlobalIndexType                              GlobalIndexType;
    typedef typename MeshConfig::LocalIndexType                               LocalIndexType;
 
@@ -51,10 +44,10 @@ class tnlMeshSuperentityTraits
     * Type of container for storing of the superentities indecis.
     */
    typedef tnlArray< GlobalIndexType, tnlHost, LocalIndexType >             StorageArrayType;
-   
+ 
    typedef tnlEllpackIndexMultimap< GlobalIndexType, tnlHost >                        StorageNetworkType;
    typedef tnlMeshSuperentityAccessor< typename StorageNetworkType::ValuesAccessorType > SuperentityAccessorType;
-   
+ 
    /****
     * Type for passing the superentities indecis by the getSuperentitiesIndices()
     * method. We introduce it because of the compatibility with the subentities

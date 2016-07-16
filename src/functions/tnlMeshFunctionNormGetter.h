@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMESHFUNCTIONNORMGETTER_H
 #define	TNLMESHFUNCTIONNORMGETTER_H
@@ -37,7 +30,7 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
                                  tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex > >
 {
    public:
-      
+ 
       typedef tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
       typedef tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
@@ -46,7 +39,7 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
       typedef typename MeshFunctionType::RealType RealType;
       typedef typename MeshFunctionType::MeshType MeshType;
       typedef typename MeshType::Face EntityType;
-      
+ 
       static RealType getNorm( const MeshFunctionType& function,
                                const RealType& p )
       {
@@ -81,7 +74,7 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
                {
                   EntityType entity = function.getMesh().template getEntity< EntityType >( i );
                   result += function[ i ] * function[ i ] * entity.getMeasure();
-               }            
+               }
                return sqrt( result );
             }
 
@@ -92,10 +85,10 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
             {
                EntityType entity = function.getMesh().template getEntity< EntityType >( i );
                result += pow( fabs( function[ i ] ), p ) * entity.getMeasure();
-            }                     
+            }
             return pow( result, 1.0 / p );
          }
-         
+ 
          if( p == 1.0 )
             return function.getData().lpNorm( 1.0 );
          if( p == 2.0 )
@@ -116,7 +109,7 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
                                  tnlGrid< Dimensions, MeshReal, tnlCuda, MeshIndex > >
 {
    public:
-      
+ 
       typedef tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlCuda, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
       typedef tnlGrid< Dimensions, MeshReal, tnlCuda, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
@@ -125,7 +118,7 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
       typedef typename MeshFunctionType::RealType RealType;
       typedef typename MeshFunctionType::MeshType MeshType;
       typedef typename MeshType::Face EntityType;
-      
+ 
       static RealType getNorm( const MeshFunctionType& function,
                                const RealType& p )
       {
@@ -141,7 +134,7 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
          {
             tnlAssert( false, std::cerr << "Not implemented yet." << std::endl );
          }
-         
+ 
          if( p == 1.0 )
             return function.getData().lpNorm( 1.0 );
          if( p == 2.0 )

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlILUPreconditionerH
 #define tnlILUPreconditionerH
@@ -26,7 +19,7 @@
 template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T >
 {
    public:
-   
+ 
    tnlILUPreconditioner( const int _size,
                        const int initial_size,
                        const int segment_size,
@@ -65,7 +58,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
       const tnlCSRMatrixOldElement< T > *A_data;
       const tnlCSRMatrixOldRowInfo *A_rows_info;
       A. Data( A_data, A_rows_info );
-      
+ 
 #ifdef ILU_DEBUG
       // 1. Copy data of A to full_M
       bzero( full_M, size * size * sizeof( T ) );
@@ -134,7 +127,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
                //return 0;
             }
          }
-        cout << "Computing ILUT ... " << 100.0 * ( float ) ( i + 1 ) / ( float ) ( size ) << "%    \r" << flush; 
+        cout << "Computing ILUT ... " << 100.0 * ( float ) ( i + 1 ) / ( float ) ( size ) << "%    \r" << flush;
          dbgExpr( i );
          //dbgExpr( * M );
       }
@@ -146,7 +139,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
       /*file. open( "orig_full_M2", ios :: out );
       WriteFullMatrix( file, full_M, size );
       file. close();*/
-      
+ 
       /*file. open( "M", ios :: out );
       file << *M << endl;
       file. close();*/
@@ -202,7 +195,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
                fabs( full_M[ i * size + j ] - ( *M )( i, j ) ) << endl;
                break;
             }
-      
+ 
       /*cout << "Checking  if LU = A" << endl;
       // check whether L U == A
       for( i = 0; i < size; i ++ )
@@ -230,9 +223,9 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
 #ifdef CSR_MATRIX_TUNING
       M -> PrintStatistics();
 #endif
-      return 1;  
-      
-        
+      return 1;
+ 
+ 
       /*
       // For i = 1 ... n - 1
       for( i = 1; i < size; i ++ )
@@ -265,7 +258,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
 
    }
 
-   
+ 
    bool Solve( const T* b, T* x ) const
    {
       dbgFunctionName( "tnlILUPreconditioner", "Solve" );
@@ -274,7 +267,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
       const tnlCSRMatrixOldRowInfo *M_rows_info;
       M -> Data( M_data, M_rows_info );
       int i, j;
-      
+ 
       dbgCout( "Solving Ly = b" );
       // L is unit lower triangular
       for( i = 0; i < size; i ++ )
@@ -290,7 +283,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
          //for( j = 0; j < i; j ++ )
          //   y[ i ] -= y[ j ] * ( * M )( i, j );
       }
-      
+ 
       dbgCout( "Solving Ux = y" );
       for( i = size - 1; i >=0 ; i -- )
       {
@@ -303,7 +296,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
               j < i_row_end && ( col = M_data[ j ]. column ) != -1;
               j ++ )
             x[ i ] -= x[ col ] * M_data[ j ]. value;
-         
+ 
          assert( M_data[ i_row_beg ]. value != 0.0 );
          x[ i ] /= M_data[ i_row_beg ]. value;
          //for( j = i + 1; j < size; j ++ )
@@ -317,7 +310,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
          for( j = 0; j < i; j ++ )
             y[ i ] -= y[ j ] * full_M[ i * size + j ];
       }
-      
+ 
       dbgCout( "Solving Ux = y" );
       for( i = size - 1; i >=0 ; i -- )
       {
@@ -329,7 +322,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
 #endif
       return true;
    }
-   
+ 
    ~tnlILUPreconditioner()
    {
       if( M ) delete M;
@@ -347,7 +340,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
    T* y;
 
    int size;
-   
+ 
 #ifdef ILU_DEBUG
    T* full_M, *ilu_check;
 #endif

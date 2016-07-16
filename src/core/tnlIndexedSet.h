@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLINDEXEDSET_H_
 #define TNLINDEXEDSET_H_
@@ -47,7 +40,7 @@ class tnlIndexedSet
    const Element& getElement( KeyType key ) const;
 
    Element& getElement( KeyType key );
-   
+ 
    void print( ostream& str ) const;
 
    protected:
@@ -57,9 +50,9 @@ class tnlIndexedSet
       // This constructor is here only because of bug in g++, we might fix it later.
       // http://stackoverflow.com/questions/22357887/comparing-two-mapiterators-why-does-it-need-the-copy-constructor-of-stdpair
       DataWithIndex(){};
-      
+ 
       DataWithIndex( const DataWithIndex& d ) : data( d.data ), index( d.index) {}
-      
+ 
       explicit DataWithIndex( const Element data) : data( data ) {}
 
       DataWithIndex( const Element data,

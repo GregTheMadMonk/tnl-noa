@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <core/tnlCuda.h>
 #include <core/mfuncs.h>
@@ -56,7 +49,7 @@ void tnlCuda::configSetup( tnlConfigDescription& config, const tnlString& prefix
    config.addEntry<  int >( prefix + "cuda-device", "Choose CUDA device to run the computationon (not supported on this system).", 0 );
 #endif
 }
-      
+ 
 bool tnlCuda::setup( const tnlParameterContainer& parameters,
                       const tnlString& prefix )
 {
@@ -67,7 +60,7 @@ bool tnlCuda::setup( const tnlParameterContainer& parameters,
       std::cerr << "I cannot activate CUDA device number " << cudaDevice << "." << std::endl;
       return false;
    }
-#endif   
+#endif
    return true;
 }
 

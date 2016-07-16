@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 /***
  * Authors:
@@ -148,7 +141,7 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-   template< typename Matrix >          
+   template< typename Matrix >
 bool
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setupLinearSystem( const MeshType& mesh,
@@ -216,13 +209,13 @@ getExplicitRHS( const RealType& time,
     *
     * You may use supporting vectors again if you need.
     */
-   
+ 
    //cout << "u = " << u << endl;
    this->bindDofs( mesh, uDofs );
    MeshFunctionType fu( mesh, fuDofs );
    tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
-   explicitUpdater.template update< typename Mesh::Cell >( 
+   explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer );
+   explicitUpdater.template update< typename Mesh::Cell >(
       time,
       mesh,
       this->differentialOperator,
@@ -235,7 +228,7 @@ getExplicitRHS( const RealType& time,
       this->boundaryCondition,
       time + tau,
       this->u );
-   
+ 
    //fu.write( "fu.txt", "gnuplot" );
    //this->u.write( "u.txt", "gnuplot");
    //getchar();
@@ -250,13 +243,13 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-    template< typename Matrix >          
+    template< typename Matrix >
 void
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshType& mesh,
-                      const DofVectorType& dofs,                      
+                      const DofVectorType& dofs,
                       Matrix& matrix,
                       DofVectorType& b,
 		                MeshDependentDataType& meshDependentData )

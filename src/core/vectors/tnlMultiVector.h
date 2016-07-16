@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMULTIVECTOR_H_
 #define TNLMULTIVECTOR_H_
@@ -62,7 +55,7 @@ class tnlMultiVector< 1, Real, Device, Index > : public tnlVector< Real, Device,
    //! Set dimensions of the Vector using another Vector as a template
    template< typename MultiVector >
    bool setLike( const tnlMultiVector& v );
-   
+ 
    Index getElementIndex( const Index i ) const;
 
    void setElement( const Index i, Real value );

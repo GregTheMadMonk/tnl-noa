@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLFUNCTIONADAPTER_H
 #define	TNLFUNCTIONADAPTER_H
@@ -30,19 +23,19 @@ template< typename Mesh,
 class tnlFunctionAdapter
 {
       public:
-      
+ 
       typedef Function FunctionType;
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
-      typedef typename MeshType::IndexType     IndexType;      
+      typedef typename MeshType::IndexType     IndexType;
       //typedef typename FunctionType::VertexType VertexType;
-      
+ 
       template< typename EntityType >
       __cuda_callable__ inline
       static RealType getValue( const FunctionType& function,
                                 const EntityType& meshEntity,
                                 const RealType& time )
-      {         
+      {
          return function( meshEntity, time );
       }
 };
@@ -56,19 +49,19 @@ template< typename Mesh,
 class tnlFunctionAdapter< Mesh, Function, SpaceDomain >
 {
    public:
-      
+ 
       typedef Function FunctionType;
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
-      typedef typename MeshType::IndexType     IndexType;      
+      typedef typename MeshType::IndexType     IndexType;
       typedef typename FunctionType::VertexType VertexType;
-      
+ 
       template< typename EntityType >
       __cuda_callable__ inline
       static RealType getValue( const FunctionType& function,
                                 const EntityType& meshEntity,
                                 const RealType& time )
-      {         
+      {
          return function( meshEntity.getCenter(), time );
       }
 };
@@ -83,19 +76,19 @@ template< typename Mesh,
 class tnlFunctionAdapter< Mesh, Function, NonspaceDomain >
 {
    public:
-      
+ 
       typedef Function FunctionType;
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
-      typedef typename MeshType::IndexType     IndexType;      
+      typedef typename MeshType::IndexType     IndexType;
       typedef typename FunctionType::VertexType VertexType;
-      
+ 
       template< typename EntityType >
       __cuda_callable__ inline
       static RealType getValue( const FunctionType& function,
                                 const EntityType& meshEntity,
                                 const RealType& time )
-      {         
+      {
          return function.getValue( time );
       }
 };
@@ -110,18 +103,18 @@ template< typename Mesh,
 class tnlFunctionAdapter< Mesh, Function, MeshFunction >
 {
    public:
-      
+ 
       typedef Function FunctionType;
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
-      typedef typename MeshType::IndexType     IndexType;      
-      
+      typedef typename MeshType::IndexType     IndexType;
+ 
       template< typename EntityType >
       __cuda_callable__ inline
       static RealType getValue( const FunctionType& function,
                                 const EntityType& meshEntity,
                                 const RealType& time )
-      {         
+      {
          return function( meshEntity, time );
       }
 };
@@ -134,19 +127,19 @@ template< typename Mesh,
 class tnlFunctionAdapter< Mesh, Function, SpaceDomain >
 {
    public:
-      
+ 
       typedef Function FunctionType;
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
-      typedef typename MeshType::IndexType     IndexType;      
+      typedef typename MeshType::IndexType     IndexType;
       typedef typename FunctionType::VertexType VertexType;
-      
+ 
       template< typename EntityType >
       __cuda_callable__ inline
       static RealType getValue( const FunctionType& function,
                                 const EntityType& meshEntity,
                                 const RealType& time )
-      {         
+      {
          return function.getValue( meshEntity.getCenter(), time );
       }
 };
@@ -159,19 +152,19 @@ template< typename Mesh,
 class tnlFunctionAdapter< Mesh, Function, SpaceDomain >
 {
    public:
-      
+ 
       typedef Function FunctionType;
       typedef Mesh MeshType;
       typedef typename FunctionType::RealType  RealType;
-      typedef typename MeshType::IndexType     IndexType;      
+      typedef typename MeshType::IndexType     IndexType;
       typedef typename FunctionType::VertexType VertexType;
-      
+ 
       template< typename EntityType >
       __cuda_callable__ inline
       static RealType getValue( const FunctionType& function,
                                 const EntityType& meshEntity,
                                 const RealType& time )
-      {         
+      {
          return function.getValue( time );
       }
 };

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef __MSTRING_H__
 #define __MSTRING_H__
@@ -59,7 +52,7 @@ class tnlString
    tnlString( unsigned number );
 
    tnlString( int number );
-   
+ 
    tnlString( long int number );
 
    tnlString( float number );
@@ -112,10 +105,10 @@ class tnlString
    //! Operator +
    tnlString operator + ( const char* str ) const;
 
-   //! Comparison operator 
+   //! Comparison operator
    bool operator == ( const tnlString& str ) const;
 
-   //! Comparison operator 
+   //! Comparison operator
    bool operator != ( const tnlString& str ) const;
 
    //! Comparison operator
@@ -123,7 +116,7 @@ class tnlString
 
    //! Comparison operator
    bool operator != ( const char* ) const;
-  
+ 
    //! Retyping operator
    operator bool () const;
 

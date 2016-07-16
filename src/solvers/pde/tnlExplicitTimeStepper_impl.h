@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLEXPLICITTIMESTEPPER_IMPL_H_
 #define TNLEXPLICITTIMESTEPPER_IMPL_H_
@@ -181,13 +174,13 @@ writeEpilog( tnlLogger& logger )
 {
    logger.writeParameter< long long int >( "Iterations count:", this->allIterations );
    logger.writeParameter< const char* >( "Pre-iterate time:", "" );
-   this->preIterateTimer.writeLog( logger, 1 );   
+   this->preIterateTimer.writeLog( logger, 1 );
    logger.writeParameter< const char* >( "Explicit update computation:", "" );
    this->explicitUpdaterTimer.writeLog( logger, 1 );
    logger.writeParameter< const char* >( "Explicit time stepper time:", "" );
    this->mainTimer.writeLog( logger, 1 );
    logger.writeParameter< const char* >( "Post-iterate time:", "" );
-   this->postIterateTimer.writeLog( logger, 1 );   
+   this->postIterateTimer.writeLog( logger, 1 );
    return true;
 }
 

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef mListH
 #define mListH
@@ -30,7 +23,7 @@ class tnlFile;
 
 //! Template for double linked lists
 /*! To acces elements in the list one can use method getSize() and
-    operator[](). To add elements there are methods Append(), 
+    operator[](). To add elements there are methods Append(),
     Prepend() and Insert() to insert an element at given
     position. To erase particular element there is merthod
     Erase() taking the element position. To erase all elements
@@ -89,7 +82,7 @@ template< class T > class tnlList
       bool AppendList( const tnlList< T >& lst );
 
       //! Prepend copy of another list
-      bool PrependList( const tnlList< T >& lst );   
+      bool PrependList( const tnlList< T >& lst );
 
       template< typename Array >
       void toArray( Array& array );
@@ -117,7 +110,7 @@ template< class T > class tnlList
 
       //! Load the list using method Load of the type T
       bool DeepLoad( tnlFile& file );
-   
+ 
    protected:
 
       //! Pointer to the first element
@@ -135,8 +128,8 @@ template< class T > class tnlList
       mutable tnlDataElement< T >* iterator;
 
       //! Iterator index
-      mutable int index;   
-      
+      mutable int index;
+ 
 
 };
 

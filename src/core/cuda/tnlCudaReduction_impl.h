@@ -6,19 +6,12 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLCUDAREDUCTION_IMPL_H
 #define	TNLCUDAREDUCTION_IMPL_H
 
-template< typename Operation, int blockSize >      
+template< typename Operation, int blockSize >
 __device__
 void
 tnlCUDAReduction< Operation, blockSize >::
@@ -154,7 +147,7 @@ reduce( Operation& operation,
 
 #ifdef UNDEF
 
-template< typename Real, typename Index, int blockSize >      
+template< typename Real, typename Index, int blockSize >
 __device__
 void
 tnlCUDAReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize >::
@@ -166,7 +159,7 @@ reduce( Operation& operation,
 {
   extern __shared__ __align__ ( 8 ) char __sdata[];
 
-   ResultType* sdata = reinterpret_cast< ResultType* >( __sdata );        
+   ResultType* sdata = reinterpret_cast< ResultType* >( __sdata );
 
    /***
     * Get thread id (tid) and global thread id (gid).

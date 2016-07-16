@@ -6,14 +6,7 @@
     email                : hellemar@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 
 #ifndef TNLARgCSRMATRIX_H_
@@ -337,7 +330,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
   dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "copyFrom" );
   if( ! this->setSize( csrMatrix. getSize() ) )
           return false;
-  
+ 
   if( Device :: getDevice() == tnlHostDevice )
   {
       Index nonzerosInGroup( 0 );
@@ -595,15 +588,15 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlAdaptiv
    cudaBlockSize = adaptiveRgCSRMatrix. cudaBlockSize;
    lastNonzeroElement = adaptiveRgCSRMatrix. lastNonzeroElement;
    numberOfGroups = adaptiveRgCSRMatrix. numberOfGroups;
-  
+ 
 
    if( ! this->setSize( adaptiveRgCSRMatrix. getSize() ) )
-      return false;   
+      return false;
 
    /****
     * Allocate the non-zero elements (they contains some artificial zeros.)
     */
-   Index total_elements = adaptiveRgCSRMatrix. getNonzeroElements() + 
+   Index total_elements = adaptiveRgCSRMatrix. getNonzeroElements() +
                           adaptiveRgCSRMatrix. getArtificialZeroElements() ;
    dbgCout( "Allocating " << total_elements << " elements.");
    if( ! setNonzeroElements( total_elements ) )
@@ -926,7 +919,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOutGroup( ostream& st
 
 template< typename Real, typename Device, typename Index >
 void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
-                                                                const tnlString& name, 
+                                                                const tnlString& name,
                                                                 const tnlString& format,
 		                                                          const Index lines ) const
 {

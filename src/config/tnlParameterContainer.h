@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlParameterContainerH
 #define tnlParameterContainerH
@@ -93,7 +86,7 @@ class tnlParameterContainer
       cerr << "Aborting the program." << endl;
       abort();
    }
-   
+ 
    //! Broadcast to other nodes in MPI cluster
    void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
@@ -136,10 +129,10 @@ setParameter( const tnlString& name,
          }
          else
          {
-            cerr << "Parameter " << name << " already exists with different type " 
+            cerr << "Parameter " << name << " already exists with different type "
                  << parameters[ i ] -> type << " not "
                  << getType( value ) << endl;
-            abort( ); 
+            abort( );
             return false;
          }
       }
