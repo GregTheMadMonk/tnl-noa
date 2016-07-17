@@ -10,7 +10,6 @@
 
 #pragma once
 
-
 #include <tnlObject.h>
 #include <core/tnlHost.h>
 #include <core/vectors/tnlStaticVector.h>
