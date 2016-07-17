@@ -6,19 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifdef HAVE_CUDA
 
 #include <core/tnlCudaDeviceInfo.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 int
 tnlCudaDeviceInfo::
@@ -28,7 +23,16 @@ getNumberOfDevices()
     cudaGetDeviceCount( &devices );
     return devices;
 }
-      
+
+int
+tnlCudaDeviceInfo::
+getActiveDevice()
+{
+    int device;
+    cudaGetDevice( &device );
+    return device;
+}
+
 tnlString
 tnlCudaDeviceInfo::
 getDeviceName( int deviceNum )
@@ -46,7 +50,7 @@ getArchitectureMajor( int deviceNum )
     cudaGetDeviceProperties( &properties, deviceNum );
     return properties.major;
 }
-      
+
 int
 tnlCudaDeviceInfo::
 getArchitectureMinor( int deviceNum )
@@ -55,7 +59,7 @@ getArchitectureMinor( int deviceNum )
     cudaGetDeviceProperties( &properties, deviceNum );
     return properties.minor;
 }
-      
+
 int
 tnlCudaDeviceInfo::
 getClockRate( int deviceNum )
@@ -64,7 +68,7 @@ getClockRate( int deviceNum )
     cudaGetDeviceProperties( &properties, deviceNum );
     return properties.clockRate;
 }
-      
+
 size_t
 tnlCudaDeviceInfo::
 getGlobalMemory( int deviceNum )
@@ -115,7 +119,7 @@ getCudaCoresPerMultiprocessors( int deviceNum )
         switch( minor )
         {
             case 0:  // GF100 class
-                return 32; 
+                return 32;
             case 1:  // GF10x class
                 return 48;
         }
@@ -136,5 +140,6 @@ getCudaCores( int deviceNum )
            tnlCudaDeviceInfo::getCudaCoresPerMultiprocessors( deviceNum );
 }
 
+} // namespace TNL
 
 #endif

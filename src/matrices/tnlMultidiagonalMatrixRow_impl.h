@@ -6,17 +6,11 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMULTIDIAGONALMATRIXROW_IMPL_H_
-#define TNLMULTIDIAGONALMATRIXROW_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Real, typename Index >
 __cuda_callable__
@@ -88,7 +82,7 @@ setElement( const Index& elementIndex,
    tnlAssert( row + this->diagonals[ aux ] == column,
               cerr << "row = " << row
                    << " aux = " << aux
-                   << " this->diagonals[ aux ] = " << this->diagonals[ aux] 
+                   << " this->diagonals[ aux ] = " << this->diagonals[ aux]
                    << " row + this->diagonals[ aux ] " << row + this->diagonals[ aux ]
                    << " column = " << column );
 
@@ -96,5 +90,4 @@ setElement( const Index& elementIndex,
    this->values[ aux * this->step ] = value;
 }
 
-
-#endif /* TNLMULTIDIAGONALMATRIXROW_IMPL_H_ */
+} // namespace TNL

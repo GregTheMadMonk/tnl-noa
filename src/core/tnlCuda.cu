@@ -6,29 +6,23 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <core/tnlCuda.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 
+namespace TNL {
 
 /*void tnlCuda::configSetup( tnlConfigDescription& config, const tnlString& prefix )
 {
 #ifdef HAVE_CUDA
    config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device.", 0 );
 #else
-   config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device (CUDA is not supported on this system).", 0 );   
-#endif   
+   config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device (CUDA is not supported on this system).", 0 );
+#endif
 }
-      
+ 
 bool tnlCuda::setup( const tnlParameterContainer& parameters,
                     const tnlString& prefix )
 {
@@ -57,7 +51,7 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
        break;
 
       // 2
-      case cudaErrorMemoryAllocation:   
+      case cudaErrorMemoryAllocation:
          cerr
           << "The API call failed because it was unable to allocate enough memory to " << endl
           << "perform the requested operation. " << endl;
@@ -69,7 +63,7 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
           << "The API call failed because the CUDA driver and runtime could not be " << endl
           << "initialized. " << endl;
        break;
-   
+ 
       // 4
       case cudaErrorLaunchFailure:
          cerr
@@ -118,7 +112,7 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
           << "proper device architecture. " << endl;
        break;
  
-      // 9 
+      // 9
       case cudaErrorInvalidConfiguration:
          cerr
           << "This indicates that a kernel launch is requesting resources that can " << endl
@@ -128,7 +122,7 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
           << "device limitations. " << endl;
        break;
 
-      // 10 
+      // 10
       case cudaErrorInvalidDevice:
          cerr
           << "This indicates that the device ordinal supplied by the user does not " << endl
@@ -418,3 +412,5 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
    //throw EXIT_FAILURE;
    return false;
 }
+
+} // namespace TNL

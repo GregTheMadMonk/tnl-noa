@@ -6,18 +6,12 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLFUNCTION_H
-#define	TNLFUNCTION_H
+#pragma once
+
+namespace TNL {
 
 enum tnlDomainType { NonspaceDomain, SpaceDomain, MeshDomain, MeshInteriorDomain, MeshBoundaryDomain };
 
@@ -26,14 +20,14 @@ template< int Dimensions,
 class tnlDomain
 {
    public:
-      
+ 
       typedef void DeviceType;
-      
+ 
       static const int dimensions = Dimensions;
       static constexpr int getDimensions() { return Dimensions; }
-      
+ 
       static constexpr tnlDomainType getDomainType() { return DomainType; }
 };
 
-#endif	/* TNLFUNCTION_H */
+} // namespace TNL
 

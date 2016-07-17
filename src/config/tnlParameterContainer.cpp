@@ -6,21 +6,16 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <ctype.h>
 #include <cstring>
 #include <stdio.h>
 
 #include "tnlParameterContainer.h"
-#include <core/tnlObject.h>
+#include <tnlObject.h>
+
+namespace TNL {
 
 bool matob( const char* value, bool& ret_val )
 {
@@ -69,8 +64,8 @@ setParameter( const tnlString& name,
          }
          else
          {
-            cerr << "Parameter " << name << " already exists with different type " 
-                 << parameters[ i ] -> type << " not " 
+            cerr << "Parameter " << name << " already exists with different type "
+                 << parameters[ i ] -> type << " not "
                  << ::getType< tnlString>() << endl;
             abort();
             return false;
@@ -102,7 +97,7 @@ void tnlParameterContainer :: MPIBcast( int root, MPI_Comm mpi_comm )
 #ifdef HAVE_MPI
    int i;
    int size = parameters. getSize();
-   :: MPIBcast( size, 1, root, mpi_comm ); 
+   :: MPIBcast( size, 1, root, mpi_comm );
    for( i = 0; i < size; i ++ )
    {
       if( MPIGetRank() == root )
@@ -137,28 +132,28 @@ void tnlParameterContainer :: MPIBcast( int root, MPI_Comm mpi_comm )
             tnlString val;
             val. MPIBcast( root, mpi_comm );
             addParameter< tnlString >( param_name. getString(),
-                                     val );           
+                                     val );
          }
          if( param_type == "bool" )
          {
             bool val;
             :: MPIBcast( val, 1, root, mpi_comm );
             addParameter< bool >( param_name. getString(),
-                                  val );           
+                                  val );
          }
          if( param_type == "int" )
          {
             int val;
             :: MPIBcast( val, 1, root, mpi_comm );
             addParameter< int >( param_name. getString(),
-                                 val );           
+                                 val );
          }
          if( param_type == "double" )
          {
             double val;
             :: MPIBcast( val, 1, root, mpi_comm );
             addParameter< double >( param_name. getString(),
-                                    val );           
+                                    val );
          }
 
       }
@@ -195,7 +190,7 @@ parseCommandLine( int argc, char* argv[],
          cerr << "Unknown parameter " << _option << "." << endl;
          parse_error = true;
       }
-      else 
+      else
       {
          const tnlString& entryType = entry->getEntryType();
          const char* value = argv[ ++ i ];
@@ -225,7 +220,7 @@ parseCommandLine( int argc, char* argv[],
                integer_list = new tnlList< int >;
             if( parsedEntryType[ 1 ] == "double" )
                real_list = new tnlList< double >;
-            
+ 
             while( i < argc && ( ( argv[ i ] )[ 0 ] != '-' || ( atof( argv[ i ] ) < 0.0 && ( integer_list || real_list ) ) ) )
             {
                const char* value = argv[ i ++ ];
@@ -342,3 +337,5 @@ parseCommandLine( int argc, char* argv[],
       return false;
    return ! parse_error;
 }
+
+} // namespace TNL

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include "tnl-init.h"
 
@@ -35,7 +28,7 @@ void setupConfig( tnlConfigDescription& config )
       config.addEntryEnum< tnlString >( "float" );
       config.addEntryEnum< tnlString >( "double" );
       config.addEntryEnum< tnlString >( "long-double" );
-   config.addEntry< double >( "initial-time", "Initial time for a serie of snapshots of the time-dependent function.", 0.0 );      
+   config.addEntry< double >( "initial-time", "Initial time for a serie of snapshots of the time-dependent function.", 0.0 );
    config.addEntry< double >( "final-time", "Final time for a serie of snapshots of the time-dependent function.", 0.0 );
    config.addEntry< double >( "snapshot-period", "Period between snapshots in a serie of the time-dependent function.", 0.0 );
    config.addEntry< int >( "x-derivative", "Order of the partial derivative w.r.t x.", 0 );
@@ -44,8 +37,8 @@ void setupConfig( tnlConfigDescription& config )
    config.addEntry< bool >( "numerical-differentiation", "The partial derivatives will be computed numerically.", false );
    config.addRequiredEntry< tnlString >( "output-file", "Output file name." );
    config.addEntry< bool >( "check-output-file", "If the output file already exists, do not recreate it.", false );
-   config.addEntry< tnlString >( "help", "Write help." );   
-   
+   config.addEntry< tnlString >( "help", "Write help." );
+ 
    config.addDelimiter                            ( "Functions parameters:" );
    tnlTestFunction< 1 >::configSetup( config );
 }
@@ -56,7 +49,7 @@ int main( int argc, char* argv[] )
    tnlConfigDescription conf_desc;
 
    setupConfig( conf_desc );
-   
+ 
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
 

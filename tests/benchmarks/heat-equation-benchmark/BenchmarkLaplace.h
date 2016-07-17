@@ -43,7 +43,7 @@ class BenchmarkLaplace< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 
       template< typename MeshEntity, typename Vector, typename MatrixRow >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
+      void setMatrixElements( const RealType& time,
                                const RealType& tau,
                                const MeshType& mesh,
                                const IndexType& index,
@@ -85,7 +85,7 @@ class BenchmarkLaplace< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 
       template< typename MeshEntity, typename Vector, typename MatrixRow >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
+      void setMatrixElements( const RealType& time,
                                const RealType& tau,
                                const MeshType& mesh,
                                const IndexType& index,
@@ -127,7 +127,7 @@ class BenchmarkLaplace< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 
       template< typename MeshEntity, typename Vector, typename MatrixRow >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
+      void setMatrixElements( const RealType& time,
                                const RealType& tau,
                                const MeshType& mesh,
                                const IndexType& index,

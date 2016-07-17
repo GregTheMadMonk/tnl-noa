@@ -6,17 +6,9 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLONESIDEDTOTALVARIATIONMINIMIZATION_H
-#define	TNLONESIDEDTOTALVARIATIONMINIMIZATION_H
+#pragma once
 
 #include <operators/tnlOperator.h>
 #include <operators/tnlFunctionInverseOperator.h>
@@ -27,6 +19,7 @@
 #include <functions/tnlConstantFunction.h>
 #include <operators/diffusion/tnlExactMeanCurvature.h>
 
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -36,7 +29,7 @@ class tnlOneSidedMeanCurvature
    : public tnlOperator< Mesh, MeshInteriorDomain, Mesh::getMeshDimensions(), Mesh::getMeshDimensions(), Real, Index >
 {
    public:
-            
+ 
       typedef Mesh MeshType;
       typedef Real RealType;
       typedef Index IndexType;
@@ -48,40 +41,40 @@ class tnlOneSidedMeanCurvature
       typedef tnlOperatorFunction< NonlinearityOperator, NonlinearityMeshFunction, NonlinearityBoundaryConditions, EvaluateNonlinearityOnFly > Nonlinearity;
       typedef tnlOneSidedNonlinearDiffusion< Mesh, Nonlinearity, RealType, IndexType > NonlinearDiffusion;
       typedef tnlExactMeanCurvature< Mesh::getMeshDimensions(), RealType > ExactOperatorType;
-      
+ 
       tnlOneSidedMeanCurvature( const MeshType& mesh )
       : nonlinearityOperator( gradientNorm ),
         nonlinearity( nonlinearityOperator, nonlinearityBoundaryConditions, mesh ),
         nonlinearDiffusion( nonlinearity ){}
-      
+ 
       static tnlString getType()
       {
          return tnlString( "tnlOneSidedMeanCurvature< " ) +
             MeshType::getType() + ", " +
             ::getType< Real >() + ", " +
-            ::getType< Index >() + " >";         
+            ::getType< Index >() + " >";
       }
-      
+ 
       void setRegularizationEpsilon( const RealType& eps )
       {
          this->gradientNorm.setEps( eps );
       }
-      
+ 
       void setPreimageFunction( typename Nonlinearity::PreimageFunctionType& preimageFunction )
       {
          this->nonlinearity.setPreimageFunction( preimageFunction );
       }
-      
+ 
       bool refresh( const RealType& time = 0.0 )
       {
          return this->nonlinearity.refresh( time );
       }
-      
+ 
       bool deepRefresh( const RealType& time = 0.0 )
       {
          return this->nonlinearity.deepRefresh( time );
-      }      
-      
+      }
+ 
       template< typename MeshFunction,
                 typename MeshEntity >
       __cuda_callable__
@@ -106,7 +99,7 @@ class tnlOneSidedMeanCurvature
                 typename Vector,
                 typename Matrix >
       __cuda_callable__
-      void updateLinearSystem( const RealType& time,
+      void setMatrixElements( const RealType& time,
                                const RealType& tau,
                                const MeshType& mesh,
                                const IndexType& index,
@@ -115,21 +108,20 @@ class tnlOneSidedMeanCurvature
                                Vector& b,
                                Matrix& matrix ) const
       {
-         this->nonlinearDiffusion.updateLinearSystem( time, tau, mesh, index, entity, u, b, matrix );
-      }            
-      
-   protected:      
-      
+         this->nonlinearDiffusion.setMatrixElements( time, tau, mesh, index, entity, u, b, matrix );
+      }
+ 
+   protected:
+ 
       NonlinearityBoundaryConditions nonlinearityBoundaryConditions;
-      
+ 
       GradientNorm gradientNorm;
 
       NonlinearityOperator nonlinearityOperator;
-      
+ 
       Nonlinearity nonlinearity;
-      
-      NonlinearDiffusion nonlinearDiffusion;            
+ 
+      NonlinearDiffusion nonlinearDiffusion;
 };
 
-#endif	/* TNLONESIDEDTOTALVARIATIONMINIMIZATION_H */
-
+} // namespace TNL

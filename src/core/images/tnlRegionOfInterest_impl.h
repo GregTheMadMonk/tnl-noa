@@ -6,28 +6,21 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLREGIONOFINTEREST_IMPL_H
-#define	TNLREGIONOFINTEREST_IMPL_H
+#pragma once
 
 #include "tnlImage.h"
 
+namespace TNL {
 
 template< typename Index >
 tnlRegionOfInterest< Index >::
 tnlRegionOfInterest()
 : top( -1 ), bottom( -1 ), left( -1 ), right( -1 )
-{   
+{
 }
-      
+ 
 template< typename Index >
 bool
 tnlRegionOfInterest< Index >::
@@ -38,7 +31,7 @@ setup( const tnlParameterContainer& parameters,
    const int roiBottom = parameters.getParameter< int >( "roi-bottom" );
    const int roiRight  = parameters.getParameter< int >( "roi-right" );
    const int roiLeft   = parameters.getParameter< int >( "roi-left" );
-    
+ 
    if( roiBottom < roiTop )
    {
       cerr << "Error: roi-bottom (" << roiBottom << ") is smaller than roi-top (" << roiTop << ")." << endl;
@@ -61,7 +54,7 @@ setup( const tnlParameterContainer& parameters,
       }
       this->left = roiLeft;
    }
-    
+ 
    if( roiRight == -1 )
       this->right = image->getWidth();
    else
@@ -73,7 +66,7 @@ setup( const tnlParameterContainer& parameters,
       }
       this->right = roiRight;
    }
-    
+ 
    if( roiTop == -1 )
       this->top = 0;
    else
@@ -85,7 +78,7 @@ setup( const tnlParameterContainer& parameters,
       }
       this->top = roiTop;
    }
-    
+ 
    if( roiBottom == -1 )
       this->bottom = image->getHeight();
    else
@@ -177,7 +170,7 @@ setGrid( Grid& grid,
     grid.setDomain( origin, proportions );
     if( verbose )
     {
-        cout << "Setting grid to dimensions " << grid.getDimensions() << 
+        cout << "Setting grid to dimensions " << grid.getDimensions() <<
                 " and proportions " << grid.getProportions() << endl;
     }
     return true;
@@ -195,5 +188,5 @@ isIn( const Index row, const Index column ) const
    return false;
 }
 
-#endif	/* TNLREGIONOFINTEREST_IMPL_H */
+} // namespace TNL
 

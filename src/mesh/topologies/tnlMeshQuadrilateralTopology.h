@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHQUADRILATERALTOPOLOGY_H_
-#define TNLMESHQUADRILATERALTOPOLOGY_H_
+#pragma once
 
 #include <mesh/topologies/tnlMeshEdgeTopology.h>
+
+namespace TNL {
 
 struct tnlMeshQuadrilateralTopology
 {
@@ -82,5 +76,4 @@ template<> struct tnlSubentityVertex< tnlMeshQuadrilateralTopology, tnlMeshEdgeT
 template<> struct tnlSubentityVertex< tnlMeshQuadrilateralTopology, tnlMeshEdgeTopology, 3, 0> { enum { index = 3 }; };
 template<> struct tnlSubentityVertex< tnlMeshQuadrilateralTopology, tnlMeshEdgeTopology, 3, 1> { enum { index = 0 }; };
 
-
-#endif /* TNLMESHQUADRILATERALTOPOLOGY_H_ */
+} // namespace TNL

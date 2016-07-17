@@ -6,18 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDEVICE_H_
-#define TNLDEVICE_H_
+#pragma once
+
+// TODO: remove this file
+
+namespace TNL {
 
 enum tnlDeviceEnum { tnlHostDevice, tnlCudaDevice };
 
-#endif /* TNLDEVICE_H_ */
+} // namespace TNL

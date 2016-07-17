@@ -6,22 +6,16 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGRID_H_
-#define TNLGRID_H_
+#pragma once
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/tnlHost.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <core/vectors/tnlVector.h>
+
+namespace TNL {
 
 template< int Dimensions,
           typename Real = double,
@@ -31,8 +25,8 @@ class tnlGrid : public tnlObject
 {
 };
 
+} // namespace TNL
+
 #include <mesh/grids/tnlGrid1D.h>
 #include <mesh/grids/tnlGrid2D.h>
 #include <mesh/grids/tnlGrid3D.h>
-
-#endif /* TNLGRID_H_ */

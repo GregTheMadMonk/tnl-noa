@@ -6,25 +6,19 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICMULTIINDEX_H
-#define	TNLSTATICMULTIINDEX_H
+#pragma once
+
+namespace TNL {
 
 template< int i1_ >
 class tnlStaticMultiIndex1D
 {
    public:
-      
+ 
       static const int i1 = i1_;
-      
+ 
       static const int size = 1;
 };
 
@@ -33,11 +27,11 @@ template< int i1_,
 class tnlStaticMultiIndex2D
 {
    public:
-      
+ 
       static const int i1 = i1_;
-      
+ 
       static const int i2 = i2_;
-      
+ 
       static const int size = 2;
 };
 
@@ -47,18 +41,15 @@ template< int i1_,
 class tnlStaticMultiIndex3D
 {
    public:
-      
+ 
       static const int i1 = i1_;
-      
+ 
       static const int i2 = i2_;
-      
+ 
       static const int i3 = i3_;
-      
+ 
       static const int size = 3;
 };
 
-
-
-
-#endif	/* TNLSTATICMULTIINDEX_H */
+} // namespace TNL
 

@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCONSTSHAREDARRAY_H_
-#define TNLCONSTSHAREDARRAY_H_
+#pragma once 
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
+
+namespace TNL {
 
 class tnlFile;
 class tnlHost;
@@ -115,6 +109,8 @@ class tnlConstSharedArray : public tnlObject
 template< typename Element, typename Device, typename Index >
 ostream& operator << ( ostream& str, const tnlConstSharedArray< Element, Device, Index >& v );
 
+} // namespace TNL
+
 #include <core/arrays/tnlConstSharedArray_impl.h>
 
-#endif /* TNLCONSTSHAREDARRAY_H_ */
+

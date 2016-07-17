@@ -6,21 +6,15 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLELLPACKMATRIX_IMPL_H_
-#define TNLELLPACKMATRIX_IMPL_H_
+#pragma once
 
 #include <matrices/tnlEllpackMatrix.h>
 #include <core/vectors/tnlVector.h>
 #include <core/mfuncs.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -40,7 +34,7 @@ tnlString tnlEllpackMatrix< Real, Device, Index > :: getType()
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( ", " ) +
-          tnlString( ::getType< Index >() ) +          
+          tnlString( ::getType< Index >() ) +
           tnlString( " >" );
 }
 
@@ -62,7 +56,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::setDimensions( const IndexType row
               cerr << "rows = " << rows
                    << " columns = " << columns << endl );
    this->rows = rows;
-   this->columns = columns;   
+   this->columns = columns;
    if( Device::DeviceType == ( int ) tnlCudaDevice )
       this->alignedRows = roundToMultiple( columns, tnlCuda::getWarpSize() );
    else this->alignedRows = rows;
@@ -577,9 +571,9 @@ bool tnlEllpackMatrix< Real, Device, Index >::save( tnlFile& file ) const
    if( ! tnlSparseMatrix< Real, Device, Index >::save( file) ) return false;
 #ifdef HAVE_NOT_CXX11
    if( ! file.write< IndexType, tnlHost, IndexType >( &this->rowLengths, 1 ) ) return false;
-#else      
+#else
    if( ! file.write( &this->rowLengths ) ) return false;
-#endif   
+#endif
    return true;
 }
 
@@ -591,9 +585,9 @@ bool tnlEllpackMatrix< Real, Device, Index >::load( tnlFile& file )
    if( ! tnlSparseMatrix< Real, Device, Index >::load( file) ) return false;
 #ifdef HAVE_NOT_CXX11
    if( ! file.read< IndexType, tnlHost, IndexType >( &this->rowLengths, 1 ) ) return false;
-#else   
+#else
    if( ! file.read( &this->rowLengths ) ) return false;
-#endif   
+#endif
    return true;
 }
 
@@ -688,8 +682,8 @@ class tnlEllpackMatrixDeviceDependentCode< tnlHost >
                                  OutVector& outVector )
       {
 #ifdef HAVE_OPENMP
-#pragma omp parallel for if( tnlOmp::isEnabled() )
-#endif           
+#pragma omp parallel for if( tnlHost::isOMPEnabled() )
+#endif
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
          /*Index col;
@@ -704,8 +698,8 @@ class tnlEllpackMatrixDeviceDependentCode< tnlHost >
       }
 };
 
-#ifdef HAVE_CUDA    
-template< 
+#ifdef HAVE_CUDA
+template<
    typename Real,
    typename Index >
 __global__ void tnlEllpackMatrixVectorProductCudaKernel(
@@ -727,14 +721,14 @@ __global__ void tnlEllpackMatrixVectorProductCudaKernel(
    Index el( 0 );
    Real result( 0.0 );
    Index columnIndex;
-   while( el++ < compressedRowsLengths && 
+   while( el++ < compressedRowsLengths &&
           ( columnIndex = columnIndexes[ i ] ) < columns &&
           columnIndex != paddingIndex )
    {
       result += values[ i ] * inVector[ columnIndex ];
       i += alignedRows;
    }
-   outVector[ rowIdx ] = result;   
+   outVector[ rowIdx ] = result;
 }
 #endif
 
@@ -782,7 +776,7 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
                                  OutVector& outVector )
       {
          //tnlMatrixVectorProductCuda( matrix, inVector, outVector );
-         #ifdef HAVE_CUDA    
+         #ifdef HAVE_CUDA
             typedef tnlEllpackMatrix< Real, Device, Index > Matrix;
             typedef typename Matrix::IndexType IndexType;
             //Matrix* kernel_this = tnlCuda::passToDevice( matrix );
@@ -816,8 +810,8 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
             checkCudaDevice;
             cudaThreadSynchronize();
          #endif
-         
+ 
       }
 };
 
-#endif /* TNLELLPACKMATRIX_IMPL_H_ */
+} // namespace TNL

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 /***
  * Authors:
@@ -21,14 +14,15 @@
  * Szekely Ondrej, ondra.szekely@gmail.com
  */
 
-
-#ifndef TNLHEATEQUATIONPROBLEM_H_
-#define TNLHEATEQUATIONPROBLEM_H_
+#pragma once
 
 #include <problems/tnlPDEProblem.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include <matrices/tnlEllpackMatrix.h>
 #include <functions/tnlMeshFunction.h>
+#include <core/tnlTimer.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -59,6 +53,9 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
 
       void writeProlog( tnlLogger& logger,
                         const tnlParameterContainer& parameters ) const;
+ 
+      bool writeEpilog( tnlLogger& logger );
+
 
       bool setup( const tnlParameterContainer& parameters );
 
@@ -93,23 +90,25 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
                                  const MeshType& mesh,
-                                 const DofVectorType& dofs,                                 
+                                 const DofVectorType& dofs,
                                  Matrix& matrix,
                                  DofVectorType& rightHandSide,
 				 MeshDependentDataType& meshDependentData );
 
 
       protected:
-         
+ 
          MeshFunctionType u;
-      
+ 
          DifferentialOperator differentialOperator;
 
          BoundaryCondition boundaryCondition;
 
          RightHandSide rightHandSide;
+ 
+         tnlTimer gpuTransferTimer;
 };
 
-#include <problems/tnlHeatEquationProblem_impl.h>
+} // namespace TNL
 
-#endif /* TNLHEATEQUATIONPROBLEM_H_ */
+#include <problems/tnlHeatEquationProblem_impl.h>

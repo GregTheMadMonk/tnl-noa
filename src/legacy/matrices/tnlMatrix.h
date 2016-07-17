@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlMatrixH
 #define tnlMatrixH
@@ -21,7 +14,7 @@
 #include <ostream>
 #include <iomanip>
 #include <string.h>
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/tnlString.h>
 #include <core/tnlList.h>
 #include <core/tnlFile.h>
@@ -89,10 +82,10 @@ class tnlMatrix : public tnlObject
    virtual bool setElement( Index row, Index column, const Real& v ) = 0;
 
    virtual bool addToElement( Index row, Index column, const Real& v ) = 0;
-   
+ 
    virtual Real rowProduct( const Index row,
                             const tnlVector< Real, Device, Index >& vec ) const = 0;
-   
+ 
    template< typename Vector1, typename Vector2 >
    void vectorProduct( const Vector1& vec,
                        Vector2& result ) const{}
@@ -240,9 +233,9 @@ bool tnlMatrix< Real, Device, Index > :: save( tnlFile& file ) const
    if( ! tnlObject :: save( file ) ) return false;
 #ifdef HAVE_NOT_CXX11
    if( ! file. write< const Index, tnlHost >( &size ) )
-#else      
+#else
    if( ! file. write( &size ) )
-#endif      
+#endif
       return false;
    return true;
 }
@@ -253,9 +246,9 @@ bool tnlMatrix< Real, Device, Index > :: load( tnlFile& file )
    if( ! tnlObject :: load( file ) ) return false;
 #ifdef HAVE_NOT_CXX11
    if( ! file. read< Index, tnlHost >( &size ) )
-#else      
+#else
    if( ! file. read( &size ) )
-#endif      
+#endif
       return false;
    return true;
 }
@@ -432,7 +425,7 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlVector< Index,
    for( Index i = 0; i < matrixSize; i ++ )
    {
       tnlAssert( this->getNonzeroElementsInRow( i ) <= matrixSize,
-                 cerr << "getNonzeroElementsInRow( " << i << " ) = " << getNonzeroElementsInRow( i ) 
+                 cerr << "getNonzeroElementsInRow( " << i << " ) = " << getNonzeroElementsInRow( i )
                       << "; matrixSize = " << matrixSize );
       permutation[ this->getNonzeroElementsInRow( i ) ] ++;
    }

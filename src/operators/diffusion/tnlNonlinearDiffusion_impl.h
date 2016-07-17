@@ -1,10 +1,10 @@
 
-#ifndef TNLNONLINEARDIFFUSION_IMPL_H
-#define	TNLNONLINEARDIFFUSION_IMPL_H
+#pragma once
 
 #include "tnlNonlinearDiffusion.h"
-
 #include <mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename MeshReal,
           typename Device,
@@ -71,7 +71,7 @@ template< typename MeshEntity,
 __cuda_callable__
 void
 tnlNonlinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,
@@ -80,7 +80,7 @@ updateLinearSystem( const RealType& time,
                     Vector& b,
                     Matrix& matrix ) const
 {
-    nonlinearDiffusionOperator.updateLinearSystem( time, tau, mesh, index, entity, u, b, matrix );
+    nonlinearDiffusionOperator.setMatrixElements( time, tau, mesh, index, entity, u, b, matrix );
 }
 
 template< typename MeshReal,
@@ -148,7 +148,7 @@ template< typename MeshEntity,
 __cuda_callable__
 void
 tnlNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,
@@ -157,7 +157,7 @@ updateLinearSystem( const RealType& time,
                     Vector& b,
                     Matrix& matrix ) const
 {
-    nonlinearDiffusionOperator.updateLinearSystem( time, tau, mesh, index, entity, u, b, matrix );
+    nonlinearDiffusionOperator.setMatrixElements( time, tau, mesh, index, entity, u, b, matrix );
 }
 
 template< typename MeshReal,
@@ -225,7 +225,7 @@ template< typename MeshEntity,
 __cuda_callable__
 void
 tnlNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,
@@ -234,7 +234,7 @@ updateLinearSystem( const RealType& time,
                     Vector& b,
                     Matrix& matrix ) const
 {
-    nonlinearDiffusionOperator.updateLinearSystem( time, tau, mesh, index, entity, u, b, matrix );
+    nonlinearDiffusionOperator.setMatrixElements( time, tau, mesh, index, entity, u, b, matrix );
 }
 
-#endif	/* TNLNONLINEARDIFFUSION_IMPL_H */
+} // namespace TNL

@@ -6,22 +6,16 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTWINSFUNCTION_H_
-#define TNLTWINSFUNCTION_H_
+#pragma once
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlDomain.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 template< typename Real,
           int Dimensions >
@@ -64,15 +58,15 @@ class tnlTwinsFunction< 1, Real > : public tnlTwinsFunctionBase< Real, 1 >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
-#endif   
+#endif
       __cuda_callable__
       RealType getPartialDerivative( const Vertex& v,
                                      const Real& time = 0.0 ) const;
-      
+ 
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
-      
+ 
 };
 
 template< typename Real >
@@ -102,11 +96,11 @@ class tnlTwinsFunction< 2, Real > : public tnlTwinsFunctionBase< Real, 2 >
       __cuda_callable__
       RealType getPartialDerivative( const Vertex& v,
                                      const Real& time = 0.0 ) const;
-      
+ 
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
-      
+ 
 };
 
 template< typename Real >
@@ -132,15 +126,15 @@ class tnlTwinsFunction< 3, Real > : public tnlTwinsFunctionBase< Real, 3 >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
-#endif   
+#endif
       __cuda_callable__
       RealType getPartialDerivative( const Vertex& v,
                                      const Real& time = 0.0 ) const;
-      
+ 
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
-      
+ 
 };
 
 template< int Dimensions,
@@ -151,7 +145,7 @@ ostream& operator << ( ostream& str, const tnlTwinsFunction< Dimensions, Real >&
    return str;
 }
 
+} // namespace TNL
+
 #include <functions/initial_conditions/tnlTwinsFunction_impl.h>
 
-
-#endif /* TNLTWINSFUNCTION_H_ */

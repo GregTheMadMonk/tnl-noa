@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLSEMIIMPLICITTIMESTEPPER_IMPL_H_
 #define TNLSEMIIMPLICITTIMESTEPPER_IMPL_H_
@@ -76,8 +69,13 @@ init( const MeshType& mesh )
    }
    if( ! this->rightHandSide.setSize( this->matrix.getRows() ) )
       return false;
+
+   this->preIterateTimer.reset();
    this->linearSystemAssemblerTimer.reset();
+   this->preconditionerUpdateTimer.reset();
    this->linearSystemSolverTimer.reset();
+   this->postIterateTimer.reset();
+
    this->allIterations = 0;
    return true;
 }
@@ -181,8 +179,9 @@ solve( const RealType& time,
       if( verbose )
          cout << "                                                                  Solving the linear system for time " << t + currentTau << "             \r" << flush;
 
-      // TODO: add timer
+      this->preconditionerUpdateTimer.start();
       preconditioner.update( this->matrix );
+      this->preconditionerUpdateTimer.stop();
 
       this->linearSystemSolverTimer.start();
       if( ! this->linearSystemSolver->template solve< DofVectorType, tnlLinearResidueGetter< MatrixType, DofVectorType > >( this->rightHandSide, dofVector ) )
@@ -219,11 +218,17 @@ bool
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 writeEpilog( tnlLogger& logger )
 {
-   logger.writeParameter< long long int >( "Ierations count:", this->allIterations );
-   logger.writeParameter< double >( "Pre-iterate time:", this->preIterateTimer.getTime() );
-   logger.writeParameter< double >( "Linear system assembler time:", this->linearSystemAssemblerTimer.getTime() );
-   logger.writeParameter< double >( "Linear system solver time:", this->linearSystemSolverTimer.getTime() );
-   logger.writeParameter< double >( "Post-iterate time:", this->postIterateTimer.getTime() );   
+   logger.writeParameter< long long int >( "Iterations count:", this->allIterations );
+   logger.writeParameter< const char* >( "Pre-iterate time:", "" );
+   this->preIterateTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Linear system assembler time:", "" );
+   this->linearSystemAssemblerTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Preconditioner update time:", "" );
+   this->preconditionerUpdateTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Linear system solver time:", "" );
+   this->linearSystemSolverTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Post-iterate time:", "" );
+   this->postIterateTimer.writeLog( logger, 1 );
    return true;
 }
 

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLSOLVERSTARTER_IMPL_H_
 #define TNLSOLVERSTARTER_IMPL_H_
@@ -21,7 +14,6 @@
 #include <tnlConfig.h>
 #include <core/tnlLogger.h>
 #include <core/tnlString.h>
-#include <core/tnlOmp.h>
 #include <core/tnlCuda.h>
 #include <solvers/ode/tnlMersonSolver.h>
 #include <solvers/ode/tnlEulerSolver.h>
@@ -30,6 +22,7 @@
 #include <solvers/linear/krylov/tnlBICGStabSolver.h>
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
 #include <solvers/linear/krylov/tnlTFQMRSolver.h>
+#include <solvers/linear/tnlUmfpackWrapper.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/preconditioners/tnlDiagonalPreconditioner.h>
 #include <solvers/pde/tnlExplicitTimeStepper.h>
@@ -92,7 +85,7 @@ bool tnlSolverStarter< ConfigTag > :: run( const tnlParameterContainer& paramete
    /****
     * Create and set-up the problem
     */
-   if( ! tnlOmp::setup( parameters ) ||
+   if( ! tnlHost::setup( parameters ) ||
        ! tnlCuda::setup( parameters ) )
       return false;
    Problem problem;
@@ -198,6 +191,7 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
                        const tnlParameterContainer& parameters )
       {
          const tnlString& discreteSolver = parameters. getParameter< tnlString>( "discrete-solver" );
+#ifndef HAVE_UMFPACK
          if( discreteSolver != "sor" &&
              discreteSolver != "cg" &&
              discreteSolver != "bicgstab" &&
@@ -207,6 +201,18 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
             cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres or tfqmr." << endl;
             return false;
          }
+#else
+         if( discreteSolver != "sor" &&
+             discreteSolver != "cg" &&
+             discreteSolver != "bicgstab" &&
+             discreteSolver != "gmres" &&
+             discreteSolver != "tfqmr" &&
+             discreteSolver != "umfpack" )
+         {
+            cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres, tfqmr or umfpack." << endl;
+            return false;
+         }
+#endif
 
          if( discreteSolver == "sor" )
             return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitSORSolverTag, ConfigTag >::run( problem, parameters );
@@ -218,6 +224,10 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
             return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitGMRESSolverTag, ConfigTag >::run( problem, parameters );
          if( discreteSolver == "tfqmr" )
             return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitTFQMRSolverTag, ConfigTag >::run( problem, parameters );
+#ifdef HAVE_UMFPACK
+         if( discreteSolver == "umfpack" )
+            return tnlSolverStarterPreconditionerSetter< Problem, tnlSemiImplicitUmfpackSolverTag, ConfigTag >::run( problem, parameters );
+#endif
          return false;
       }
 };
@@ -352,11 +362,14 @@ class tnlSolverStarterExplicitTimeStepperSetter
          typedef typename Problem::IndexType IndexType;
          typedef tnlODESolverMonitor< RealType, IndexType > SolverMonitorType;
 
+         const int verbose = parameters.getParameter< int >( "verbose" );
+
          ExplicitSolver explicitSolver;
          explicitSolver.setup( parameters );
-         int verbose = parameters.getParameter< int >( "verbose" );
          explicitSolver.setVerbose( verbose );
+
          SolverMonitorType odeSolverMonitor;
+         odeSolverMonitor.setVerbose( verbose );
          if( ! problem.getSolverMonitor() )
             explicitSolver.setSolverMonitor( odeSolverMonitor );
          else
@@ -395,10 +408,13 @@ class tnlSolverStarterSemiImplicitTimeStepperSetter
          typedef typename Problem::IndexType IndexType;
          typedef tnlIterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
 
+         const int verbose = parameters.getParameter< int >( "verbose" );
+
          LinearSystemSolverType linearSystemSolver;
          linearSystemSolver.setup( parameters );
 
          SolverMonitorType solverMonitor;
+         solverMonitor.setVerbose( verbose );
          if( ! problem.getSolverMonitor() )
             linearSystemSolver.setSolverMonitor( solverMonitor );
          else
@@ -490,11 +506,9 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
                                                     const tnlParameterContainer& parameters,
                                                     TimeStepper& timeStepper )
 {
-   this->totalCpuTimer.reset();
-   this->totalRtTimer.reset();
-   this->totalCpuTimer.start();
-   this->totalRtTimer.start();
-   
+   this->totalTimer.reset();
+   this->totalTimer.start();
+ 
 
    /****
     * Set-up the PDE solver
@@ -537,16 +551,10 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Set-up timers
     */
-   this->computeRtTimer.reset();
-   this->computeCpuTimer.reset();
-   this->ioRtTimer.reset();
-   this->ioRtTimer.stop();
-   this->ioCpuTimer.reset();
-   this->ioCpuTimer.stop();
-   solver.setComputeRtTimer( this->computeRtTimer );
-   solver.setComputeCpuTimer( this->computeCpuTimer );
-   solver.setIoRtTimer( this->ioRtTimer );
-   solver.setIoCpuTimer( this->ioCpuTimer );
+   this->computeTimer.reset();
+   this->ioTimer.reset();
+   solver.setComputeTimer( this->computeTimer );
+   solver.setIoTimer( this->ioTimer );
 
    /****
     * Start the solver
@@ -574,10 +582,8 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Stop timers
     */
-   this->computeRtTimer.stop();
-   this->computeCpuTimer.stop();
-   this->totalCpuTimer.stop();
-   this->totalRtTimer.stop();
+   this->computeTimer.stop();
+   this->totalTimer.stop();
 
    /****
     * Write an epilog
@@ -611,14 +617,14 @@ bool tnlSolverStarter< ConfigTag > :: writeEpilog( ostream& str, const Solver& s
    logger.writeCurrentTime( "Finished at:" );
    if( ! solver.writeEpilog( logger ) )
       return false;
-   logger.writeParameter< double >( "IO Real Time:", this->ioRtTimer.getTime() );
-   logger.writeParameter< double >( "IO CPU Time:", this->ioCpuTimer.getTime() );
-   logger.writeParameter< double >( "Compute Real Time:", this->computeRtTimer.getTime() );
-   logger.writeParameter< double >( "Compute CPU Time:", this->computeCpuTimer.getTime() );
-   logger.writeParameter< double >( "Total Real Time:", this->totalRtTimer.getTime() );
-   logger.writeParameter< double >( "Total CPU Time:", this->totalCpuTimer.getTime() );
+   logger.writeParameter< const char* >( "Compute time:", "" );
+   this->computeTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "I/O time:", "" );
+   this->ioTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Total time:", "" );
+   this->totalTimer.writeLog( logger, 1 );
    char buf[ 256 ];
-   sprintf( buf, "%f %%", 100 * ( ( double ) this->totalCpuTimer.getTime() ) / this->totalRtTimer.getTime() );
+   sprintf( buf, "%f %%", 100 * ( ( double ) this->totalTimer.getCPUTime() ) / this->totalTimer.getRealTime() );
    logger.writeParameter< char* >( "CPU usage:", buf );
    logger.writeSeparator();
    return true;

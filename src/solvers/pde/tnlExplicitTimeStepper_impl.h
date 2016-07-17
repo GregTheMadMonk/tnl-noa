@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLEXPLICITTIMESTEPPER_IMPL_H_
 #define TNLEXPLICITTIMESTEPPER_IMPL_H_
@@ -59,6 +52,8 @@ init( const MeshType& mesh )
 {
    this->explicitUpdaterTimer.reset();
    this->mainTimer.reset();
+   this->preIterateTimer.reset();
+   this->postIterateTimer.reset();
    return true;
 }
 
@@ -126,6 +121,7 @@ solve( const RealType& time,
    this->meshDependentData = &meshDependentData;
    if( ! this->odeSolver->solve( dofVector ) )
       return false;
+   this->problem->setExplicitBoundaryConditions( stopTime, *( this->mesh ), dofVector, *( this->meshDependentData ) );
    mainTimer.stop();
    this->allIterations += this->odeSolver->getIterations();
    return true;
@@ -140,6 +136,7 @@ getExplicitRHS( const RealType& time,
                 DofVectorType& u,
                 DofVectorType& fu )
 {
+   this->preIterateTimer.start();
    if( ! this->problem->preIterate( time,
                                     tau,
                                     *( this->mesh),
@@ -150,9 +147,12 @@ getExplicitRHS( const RealType& time,
       return;
       //return false; // TODO: throw exception
    }
+   this->preIterateTimer.stop();
    this->explicitUpdaterTimer.start();
+   this->problem->setExplicitBoundaryConditions( time, *( this->mesh ), u, *( this->meshDependentData ) );
    this->problem->getExplicitRHS( time, tau, *( this->mesh ), u, fu, *( this->meshDependentData ) );
    this->explicitUpdaterTimer.stop();
+   this->postIterateTimer.start();
    if( ! this->problem->postIterate( time,
                                      tau,
                                      *( this->mesh ),
@@ -163,6 +163,7 @@ getExplicitRHS( const RealType& time,
       return;
       //return false; // TODO: throw exception
    }
+   this->postIterateTimer.stop();
 }
 
 template< typename Problem,
@@ -171,9 +172,15 @@ bool
 tnlExplicitTimeStepper< Problem, OdeSolver >::
 writeEpilog( tnlLogger& logger )
 {
-   logger.writeParameter< long long int >( "Ierations count:", this->allIterations );
-   logger.writeParameter< double >( "Explicit update computation time:", this->explicitUpdaterTimer.getTime() );
-   logger.writeParameter< double >( "Explicit time stepper time:", this->mainTimer.getTime() );
+   logger.writeParameter< long long int >( "Iterations count:", this->allIterations );
+   logger.writeParameter< const char* >( "Pre-iterate time:", "" );
+   this->preIterateTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Explicit update computation:", "" );
+   this->explicitUpdaterTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Explicit time stepper time:", "" );
+   this->mainTimer.writeLog( logger, 1 );
+   logger.writeParameter< const char* >( "Post-iterate time:", "" );
+   this->postIterateTimer.writeLog( logger, 1 );
    return true;
 }
 

@@ -6,64 +6,58 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLLIST_IMPL_H
-#define	TNLLIST_IMPL_H
+#pragma once
 
 #include <core/tnlFile.h>
 
-template< typename T > 
-tnlList< T >::tnlList() 
+namespace TNL {
+
+template< typename T >
+tnlList< T >::tnlList()
    : first( 0 ),  last( 0 ), size( 0 ), iterator( 0 ), index( 0 )
 {
 }
 
-template< typename T > 
+template< typename T >
 tnlList< T >::tnlList( const tnlList& list )
    : first( 0 ), last( 0 ), size( 0 ), iterator( 0 ), index( 0 )
 {
    AppendList( list );
 }
 
-template< typename T > 
+template< typename T >
 tnlList< T >::~tnlList()
-{ 
-   reset(); 
+{
+   reset();
 }
 
-template< typename T >    
+template< typename T >
 tnlString tnlList< T >::getType()
 {
    return tnlString( "tnlList< " ) + ::getType< T >() +  tnlString( " >" );
 }
 
-template< typename T > 
+template< typename T >
 bool tnlList< T >::isEmpty() const
-{ 
-   return ! size; 
+{
+   return ! size;
 }
-   
-template< typename T > 
+ 
+template< typename T >
 int tnlList< T >::getSize() const
-{ 
-   return size; 
+{
+   return size;
 }
 
-template< typename T > 
+template< typename T >
 T& tnlList< T >::operator[]( const int& ind )
 {
    tnlAssert( ind < size, );
    int iter_dist = abs( index - ind );
    if( ! iterator ||
-       iter_dist > ind || 
+       iter_dist > ind ||
        iter_dist > size - ind )
    {
       if( ind < size - ind )
@@ -83,7 +77,7 @@ T& tnlList< T >::operator[]( const int& ind )
    {
       //cout << " current index = " << index
       //     << " index = " << ind << endl;
-      if( ind < index ) 
+      if( ind < index )
       {
          iterator = iterator -> Previous();
          index --;
@@ -97,21 +91,21 @@ T& tnlList< T >::operator[]( const int& ind )
    }
    return iterator -> Data();
 };
-   
-template< typename T > 
+ 
+template< typename T >
 const T& tnlList< T >::operator[]( const int& ind ) const
 {
    return const_cast< tnlList< T >* >( this ) -> operator[]( ind );
 }
 
-template< typename T >    
+template< typename T >
 const tnlList< T >& tnlList< T >::operator = ( const tnlList& lst )
 {
    AppendList( lst );
    return( *this );
 }
 
-template< typename T > 
+template< typename T >
 bool tnlList< T >::Append( const T& data )
 {
    if( ! first )
@@ -120,7 +114,7 @@ bool tnlList< T >::Append( const T& data )
       first = last = new tnlDataElement< T >( data );
       if( ! first ) return false;
    }
-   else 
+   else
    {
       tnlDataElement< T >* new_element =  new tnlDataElement< T >( data, last, 0 );
       if( ! new_element ) return false;
@@ -131,7 +125,7 @@ bool tnlList< T >::Append( const T& data )
    return true;
 };
 
-template< typename T > 
+template< typename T >
 bool tnlList< T >::Prepend( const T& data )
 {
    if( ! first )
@@ -144,21 +138,21 @@ bool tnlList< T >::Prepend( const T& data )
    {
       tnlDataElement< T >* new_element =  new tnlDataElement< T >( data, 0, first );
       if( ! new_element ) return false;
-      first = first -> Previous() = new_element; 
+      first = first -> Previous() = new_element;
    }
    size ++;
    index ++;
    return true;
 };
 
-template< typename T > 
+template< typename T >
 bool tnlList< T >::Insert( const T& data, const int& ind )
 {
    tnlAssert( ind <= size || ! size, );
    if( ind == 0 ) return Prepend( data );
    if( ind == size ) return Append( data );
    operator[]( ind );
-   tnlDataElement< T >* new_el = 
+   tnlDataElement< T >* new_el =
       new tnlDataElement< T >( data,
                              iterator -> Previous(),
                              iterator );
@@ -170,7 +164,7 @@ bool tnlList< T >::Insert( const T& data, const int& ind )
    return true;
 };
 
-template< typename T > 
+template< typename T >
 bool tnlList< T >::AppendList( const tnlList< T >& lst )
 {
    int i;
@@ -180,8 +174,8 @@ bool tnlList< T >::AppendList( const tnlList< T >& lst )
    }
    return true;
 };
-   
-template< typename T > 
+ 
+template< typename T >
 bool tnlList< T >::PrependList( const tnlList< T >& lst )
 
 {
@@ -191,7 +185,7 @@ bool tnlList< T >::PrependList( const tnlList< T >& lst )
    return true;
 };
 
-template< typename T >    
+template< typename T >
    template< typename Array >
 void tnlList< T >::toArray( Array& array )
 {
@@ -202,7 +196,7 @@ void tnlList< T >::toArray( Array& array )
       array[ i ] = ( *this )[ i ];
 }
 
-template< typename T > 
+template< typename T >
 void tnlList< T >::Erase( const int& ind )
 {
    operator[]( ind );
@@ -223,7 +217,7 @@ void tnlList< T >::Erase( const int& ind )
    size --;
 };
 
-template< typename T > 
+template< typename T >
 void tnlList< T >::DeepErase( const int& ind )
 {
    operator[]( ind );
@@ -231,7 +225,7 @@ void tnlList< T >::DeepErase( const int& ind )
    Erase( ind );
 };
 
-template< typename T > 
+template< typename T >
 void tnlList< T >::reset()
 {
    iterator = first;
@@ -247,7 +241,7 @@ void tnlList< T >::reset()
    size = 0;
 };
 
-template< typename T > 
+template< typename T >
 void tnlList< T >::DeepEraseAll()
 {
    iterator = first;
@@ -262,8 +256,8 @@ void tnlList< T >::DeepEraseAll()
    first = last = 0;
    size = 0;
 };
-   
-template< typename T > 
+ 
+template< typename T >
 bool tnlList< T >::Save( tnlFile& file ) const
 {
 #ifdef HAVE_NOT_CXX11
@@ -279,10 +273,10 @@ bool tnlList< T >::Save( tnlFile& file ) const
          return false;
    return true;
 
-#endif            
+#endif
 }
 
-template< typename T > 
+template< typename T >
 bool tnlList< T >::DeepSave( tnlFile& file ) const
 {
 #ifdef HAVE_NOT_CXX11
@@ -295,10 +289,10 @@ bool tnlList< T >::DeepSave( tnlFile& file ) const
    for( int i = 0; i < size; i ++ )
       if( ! operator[]( i ). save( file ) ) return false;
    return true;
-#endif            
+#endif
 }
 
-template< typename T > 
+template< typename T >
 bool tnlList< T >::Load( tnlFile& file )
 {
 #ifdef HAVE_NOT_CXX11
@@ -335,10 +329,10 @@ bool tnlList< T >::Load( tnlFile& file )
       Append( t );
    }
    return true;
-#endif            
+#endif
 };
 
-template< typename T > 
+template< typename T >
 bool tnlList< T >::DeepLoad( tnlFile& file )
 {
 #ifdef HAVE_NOT_CXX11
@@ -373,9 +367,9 @@ bool tnlList< T >::DeepLoad( tnlFile& file )
       Append( t );
    }
    return true;
-#endif            
+#endif
 };
-   
+ 
 template< typename T >
 ostream& operator << ( ostream& str, const tnlList< T >& list )
 {
@@ -385,7 +379,6 @@ ostream& operator << ( ostream& str, const tnlList< T >& list )
    return str;
 };
 
+} // namespace TNL
 
-
-#endif	/* TNLLIST_IMPL_H */
 

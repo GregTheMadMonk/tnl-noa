@@ -6,17 +6,11 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef CUDA_PREFIX_SUM_H_
-#define CUDA_PREFIX_SUM_H_
+#pragma once
+
+namespace TNL {
 
 enum enumPrefixSumType { exclusivePrefixSum = 0,
                          inclusivePrefixSum };
@@ -31,7 +25,6 @@ bool cudaPrefixSum( const Index size,
                     const Operation& operation,
                     const enumPrefixSumType prefixSumType = inclusivePrefixSum );
 
+} // namespace TNL
 
 #include <core/cuda/cuda-prefix-sum_impl.h>
-
-#endif /* CUDA_PREFIX_SUM_H_ */

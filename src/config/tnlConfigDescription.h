@@ -6,17 +6,9 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlConfigDescriptionH
-#define tnlConfigDescriptionH
+#pragma once
 
 #include <core/tnlString.h>
 #include <core/tnlList.h>
@@ -25,6 +17,8 @@
 #include <config/tnlConfigEntry.h>
 #include <config/tnlConfigEntryList.h>
 #include <config/tnlConfigDelimiter.h>
+
+namespace TNL {
 
 class tnlParameterContainer;
 
@@ -49,7 +43,7 @@ class tnlConfigDescription
       currentEntry = new tnlConfigEntry< EntryType >( name, description, true );
       entries.Append( currentEntry );
    }
-   
+ 
    template< typename EntryType >
    void addEntry( const tnlString& name,
                   const tnlString& description,
@@ -117,7 +111,7 @@ class tnlConfigDescription
       return NULL;
    }
 
-   
+ 
    //! Returns empty string if given entry does not exist
    //const tnlString getEntryType( const char* name ) const;
 
@@ -136,7 +130,7 @@ class tnlConfigDescription
       cerr << "Asking for the default value of uknown parameter." << endl;
       return NULL;
    }
-   
+ 
    //! Returns zero pointer if there is no default value
    template< class T > T* getDefaultValue( const tnlString& name )
    {
@@ -177,5 +171,5 @@ class tnlConfigDescription
 
 };
 
+} //namespace TNL
 
-#endif

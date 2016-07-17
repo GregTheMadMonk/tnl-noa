@@ -6,19 +6,16 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlTimerRTH
 #define tnlTimerRTH
 
 #include "mpi-supp.h"
+
+// TODO: remove this file
+
+namespace TNL {
 
 class tnlTimerRT
 {
@@ -44,4 +41,7 @@ class tnlTimerRT
 };
 
 extern tnlTimerRT defaultRTTimer;
+
+} // namespace TNL
+
 #endif

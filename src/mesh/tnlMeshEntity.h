@@ -6,17 +6,9 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITY_H_
-#define TNLMESHENTITY_H_
+#pragma once
 
 #include <core/tnlFile.h>
 #include <core/tnlDynamicTypeTag.h>
@@ -29,13 +21,15 @@
 #include <mesh/layers/tnlMeshSuperentityAccess.h>
 #include <mesh/initializer/tnlMeshEntitySeed.h>
 
+namespace TNL {
+
 template< typename MeshConfig >
 class tnlMeshInitializer;
 
 template< typename MeshConfig,
           typename EntityTopology_ >
 class tnlMeshEntity
-   : public tnlMeshSubentityStorageLayers< MeshConfig, EntityTopology_ >,     
+   : public tnlMeshSubentityStorageLayers< MeshConfig, EntityTopology_ >,
      public tnlMeshSuperentityAccess< MeshConfig, EntityTopology_ >,
      public tnlMeshEntityId< typename MeshConfig::IdType,
                              typename MeshConfig::GlobalIndexType >
@@ -47,19 +41,19 @@ class tnlMeshEntity
       typedef typename MeshTraits::GlobalIndexType                GlobalIndexType;
       typedef typename MeshTraits::LocalIndexType                 LocalIndexType;
       typedef typename MeshTraits::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
-      typedef tnlMeshEntitySeed< MeshConfig, EntityTopology >     SeedType;   
+      typedef tnlMeshEntitySeed< MeshConfig, EntityTopology >     SeedType;
 
-      template< int Subdimensions > using SubentityTraits = 
+      template< int Subdimensions > using SubentityTraits =
       typename MeshTraits::template SubentityTraits< EntityTopology, Subdimensions >;
-      
-      template< int SuperDimensions > using SuperentityTraits = 
+ 
+      template< int SuperDimensions > using SuperentityTraits =
       typename MeshTraits::template SuperentityTraits< EntityTopology, SuperDimensions >;
-      
+ 
       tnlMeshEntity( const SeedType& entitySeed );
 
       tnlMeshEntity();
-      
-      ~tnlMeshEntity();      
+ 
+      ~tnlMeshEntity();
 
       static tnlString getType();
 
@@ -72,12 +66,12 @@ class tnlMeshEntity
       void print( ostream& str ) const;
 
       bool operator==( const tnlMeshEntity& entity ) const;
-      
+ 
       constexpr int getEntityDimensions() const;
 
       /****
        * Subentities
-       */      
+       */
       template< int Subdimensions >
       constexpr bool subentitiesAvailable() const;
 
@@ -95,7 +89,7 @@ class tnlMeshEntity
 
       /****
        * Superentities
-       */      
+       */
       template< int SuperDimensions >
       LocalIndexType getNumberOfSuperentities() const;
 
@@ -121,7 +115,7 @@ class tnlMeshEntity
 
       template< int Dimensions >
       IdPermutationArrayAccessorType subentityOrientation( LocalIndexType index ) const;
-      
+ 
    protected:
 
       /****
@@ -134,7 +128,7 @@ class tnlMeshEntity
       template< int Subdimensions >
       void setSubentityIndex( const LocalIndexType localIndex,
                               const GlobalIndexType globalIndex );
-      
+ 
       template< int Subdimensions >
       typename SubentityTraits< Subdimensions >::IdArrayType& subentityIdsArray();
 
@@ -143,9 +137,9 @@ class tnlMeshEntity
 
       template< int Subdimensions >
       typename SubentityTraits< Subdimensions >::OrientationArrayType& subentityOrientationsArray();
-      
+ 
    friend tnlMeshInitializer< MeshConfig >;
-      
+ 
 };
 
 /****
@@ -165,9 +159,9 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >
       typedef typename MeshTraits::LocalIndexType                 LocalIndexType;
       typedef typename MeshTraits::PointType                      PointType;
       typedef typename MeshTraits::IdPermutationArrayAccessorType IdPermutationArrayAccessorType;
-      typedef tnlMeshEntitySeed< MeshConfig, EntityTopology >     SeedType; 
-      
-      template< int SuperDimensions > using SuperentityTraits = 
+      typedef tnlMeshEntitySeed< MeshConfig, EntityTopology >     SeedType;
+ 
+      template< int SuperDimensions > using SuperentityTraits =
       typename MeshTraits::template SuperentityTraits< EntityTopology, SuperDimensions >;
 
       static tnlString getType();
@@ -183,7 +177,7 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >
       void print( ostream& str ) const;
 
       bool operator==( const tnlMeshEntity& entity ) const;
-      
+ 
       constexpr int getEntityDimensions() const;
 
       template< int Superdimensions > LocalIndexType getNumberOfSuperentities() const;
@@ -205,15 +199,15 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >
       void setPoint( const PointType& point );
 
    protected:
-      
+ 
       typedef typename MeshTraits::IdArrayAccessorType                          IdArrayAccessorType;
       typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTopology >     SuperentityAccessBase;
-   
+ 
       template< int Superdimensions >
       IdArrayAccessorType& superentityIdsArray();
 
       PointType point;
-      
+ 
    friend tnlMeshInitializer< MeshConfig >;
 };
 
@@ -232,6 +226,6 @@ struct tnlDynamicTypeTag< tnlMeshEntity< MeshConfig, EntityTopology > >
    enum { value = true };
 };
 
-#include <mesh/tnlMeshEntity_impl.h>
+} // namespace TNL
 
-#endif /* TNLMESHENTITY_H_ */
+#include <mesh/tnlMeshEntity_impl.h>

@@ -6,23 +6,17 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTESTFUNCTION_H_
-#define TNLTESTFUNCTION_H_
+#pragma once
 
 #include <core/tnlHost.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< int FunctionDimensions,
           typename Real = double,
@@ -103,8 +97,8 @@ class tnlTestFunction : public tnlDomain< FunctionDimensions, SpaceDomain >
                            const Real& time = 0 ) const
    {
       return this->getTimeDerivative< 0, 0, 0, Vertex >( vertex, time );
-   }   
-#endif                              
+   }
+#endif
 
    ostream& print( ostream& str ) const;
 
@@ -146,6 +140,7 @@ ostream& operator << ( ostream& str, const tnlTestFunction< FunctionDimensions, 
    return f.print( str );
 }
 
+} // namespace TNL
+
 #include <functions/tnlTestFunction_impl.h>
 
-#endif /* TNLTESTFUNCTION_H_ */

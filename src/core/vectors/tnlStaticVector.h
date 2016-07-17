@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICVECTOR_H_
-#define TNLSTATICVECTOR_H_
+#pragma once
 
 #include <core/arrays/tnlStaticArray.h>
+
+namespace TNL {
 
 template< int Size, typename Real = double >
 class tnlStaticVector : public tnlStaticArray< Size, Real >
@@ -86,8 +80,8 @@ class tnlStaticVector : public tnlStaticArray< Size, Real >
 
    template< typename OtherReal >
    __cuda_callable__
-   operator tnlStaticVector< Size, OtherReal >() const;   
-   
+   operator tnlStaticVector< Size, OtherReal >() const;
+ 
    __cuda_callable__
    ThisType abs() const;
 };
@@ -155,8 +149,8 @@ class tnlStaticVector< 1, Real > : public tnlStaticArray< 1, Real >
 
    template< typename OtherReal >
    __cuda_callable__
-   operator tnlStaticVector< 1, OtherReal >() const;   
-   
+   operator tnlStaticVector< 1, OtherReal >() const;
+ 
    __cuda_callable__
    ThisType abs() const;
 };
@@ -227,11 +221,11 @@ class tnlStaticVector< 2, Real > : public tnlStaticArray< 2, Real >
 
    __cuda_callable__
    bool operator >= ( const tnlStaticVector& v ) const;
-   
+ 
    template< typename OtherReal >
    __cuda_callable__
-   operator tnlStaticVector< 2, OtherReal >() const;   
-   
+   operator tnlStaticVector< 2, OtherReal >() const;
+ 
    __cuda_callable__
    ThisType abs() const;
 };
@@ -305,8 +299,8 @@ class tnlStaticVector< 3, Real > : public tnlStaticArray< 3, Real >
 
    template< typename OtherReal >
    __cuda_callable__
-   operator tnlStaticVector< 3, OtherReal >() const;   
-   
+   operator tnlStaticVector< 3, OtherReal >() const;
+ 
    __cuda_callable__
    ThisType abs() const;
 };
@@ -382,4 +376,5 @@ Real tnlTriangleArea( const tnlStaticVector< 3, Real >& a,
    const tnlStaticVector< 3, Real > v = tnlVectorProduct( u1, u2 );
    return 0.5 * sqrt( tnlScalarProduct( v, v ) );
 };
-#endif /* TNLSTATICVECTOR_H_ */
+
+} // namespace TNL

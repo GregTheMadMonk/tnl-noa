@@ -12,7 +12,7 @@
 # Vladimir Klement
 # Jakub Klinkovsky
 
-cmake_minimum_required( VERSION 3.0 )
+cmake_minimum_required( VERSION 3.4 )
 
 project( tnl )
 
@@ -45,6 +45,7 @@ endif()
 set( CMAKE_CXX_FLAGS "-std=c++11" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG" )
+#set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
 # pass -rdynamic only in Debug mode
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "" )
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG "-rdynamic" )
@@ -110,15 +111,26 @@ if( WITH_CUDA STREQUAL "yes" )
         set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} )
         # TODO: this is necessary only due to a bug in cmake
         set( CUDA_ADD_LIBRARY_OPTIONS -shared )
+        # TODO: workaround for a bug in cmake 3.5.0 (fixed in 3.5.1)
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -ccbin "${CMAKE_CXX_COMPILER}" )
+        set( CUDA_HOST_COMPILER "" )
 
         ####
         # Check for cuBLAS
         #
-        if( WITH_CUBLAS STREQUAL "yes" ) 
-            message( "Enabling CUBLAS." )
-            set( HAVE_CUBLAS TRUE)
-            set( HAVE_CUBLAS "#define HAVE_CUBLAS 1" )
-        endif( WITH_CUBLAS STREQUAL "yes" )       
+        if( NOT WITH_CUBLAS STREQUAL "no" )
+            find_path( CUBLAS_INCLUDE_DIR cublas_v2.h
+                       /usr/local/cuda/include
+                       ${CUDA_INCLUDE_DIR}
+                       DOC "CUBLAS headers." )
+            if( ${CUBLAS_INCLUDE_DIR} STREQUAL "CUBLAS_INCLUDE_DIR-NOTFOUND" )
+                message( "CUBLAS not found." )
+                set( HAVE_CUBLAS "//#define HAVE_CUBLAS 1" )
+            else()
+                message( "CUBLAS found. -- ${CUBLAS_INCLUDE_DIR}" )
+                set( HAVE_CUBLAS "#define HAVE_CUBLAS 1" )
+            endif()
+        endif( NOT WITH_CUBLAS STREQUAL "no" )
 
         ####
         # Check for CUSP
@@ -138,7 +150,6 @@ if( WITH_CUDA STREQUAL "yes" )
         # Check for CUSPARSE
         #
         if( NOT WITH_CUSPARSE STREQUAL "no" )
-        
            find_path( CUSPARSE_INCLUDE_DIR cusparse.h
                       /usr/local/cuda/include                   
                       ${CUDA_INCLUDE_DIR}  

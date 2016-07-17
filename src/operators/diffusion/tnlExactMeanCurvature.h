@@ -6,22 +6,15 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-
-#ifndef TNLEXACTMEANCURVATURE_H
-#define	TNLEXACTMEANCURVATURE_H
+#pragma once
 
 #include<operators/diffusion/tnlExactNonlinearDiffusion.h>
 #include<operators/tnlExactFunctionInverseOperator.h>
 #include<operators/geometric/tnlExactGradientNorm.h>
+
+namespace TNL {
 
 template< int Dimensions,
           typename InnerOperator = tnlExactIdentityOperator< Dimensions > >
@@ -29,35 +22,35 @@ class tnlExactMeanCurvature
 : public tnlDomain< Dimensions, SpaceDomain >
 {
    public:
-     
+ 
       typedef tnlExactGradientNorm< Dimensions > ExactGradientNorm;
       typedef tnlExactFunctionInverseOperator< Dimensions, ExactGradientNorm > FunctionInverse;
       typedef tnlExactNonlinearDiffusion< Dimensions, FunctionInverse > NonlinearDiffusion;
-      
+ 
       static tnlString getType()
       {
-         return tnlString( "tnlExactMeanCurvature< " ) + 
+         return tnlString( "tnlExactMeanCurvature< " ) +
                 tnlString( Dimensions) + ", " +
-                InnerOperator::getType() + " >";         
+                InnerOperator::getType() + " >";
       }
-      
+ 
       template< typename Real >
       void setRegularizationEpsilon( const Real& eps)
       {
          nonlinearDiffusion.getNonlinearity().getInnerOperator().setRegularizationEpsilon( eps );
       }
-      
+ 
       template< typename Function >
       __cuda_callable__
-      typename Function::RealType 
+      typename Function::RealType
          operator()( const Function& function,
-                     const typename Function::VertexType& v, 
+                     const typename Function::VertexType& v,
                      const typename Function::RealType& time = 0.0 ) const
       {
          return this->nonlinearDiffusion( function, v, time );
       }
-      
-      template< typename Function, 
+ 
+      template< typename Function,
                 int XDerivative = 0,
                 int YDerivative = 0,
                 int ZDerivative = 0 >
@@ -71,7 +64,7 @@ class tnlExactMeanCurvature
             "Partial derivative must be non-negative integer." );
          static_assert( XDerivative + YDerivative + ZDerivative < 1, "Partial derivative of higher order then 1 are not implemented yet." );
          typedef typename Function::RealType RealType;
-         
+ 
          if( XDerivative == 1 )
          {
          }
@@ -80,20 +73,19 @@ class tnlExactMeanCurvature
          }
          if( ZDerivative == 1 )
          {
-         }         
+         }
       }
-      
-      
+ 
+ 
    protected:
-      
+ 
       ExactGradientNorm gradientNorm;
-      
+ 
       FunctionInverse functionInverse;
-      
+ 
       NonlinearDiffusion nonlinearDiffusion;
-      
+ 
 };
 
-
-#endif	/* TNLEXACTMEANCURVATURE_H */
+} // namespace TNL
 

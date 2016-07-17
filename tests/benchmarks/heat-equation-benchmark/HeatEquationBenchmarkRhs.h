@@ -23,7 +23,7 @@ template< typename Mesh, typename Real >class HeatEquationBenchmarkRhs
          typedef typename MeshEntity::MeshType::VertexType VertexType;
          VertexType v = entity.getCenter();
          return 0.0;
-      };
+      }
 };
 
 #endif /* HeatEquationBenchmarkRHS_H_ */

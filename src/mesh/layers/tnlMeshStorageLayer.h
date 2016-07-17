@@ -6,22 +6,16 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHSTORAGELAYER_H_
-#define TNLMESHSTORAGELAYER_H_
+#pragma once
 
 #include <core/tnlFile.h>
 #include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/traits/tnlMeshEntityTraits.h>
 #include <mesh/traits/tnlMeshTraits.h>
+
+namespace TNL {
 
 template< typename MeshConfig,
           typename DimensionsTag,
@@ -42,17 +36,17 @@ class tnlMeshStorageLayer< MeshConfig,
                            DimensionsTag,
                            true >
    : public tnlMeshStorageLayer< MeshConfig, typename DimensionsTag::Decrement >,
-     public tnlMeshSuperentityStorageLayers< MeshConfig, 
+     public tnlMeshSuperentityStorageLayers< MeshConfig,
                                              typename tnlMeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::EntityTopology >
 {
    public:
 
       static const int Dimensions = DimensionsTag::value;
       typedef tnlMeshStorageLayer< MeshConfig, typename DimensionsTag::Decrement >   BaseType;
-      typedef tnlMeshSuperentityStorageLayers< MeshConfig, 
+      typedef tnlMeshSuperentityStorageLayers< MeshConfig,
                                                typename tnlMeshTraits< MeshConfig >::template EntityTraits< DimensionsTag::value >::EntityTopology > SuperentityStorageBaseType;
       typedef tnlMeshTraits< MeshConfig >                                          MeshTraits;
-      typedef typename MeshTraits::template EntityTraits< Dimensions >             EntityTraits; 
+      typedef typename MeshTraits::template EntityTraits< Dimensions >             EntityTraits;
 
       typedef typename EntityTraits::StorageArrayType                              StorageArrayType;
       typedef typename EntityTraits::AccessArrayType                               AccessArrayType;
@@ -122,7 +116,7 @@ class tnlMeshStorageLayer< MeshConfig,
 
       void print( ostream& str ) const
       {
-         BaseType::print( str );         
+         BaseType::print( str );
          str << "The entities with " << DimensionsTag::value << " dimensions are: " << endl;
          for( GlobalIndexType i = 0; i < entities.getSize();i ++ )
          {
@@ -143,17 +137,17 @@ class tnlMeshStorageLayer< MeshConfig,
       StorageArrayType entities;
 
       AccessArrayType entitiesAccess;
-   
+ 
    // TODO: this is only for the mesh initializer - fix it
    public:
 
       using BaseType::entitiesArray;
-      
+ 
       typename EntityTraits::StorageArrayType& entitiesArray( DimensionsTag )
       {
-         return entities; 
+         return entities;
       }
-              
+ 
       using BaseType::superentityIdsArray;
 	
       template< typename SuperDimensionsTag >
@@ -161,10 +155,10 @@ class tnlMeshStorageLayer< MeshConfig,
       {
          return SuperentityStorageBaseType::superentityIdsArray( SuperDimensionsTag() );
       }
-      
+ 
       using BaseType::getSuperentityStorageNetwork;
       template< typename SuperdimensionsTag >
-      typename MeshTraits::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType& 
+      typename MeshTraits::template SuperentityTraits< EntityTopology, SuperdimensionsTag::value >::StorageNetworkType&
       getSuperentityStorageNetwork( tnlDimensionsTag< EntityTopology::dimensions > )
       {
          return SuperentityStorageBaseType::getStorageNetwork( SuperdimensionsTag() );
@@ -180,27 +174,27 @@ class tnlMeshStorageLayer< MeshConfig, DimensionsTag, false >
 
 template< typename MeshConfig >
 class tnlMeshStorageLayer< MeshConfig, tnlDimensionsTag< 0 >, true > :
-   public tnlMeshSuperentityStorageLayers< MeshConfig, 
+   public tnlMeshSuperentityStorageLayers< MeshConfig,
                                            tnlMeshVertexTopology >
 
 {
    public:
 
    typedef tnlDimensionsTag< 0 >                        DimensionsTag;
-   
-   typedef tnlMeshSuperentityStorageLayers< MeshConfig, 
+ 
+   typedef tnlMeshSuperentityStorageLayers< MeshConfig,
                                             tnlMeshVertexTopology > SuperentityStorageBaseType;
 
    typedef tnlMeshTraits< MeshConfig >                                          MeshTraits;
-   typedef typename MeshTraits::template EntityTraits< 0 >                      EntityTraits; 
-   
+   typedef typename MeshTraits::template EntityTraits< 0 >                      EntityTraits;
+ 
    typedef typename EntityTraits::StorageArrayType                              StorageArrayType;
    typedef typename EntityTraits::AccessArrayType                               AccessArrayType;
    typedef typename EntityTraits::GlobalIndexType                               GlobalIndexType;
    typedef typename EntityTraits::EntityType                                    VertexType;
    typedef typename VertexType::PointType                                       PointType;
    typedef tnlMeshVertexTopology                                                EntityTopology;
-   
+ 
    tnlMeshStorageLayer()
    {
    }
@@ -287,7 +281,7 @@ class tnlMeshStorageLayer< MeshConfig, tnlDimensionsTag< 0 >, true > :
    }
 
    void print( ostream& str ) const
-   {      
+   {
       str << "The mesh vertices are: " << endl;
       for( GlobalIndexType i = 0; i < vertices.getSize();i ++ )
       {
@@ -306,16 +300,16 @@ class tnlMeshStorageLayer< MeshConfig, tnlDimensionsTag< 0 >, true > :
    StorageArrayType vertices;
 
    AccessArrayType verticesAccess;
-   
+ 
    // TODO: this is only for the mesh initializer - fix it
    public:
-      
+ 
       typename EntityTraits::StorageArrayType& entitiesArray( DimensionsTag )
       {
-         return vertices; 
+         return vertices;
       }
 
-      
+ 
       template< typename SuperDimensionsTag >
       typename MeshTraits::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
       {
@@ -338,5 +332,4 @@ class tnlMeshStorageLayer< MeshConfig, tnlDimensionsTag< 0 >, false >
 {
 };
 
-
-#endif /* TNLMESHSTORAGELAYER_H_ */
+} // namespace TNL

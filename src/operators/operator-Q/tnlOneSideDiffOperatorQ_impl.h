@@ -1,9 +1,19 @@
+/***************************************************************************
+                          tnlOndeSidedDiffOperatorQ_impl.h  -  description
+                             -------------------
+    begin                : Jan 25, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
 
-#ifndef TNLONESIDEDIFFOPERATORQ_IMPL_H
-#define	TNLONESIDEDIFFOPERATORQ_IMPL_H
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
 
 #include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename MeshReal,
           typename Device,
@@ -257,4 +267,5 @@ getValueStriped( const MeshFunction& u,
                         u_y_f * u_y_f + u_y_b * u_y_b + 
                         u_z_f * u_z_f + u_z_b * u_z_b ) );
 }   
-#endif	/* TNLONESIDEDIFFOPERATORQ_IMPL_H */
+
+} // namespace TNL

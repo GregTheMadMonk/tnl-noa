@@ -6,18 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
  
 #include <core/cuda/reduction-operations.h>
 #include <core/cuda/cuda-reduction.h>
  
+namespace TNL {
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 /****
@@ -61,7 +56,7 @@ template bool reductionOnCudaDevice< tnlParallelReductionDiffMax< long double, i
                                      typename tnlParallelReductionDiffMax< long double, int> :: ResultType& result );
 #endif
 
-#ifdef INSTANTIATE_LONG_INT                                     
+#ifdef INSTANTIATE_LONG_INT
 template bool reductionOnCudaDevice< tnlParallelReductionDiffMax< char, long int > >
                                    ( tnlParallelReductionDiffMax< char, long int >& operation,
                                      const typename tnlParallelReductionDiffMax< char, long int > :: IndexType size,
@@ -98,5 +93,7 @@ template bool reductionOnCudaDevice< tnlParallelReductionDiffMax< long double, l
                                      const typename tnlParallelReductionDiffMax< long double, long int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionDiffMax< long double, long int> :: ResultType& result );
 #endif
-#endif                                     
 #endif
+#endif
+
+} // namespace TNL

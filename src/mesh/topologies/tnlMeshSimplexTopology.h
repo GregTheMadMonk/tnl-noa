@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLMESHSIMPLEXTOPOLOGY_H
-#define TNLMESHSIMPLEXTOPOLOGY_H
+#pragma once
 
+
+namespace TNL {
 
 template< int dimensions_ >
 class tnlMeshSimplexTopology
@@ -135,7 +129,7 @@ class tnlCombinationValue
 };
 
 template< unsigned int n,
-          unsigned int k, 
+          unsigned int k,
           unsigned int valueIndex >
 class tnlCombinationValue< n, k, 0, valueIndex >
 {
@@ -184,5 +178,5 @@ class tnlCombinationIncrement
 	   static const unsigned int valueIndex = tnlCombinationIncrementImpl< n, k, combinationIndex, k - 1 >::valueIndex;
 };
 
-#endif	/* TNLMESHSIMPLEXTOPOLOGY_H */
+} // namespace TNL
 

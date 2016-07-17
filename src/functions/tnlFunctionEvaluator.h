@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef SRC_FUNCTIONS_TNLFUNCTIONEVALUATOR_H_
-#define SRC_FUNCTIONS_TNLFUNCTIONEVALUATOR_H_
+#pragma once
 
 #include <functions/tnlFunctionAdapter.h>
+
+namespace TNL {
 
 template< typename MeshFunction,
           typename Function >
@@ -49,7 +43,7 @@ class tnlFunctionEvaluatorTraverserUserData
         functionCoefficient( &functionCoefficient ),
         dofVectorCoefficient( &dofVectorCoefficient )
       {};
-            
+ 
 };
 
 
@@ -72,9 +66,9 @@ class tnlFunctionEvaluator
                        const RealType& time = 0.0 ) const;
 
       //void addition( ... );
-      
+ 
       //void subtruction( .... );
-      
+ 
       //void multiplication( .... );
 
       class TraverserEntitiesProcessor
@@ -93,7 +87,7 @@ class tnlFunctionEvaluator
                      ( *userData.functionCoefficient ) * FunctionAdapter::getValue( *userData.function,
                                                                                     entity,
                                                                                     *userData.time );
-               else                                                                                            
+               else
                  ( *userData.u )( entity ) =
                              ( *userData.dofVectorCoefficient ) * ( *userData.u )( entity ) +
                              ( *userData.functionCoefficient ) * FunctionAdapter::getValue( *userData.function,
@@ -105,8 +99,7 @@ class tnlFunctionEvaluator
 
 };
 
+} // namespace TNL
+
 #include <functions/tnlFunctionEvaluator_impl.h>
 
-
-
-#endif /* SRC_FUNCTIONS_TNLFUNCTIONEVALUATOR_H_ */

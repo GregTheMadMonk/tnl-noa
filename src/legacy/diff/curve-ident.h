@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef curve_identH
 #define curve_identH
@@ -74,7 +67,7 @@ bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
             {
                curves[ k ] -> Prepend( tnlStaticVector< 2, Index >( i, j ) );
                added = true;
-               dbgCout( "Prepending to list no. " << k << "; list size ->  " << 
+               dbgCout( "Prepending to list no. " << k << "; list size ->  " <<
                      curves[ k ] -> getSize() );
                break;
             }
@@ -88,7 +81,7 @@ bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
             dbgCout( "Adding new list." );
          }
       }
-   
+ 
    // Now defragment all curves as much as it is possible.
    // It means - check if there are two curves whose begening and end
    // match, connect the together and erase the appended (or prepended) one.
@@ -115,7 +108,7 @@ bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
-               dbgCout( "Prepending the list no. " << j << 
+               dbgCout( "Prepending the list no. " << j <<
                          " (" << c2. getSize() <<") to the list no. " << i <<
                          " (" << c1. getSize() <<").");
                c1. PrependList( c2 );
@@ -273,6 +266,6 @@ bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
    curves. DeepEraseAll();
    return true;
 };
-                                           
+ 
 
 #endif

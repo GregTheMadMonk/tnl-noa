@@ -6,20 +6,15 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHSUPERENTITYSTORAGEINITIALIZER_H_
-#define TNLMESHSUPERENTITYSTORAGEINITIALIZER_H_
+#pragma once
 
 #include <mesh/tnlDimensionsTag.h>
 #include <algorithm>
+#include <vector>
+
+namespace TNL {
 
 template< typename MeshConfig >
 class tnlMeshInitializer;
@@ -56,16 +51,16 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
 	
    typedef tnlMeshTraits< MeshConfig >                                                      MeshTraits;
    typedef typename MeshTraits::GlobalIdArrayType                                           GlobalIdArrayType;
-      
+ 
    typedef typename MeshTraits::GlobalIndexType                                             GlobalIndexType;
    typedef typename MeshTraits::LocalIndexType                                              LocalIndexType;
    typedef tnlMeshInitializer< MeshConfig >                                                 MeshInitializer;
    typedef typename MeshTraits::template SuperentityTraits< EntityTopology, Dimensions >    SuperentityTraits;
    typedef typename SuperentityTraits::StorageNetworkType                                   SuperentityStorageNetwork;
 
-   public:      
+   public:
       using BaseType::addSuperentity;
-	   
+	
       void addSuperentity( DimensionsTag, GlobalIndexType entityIndex, GlobalIndexType superentityIndex)
       {
          //cout << "Adding superentity with " << DimensionsTag::value << " dimensions of enity with " << EntityDimensions::value << " ... " << endl;
@@ -79,7 +74,7 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
                     indexPairs.end(),
                     []( IndexPair pair0, IndexPair pair1 ){ return ( pair0.entityIndex < pair1.entityIndex ); } );
 
-         GlobalIdArrayType &superentityIdsArray = meshInitializer.template meshSuperentityIdsArray< EntityDimensions, DimensionsTag >();         
+         GlobalIdArrayType &superentityIdsArray = meshInitializer.template meshSuperentityIdsArray< EntityDimensions, DimensionsTag >();
          superentityIdsArray.setSize( static_cast< GlobalIndexType >( indexPairs.size() )  );
          GlobalIndexType currentBegin = 0;
          GlobalIndexType lastEntityIndex = 0;
@@ -87,7 +82,7 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
          for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
          {
             superentityIdsArray[ i ] = indexPairs[i].superentityIndex;
-            
+ 
             //cout << "Adding superentity " << indexPairs[i].superentityIndex << " to entity " << lastEntityIndex << endl;
             if( indexPairs[ i ].entityIndex != lastEntityIndex )
             {
@@ -99,7 +94,7 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
 
          meshInitializer.template superentityIdsArray< DimensionsTag >( meshInitializer.template meshEntitiesArray< EntityDimensions >()[ lastEntityIndex ] ).bind( superentityIdsArray, currentBegin, superentityIdsArray.getSize() - currentBegin );
          indexPairs.clear();
-         
+ 
          /****
           * Network initializer
           */
@@ -117,12 +112,12 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
             if( indexPairs[ i ].entityIndex == lastEntityIndex )
                storageNetworkAllocationVector[ lastEntityIndex ]++;
             else
-               lastEntityIndex++;                           
+               lastEntityIndex++;
          }
          superentityStorageNetwork.allocate( storageNetworkAllocationVector );
          lastEntityIndex = 0;
          LocalIndexType superentitiesCount( 0 );
-         typename SuperentityStorageNetwork::ValuesAccessorType superentitiesIndecis = 
+         typename SuperentityStorageNetwork::ValuesAccessorType superentitiesIndecis =
             superentityStorageNetwork.getValues( lastEntityIndex );
          for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
          {
@@ -144,7 +139,7 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
       };
 
       std::vector< IndexPair > indexPairs;
-   
+ 
 };
 
 template< typename MeshConfig,
@@ -162,11 +157,11 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
                                                 EntityTopology,
                                                 typename DimensionsTag::Decrement > BaseType;
    typedef tnlMeshInitializer< MeshConfig >                                      MeshInitializerType;
-   
+ 
    public:
    void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
    using BaseType::initSuperentities;
-   void initSuperentities( MeshInitializerType& ) {cerr << "***" << endl;} 
+   void initSuperentities( MeshInitializerType& ) {cerr << "***" << endl;}
 };
 
 template< typename MeshConfig,
@@ -177,7 +172,7 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
                                           true >
 {
    typedef tnlMeshInitializer< MeshConfig >                                      MeshInitializerType;
-   
+ 
    public:
    void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
    void initSuperentities( MeshInitializerType& ) {}
@@ -197,7 +192,4 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
    void initSuperentities( MeshInitializerType& ) {}
 };
 
-
-
-
-#endif /* TNLMESHSUPERENTITYSTORAGEINITIALIZER_H_ */
+} // namespace TNL

@@ -6,18 +6,12 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLSPARSEMATRIXROW_H_
-#define TNLSPARSEMATRIXROW_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Real, typename Index >
 class tnlSparseMatrixRow
@@ -43,7 +37,7 @@ class tnlSparseMatrixRow
       void setElement( const Index& elementIndex,
                        const Index& column,
                        const Real& value );
-      
+ 
       void print( ostream& str ) const;
 
    protected:
@@ -62,6 +56,6 @@ ostream& operator << ( ostream& str, const tnlSparseMatrixRow< Real, Index >& ro
    return str;
 }
 
-#include <matrices/tnlSparseMatrixRow_impl.h>
+} // namespace TNL
 
-#endif /* TNLSPARSEMATRIXROW_H_ */
+#include <matrices/tnlSparseMatrixRow_impl.h>

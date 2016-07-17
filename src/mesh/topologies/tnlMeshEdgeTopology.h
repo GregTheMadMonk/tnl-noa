@@ -6,20 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHEDGETOPOLOGY_H_
-#define TNLMESHEDGETOPOLOGY_H_
+#pragma once
 
 #include <mesh/topologies/tnlMeshEntityTopology.h>
 #include <mesh/topologies/tnlMeshVertexTopology.h>
+
+namespace TNL {
 
 struct tnlMeshEdgeTopology
 {
@@ -35,4 +29,4 @@ struct tnlMeshSubtopology< tnlMeshEdgeTopology, 0 >
    static const int count = 2;
 };
 
-#endif /* TNLMESHEDGETOPOLOGY_H_ */
+} // namespace TNL

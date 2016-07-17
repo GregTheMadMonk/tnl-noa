@@ -6,22 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLPDESOLVER_H_
 #define TNLPDESOLVER_H_
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
-#include <solvers/tnlSolverMonitor.h>
 #include <core/tnlLogger.h>
 
 template< typename Problem,
@@ -73,13 +65,9 @@ class tnlPDESolver : public tnlObject
 
       const RealType& getSnapshotPeriod() const;
 
-      void setIoRtTimer( tnlTimerRT& ioRtTimer);
+      void setIoTimer( tnlTimer& ioTimer);
 
-      void setComputeRtTimer( tnlTimerRT& computeRtTimer );
-
-      void setIoCpuTimer( tnlTimerCPU& ioCpuTimer );
-
-      void setComputeCpuTimer( tnlTimerCPU& computeCpuTimer );
+      void setComputeTimer( tnlTimer& computeTimer );
 
       bool solve();
 
@@ -99,10 +87,7 @@ class tnlPDESolver : public tnlObject
 
       ProblemType* problem;
 
-      tnlTimerRT *ioRtTimer, *computeRtTimer;
-
-      tnlTimerCPU *ioCpuTimer, *computeCpuTimer;
-
+      tnlTimer *ioTimer, *computeTimer;
 };
 
 #include <solvers/pde/tnlPDESolver_impl.h>

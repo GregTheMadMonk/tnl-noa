@@ -2,24 +2,21 @@
                           tnlDicomImageInfo_impl.h  -  description
                              -------------------
     begin                : Jul 19, 2015
-    copyright            : (C) 2015 by Tomas Oberhuber et al.                                       
-     
+    copyright            : (C) 2015 by Tomas Oberhuber et al.
+ 
      Tomas Oberhuber     tomas.oberhuber@fjfi.cvut.cz
      Jiri Kafka          kafka9@seznam.cz
      Pavel Neskudla
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
 
 #include <core/images/tnlDicomImageInfo.h>
 #include <core/images/tnlDicomHeader.h>
+
+namespace TNL {
 
 inline tnlDicomImageInfo::tnlDicomImageInfo( tnlDicomHeader& dicomHeader )
 : dicomHeader( dicomHeader )
@@ -61,7 +58,7 @@ inline bool tnlDicomImageInfo::retrieveInfo()
 #else
    cerr << "DICOM format is not supported in this build of TNL." << endl;
    return false;
-#endif   
+#endif
 }
 
 inline ImagePositionToPatient tnlDicomImageInfo::getImagePositionToPatient()
@@ -105,3 +102,5 @@ inline int tnlDicomImageInfo::getNumberOfSlices()
         retrieveInfo();
     return numberOfSlices;
 }
+
+} // namespace TNL

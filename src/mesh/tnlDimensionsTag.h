@@ -6,28 +6,22 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDIMENSIONSTAG_H_
-#define TNLDIMENSIONSTAG_H_
+#pragma once
 
 #include <core/tnlAssert.h>
+
+namespace TNL {
 
 /***
  * This tag or integer wrapper is necessary for C++ templates specializations.
  * As th C++ standard says:
- *  
+ *
  *   A partially specialized non-type argument expression shall not involve
  *   a template parameter of the partial specialization except when the argument
- *   expression is a simple identifier. 
- *  
+ *   expression is a simple identifier.
+ *
  * Therefore one cannot specialize the mesh layers just by integers saying the mesh
  * layer dimensions but instead this tag must be used. This makes the code more difficult
  * to read and we would like to avoid it if it is possible sometime.
@@ -52,8 +46,8 @@ template<>
 class tnlDimensionsTag< 0 >
 {
    public:
-   
+ 
       static const int value = 0;
 };
 
-#endif /* TNLDIMENSIONSTAG_H_ */
+} // namespace TNL

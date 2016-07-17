@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCONFIGENTRYLIST_H_
-#define TNLCONFIGENTRYLIST_H_
+#pragma once 
 
 #include <config/tnlConfigEntryBase.h>
+
+namespace TNL {
 
 template< typename EntryType >
 struct tnlConfigEntryList : public tnlConfigEntryBase
@@ -116,5 +110,4 @@ struct tnlConfigEntryList : public tnlConfigEntryBase
    };
 };
 
-
-#endif /* TNLCONFIGENTRYLIST_H_ */
+} // namespace TNL

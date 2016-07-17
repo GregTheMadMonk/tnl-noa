@@ -6,18 +6,12 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <core/mpi-supp.h>
 
-//--------------------------------------------------------------------------
+namespace TNL {
+
 void MPIInit( int* argc, char** argv[] )
 {
 #ifdef HAVE_MPI
@@ -67,7 +61,9 @@ int MPIGetSize( MPI_Comm comm )
 void MPIBarrier( MPI_Comm comm )
 {
 #ifdef HAVE_MPI
-   MPI_Barrier( comm ); 
+   MPI_Barrier( comm );
 #endif
 }
+
+} // namespace TNL
 

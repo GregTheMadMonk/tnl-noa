@@ -6,17 +6,9 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLARRAYOPERATIONSCUDA_IMPL_H_
-#define TNLARRAYOPERATIONSCUDA_IMPL_H_
+#pragma once 
 
 #include <iostream>
 #include <tnlConfig.h>
@@ -24,6 +16,7 @@
 #include <core/cuda/cuda-reduction.h>
 #include <core/cuda/reduction-operations.h>
 
+namespace TNL {
 
 template< typename Element, typename Index >
 bool tnlArrayOperations< tnlCuda >::allocateMemory( Element*& data,
@@ -271,7 +264,7 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( const Element1* dest
    }
    Index compared( 0 );
    while( compared < size )
-   {      
+   {
       Index transfer = Min( size - compared, tnlCuda::getGPUTransferBufferSize() );
       if( cudaMemcpy( ( void* ) host_buffer,
                       ( void* ) & ( source[ compared ] ),
@@ -649,4 +642,4 @@ extern template bool tnlArrayOperations< tnlCuda >::setMemory< long double, long
 
 #endif
 
-#endif /* TNLARRAYOPERATIONSCUDA_IMPL_H_ */
+} // namespace TNL

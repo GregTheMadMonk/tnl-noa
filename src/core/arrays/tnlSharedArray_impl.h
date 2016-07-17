@@ -6,17 +6,9 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSHAREDARRAY_H_IMPLEMENTATION
-#define TNLSHAREDARRAY_H_IMPLEMENTATION
+#pragma once
 
 #include <iostream>
 #include <core/tnlFile.h>
@@ -26,7 +18,7 @@
 #include <core/mfuncs.h>
 #include <core/param-types.h>
 
-using namespace std;
+namespace TNL {
 
 template< typename Element,
           typename Device,
@@ -108,10 +100,10 @@ void tnlSharedArray< Element, Device, Index > :: bind( Element* data,
                                                        const Index size )
 {
    tnlAssert( size >= 0,
-              cerr << "You try to set size of tnlSharedArray to negative value."
-                   << "New size: " << size << endl );
+              std::cerr << "You try to set size of tnlSharedArray to negative value."
+                        << "New size: " << size << std::endl );
    tnlAssert( data != 0,
-              cerr << "You try to use null pointer to data for tnlSharedArray." );
+              std::cerr << "You try to use null pointer to data for tnlSharedArray." );
 
    this->size = size;
    this->data = data;
@@ -134,7 +126,7 @@ void tnlSharedArray< Element, Device, Index > :: bind( Array& array,
       this->size = array. getSize();
    else
       this->size = size;
-   
+ 
 };
 
 template< typename Element,
@@ -191,9 +183,9 @@ template< typename Element,
 void tnlSharedArray< Element, Device, Index > :: setElement( const Index& i, const Element& x )
 {
    tnlAssert( 0 <= i && i < this->getSize(),
-              cerr << "Wrong index for setElement method in tnlSharedArray "
-                   << " index is " << i
-                   << " and array size is " << this->getSize() );
+              std::cerr << "Wrong index for setElement method in tnlSharedArray "
+                        << " index is " << i
+                        << " and array size is " << this->getSize() );
    return tnlArrayOperations< Device >::setMemoryElement( & ( this->data[ i ] ), x );
 };
 
@@ -203,9 +195,9 @@ template< typename Element,
 Element tnlSharedArray< Element, Device, Index > :: getElement( const Index& i ) const
 {
    tnlAssert( 0 <= i && i < this->getSize(),
-              cerr << "Wrong index for getElement method in tnlSharedArray "
-                   << " index is " << i
-                   << " and array size is " << this->getSize() );
+              std::cerr << "Wrong index for getElement method in tnlSharedArray "
+                        << " index is " << i
+                        << " and array size is " << this->getSize() );
    return tnlArrayOperations< Device >::getMemoryElement( &( this->data[ i ] ) );
 };
 
@@ -216,9 +208,9 @@ __cuda_callable__
 Element& tnlSharedArray< Element, Device, Index > :: operator[] ( const Index& i )
 {
    tnlAssert( 0 <= i && i < this->getSize(),
-              cerr << "Wrong index for operator[] in tnlSharedArray "
-                   << " index is " << i
-                   << " and array size is " << this->getSize() );
+              std::cerr << "Wrong index for operator[] in tnlSharedArray "
+                        << " index is " << i
+                        << " and array size is " << this->getSize() );
    return this->data[ i ];
 };
 
@@ -229,9 +221,9 @@ __cuda_callable__
 const Element& tnlSharedArray< Element, Device, Index > :: operator[] ( const Index& i ) const
 {
    tnlAssert( 0 <= i && i < this->getSize(),
-              cerr << "Wrong index for operator[] in tnlSharedArray "
-                   << " index is " << i
-                   << " and array size is " << this->getSize() );
+              std::cerr << "Wrong index for operator[] in tnlSharedArray "
+                        << " index is " << i
+                        << " and array size is " << this->getSize() );
    return this->data[ i ];
 };
 
@@ -242,8 +234,8 @@ tnlSharedArray< Element, Device, Index >&
     tnlSharedArray< Element, Device, Index > :: operator = ( const tnlSharedArray< Element, Device, Index >& array )
 {
    tnlAssert( array. getSize() == this->getSize(),
-           cerr << "Source size: " << array. getSize() << endl
-                << "Target size: " << this->getSize() << endl );
+              std::cerr << "Source size: " << array. getSize() << std::endl
+                        << "Target size: " << this->getSize() << std::endl );
    tnlArrayOperations< Device > ::
    template copyMemory< Element,
                         Element,
@@ -261,8 +253,8 @@ template< typename Element,
 tnlSharedArray< Element, Device, Index >& tnlSharedArray< Element, Device, Index > :: operator = ( const Array& array )
 {
    tnlAssert( array. getSize() == this->getSize(),
-           cerr << "Source size: " << array. getSize() << endl
-                << "Target size: " << this->getSize() << endl );
+              std::cerr << "Source size: " << array. getSize() << std::endl
+                        << "Target size: " << this->getSize() << std::endl );
    tnlArrayOperations< typename Array :: DeviceType,
                        Device > ::
     template copyMemory< Element,
@@ -352,18 +344,18 @@ template< typename Element,
 bool tnlSharedArray< Element, Device, Index > :: save( tnlFile& file ) const
 {
    tnlAssert( this->size != 0,
-              cerr << "You try to save empty array." << endl );
+              std::cerr << "You try to save empty array." << std::endl );
    if( ! tnlObject :: save( file ) )
       return false;
 #ifdef HAVE_NOT_CXX11
    if( ! file. write< const Index, tnlHost >( &this->size ) )
-#else            
+#else
    if( ! file. write( &this->size ) )
-#endif      
+#endif
       return false;
    if( ! file. write< Element, Device, Index >( this->data, this->size ) )
    {
-      cerr << "I was not able to WRITE tnlSharedArray with size " << this->getSize() << endl;
+      std::cerr << "I was not able to WRITE tnlSharedArray with size " << this->getSize() << std::endl;
       return false;
    }
    return true;
@@ -394,15 +386,15 @@ bool tnlSharedArray< Element, Device, Index > :: load( tnlFile& file )
 #endif
    if( _size != this->size )
    {
-      cerr << "Error: The size " << _size << " of the data to be load is different from the " <<
-               "allocated array. This is not possible in the shared array." << endl;
+      std::cerr << "Error: The size " << _size << " of the data to be load is different from the " <<
+                   "allocated array. This is not possible in the shared array." << std::endl;
       return false;
    }
    if( _size )
    {
       if( ! file. read< Element, Device, Index >( this->data, this->size ) )
       {
-         cerr << "I was not able to READ tnlSharedArray with size " << this->getSize() << endl;
+         std::cerr << "I was not able to READ tnlSharedArray with size " << this->getSize() << std::endl;
          return false;
       }
    }
@@ -472,4 +464,4 @@ extern template class tnlSharedArray< double, tnlCuda, long int >;*/
 
 #endif
 
-#endif /* TNLSHAREDARRAY_H_IMPLEMENTATION */
+} // namespace TNL

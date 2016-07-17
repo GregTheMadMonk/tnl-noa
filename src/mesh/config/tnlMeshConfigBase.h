@@ -6,17 +6,11 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHCONFIGBASE_H_
-#define TNLMESHCONFIGBASE_H_
+#pragma once
+
+namespace TNL {
 
 /****
  * Basic structure for mesh configuration.
@@ -45,7 +39,7 @@ struct tnlMeshConfigBase
    {
       return tnlString( "tnlMeshConfigBase< >");
    };
-   
+ 
    /****
     * Storage of mesh entities.
     */
@@ -53,11 +47,11 @@ struct tnlMeshConfigBase
 	{
       /****
        *  Vertices and cells must always be stored
-       */ 
+       */
       return true;
 		//return ( dimensions == 0 || dimensions == cellDimensions );
 	}
-   
+ 
    /****
     *  Storage of subentities of mesh entities
     */
@@ -90,8 +84,8 @@ struct tnlMeshConfigBase
       return true;
 		//return false;
 	}
-   
+ 
    static_assert( WorldDimensions >= Cell::dimensions, "The number of the cell dimensions cannot be larger than the world dimension." );
 };
 
-#endif /* TNLMESHCONFIGBASE_H_ */
+} // namespace TNL

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <tnlConfig.h>
 #include <core/tnlHost.h>
@@ -34,11 +27,11 @@ template< typename ApproximateOperator >
 class tnlFinitDifferenceEocTestResults
 {
    public:
-        
+ 
       typedef typename ApproximateOperator::RealType RealType;
-      
+ 
       const RealType  eoc[ 3 ] =       { 1.0,  1.0,  1.0 };
-      const RealType  tolerance[ 3 ] = { 0.05, 0.05, 0.05 };      
+      const RealType  tolerance[ 3 ] = { 0.05, 0.05, 0.05 };
 
 };
 
@@ -51,9 +44,9 @@ template< typename MeshType,
 class tnlFinitDifferenceEocTestResults< tnlCentralFiniteDifference< MeshType, XDifference, YDifference, ZDifference, RealType, IndexType > >
 {
    public:
-      
+ 
       const RealType  eoc[ 3 ] =       { 2.0,  2.0,  2.0 };
-      const RealType  tolerance[ 3 ] = { 0.05, 0.05, 0.05 };         
+      const RealType  tolerance[ 3 ] = { 0.05, 0.05, 0.05 };
 };
 
 template< typename ApproximateOperator,
@@ -65,28 +58,28 @@ class tnlFiniteDifferenceTest
      public tnlFinitDifferenceEocTestResults< ApproximateOperator >
 {
    public:
-      
+ 
       typedef ApproximateOperator ApproximateOperatorType;
       typedef typename ApproximateOperatorType::ExactOperatorType ExactOperatorType;
       typedef typename ApproximateOperator::MeshType MeshType;
       typedef typename ApproximateOperator::RealType RealType;
       typedef typename ApproximateOperator::IndexType IndexType;
-      
+ 
       const IndexType coarseMeshSize[ 3 ] = { 1024, 256, 64 };
-      
-   
+ 
+ 
       static tnlString getType()
-      { 
-         return tnlString( "tnlLinearDiffusionTest< " ) + 
+      {
+         return tnlString( "tnlLinearDiffusionTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }
-      
+ 
       void setupTest()
       {
          this->setupFunction();
       }
-            
+ 
       void getApproximationError( const IndexType meshSize,
                                   RealType errors[ 3 ] )
       {
@@ -98,19 +91,19 @@ class tnlFiniteDifferenceTest
                             verbose );
 
       }
-      
+ 
       void runUnitTest()
-      {  
+      {
          RealType coarseErrors[ 3 ], fineErrors[ 3 ];
          this->getApproximationError( coarseMeshSize[ MeshType::getMeshDimensions() - 1 ], coarseErrors );
          this->getApproximationError( 2 * coarseMeshSize[ MeshType::getMeshDimensions() - 1 ], fineErrors );
-         this->checkEoc( coarseErrors, fineErrors, this->eoc, this->tolerance, verbose );                            
+         this->checkEoc( coarseErrors, fineErrors, this->eoc, this->tolerance, verbose );
       }
-      
+ 
    protected:
 
       ApproximateOperator approximateOperator;
-      
+ 
       ExactOperatorType exactOperator;
 
 };
@@ -123,7 +116,7 @@ template< typename FiniteDifferenceOperator,
 bool testFiniteDifferenceOperator()
 {
     typedef tnlFiniteDifferenceTest< FiniteDifferenceOperator, Function, write, verbose > OperatorTest;
-#ifdef HAVE_CPPUNIT   
+#ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter::run< tnlPDEOperatorEocUnitTest< OperatorTest > >() )
       return false;
    return true;
@@ -145,7 +138,7 @@ bool setFiniteDifferenceOperator()
     typedef tnlForwardFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > ForwardFiniteDifference;
     typedef tnlBackwardFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > BackwardFiniteDifference;
     typedef tnlCentralFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > CentralFiniteDifference;
-    
+ 
     if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
       return ( testFiniteDifferenceOperator< ForwardFiniteDifference, Function, WriteFunctions, Verbose >() &&
                testFiniteDifferenceOperator< BackwardFiniteDifference, Function, WriteFunctions, Verbose >() &&
@@ -159,7 +152,7 @@ template< typename Mesh,
           typename IndexType,
           int XDifference,
           int YDifference,
-          int ZDifference,        
+          int ZDifference,
           int MeshSize,
           bool WriteFunctions,
           bool Verbose >
@@ -187,14 +180,14 @@ bool setDifferenceOrder()
              setFunction< Grid1D, RealType, IndexType, 2, 0, 0, MeshSize, WriteFunctions, Verbose >() &&
              setFunction< Grid2D, RealType, IndexType, 1, 0, 0, MeshSize, WriteFunctions, Verbose >() &&
              setFunction< Grid2D, RealType, IndexType, 0, 1, 0, MeshSize, WriteFunctions, Verbose >() &&
-             setFunction< Grid2D, RealType, IndexType, 2, 0, 0, MeshSize, WriteFunctions, Verbose >() &&            
+             setFunction< Grid2D, RealType, IndexType, 2, 0, 0, MeshSize, WriteFunctions, Verbose >() &&
              setFunction< Grid2D, RealType, IndexType, 0, 2, 0, MeshSize, WriteFunctions, Verbose >() &&
-             setFunction< Grid3D, RealType, IndexType, 1, 0, 0, MeshSize, WriteFunctions, Verbose >() &&             
+             setFunction< Grid3D, RealType, IndexType, 1, 0, 0, MeshSize, WriteFunctions, Verbose >() &&
              setFunction< Grid3D, RealType, IndexType, 0, 1, 0, MeshSize, WriteFunctions, Verbose >() &&
              setFunction< Grid3D, RealType, IndexType, 0, 0, 1, MeshSize, WriteFunctions, Verbose >() &&
              setFunction< Grid3D, RealType, IndexType, 2, 0, 0, MeshSize, WriteFunctions, Verbose >() &&
-             setFunction< Grid3D, RealType, IndexType, 0, 2, 0, MeshSize, WriteFunctions, Verbose >() &&             
-             setFunction< Grid3D, RealType, IndexType, 0, 0, 2, MeshSize, WriteFunctions, Verbose >() );            
+             setFunction< Grid3D, RealType, IndexType, 0, 2, 0, MeshSize, WriteFunctions, Verbose >() &&
+             setFunction< Grid3D, RealType, IndexType, 0, 0, 2, MeshSize, WriteFunctions, Verbose >() );
 }
 
 bool test()
@@ -206,8 +199,8 @@ bool test()
 #ifdef HAVE_CUDA
    if( ! setDifferenceOrder< double, tnlCuda, int, double, int, 64, writeFunctions, verbose >() )
       return false;
-#endif    
-    return true;    
+#endif
+    return true;
 }
 
 int main( int argc, char* argv[] )

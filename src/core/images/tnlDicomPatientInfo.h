@@ -2,27 +2,16 @@
                           tnlDicomPatientInfo.h  -  description
                              -------------------
     begin                : Jul 19, 2015
-    copyright            : (C) 2015 by Tomas Oberhuber et al.                                       
-     
+    copyright            : (C) 2015 by Tomas Oberhuber et al.
+ 
      Tomas Oberhuber     tomas.oberhuber@fjfi.cvut.cz
      Jiri Kafka          kafka9@seznam.cz
      Pavel Neskudla
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-
-#ifndef TNLDICOMPATIENTINFO_H
-#define TNLDICOMPATIENTINFO_H
-
-class tnlDicomHeader;
+#pragma once
 
 #include <core/tnlString.h>
 #include <tnlConfig.h>
@@ -35,6 +24,10 @@ class tnlDicomHeader;
 #include <dcmtk/ofstd/ofstring.h>
 #endif
 
+namespace TNL {
+
+class tnlDicomHeader;
+
 /***
  * PatientInfoObj class stores selected informations about patient.
  * (accesses information via tnlDicomHeader class)
@@ -42,21 +35,21 @@ class tnlDicomHeader;
 class tnlDicomPatientInfo
 {
    public:
-      
+ 
       inline tnlDicomPatientInfo(tnlDicomHeader &atnlDicomHeader);
-       
+ 
       inline virtual ~tnlDicomPatientInfo();
 
       inline const tnlString& getName();
-       
+ 
       inline const tnlString& getSex();
-       
+ 
       inline const tnlString& getID();
-       
+ 
       inline const tnlString& getWeight();
-       
+ 
       inline const tnlString& getPosition();
-       
+ 
       inline const tnlString& getOrientation();
 
    private:
@@ -78,6 +71,7 @@ class tnlDicomPatientInfo
        tnlString patientOrientation;
 };
 
+} // namespace TNL
+
 #include <core/images/tnlDicomPatientInfo_impl.h>
 
-#endif // TNLDICOMPATIENTINFO_H

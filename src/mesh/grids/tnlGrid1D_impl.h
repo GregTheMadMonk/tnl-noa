@@ -6,17 +6,9 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGRID1D_IMPL_H_
-#define TNLGRID1D_IMPL_H_
+#pragma once
 
 #include <fstream>
 #include <iomanip>
@@ -28,7 +20,7 @@
 #include <mesh/grids/tnlGrid1D.h>
 #include <mesh/grids/tnlGridEntityMeasureGetter.h>
 
-using namespace std;
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -137,7 +129,7 @@ template< typename Real,
           typename Device,
           typename Index  >
 __cuda_callable__ inline
-const typename tnlGrid< 1, Real, Device, Index >::VertexType& 
+const typename tnlGrid< 1, Real, Device, Index >::VertexType&
   tnlGrid< 1, Real, Device, Index >::getOrigin() const
 {
    return this->origin;
@@ -147,7 +139,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename tnlGrid< 1, Real, Device, Index >::VertexType& 
+const typename tnlGrid< 1, Real, Device, Index >::VertexType&
    tnlGrid< 1, Real, Device, Index >::getProportions() const
 {
    return this->proportions;
@@ -159,19 +151,19 @@ template< typename Real,
    template< typename EntityType >
 __cuda_callable__  inline
 Index
-tnlGrid< 1, Real, Device, Index >:: 
+tnlGrid< 1, Real, Device, Index >::
 getEntitiesCount() const
 {
    static_assert( EntityType::entityDimensions <= 1 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
-   
+ 
    switch( EntityType::entityDimensions )
    {
       case 1:
          return this->numberOfCells;
       case 0:
          return this->numberOfVertices;
-   }            
+   }
    return -1;
 }
 
@@ -186,7 +178,7 @@ getEntity( const IndexType& entityIndex ) const
 {
    static_assert( EntityType::entityDimensions <= 1 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
-   
+ 
    return tnlGridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
 
@@ -201,7 +193,7 @@ getEntityIndex( const EntityType& entity ) const
 {
    static_assert( EntityType::entityDimensions <= 1 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
-   
+ 
    return tnlGridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
 
@@ -243,12 +235,12 @@ template< typename Real,
           typename Device,
           typename Index >
    template< int xPow >
-__cuda_callable__ inline 
-const Real& 
+__cuda_callable__ inline
+const Real&
 tnlGrid< 1, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
-   tnlAssert( xPow >= -2 && xPow <= 2, 
+   tnlAssert( xPow >= -2 && xPow <= 2,
               cerr << " xPow = " << xPow );
    return this->spaceStepsProducts[ xPow + 2 ];
 }
@@ -272,7 +264,7 @@ tnlGrid< 1, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
                                                         const GridFunction& f2 ) const
 {
    typename GridFunction::RealType maxDiff( -1.0 );
-   
+ 
    Cell cell( *this );
    for( cell.getCoordinates().x() = 0;
         cell.getCoordinates().x() < getDimensions().x();
@@ -383,7 +375,7 @@ bool tnlGrid< 1, Real, Device, Index >::write( const MeshFunction& function,
    if( this->template getEntitiesCount< Cell >() != function. getSize() )
    {
       cerr << "The size ( " << function. getSize()
-           << " ) of the mesh function does not agree with the DOFs ( " 
+           << " ) of the mesh function does not agree with the DOFs ( "
            << this->template getEntitiesCount< Cell >() << " ) of a mesh." << endl;
       return false;
    }
@@ -427,4 +419,4 @@ writeProlog( tnlLogger& logger )
    logger.writeParameter( "Space steps:", this->getSpaceSteps() );
 }
 
-#endif /* TNLGRID1D_IMPL_H_ */
+} // namespace TNL

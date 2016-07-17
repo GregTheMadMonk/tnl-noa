@@ -6,23 +6,17 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUDA_H_
-#define TNLCUDA_H_
+#pragma once
 
 #include <iostream>
 #include <unistd.h>
 #include <core/tnlDevice.h>
 #include <core/tnlString.h>
 #include <core/tnlAssert.h>
+
+namespace TNL {
 
 class tnlConfigDescription;
 class tnlParameterContainer;
@@ -93,9 +87,9 @@ class tnlCuda
 #else
    static bool checkDevice( const char* file_name, int line ) { return false;};
 #endif
-   
+ 
    static void configSetup( tnlConfigDescription& config, const tnlString& prefix = "" );
-      
+ 
    static bool setup( const tnlParameterContainer& parameters,
                       const tnlString& prefix = "" );
 
@@ -130,6 +124,6 @@ class tnlCuda
 
 #endif
 
+} // namespace TNL   
+   
 #include <core/tnlCuda_impl.h>
-
-#endif /* TNLCUDA_H_ */

@@ -6,23 +6,17 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITYINITIALIZER_H_
-#define TNLMESHENTITYINITIALIZER_H_
+#pragma once
 
 #include <core/tnlStaticFor.h>
 #include <mesh/initializer/tnlMeshSuperentityStorageInitializer.h>
 #include <mesh/initializer/tnlMeshSubentitySeedCreator.h>
 
 #include "tnlMeshEntitySeed.h"
+
+namespace TNL {
 
 template< typename MeshConfig >
 class tnlMeshInitializer;
@@ -41,16 +35,16 @@ template< typename MeshConfig,
           typename EntityTopology >
 class tnlMeshEntityInitializer
    : public tnlMeshEntityInitializerLayer< MeshConfig,
-                                           EntityTopology, 
+                                           EntityTopology,
                                            tnlDimensionsTag< EntityTopology::dimensions - 1 > >
 {
    typedef tnlDimensionsTag< EntityTopology::dimensions >                                 DimensionsTag;
    private:
 
       typedef tnlMeshEntityInitializerLayer< MeshConfig,
-                                           EntityTopology, 
+                                           EntityTopology,
                                            tnlDimensionsTag< EntityTopology::dimensions - 1 > > BaseType;
-      
+ 
    typedef
       tnlMeshEntityInitializerLayer< MeshConfig,
                                      EntityTopology,
@@ -66,10 +60,10 @@ class tnlMeshEntityInitializer
    typedef typename MeshTraits::GlobalIndexType                                 GlobalIndexType;
    typedef typename MeshTraits::LocalIndexType                                  LocalIndexType;
    typedef typename MeshTraits::template EntityTraits< Dimensions >             EntityTraits;
-   
-   typedef typename EntityTraits::EntityType                                    EntityType;   
+ 
+   typedef typename EntityTraits::EntityType                                    EntityType;
    typedef typename MeshTraits::template SubentityTraits< EntityTopology, 0 >   SubvertexTraits;
-   
+ 
 
    typedef tnlMeshInitializer< MeshConfig >                                                   InitializerType;
    typedef tnlMeshEntitySeed< MeshConfig, EntityTopology >                            SeedType;
@@ -89,7 +83,7 @@ class tnlMeshEntityInitializer
       entity = EntityType( entitySeed );
       BaseType::initSubentities( entity, entityIndex, entitySeed, initializer );
    }
-   
+ 
    template< typename SuperentityDimensionTag >
    typename tnlMeshSuperentityTraits< MeshConfig, EntityTopology, SuperentityDimensionTag::value >::SharedContainerType& getSuperentityContainer( SuperentityDimensionTag )
    {
@@ -118,8 +112,8 @@ class tnlMeshEntityInitializer< MeshConfig, tnlMeshVertexTopology >
       typedef tnlMeshInitializer< MeshConfig >                 InitializerType;
 
       static tnlString getType() {};
-      
-      static void setVertexPoint( VertexType& vertex, 
+ 
+      static void setVertexPoint( VertexType& vertex,
                                   const PointType& point,
                                   InitializerType& initializer )
       {
@@ -130,9 +124,9 @@ class tnlMeshEntityInitializer< MeshConfig, tnlMeshVertexTopology >
 
 /****
  *       Mesh entity initializer layer with specializations
- * 
+ *
  *  SUBENTITY STORAGE     SUBENTITY ORIENTATION    SUPERENTITY STORAGE
- *      TRUE                    FALSE                    TRUE 
+ *      TRUE                    FALSE                    TRUE
  */
 template< typename MeshConfig,
           typename EntityTopology,
@@ -176,9 +170,9 @@ class tnlMeshEntityInitializerLayer< MeshConfig,
 
       IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >( entity );
       for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
-      {         
+      {
          //cout << "    Adding subentity " << subentityIdsArray[ i ] << endl;
-         subentityIdsArray[ i ] = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );         
+         subentityIdsArray[ i ] = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
          meshInitializer.
             template getSuperentityInitializer< DimensionsTag >().
                addSuperentity( EntityDimensionsTag(), subentityIdsArray[ i ], entityIndex );
@@ -189,9 +183,9 @@ class tnlMeshEntityInitializerLayer< MeshConfig,
 
 /****
  *       Mesh entity initializer layer with specializations
- * 
+ *
  *  SUBENTITY STORAGE     SUBENTITY ORIENTATION    SUPERENTITY STORAGE
- *      TRUE                    TRUE                    TRUE 
+ *      TRUE                    TRUE                    TRUE
  */
 template< typename MeshConfig,
           typename EntityTopology,
@@ -235,7 +229,7 @@ class tnlMeshEntityInitializerLayer< MeshConfig,
       IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >( entity );
       OrientationArrayType &subentityOrientationsArray = InitializerType::template subentityOrientationsArray< DimensionsTag >( entity );
       for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
-      {         
+      {
          //cout << "    Adding subentity " << subentityIdsArray[ i ] << endl;
          GlobalIndexType subentityIndex = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
          subentityIdsArray[ i ] = subentityIndex;
@@ -245,14 +239,14 @@ class tnlMeshEntityInitializerLayer< MeshConfig,
             template getSuperentityInitializer< DimensionsTag >().
                addSuperentity( EntityDimensionsTag(), subentityIdsArray[ i ], entityIndex );
       }
-      
+ 
       BaseType::initSubentities( entity, entityIndex, entitySeed, meshInitializer );
    }
 };
 
 /****
  *       Mesh entity initializer layer with specializations
- * 
+ *
  *  SUBENTITY STORAGE     SUBENTITY ORIENTATION    SUPERENTITY STORAGE
  *      TRUE                    TRUE                    FALSE
  */
@@ -298,9 +292,9 @@ class tnlMeshEntityInitializerLayer< MeshConfig,
       IdArrayType& subentityIdsArray = InitializerType::template subentityIdsArray< DimensionsTag >( entity );
       OrientationArrayType &subentityOrientationsArray = InitializerType::template subentityOrientationsArray< DimensionsTag >( entity );
       for( LocalIndexType i = 0; i < subentitySeeds.getSize(); i++ )
-      {         
+      {
          //cout << "    Adding subentity " << subentityIdsArray[ i ] << endl;
-         subentityIdsArray[ i ] = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );         
+         subentityIdsArray[ i ] = meshInitializer.findEntitySeedIndex( subentitySeeds[ i ] );
          subentityOrientationsArray[ i ] = meshInitializer.template getReferenceOrientation< DimensionsTag >( subentitySeeds[ i ] ).createOrientation( subentitySeeds[ i ] );
       }
       BaseType::initSubentities( entity, entityIndex, entitySeed, meshInitializer );
@@ -392,7 +386,7 @@ class tnlMeshEntityInitializerLayer< MeshConfig,
 
 
    protected:
-      
+ 
       static void initSubentities( EntityType& entity, GlobalIndexType entityIndex, const SeedType& entitySeed,
                                    InitializerType& meshInitializer )
       {
@@ -452,7 +446,7 @@ class tnlMeshEntityInitializerLayer< MeshConfig,
 
 
    protected:
-      
+ 
       static void initSubentities( EntityType& entity, GlobalIndexType entityIndex, const SeedType& entitySeed,
                                    InitializerType& meshInitializer )
       {
@@ -490,10 +484,10 @@ class tnlMeshEntityInitializerLayer< MeshConfig,
 
 
    protected:
-   
+ 
       static void initSubentities( EntityType& entity, GlobalIndexType entityIndex, const SeedType& entitySeed,
                                    InitializerType& meshInitializer ) {};
-   
+ 
 };
 
 template< typename MeshConfig,
@@ -545,5 +539,4 @@ class tnlMeshEntityInitializerLayer< MeshConfig,
                          InitializerType& ) {}
 };
 
-
-#endif /* TNLMESHENTITYINITIALIZER_H_ */
+} // namespace TNL

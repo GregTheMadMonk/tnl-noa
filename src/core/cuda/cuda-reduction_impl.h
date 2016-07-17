@@ -6,17 +6,11 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef CUDA_REDUCTION_IMPL_H_
-#define CUDA_REDUCTION_IMPL_H_
+#pragma once 
+
+namespace TNL {
 
 //#define CUDA_REDUCTION_PROFILING
 
@@ -69,24 +63,24 @@ typename Operation::IndexType reduceOnCudaDevice( Operation& operation,
    typedef typename Operation::IndexType IndexType;
    typedef typename Operation::RealType RealType;
    typedef typename Operation::ResultType ResultType;
-   
-   const IndexType desGridSize( minGPUReductionDataSize );   
-   dim3 blockSize( 256 ), gridSize( 0 );   
+ 
+   const IndexType desGridSize( minGPUReductionDataSize );
+   dim3 blockSize( 256 ), gridSize( 0 );
    gridSize.x = Min( tnlCuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
-  
+ 
    // create reference to the reduction buffer singleton and set default size
    tnlCudaReductionBuffer & cudaReductionBuffer = tnlCudaReductionBuffer::getInstance( 8 * minGPUReductionDataSize );
-   
+ 
    //tnlCudaReductionBuffer cudaReductionBuffer( 8 * minGPUReductionDataSize );
    if( ! cudaReductionBuffer.setSize( gridSize.x * sizeof( ResultType ) ) )
       return false;
-   output = cudaReductionBuffer.template getData< ResultType >();      
+   output = cudaReductionBuffer.template getData< ResultType >();
    IndexType shmem = blockSize.x * sizeof( ResultType );
-   
+ 
    /***
     * Depending on the blockSize we generate appropriate template instance.
     */
-   switch( blockSize.x )         
+   switch( blockSize.x )
    {
       case 512:
          tnlCUDAReductionKernel< Operation, 512 >
@@ -147,18 +141,18 @@ bool reductionOnCudaDevice( Operation& operation,
    typedef typename Operation::RealType RealType;
    typedef typename Operation::ResultType ResultType;
    typedef typename Operation::LaterReductionOperation LaterReductionOperation;
-   
+ 
    /***
     * First check if the input array(s) is/are large enough for the reduction on GPU.
     * Otherwise copy it/them to host and reduce on CPU.
-    */   
+    */
    RealType hostArray1[ minGPUReductionDataSize ];
    RealType hostArray2[ minGPUReductionDataSize ];
    if( size <= minGPUReductionDataSize )
    {
       if( ! tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< RealType, RealType, IndexType >( hostArray1, deviceInput1, size ) )
          return false;
-      if( deviceInput2 && ! 
+      if( deviceInput2 && !
           tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, size ) )
          return false;
       result = operation.initialValue();
@@ -171,11 +165,11 @@ bool reductionOnCudaDevice( Operation& operation,
       tnlTimerRT timer;
       timer.reset();
       timer.start();
-   #endif   
+   #endif
 
    /****
     * Reduce the data on the CUDA device.
-    */      
+    */
    ResultType* deviceAux1( 0 );
    IndexType reducedSize = reduceOnCudaDevice( operation,
                                                size,
@@ -187,7 +181,7 @@ bool reductionOnCudaDevice( Operation& operation,
       cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getTime() << " sec. " << endl;
       timer.reset();
       timer.start();
-   #endif   
+   #endif
 
    /***
     * Transfer the reduced data from device to host.
@@ -195,30 +189,30 @@ bool reductionOnCudaDevice( Operation& operation,
    ResultType resultArray[ minGPUReductionDataSize ];
    if( ! tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
       return false;
-   
-   #ifdef CUDA_REDUCTION_PROFILING   
+ 
+   #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
       cout << "   Transferring data to CPU took " << timer.getTime() << " sec. " << endl;
-   #endif   
+   #endif
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.reset();
       timer.start();
-   #endif      
-   
+   #endif
+ 
    /***
     * Reduce the data on the host system.
-    */    
+    */
    LaterReductionOperation laterReductionOperation;
    result = laterReductionOperation. initialValue();
    for( IndexType i = 0; i < reducedSize; i ++ )
       result = laterReductionOperation.reduceOnHost( i, result, resultArray, ( ResultType*) 0 );
-   
+ 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
       cout << "   Reduction of small data set on CPU took " << timer.getTime() << " sec. " << endl;
-   #endif 
-   
+   #endif
+ 
    return checkCudaDevice;
 #else
    tnlCudaSupportMissingMessage;;
@@ -1715,4 +1709,4 @@ extern template bool reductionOnCudaDevice< tnlParallelReductionDiffLpNorm< long
 
 #endif /* TEMPLATE_EXPLICIT_INSTANTIATION */
 
-#endif /* CUDA_REDUCTION_IMPL_H_ */
+} // namespace TNL

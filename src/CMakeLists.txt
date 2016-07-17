@@ -10,6 +10,8 @@ ADD_SUBDIRECTORY( problems )
 ADD_SUBDIRECTORY( solvers )
 ADD_SUBDIRECTORY( legacy )
 
+set (headers tnlObject.h )
+
 set( tnl_SOURCES ${tnl_functions_SOURCES}
                  ${tnl_config_SOURCES}
                  ${tnl_core_SOURCES}
@@ -19,6 +21,7 @@ set( tnl_SOURCES ${tnl_functions_SOURCES}
                  ${tnl_operators_SOURCES}
                  ${tnl_solvers_SOURCES}
                  ${tnl_problems_SOURCES}
+                 tnlObject.cpp
                   )
 
 set( tnl_CUDA__SOURCES ${tnl_functions_CUDA__SOURCES}
@@ -77,5 +80,7 @@ IF( BUILD_MPI )
    INSTALL( TARGETS tnl-mpi${debugExt}-${tnlVersion} DESTINATION lib )
                                                                 
 ENDIF()
+
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion} )
 
 

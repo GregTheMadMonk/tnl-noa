@@ -6,21 +6,15 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHFUNCTIONEVALUATOR_H
-#define	TNLMESHFUNCTIONEVALUATOR_H
+#pragma once
 
 #include <mesh/tnlGrid.h>
 #include <functions/tnlMeshFunction.h>
 #include <functions/tnlOperatorFunction.h>
+
+namespace TNL {
 
 template< typename OutMeshFunction,
           typename InFunction,
@@ -48,32 +42,32 @@ class tnlMeshFunctionEvaluator : public tnlDomain< OutMeshFunction::getEntitiesD
       typedef typename OutMeshFunction::RealType RealType;
       typedef tnlMeshFunctionEvaluatorTraverserUserData< OutMeshFunction, InFunction, RealType > TraverserUserData;
 
-      
+ 
       const static int meshEntityDimensions = OutMeshFunction::getEntitiesDimensions();
-      
-      static_assert( MeshType::meshDimensions == InFunction::getDimensions(), 
+ 
+      static_assert( MeshType::meshDimensions == InFunction::getDimensions(),
          "Input function and the mesh of the mesh function have both different number of dimensions." );
-      
+ 
       static void evaluate( OutMeshFunction& meshFunction,
-                            const InFunction& function,                          
+                            const InFunction& function,
                             const RealType& time = 0.0,
                             const RealType& outFunctionMultiplicator = 0.0,
                             const RealType& inFunctionMultiplicator = 1.0 );
 
       static void evaluateAllEntities( OutMeshFunction& meshFunction,
-                                       const InFunction& function,                          
+                                       const InFunction& function,
                                        const RealType& time = 0.0,
                                        const RealType& outFunctionMultiplicator = 0.0,
                                        const RealType& inFunctionMultiplicator = 1.0 );
-      
+ 
       static void evaluateInteriorEntities( OutMeshFunction& meshFunction,
-                                            const InFunction& function,                          
+                                            const InFunction& function,
                                             const RealType& time = 0.0,
                                             const RealType& outFunctionMultiplicator = 0.0,
                                             const RealType& inFunctionMultiplicator = 1.0 );
 
       static void evaluateBoundaryEntities( OutMeshFunction& meshFunction,
-                                            const InFunction& function,                          
+                                            const InFunction& function,
                                             const RealType& time = 0.0,
                                             const RealType& outFunctionMultiplicator = 0.0,
                                             const RealType& inFunctionMultiplicator = 1.0 );
@@ -81,16 +75,16 @@ class tnlMeshFunctionEvaluator : public tnlDomain< OutMeshFunction::getEntitiesD
    protected:
 
       enum EntitiesType { all, boundary, interior };
-      
+ 
       static void evaluateEntities( OutMeshFunction& meshFunction,
-                                    const InFunction& function,                          
+                                    const InFunction& function,
                                     const RealType& time,
                                     const RealType& outFunctionMultiplicator,
                                     const RealType& inFunctionMultiplicator,
                                     EntitiesType entitiesType );
 
-      
-}; 
+ 
+};
 
 template< typename OutMeshFunction,
           typename InFunction,
@@ -106,11 +100,11 @@ class tnlMeshFunctionEvaluatorTraverserUserData
                                                  OutMeshFunction* meshFunction,
                                                  const Real* outFunctionMultiplicator,
                                                  const Real* inFunctionMultiplicator )
-      : meshFunction( meshFunction ), function( function ), time( time ), 
+      : meshFunction( meshFunction ), function( function ), time( time ),
         outFunctionMultiplicator( outFunctionMultiplicator ),
         inFunctionMultiplicator( inFunctionMultiplicator ){}
 
-      OutMeshFunction* meshFunction;            
+      OutMeshFunction* meshFunction;
       const InFunction* function;
       const Real *time, *outFunctionMultiplicator, *inFunctionMultiplicator;
 
@@ -118,7 +112,7 @@ class tnlMeshFunctionEvaluatorTraverserUserData
 
 
 template< typename MeshType,
-          typename UserData > 
+          typename UserData >
 class tnlMeshFunctionEvaluatorAssignmentEntitiesProcessor
 {
    public:
@@ -130,18 +124,18 @@ class tnlMeshFunctionEvaluatorAssignmentEntitiesProcessor
                                         const EntityType& entity )
       {
          typedef tnlFunctionAdapter< MeshType, typename UserData::InFunctionType > FunctionAdapter;
-         ( *userData.meshFunction )( entity ) = 
+         ( *userData.meshFunction )( entity ) =
             *userData.inFunctionMultiplicator *
             FunctionAdapter::getValue( *userData.function, entity, *userData.time );
-         /*cerr << "Idx = " << entity.getIndex() 
-            << " Value = " << FunctionAdapter::getValue( *userData.function, entity, *userData.time ) 
+         /*cerr << "Idx = " << entity.getIndex()
+            << " Value = " << FunctionAdapter::getValue( *userData.function, entity, *userData.time )
             << " stored value = " << ( *userData.meshFunction )( entity )
             << " multiplicators = " << endl;*/
       }
 };
 
 template< typename MeshType,
-          typename UserData > 
+          typename UserData >
 class tnlMeshFunctionEvaluatorAdditionEntitiesProcessor
 {
    public:
@@ -153,19 +147,18 @@ class tnlMeshFunctionEvaluatorAdditionEntitiesProcessor
                                         const EntityType& entity )
       {
          typedef tnlFunctionAdapter< MeshType, typename UserData::InFunctionType > FunctionAdapter;
-         ( *userData.meshFunction )( entity ) = 
+         ( *userData.meshFunction )( entity ) =
             *userData.outFunctionMultiplicator * ( *userData.meshFunction )( entity ) +
             *userData.inFunctionMultiplicator *
             FunctionAdapter::getValue( *userData.function, entity, *userData.time );
-         /*cerr << "Idx = " << entity.getIndex() 
-            << " Value = " << FunctionAdapter::getValue( *userData.function, entity, *userData.time ) 
+         /*cerr << "Idx = " << entity.getIndex()
+            << " Value = " << FunctionAdapter::getValue( *userData.function, entity, *userData.time )
             << " stored value = " << ( *userData.meshFunction )( entity )
             << " multiplicators = " << endl;*/
       }
 };
 
+} // namespace TNL
 
 #include <functions/tnlMeshFunctionEvaluator_impl.h>
-
-#endif	/* TNLMESHFUNCTIONEVALUATOR_H */
 

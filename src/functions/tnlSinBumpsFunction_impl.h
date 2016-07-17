@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSINBUMPSFUNCTION_IMPL_H_
-#define TNLSINBUMPSFUNCTION_IMPL_H_
+#pragma once
 
 #include <functions/tnlSinBumpsFunction.h>
+
+namespace TNL {
 
 template< typename Vertex >
 void tnlSinBumpsFunctionBase< Vertex >::setWaveLength( const Vertex& waveLength )
@@ -245,5 +239,5 @@ operator()( const VertexType& v,
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
+} // namespace TNL
 
-#endif /* TNLSINBUMPSFUNCTION_IMPL_H_ */

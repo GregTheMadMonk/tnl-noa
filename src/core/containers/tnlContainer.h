@@ -6,20 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCONTAINER_H_
-#define TNLCONTAINER_H_
+#pragma once
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/arrays/tnlArray.h>
+
+namespace TNL {
 
 template< typename Element, typename Device = tnlHost, typename Index = int >
 class tnlContainer : public tnlObject
@@ -59,6 +53,6 @@ class tnlContainer : public tnlObject
    tnlArray< Element, Device, Index > data;
 };
 
-#include <core/containers/tnlContainer_impl.h>
+} // namespace TNL
 
-#endif /* TNLCONTAINER_H_ */
+#include <core/containers/tnlContainer_impl.h>

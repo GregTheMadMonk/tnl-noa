@@ -6,17 +6,11 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICVECTOR1D_IMPL_H_
-#define TNLSTATICVECTOR1D_IMPL_H_
+#pragma once 
+
+namespace TNL {
 
 template< typename Real >
 __cuda_callable__
@@ -151,7 +145,7 @@ tnlStaticVector< 1, Real >
 tnlStaticVector< 1, Real >::abs() const
 {
    return tnlStaticVector< 1, Real >( tnlAbs( this->data[ 0 ] ) );
-} 
+}
 
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -168,4 +162,4 @@ extern template class tnlStaticVector< 1, long double >;
 
 #endif
 
-#endif /* TNLSTATICVECTOR1D_IMPL_H_ */
+} // namespace TNL

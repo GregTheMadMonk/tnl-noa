@@ -6,22 +6,16 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLFLOWERPOTFUNCTION_H_
-#define TNLFLOWERPOTFUNCTION_H_
+#pragma once
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlDomain.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 template< typename Real,
           int Dimensions >
@@ -72,15 +66,15 @@ class tnlFlowerpotFunction< 1, Real > : public tnlFlowerpotFunctionBase< Real, 1
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
-#endif   
+#endif
       __cuda_callable__
       RealType getPartialDerivative( const Vertex& v,
                                      const Real& time = 0.0 ) const;
-      
+ 
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
-      
+ 
 };
 
 template< typename Real >
@@ -110,11 +104,11 @@ class tnlFlowerpotFunction< 2, Real > : public tnlFlowerpotFunctionBase< Real, 2
       __cuda_callable__
       RealType getPartialDerivative( const Vertex& v,
                                      const Real& time = 0.0 ) const;
-      
+ 
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
-      
+ 
 };
 
 template< typename Real >
@@ -140,15 +134,15 @@ class tnlFlowerpotFunction< 3, Real > : public tnlFlowerpotFunctionBase< Real, 3
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0,
                 typename Vertex = VertexType >
-#endif   
+#endif
       __cuda_callable__
       RealType getPartialDerivative( const Vertex& v,
                                      const Real& time = 0.0 ) const;
-      
+ 
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
-      
+ 
 };
 
 template< int Dimensions,
@@ -159,7 +153,7 @@ ostream& operator << ( ostream& str, const tnlFlowerpotFunction< Dimensions, Rea
    return str;
 }
 
+} // namespace TNL
+
 #include <functions/initial_conditions/tnlFlowerpotFunction_impl.h>
 
-
-#endif /* TNLFLOWERPOTFUNCTION_H_ */

@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSHAREDVECTOR_H_IMPLEMENTATION
-#define TNLSHAREDVECTOR_H_IMPLEMENTATION
+#pragma once
 
 #include <core/vectors/tnlVectorOperations.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -412,10 +406,10 @@ extern template class tnlSharedVector< double, tnlCuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
 extern template class tnlSharedVector< long double, tnlCuda, long int >;
 #endif
- #endif 
+ #endif
  */
 #endif
 
 #endif
 
-#endif /* TNLSHAREDVECTOR_H_IMPLEMENTATION */
+} // namespace TNL

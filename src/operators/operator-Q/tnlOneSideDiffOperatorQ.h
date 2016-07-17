@@ -1,9 +1,20 @@
-#ifndef TNLONESIDEDIFFOPERATORQ_H
-#define	TNLONESIDEDIFFOPERATORQ_H
+/***************************************************************************
+                          tnlOneSidedDiffOperatorQ.h  -  description
+                             -------------------
+    begin                : Jan 25, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
 
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlSharedVector.h>
 #include <mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -123,7 +134,6 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, 
    RealType eps, epsSquare;
 };
 
+} // namespace TNL
+
 #include <operators/operator-Q/tnlOneSideDiffOperatorQ_impl.h>
-
-
-#endif	/* TNLONESIDEDIFFOPERATORQ_H */

@@ -6,17 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLPDESOLVER_IMPL_H_
 #define TNLPDESOLVER_IMPL_H_
+
+#include "tnlPDESolver.h"
+
 
 template< typename Problem,
           typename TimeStepper >
@@ -29,10 +25,8 @@ tnlPDESolver()
   timeStep( 1.0 ),
   timeStepOrder( 0.0 ),
   problem( 0 ),
-  ioRtTimer( 0 ),
-  computeRtTimer( 0 ),
-  ioCpuTimer( 0 ),
-  computeCpuTimer( 0 )
+  ioTimer( 0 ),
+  computeTimer( 0 )
 {
 }
 
@@ -86,13 +80,13 @@ setup( const tnlParameterContainer& parameters,
    cout << " [ OK ]" << endl;
    this->dofs.setValue( 0.0 );
    this->problem->bindDofs( this->mesh, this->dofs );
-   
+ 
    /****
     * Set mesh dependent data
     */
    this->problem->setMeshDependentData( this->mesh, this->meshDependentData );
    this->problem->bindMeshDependentData( this->mesh, this->meshDependentData );
-   
+ 
    /***
     * Set-up the initial condition
     */
@@ -253,7 +247,7 @@ setTimeStep( const RealType& timeStep )
    this->timeStep = timeStep;
    return true;
 }
-   
+ 
 template< typename Problem,
           typename TimeStepper >
 const typename TimeStepper::RealType&
@@ -288,27 +282,15 @@ getTimeStepOrder() const
 }
 
 template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper > :: setIoRtTimer( tnlTimerRT& ioRtTimer )
+void tnlPDESolver< Problem, TimeStepper > :: setIoTimer( tnlTimer& ioTimer )
 {
-   this->ioRtTimer = &ioRtTimer;
+   this->ioTimer = &ioTimer;
 }
 
 template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper > :: setComputeRtTimer( tnlTimerRT& computeRtTimer )
+void tnlPDESolver< Problem, TimeStepper > :: setComputeTimer( tnlTimer& computeTimer )
 {
-   this->computeRtTimer = &computeRtTimer;
-}
-
-template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper > :: setIoCpuTimer( tnlTimerCPU& ioCpuTimer )
-{
-   this->ioCpuTimer = &ioCpuTimer;
-}
-
-template< typename Problem, typename TimeStepper >
-void tnlPDESolver< Problem, TimeStepper > :: setComputeCpuTimer( tnlTimerCPU& computeCpuTimer )
-{
-   this->computeCpuTimer = & computeCpuTimer;
+   this->computeTimer = &computeTimer;
 }
 
 template< typename Problem, typename TimeStepper >
@@ -330,23 +312,17 @@ solve()
    IndexType step( 0 );
    IndexType allSteps = ceil( ( this->finalTime - this->initialTime ) / this->snapshotPeriod );
 
-   this->ioRtTimer->reset();
-   this->ioCpuTimer->reset();
-   this->computeRtTimer->reset();
-   this->computeCpuTimer->reset();
-   
-   this->ioRtTimer->start();
-   this->ioCpuTimer->start();
+   this->ioTimer->reset();
+   this->computeTimer->reset();
+ 
+   this->ioTimer->start();
    if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->meshDependentData ) )
    {
       cerr << "Making the snapshot failed." << endl;
       return false;
    }
-
-   this->ioRtTimer->stop();
-   this->ioCpuTimer->stop();
-   this->computeRtTimer->start();
-   this->computeCpuTimer->start();
+   this->ioTimer->stop();
+   this->computeTimer->start();
 
    /****
     * Initialize the time stepper
@@ -363,22 +339,17 @@ solve()
       step ++;
       t += tau;
 
-      this->ioRtTimer->start();
-      this->ioCpuTimer->start();
-      this->computeRtTimer->stop();
-      this->computeCpuTimer->stop();
-
+      this->ioTimer->start();
+      this->computeTimer->stop();
       if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->meshDependentData ) )
       {
          cerr << "Making the snapshot failed." << endl;
          return false;
       }
-
-      this->ioRtTimer->stop();
-      this->ioCpuTimer->stop();
-      this->computeRtTimer->start();
-      this->computeCpuTimer->start();
+      this->ioTimer->stop();
+      this->computeTimer->start();
    }
+   this->computeTimer->stop();
    return true;
 }
 
@@ -387,7 +358,8 @@ bool
 tnlPDESolver< Problem, TimeStepper >::
 writeEpilog( tnlLogger& logger ) const
 {
-   return this->timeStepper->writeEpilog( logger );
+   return ( this->timeStepper->writeEpilog( logger ) &&
+      this->problem->writeEpilog( logger ) );
 }
 
 #endif /* TNLPDESOLVER_IMPL_H_ */

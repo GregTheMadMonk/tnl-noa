@@ -1,5 +1,15 @@
-#ifndef TNLFINITEVOLUMENONLINEAROPERATOR_H
-#define	TNLFINITEVOLUMENONLINEAROPERATOR_H
+/***************************************************************************
+                          tnlTraverser.h  -  description
+                             -------------------
+    begin                : Feb 17, 2016
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
+
+namespace TNL {
 
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
@@ -52,7 +62,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >
              typename Vector,
              typename Matrix >
    __cuda_callable__
-      void updateLinearSystem( const RealType& time,
+      void setMatrixElements( const RealType& time,
                                const RealType& tau,
                                const MeshType& mesh,
                                const IndexType& index,
@@ -106,7 +116,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex 
              typename Vector,
              typename Matrix >
    __cuda_callable__
-      void updateLinearSystem( const RealType& time,
+      void setMatrixElements( const RealType& time,
                                const RealType& tau,
                                const MeshType& mesh,
                                const IndexType& index,
@@ -158,7 +168,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex 
              typename Vector,
              typename Matrix >
    __cuda_callable__
-      void updateLinearSystem( const RealType& time,
+      void setMatrixElements( const RealType& time,
                                const RealType& tau,
                                const MeshType& mesh,
                                const IndexType& index,
@@ -172,8 +182,6 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex 
    OperatorQ operatorQ;
 };
 
+} //namespace TNL
 
 #include "tnlFiniteVolumeNonlinearOperator_impl.h"
-
-
-#endif	/* TNLFINITEVOLUMENONLINEAROPERATOR_H */

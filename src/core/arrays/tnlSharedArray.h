@@ -6,20 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSHAREDARRAY_H_
-#define TNLSHAREDARRAY_H_
+#pragma once 
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 class tnlFile;
 class tnlHost;
@@ -126,10 +120,10 @@ class tnlSharedArray : public tnlObject
 #ifdef HAVE_NOT_CXX11
    template< typename IndexType2 >
    void touch( IndexType2 touches = 1 ) const;
-#else   
+#else
    template< typename IndexType2 = Index >
    void touch( IndexType2 touches = 1 ) const;
-#endif   
+#endif
 
    //! Method for saving the object to a file as a binary data.
    bool save( tnlFile& file ) const;
@@ -152,6 +146,6 @@ class tnlSharedArray : public tnlObject
 template< typename Element, typename Device, typename Index >
 ostream& operator << ( ostream& str, const tnlSharedArray< Element, Device, Index >& v );
 
-#include <core/arrays/tnlSharedArray_impl.h>
+} // namespace TNL
 
-#endif /* TNLSHAREDARRAY_H_ */
+#include <core/arrays/tnlSharedArray_impl.h>

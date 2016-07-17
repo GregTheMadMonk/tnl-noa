@@ -6,20 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICARRAY_H_
-#define TNLSTATICARRAY_H_
+#pragma once 
 
 #include <core/tnlString.h>
 #include <core/tnlFile.h>
+
+namespace TNL {
 
 //! Aliases for the coordinates
 // TODO: Remove this - it is here only because of some legact code
@@ -78,7 +72,7 @@ class tnlStaticArray
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
-         
+ 
    template< typename OtherElement >
    __cuda_callable__
    operator tnlStaticArray< Size, OtherElement >() const;
@@ -91,7 +85,7 @@ class tnlStaticArray
    bool load( tnlFile& file);
 
    void sort();
-   
+ 
    ostream& write( ostream& str, const char* separator = " " ) const;
 
    protected:
@@ -159,10 +153,10 @@ class tnlStaticArray< 1, Element >
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
-   
+ 
    template< typename OtherElement >
    __cuda_callable__
-   operator tnlStaticArray< 1, OtherElement >() const;   
+   operator tnlStaticArray< 1, OtherElement >() const;
 
    __cuda_callable__
    inline
@@ -173,7 +167,7 @@ class tnlStaticArray< 1, Element >
    bool load( tnlFile& file);
 
    void sort();
-   
+ 
    ostream& write( ostream& str, const char* separator = " " ) const;
 
    protected:
@@ -252,11 +246,11 @@ class tnlStaticArray< 2, Element >
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
-   
+ 
    template< typename OtherElement >
    __cuda_callable__
-   operator tnlStaticArray< 2, OtherElement >() const;   
-   
+   operator tnlStaticArray< 2, OtherElement >() const;
+ 
    __cuda_callable__
    inline void setValue( const ElementType& val );
 
@@ -265,7 +259,7 @@ class tnlStaticArray< 2, Element >
    bool load( tnlFile& file);
 
    void sort();
-   
+ 
    ostream& write( ostream& str, const char* separator = " " ) const;
 
    protected:
@@ -352,7 +346,7 @@ class tnlStaticArray< 3, Element >
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
-   
+ 
    template< typename OtherElement >
    __cuda_callable__
    operator tnlStaticArray< 3, OtherElement >() const;
@@ -365,7 +359,7 @@ class tnlStaticArray< 3, Element >
    bool load( tnlFile& file);
 
    void sort();
-   
+ 
    ostream& write( ostream& str, const char* separator = " " ) const;
 
    protected:
@@ -376,9 +370,10 @@ class tnlStaticArray< 3, Element >
 template< int Size, typename Element >
 ostream& operator << ( ostream& str, const tnlStaticArray< Size, Element >& a );
 
+} // namespace TNL
+
 #include <core/arrays/tnlStaticArray_impl.h>
 #include <core/arrays/tnlStaticArray1D_impl.h>
 #include <core/arrays/tnlStaticArray2D_impl.h>
 #include <core/arrays/tnlStaticArray3D_impl.h>
 
-#endif /* TNLSTATICARRAY_H_ */

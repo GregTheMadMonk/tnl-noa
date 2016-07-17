@@ -6,23 +6,17 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCONSTANTS_H
-#define	TNLCONSTANTS_H
+#pragma once
 
 #include <limits.h>
 #include <float.h>
 #include <cstdio>
 #include <core/tnlAssert.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 template< typename T > __cuda_callable__ T tnlMinValue(){ tnlAssert( false,)};
 template<> inline __cuda_callable__ char               tnlMinValue< char >() { return CHAR_MIN; }
@@ -50,8 +44,5 @@ template<> inline __cuda_callable__ float              tnlMaxValue< float >() { 
 template<> inline __cuda_callable__ double             tnlMaxValue< double >() { return DBL_MAX; }
 template<> inline __cuda_callable__ long double        tnlMaxValue< long double >() { return LDBL_MAX; }
 
-
-
-
-#endif	/* TNLCONSTANTS_H */
+} // namespace TNL
 

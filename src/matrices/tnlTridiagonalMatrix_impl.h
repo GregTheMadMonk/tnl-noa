@@ -6,20 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTRIDIAGONALMATRIX_IMPL_H_
-#define TNLTRIDIAGONALMATRIX_IMPL_H_
+#pragma once
 
 #include <core/tnlAssert.h>
 #include <matrices/tnlTridiagonalMatrix.h>
+
+namespace TNL {
 
 template< typename Device >
 class tnlTridiagonalMatrixDeviceDependentCode;
@@ -445,7 +439,7 @@ void tnlTridiagonalMatrix< Real, Device, Index >::addMatrix( const tnlTridiagona
 template< typename Real,
           typename Real2,
           typename Index,
-          typename Index2 >          
+          typename Index2 >
 __global__ void tnlTridiagonalMatrixTranspositionCudaKernel( const tnlTridiagonalMatrix< Real2, tnlCuda, Index2 >* inMatrix,
                                                              tnlTridiagonalMatrix< Real, tnlCuda, Index >* outMatrix,
                                                              const Real matrixMultiplicator,
@@ -654,8 +648,8 @@ class tnlTridiagonalMatrixDeviceDependentCode< tnlHost >
                                  OutVector& outVector )
       {
 #ifdef HAVE_OPENMP
-#pragma omp parallel for if( tnlOmp::isEnabled() )
-#endif           
+#pragma omp parallel for if( tnlHost::isOMPEnabled() )
+#endif
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
       }
@@ -665,7 +659,7 @@ template<>
 class tnlTridiagonalMatrixDeviceDependentCode< tnlCuda >
 {
    public:
-      
+ 
       typedef tnlCuda Device;
 
       template< typename Index >
@@ -710,6 +704,4 @@ class tnlTridiagonalMatrixDeviceDependentCode< tnlCuda >
       }
 };
 
-
-
-#endif /* TNLTRIDIAGONALMATRIX_IMPL_H_ */
+} // namespace TNL

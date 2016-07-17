@@ -6,47 +6,35 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUDA_IMPL_H_
-#define TNLCUDA_IMPL_H_
+#pragma once
 
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+#include <core/tnlCuda.h>
+
+namespace TNL {
+
+__cuda_callable__ 
 inline tnlDeviceEnum tnlCuda::getDevice()
 {
    return tnlCudaDevice;
 };
 
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__ 
 inline int tnlCuda::getMaxGridSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
-   return 65536;
+   return 65535;
 };
 
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 inline int tnlCuda::getMaxBlockSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 1024;
 };
 
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__ 
 inline int tnlCuda::getWarpSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
@@ -62,9 +50,7 @@ __device__ Index tnlCuda::getGlobalThreadIdx( const Index gridIdx )
 #endif
 
 
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__ 
 inline int tnlCuda::getNumberOfSharedMemoryBanks()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
@@ -112,7 +98,7 @@ ObjectType tnlCuda::passFromDevice( const ObjectType* object )
 #else
    tnlAssert( false, cerr << "CUDA support is missing." );
    return 0;
-#endif      
+#endif
 }
 
 template< typename ObjectType >
@@ -127,7 +113,7 @@ void tnlCuda::passFromDevice( const ObjectType* deviceObject,
    checkCudaDevice;
 #else
    tnlAssert( false, cerr << "CUDA support is missing." );
-#endif      
+#endif
 }
 
 template< typename ObjectType >
@@ -144,12 +130,12 @@ void tnlCuda::print( const ObjectType* deviceObject, ostream& str )
 template< typename ObjectType >
 void tnlCuda::freeFromDevice( ObjectType* deviceObject )
 {
-#ifdef HAVE_CUDA   
+#ifdef HAVE_CUDA
    cudaFree( deviceObject );
    checkCudaDevice;
 #else
    tnlAssert( false, cerr << "CUDA support is missing." );
-#endif      
+#endif
 }
 
 #ifdef HAVE_CUDA
@@ -180,6 +166,4 @@ __device__ inline getSharedMemory< long int >::operator long int*()
 
 #endif /* HAVE_CUDA */
 
-
-
-#endif /* TNLCUDA_IMPL_H_ */
+} // namespace TNL

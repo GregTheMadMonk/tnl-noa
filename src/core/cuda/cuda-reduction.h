@@ -6,17 +6,11 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef CUDA_REDUCTION_H_
-#define CUDA_REDUCTION_H_
+#pragma once 
+
+namespace TNL {
 
 template< typename Operation >
 bool reductionOnCudaDevice( const Operation& operation,
@@ -25,6 +19,7 @@ bool reductionOnCudaDevice( const Operation& operation,
                             const typename Operation :: RealType* deviceInput2,
                             typename Operation :: ResultType& result );
 
+} // namespace TNL
+
 #include <core/cuda/cuda-reduction_impl.h>
 
-#endif /* CUDA_REDUCTION_H_ */

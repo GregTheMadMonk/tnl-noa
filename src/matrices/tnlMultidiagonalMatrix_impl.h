@@ -6,21 +6,15 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMULTIDIAGONALMATRIX_IMPL_H_
-#define TNLMULTIDIAGONALMATRIX_IMPL_H_
+#pragma once
 
 #include <matrices/tnlMultidiagonalMatrix.h>
 #include <core/vectors/tnlVector.h>
 #include <core/mfuncs.h>
+
+namespace TNL {
 
 template< typename Device >
 class tnlMultidiagonalMatrixDeviceDependentCode;
@@ -735,8 +729,8 @@ class tnlMultidiagonalMatrixDeviceDependentCode< tnlHost >
                                  OutVector& outVector )
       {
 #ifdef HAVE_OPENMP
-#pragma omp parallel for if( tnlOmp::isEnabled() )
-#endif           
+#pragma omp parallel for if( tnlHost::isOMPEnabled() )
+#endif
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
       }
@@ -771,5 +765,4 @@ class tnlMultidiagonalMatrixDeviceDependentCode< tnlCuda >
       }
 };
 
-
-#endif /* TNLMULTIDIAGONALMATRIX_IMPL_H_ */
+} // namespace TNL

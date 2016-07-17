@@ -2,32 +2,29 @@
                           tnlDicomHeader_impl.h  -  description
                              -------------------
     begin                : Jul 19, 2015
-    copyright            : (C) 2015 by Tomas Oberhuber et al.                                       
-     
+    copyright            : (C) 2015 by Tomas Oberhuber et al.
+ 
      Tomas Oberhuber     tomas.oberhuber@fjfi.cvut.cz
      Jiri Kafka          kafka9@seznam.cz
      Pavel Neskudla
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
 
 #include <core/images/tnlDicomHeader.h>
 #include <core/images/tnlDicomSeriesInfo.h>
 #include <core/images/tnlDicomPatientInfo.h>
 #include <core/images/tnlDicomImageInfo.h>
 
+namespace TNL {
+
 inline tnlDicomHeader::tnlDicomHeader()
 {
 #ifdef HAVE_DCMTK_H
     fileFormat = new DcmFileFormat();
-#endif    
+#endif
     isLoaded = false;
     imageInfoObj = new tnlDicomImageInfo(*this);
     patientInfoObj = new tnlDicomPatientInfo(*this);
@@ -39,9 +36,9 @@ inline tnlDicomHeader::~tnlDicomHeader()
     delete imageInfoObj;
     delete patientInfoObj;
     delete seriesInfoObj;
-#ifdef HAVE_DCMTK_H    
+#ifdef HAVE_DCMTK_H
     delete fileFormat;
-#endif    
+#endif
 }
 
 inline bool tnlDicomHeader::loadFromFile( const tnlString& fileName )
@@ -53,7 +50,7 @@ inline bool tnlDicomHeader::loadFromFile( const tnlString& fileName )
         isLoaded = true;
         return true;
     }
-#endif    
+#endif
     isLoaded = false;
     return false;
 }
@@ -79,4 +76,6 @@ inline tnlDicomSeriesInfo &tnlDicomHeader::getSeriesInfo()
 {
     return *seriesInfoObj;
 }
+
+} // namespace TNL
 

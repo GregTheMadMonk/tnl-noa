@@ -6,20 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSPARSEMATRIX_H_
-#define TNLSPARSEMATRIX_H_
+#pragma once
 
 #include <matrices/tnlMatrix.h>
 #include <matrices/tnlSparseMatrixRow.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -70,6 +64,6 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
    Index maxRowLength;
 };
 
-#include <matrices/tnlSparseMatrix_impl.h>
+} // namespace TNL
 
-#endif /* TNLSPARSEMATRIX_H_ */
+#include <matrices/tnlSparseMatrix_impl.h>

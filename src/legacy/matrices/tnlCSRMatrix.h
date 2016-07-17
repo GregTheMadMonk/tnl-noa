@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLCSRMATRIX_H_
 #define TNLCSRMATRIX_H_
@@ -743,9 +736,9 @@ bool tnlCSRMatrix< Real, Device, Index > :: save( tnlFile& file ) const
    if( ! row_offsets. save( file ) ) return false;
 #ifdef HAVE_NOT_CXX11
    if( ! file. write< const Index, tnlHost >( &last_nonzero_element ) )
-#else      
+#else
    if( ! file. write( &last_nonzero_element ) )
-#endif      
+#endif
       return false;
    return true;
 };
@@ -759,9 +752,9 @@ bool tnlCSRMatrix< Real, Device, Index > :: load( tnlFile& file )
    if( ! row_offsets. load( file ) ) return false;
 #ifdef HAVE_NOT_CXX11
    if( ! file. read< Index, tnlHost >( &last_nonzero_element ) )
-#else      
+#else
    if( ! file. read( &last_nonzero_element ) )
-#endif      
+#endif
       return false;
    return true;
 };
@@ -798,7 +791,7 @@ tnlCSRMatrix< Real, Device, Index >& tnlCSRMatrix< Real, Device, Index > :: oper
 
 template< typename Real, typename Device, typename Index >
 void tnlCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
-                                                      const tnlString& name, 
+                                                      const tnlString& name,
                                                       const tnlString& format,
 		                                                const Index lines ) const
 {

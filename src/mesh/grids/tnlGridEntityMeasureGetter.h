@@ -6,22 +6,16 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGRIDENTITYMEASUREGETTER_H
-#define	TNLGRIDENTITYMEASUREGETTER_H
+#pragma once
+
+namespace TNL {
 
 template< typename Grid,
           int EntityDimensions >
 class tnlGridEntityMeasureGetter
-{   
+{
 };
 
 /***
@@ -34,9 +28,9 @@ template< int Dimensions,
 class tnlGridEntityMeasureGetter< tnlGrid< Dimensions, Real, Device, Index >, 0 >
 {
    public:
-      
+ 
       typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
-            
+ 
       template< typename EntityType >
       static const Real& getMeasure( const GridType& grid,
                                      const EntityType& entity )
@@ -55,9 +49,9 @@ template< typename Real,
 class tnlGridEntityMeasureGetter< tnlGrid< 1, Real, Device, Index >, 1 >
 {
    public:
-      
+ 
       typedef tnlGrid< 1, Real, Device, Index > GridType;
-      
+ 
       template< typename EntityType >
       static const Real& getMeasure( const GridType& grid,
                                      const EntityType& entity )
@@ -75,9 +69,9 @@ template< typename Real,
 class tnlGridEntityMeasureGetter< tnlGrid< 2, Real, Device, Index >, 2 >
 {
    public:
-      
+ 
       typedef tnlGrid< 2, Real, Device, Index > GridType;
-      
+ 
       template< typename EntityType >
       static const Real& getMeasure( const GridType& grid,
                                      const EntityType& entity )
@@ -92,9 +86,9 @@ template< typename Real,
 class tnlGridEntityMeasureGetter< tnlGrid< 2, Real, Device, Index >, 1 >
 {
    public:
-      
+ 
       typedef tnlGrid< 2, Real, Device, Index > GridType;
-      
+ 
       template< typename EntityType >
       static const Real& getMeasure( const GridType& grid,
                                      const EntityType& entity )
@@ -115,9 +109,9 @@ template< typename Real,
 class tnlGridEntityMeasureGetter< tnlGrid< 3, Real, Device, Index >, 3 >
 {
    public:
-      
+ 
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      
+ 
       template< typename EntityType >
       static const Real& getMeasure( const GridType& grid,
                                      const EntityType& entity )
@@ -132,9 +126,9 @@ template< typename Real,
 class tnlGridEntityMeasureGetter< tnlGrid< 3, Real, Device, Index >, 2 >
 {
    public:
-      
+ 
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      
+ 
       template< typename EntityType >
       static const Real& getMeasure( const GridType& grid,
                                      const EntityType& entity )
@@ -154,9 +148,9 @@ template< typename Real,
 class tnlGridEntityMeasureGetter< tnlGrid< 3, Real, Device, Index >, 1 >
 {
    public:
-      
+ 
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      
+ 
       template< typename EntityType >
       static const Real& getMeasure( const GridType& grid,
                                      const EntityType& entity )
@@ -170,5 +164,5 @@ class tnlGridEntityMeasureGetter< tnlGrid< 3, Real, Device, Index >, 1 >
       }
 };
 
-#endif	/* TNLGRIDENTITYMEASUREGETTER_H */
+} // namespace TNL
 

@@ -6,31 +6,202 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHFUNCTIONVTKWRITER_H
-#define	TNLMESHFUNCTIONVTKWRITER_H
+#pragma once
+
+namespace TNL {
 
 template< typename MeshFunction >
 class tnlMeshFunctionVTKWriter
 {
    public:
-      
+ 
       static bool write( const MeshFunction& function,
-                         ostream& str )
-      {
-         std::cerr << "VTK writer for mesh functions defined on mesh type " << MeshFunction::MeshType::getType() << " is not (yet) implmeneted." << std::endl;
-         return false;
-      }
+                         ostream& str );
+      static void writeHeader(const MeshFunction& function,
+                         ostream& str ){}
 };
 
+/***
+ * 1D grid, cells
+ */
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real >
+class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 1, Real > >
+{
+   public:
+      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
-#endif	/* TNLMESHFUNCTIONVTKWRITER_H */
+      static bool write( const MeshFunctionType& function,
+                         ostream& str );
+      static void writeHeader(const MeshFunctionType& function,
+                         ostream& str );
+};
+ 
+/***
+ * 1D grid, vertices
+ */
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real >
+class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 0, Real > >
+{
+   public:
+      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef tnlMeshFunction< MeshType, 0, RealType > MeshFunctionType;
+
+      static bool write( const MeshFunctionType& function,
+                         ostream& str );
+      static void writeHeader(const MeshFunctionType& function,
+                         ostream& str );
+};
+
+/***
+ * 2D grid, cells
+ */
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real >
+class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 2, Real > >
+{
+   public:
+      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef tnlMeshFunction< MeshType, 2, RealType > MeshFunctionType;
+
+      static bool write( const MeshFunctionType& function,
+                         ostream& str );
+      static void writeHeader(const MeshFunctionType& function,
+                         ostream& str );
+};
+
+/***
+ * 2D grid, faces
+ */
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real >
+class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real > >
+{
+   public:
+      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
+
+      static bool write( const MeshFunctionType& function,
+                         ostream& str );
+      static void writeHeader(const MeshFunctionType& function,
+                         ostream& str );
+};
+
+/***
+ * 2D grid, vertices
+ */
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real >
+class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 0, Real > >
+{
+   public:
+      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef tnlMeshFunction< MeshType, 0, RealType > MeshFunctionType;
+
+      static bool write( const MeshFunctionType& function,
+                         ostream& str );
+      static void writeHeader(const MeshFunctionType& function,
+                         ostream& str );
+};
+
+/***
+ * 3D grid, cells
+ */
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real >
+class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 3, Real > >
+{
+   public:
+      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef tnlMeshFunction< MeshType, 3, RealType > MeshFunctionType;
+
+      static bool write( const MeshFunctionType& function,
+                         ostream& str );
+      static void writeHeader(const MeshFunctionType& function,
+                         ostream& str );
+};
+
+/***
+ * 3D grid, faces
+ */
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real >
+class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real > >
+{
+   public:
+      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef tnlMeshFunction< MeshType, 2, RealType > MeshFunctionType;
+
+      static bool write( const MeshFunctionType& function,
+                         ostream& str );
+      static void writeHeader(const MeshFunctionType& function,
+                         ostream& str );
+};
+
+/***
+ * 3D grid, edges
+ */
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real >
+class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 1, Real > >
+{
+   public:
+      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
+
+      static bool write( const MeshFunctionType& function,
+                         ostream& str );
+      static void writeHeader(const MeshFunctionType& function,
+                         ostream& str );
+};
+
+/***
+ * 3D grid, vertices
+ */
+template< typename MeshReal,
+          typename Device,
+          typename MeshIndex,
+          typename Real >
+class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 0, Real > >
+{
+   public:
+      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Real RealType;
+      typedef tnlMeshFunction< MeshType, 0, RealType > MeshFunctionType;
+
+      static bool write( const MeshFunctionType& function,
+                         ostream& str );
+      static void writeHeader(const MeshFunctionType& function,
+                         ostream& str );
+};
+
+} // namespace TNL
 

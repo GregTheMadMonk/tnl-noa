@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLBUILDCONFIGTAGS_H_
 #define TNLBUILDCONFIGTAGS_H_
@@ -26,6 +19,7 @@
 #include <solvers/linear/krylov/tnlBICGStabSolver.h>
 #include <solvers/linear/krylov/tnlGMRESSolver.h>
 #include <solvers/linear/krylov/tnlTFQMRSolver.h>
+#include <solvers/linear/tnlUmfpackWrapper.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 
 class tnlDefaultBuildConfigTag{};
@@ -57,7 +51,7 @@ template< typename ConfigTag > struct tnlConfigTagMeshResolve{ enum { enabled = 
 /****
  * 1, 2, and 3 dimensions are enabled by default
  */
-template< typename ConfigTag, int Dimensions > struct tnlConfigTagDimensions{ enum { enabled = ( Dimensions > 0 && Dimensions <=3 ) }; };
+template< typename ConfigTag, int Dimensions > struct tnlConfigTagDimensions{ enum { enabled = ( Dimensions > 0 && Dimensions <= 3 ) }; };
 
 /****
  * Up to the exceptions enlisted below, all mesh types are disabled by default.
@@ -150,6 +144,17 @@ public:
                                                                                  typename Matrix::IndexType > >
     using Template = tnlTFQMRSolver< Matrix, Preconditioner >;
 };
+
+#ifdef HAVE_UMFPACK
+class  tnlSemiImplicitUmfpackSolverTag
+{
+public:
+    template< typename Matrix, typename Preconditioner = tnlDummyPreconditioner< typename Matrix::RealType,
+                                                                                 typename Matrix::DeviceType,
+                                                                                 typename Matrix::IndexType > >
+    using Template = tnlUmfpackWrapper< Matrix, Preconditioner >;
+};
+#endif
 
 template< typename ConfigTag, typename SemiImplicitSolver > struct tnlConfigTagSemiImplicitSolver{ enum { enabled = true }; };
 

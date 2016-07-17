@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlBICGStabSolverOldH
 #define tnlBICGStabSolverOldH
@@ -34,7 +27,7 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
 
    bool Solve( const tnlMatrix< T >& A,
                const T* b,
-               T* x, 
+               T* x,
                const double& max_residue,
                const int max_iterations,
                tnlPreconditioner< T >* precond = 0 )
@@ -44,15 +37,15 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
 
       tnlMatrixSolver< T > :: residue =  max_residue + 1.0;
       tnlMatrixSolver< T > :: iteration = 0;
-      
+ 
       T alpha, beta, omega, s1, s2, rho( 0.0 ), b_norm( 0.0 );
       int i;
       // r_0 = b - A x_0, p_0 = r_0
       // r^ast_0 = r_0
-      
+ 
       dbgCout( "Computing Ax" );
       A. VectorProduct( x, r );
-      
+ 
       dbgCout( "Computing r_0, r_ast_0, p_0 and b_norm ..." );
       /*if( M )
       {
@@ -78,9 +71,9 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
          }
       if( b_norm == 0.0 ) b_norm = 1.0;
       //dbgExpr( b_norm );
-      
+ 
 
-      while( tnlMatrixSolver< T > :: iteration < max_iterations && 
+      while( tnlMatrixSolver< T > :: iteration < max_iterations &&
              tnlMatrixSolver< T > :: residue > max_residue )
       {
          //dbgCout( "Starting BiCGStab iteration " << iter + 1 );
@@ -96,7 +89,7 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
          }
          else*/
              A. VectorProduct( p, Ap );
-      
+ 
          //dbgCout( "Computing alpha" );
          s2 = 0.0;
          for( i = 0; i < size; i ++ )
@@ -135,7 +128,7 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
          if( s2 == 0.0 ) omega = 0.0;
          else omega = s1 / s2;
          //dbgExpr( omega );
-         
+ 
          //DrawVector( "p", p, ( m_int ) sqrt( ( m_real ) size ) );
          //DrawVector( "s", s, ( m_int ) sqrt( ( m_real ) size ) );
          // x_{j+1} = x_j + alpha_j * p_j + omega_j * s_j
@@ -148,7 +141,7 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
          }
          //DrawVector( "x", x, ( m_int ) sqrt( ( m_real ) size ) );
          //DrawVector( "r", r, ( m_int ) sqrt( ( m_real ) size ) );
-         
+ 
          // beta = alpha_j / omega_j * ( r_{j+1}, r^ast_0 ) / ( r_j, r^ast_0 )
          s1 = 0.0;
          for( i = 0; i < size; i ++ )
@@ -157,7 +150,7 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
          else beta = ( s1 / rho ) * ( alpha / omega );
          rho = s1;
 
-         // p_{j+1} = r_{j+1} + beta_j * ( p_j - omega_j * A p_j )     
+         // p_{j+1} = r_{j+1} + beta_j * ( p_j - omega_j * A p_j )
          tnlMatrixSolver< T > :: residue = 0.0;
          for( i = 0; i < size; i ++ )
          {
@@ -167,14 +160,14 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
             //dbgExpr( res );
          }
          tnlMatrixSolver< T > :: residue = sqrt( tnlMatrixSolver< T > :: residue / b_norm );
-         
+ 
          if( tnlMatrixSolver< T > :: iteration % 10 == 0 &&
-             tnlMatrixSolver< T > :: verbosity > 1 ) 
+             tnlMatrixSolver< T > :: verbosity > 1 )
                   tnlMatrixSolver< T > :: PrintOut();
          tnlMatrixSolver< T > :: iteration ++;
       }
       tnlMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm, r );
-      if( tnlMatrixSolver< T > :: verbosity > 0 ) 
+      if( tnlMatrixSolver< T > :: verbosity > 0 )
          tnlMatrixSolver< T > :: PrintOut();
    };
 
@@ -189,7 +182,7 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
                       const T* b,
                       const T* x,
                       const T& b_norm,
-                      T* tmp ) 
+                      T* tmp )
    {
       A. VectorProduct( x, tmp );
       T res = 0.0;

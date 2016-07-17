@@ -6,18 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
  
 #include <core/cuda/reduction-operations.h>
 #include <core/cuda/cuda-reduction.h>
  
+namespace TNL {
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 /****
@@ -59,7 +54,7 @@ template bool reductionOnCudaDevice< tnlParallelReductionAbsMax< long double, in
                                      const typename tnlParallelReductionAbsMax< long double, int > :: RealType* deviceInput1,
                                      const typename tnlParallelReductionAbsMax< long double, int > :: RealType* deviceInput2,
                                      typename tnlParallelReductionAbsMax< long double, int> :: ResultType& result );
-#endif                                     
+#endif
 
 template bool reductionOnCudaDevice< tnlParallelReductionAbsMax< char, long int > >
                                    ( tnlParallelReductionAbsMax< char, long int >& operation,
@@ -100,4 +95,6 @@ template bool reductionOnCudaDevice< tnlParallelReductionAbsMax< long double, lo
 #endif
 #endif
 
-#endif                                     
+#endif
+
+} // namespace TNL

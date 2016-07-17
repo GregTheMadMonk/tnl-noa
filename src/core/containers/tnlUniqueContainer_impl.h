@@ -6,17 +6,11 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLUNIQUECONTAINER_IMPL_H_
-#define TNLUNIQUECONTAINER_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Element, typename Key >
 class tnlUniqueContainer : public tnlObject
@@ -82,4 +76,4 @@ template< typename Element, typename Key >
 bool tnlUniqueContainer< Element, Key >::load( tnlFile& file );
 
 
-#endif /* TNLUNIQUECONTAINER_IMPL_H_ */
+} // namespace TNL

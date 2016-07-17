@@ -2,26 +2,22 @@
                           tnlDicomSeries_impl.h  -  description
                              -------------------
     begin                : Jul 19, 2015
-    copyright            : (C) 2015 by Tomas Oberhuber et al.                                       
-     
+    copyright            : (C) 2015 by Tomas Oberhuber et al.
+ 
      Tomas Oberhuber     tomas.oberhuber@fjfi.cvut.cz
      Jiri Kafka          kafka9@seznam.cz
      Pavel Neskudla
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
 
 #include <core/images/tnlDicomSeries.h>
 #include <core/images/tnlDicomSeriesInfo.h>
 #include <dirent.h>
 
+namespace TNL {
 
 int findLastIndexOf(tnlString &str, const char* c)
 {
@@ -48,7 +44,7 @@ inline tnlDicomSeries::tnlDicomSeries( const tnlString& filePath)
 #ifdef HAVE_DCMTK_H
     dicomImage = 0;
     pixelData = 0;
-#endif    
+#endif
     imagesInfo.imagesCount = 0;
     imagesInfo.maxColorValue = 0;
     imagesInfo.minColorValue = 128000;
@@ -69,13 +65,13 @@ inline tnlDicomSeries::~tnlDicomSeries()
         header = 0;
     }
 
-#ifdef HAVE_DCMTK_H    
+#ifdef HAVE_DCMTK_H
     if(dicomImage)
         delete dicomImage;
 
     if(pixelData)
         delete pixelData;
-#endif    
+#endif
 }
 
 template< typename Real,
@@ -93,7 +89,7 @@ getImage( const int imageIdx,
    const Uint16* imageData = this->getData( imageIdx );
    typedef tnlGrid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
-   
+ 
    Index i, j;
    int position( 0 );
    for( i = 0; i < this->height; i ++ )
@@ -118,7 +114,7 @@ getImage( const int imageIdx,
    return true;
 #else
    cerr << "DICOM format is not supported in this build of TNL." << endl;
-   return false;     
+   return false;
 #endif
 }
 
@@ -315,7 +311,7 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
 #else
     cerr << "DICOM format is not supported in this build of TNL." << endl;
     return false;
-#endif    
+#endif
 }
 
 
@@ -385,7 +381,7 @@ inline void tnlDicomSeries::freeData()
     if (pixelData)
         delete pixelData;
     pixelData = NULL;
-#endif    
+#endif
 }
 
 inline tnlDicomHeader &tnlDicomSeries::getHeader(int image)
@@ -400,3 +396,4 @@ inline bool tnlDicomSeries::isDicomSeriesLoaded()
     return isLoaded;
 }
 
+} // namespace TNL

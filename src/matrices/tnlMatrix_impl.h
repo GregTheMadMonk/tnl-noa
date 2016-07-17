@@ -6,20 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMATRIX_IMPL_H_
-#define TNLMATRIX_IMPL_H_
+#pragma once
 
 #include <matrices/tnlMatrix.h>
 #include <core/tnlAssert.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -184,13 +178,13 @@ bool tnlMatrix< Real, Device, Index >::save( tnlFile& file ) const
        ! file.write< IndexType, tnlHost, Index >( &this->columns, 1 ) ||
        ! this->values.save( file ) )
       return false;
-#else   
+#else
    if( ! tnlObject::save( file ) ||
        ! file.write( &this->rows ) ||
        ! file.write( &this->columns ) ||
        ! this->values.save( file ) )
       return false;
-#endif      
+#endif
    return true;
 }
 
@@ -205,13 +199,13 @@ bool tnlMatrix< Real, Device, Index >::load( tnlFile& file )
        ! file.read< IndexType, tnlHost, Index >( &this->columns, 1 ) ||
        ! this->values.load( file ) )
       return false;
-#else   
+#else
    if( ! tnlObject::load( file ) ||
        ! file.read( &this->rows ) ||
        ! file.read( &this->columns ) ||
        ! this->values.load( file ) )
       return false;
-#endif      
+#endif
    return true;
 }
 
@@ -245,7 +239,7 @@ void tnlMatrixVectorProductCuda( const Matrix& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
 {
-#ifdef HAVE_CUDA    
+#ifdef HAVE_CUDA
    typedef typename Matrix::IndexType IndexType;
    Matrix* kernel_this = tnlCuda::passToDevice( matrix );
    InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
@@ -271,4 +265,4 @@ void tnlMatrixVectorProductCuda( const Matrix& matrix,
 #endif
 }
 
-#endif /* TNLMATRIX_IMPL_H_ */
+} // namespace TNL

@@ -6,20 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 /***
  * Authors:
  * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
  * Heller Martin
- * 
+ *
  * The algorithm/method was published in:
  * Heller M., Oberhuber T., Improved Row-grouped CSR Format for Storing of
  * Sparse Matrices on GPU, Proceedings of Algoritmy 2012, 2012, Handlovičová A.,
@@ -27,11 +20,12 @@
  */
 
 
-#ifndef TNLCHUNKEDELLPACKMATRIX_H_
-#define TNLCHUNKEDELLPACKMATRIX_H_
+#pragma once
 
 #include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
+
+namespace TNL {
 
 template< typename Device >
 class tnlChunkedEllpackMatrixDeviceDependentCode;
@@ -328,7 +322,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 #endif
 };
 
+} // namespace TNL
+
 #include <matrices/tnlChunkedEllpackMatrix_impl.h>
 
-
-#endif /* TNLCHUNKEDELLPACKMATRIX_H_ */

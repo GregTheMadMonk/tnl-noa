@@ -6,22 +6,15 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <fstream>
 #include <iomanip>
-//#include <legacy/config/tnlConfigDescriptionParser.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <core/mfuncs.h>
 
+namespace TNL {
 
 tnlConfigDescription :: tnlConfigDescription()
 : currentEntry( 0 )
@@ -87,22 +80,7 @@ void tnlConfigDescription::printUsage( const char* program_name ) const
    }
    cout << endl;
 }
-//--------------------------------------------------------------------------
-/*bool tnlConfigDescription::parseConfigDescription( const char* file_name )
-{
-   tnlConfigDescriptionParser parser;
-   fstream in_file;
-   in_file. open( file_name, ios :: in );
-   if( ! in_file )
-   {
-      cerr << "Unable to open the file " << file_name << endl;
-      return false;
-   }
-   parser. setScanner( &in_file );
-   if( ! parser. runParsing( this ) ) return false;
-   return true;
-}*/
-//--------------------------------------------------------------------------
+
 void tnlConfigDescription :: addMissingEntries( tnlParameterContainer& parameter_container ) const
 {
    int i;
@@ -144,7 +122,7 @@ void tnlConfigDescription :: addMissingEntries( tnlParameterContainer& parameter
       }
    }
 }
-//--------------------------------------------------------------------------
+
 bool tnlConfigDescription :: checkMissingEntries( tnlParameterContainer& parameter_container,
                                                   bool printUsage,
                                                   const char* programName ) const
@@ -155,7 +133,7 @@ bool tnlConfigDescription :: checkMissingEntries( tnlParameterContainer& paramet
    for( i = 0; i < size; i ++ )
    {
       const char* entry_name = entries[ i ] -> name. getString();
-      if( entries[ i ] -> required && 
+      if( entries[ i ] -> required &&
           ! parameter_container. checkParameter( entry_name ) )
          missingParameters.Append( entry_name );
    }
@@ -172,4 +150,6 @@ bool tnlConfigDescription :: checkMissingEntries( tnlParameterContainer& paramet
    }
    return true;
 }
+
+} // namespace TNL
 

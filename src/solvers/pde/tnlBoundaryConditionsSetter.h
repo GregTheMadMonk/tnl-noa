@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 
 #ifndef TNLBOUNDARYCONDITIONSSETTER_H
@@ -35,7 +28,7 @@ class tnlBoundaryConditionsSetterTraverserUserData
 
       DofVector *u;
 
-      tnlBoundaryConditionsSetterTraverserUserData( 
+      tnlBoundaryConditionsSetterTraverserUserData(
          const Real& time,
          const BoundaryConditions& boundaryConditions,
          DofVector& u )
@@ -55,7 +48,7 @@ class tnlBoundaryConditionsSetter
       typedef typename MeshFunction::RealType RealType;
       typedef typename MeshFunction::DeviceType DeviceType;
       typedef typename MeshFunction::IndexType IndexType;
-      typedef tnlBoundaryConditionsSetterTraverserUserData< 
+      typedef tnlBoundaryConditionsSetterTraverserUserData<
          RealType,
          MeshFunction,
          BoundaryConditions > TraverserUserData;
@@ -63,12 +56,12 @@ class tnlBoundaryConditionsSetter
       template< typename EntityType = typename MeshType::Cell >
       static void apply( const BoundaryConditions& boundaryConditions,
                          const RealType& time,
-                         MeshFunction& u );      
-     
+                         MeshFunction& u );
+ 
       class TraverserBoundaryEntitiesProcessor
       {
          public:
-            
+ 
             template< typename GridEntity >
             __cuda_callable__
             static inline void processEntity( const MeshType& mesh,

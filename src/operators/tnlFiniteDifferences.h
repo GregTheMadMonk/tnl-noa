@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLFINITEDIFFERENCES_H_
-#define TNLFINITEDIFFERENCES_H_
+#pragma once
 
 #include <mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename Grid >
 class tnlFiniteDifferences
@@ -60,7 +54,7 @@ class tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index > >
    static RealType getDifference( const GridType& grid,
                                   const GridFunction& inFunction,
                                   GridFunction& outFunction );
-#endif   
+#endif
 
 #ifdef HAVE_NOT_CXX11
    template< typename GridFunction,
@@ -84,7 +78,7 @@ class tnlFiniteDifferences< tnlGrid< 1, Real, Device, Index > >
    static RealType getDifference( const GridType& grid,
                                   const CellType& cell,
                                   const GridFunction& function );
-#endif   
+#endif
 
 };
 
@@ -123,7 +117,7 @@ class tnlFiniteDifferences< tnlGrid< 2, Real, Device, Index > >
    static RealType getDifference( const GridType& grid,
                                   const GridFunction& inFunction,
                                   GridFunction& outFunction );
-#endif   
+#endif
 
 #ifdef HAVE_NOT_CXX11
    template< typename GridFunction,
@@ -147,7 +141,7 @@ class tnlFiniteDifferences< tnlGrid< 2, Real, Device, Index > >
    static RealType getDifference( const GridType& grid,
                                   const CellType& cell,
                                   const GridFunction& function );
-#endif   
+#endif
 
 };
 
@@ -185,7 +179,7 @@ class tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index > >
    static RealType getDifference( const GridType& grid,
                                   const GridFunction& inFunction,
                                   GridFunction& outFunction );
-#endif   
+#endif
 
 #ifdef HAVE_NOT_CXX11
    template< typename GridFunction,
@@ -209,12 +203,10 @@ class tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index > >
    static RealType getDifference( const GridType& grid,
                                   const CellType& cell,
                                   const GridFunction& function );
-#endif   
+#endif
 
 };
 
+} // namespace TNL
+
 #include <operators/tnlFiniteDifferences_impl.h>
-
-
-
-#endif /* TNLFINITEDIFFERENCES_H_ */

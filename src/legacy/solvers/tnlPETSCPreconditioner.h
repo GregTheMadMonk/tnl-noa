@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlPETSCPreconditionerH
 #define tnlPETSCPreconditionerH
@@ -53,7 +46,7 @@ template< typename T > class tnlPETSCPreconditioner : public tnlPreconditioner< 
       cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
 #endif
    };
-   
+ 
    void GetData( PC& precond ) const
    {
 #ifdef HAVE_PETSC
@@ -62,7 +55,7 @@ template< typename T > class tnlPETSCPreconditioner : public tnlPreconditioner< 
       cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
 #endif
    };
-   
+ 
    bool Solve( const T* b, T* x ) const
    {
       cerr << "Do not call tnlPETSCPreconditioner :: Solve. Connect it to tnlPETSCSolver using tnlPETSCPreconditioner :: GetData( PC& precond )." << endl;

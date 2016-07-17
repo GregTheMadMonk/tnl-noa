@@ -6,25 +6,21 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlTimerCPUH
 #define tnlTimerCPUH
+
+// TODO: remove this file
 
 #include "tnlConfig.h"
 #ifdef HAVE_SYS_RESOURCE_H
    #include <sys/resource.h>
 #endif
 
-
 #include "mpi-supp.h"
+
+namespace TNL {
 
 class tnlTimerCPU
 {
@@ -33,13 +29,13 @@ class tnlTimerCPU
    tnlTimerCPU();
 
    void reset();
-   
+ 
    void stop();
 
    void start();
 
    double getTime( int root = 0, MPI_Comm = MPI_COMM_WORLD );
-      
+ 
    protected:
 
    double initial_time;
@@ -51,6 +47,6 @@ class tnlTimerCPU
 
 extern tnlTimerCPU defaultCPUTimer;
 
-
+} // namespace TNL
 
 #endif

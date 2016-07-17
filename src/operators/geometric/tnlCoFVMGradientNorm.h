@@ -6,17 +6,9 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCOFVMGRADIENTNORM_H
-#define	TNLCOFVMGRADIENTNORM_H
+#pragma once
 
 #include <mesh/tnlGrid.h>
 #include <operators/geometric/tnlExactGradientNorm.h>
@@ -24,12 +16,14 @@
 #include <operators/tnlOperator.h>
 #include <operators/tnlOperatorComposition.h>
 
+namespace TNL {
+
 template< typename Mesh,
           int MeshEntityDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class tnlCoFVMGradientNorm
-{   
+{
 };
 
 template< int MeshDimensions,
@@ -39,12 +33,12 @@ template< int MeshDimensions,
           typename Real,
           typename Index >
 class tnlCoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex >, MeshDimensions, Real, Index >
-: public tnlOperatorComposition< 
+: public tnlOperatorComposition<
    tnlMeshEntitiesInterpolants< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex >,
                                 MeshDimensions - 1,
                                 MeshDimensions >,
    tnlCoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex >, MeshDimensions - 1, Real, Index > >
-{  
+{
    public:
       typedef tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
@@ -55,13 +49,13 @@ class tnlCoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex
       typedef tnlMeshEntitiesInterpolants< MeshType, MeshDimensions - 1, MeshDimensions > OuterOperator;
       typedef tnlOperatorComposition< OuterOperator, InnerOperator > BaseType;
       typedef tnlExactGradientNorm< MeshDimensions, RealType > ExactOperatorType;
-         
+ 
       tnlCoFVMGradientNorm( const OuterOperator& outerOperator,
                             InnerOperator& innerOperator,
                             const MeshType& mesh )
       : BaseType( outerOperator, innerOperator, mesh )
       {}
-      
+ 
       static tnlString getType()
       {
          return tnlString( "tnlCoFVMGradientNorm< " ) +
@@ -70,12 +64,12 @@ class tnlCoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex
             ::getType< Real >() + ", " +
             ::getType< Index >() + " >";
       }
-      
+ 
       void setEps( const RealType& eps )
       {
          this->getInnerOperator().setEps( eps );
       }
-      
+ 
       static constexpr int getPreimageEntitiesDimensions() { return MeshDimensions; };
       static constexpr int getImageEntitiesDimensions() { return MeshDimensions; };
 
@@ -89,18 +83,18 @@ template< typename MeshReal,
 class tnlCoFVMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, 0, Real, Index >
    : public tnlOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >, MeshInteriorDomain, 1, 0, Real, Index >
 {
-   public: 
-   
+   public:
+ 
    typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlExactGradientNorm< 1, RealType > ExactOperatorType;
-   
+ 
    constexpr static int getPreimageEntitiesDimensions() { return MeshType::getMeshDimensions(); };
    constexpr static int getImageEntitiesDimensions() { return MeshType::getMeshDimensions() - 1; };
-   
+ 
    tnlCoFVMGradientNorm()
    : epsSquare( 0.0 ){}
 
@@ -118,25 +112,25 @@ class tnlCoFVMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, 0, Real, I
                     const MeshEntity& entity,
                     const Real& time = 0.0 ) const
    {
-      static_assert( MeshFunction::getDimensions() == 1, 
+      static_assert( MeshFunction::getDimensions() == 1,
          "The mesh function u must be stored on mesh cells.." );
       static_assert( MeshEntity::getDimensions() == 0,
          "The complementary finite volume gradient norm may be evaluated only on faces." );
       const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.template getNeighbourEntities< 1 >();
-      
-      const RealType& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1 >();      
+ 
+      const RealType& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1 >();
       const RealType& u_x = ( u[ neighbourEntities.template getEntityIndex<  1 >() ] -
                               u[ neighbourEntities.template getEntityIndex< -1 >() ] ) * hxDiv;
-      return sqrt( this->epsSquare + ( u_x * u_x ) );          
+      return sqrt( this->epsSquare + ( u_x * u_x ) );
    }
-                
+ 
    void setEps( const Real& eps )
    {
       this->epsSquare = eps*eps;
    }
-      
+ 
    private:
-   
+ 
    RealType epsSquare;
 };
 
@@ -149,18 +143,18 @@ template< typename MeshReal,
 class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, Index >
    : public tnlOperator< tnlGrid< 2,MeshReal, Device, MeshIndex >, MeshInteriorDomain, 2, 1, Real, Index >
 {
-   public: 
-   
+   public:
+ 
    typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlExactGradientNorm< 2, RealType > ExactOperatorType;
-   
+ 
    constexpr static int getPreimageEntitiesDimensions() { return MeshType::getMeshDimensions(); };
    constexpr static int getImageEntitiesDimensions() { return MeshType::getMeshDimensions() - 1; };
-   
+ 
    tnlCoFVMGradientNorm()
    : epsSquare( 0.0 ){}
 
@@ -173,14 +167,14 @@ class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, 
          ::getType< Index >() + " >";
 
    }
-      
+ 
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
    Real operator()( const MeshFunction& u,
                     const MeshEntity& entity,
                     const Real& time = 0.0 ) const
-   {      
-      static_assert( MeshFunction::getDimensions() == 2, 
+   {
+      static_assert( MeshFunction::getDimensions() == 2,
          "The mesh function u must be stored on mesh cells.." );
       static_assert( MeshEntity::getDimensions() == 1,
          "The complementary finite volume gradient norm may be evaluated only on faces." );
@@ -191,28 +185,28 @@ class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, 
       {
          const RealType u_x =
             ( u[ neighbourEntities.template getEntityIndex<  1, 0 >()] -
-              u[ neighbourEntities.template getEntityIndex< -1, 0 >()] ) * hxDiv;         
+              u[ neighbourEntities.template getEntityIndex< -1, 0 >()] ) * hxDiv;
          RealType u_y;
          if( entity.getCoordinates().y() > 0 )
          {
             if( entity.getCoordinates().y() < entity.getMesh().getDimensions().y() - 1 )
-               u_y = 0.25 * 
-                  ( u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] + 
-                    u[ neighbourEntities.template getEntityIndex< -1,  1 >() ] - 
+               u_y = 0.25 *
+                  ( u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] +
+                    u[ neighbourEntities.template getEntityIndex< -1,  1 >() ] -
                     u[ neighbourEntities.template getEntityIndex<  1, -1 >() ] -
                     u[ neighbourEntities.template getEntityIndex< -1, -1 >() ] ) * hyDiv;
             else // if( entity.getCoordinates().y() < entity.getMesh().getDimensions().y() - 1 )
-               u_y = 0.5 * 
-                  ( u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] + 
-                    u[ neighbourEntities.template getEntityIndex< -1,  0 >() ] - 
+               u_y = 0.5 *
+                  ( u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] +
+                    u[ neighbourEntities.template getEntityIndex< -1,  0 >() ] -
                     u[ neighbourEntities.template getEntityIndex<  1, -1 >() ] -
                     u[ neighbourEntities.template getEntityIndex< -1, -1 >() ] ) * hyDiv;
          }
          else // if( entity.getCoordinates().y() > 0 )
          {
-            u_y = 0.5 * 
-               ( u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] + 
-                 u[ neighbourEntities.template getEntityIndex< -1,  1 >() ] - 
+            u_y = 0.5 *
+               ( u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] +
+                 u[ neighbourEntities.template getEntityIndex< -1,  1 >() ] -
                  u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] -
                  u[ neighbourEntities.template getEntityIndex< -1,  0 >() ] ) * hyDiv;
          }
@@ -222,23 +216,23 @@ class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, 
       if( entity.getCoordinates().x() > 0 )
       {
          if( entity.getCoordinates().x() < entity.getMesh().getDimensions().x() - 1 )
-            u_x = 0.25 * 
-            ( u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] + 
-              u[ neighbourEntities.template getEntityIndex<  1, -1 >() ] - 
+            u_x = 0.25 *
+            ( u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] +
+              u[ neighbourEntities.template getEntityIndex<  1, -1 >() ] -
               u[ neighbourEntities.template getEntityIndex< -1,  1 >() ] -
               u[ neighbourEntities.template getEntityIndex< -1, -1 >() ] ) * hxDiv;
          else // if( entity.getCoordinates().x() < entity.getMesh().getDimensions().x() - 1 )
-            u_x = 0.5 * 
-            ( u[ neighbourEntities.template getEntityIndex<  0,  1 >() ] + 
-              u[ neighbourEntities.template getEntityIndex<  0, -1 >() ] - 
+            u_x = 0.5 *
+            ( u[ neighbourEntities.template getEntityIndex<  0,  1 >() ] +
+              u[ neighbourEntities.template getEntityIndex<  0, -1 >() ] -
               u[ neighbourEntities.template getEntityIndex< -1,  1 >() ] -
               u[ neighbourEntities.template getEntityIndex< -1, -1 >() ] ) * hxDiv;
       }
       else // if( entity.getCoordinates().x() > 0 )
       {
-         u_x = 0.5 * 
-            ( u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] + 
-              u[ neighbourEntities.template getEntityIndex<  1, -1 >() ] - 
+         u_x = 0.5 *
+            ( u[ neighbourEntities.template getEntityIndex<  1,  1 >() ] +
+              u[ neighbourEntities.template getEntityIndex<  1, -1 >() ] -
               u[ neighbourEntities.template getEntityIndex<  0,  1 >() ] -
               u[ neighbourEntities.template getEntityIndex<  0, -1 >() ] ) * hxDiv;
       }
@@ -247,14 +241,14 @@ class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, 
            u[ neighbourEntities.template getEntityIndex< 0, -1 >()] ) * hyDiv;
       return sqrt( this->epsSquare + u_x * u_x + u_y * u_y );
    }
-           
+ 
    void setEps( const Real& eps )
    {
       this->epsSquare = eps*eps;
-   }   
-   
+   }
+ 
    private:
-   
+ 
    RealType epsSquare;
 };
 
@@ -267,27 +261,27 @@ template< typename MeshReal,
 class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, Index >
    : public tnlOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, MeshInteriorDomain, 3, 2, Real, Index >
 {
-   public: 
-   
+   public:
+ 
    typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlExactGradientNorm< 3, RealType > ExactOperatorType;
-   
+ 
    constexpr static int getPreimageEntitiesDimensions() { return MeshType::getMeshDimensions(); };
    constexpr static int getImageEntitiesDimensions() { return MeshType::getMeshDimensions() - 1; };
-   
+ 
    tnlCoFVMGradientNorm()
-   : epsSquare( 0.0 ){}   
+   : epsSquare( 0.0 ){}
 
    static tnlString getType()
    {
       return tnlString( "tnlCoFVMGradientNorm< " ) +
          MeshType::getType() + ", 2, " +
          ::getType< Real >() + ", " +
-         ::getType< Index >() + " >";      
+         ::getType< Index >() + " >";
    }
 
    template< typename MeshFunction, typename MeshEntity >
@@ -296,7 +290,7 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
                     const MeshEntity& entity,
                     const Real& time = 0.0 ) const
    {
-      static_assert( MeshFunction::getDimensions() == 3, 
+      static_assert( MeshFunction::getDimensions() == 3,
          "The mesh function u must be stored on mesh cells.." );
       static_assert( MeshEntity::getDimensions() == 2,
          "The complementary finite volume gradient norm may be evaluated only on faces." );
@@ -308,23 +302,23 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
       {
          const RealType u_x =
             ( u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >()] -
-              u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >()] ) * hxDiv;         
+              u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >()] ) * hxDiv;
          RealType u_y;
          if( entity.getCoordinates().y() > 0 )
          {
             if( entity.getCoordinates().y() < entity.getMesh().getDimensions().y() - 1 )
             {
-               u_y = 0.25 * 
-               ( u[ neighbourEntities.template getEntityIndex<  1,  1,  0 >() ] + 
-                 u[ neighbourEntities.template getEntityIndex< -1,  1,  0 >() ] - 
+               u_y = 0.25 *
+               ( u[ neighbourEntities.template getEntityIndex<  1,  1,  0 >() ] +
+                 u[ neighbourEntities.template getEntityIndex< -1,  1,  0 >() ] -
                  u[ neighbourEntities.template getEntityIndex<  1, -1,  0 >() ] -
                  u[ neighbourEntities.template getEntityIndex< -1, -1,  0 >() ] ) * hyDiv;
             }
             else // if( entity.getCoordinates().y() < entity.getMesh().getDimensions().y() - 1 )
             {
-               u_y = 0.5 * 
-               ( u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] + 
-                 u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] - 
+               u_y = 0.5 *
+               ( u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] +
+                 u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] -
                  u[ neighbourEntities.template getEntityIndex<  1, -1,  0 >() ] -
                  u[ neighbourEntities.template getEntityIndex< -1, -1,  0 >() ] ) * hyDiv;
 
@@ -332,9 +326,9 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
          }
          else // if( entity.getCoordinates().y() > 0 )
          {
-            u_y = 0.5 * 
-            ( u[ neighbourEntities.template getEntityIndex<  1,  1,  0 >() ] + 
-              u[ neighbourEntities.template getEntityIndex< -1,  1,  0 >() ] - 
+            u_y = 0.5 *
+            ( u[ neighbourEntities.template getEntityIndex<  1,  1,  0 >() ] +
+              u[ neighbourEntities.template getEntityIndex< -1,  1,  0 >() ] -
               u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] -
               u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] ) * hyDiv;
 
@@ -344,26 +338,26 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
          {
             if( entity.getCoordinates().z() < entity.getMesh().getDimensions().z() - 1 )
             {
-               u_z = 0.25 * 
-               ( u[ neighbourEntities.template getEntityIndex<  1,  0,  1 >() ] + 
-                 u[ neighbourEntities.template getEntityIndex< -1,  0,  1 >() ] - 
+               u_z = 0.25 *
+               ( u[ neighbourEntities.template getEntityIndex<  1,  0,  1 >() ] +
+                 u[ neighbourEntities.template getEntityIndex< -1,  0,  1 >() ] -
                  u[ neighbourEntities.template getEntityIndex<  1,  0, -1 >() ] -
                  u[ neighbourEntities.template getEntityIndex< -1,  0, -1 >() ] ) * hzDiv;
             }
             else //if( entity.getCoordinates().z() < entity.getMesh().getDimensions().z() - 1 )
             {
-               u_z = 0.5 * 
-               ( u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] + 
-                 u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] - 
+               u_z = 0.5 *
+               ( u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] +
+                 u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] -
                  u[ neighbourEntities.template getEntityIndex<  1,  0, -1 >() ] -
                  u[ neighbourEntities.template getEntityIndex< -1,  0, -1 >() ] ) * hzDiv;
             }
          }
          else //if( entity.getCoordinates().z() > 0 )
          {
-            u_z = 0.5 * 
-            ( u[ neighbourEntities.template getEntityIndex<  1,  0,  1 >() ] + 
-              u[ neighbourEntities.template getEntityIndex< -1,  0,  1 >() ] - 
+            u_z = 0.5 *
+            ( u[ neighbourEntities.template getEntityIndex<  1,  0,  1 >() ] +
+              u[ neighbourEntities.template getEntityIndex< -1,  0,  1 >() ] -
               u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] -
               u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] ) * hzDiv;
          }
@@ -376,26 +370,26 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
          {
             if( entity.getCoordinates().x() < entity.getMesh().getDimensions().x() - 1 )
             {
-               u_x = 0.25 * 
-               ( u[ neighbourEntities.template getEntityIndex<  1,  1,  0 >() ] + 
-                 u[ neighbourEntities.template getEntityIndex<  1, -1,  0 >() ] - 
+               u_x = 0.25 *
+               ( u[ neighbourEntities.template getEntityIndex<  1,  1,  0 >() ] +
+                 u[ neighbourEntities.template getEntityIndex<  1, -1,  0 >() ] -
                  u[ neighbourEntities.template getEntityIndex< -1,  1,  0 >() ] -
                  u[ neighbourEntities.template getEntityIndex< -1, -1,  0 >() ] ) * hxDiv;
             }
             else // if( entity.getCoordinates().x() < entity.getMesh().getDimensions().x() - 1 )
             {
-               u_x = 0.5 * 
-               ( u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] + 
-                 u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] - 
+               u_x = 0.5 *
+               ( u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] +
+                 u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] -
                  u[ neighbourEntities.template getEntityIndex< -1,  1,  0 >() ] -
                  u[ neighbourEntities.template getEntityIndex< -1, -1,  0 >() ] ) * hxDiv;
             }
          }
          else // if( entity.getCoordinates().x() > 0 )
          {
-            u_x = 0.5 * 
-            ( u[ neighbourEntities.template getEntityIndex<  1,  1,  0 >() ] + 
-              u[ neighbourEntities.template getEntityIndex<  1, -1,  0 >() ] - 
+            u_x = 0.5 *
+            ( u[ neighbourEntities.template getEntityIndex<  1,  1,  0 >() ] +
+              u[ neighbourEntities.template getEntityIndex<  1, -1,  0 >() ] -
               u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] -
               u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] ) * hxDiv;
          }
@@ -407,26 +401,26 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
          {
             if( entity.getCoordinates().z() < entity.getMesh().getDimensions().z() - 1 )
             {
-               u_z = 0.25 * 
-               ( u[ neighbourEntities.template getEntityIndex<  0,  1,  1 >() ] + 
-                 u[ neighbourEntities.template getEntityIndex<  0, -1,  1 >() ] - 
+               u_z = 0.25 *
+               ( u[ neighbourEntities.template getEntityIndex<  0,  1,  1 >() ] +
+                 u[ neighbourEntities.template getEntityIndex<  0, -1,  1 >() ] -
                  u[ neighbourEntities.template getEntityIndex<  0,  1, -1 >() ] -
                  u[ neighbourEntities.template getEntityIndex<  0, -1, -1 >() ] ) * hzDiv;
             }
             else // if( entity.getCoordinates().z() < entity.getMesh().getDimensions().z() - 1 )
             {
-               u_z = 0.5 * 
-               ( u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] + 
-                 u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] - 
+               u_z = 0.5 *
+               ( u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] +
+                 u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] -
                  u[ neighbourEntities.template getEntityIndex<  0,  1, -1 >() ] -
                  u[ neighbourEntities.template getEntityIndex<  0, -1, -1 >() ] ) * hzDiv;
             }
          }
          else // if( entity.getCoordinates().z() > 0 )
          {
-            u_z = 0.5 * 
-            ( u[ neighbourEntities.template getEntityIndex<  0,  1,  1 >() ] + 
-              u[ neighbourEntities.template getEntityIndex<  0, -1,  1 >() ] - 
+            u_z = 0.5 *
+            ( u[ neighbourEntities.template getEntityIndex<  0,  1,  1 >() ] +
+              u[ neighbourEntities.template getEntityIndex<  0, -1,  1 >() ] -
               u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] -
               u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] ) * hzDiv;
          }
@@ -437,17 +431,17 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
       {
          if( entity.getCoordinates().x() < entity.getMesh().getDimensions().x() - 1 )
          {
-            u_x = 0.25 * 
-            ( u[ neighbourEntities.template getEntityIndex<  1,  0,  1 >() ] + 
-              u[ neighbourEntities.template getEntityIndex<  1,  0, -1 >() ] - 
+            u_x = 0.25 *
+            ( u[ neighbourEntities.template getEntityIndex<  1,  0,  1 >() ] +
+              u[ neighbourEntities.template getEntityIndex<  1,  0, -1 >() ] -
               u[ neighbourEntities.template getEntityIndex< -1,  0,  1 >() ] -
               u[ neighbourEntities.template getEntityIndex< -1,  0, -1 >() ] ) * hxDiv;
          }
          else // if( entity.getCoordinates().x() < entity.getMesh().getDimensions().x() - 1 )
          {
-            u_x = 0.5 * 
-            ( u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] + 
-              u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] - 
+            u_x = 0.5 *
+            ( u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] +
+              u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] -
               u[ neighbourEntities.template getEntityIndex< -1,  0,  1 >() ] -
               u[ neighbourEntities.template getEntityIndex< -1,  0, -1 >() ] ) * hxDiv;
 
@@ -455,56 +449,56 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
       }
       else // if( entity.getCoordinates().x() > 0 )
       {
-         u_x = 0.5 * 
-         ( u[ neighbourEntities.template getEntityIndex<  1,  0,  1 >() ] + 
-           u[ neighbourEntities.template getEntityIndex<  1,  0, -1 >() ] - 
+         u_x = 0.5 *
+         ( u[ neighbourEntities.template getEntityIndex<  1,  0,  1 >() ] +
+           u[ neighbourEntities.template getEntityIndex<  1,  0, -1 >() ] -
            u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] -
-           u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] ) * hxDiv;         
+           u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] ) * hxDiv;
       }
       RealType u_y;
       if( entity.getCoordinates().y() > 0 )
       {
          if( entity.getCoordinates().y() < entity.getMesh().getDimensions().y() - 1 )
-         {      
-            u_y = 0.25 * 
-            ( u[ neighbourEntities.template getEntityIndex<  0,  1,  1 >() ] + 
-              u[ neighbourEntities.template getEntityIndex<  0,  1, -1 >() ] - 
+         {
+            u_y = 0.25 *
+            ( u[ neighbourEntities.template getEntityIndex<  0,  1,  1 >() ] +
+              u[ neighbourEntities.template getEntityIndex<  0,  1, -1 >() ] -
               u[ neighbourEntities.template getEntityIndex<  0, -1,  1 >() ] -
               u[ neighbourEntities.template getEntityIndex<  0, -1, -1 >() ] ) * hyDiv;
          }
          else //if( entity.getCoordinates().y() < entity.getMesh().getDimensions().y() - 1 )
          {
-            u_y = 0.5 * 
-            ( u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] + 
-              u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] - 
+            u_y = 0.5 *
+            ( u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] +
+              u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] -
               u[ neighbourEntities.template getEntityIndex<  0, -1,  1 >() ] -
               u[ neighbourEntities.template getEntityIndex<  0, -1, -1 >() ] ) * hyDiv;
          }
       }
       else //if( entity.getCoordinates().y() > 0 )
       {
-         u_y = 0.5 * 
-         ( u[ neighbourEntities.template getEntityIndex<  0,  1,  1 >() ] + 
-           u[ neighbourEntities.template getEntityIndex<  0,  1, -1 >() ] - 
+         u_y = 0.5 *
+         ( u[ neighbourEntities.template getEntityIndex<  0,  1,  1 >() ] +
+           u[ neighbourEntities.template getEntityIndex<  0,  1, -1 >() ] -
            u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >() ] -
-           u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] ) * hyDiv;         
+           u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >() ] ) * hyDiv;
       }
       const RealType u_z =
          ( u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >()] -
            u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >()] ) * hzDiv;
       return sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );
    }
-   
-        
+ 
+ 
    void setEps(const Real& eps)
    {
       this->epsSquare = eps*eps;
-   }   
-   
+   }
+ 
    private:
-   
+ 
    RealType epsSquare;
 };
 
-#endif	/* TNLCOFVMGRADIENTNORM_H */
+} // namespace TNL
 

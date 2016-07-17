@@ -6,21 +6,15 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCENTRALFINITEDIFFERENCE_H
-#define	TNLCENTRALFINITEDIFFERENCE_H
+#pragma once
 
 #include <operators/fdm/tnlFiniteDifferences.h>
 #include <operators/fdm/tnlExactDifference.h>
 #include <operators/tnlOperator.h>
+
+namespace TNL {
 
 template< typename Mesh,
           int Xdifference = 0,
@@ -29,7 +23,7 @@ template< typename Mesh,
           typename RealType = typename Mesh::RealType,
           typename IndexType = typename Mesh::IndexType >
 class tnlCentralFiniteDifference
-{    
+{
 };
 
 template< int Dimensions,
@@ -46,15 +40,15 @@ class tnlCentralFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Mes
                       MeshInteriorDomain, Dimensions, Dimensions, Real, Index >
 {
    public:
-      
+ 
       typedef tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex > MeshType;
       typedef Real RealType;
       typedef MeshDevice DeviceType;
       typedef Index IndexType;
       typedef tnlExactDifference< Dimensions, XDifference, YDifference, ZDifference > ExactOperatorType;
-            
+ 
       //static constexpr int getMeshDimensions() { return Dimensions; }
-      
+ 
       static tnlString getType()
       {
          return tnlString( "tnlCentralFiniteDifference< " ) +
@@ -66,7 +60,7 @@ class tnlCentralFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Mes
             ::getType< IndexType >() + " >";
       }
 
-      
+ 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
       inline Real operator()( const MeshFunction& u,
@@ -79,6 +73,5 @@ class tnlCentralFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Mes
       };
 };
 
-
-#endif	/* TNLCENTRALFINITEDIFFERENCE_H */
+} // namespace TNL
 

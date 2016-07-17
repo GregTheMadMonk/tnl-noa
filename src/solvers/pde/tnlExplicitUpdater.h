@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLEXPLICITUPDATER_H_
 #define TNLEXPLICITUPDATER_H_
 
 #include <functions/tnlFunctionAdapter.h>
+#include <core/tnlTimer.h>
 
 template< typename Real,
           typename MeshFunction,
@@ -51,7 +45,8 @@ class tnlExplicitUpdaterTraverserUserData
         rightHandSide( &rightHandSide ),
         u( &u ),
         fu( &fu )
-      {};
+      {
+      };
 };
 
 
@@ -72,6 +67,14 @@ class tnlExplicitUpdater
                                                    DifferentialOperator,
                                                    BoundaryConditions,
                                                    RightHandSide > TraverserUserData;
+ 
+      tnlExplicitUpdater()
+      : gpuTransferTimer( 0 ){}
+ 
+      void setGPUTransferTimer( tnlTimer& timer )
+      {
+         this->gpuTransferTimer = &timer;
+      }
 
       template< typename EntityType >
       void update( const RealType& time,
@@ -80,12 +83,12 @@ class tnlExplicitUpdater
                    const BoundaryConditions& boundaryConditions,
                    const RightHandSide& rightHandSide,
                    MeshFunction& u,
-                   MeshFunction& fu ) const;      
-      
+                   MeshFunction& fu ) const;
+ 
       class TraverserBoundaryEntitiesProcessor
       {
          public:
-            
+ 
             template< typename GridEntity >
             __cuda_callable__
             static inline void processEntity( const MeshType& mesh,
@@ -105,27 +108,31 @@ class tnlExplicitUpdater
          public:
 
             typedef typename MeshType::VertexType VertexType;
-         
+ 
             template< typename EntityType >
             __cuda_callable__
             static inline void processEntity( const MeshType& mesh,
                                               TraverserUserData& userData,
                                               const EntityType& entity )
             {
-               ( *userData.fu)( entity ) = 
+               ( *userData.fu)( entity ) =
                   userData.differentialOperator->operator()(
                      *userData.u,
                      entity,
                      *userData.time );
 
                typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
-               ( * userData.fu )( entity ) += 
+               ( * userData.fu )( entity ) +=
                   FunctionAdapter::getValue(
                      *userData.rightHandSide,
                      entity,
                      *userData.time );
             }
       };
+ 
+   protected:
+ 
+      tnlTimer* gpuTransferTimer;
 };
 
 #include <solvers/pde/tnlExplicitUpdater_impl.h>

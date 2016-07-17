@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHHEXAHEDRONTOPOLOGY_H_
-#define TNLMESHHEXAHEDRONTOPOLOGY_H_
+#pragma once
 
 #include <mesh/topologies/tnlMeshQuadrilateralTopology.h>
+
+namespace TNL {
 
 struct tnlMeshHexahedronTopology
 {
@@ -173,4 +167,4 @@ template<> struct tnlSubentityVertex< tnlMeshHexahedronTopology, tnlMeshQuadrila
 template<> struct tnlSubentityVertex< tnlMeshHexahedronTopology, tnlMeshQuadrilateralTopology, 5, 2> { enum { index = 6 }; };
 template<> struct tnlSubentityVertex< tnlMeshHexahedronTopology, tnlMeshQuadrilateralTopology, 5, 3> { enum { index = 7 }; };
 
-#endif /* TNLMESHHEXAHEDRONTOPOLOGY_H_ */
+} // namespace TNL

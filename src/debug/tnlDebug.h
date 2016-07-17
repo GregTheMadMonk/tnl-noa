@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef __tnlDebug_h__
 #define __tnlDebug_h__
@@ -121,7 +114,7 @@ extern int __tnldbg_mpi_i_proc;
       __LINE__);                                             \
       printf( #expr );                                       \
       printf( "\n" );                                        \
-   }         
+   }
 
 #define dbgExpr( expr )                                      \
    if( _tnldbg_debug_func( _tnldbg_debug_class_name,         \
@@ -149,7 +142,7 @@ extern int __tnldbg_mpi_i_proc;
       << __LINE__ << " | CALL:  "                \
       << #expr << " -> " << std :: flush << std :: endl;       \
       expr;                                      \
-   }         
+   }
 
 #define dbgWait                                     \
    if( _tnldbg_interactive_func( _tnldbg_debug_class_name, \
@@ -180,7 +173,7 @@ extern int __tnldbg_mpi_i_proc;
          __LINE__);                                    \
          printf( #expr );                              \
          printf( "\n" );                               \
-      }         
+      }
 
 #define dbgCondExpr( condition, expr )         \
    if( _tnldbg_debug_func( _tnldbg_debug_class_name,   \
@@ -201,7 +194,7 @@ extern int __tnldbg_mpi_i_proc;
          << __LINE__ << " | CALL:  "             \
          << #expr << " -> " << std :: flush << std :: endl;    \
          expr;                                   \
-      }         
+      }
 
 #define dbgCondWait( condition )                     \
    if( _tnldbg_interactive_func( _tnldbg_debug_class_name,   \

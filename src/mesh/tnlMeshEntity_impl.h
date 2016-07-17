@@ -6,20 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITY_IMPL_H
-#define	TNLMESHENTITY_IMPL_H
+#pragma once
 
 #include "tnlMeshEntity.h"
 
+namespace TNL {
 
 template< typename MeshConfig,
           typename EntityTopology >
@@ -28,7 +21,7 @@ tnlMeshEntity( const SeedType& entitySeed )
 {
    typedef typename SeedType::LocalIndexType LocalIndexType;
    for( LocalIndexType i = 0; i < entitySeed.getCornerIds().getSize(); i++ )
-      this->template setSubentityIndex< 0 >( i, entitySeed.getCornerIds()[ i ] );         
+      this->template setSubentityIndex< 0 >( i, entitySeed.getCornerIds()[ i ] );
 }
 
 
@@ -58,7 +51,7 @@ getType()
 
 template< typename MeshConfig,
           typename EntityTopology >
-tnlString 
+tnlString
 tnlMeshEntity< MeshConfig, EntityTopology >::
 getTypeVirtual() const
 {
@@ -114,7 +107,7 @@ operator==( const tnlMeshEntity& entity ) const
 
 template< typename MeshConfig,
           typename EntityTopology >
-constexpr int 
+constexpr int
 tnlMeshEntity< MeshConfig, EntityTopology >::
 getEntityDimensions() const
 {
@@ -189,7 +182,7 @@ getSubentitiesIndices() const
 template< typename MeshConfig,
           typename EntityTopology >
    template< int SuperDimensions >
-typename tnlMeshEntity< MeshConfig, EntityTopology >::LocalIndexType 
+typename tnlMeshEntity< MeshConfig, EntityTopology >::LocalIndexType
 tnlMeshEntity< MeshConfig, EntityTopology >::
 getNumberOfSuperentities() const
 {
@@ -201,7 +194,7 @@ getNumberOfSuperentities() const
 template< typename MeshConfig,
           typename EntityTopology >
    template< int SuperDimensions >
-typename tnlMeshEntity< MeshConfig, EntityTopology >::GlobalIndexType 
+typename tnlMeshEntity< MeshConfig, EntityTopology >::GlobalIndexType
 tnlMeshEntity< MeshConfig, EntityTopology >::
 getSuperentityIndex( const LocalIndexType localIndex ) const
 {
@@ -217,7 +210,7 @@ getSuperentityIndex( const LocalIndexType localIndex ) const
 template< typename MeshConfig,
           typename EntityTopology >
    template< int SuperDimensions >
-typename tnlMeshEntity< MeshConfig, EntityTopology >::template SuperentityTraits< SuperDimensions >::AccessArrayType& 
+typename tnlMeshEntity< MeshConfig, EntityTopology >::template SuperentityTraits< SuperDimensions >::AccessArrayType&
 tnlMeshEntity< MeshConfig, EntityTopology >::
 getSuperentitiesIndices()
 {
@@ -267,7 +260,7 @@ getVerticesIndices()
 
 template< typename MeshConfig,
           typename EntityTopology >
-const typename tnlMeshEntity< MeshConfig, EntityTopology >::template SubentityTraits< 0 >::AccessArrayType& 
+const typename tnlMeshEntity< MeshConfig, EntityTopology >::template SubentityTraits< 0 >::AccessArrayType&
 tnlMeshEntity< MeshConfig, EntityTopology >::
 getVerticesIndices() const
 {
@@ -285,7 +278,7 @@ subentityOrientation( LocalIndexType index ) const
    tnlAssert( 0 <= index && index < subentitiesCount, );
 
    return SubentityStorageLayers::subentityOrientation( tnlDimensionsTag< Dimensions >(), index );
-}  
+}
 
 /****
  * Mesh initialization method
@@ -339,7 +332,7 @@ tnlMeshEntity< MeshConfig, EntityTopology >::
 subentityOrientationsArray()
 {
    return SubentityStorageLayers::subentityOrientationsArray( tnlDimensionsTag< Subdimensions >() );
-}      
+}
 
 /****
  * Vertex entity specialization
@@ -411,7 +404,7 @@ operator==( const tnlMeshEntity& entity ) const
 }
 
 template< typename MeshConfig >
-constexpr int 
+constexpr int
 tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::
 getEntityDimensions() const
 {
@@ -430,7 +423,7 @@ getNumberOfSuperentities() const
 
 template< typename MeshConfig >
    template< int Superdimensions >
-typename tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::template SuperentityTraits< Superdimensions >::AccessArrayType& 
+typename tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::template SuperentityTraits< Superdimensions >::AccessArrayType&
 tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::
 getSuperentitiesIndices()
 {
@@ -440,7 +433,7 @@ getSuperentitiesIndices()
 
 template< typename MeshConfig >
    template< int Superdimensions >
-const typename tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::template SuperentityTraits< Superdimensions >::AccessArrayType& 
+const typename tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::template SuperentityTraits< Superdimensions >::AccessArrayType&
 tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::
 getSuperentitiesIndeces() const
 {
@@ -463,10 +456,10 @@ getSuperentityIndex( const LocalIndexType localIndex ) const
 }
 
 template< typename MeshConfig >
-typename tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::PointType 
+typename tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::PointType
 tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::
 getPoint() const
-{ 
+{
    return this->point;
 }
 
@@ -480,7 +473,7 @@ setPoint( const PointType& point )
 
 template< typename MeshConfig >
    template< int Superdimensions >
-typename tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::MeshTraits::IdArrayAccessorType& 
+typename tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::MeshTraits::IdArrayAccessorType&
 tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::
 superentityIdsArray()
 {
@@ -495,5 +488,5 @@ ostream& operator <<( ostream& str, const tnlMeshEntity< MeshConfig, EntityTopol
    return str;
 }
 
-#endif	/* TNLMESHENTITY_IMPL_H */
+} // namespace TNL
 

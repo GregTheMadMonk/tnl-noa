@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <tnlDebugParser.h>
 #include <tnlDebugScanner.h>
@@ -80,7 +73,7 @@ void tnlDebugParser :: AddCurrentGroup()
 #endif
    debug_structure -> AppendGroup( current_group );
    current_group = 0;
-   
+ 
 }
 //--------------------------------------------------------------------------
 void tnlDebugParser :: AddCurrentEntry()
@@ -96,7 +89,7 @@ void tnlDebugParser :: AddCurrentEntry()
 #ifdef DEBUG
       cout << " into class " << current_group -> group_name << endl;
 #endif
-      current_group -> debug_entries. push_back( current_entry ); 
+      current_group -> debug_entries. push_back( current_entry );
    }
    else
    {
@@ -124,7 +117,7 @@ void tnlDebugParser :: SetCurrentFunctionId( char* s )
 #endif
    assert( current_group );
    current_entry = new tnlDebugEntry;
-   current_entry -> function_name = string( s );   
+   current_entry -> function_name = string( s );
 }
 //--------------------------------------------------------------------------
 void tnlDebugParser :: SetBool( bool v )

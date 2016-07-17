@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLGMRESSOLVER_IMPL_H_
 #define TNLGMRESSOLVER_IMPL_H_
@@ -47,7 +40,7 @@ configSetup( tnlConfigDescription& config,
              const tnlString& prefix )
 {
    //tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
-   config.addEntry< int >( prefix + "gmres-restarting", "Number of iterations after which the GMRES restarts.", 10 );   
+   config.addEntry< int >( prefix + "gmres-restarting", "Number of iterations after which the GMRES restarts.", 10 );
 }
 
 template< typename Matrix,
@@ -104,7 +97,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    }
 
    IndexType _size = size;
-   
+ 
    //RealType *w = _w. getData();
    RealType *s = _s. getData();
    RealType *cs = _cs. getData();
@@ -133,13 +126,13 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    }
    else
    {
-      matrix -> vectorProduct( x, _r );      
+      matrix -> vectorProduct( x, _r );
       normb = b. lpNorm( ( RealType ) 2.0 );
       _r. addVector( b, ( RealType ) 1.0, -1.0 );
       beta = _r. lpNorm( ( RealType ) 2.0 );
       //cout << "x = " << x << endl;
    }
-   
+ 
     //cout << "norm b = " << normb << endl;
     //cout << " beta = " << beta << endl;
 
@@ -150,7 +143,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    this->setResidue( beta / normb );
 
    tnlSharedVector< RealType, DeviceType, IndexType > vi, vk;
-   while( this->nextIteration() )
+   while( this->checkNextIteration() )
    {
       const IndexType m = restarting;
       for( IndexType i = 0; i < m + 1; i ++ )
@@ -188,7 +181,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          }
          else
              matrix->vectorProduct( vi, w );
-         
+ 
          //cout << " i = " << i << " vi = " << vi << endl;
 
          for( IndexType k = 0; k <= i; k++ )
@@ -201,7 +194,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
                 * H_{k,i} = ( w, v_k )
                 */
                RealType H_k_i = w. scalarProduct( vk );
-               H[ k + i * ( m + 1 ) ] += H_k_i;           
+               H[ k + i * ( m + 1 ) ] += H_k_i;
 
                /****
                 * w = w - H_{k,i} v_k
@@ -218,15 +211,15 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          H[ i + 1 + i * ( m + 1 ) ] = normw;
 
          //cout << "normw = " << normw << endl;
-         
+ 
          /***
           * v_{i+1} = w / |w|
           */
          vi. bind( &( _v. getData()[ ( i + 1 ) * size ] ), size );
          vi. addVector( w, ( RealType ) 1.0 / normw );
-         
+ 
          //cout << "vi = " << vi << endl;
-         
+ 
          /****
           * Applying the Givens rotations
           */
@@ -250,11 +243,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
                              sn[ i ] );
 
          this->setResidue( fabs( s[ i + 1 ] ) / normb );
-         // The nextIteration() method should not be called here, because it increments
-         // the iteration counter. The condition below is slightly different than in
-         // nextIteration(), because it first increments and then compares.
-         if( this->getIterations() >= this->getMinIterations() && this->getResidue() < this->getConvergenceResidue() )
-         {
+         if( ! this->checkNextIteration() ) {
             update( i, m, _H, _s, _v, x );
             this->refreshSolverMonitor( true );
             return this->checkConvergence();
@@ -325,7 +314,7 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
       //cout << " y = " << y << endl;
       y[ i ] /= H[ i + i * ( m + 1 ) ];
       for( j = i - 1; j >= 0; j--)
-         y[ j ] -= H[ j + i * ( m + 1 ) ] * y[ i ];      
+         y[ j ] -= H[ j + i * ( m + 1 ) ] * y[ i ];
    }
 
    tnlSharedVector< RealType, DeviceType, IndexType > vi;

@@ -6,21 +6,15 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLFUNCTIONINVERSEOPERATOR_H
-#define	TNLFUNCTIONINVERSEOPERATOR_H
+#pragma once
 
 #include <core/tnlString.h>
 #include <core/tnlCuda.h>
 #include <operators/tnlOperator.h>
+
+namespace TNL {
 
 template< typename Operator >
 class tnlFunctionInverseOperator
@@ -32,24 +26,24 @@ class tnlFunctionInverseOperator
                       typename Operator::IndexType >
 {
    public:
-      
+ 
       typedef Operator OperatorType;
       typedef typename OperatorType::RealType RealType;
       typedef typename OperatorType::IndexType IndexType;
       typedef tnlFunctionInverseOperator< Operator > ThisType;
       typedef ThisType ExactOperatorType;
-      
-      
+ 
+ 
       tnlFunctionInverseOperator( const OperatorType& operator_ )
       : operator_( operator_ ) {};
-      
+ 
       static tnlString getType()
       {
-         return tnlString( "tnlFunctionInverseOperator< " ) + Operator::getType() + " >";         
+         return tnlString( "tnlFunctionInverseOperator< " ) + Operator::getType() + " >";
       }
-      
+ 
       const OperatorType& getOperator() const { return this->operator_; }
-      
+ 
       template< typename MeshFunction,
                 typename MeshEntity >
       __cuda_callable__
@@ -60,12 +54,11 @@ class tnlFunctionInverseOperator
       {
          return 1.0 / operator_( u, entity, time );
       }
-      
+ 
    protected:
-      
+ 
       const OperatorType& operator_;
 };
 
-
-#endif	/* TNLINVERSEFUNCTIONOPERATOR_H */
+} // namespace TNL
 

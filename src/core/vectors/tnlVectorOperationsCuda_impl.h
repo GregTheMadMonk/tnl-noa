@@ -6,21 +6,15 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLVECTOROPERATIONSCUDA_IMPL_H_
-#define TNLVECTOROPERATIONSCUDA_IMPL_H_
+#pragma once
 
 #include <tnlConfig.h>
 #include <core/cuda/cuda-prefix-sum.h>
 #include <core/cuda/tnlCublasWrapper.h>
+
+namespace TNL {
 
 template< typename Vector >
 void tnlVectorOperations< tnlCuda >::addElement( Vector& v,
@@ -53,7 +47,7 @@ typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorMax( cons
                           v. getSize(),
                           v. getData(),
                           ( Real* ) 0,
-                          result );   
+                          result );
    return result;
 }
 
@@ -112,7 +106,7 @@ typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorAbsMin( c
 }
 
 template< typename Vector >
-typename Vector::RealType 
+typename Vector::RealType
 tnlVectorOperations< tnlCuda >::
 getVectorL1Norm( const Vector& v )
 {
@@ -132,7 +126,7 @@ getVectorL1Norm( const Vector& v )
 }
 
 template< typename Vector >
-typename Vector::RealType 
+typename Vector::RealType
 tnlVectorOperations< tnlCuda >::
 getVectorL2Norm( const Vector& v )
 {
@@ -164,7 +158,7 @@ getVectorLpNorm( const Vector& v,
    tnlAssert( v. getSize() > 0, );
    tnlAssert( p > 0.0,
               cerr << " p = " << p );
-   
+ 
    if( p == 1 )
       return getVectorL1Norm( v );
    if( p == 2 )
@@ -485,7 +479,7 @@ void tnlVectorOperations< tnlCuda > :: addVector( Vector1& y,
       const Index& size = x.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
-      cudaBlocks.x = Min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
+      cudaBlocks.x = Min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
 
       vectorAddVectorCudaKernel<<< cudaBlocks, cudaBlockSize >>>( y.getData(),
                                                                   x.getData(),
@@ -558,7 +552,7 @@ addVectors( Vector1& v,
       const Index& size = v.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
-      cudaBlocks.x = Min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
+      cudaBlocks.x = Min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
 
       vectorAddVectorsCudaKernel<<< cudaBlocks, cudaBlockSize >>>( v.getData(),
                                                                    v1.getData(),
@@ -876,4 +870,4 @@ extern template long double tnlVectorOperations< tnlCuda >::getVectorDifferenceA
 
 #endif
 
-#endif /* TNLVECTOROPERATIONSCUDA_IMPL_H_ */
+} // namespace TNL

@@ -6,17 +6,9 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMEANCURVATUREFLOWPROBLEM_H_
-#define TNLMEANCURVATUREFLOWPROBLEM_H_
+#pragma once
 
 #include <operators/diffusion/tnlOneSidedMeanCurvature.h>
 #include <problems/tnlPDEProblem.h>
@@ -24,10 +16,12 @@
 #include <matrices/tnlCSRMatrix.h>
 #include <functions/tnlMeshFunction.h>
 
+namespace TNL {
+
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator = 
+          typename DifferentialOperator =
             tnlOneSidedMeanCurvature< Mesh,
                                       typename Mesh::RealType,
                                       typename Mesh::IndexType,
@@ -67,7 +61,7 @@ class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
       template< typename Matrix >
       bool setupLinearSystem( const MeshType& mesh,
                               Matrix& matrix );
-      
+ 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
                          const MeshType& mesh,
@@ -103,10 +97,11 @@ class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
       DifferentialOperator differentialOperator;
 
       BoundaryCondition boundaryCondition;
-   
+ 
       RightHandSide rightHandSide;
 };
 
-#include "tnlMeanCurvatureFlowProblem_impl.h"
 
-#endif /* TNLMEANCURVATUREFLOWPROBLEM_H_ */
+} // namespace TNL
+
+#include "tnlMeanCurvatureFlowProblem_impl.h"

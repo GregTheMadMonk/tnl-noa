@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNL_VIEW_H_
 #define TNL_VIEW_H_
@@ -40,11 +33,13 @@ bool getOutputFileName( const tnlString& inputFileName,
       outputFileName += ".gplt";
       return true;
    }
-   else
+   if( outputFormat == "vtk" )
    {
-      cerr << "Unknown file format " << outputFormat << ".";
-      return false;
+      outputFileName += ".vtk";
+      return true;
    }
+   cerr << "Unknown file format " << outputFormat << ".";
+   return false;
 }
 
 
@@ -113,7 +108,7 @@ bool setMeshEntityDimensions( const tnlGrid< 1, MeshReal, tnlHost, MeshIndex >& 
    {
       case 0:
          return setMeshEntityType< Mesh, 0 >( mesh, inputFileName, parsedObjectType, parameters );
-         break;      
+         break;
       case 1:
          return setMeshEntityType< Mesh, 1 >( mesh, inputFileName, parsedObjectType, parameters );
          break;
@@ -136,7 +131,7 @@ bool setMeshEntityDimensions( const tnlGrid< 2, MeshReal, tnlHost, MeshIndex >& 
    {
       case 0:
          return setMeshEntityType< Mesh, 0 >( mesh, inputFileName, parsedObjectType, parameters );
-         break;            
+         break;
       case 1:
          return setMeshEntityType< Mesh, 1 >( mesh, inputFileName, parsedObjectType, parameters );
          break;
@@ -162,7 +157,7 @@ bool setMeshEntityDimensions( const tnlGrid< 3, MeshReal, tnlHost, MeshIndex >& 
    {
       case 0:
          return setMeshEntityType< Mesh, 0 >( mesh, inputFileName, parsedObjectType, parameters );
-         break;      
+         break;
       case 1:
          return setMeshEntityType< Mesh, 1 >( mesh, inputFileName, parsedObjectType, parameters );
          break;
@@ -431,7 +426,7 @@ bool processFiles( const tnlParameterContainer& parameters )
             continue;
          }
          if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
-             parsedObjectType[ 0 ] == "tnlSharedMultiVector" ||      
+             parsedObjectType[ 0 ] == "tnlSharedMultiVector" ||
              parsedObjectType[ 0 ] == "tnlSharedVector" ||
              parsedObjectType[ 0 ] == "tnlVector" )
             setElementType< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );

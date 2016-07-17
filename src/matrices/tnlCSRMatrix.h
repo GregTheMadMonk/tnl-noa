@@ -6,20 +6,19 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCSRMATRIX_H_
-#define TNLCSRMATRIX_H_
+#pragma once 
 
 #include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
+
+namespace TNL {
+
+#ifdef HAVE_UMFPACK
+    template< typename Matrix, typename Preconditioner >
+    class tnlUmfpackWrapper;
+#endif
 
 template< typename Real >
 class tnlCusparseCSRMatrix;
@@ -63,7 +62,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    void reset();
 
-   __cuda_callable__ 
+   __cuda_callable__
    bool setElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value );
@@ -209,10 +208,14 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef tnlCSRMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlCSRMatrixDeviceDependentCode< DeviceType >;
    friend class tnlCusparseCSRMatrix< RealType >;
+#ifdef HAVE_UMFPACK
+    template< typename Matrix, typename Preconditioner >
+    friend class tnlUmfpackWrapper;
+#endif
 
 };
 
+} // namespace TNL
+
 #include <matrices/tnlCSRMatrix_impl.h>
 
-
-#endif /* TNLCSRMATRIX_H_ */

@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLVECTOR_H_IMPLEMENTATION
-#define TNLVECTOR_H_IMPLEMENTATION
+#pragma once 
 
 #include <core/vectors/tnlVectorOperations.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -401,4 +395,4 @@ extern template class tnlVector< long double, tnlCuda, long int >;
 
 #endif
 
-#endif /* TNLVECTOR_H_IMPLEMENTATION */
+} // namespace TNL

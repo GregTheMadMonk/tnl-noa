@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlMatrixSolverH
 #define tnlMatrixSolverH
@@ -21,7 +14,7 @@
 #include <core/tnlTimerCPU.h>
 #include <core/tnlTimerRT.h>
 #include <core/mpi-supp.h>
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <matrices/tnlMatrix.h>
 #include <legacy/solvers/tnlPreconditioner.h>
 
@@ -41,7 +34,7 @@ class tnlMatrixSolver : public tnlObject
    void setTimerCPU( tnlTimerCPU* timer );
 
    void setTimerRT( tnlTimerRT* timer );
-   
+ 
    virtual void printOut();
 
    virtual bool solve( const tnlMatrix< Real, Device, Index >& A,
@@ -65,11 +58,11 @@ class tnlMatrixSolver : public tnlObject
    Real residue;
 
    MPI_Comm solver_comm;
-   
+ 
    int verbosity;
 
    tnlTimerCPU* cpu_timer;
-   
+ 
    tnlTimerRT* rt_timer;
 
 };

@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXACTLINEARDIFFUSION_H_
-#define TNLEXACTLINEARDIFFUSION_H_
+#pragma once
 
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< int Dimensions >
 class tnlExactLinearDiffusion
@@ -30,9 +24,9 @@ class tnlExactLinearDiffusion< 1 > : public tnlDomain< 1, SpaceDomain >
    public:
 
       static const int Dimensions = 1;
-      
-      static tnlString getType();      
-   
+ 
+      static tnlString getType();
+ 
       template< typename Function >
       __cuda_callable__ inline
       typename Function::RealType operator()( const Function& function,
@@ -44,10 +38,10 @@ template<>
 class tnlExactLinearDiffusion< 2 > : public tnlDomain< 2, SpaceDomain >
 {
    public:
-      
+ 
       static const int Dimensions = 2;
-      
-      static tnlString getType();      
+ 
+      static tnlString getType();
 
       template< typename Function >
       __cuda_callable__ inline
@@ -60,9 +54,9 @@ template<>
 class tnlExactLinearDiffusion< 3 > : public tnlDomain< 3 >
 {
    public:
-      
+ 
       static const int Dimensions = 3;
-      
+ 
       static tnlString getType();
 
       template< typename Function >
@@ -72,6 +66,6 @@ class tnlExactLinearDiffusion< 3 > : public tnlDomain< 3 >
                                               const typename Function::RealType& time = 0.0 ) const;
 };
 
-#include <operators/diffusion/tnlExactLinearDiffusion_impl.h>
+} // namespace TNL
 
-#endif /* TNLEXACTLINEARDIFFUSION_H_ */
+#include <operators/diffusion/tnlExactLinearDiffusion_impl.h>

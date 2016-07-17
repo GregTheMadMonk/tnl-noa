@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLPROBLEM_H_
-#define TNLPROBLEM_H_
+#pragma once
 
 #include <matrices/tnlSlicedEllpackMatrix.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -32,5 +26,4 @@ class tnlProblem
       typedef Index IndexType;
 };
 
-
-#endif /* TNLPROBLEM_H_ */
+} //namespace TNL

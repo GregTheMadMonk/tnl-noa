@@ -6,17 +6,9 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCSRMATRIX_IMPL_H_
-#define TNLCSRMATRIX_IMPL_H_
+#pragma once
 
 #include <matrices/tnlCSRMatrix.h>
 #include <core/vectors/tnlVector.h>
@@ -25,7 +17,11 @@
 
 #ifdef HAVE_CUSPARSE
 #include <cusparse.h>
+#endif
 
+namespace TNL {
+
+#ifdef HAVE_CUSPARSE
 template< typename Real, typename Index >
 class tnlCusparseCSRWrapper {};
 #endif
@@ -717,7 +713,7 @@ class tnlCSRMatrixDeviceDependentCode< tnlHost >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const tnlCSRMatrix< Real, Device, Index >& matrix,      
+      static void vectorProduct( const tnlCSRMatrix< Real, Device, Index >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
@@ -726,8 +722,8 @@ class tnlCSRMatrixDeviceDependentCode< tnlHost >
          const InVector* inVectorPtr = &inVector;
          OutVector* outVectorPtr = &outVector;
 #ifdef HAVE_OPENMP
-#pragma omp parallel for firstprivate( matrixPtr, inVectorPtr, outVectorPtr ), schedule(static ), if( tnlOmp::isEnabled() )
-#endif         
+#pragma omp parallel for firstprivate( matrixPtr, inVectorPtr, outVectorPtr ), schedule(static ), if( tnlHost::isOMPEnabled() )
+#endif
          for( Index row = 0; row < rows; row ++ )
             ( *outVectorPtr )[ row ] = matrixPtr->rowVectorProduct( row, *inVectorPtr );
       }
@@ -843,10 +839,10 @@ template<>
 class tnlCusparseCSRWrapper< float, int >
 {
    public:
-      
+ 
       typedef float Real;
       typedef int Index;
-      
+ 
       static void vectorProduct( const Index rows,
                                  const Index columns,
                                  const Index nnz,
@@ -857,7 +853,7 @@ class tnlCusparseCSRWrapper< float, int >
                                  Real* y )
       {
          cusparseHandle_t   cusparseHandle;
-         cusparseMatDescr_t cusparseMatDescr;         
+         cusparseMatDescr_t cusparseMatDescr;
          cusparseCreate( &cusparseHandle );
          cusparseCreateMatDescr( &cusparseMatDescr );
          cusparseSetMatType( cusparseMatDescr, CUSPARSE_MATRIX_TYPE_GENERAL );
@@ -883,10 +879,10 @@ template<>
 class tnlCusparseCSRWrapper< double, int >
 {
    public:
-      
+ 
       typedef double Real;
       typedef int Index;
-      
+ 
       static void vectorProduct( const Index rows,
                                  const Index columns,
                                  const Index nnz,
@@ -897,7 +893,7 @@ class tnlCusparseCSRWrapper< double, int >
                                  Real* y )
       {
          cusparseHandle_t   cusparseHandle;
-         cusparseMatDescr_t cusparseMatDescr;         
+         cusparseMatDescr_t cusparseMatDescr;
          cusparseCreate( &cusparseHandle );
          cusparseCreateMatDescr( &cusparseMatDescr );
          cusparseSetMatType( cusparseMatDescr, CUSPARSE_MATRIX_TYPE_GENERAL );
@@ -936,7 +932,7 @@ class tnlCSRMatrixDeviceDependentCode< tnlCuda >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
-#ifdef HAVE_CUSPARSE         
+#ifdef HAVE_CUSPARSE
          tnlCusparseCSRWrapper< Real, Index >::vectorProduct( matrix.getRows(),
                                                               matrix.getColumns(),
                                                               matrix.values.getSize(),
@@ -947,11 +943,9 @@ class tnlCSRMatrixDeviceDependentCode< tnlCuda >
                                                               outVector.getData() );
 #else
          tnlCSRMatrixVectorProductCuda( matrix, inVector, outVector );
-#endif         
+#endif
       }
 
 };
 
-
-
-#endif /* TNLCSRMATRIX_IMPL_H_ */
+} // namespace TNL

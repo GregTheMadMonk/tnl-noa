@@ -6,17 +6,11 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMEANCURVATUREFLOWEOCPROBLEM_IMPL_H_
-#define TNLMEANCURVATUREFLOWEOCPROBLEM_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -38,11 +32,11 @@ tnlMeanCurvatureFlowEocProblem< Mesh, BoundaryCondition, RightHandSide, Differen
 setup( const tnlParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters ) ||
-       ! this->rightHandSide.setup( parameters ) || 
+       ! this->rightHandSide.setup( parameters ) ||
        ! this->differentialOperator.nonlinearDiffusionOperator.operatorQ.setEps(parameters.getParameter< double >("eps")) )
       return false;
-   
+ 
    return true;
 }
 
-#endif /* TNLMEANCURVATUREFLOWEOCPROBLEM_IMPL_H_ */
+} // namespace TNL

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNL_DIFF_H_
 #define TNL_DIFF_H_
@@ -119,7 +112,7 @@ bool computeDifferenceOfMeshFunctions( const Mesh& mesh, const tnlParameterConta
          outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
       }
       diff = v1;
-      diff -= v2;      
+      diff -= v2;
       Real l1Diff = diff.getLpNorm( 1.0 );
       Real l2Diff = diff.getLpNorm( 2.0 );
       Real maxDiff = diff.getMaxNorm();
@@ -321,7 +314,7 @@ bool setIndexType( const Mesh& mesh,
 
    if(parsedObjectType[ 0 ] == "tnlMeshFunction" )
       return computeDifference< Mesh, Element, Real, typename Mesh::IndexType >( mesh, parsedObjectType[ 0 ], parameters );
-   
+ 
    if( indexType == "int" )
       return computeDifference< Mesh, Element, Real, int >( mesh, parsedObjectType[ 0 ], parameters );
    if( indexType == "long-int" )

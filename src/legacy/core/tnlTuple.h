@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlStaticVectorH
 #define tnlStaticVectorH
@@ -81,7 +74,7 @@ class tnlStaticVector
    __host__ __device__
 #endif
    Real& operator[]( int i );
-   
+ 
    //! Returns the first coordinate
 #ifdef HAVE_CUDA
    __host__ __device__
@@ -154,7 +147,7 @@ class tnlStaticVector
 #endif
    tnlStaticVector operator * ( const Real& c ) const;
 
-   //! 
+   //!
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
@@ -735,11 +728,11 @@ template< int Size, typename Real >
 bool tnlStaticVector< Size, Real > :: save( tnlFile& file ) const
 {
    int size = Size;
-#ifdef HAVE_NOT_CXX11   
+#ifdef HAVE_NOT_CXX11
    if( ! file. write< int, tnlHost >( &size ) ||
        ! file. write< Real, tnlHost, int >( data, size ) )
       cerr << "Unable to write tnlStaticVector." << endl;
-#else   
+#else
    if( ! file. write( &size ) ||
        ! file. write( data, size ) )
       cerr << "Unable to write tnlStaticVector." << endl;
@@ -751,26 +744,26 @@ template< int Size, typename Real >
 bool tnlStaticVector< Size, Real > :: load( tnlFile& file)
 {
    int size;
-#ifdef HAVE_NOT_CXX11   
+#ifdef HAVE_NOT_CXX11
    if( ! file. read< int, tnlHost >( &size ) )
-#else   
+#else
    if( ! file. read( &size ) )
-#endif      
+#endif
    {
       cerr << "Unable to read tnlStaticVector." << endl;
       return false;
-   }   
+   }
    if( size != Size )
    {
       cerr << "You try to read tnlStaticVector with wrong size " << size
            << ". It should be " << Size << endl;
       return false;
    }
-#ifdef HAVE_NOT_CXX11   
+#ifdef HAVE_NOT_CXX11
    if( ! file. read< Real, tnlHost, int >( data, size ) )
 #else
    if( ! file. read( data, size ) )
-#endif      
+#endif
    {
       cerr << "Unable to read tnlStaticVector." << endl;
       return false;

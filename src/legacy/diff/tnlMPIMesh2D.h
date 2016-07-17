@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlMPIMesh2DH
 #define tnlMPIMesh2DH
@@ -46,7 +39,7 @@ class tnlMPIMesh< 2, Real, Device, Index >
               Index _overlap_width,
               int root = 0,
               MPI_Comm comm = MPI_COMM_WORLD );
-   
+ 
    //! Initiation by parametr container
    bool Init( const tnlGridOld< 2, Real, Device, Index >& u,
               const tnlParameterContainer& parameters,
@@ -157,7 +150,7 @@ class tnlMPIMesh< 2, Real, Device, Index >
 
    //! Scatter the function but only at the domains at the boundaries
    //void ScatterAtBoundaries( const tnlGridOld2D* u,
-   //                          tnlGridOld2D* sub_u ); 
+   //                          tnlGridOld2D* sub_u );
 
    //! Gather the function
    void Gather( tnlGridOld< 2, Real, Device, Index >& u,
@@ -166,7 +159,7 @@ class tnlMPIMesh< 2, Real, Device, Index >
 
    //! Synchronize domain edges
    void Synchronize( tnlGridOld< 2, Real, Device, Index >& u );
-   
+ 
    //! Get domain edges
    void DomainOverlaps( int& right, int& left,
                         int& bottom, int& top );
@@ -195,16 +188,16 @@ class tnlMPIMesh< 2, Real, Device, Index >
    int left_neighbour, right_neighbour, bottom_neighbour, top_neighbour,
        left_bottom_neighbour, right_bottom_neighbour,
        left_top_neighbour, right_top_neighbour;
-   
+ 
    //! Global domain dimensions
    Index domain_x_size, domain_y_size;
 
    //! Global domain size
    Real Ax, Bx, Ay, By;
-    
+ 
    //! The subdomain dimensions
    Index subdomain_x_size, subdomain_y_size;
-    
+ 
    //! The domain overlaps
    Index overlap_width, left_overlap, right_overlap, bottom_overlap, top_overlap;
 
@@ -222,7 +215,7 @@ class tnlMPIMesh< 2, Real, Device, Index >
         *top_left_recieve_buff,
         *top_right_recieve_buff;
 };
-               
+ 
 template< typename Real, typename Device, typename Index >
 void DrawSubdomains( const tnlMPIMesh< 2, Real, Device, Index >& mpi_mesh,
                      const tnlGridOld< 2, Real, Device, Index >* u,
@@ -256,7 +249,7 @@ tnlMPIMesh< 2, Real, Device, Index > :: tnlMPIMesh()
       top_left_recieve_buff( 0 ),
       top_right_recieve_buff( 0 )
       {};
-   
+ 
 template< typename Real, typename Device, typename Index  >
 bool tnlMPIMesh< 2, Real, Device, Index > :: Init( const tnlGridOld< 2, Real, Device, Index >& u,
                                                    int& _mesh_x_size,
@@ -293,9 +286,9 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: Init( const tnlGridOld< 2, Real, De
          return false;
       }
       MPI_Cart_coords( mesh_comm, MPIGetRank( mesh_comm ), 2, dims );
-      node_x_pos = dims[ 0 ];  
-      node_y_pos = dims[ 1 ];  
-      
+      node_x_pos = dims[ 0 ];
+      node_y_pos = dims[ 1 ];
+ 
       MPI_Cart_shift( mesh_comm, 0, 1, &left_neighbour, &right_neighbour );
       MPI_Cart_shift( mesh_comm, 1, 1, &bottom_neighbour, &top_neighbour );
       :: MPIBcast< int >( _overlap_width, 1, root );
@@ -341,21 +334,21 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: Init( const tnlGridOld< 2, Real, De
       domain_y_size = u. GetYSize();
       :: MPIBcast< int >( domain_x_size, 1, 0 );
       :: MPIBcast< int >( domain_y_size, 1, 0 );
-      
+ 
       subdomain_x_size = domain_x_size / mesh_x_size;
       subdomain_y_size = domain_y_size / mesh_y_size;
-      
+ 
       if( node_x_pos == mesh_x_size - 1 )
          subdomain_x_size = domain_x_size - subdomain_x_size * ( mesh_x_size - 1 );
-      
+ 
       if( node_y_pos == mesh_y_size - 1 )
          subdomain_y_size = domain_y_size - subdomain_y_size * ( mesh_y_size - 1 );
-      
+ 
       Ax = u. GetAx();
       Ay = u. GetAy();
       Bx = u. GetBx();
       By = u. GetBy();
-      
+ 
       :: MPIBcast< double >( Ax, 1, 0 );
       :: MPIBcast< double >( Ay, 1, 0 );
       :: MPIBcast< double >( Bx, 1, 0 );
@@ -387,7 +380,7 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: Init( const tnlGridOld< 2, Real, De
          bottom_left_send_buff = new T[ bottom_overlap * left_overlap ];
          bottom_left_recieve_buff = new T[ bottom_overlap * left_overlap ];
       }
-   
+ 
       if( bottom_overlap && right_overlap )
       {
          bottom_right_send_buff = new T[ bottom_overlap * right_overlap ];
@@ -403,15 +396,15 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: Init( const tnlGridOld< 2, Real, De
          top_right_send_buff = new T[ top_overlap * right_overlap ];
          top_right_recieve_buff = new T[ top_overlap * right_overlap ];
       }
-      cout << "Node " << MPIGetRank() 
-           << " has position (" << GetXPos() 
-           << ", " << GetYPos() 
-           << ") and dimensions " << GetSubdomainXSize() 
+      cout << "Node " << MPIGetRank()
+           << " has position (" << GetXPos()
+           << ", " << GetYPos()
+           << ") and dimensions " << GetSubdomainXSize()
            << " x " << GetSubdomainYSize() << endl;
 #else
       domain_x_size = u. getDimensions(). x();
       domain_y_size = u. getDimensions(). y();
-      
+ 
       Ax = u. getDomainLowerCorner(). x();
       Ay = u. getDomainLowerCorner(). y();
       Bx = u. getDomainUpperCorner(). x();
@@ -420,7 +413,7 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: Init( const tnlGridOld< 2, Real, De
 #endif
       return true;
    };
-   
+ 
 template< typename Real, typename Device, typename Index  >
 bool tnlMPIMesh< 2, Real, Device, Index > :: Init( const tnlGridOld< 2, Real, Device, Index >& u,
                                                    const tnlParameterContainer& parameters,
@@ -439,12 +432,12 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: SetGlobalDomain( tnlGridOld< 2, Rea
 {
    if( ! global_u. setDimensions( tnlStaticVector< 2, int >( domain_x_size, domain_y_size ) ) )
       return false;
-   
+ 
    global_u. setDomain( tnlStaticVector< 2, Real >( Ax, Ay ),
                         tnlStaticVector< 2, Real >( Bx, By ) );
    return true;
 }
-   
+ 
 template< typename Real, typename Device, typename Index  >
 bool tnlMPIMesh< 2, Real, Device, Index > :: CreateMesh( const tnlGridOld< 2, Real, Device, Index >& u,
                                                          tnlGridOld< 2, Real, Device, Index >& sub_u,
@@ -470,8 +463,8 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: CreateMesh( const tnlGridOld< 2, Re
    if( ! sub_u. SetNewDimensions( subdomain_x_size + left_overlap + right_overlap,
                                   subdomain_y_size + bottom_overlap + top_overlap ) )
    {
-      cerr << "Unable to allocate subdomain grids for '" << name 
-           << "' on the node ( " << node_x_pos << ", " << node_y_pos 
+      cerr << "Unable to allocate subdomain grids for '" << name
+           << "' on the node ( " << node_x_pos << ", " << node_y_pos
            << " rank " << MPIGetRank( original_comm ) << "." << endl;
       err = 1;
    }
@@ -480,7 +473,7 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: CreateMesh( const tnlGridOld< 2, Re
                         ay + ( node_y_pos * subdomain_y_size - bottom_overlap ) * hx,
                         ay + ( ( node_y_pos + 1 ) * subdomain_y_size + top_overlap - 1 ) * hx,
                         hx, hy );
-   //cout << "Node " << MPIGetRank() << " mesh size " 
+   //cout << "Node " << MPIGetRank() << " mesh size "
    //     << sub_u -> GetXSize() << "x" << sub_u -> GetYSize() << endl;
    MPI_Allreduce( &err, &all_err, 1, MPI_INT,MPI_SUM, mesh_comm );
    if( all_err != 0 ) return false;
@@ -515,8 +508,8 @@ void tnlMPIMesh< 2, Real, Device, Index > :: ScatterToNode( const tnlGridOld< 2,
       if( dest_x_pos < mesh_x_size - 1 ) dest_right_overlap = overlap_width;
       if( dest_y_pos > 0 ) dest_bottom_overlap = overlap_width;
       if( dest_y_pos < mesh_y_size - 1 ) dest_top_overlap = overlap_width;
-     
-      dbgCout( "dest edges LRLU " << 
+ 
+      dbgCout( "dest edges LRLU " <<
                dest_left_overlap << dest_right_overlap <<
                dest_bottom_overlap << dest_top_overlap );
 
@@ -531,7 +524,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: ScatterToNode( const tnlGridOld< 2,
                   ( dest_x_pos + 1 ) * subdomain_x_size + dest_right_overlap << " > x < " <<
                   dest_y_pos * subdomain_y_size - dest_bottom_overlap << ", " <<
                   ( dest_y_pos + 1 ) * subdomain_y_size + dest_top_overlap << " >" );
-      
+ 
       int i, j;
       const int i1 = dest_x_pos * subdomain_x_size - dest_left_overlap;
       const int i2 = ( dest_x_pos + 1 ) * subdomain_x_size + dest_right_overlap;
@@ -540,7 +533,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: ScatterToNode( const tnlGridOld< 2,
       for( i = i1; i < i2; i ++ )
          for( j = j1; j < j2; j ++ )
             ( *mpi_buff )( i - i1, j - j1 ) = u( i, j );
-      int buf_size = 
+      int buf_size =
          ( subdomain_x_size + dest_left_overlap + dest_right_overlap ) *
          ( subdomain_y_size + dest_bottom_overlap + dest_top_overlap );
       if( dest_node != root )
@@ -589,7 +582,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Scatter( const tnlGridOld< 2, Real,
    sub_u = u;
 #endif
 }
-    
+ 
 template< typename Real, typename Device, typename Index  >
 void tnlMPIMesh< 2, Real, Device, Index > :: Gather( tnlGridOld< 2, Real, Device, Index >& u,
                                                      const tnlGridOld< 2, Real, Device, Index >& sub_u,
@@ -597,7 +590,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Gather( tnlGridOld< 2, Real, Device
 {
    dbgFunctionName( "tnlMPIMesh", "Gather" );
 #ifdef HAVE_MPI
-   
+ 
    dbgMPIBarrier;
    dbgExpr( MPIGetRank( original_comm ) );
    if( MPIGetRank( original_comm ) == root )
@@ -608,7 +601,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Gather( tnlGridOld< 2, Real, Device
       for( src = 0; src < mesh_size; src ++ )
       {
          int coords[ 2 ];
-         MPI_Cart_coords( mesh_comm, src, 2, coords ); 
+         MPI_Cart_coords( mesh_comm, src, 2, coords );
          int src_x_pos = coords[ 0 ];
          int src_y_pos = coords[ 1 ];
 
@@ -624,22 +617,22 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Gather( tnlGridOld< 2, Real, Device
          if( src_y_pos < mesh_y_size - 1 ) src_top_overlap = overlap_width;
          if( src != root )
          {
-            
+ 
             dbgCout( "Allocating supporting buffer < " <<
                       src_x_pos * subdomain_x_size - src_left_overlap <<
                       ", " << ( src_x_pos + 1 ) * subdomain_x_size + src_right_overlap <<
                       " >x< " << src_y_pos * subdomain_y_size - src_bottom_overlap <<
                       ", " << ( src_y_pos + 1 ) * subdomain_y_size + src_top_overlap <<
                       " >" );
-                  
+ 
             tnlGridOld< 2, Real, Device, Index > mpi_buff( subdomain_x_size + src_left_overlap + src_right_overlap,
                                    subdomain_y_size + src_bottom_overlap + src_top_overlap,
                                    0.0, 1.0, 0.0, 1.0 );
-            int buf_size = 
+            int buf_size =
                ( subdomain_x_size + src_left_overlap + src_right_overlap ) *
                ( subdomain_y_size + src_bottom_overlap + src_top_overlap );
             dbgExpr( buf_size );
-            
+ 
             dbgCout( "RECEIVING data from node " << src  );
             MPI_Recv( mpi_buff. getData(),
                       buf_size * sizeof( T ),
@@ -707,17 +700,17 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
   int max_y = min_y + subdomain_y_size;
   int wdth = overlap_width;
   MPI_Status status;
-   
+ 
   MPI_Request lft_snd_rqst, rght_snd_rqst, lwr_snd_rqst, uppr_snd_rqst,
               lwr_lft_snd_rqst, lwr_rght_snd_rqst,
               uppr_lft_snd_rqst, uppr_rght_snd_rqst,
               lft_rcv_rqst, rght_rcv_rqst, lwr_rcv_rqst, uppr_rcv_rqst,
               lwr_lft_rcv_rqst, lwr_rght_rcv_rqst,
               uppr_lft_rcv_rqst, uppr_rght_rcv_rqst;
-  
-  
+ 
+ 
   dbgMPIBarrier;
-  
+ 
   //starting communication with the left neighbour
   if( left_neighbour != MPI_PROC_NULL )
   {
@@ -733,7 +726,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
                 0,
                 mesh_comm ,
                 &lft_snd_rqst );
-     
+ 
      dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the LEFT neighbour" );
      MPI_Irecv( left_recieve_buff,
                 wdth * subdomain_y_size * sizeof( T ),
@@ -744,7 +737,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
                 &lft_rcv_rqst );
   }
   dbgMPIBarrier;
-  
+ 
   // starting communication with the right neighbour
   if( right_neighbour != MPI_PROC_NULL )
   {
@@ -760,7 +753,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
                 0,
                 mesh_comm,
                 &rght_snd_rqst );
-     
+ 
      dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the RIGHT neighbour" );
      MPI_Irecv( right_recieve_buff,
                 wdth * subdomain_y_size * sizeof( T ),
@@ -771,7 +764,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
                 &rght_rcv_rqst );
   }
   dbgMPIBarrier;
-  
+ 
   // starting communication with the bottom neighbour
   if( bottom_neighbour != MPI_PROC_NULL )
   {
@@ -787,7 +780,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
                 0,
                 mesh_comm,
                 &lwr_snd_rqst );
-     
+ 
      dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the BOTTOM neighbour" );
      MPI_Irecv( bottom_recieve_buff,
                 wdth * subdomain_y_size * sizeof( T ),
@@ -814,7 +807,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
                 0,
                 mesh_comm,
                 &uppr_snd_rqst );
-     
+ 
      dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING data from the TOP neighbour" );
      MPI_Irecv( top_recieve_buff,
                 wdth * subdomain_y_size * sizeof( T ),
@@ -825,9 +818,9 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
                 &uppr_rcv_rqst );
   }
   dbgMPIBarrier;
-  
+ 
   int wdth_2 = wdth * wdth;
-  
+ 
   // starting communication with lower left neighbour
   if( left_bottom_neighbour != MPI_PROC_NULL )
   {
@@ -843,7 +836,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
                 0,
                 mesh_comm,
                 &lwr_lft_snd_rqst );
-     
+ 
      dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the BOTTOM LEFT neighbour." );
      MPI_Irecv( bottom_left_recieve_buff,
                 wdth_2 * sizeof( T ),
@@ -854,7 +847,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
                 &lwr_lft_rcv_rqst );
   }
   dbgMPIBarrier;
-  
+ 
   // starting communication with lower right neighbour
   if( right_bottom_neighbour != MPI_PROC_NULL )
   {
@@ -870,7 +863,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
                 0,
                 mesh_comm,
                 &lwr_rght_snd_rqst );
-     
+ 
      dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the BOTTOM RIGHT neighbour." );
      MPI_Irecv( bottom_right_recieve_buff,
                 wdth_2 * sizeof( T ),
@@ -897,7 +890,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
                 0,
                 mesh_comm,
                 &uppr_lft_snd_rqst );
-     
+ 
      dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the TOP LEFT neighbour." );
      MPI_Irecv( top_left_recieve_buff,
                 wdth_2 * sizeof( T ),
@@ -924,7 +917,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
                 0,
                 mesh_comm,
                 &uppr_rght_snd_rqst );
-     
+ 
      dbgCout( "node ( " << node_x_pos << ", " << node_y_pos << " ) - RECEIVING small square from the TOP RIGHT neighbour." );
      MPI_Irecv( top_right_recieve_buff,
                 wdth_2 * sizeof( T ),
@@ -948,7 +941,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
      MPI_Wait( &lft_snd_rqst, &status );
   }
   dbgMPIBarrier;
-  
+ 
   // finishing communication with the right neighbour
   if( right_neighbour != MPI_PROC_NULL )
   {
@@ -961,7 +954,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
      MPI_Wait( &rght_snd_rqst, &status );
   }
   dbgMPIBarrier;
-  
+ 
   // finishing communication with the lower neighbour
   if( bottom_neighbour != MPI_PROC_NULL )
   {
@@ -974,7 +967,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
      MPI_Wait( &lwr_snd_rqst, &status );
   }
   dbgMPIBarrier;
-  
+ 
   // finishing communication with the upper neighbour
   if( top_neighbour != MPI_PROC_NULL )
   {
@@ -987,8 +980,8 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
      MPI_Wait( &uppr_snd_rqst, &status );
   }
   dbgMPIBarrier;
-  
-  
+ 
+ 
   // finishing communication with the lower left neighbour
   if( left_bottom_neighbour != MPI_PROC_NULL  )
   {
@@ -1027,7 +1020,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
      MPI_Wait( &uppr_rght_snd_rqst, &status );
   }
   dbgMPIBarrier;
-  
+ 
   // finishing communication with the upper left neighbour
   if( left_top_neighbour != MPI_PROC_NULL )
   {
@@ -1039,7 +1032,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Synchronize( tnlGridOld< 2, Real, D
            top_left_recieve_buff[ j * wdth + i ];
      MPI_Wait( &uppr_lft_snd_rqst, &status );
   }
-  
+ 
   dbgCout( "Synchronisation done..." );
   dbgMPIBarrier;
 #endif

@@ -6,17 +6,11 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXACTDIFFERENCE_H
-#define	TNLEXACTDIFFERENCE_H
+#pragma once
+
+namespace TNL {
 
 template< int Dimensions,
           int XDerivative,
@@ -26,7 +20,7 @@ class tnlExactDifference
    : public tnlDomain< Dimensions, SpaceDomain >
 {
    public:
-      
+ 
       static tnlString getType()
       {
          return tnlString( "tnlExactDifference< " ) +
@@ -35,10 +29,10 @@ class tnlExactDifference
             tnlString( YDerivative ) + ", " +
             tnlString( ZDerivative ) + " >";
       }
-      
+ 
       template< typename Function >
       __cuda_callable__
-      typename Function::RealType operator()( 
+      typename Function::RealType operator()(
          const Function& function,
          const typename Function::VertexType& vertex,
          const typename Function::RealType& time = 0 ) const
@@ -47,11 +41,10 @@ class tnlExactDifference
             XDerivative,
             YDerivative,
             ZDerivative >(
-            vertex, 
+            vertex,
             time );
       }
 };
 
-
-#endif	/* TNLEXACTDIFFERENCE_H */
+} // namespace TNL
 

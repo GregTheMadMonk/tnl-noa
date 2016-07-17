@@ -6,22 +6,16 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLVECTOROPERATIONS_H_
-#define TNLVECTOROPERATIONS_H_
+#pragma once 
 
 #include <core/cuda/cuda-reduction.h>
 #include <core/cuda/reduction-operations.h>
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 template< typename Device >
 class tnlVectorOperations{};
@@ -56,10 +50,10 @@ class tnlVectorOperations< tnlHost >
 
    template< typename Vector >
    static typename Vector::RealType getVectorL1Norm( const Vector& v );
-   
+ 
    template< typename Vector >
    static typename Vector::RealType getVectorL2Norm( const Vector& v );
-   
+ 
    template< typename Vector >
    static typename Vector::RealType getVectorLpNorm( const Vector& v,
                                                      const typename Vector::RealType& p );
@@ -90,7 +84,7 @@ class tnlVectorOperations< tnlHost >
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceL2Norm( const Vector1& v1,
                                                            const Vector2& v2 );
-   
+ 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceLpNorm( const Vector1& v1,
                                                            const Vector2& v2,
@@ -99,8 +93,8 @@ class tnlVectorOperations< tnlHost >
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceSum( const Vector1& v1,
                                                                const Vector2& v2 );
-   
-   
+ 
+ 
    template< typename Vector >
    static void vectorScalarMultiplication( Vector& v,
                                            const typename Vector::RealType& alpha );
@@ -114,7 +108,7 @@ class tnlVectorOperations< tnlHost >
                           const Vector2& v,
                           const typename Vector2::RealType& multiplicator,
                           const typename Vector1::RealType& thisMultiplicator = 1.0 );
-   
+ 
    template< typename Vector1, typename Vector2, typename Vector3 >
    static void addVectors( Vector1& v,
                            const Vector2& v1,
@@ -162,17 +156,17 @@ class tnlVectorOperations< tnlCuda >
 
    template< typename Vector >
    static typename Vector::RealType getVectorAbsMin( const Vector& v );
-   
+ 
    template< typename Vector >
    static typename Vector::RealType getVectorL1Norm( const Vector& v );
-   
+ 
    template< typename Vector >
    static typename Vector::RealType getVectorL2Norm( const Vector& v );
-   
+ 
    template< typename Vector >
    static typename Vector::RealType getVectorLpNorm( const Vector& v,
                                                      const typename Vector::RealType& p );
-   
+ 
    template< typename Vector >
    static typename Vector::RealType getVectorSum( const Vector& v );
 
@@ -191,7 +185,7 @@ class tnlVectorOperations< tnlCuda >
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceAbsMin( const Vector1& v1,
                                                                 const Vector2& v2 );
-  
+ 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceL1Norm( const Vector1& v1,
                                                                 const Vector2& v2 );
@@ -199,7 +193,7 @@ class tnlVectorOperations< tnlCuda >
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceL2Norm( const Vector1& v1,
                                                                 const Vector2& v2 );
-  
+ 
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceLpNorm( const Vector1& v1,
                                                            const Vector2& v2,
@@ -208,7 +202,7 @@ class tnlVectorOperations< tnlCuda >
    template< typename Vector1, typename Vector2 >
    static typename Vector1::RealType getVectorDifferenceSum( const Vector1& v1,
                                                                const Vector2& v2 );
-   
+ 
    template< typename Vector >
    static void vectorScalarMultiplication( Vector& v,
                                            const typename Vector::RealType& alpha );
@@ -222,7 +216,7 @@ class tnlVectorOperations< tnlCuda >
                           const Vector2& x,
                           const typename Vector2::RealType& alpha,
                           const typename Vector1::RealType& thisMultiplicator = 1.0 );
-   
+ 
    template< typename Vector1, typename Vector2, typename Vector3 >
    static void addVectors( Vector1& v,
                            const Vector2& v1,
@@ -230,7 +224,7 @@ class tnlVectorOperations< tnlCuda >
                            const Vector3& v2,
                            const typename Vector3::RealType& multiplicator2,
                            const typename Vector1::RealType& thisMultiplicator = 1.0 );
-   
+ 
 
    template< typename Vector >
    static void computePrefixSum( Vector& v,
@@ -243,7 +237,8 @@ class tnlVectorOperations< tnlCuda >
                                           const typename Vector::IndexType end );
 };
 
+} // namespace TNL
+
 #include <core/vectors/tnlVectorOperationsHost_impl.h>
 #include <core/vectors/tnlVectorOperationsCuda_impl.h>
 
-#endif /* TNLVECTOROPERATIONS_H_ */

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include "tnl-view.h"
 #include <cstdlib>
@@ -40,7 +33,7 @@ void setupConfig( tnlConfigDescription& config )
    config.addEntry        < double >              ( "scale", "Multiply the function by given number.", 1.0 );
    config.addEntry        < tnlString >           ( "output-format", "Output file format.", "gnuplot" );
       config.addEntryEnum  < tnlString >             ( "gnuplot" );
-      config.addEntryEnum  < tnlString >             ( "vti" );
+      config.addEntryEnum  < tnlString >             ( "vtk" );
    config.addEntry        < int >                 ( "verbose", "Set the verbosity of the program.", 1 );
 
    config.addDelimiter( "Matrix settings:" );

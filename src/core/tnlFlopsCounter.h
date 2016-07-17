@@ -6,20 +6,11 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
+#pragma once
 
-
-#ifndef TNLFLOPSCOUNTER_H_
-#define TNLFLOPSCOUNTER_H_
-
+namespace TNL {
 
 class tnlFlopsCounter
 {
@@ -89,4 +80,4 @@ class tnlFlopsCounter
 
 extern tnlFlopsCounter tnl_flops_counter;
 
-#endif /* TNLFLOPSCOUNTER_H_ */
+} // namespace TNL

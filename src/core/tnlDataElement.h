@@ -6,17 +6,11 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef __mDATAELEMENT_H__
-#define __mDATAELEMENT_H__
+#pragma once
+
+namespace TNL {
 
 //! Data element for tnlList and mStack
 template< class T > class tnlDataElement
@@ -37,10 +31,10 @@ template< class T > class tnlDataElement
         previous( 0 ){};
 
    //! Constructor with given data and possibly pointer to next element
-   tnlDataElement( const T& dt, 
+   tnlDataElement( const T& dt,
                    tnlDataElement< T >* prv = 0,
                    tnlDataElement< T >* nxt = 0 )
-      : data( dt ), 
+      : data( dt ),
         next( nxt ),
         previous( prv ){};
 
@@ -67,4 +61,4 @@ template< class T > class tnlDataElement
 
 };
 
-#endif
+} // namespace TNL

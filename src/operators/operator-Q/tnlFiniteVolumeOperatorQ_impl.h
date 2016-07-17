@@ -1,9 +1,19 @@
+/***************************************************************************
+                          tnlFiniteVolumeOperatorQ_impl.h  -  description
+                             -------------------
+    begin                : Jan 25, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
 
-#ifndef TNLFINITEVOLUMEOPERATORQ_IMPL_H
-#define	TNLFINITEVOLUMEOPERATORQ_IMPL_H
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
 
 #include <operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
 #include <mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename MeshReal,
           typename Device,
@@ -614,4 +624,5 @@ operator()(
                this->template boundaryDerivative< MeshEntity, Vector,0,0,1 >( mesh, entity, u, time, 0, 0, -1 ) );
     return 0.0;
 }
-#endif	/* TNLFINITEVOLUMEOPERATORQ_IMPL_H */
+
+} // namespace TNL

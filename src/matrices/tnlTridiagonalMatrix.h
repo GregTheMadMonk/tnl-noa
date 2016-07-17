@@ -6,21 +6,15 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTRIDIAGONALMATRIX_H_
-#define TNLTRIDIAGONALMATRIX_H_
+#pragma once
 
 #include <matrices/tnlMatrix.h>
 #include <core/vectors/tnlVector.h>
 #include <matrices/tnlTridiagonalMatrixRow.h>
+
+namespace TNL {
 
 template< typename Device >
 class tnlTridiagonalMatrixDeviceDependentCode;
@@ -161,7 +155,7 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
    template< typename Real2, typename Index2 >
    void getTransposition( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
-#endif   
+#endif
 
    template< typename Vector >
    __cuda_callable__
@@ -192,7 +186,6 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
    friend class tnlTridiagonalMatrixDeviceDependentCode< DeviceType >;
 };
 
+} // namespace TNL
+
 #include <matrices/tnlTridiagonalMatrix_impl.h>
-
-
-#endif /* TNLTRIDIAGONALMATRIX_H_ */

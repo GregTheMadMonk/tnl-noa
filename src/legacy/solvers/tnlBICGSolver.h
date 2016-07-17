@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlBICGSolverH
 #define tnlBICGSolverH
@@ -35,10 +28,10 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
    {
       A_T = _A_T;
    };
-   
+ 
    bool Solve( const tnlMatrix< T >& A,
                const T* b,
-               T* x, 
+               T* x,
                const double& max_residue,
                const int max_iterations,
                tnlPreconditioner< T >* precond = 0 )
@@ -60,17 +53,17 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
 
       // r_0 = b - A x_0, p_0 = r_0
       // r^ast_0 = r_0, p^ast_0 = r^ast_0
-      
+ 
       //dbgCout( "Computing Ax" );
       A. VectorProduct( x, r );
-      
+ 
       //dbgCout( "Computing r_0, r_ast_0, p_0 and p_ast_0..." );
       for( i = 0; i < size; i ++ )
-         r[ i ] = r_ast[ i ] = 
+         r[ i ] = r_ast[ i ] =
          p[ i ] = p_ast[ i ] = b[ i ] - r[ i ];
-      
+ 
 
-      while( tnlMatrixSolver< T > :: iteration < max_iterations && 
+      while( tnlMatrixSolver< T > :: iteration < max_iterations &&
              tnlMatrixSolver< T > :: residue > max_residue )
       {
          //dbgCout( "Starting BiCG iteration " << iter + 1 );
@@ -88,7 +81,7 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
          }
          if( s2 == 0.0 ) alpha = 0.0;
          else alpha = s1 / s2;
-         
+ 
          // x_{j+1} = x_j + alpha_j * p_j
          // r_{j+1} = r_j - alpha_j * A * p_j
          //dbgCout( "Computing new x and new r." );
@@ -97,7 +90,7 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
             x[ i ] += alpha * p[ i ];
             r_new[ i ] = r[ i ] - alpha * tmp[ i ];
          }
-         
+ 
          //dbgCout( "Computing (A^T)p." );
          A_T -> VectorProduct( p_ast, tmp );
 
@@ -121,7 +114,7 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
             p[ i ] = r_new[ i ] + beta * p[ i ];
             p_ast[ i ] = r_ast_new[ i ] + beta * p_ast[ i ];
          }
-         
+ 
          T* q;
          q = r_new;
          r_new = r;
@@ -129,17 +122,17 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
          q = r_ast_new;
          r_ast_new = r_ast;
          r_ast = q;
-         
+ 
          if( tnlMatrixSolver< T > :: iteration % 10 == 0 )
          {
             tnlMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm, tmp );
-            if( tnlMatrixSolver< T > :: verbosity > 1 ) 
+            if( tnlMatrixSolver< T > :: verbosity > 1 )
                tnlMatrixSolver< T > :: PrintOut();
          }
          tnlMatrixSolver< T > :: iteration ++;
       }
       tnlMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm, r );
-      if( tnlMatrixSolver< T > :: verbosity > 0 ) 
+      if( tnlMatrixSolver< T > :: verbosity > 0 )
          tnlMatrixSolver< T > :: PrintOut();
    };
 
@@ -154,7 +147,7 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
                       const T* b,
                       const T* x,
                       const T& b_norm,
-                      T* tmp ) 
+                      T* tmp )
    {
       A. VectorProduct( x, tmp );
       T res = 0.0;

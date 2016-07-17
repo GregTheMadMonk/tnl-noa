@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 /***
  * Authors:
@@ -22,11 +15,11 @@
  */
 
 
-#ifndef TNLHEATEQUATIONEOCPROBLEM_H_
-#define TNLHEATEQUATIONEOCPROBLEM_H_
+#pragma once
 
 #include <problems/tnlHeatEquationProblem.h>
 
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -42,6 +35,6 @@ class tnlHeatEquationEocProblem : public tnlHeatEquationProblem< Mesh, BoundaryC
       bool setup( const tnlParameterContainer& parameters );
 };
 
-#include <problems/tnlHeatEquationEocProblem_impl.h>
+} //namespace TNL
 
-#endif /* TNLHEATEQUATIONEOCPROBLEM_H_ */
+#include <problems/tnlHeatEquationEocProblem_impl.h>

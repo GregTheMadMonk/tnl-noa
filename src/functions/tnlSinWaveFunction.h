@@ -6,28 +6,22 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSINWAVEFUNCTION_H_
-#define TNLSINWAVEFUNCTION_H_
+#pragma once
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< int dimensions,
           typename Real = double >
 class tnlSinWaveFunctionBase : public tnlDomain< dimensions, SpaceDomain >
 {
    public:
-      
+ 
    tnlSinWaveFunctionBase();
 
    bool setup( const tnlParameterContainer& parameters,
@@ -59,7 +53,7 @@ template< typename Real >
 class tnlSinWaveFunction< 1, Real > : public tnlSinWaveFunctionBase< 1, Real >
 {
    public:
-      
+ 
       typedef Real RealType;
       typedef tnlStaticVector< 1, RealType > VertexType;
 
@@ -75,10 +69,10 @@ class tnlSinWaveFunction< 1, Real > : public tnlSinWaveFunctionBase< 1, Real >
       __cuda_callable__
       RealType getPartialDerivative( const VertexType& v,
                                      const Real& time = 0.0 ) const;
-      
+ 
       __cuda_callable__
       RealType operator()( const VertexType& v,
-                           const Real& time = 0.0 ) const;      
+                           const Real& time = 0.0 ) const;
 
 };
 
@@ -86,10 +80,10 @@ template< typename Real >
 class tnlSinWaveFunction< 2, Real > : public tnlSinWaveFunctionBase< 2, Real >
 {
    public:
-            
+ 
       typedef Real RealType;
-      typedef tnlStaticVector< 2, RealType > VertexType;      
-      
+      typedef tnlStaticVector< 2, RealType > VertexType;
+ 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
@@ -102,23 +96,23 @@ class tnlSinWaveFunction< 2, Real > : public tnlSinWaveFunctionBase< 2, Real >
       __cuda_callable__
       RealType getPartialDerivative( const VertexType& v,
                                      const Real& time = 0.0 ) const;
-      
+ 
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
-      
+ 
 };
 
 template< typename Real >
 class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< 3, Real >
 {
-   public:      
-          
+   public:
+ 
       typedef Real RealType;
-      typedef tnlStaticVector< 3, RealType > VertexType;      
+      typedef tnlStaticVector< 3, RealType > VertexType;
 
 
-      
+ 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
@@ -131,11 +125,11 @@ class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< 3, Real >
       __cuda_callable__
       RealType getPartialDerivative( const VertexType& v,
                          const Real& time = 0.0 ) const;
-      
+ 
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
-      
+ 
 };
 
 template< int Dimensions,
@@ -148,6 +142,7 @@ ostream& operator << ( ostream& str, const tnlSinWaveFunction< Dimensions, Real 
    return str;
 }
 
+} // namespace TNL
+
 #include <functions/tnlSinWaveFunction_impl.h>
 
-#endif /* TNLSINWAVEFUNCTION_H_ */

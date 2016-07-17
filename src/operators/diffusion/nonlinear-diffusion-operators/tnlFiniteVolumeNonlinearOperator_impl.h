@@ -1,10 +1,18 @@
+/***************************************************************************
+                          tnlTraverser.h  -  description
+                             -------------------
+    begin                : Feb 17, 2016
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
 
-#ifndef TNLFINITEVOLUMENONLINEAROPERATOR__IMPL_H
-#define	TNLFINITEVOLUMENONLINEAROPERATOR__IMPL_H
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
 
 #include "tnlFiniteVolumeNonlinearOperator.h"
-
 #include <mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename MeshReal,
           typename Device,
@@ -71,7 +79,7 @@ template< typename MeshEntity,
 __cuda_callable__
 void
 tnlFiniteVolumeNonlinearOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,
@@ -155,7 +163,7 @@ template< typename MeshEntity,
 __cuda_callable__
 void
 tnlFiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,
@@ -268,7 +276,7 @@ __cuda_callable__
 #endif
 void
 tnlFiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
-updateLinearSystem( const RealType& time,
+setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
                     const IndexType& index,
@@ -306,4 +314,5 @@ updateLinearSystem( const RealType& time,
    matrixRow.setElement( 5, neighbourEntities.template getEntityIndex< 0,1,0 >(),  fCoef );
    matrixRow.setElement( 6, neighbourEntities.template getEntityIndex< 0,0,1 >(),  gCoef );
 }
-#endif	/* TNLFINITEVOLUMENONLINEAROPERATOR__IMPL_H */
+
+} // namespace TNL

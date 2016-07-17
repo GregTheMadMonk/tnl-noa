@@ -6,23 +6,17 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLPNGIMAGE_IMPL_H
-#define	TNLPNGIMAGE_IMPL_H
+#pragma once 
 
 #include <core/images/tnlPNGImage.h>
 
+namespace TNL {
+
 template< typename Index >
 tnlPNGImage< Index >::
-tnlPNGImage() : 
+tnlPNGImage() :
    fileOpen( false )
 {
 }
@@ -46,7 +40,7 @@ readHeader()
    bool isPNG = !png_sig_cmp( header, 0, headerSize );
    if( ! isPNG )
       return false;
-   
+ 
    /****
     * Allocate necessary memory
     */
@@ -87,7 +81,7 @@ readHeader()
    }
    png_init_io( this->png_ptr, this->file );
    png_set_sig_bytes( this->png_ptr, headerSize );
-   
+ 
    /****
     * Read the header
     */
@@ -97,11 +91,11 @@ readHeader()
    this->bit_depth = png_get_bit_depth( this->png_ptr, this->info_ptr );
    this->color_type = png_get_color_type( this->png_ptr, this->info_ptr );
    cout << this->height << " x " << this->width << endl;
-   return true;   
+   return true;
 #else
    //cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
    return false;
-#endif   
+#endif
 }
 
 template< typename Index >
@@ -135,7 +129,7 @@ read( const tnlRegionOfInterest< Index > roi,
 #ifdef HAVE_PNG_H
    typedef tnlGrid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
-   
+ 
    /***
     * Prepare the long jump back from libpng.
     */
@@ -146,9 +140,9 @@ read( const tnlRegionOfInterest< Index > roi,
                                &this->end_info );
       return false;
    }
-   
+ 
    png_bytepp row_pointers = png_get_rows( this->png_ptr, this->info_ptr );
-   
+ 
    Index i, j;
    for( i = 0; i < this->height; i ++ )
    {
@@ -156,7 +150,7 @@ read( const tnlRegionOfInterest< Index > roi,
       {
          if( !roi.isIn( i, j ) )
             continue;
-         
+ 
          cell.getCoordinates().x() = j - roi.getLeft();
          cell.getCoordinates().y() = roi.getBottom() - 1 - i;
          cell.refresh();
@@ -216,7 +210,7 @@ read( const tnlRegionOfInterest< Index > roi,
 #else
    //cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
    return false;
-#endif      
+#endif
 }
 
 template< typename Index >
@@ -241,7 +235,7 @@ writeHeader( const tnlGrid< 2, Real, Device, Index >& grid )
                                 NULL);
       return false;
    }
-   
+ 
    /***
     * Prepare the long jump back from libpng.
     */
@@ -257,24 +251,24 @@ writeHeader( const tnlGrid< 2, Real, Device, Index >& grid )
     * Set the zlib compression level
     */
    //png_set_compression_level( this->png_ptr, Z_BEST_COMPRESSION );
-   
+ 
    const int bitDepth( 8 );
    png_set_IHDR( this->png_ptr,
                  this->info_ptr,
                  grid.getDimensions().x(),
                  grid.getDimensions().y(),
-                 8, //bitDepth, 
+                 8, //bitDepth,
                  PNG_COLOR_TYPE_GRAY,
                  PNG_INTERLACE_NONE,
                  PNG_COMPRESSION_TYPE_DEFAULT,
                  PNG_FILTER_TYPE_DEFAULT );
    png_init_io( this->png_ptr, this->file );
    png_write_info( png_ptr, info_ptr );
-   
+ 
 #else
    cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
    return false;
-#endif    
+#endif
 }
 
 template< typename Index >
@@ -307,10 +301,10 @@ tnlPNGImage< Index >::
 write( const tnlGrid< 2, Real, Device, Index >& grid,
        Vector& vector )
 {
-#ifdef HAVE_PNG_H   
+#ifdef HAVE_PNG_H
    typedef tnlGrid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
-   
+ 
    /***
     * Prepare the long jump back from libpng.
     */
@@ -321,7 +315,7 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
                                &this->end_info );
       return false;
    }
-              
+ 
    Index i, j;
    png_bytep row = new png_byte[ 3 * grid.getDimensions().x() ];
    for( i = 0; i < grid.getDimensions().y(); i ++ )
@@ -334,7 +328,7 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
          //Index cellIndex = grid.getCellIndex( CoordinatesType( j,
          //                                     grid.getDimensions().y() - 1 - i ) );
 
-         row[ j ] = 255 * vector.getElement( cell.getIndex() );         
+         row[ j ] = 255 * vector.getElement( cell.getIndex() );
       }
       png_write_row( this->png_ptr, row );
    }
@@ -342,7 +336,7 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
    return true;
 #else
    return false;
-#endif   
+#endif
 }
 
 
@@ -363,6 +357,5 @@ tnlPNGImage< Index >::
    close();
 }
 
-
-#endif	/* TNLPNGIMAGE_IMPL_H */
+} // namespace TNL
 

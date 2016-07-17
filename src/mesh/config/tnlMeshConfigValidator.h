@@ -6,21 +6,15 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHCONFIGVALIDATOR_H
-#define	TNLMESHCONFIGVALIDATOR_H
+#pragma once
 
 #include <core/tnlAssert.h>
 #include <mesh/topologies/tnlMeshEntityTopology.h>
 #include <mesh/tnlDimensionsTag.h>
+
+namespace TNL {
 
 template< typename MeshConfig,
           typename MeshEntity,
@@ -28,11 +22,11 @@ template< typename MeshConfig,
 class tnlMeshConfigValidatorSubtopologyLayer :
 public tnlMeshConfigValidatorSubtopologyLayer< MeshConfig, MeshEntity, typename dimensions::Decrement >
 {
-   static_assert( ! MeshConfig::subentityStorage( MeshEntity(), dimensions::value ) || 
+   static_assert( ! MeshConfig::subentityStorage( MeshEntity(), dimensions::value ) ||
                     MeshConfig::entityStorage( MeshEntity::dimensions ), "entities of which subentities are stored must be stored" );
    static_assert( ! MeshConfig::subentityStorage( MeshEntity(), dimensions::value ) ||
                     MeshConfig::entityStorage( dimensions::value ), "entities that are stored as subentities must be stored");
-   static_assert( ! MeshConfig::subentityOrientationStorage( MeshEntity(), dimensions::value ) || 
+   static_assert( ! MeshConfig::subentityOrientationStorage( MeshEntity(), dimensions::value ) ||
                     MeshConfig::subentityStorage( MeshEntity(), dimensions::value ), "orientation can be stored only for subentities that are stored");
 };
 
@@ -67,10 +61,10 @@ class tnlMeshConfigValidatorSupertopologyLayer< MeshConfig, MeshEntity, tnlDimen
 template< typename MeshConfig, int dimensions >
 class tnlMeshConfigValidatorLayer :
  public tnlMeshConfigValidatorLayer< MeshConfig, dimensions - 1 >,
- public tnlMeshConfigValidatorSubtopologyLayer< MeshConfig, 
+ public tnlMeshConfigValidatorSubtopologyLayer< MeshConfig,
                                                 typename tnlMeshSubtopology< typename MeshConfig::CellTopology, dimensions >::Topology,
                                                 tnlDimensionsTag< dimensions - 1 > >,
- public tnlMeshConfigValidatorSupertopologyLayer< MeshConfig, 
+ public tnlMeshConfigValidatorSupertopologyLayer< MeshConfig,
                                                   typename tnlMeshSubtopology< typename MeshConfig::CellTopology, dimensions >::Topology,
                                                   tnlDimensionsTag< MeshConfig::CellTopology::dimensions > >
 {
@@ -87,7 +81,7 @@ class tnlMeshConfigValidatorLayer< MeshConfig, 0 >
 template< typename MeshConfig >
 class tnlMeshConfigValidatorLayerCell :
    public tnlMeshConfigValidatorLayer< MeshConfig, MeshConfig::CellTopology::dimensions - 1 >,
-   public tnlMeshConfigValidatorSubtopologyLayer< MeshConfig, 
+   public tnlMeshConfigValidatorSubtopologyLayer< MeshConfig,
                                                   typename MeshConfig::CellTopology,
                                                   tnlDimensionsTag< MeshConfig::CellTopology::dimensions - 1 > >
 {
@@ -109,6 +103,5 @@ class tnlMeshConfigValidator : public tnlMeshConfigValidatorLayerCell< MeshConfi
 	static_assert( MeshConfig::entityStorage( meshDimensions ), "mesh cells must be stored");
 };
 
-
-#endif	/* TNLMESHCONFIGVALIDATOR_H */
+} // namespace TNL
 

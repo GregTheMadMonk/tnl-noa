@@ -6,20 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLARRAY_H_
-#define TNLARRAY_H_
+#pragam once 
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/arrays/tnlSharedArray.h>
+
+namespace TNL {
 
 class tnlFile;
 class tnlHost;
@@ -29,7 +23,7 @@ class tnlSharedArray;
 
 /****
  * Array handles memory allocation and sharing of the same data between more Arrays.
- * 
+ *
  */
 template< typename Element,
           typename Device = tnlHost,
@@ -44,11 +38,11 @@ class tnlArray : public virtual tnlObject
       typedef tnlArray< Element, tnlHost, Index > HostType;
       typedef tnlArray< Element, tnlCuda, Index > CudaType;
       typedef tnlArray< Element, Device, Index > ThisType;
-      
+ 
       tnlArray();
-      
+ 
       tnlArray( const IndexType& size );
-      
+ 
       tnlArray( Element* data,
                 const IndexType& size );
 
@@ -131,15 +125,15 @@ class tnlArray : public virtual tnlObject
    #else
       template< typename IndexType2 = Index >
       void touch( IndexType2 touches = 1 ) const;
-   #endif      
+   #endif
 
       //! Method for saving the object to a file as a binary data.
       bool save( tnlFile& file ) const;
 
       //! Method for loading the object from a file as a binary data.
       bool load( tnlFile& file );
-      
-      //! This method loads data without reallocation. 
+ 
+      //! This method loads data without reallocation.
       /****
        * This is useful for loading data into shared arrays.
        * If the array was not initialize yet, common load is
@@ -147,9 +141,9 @@ class tnlArray : public virtual tnlObject
        * the size of array being loaded.
        */
       bool boundLoad( tnlFile& file );
-      
+ 
       bool boundLoad( const tnlString& fileName );
-      
+ 
       using tnlObject::load;
 
       using tnlObject::save;
@@ -157,7 +151,7 @@ class tnlArray : public virtual tnlObject
       ~tnlArray();
 
    protected:
-      
+ 
       void releaseData() const;
 
       //!Number of elements in array
@@ -167,7 +161,7 @@ class tnlArray : public virtual tnlObject
       mutable Element* data;
 
       /****
-       * Pointer to the originally allocated data. They might differ if one 
+       * Pointer to the originally allocated data. They might differ if one
        * long array is partitioned into more shorter arrays. Each of them
        * must know the pointer on allocated data because the last one must
        * deallocate the array. If outer data (not allocated by TNL) are bind
@@ -186,6 +180,7 @@ class tnlArray : public virtual tnlObject
 template< typename Element, typename Device, typename Index >
 ostream& operator << ( ostream& str, const tnlArray< Element, Device, Index >& v );
 
+} // namespace TNL
+
 #include <core/arrays/tnlArray_impl.h>
 
-#endif /* TNLARRAY_H_ */

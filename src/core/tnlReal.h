@@ -6,25 +6,15 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-
-
-#ifndef TNLREAL_H_
-#define TNLREAL_H_
+#pragma once
 
 #include <iostream>
 #include <math.h>
 #include <core/tnlFlopsCounter.h>
 
-using namespace std;
+namespace TNL {
 
 template< class T > class tnlReal
 {
@@ -425,7 +415,7 @@ template< class T > const tnlReal< T > log10( const tnlReal< T >& x )
 };
 
 template< class T >
-ostream& operator << ( ostream& str, const tnlReal< T >& v )
+std::ostream& operator << ( std::ostream& str, const tnlReal< T >& v )
 {
    str << v. Data();
    return str;
@@ -434,4 +424,4 @@ ostream& operator << ( ostream& str, const tnlReal< T >& v )
 typedef tnlReal< float > tnlFloat;
 typedef tnlReal< double > tnlDouble;
 
-#endif /* TNLREAL_H_ */
+} // namespace TNL

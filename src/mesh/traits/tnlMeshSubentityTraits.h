@@ -6,17 +6,9 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHSUBENTITYTRAITS_H_
-#define TNLMESHSUBENTITYTRAITS_H_
+#pragma once
 
 #include <core/arrays/tnlStaticArray.h>
 #include <core/arrays/tnlSharedArray.h>
@@ -24,6 +16,7 @@
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/topologies/tnlMeshEntityTopology.h>
 
+namespace TNL {
 
 template< typename MeshConfig, typename EntityTopology > class tnlMeshEntityOrientation;
 
@@ -32,12 +25,12 @@ template< typename MeshConfig,
           int Dimensions >
 class tnlMeshSubentityTraits
 {
-   public:   
+   public:
       static const bool storageEnabled = MeshConfig::subentityStorage( EntityTopology(), Dimensions );
-      static const bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimensions );      
+      static const bool orientationEnabled = MeshConfig::subentityOrientationStorage( EntityTopology(), Dimensions );
 
       typedef typename MeshConfig::GlobalIndexType                                GlobalIndexType;
-      typedef typename MeshConfig::LocalIndexType                                 LocalIndexType;      
+      typedef typename MeshConfig::LocalIndexType                                 LocalIndexType;
       typedef tnlMeshSubtopology< EntityTopology, Dimensions >                    Subtopology;
       typedef typename Subtopology::Topology                                      SubentityTopology;
       typedef tnlMeshEntity< MeshConfig, SubentityTopology >                      SubentityType;
@@ -70,6 +63,4 @@ class tnlMeshSubentityTraits
       static_assert( EntityTopology::dimensions > Dimensions, "You try to create subentities traits where subentity dimensions are not smaller than the entity dimensions." );
 };
 
-
-
-#endif /* TNLMESHSUBENTITYTRAITS_H_ */
+} // namespace TNL

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef tnlCGSolverH
 #define tnlCGSolverH
@@ -28,21 +21,21 @@ template< typename T > class tnlCGSolverOld : public tnlMatrixSolver< T >
    tnlCGSolverOld()
    : r( 0 ), new_r( 0 ), p( 0 ), Ap( 0 ), size( 0 )
    {};
-   
+ 
    bool Solve( const tnlMatrix< T >& A,
                const T* b,
-               T* x, 
+               T* x,
                const double& max_residue,
                const int max_iterations,
                tnlPreconditioner< T >* precond = 0 )
    {
       if( ! SetSize( A. GetSize() ) ) return false;
-      
+ 
       T alpha, beta, s1, s2;
       int i;
       tnlMatrixSolver< T > :: residue = max_residue + 1.0;
       tnlMatrixSolver< T > :: iteration = 0;
-      
+ 
       T b_norm( 0.0 );
       for( i = 0; i < size; i ++ )
          b_norm += b[ i ] * b[ i ];
@@ -52,14 +45,14 @@ template< typename T > class tnlCGSolverOld : public tnlMatrixSolver< T >
       A. VectorProduct( x, r );
       for( i = 0; i < size; i ++ )
          p[ i ] = r[ i ] = b[ i ] - r[ i ];
-      
+ 
 
-      while( tnlMatrixSolver< T > :: iteration < max_iterations && 
+      while( tnlMatrixSolver< T > :: iteration < max_iterations &&
              tnlMatrixSolver< T > :: residue > max_residue )
       {
          // 1. alpha_j = ( r_j, r_j ) / ( A * p_j, p_j )
          A. VectorProduct( p, Ap );
-         
+ 
          s1 = s2 = 0.0;
          for( i = 0; i < size; i ++ )
          {
@@ -69,11 +62,11 @@ template< typename T > class tnlCGSolverOld : public tnlMatrixSolver< T >
          // if s2 = 0 => p = 0 => r = 0 => we have the solution (provided A != 0)
          if( s2 == 0.0 ) alpha = 0.0;
          else alpha = s1 / s2;
-         
+ 
          // 2. x_{j+1} = x_j + \alpha_j p_j
          for( i = 0; i < size; i ++ )
             x[ i ] += alpha * p[ i ];
-         
+ 
          // 3. r_{j+1} = r_j - \alpha_j A * p_j
          for( i = 0; i < size; i ++ )
             new_r[ i ] = r[ i ] - alpha * Ap[ i ];
@@ -92,22 +85,22 @@ template< typename T > class tnlCGSolverOld : public tnlMatrixSolver< T >
          // 5. p_{j+1} = r_{j+1} + beta_j * p_j
          for( i = 0; i < size; i ++ )
             p[ i ] = new_r[ i ] + beta * p[ i ];
-     
+ 
          // 6. r_{j+1} = new_r
          T* tmp = r;
          r = new_r;
          new_r = tmp;
-         
+ 
          if( tnlMatrixSolver< T > :: iteration % 10 == 0 )
          {
             tnlMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm, tmp );
-            if( tnlMatrixSolver< T > :: verbosity > 1 ) 
+            if( tnlMatrixSolver< T > :: verbosity > 1 )
                tnlMatrixSolver< T > :: PrintOut();
          }
          tnlMatrixSolver< T > :: iteration ++;
       }
       tnlMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm, r );
-      if( tnlMatrixSolver< T > :: verbosity > 0 ) 
+      if( tnlMatrixSolver< T > :: verbosity > 0 )
          tnlMatrixSolver< T > :: PrintOut();
    };
 
@@ -122,7 +115,7 @@ template< typename T > class tnlCGSolverOld : public tnlMatrixSolver< T >
                       const T* b,
                       const T* x,
                       const T& b_norm,
-                      T* tmp ) 
+                      T* tmp )
    {
       A. VectorProduct( x, tmp );
       T res = 0.0;

@@ -6,21 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLELLPACKINDEXMULTIMAPVALUES_IMPL_H
-#define TNLELLPACKINDEXMULTIMAPVALUES_IMPL_H
+#pragma once
 
 #include "tnlEllpackIndexMultimapValues.h"
 
-
+namespace TNL {
+ 
 template< typename Index,
           typename Device >
 tnlEllpackIndexMultimapValues< Index, Device >::
@@ -31,7 +24,7 @@ tnlEllpackIndexMultimapValues()
 template< typename Index,
           typename Device >
 tnlEllpackIndexMultimapValues< Index, Device >::
-tnlEllpackIndexMultimapValues( IndexType* networkPorts, 
+tnlEllpackIndexMultimapValues( IndexType* networkPorts,
                         const IndexType input,
                         const IndexType portsMaxCount )
 {
@@ -50,7 +43,7 @@ getPortsCount() const
 
 template< typename Index,
           typename Device >
-void 
+void
 tnlEllpackIndexMultimapValues< Index, Device >::
 setOutput( const IndexType portIndex,
            const IndexType output )
@@ -110,5 +103,5 @@ std::ostream& operator << ( std::ostream& str, const tnlEllpackIndexMultimapValu
    return str;
 }
 
-#endif	/* TNLELLPACKGRAPHLINKSACCESSOR_IMPL_H */
+} // namespace TNL
 

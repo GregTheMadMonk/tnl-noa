@@ -6,21 +6,15 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMATRIX_H_
-#define TNLMATRIX_H_
+#pragma once
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/tnlHost.h>
 #include <core/vectors/tnlVector.h>
+
+namespace TNL {
 
 template< typename Real = double,
           typename Device = tnlHost,
@@ -131,7 +125,6 @@ void tnlMatrixVectorProductCuda( const Matrix& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector );
 
+} // namespace TNL
 
 #include <matrices/tnlMatrix_impl.h>
-
-#endif /* TNLMATRIX_H_ */

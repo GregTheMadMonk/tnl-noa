@@ -6,19 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITYSEEDKEY_H_
-#define TNLMESHENTITYSEEDKEY_H_
+#pragma once
 
 #include <mesh/tnlDimensionsTag.h>
+
+namespace TNL {
 
 template< typename MeshConfig,
           typename EntityTopology >
@@ -49,7 +43,7 @@ class tnlMeshEntitySeedKey
 
    explicit tnlMeshEntitySeedKey( const EntitySeedType& entitySeed )
    {
-      for( typename StorageArrayType::IndexType i = 0; 
+      for( typename StorageArrayType::IndexType i = 0;
            i < entitySeed.getCornersCount();
            i++ )
          this->sortedCorners[ i ] = entitySeed.getCornerIds()[ i ];
@@ -76,5 +70,4 @@ class tnlMeshEntitySeedKey
    StorageArrayType sortedCorners;
 };
 
-
-#endif /* TNLMESHENTITYKSEEDEY_H_ */
+} // namespace TNL

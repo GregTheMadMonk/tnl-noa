@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLOPERATORFUNCTIONTEST_H
 #define	TNLOPERATORFUNCTIONTEST_H
@@ -48,7 +41,7 @@ class tnlOperatorFunctionTest
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef typename MeshType::VertexType VertexType;
    typedef tnlExpBumpFunction< MeshType::getMeshDimensions(), RealType > TestFunctionType;
-   typedef tnlMeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;   
+   typedef tnlMeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
 
    tnlOperatorFunctionTest(){};
 
@@ -64,7 +57,7 @@ class tnlOperatorFunctionTest
       suiteOfTests -> addTest( new TestCallerType( "testWithBoundaryConditions", &TesterType::testWithBoundaryConditions ) );
       return suiteOfTests;
    }
-   
+ 
    void testWithNoBoundaryConditions()
    {
       MeshType mesh;
@@ -84,15 +77,15 @@ class tnlOperatorFunctionTest
       {
          auto entity = mesh.template getEntity< typename MeshType::Cell >( i );
          entity.refresh();
-         
+ 
          if( ! entity.isBoundaryEntity() )
          {
             //cerr << entity.getIndex() << " " << operator_( f1, entity ) << " " << operatorFunction( entity ) << endl;
             CPPUNIT_ASSERT( operator_( f1, entity ) == operatorFunction( entity ) );
          }
-      }            
+      }
    }
-   
+ 
    void testWithBoundaryConditions()
    {
       MeshType mesh;
@@ -102,11 +95,11 @@ class tnlOperatorFunctionTest
       mesh.setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
       TestFunctionType testFunction;
       testFunction.setAmplitude( 1.0 );
-      testFunction.setSigma( 1.0 );      
+      testFunction.setSigma( 1.0 );
       MeshFunctionType f1( mesh );
       f1 = testFunction;
       OperatorType operator_;
-      BoundaryConditionsType boundaryConditions;      
+      BoundaryConditionsType boundaryConditions;
       OperatorFunctionType operatorFunction( operator_, boundaryConditions, f1 );
       operatorFunction.refresh();
       //cerr << f1.getData() << endl;
@@ -121,11 +114,11 @@ class tnlOperatorFunctionTest
             //cerr << entity.getIndex() << " " << operator_( f1, entity ) << " " << operatorFunction( entity ) << endl;
             CPPUNIT_ASSERT( operator_( f1, entity ) == operatorFunction( entity ) );
          }
-      }            
-   }   
+      }
+   }
 };
 #endif
-   
+ 
 template< typename MeshType >
 bool runTest()
 {
@@ -139,7 +132,7 @@ bool runTest()
    return true;
 #else
    return false;
-#endif        
+#endif
 }
 
 int main( int argc, char* argv[] )

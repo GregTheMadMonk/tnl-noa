@@ -6,31 +6,25 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCONSTANTFUNCTION_H_
-#define TNLCONSTANTFUNCTION_H_
+#pragma once 
 
 #include <iostream>
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< int dimensions,
           typename Real = double >
 class tnlConstantFunction : public tnlDomain< dimensions, NonspaceDomain >
 {
    public:
-      
+ 
       typedef Real RealType;
-      typedef tnlStaticVector< dimensions, RealType > VertexType;      
-      
+      typedef tnlStaticVector< dimensions, RealType > VertexType;
+ 
       tnlConstantFunction();
 
       static void configSetup( tnlConfigDescription& config,
@@ -62,7 +56,7 @@ class tnlConstantFunction : public tnlDomain< dimensions, NonspaceDomain >
       {
          return constant;
       }
-      
+ 
        __cuda_callable__ inline
       RealType getValue( const Real& time = 0.0 ) const
       {
@@ -82,6 +76,7 @@ std::ostream& operator << ( std::ostream& str, const tnlConstantFunction< dimens
    return str;
 }
 
+} //namespace TNL
+
 #include <functions/tnlConstantFunction_impl.h>
 
-#endif /* TNLCONSTANTFUNCTION_H_ */

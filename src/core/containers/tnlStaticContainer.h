@@ -6,20 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICCONTAINER_H_
-#define TNLSTATICCONTAINER_H_
+#pragma once
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/arrays/tnlStaticArray.h>
+
+namespace TNL {
 
 template< int Size, typename Element >
 class tnlStaticContainer : public tnlObject
@@ -55,7 +49,7 @@ class tnlStaticContainer : public tnlObject
    tnlStaticArray< Size, Element > data;
 };
 
+} // namespace TNL
+
 #include <core/containers/tnlStaticContainer_impl.h>
 
-
-#endif /* TNLSTATICCONTAINER_H_ */

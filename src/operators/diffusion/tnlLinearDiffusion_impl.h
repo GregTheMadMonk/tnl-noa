@@ -6,20 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLLINEARDIFFUSION_IMP_H
-#define	TNLLINEARDIFFUSION_IMP_H
+#pragma once
 
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include <mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename MeshReal,
           typename Device,
@@ -65,7 +59,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename MeshEntity >          
+   template< typename MeshEntity >
 __cuda_callable__
 inline
 Index
@@ -82,28 +76,30 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename MeshEntity,
-             typename Vector, 
-             typename Matrix >
+   template< typename PreimageFunction,
+             typename MeshEntity,
+             typename Matrix,
+             typename Vector >
 __cuda_callable__
 inline
 void
 tnlLinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
-updateLinearSystem( const RealType& time,
-                    const RealType& tau,
-                    const MeshType& mesh,
-                    const IndexType& index,
-                    const MeshEntity& entity,
-                    const MeshFunction< 1 >& u,
-                    Vector& b,
-                    Matrix& matrix ) const
+setMatrixElements( const PreimageFunction& u,
+                   const MeshEntity& entity,
+                   const RealType& time,
+                   const RealType& tau,
+                   Matrix& matrix,
+                   Vector& b ) const
 {
+   static_assert( MeshEntity::entityDimensions == 1, "Wrong mesh entity dimensions." );
+   static_assert( PreimageFunction::getEntitiesDimensions() == 1, "Wrong preimage function" );
    const typename MeshEntity::template NeighbourEntities< 1 >& neighbourEntities = entity.getNeighbourEntities();
+   const IndexType& index = entity.getIndex();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   const RealType lambdaX = tau * mesh.template getSpaceStepsProducts< -2 >();
+   const RealType lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2 >();
    matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< -1 >(),      - lambdaX );
    matrixRow.setElement( 1, index,                                              2.0 * lambdaX );
-   matrixRow.setElement( 2, neighbourEntities.template getEntityIndex< 1 >(),       - lambdaX );   
+   matrixRow.setElement( 2, neighbourEntities.template getEntityIndex< 1 >(),       - lambdaX );
 }
 
 template< typename MeshReal,
@@ -171,26 +167,28 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename Vector,
+   template< typename PreimageFunction,
+             typename MeshEntity,
              typename Matrix,
-             typename EntityType >
+             typename Vector >
 __cuda_callable__
 inline
 void
 tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
-updateLinearSystem( const RealType& time,
-                    const RealType& tau,
-                    const MeshType& mesh,
-                    const IndexType& index,
-                    const EntityType& entity,
-                    const MeshFunction< 2 >& u,
-                    Vector& b,
-                    Matrix& matrix ) const
+setMatrixElements( const PreimageFunction& u,
+                   const MeshEntity& entity,
+                   const RealType& time,
+                   const RealType& tau,
+                   Matrix& matrix,
+                   Vector& b ) const
 {
+   static_assert( MeshEntity::entityDimensions == 2, "Wrong mesh entity dimensions." );
+   static_assert( PreimageFunction::getEntitiesDimensions() == 2, "Wrong preimage function" );
+   const IndexType& index = entity.getIndex();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   const RealType lambdaX = tau * mesh.template getSpaceStepsProducts< -2, 0 >();
-   const RealType lambdaY = tau * mesh.template getSpaceStepsProducts< 0, -2 >();
-   const typename EntityType::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
+   const RealType lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2, 0 >();
+   const RealType lambdaY = tau * entity.getMesh().template getSpaceStepsProducts< 0, -2 >();
+   const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities();
    matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, -1 >(), -lambdaY );
    matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< -1, 0 >(), -lambdaX );
    matrixRow.setElement( 2, index,                                                        2.0 * ( lambdaX + lambdaY ) );
@@ -249,7 +247,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename EntityType >          
+   template< typename EntityType >
 __cuda_callable__
 inline
 Index
@@ -266,27 +264,29 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-   template< typename Vector,
+   template< typename PreimageFunction,
+             typename MeshEntity,
              typename Matrix,
-             typename EntityType >
+             typename Vector >
 __cuda_callable__
 inline
 void
 tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
-updateLinearSystem( const RealType& time,
-                    const RealType& tau,
-                    const MeshType& mesh,
-                    const IndexType& index,
-                    const EntityType& entity,
-                    const MeshFunction< 3 >& u,
-                    Vector& b,
-                    Matrix& matrix ) const
+setMatrixElements( const PreimageFunction& u,
+                   const MeshEntity& entity,
+                   const RealType& time,
+                   const RealType& tau,
+                   Matrix& matrix,
+                   Vector& b ) const
 {
-   const typename EntityType::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+   static_assert( MeshEntity::entityDimensions == 3, "Wrong mesh entity dimensions." );
+   static_assert( PreimageFunction::getEntitiesDimensions() == 3, "Wrong preimage function" );
+   const typename MeshEntity::template NeighbourEntities< 3 >& neighbourEntities = entity.getNeighbourEntities();
+   const IndexType& index = entity.getIndex();
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-   const RealType lambdaX = tau * mesh.template getSpaceStepsProducts< -2, 0, 0 >();
-   const RealType lambdaY = tau * mesh.template getSpaceStepsProducts< 0, -2, 0 >();
-   const RealType  lambdaZ = tau * mesh.template getSpaceStepsProducts< 0, 0, -2 >();
+   const RealType lambdaX = tau * entity.getMesh().template getSpaceStepsProducts< -2, 0, 0 >();
+   const RealType lambdaY = tau * entity.getMesh().template getSpaceStepsProducts< 0, -2, 0 >();
+   const RealType lambdaZ = tau * entity.getMesh().template getSpaceStepsProducts< 0, 0, -2 >();
    matrixRow.setElement( 0, neighbourEntities.template getEntityIndex< 0, 0, -1 >(), -lambdaZ );
    matrixRow.setElement( 1, neighbourEntities.template getEntityIndex< 0, -1, 0 >(), -lambdaY );
    matrixRow.setElement( 2, neighbourEntities.template getEntityIndex< -1, 0, 0 >(), -lambdaX );
@@ -296,4 +296,4 @@ updateLinearSystem( const RealType& time,
    matrixRow.setElement( 6, neighbourEntities.template getEntityIndex< 0, 0, 1 >(),   -lambdaZ );
 }
 
-#endif	/* TNLLINEARDIFFUSION_IMP_H */
+} // namespace TNL

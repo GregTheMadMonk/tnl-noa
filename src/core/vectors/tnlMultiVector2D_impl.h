@@ -6,19 +6,11 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMULTIVECTOR2D_IMPL_H_
-#define TNLMULTIVECTOR2D_IMPL_H_
+#pragma once
 
-
+namespace TNL {
 
 template< typename Real, typename Device, typename Index >
 tnlMultiVector< 2, Real, Device, Index > :: tnlMultiVector()
@@ -273,5 +265,4 @@ extern template class tnlMultiVector< 2, double, tnlCuda, long int >;
 
 #endif
 
-
-#endif /* TNLMULTIVECTOR2D_IMPL_H_ */
+} // namespace TNL

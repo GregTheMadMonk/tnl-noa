@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMESHENTITYTESTER_H_
 #define TNLMESHENTITYTESTER_H_
@@ -30,7 +23,7 @@
 #include <mesh/topologies/tnlMeshEdgeTopology.h>
 #include <mesh/topologies/tnlMeshTriangleTopology.h>
 #include <mesh/topologies/tnlMeshTetrahedronTopology.h>
-    
+ 
 //typedef tnlMeshConfigBase< tnlMeshTriangleTopology, 2, double, int, int, void > TestTriangleEntityTopology;
 typedef tnlMeshConfigBase< tnlMeshEdgeTopology, 2, double, int, int, void > TestEdgeEntityTopology;
 typedef tnlMeshConfigBase< tnlMeshVertexTopology, 2, double, int, int, void > TestVertexEntityTopology;
@@ -38,35 +31,35 @@ typedef tnlMeshConfigBase< tnlMeshVertexTopology, 2, double, int, int, void > Te
 class TestTriangleMeshConfig : public tnlMeshConfigBase< tnlMeshTriangleTopology >
 {
    public:
-      
+ 
       template< typename MeshEntity >
       static constexpr bool subentityStorage( MeshEntity entity, int subentityDimensions )
       {
          return true;
-      }  
-      
+      }
+ 
       template< typename MeshEntity >
       static constexpr bool superentityStorage( MeshEntity entity, int superentityDimensions )
       {
          return true;
-      }  
+      }
 };
 
 class TestTetrahedronMeshConfig : public tnlMeshConfigBase< tnlMeshTetrahedronTopology >
 {
    public:
-      
+ 
       template< typename MeshEntity >
       static constexpr bool subentityStorage( MeshEntity entity, int subentityDimensions )
       {
          return true;
-      }  
-      
+      }
+ 
       template< typename MeshEntity >
       static constexpr bool superentityStorage( MeshEntity entity, int superentityDimensions )
       {
          return true;
-      }  
+      }
 };
 
 template< typename RealType, typename Device, typename IndexType >
@@ -94,7 +87,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
 
       return suiteOfTests;
    }
-       
+ 
 
    void vertexMeshEntityTest()
    {
@@ -116,7 +109,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
    {
       typedef tnlMeshEntity< TestEdgeEntityTopology, tnlMeshEdgeTopology > EdgeMeshEntityType;
       typedef tnlMeshEntity< TestEdgeEntityTopology, tnlMeshVertexTopology > VertexMeshEntityType;
-      
+ 
       typedef typename VertexMeshEntityType::PointType PointType;
       CPPUNIT_ASSERT( PointType::getType() == ( tnlStaticVector< 2, RealType >::getType() ) );
 
@@ -124,13 +117,13 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
        *
        * Here we test the following simple example:
        *
-       
-                point2   
+ 
+                point2
                    |\
                    | \
                    |  \
                    |   \
-               
+ 
                      ....
                 edge1     edge0
                      ....
@@ -142,11 +135,11 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
                 point0   edge2        point1
 
        */
-      
+ 
       PointType point0( 0.0, 0.0 ),
                 point1( 1.0, 0.0 ),
                 point2( 0.0, 1.0 );
-      
+ 
       tnlStaticArray< 3, VertexMeshEntityType > vertexEntities;
       vertexEntities[ 0 ].setPoint( point0 );
       vertexEntities[ 1 ].setPoint( point1 );
@@ -258,7 +251,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
                 point1( 1.0, 0.0, 0.0 ),
                 point2( 0.0, 1.0, 0.0 ),
                 point3( 0.0, 0.0, 1.0 );
-      
+ 
       tnlStaticArray< tnlMeshSubtopology< tnlMeshTetrahedronTopology, 0 >::count,
                       VertexMeshEntityType > vertexEntities;
 
@@ -455,7 +448,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
        CPPUNIT_ASSERT( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 0 ) == 0 );
        CPPUNIT_ASSERT( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 1 ) == 3 );
        CPPUNIT_ASSERT( triangleEntities[ 1 ].template getSubentityIndex< 1 >( 2 ) == 4 );
-         
+ 
        /*vertexEntities[ 0 ].template setNumberOfSuperentities< 1 >( 2 );
        vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 0, 2 );
        vertexEntities[ 0 ].template setSuperentityIndex< 1 >( 1, 1 );

@@ -6,27 +6,21 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSINBUMPSFUNCTION_H_
-#define TNLSINBUMPSFUNCTION_H_
+#pragma once
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlDomain.h>
 
+namespace TNL {
+
 template< typename Vertex >
 class tnlSinBumpsFunctionBase : public tnlDomain< Vertex::size, SpaceDomain >
 {
    public:
-      
+ 
       typedef Vertex VertexType;
       typedef typename Vertex::RealType RealType;
       enum { Dimensions = VertexType::size };
@@ -59,9 +53,9 @@ template< typename Real >
 class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStaticVector< 1, Real > >
 {
    public:
-      
+ 
       typedef Real RealType;
-      typedef tnlStaticVector< 1, RealType > VertexType;      
+      typedef tnlStaticVector< 1, RealType > VertexType;
 
 
       tnlSinBumpsFunction();
@@ -81,11 +75,11 @@ class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStati
       __cuda_callable__
       RealType getPartialDerivative( const VertexType& v,
                                      const Real& time = 0.0 ) const;
-      
+ 
    __cuda_callable__
    RealType operator()( const VertexType& v,
                         const Real& time = 0.0 ) const;
-      
+ 
 };
 
 template< typename Real >
@@ -94,8 +88,8 @@ class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStatic
    public:
 
       typedef Real RealType;
-      typedef tnlStaticVector< 2, RealType > VertexType;      
-      
+      typedef tnlStaticVector< 2, RealType > VertexType;
+ 
 
       tnlSinBumpsFunction();
 
@@ -114,11 +108,11 @@ class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStatic
       __cuda_callable__
       RealType getPartialDerivative( const VertexType& v,
                                      const Real& time = 0.0 ) const;
-      
+ 
    __cuda_callable__
    RealType operator()( const VertexType& v,
                         const Real& time = 0.0 ) const;
-      
+ 
 };
 
 template< typename Real >
@@ -146,11 +140,11 @@ class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStatic
       __cuda_callable__
       RealType getPartialDerivative( const VertexType& v,
                          const Real& time = 0.0 ) const;
-      
+ 
    __cuda_callable__
    RealType operator()( const VertexType& v,
                         const Real& time = 0.0 ) const;
-      
+ 
 };
 
 template< int Dimensions,
@@ -163,7 +157,8 @@ ostream& operator << ( ostream& str, const tnlSinBumpsFunction< Dimensions, Real
    return str;
 }
 
+} // namespace TNL
+
 #include <functions/tnlSinBumpsFunction_impl.h>
 
 
-#endif /* TNLSINBUMPSFUNCTION_H_ */

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMULTIARRAYTESTER_H_
 #define TNLMULTIARRAYTESTER_H_
@@ -116,19 +109,19 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
    {
       u.setElement( i, i, i, v );
    }
-   
+ 
    IndexType getDiagonalElement( tnlMultiArray< 1, ElementType, Device, IndexType >& u,
                                  const IndexType& i )
    {
       return u.getElement( i );
    }
-   
+ 
    IndexType getDiagonalElement( tnlMultiArray< 2, ElementType, Device, IndexType >& u,
                                  const IndexType& i )
    {
       return u.getElement( i, i );
    }
-   
+ 
    IndexType getDiagonalElement( tnlMultiArray< 3, ElementType, Device, IndexType >& u,
                                  const IndexType& i )
    {

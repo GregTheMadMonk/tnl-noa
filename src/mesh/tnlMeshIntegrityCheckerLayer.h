@@ -6,20 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHINTEGRITYCHECKERLAYER_H_
-#define TNLMESHINTEGRITYCHECKERLAYER_H_
+#pragma once
 
 #include <mesh/traits/tnlMeshEntityTraits.h>
 #include <mesh/tnlDimensionsTag.h>
+
+namespace TNL {
 
 template< typename MeshType,
           typename DimensionsTag,
@@ -36,12 +30,12 @@ class tnlMeshIntegrityCheckerLayer< MeshType,
                                           typename DimensionsTag::Decrement >
 {
    public:
-      typedef tnlMeshIntegrityCheckerLayer< MeshType, 
+      typedef tnlMeshIntegrityCheckerLayer< MeshType,
                                             typename DimensionsTag::Decrement >     BaseType;
       enum { dimensions = DimensionsTag::value };
 
       static bool checkEntities( const MeshType& mesh )
-      {         
+      {
          typedef typename MeshType::template EntitiesTraits< dimensions >::ContainerType ContainerType;
          typedef typename ContainerType::IndexType                                       GlobalIndexType;
          cout << "Checking entities with " << dimensions << " dimensions ..." << endl;
@@ -102,5 +96,4 @@ class tnlMeshIntegrityCheckerLayer< MeshType,
 
 };
 
-
-#endif /* TNLMESHINTEGRITYCHECKERLAYER_H_ */
+} // namespace TNL

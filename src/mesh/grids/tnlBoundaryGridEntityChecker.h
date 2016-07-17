@@ -6,18 +6,12 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLBOUNDARYGRIDENTITYCHECKER_H
-#define	TNLBOUNDARYGRIDENTITYCHECKER_H
+#pragma once
+
+namespace TNL{
 
 template< typename GridEntity >
 class tnlBoundaryGridEntityChecker
@@ -34,10 +28,10 @@ template< typename Real,
 class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 1, Real, Device, Index >, 1, Config  > >
 {
    public:
-      
+ 
       typedef tnlGrid< 1, Real, Device, Index > GridType;
       typedef tnlGridEntity< GridType, 1, Config > GridEntityType;
-      
+ 
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
       {
@@ -53,10 +47,10 @@ template< typename Real,
 class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 1, Real, Device, Index >, 0, Config > >
 {
    public:
-      
+ 
       typedef tnlGrid< 1, Real, Device, Index > GridType;
       typedef tnlGridEntity< GridType, 1, Config > GridEntityType;
-      
+ 
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
       {
@@ -75,10 +69,10 @@ template< typename Real,
 class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 2, Config > >
 {
    public:
-      
+ 
       typedef tnlGrid< 2, Real, Device, Index > GridType;
       typedef tnlGridEntity< GridType, 2, Config > GridEntityType;
-      
+ 
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
       {
@@ -96,20 +90,20 @@ template< typename Real,
 class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 1, Config > >
 {
    public:
-      
+ 
       typedef tnlGrid< 2, Real, Device, Index > GridType;
       typedef tnlGridEntity< GridType, 2, Config > GridEntityType;
-      
+ 
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
       {
          return( entity.getCoordinates().x() == 0 ||
                  entity.getCoordinates().y() == 0 ||
-                 entity.getCoordinates().x() == 
+                 entity.getCoordinates().x() ==
                     entity.grid.getDimensions().x() - entity.getBasis().x() ||
-                 entity.getCoordinates().y() == 
+                 entity.getCoordinates().y() ==
                     entity.grid.getDimensions().y() - entity.getBasis().y() );
-         
+ 
       }
 };
 
@@ -121,10 +115,10 @@ template< typename Real,
 class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 0, Config > >
 {
    public:
-      
+ 
       typedef tnlGrid< 2, Real, Device, Index > GridType;
       typedef tnlGridEntity< GridType, 2, Config > GridEntityType;
-      
+ 
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
       {
@@ -132,7 +126,7 @@ class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 2, Real, Device, Ind
                  entity.getCoordinates().y() == 0 ||
                  entity.getCoordinates().x() == entity.grid.getDimensions().x() ||
                  entity.getCoordinates().y() == entity.grid.getDimensions().y() );
-         
+ 
       }
 };
 
@@ -148,23 +142,23 @@ template< typename Real,
 class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, EntityDimensions, Config > >
 {
    public:
-      
+ 
       typedef tnlGrid< 3, Real, Device, Index > GridType;
       typedef tnlGridEntity< GridType, 3, Config > GridEntityType;
-      
+ 
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
       {
          return( entity.getCoordinates().x() == 0 ||
                  entity.getCoordinates().y() == 0 ||
                  entity.getCoordinates().z() == 0 ||
-                 entity.getCoordinates().x() == 
+                 entity.getCoordinates().x() ==
                     entity.grid.getDimensions().x() - entity.getBasis().x() ||
-                 entity.getCoordinates().y() == 
+                 entity.getCoordinates().y() ==
                     entity.grid.getDimensions().y() - entity.getBasis().y() ||
-                 entity.getCoordinates().z() == 
+                 entity.getCoordinates().z() ==
                     entity.grid.getDimensions().z() - entity.getBasis().z() );
-         
+ 
       }
 };
 
@@ -175,10 +169,10 @@ template< typename Real,
 class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, 3, Config > >
 {
    public:
-      
+ 
       typedef tnlGrid< 3, Real, Device, Index > GridType;
       typedef tnlGridEntity< GridType, 3, Config > GridEntityType;
-      
+ 
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
       {
@@ -198,10 +192,10 @@ template< typename Real,
 class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 3, Real, Device, Index >, 0, Config > >
 {
    public:
-      
+ 
       typedef tnlGrid< 3, Real, Device, Index > GridType;
       typedef tnlGridEntity< GridType, 3, Config > GridEntityType;
-      
+ 
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
       {
@@ -214,5 +208,5 @@ class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       }
 };
 
-#endif	/* TNLBOUNDARYGRIDENTITYCHECKER_H */
+} // namespace TNL
 
