@@ -15,11 +15,11 @@
  */
 
 
-#ifndef TNLHEATEQUATIONEOCPROBLEM_IMPL_H_
-#define TNLHEATEQUATIONEOCPROBLEM_IMPL_H_
+#pragma once
 
 #include "tnlHeatEquationProblem.h"
 
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -46,4 +46,4 @@ setup( const tnlParameterContainer& parameters )
    return true;
 }
 
-#endif /* TNLHEATEQUATIONEOCPROBLEM_IMPL_H_ */
+} // namespace TNL

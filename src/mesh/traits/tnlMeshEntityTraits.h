@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITYTRAITS_H_
-#define TNLMESHENTITYTRAITS_H_
+#pragma once
 
 #include <core/vectors/tnlStaticVector.h>
 #include <core/arrays/tnlArray.h>
@@ -19,6 +18,8 @@
 #include <mesh/topologies/tnlMeshEntityTopology.h>
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/traits/tnlMeshTraits.h>
+
+namespace TNL {
 
 template< typename MeshConfig, typename EntityTopology > class tnlMeshEntity;
 template< typename MeshConfig, typename EntityTopology > class tnlMeshEntitySeed;
@@ -81,5 +82,4 @@ class tnlMeshEntityTraits
       typedef tnlConstSharedArray< EntityType, tnlHost, GlobalIndexType >          SharedArrayType;
 };
 
-
-#endif /* TNLMESHENTITYTRAITS_H_ */
+} // namespace TNL

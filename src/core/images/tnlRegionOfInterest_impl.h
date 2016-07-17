@@ -8,11 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLREGIONOFINTEREST_IMPL_H
-#define	TNLREGIONOFINTEREST_IMPL_H
+#pragma once
 
 #include "tnlImage.h"
 
+namespace TNL {
 
 template< typename Index >
 tnlRegionOfInterest< Index >::
@@ -188,5 +188,5 @@ isIn( const Index row, const Index column ) const
    return false;
 }
 
-#endif	/* TNLREGIONOFINTEREST_IMPL_H */
+} // namespace TNL
 

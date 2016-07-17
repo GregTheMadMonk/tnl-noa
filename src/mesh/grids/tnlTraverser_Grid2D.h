@@ -8,10 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
 
-#ifndef TNLTRAVERSER_GRID2D_H_
-#define TNLTRAVERSER_GRID2D_H_
-
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -222,6 +221,6 @@ class tnlTraverser< tnlGrid< 2, Real, tnlCuda, Index >, GridEntity, 0 >
 
 #endif // UNDEF
 
-#include <mesh/grids/tnlTraverser_Grid2D_impl.h>
+} // namespace TNL
 
-#endif /* TNLTRAVERSER_GRID2D_H_ */
+#include <mesh/grids/tnlTraverser_Grid2D_impl.h>

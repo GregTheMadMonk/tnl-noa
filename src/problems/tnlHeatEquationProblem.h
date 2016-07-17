@@ -14,15 +14,15 @@
  * Szekely Ondrej, ondra.szekely@gmail.com
  */
 
-
-#ifndef TNLHEATEQUATIONPROBLEM_H_
-#define TNLHEATEQUATIONPROBLEM_H_
+#pragma once
 
 #include <problems/tnlPDEProblem.h>
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include <matrices/tnlEllpackMatrix.h>
 #include <functions/tnlMeshFunction.h>
 #include <core/tnlTimer.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -109,6 +109,6 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
          tnlTimer gpuTransferTimer;
 };
 
-#include <problems/tnlHeatEquationProblem_impl.h>
+} // namespace TNL
 
-#endif /* TNLHEATEQUATIONPROBLEM_H_ */
+#include <problems/tnlHeatEquationProblem_impl.h>

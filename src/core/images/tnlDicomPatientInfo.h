@@ -11,11 +11,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-
-#ifndef TNLDICOMPATIENTINFO_H
-#define TNLDICOMPATIENTINFO_H
-
-class tnlDicomHeader;
+#pragma once
 
 #include <core/tnlString.h>
 #include <tnlConfig.h>
@@ -27,6 +23,10 @@ class tnlDicomHeader;
 #include <dcmtk/dcmdata/dcdeftag.h>
 #include <dcmtk/ofstd/ofstring.h>
 #endif
+
+namespace TNL {
+
+class tnlDicomHeader;
 
 /***
  * PatientInfoObj class stores selected informations about patient.
@@ -71,6 +71,7 @@ class tnlDicomPatientInfo
        tnlString patientOrientation;
 };
 
+} // namespace TNL
+
 #include <core/images/tnlDicomPatientInfo_impl.h>
 
-#endif // TNLDICOMPATIENTINFO_H

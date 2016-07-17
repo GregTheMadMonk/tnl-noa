@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHSUBTOPOLOGY_H
-#define	TNLMESHSUBTOPOLOGY_H
+#pragma once
+
+namespace TNL {
 
 template< typename Topology,
           int dimensions >
@@ -21,5 +22,5 @@ template< typename Topology,
           int vertexIndex >
 struct tnlMeshSubtopologyVertex;
 
-#endif	/* TNLMESHSUBTOPOLOGY_H */
+} // namespace TNL
 

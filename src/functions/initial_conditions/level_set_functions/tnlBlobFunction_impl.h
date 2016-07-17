@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLBLOBFUNCTION_IMPL_H_
-#define TNLBLOBFUNCTION_IMPL_H_
+#pragma once
 
 #include <functions/initial_conditions/level_set_functions/tnlBlobFunction.h>
+
+namespace TNL {
 
 template< typename Real,
           int Dimensions >
@@ -156,5 +157,4 @@ operator()( const VertexType& v,
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
-
-#endif /* TNLBLOBFUNCTION_IMPL_H_ */
+} // namepsace TNL

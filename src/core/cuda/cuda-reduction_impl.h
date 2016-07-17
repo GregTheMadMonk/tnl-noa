@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef CUDA_REDUCTION_IMPL_H_
-#define CUDA_REDUCTION_IMPL_H_
+#pragma once 
+
+namespace TNL {
 
 //#define CUDA_REDUCTION_PROFILING
 
@@ -1708,4 +1709,4 @@ extern template bool reductionOnCudaDevice< tnlParallelReductionDiffLpNorm< long
 
 #endif /* TEMPLATE_EXPLICIT_INSTANTIATION */
 
-#endif /* CUDA_REDUCTION_IMPL_H_ */
+} // namespace TNL

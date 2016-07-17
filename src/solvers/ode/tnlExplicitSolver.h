@@ -15,7 +15,7 @@
 #include <core/tnlTimerCPU.h>
 #include <core/tnlTimerRT.h>
 #include <core/tnlFlopsCounter.h>
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <solvers/ode/tnlODESolverMonitor.h>
 #include <solvers/tnlIterativeSolver.h>
 #include <config/tnlConfigDescription.h>

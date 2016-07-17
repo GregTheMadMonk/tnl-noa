@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLELLPACKMATRIX_IMPL_H_
-#define TNLELLPACKMATRIX_IMPL_H_
+#pragma once
 
 #include <matrices/tnlEllpackMatrix.h>
 #include <core/vectors/tnlVector.h>
 #include <core/mfuncs.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -813,4 +814,4 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
       }
 };
 
-#endif /* TNLELLPACKMATRIX_IMPL_H_ */
+} // namespace TNL

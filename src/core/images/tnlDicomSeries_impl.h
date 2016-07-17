@@ -11,10 +11,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
+
 #include <core/images/tnlDicomSeries.h>
 #include <core/images/tnlDicomSeriesInfo.h>
 #include <dirent.h>
 
+namespace TNL {
 
 int findLastIndexOf(tnlString &str, const char* c)
 {
@@ -393,3 +396,4 @@ inline bool tnlDicomSeries::isDicomSeriesLoaded()
     return isLoaded;
 }
 
+} // namespace TNL

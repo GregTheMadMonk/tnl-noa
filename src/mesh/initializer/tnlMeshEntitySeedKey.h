@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITYSEEDKEY_H_
-#define TNLMESHENTITYSEEDKEY_H_
+#pragma once
 
 #include <mesh/tnlDimensionsTag.h>
+
+namespace TNL {
 
 template< typename MeshConfig,
           typename EntityTopology >
@@ -69,5 +70,4 @@ class tnlMeshEntitySeedKey
    StorageArrayType sortedCorners;
 };
 
-
-#endif /* TNLMESHENTITYKSEEDEY_H_ */
+} // namespace TNL

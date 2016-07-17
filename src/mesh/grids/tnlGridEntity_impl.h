@@ -9,14 +9,14 @@
 /* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLGRIDENTITY_IMPL_H
-#define TNLGRIDENTITY_IMPL_H
+#pragma once
 
 #include <mesh/grids/tnlBoundaryGridEntityChecker.h>
 #include <mesh/grids/tnlGridEntityCenterGetter.h>
 #include <mesh/grids/tnlGridEntityMeasureGetter.h>
 #include <mesh/grids/tnlGridEntity.h>
 
+namespace TNL {
 
 /*template< int Dimensions,
           typename Real,
@@ -726,5 +726,5 @@ getMesh() const
    return this->grid;
 }
 
-#endif	/* TNLGRIDENTITY_IMPL_H */
+} // namespace TNL
 

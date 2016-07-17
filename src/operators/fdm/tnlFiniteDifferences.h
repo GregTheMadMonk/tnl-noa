@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLFINITEDIFFERENCES_H
-#define	TNLFINITEDIFFERENCES_H
+#pragma once
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real,
@@ -24,9 +25,9 @@ class tnlFiniteDifferences
 {
 };
 
+} // namespace TNL
+
 #include <operators/fdm/tnlFiniteDifferences_1D.h>
 #include <operators/fdm/tnlFiniteDifferences_2D.h>
 #include <operators/fdm/tnlFiniteDifferences_3D.h>
-
-#endif	/* TNLFINITEDIFFERENCES_H */
 

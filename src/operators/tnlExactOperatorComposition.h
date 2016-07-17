@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXACTOPERATORCOMPOSITION_H
-#define TNLEXACTOPERATORCOMPOSITION_H
+#pragma once
+
+namespace TNL {
 
 template< typename OuterOperator,
           typename InnerOperator >
@@ -33,5 +34,5 @@ class tnlExactOperatorComposition
       OuterOperator outerOperator;
 };
 
-#endif /* TNLEXACTOPERATORCOMPOSITION_H */
+} // namespace TNL
 

@@ -10,5 +10,8 @@
 
 #include <core/tnlFlopsCounter.h>
 
+namespace TNL {
+
 tnlFlopsCounter tnl_flops_counter;
 
+} // namespace TNL

@@ -11,13 +11,16 @@
 #ifndef tnlTimerCPUH
 #define tnlTimerCPUH
 
+// TODO: remove this file
+
 #include "tnlConfig.h"
 #ifdef HAVE_SYS_RESOURCE_H
    #include <sys/resource.h>
 #endif
 
-
 #include "mpi-supp.h"
+
+namespace TNL {
 
 class tnlTimerCPU
 {
@@ -44,6 +47,6 @@ class tnlTimerCPU
 
 extern tnlTimerCPU defaultCPUTimer;
 
-
+} // namespace TNL
 
 #endif

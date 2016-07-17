@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXPBUMPFUNCTION_IMPL_H_
-#define TNLEXPBUMPFUNCTION_IMPL_H_
+#pragma once
 
 #include <functions/tnlExpBumpFunction.h>
+
+namespace TNL {
 
 template< int dimensions, typename Real >
 tnlExpBumpFunctionBase< dimensions, Real >::
@@ -221,6 +222,4 @@ operator()( const VertexType& v,
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
-
-
-#endif /* TNLEXPBUMPFUNCTION_IMPL_H_ */
+} //namespace TNL

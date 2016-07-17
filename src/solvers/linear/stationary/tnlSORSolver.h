@@ -12,7 +12,7 @@
 #define tnlSORSolverH
 
 #include <math.h>
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlIterativeSolver.h>
 #include <solvers/linear/tnlLinearResidueGetter.h>

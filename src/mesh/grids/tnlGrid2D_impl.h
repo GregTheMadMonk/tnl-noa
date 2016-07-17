@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGRID2D_IMPL_H_
-#define TNLGRID2D_IMPL_H_
+#pragma once
 
 #include <fstream>
 #include <iomanip>
@@ -19,7 +18,7 @@
 #include <mesh/grids/tnlNeighbourGridEntityGetter2D_impl.h>
 #include <mesh/grids/tnlGridEntityMeasureGetter.h>
 
-using namespace std;
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -615,5 +614,4 @@ writeProlog( tnlLogger& logger )
    logger.writeParameter( "Space steps:", this->getSpaceSteps() );
 }
 
-
-#endif /* TNLGRID2D_IMPL_H_ */
+} // namespace TNL

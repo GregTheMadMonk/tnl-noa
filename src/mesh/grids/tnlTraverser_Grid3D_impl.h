@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTRAVERSER_GRID3D_IMPL_H_
-#define TNLTRAVERSER_GRID3D_IMPL_H_
+#pragma once
 
 #include <mesh/grids/tnlGridTraverser.h>
+
+namespace TNL {
 
 /****
  * Grid 3D, cells
@@ -419,4 +420,4 @@ processAllEntities( const GridType& grid,
       userData );
 }
 
-#endif /* TNLTRAVERSER_GRID3D_IMPL_H_ */
+} // namespace TNL

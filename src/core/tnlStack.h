@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTACK_H_
-#define TNLSTACK_H_
+#pragma once
 
 #include <core/tnlList.h>
+
+namespace TNL {
 
 /*
  *
@@ -48,4 +49,4 @@ template< class T > class tnlStack : protected tnlList< T >
    }
 };
 
-#endif /* TNLSTACK_H_ */
+} // namespace TNL

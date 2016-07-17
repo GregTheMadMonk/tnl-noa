@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSPARSEMATRIX_H_
-#define TNLSPARSEMATRIX_H_
+#pragma once
 
 #include <matrices/tnlMatrix.h>
 #include <matrices/tnlSparseMatrixRow.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -63,6 +64,6 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
    Index maxRowLength;
 };
 
-#include <matrices/tnlSparseMatrix_impl.h>
+} // namespace TNL
 
-#endif /* TNLSPARSEMATRIX_H_ */
+#include <matrices/tnlSparseMatrix_impl.h>

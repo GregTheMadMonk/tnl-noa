@@ -8,38 +8,33 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUDA_IMPL_H_
-#define TNLCUDA_IMPL_H_
+#pragma once
 
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+#include <core/tnlCuda.h>
+
+namespace TNL {
+
+__cuda_callable__ 
 inline tnlDeviceEnum tnlCuda::getDevice()
 {
    return tnlCudaDevice;
 };
 
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__ 
 inline int tnlCuda::getMaxGridSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 65535;
 };
 
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__
 inline int tnlCuda::getMaxBlockSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 1024;
 };
 
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__ 
 inline int tnlCuda::getWarpSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
@@ -55,9 +50,7 @@ __device__ Index tnlCuda::getGlobalThreadIdx( const Index gridIdx )
 #endif
 
 
-#ifdef HAVE_CUDA
-__host__ __device__
-#endif
+__cuda_callable__ 
 inline int tnlCuda::getNumberOfSharedMemoryBanks()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
@@ -173,6 +166,4 @@ __device__ inline getSharedMemory< long int >::operator long int*()
 
 #endif /* HAVE_CUDA */
 
-
-
-#endif /* TNLCUDA_IMPL_H_ */
+} // namespace TNL

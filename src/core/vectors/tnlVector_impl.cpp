@@ -10,6 +10,8 @@
 
 #include <core/vectors/tnlVector.h>
 
+namespace TNL {
+
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
@@ -34,4 +36,5 @@ template class tnlVector< long double, tnlHost, long int >;
 
 #endif
 
+} // namespace TNL
 

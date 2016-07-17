@@ -8,9 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-
-#ifndef TNLMESHWRITERVTKLEGACY_H_
-#define TNLMESHWRITERVTKLEGACY_H_
+#pragma once
 
 #include <fstream>
 #include <istream>
@@ -23,8 +21,7 @@
 #include <mesh/topologies/tnlMeshHexahedronTopology.h>
 #include <mesh/tnlMeshEntity.h>
 
-
-using namespace std;
+namespace TNL {
 
 enum tnlVTKMeshEntities { tnlVTKVertex = 1,
                           tnlVTKPolyVertex = 2,
@@ -124,6 +121,4 @@ class tnlMeshWriterVTKLegacy
 
 };
 
-
-
-#endif /* TNLMESHWRITERVTKLEGACY_H_ */
+} // namespace TNL

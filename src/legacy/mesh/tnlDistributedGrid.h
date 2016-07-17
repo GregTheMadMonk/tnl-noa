@@ -11,7 +11,7 @@
 #ifndef TNLDISTRIBUTEDGRID_H_
 #define TNLDISTRIBUTEDGRID_H_
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/tnlCommunicator.h>
 
 template< int Dimensions,

@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTRIDIAGONALMATRIX_H_
-#define TNLTRIDIAGONALMATRIX_H_
+#pragma once
 
 #include <matrices/tnlMatrix.h>
 #include <core/vectors/tnlVector.h>
 #include <matrices/tnlTridiagonalMatrixRow.h>
+
+namespace TNL {
 
 template< typename Device >
 class tnlTridiagonalMatrixDeviceDependentCode;
@@ -185,7 +186,6 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
    friend class tnlTridiagonalMatrixDeviceDependentCode< DeviceType >;
 };
 
+} // namespace TNL
+
 #include <matrices/tnlTridiagonalMatrix_impl.h>
-
-
-#endif /* TNLTRIDIAGONALMATRIX_H_ */

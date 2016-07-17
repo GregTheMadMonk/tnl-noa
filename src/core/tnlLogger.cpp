@@ -14,6 +14,8 @@
 #include <core/tnlSystemInfo.h>
 #include <core/tnlCudaDeviceInfo.h>
 
+namespace TNL {
+
 tnlLogger :: tnlLogger( int _width,
                         ostream& _stream )
 : width( _width ),
@@ -128,3 +130,5 @@ template void tnlLogger::writeParameter< int >( const tnlString&,
                                                 int );
 
 #endif
+
+} // namespace TNL

@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGRIDTRAVERSER_IMPL_H
-#define	TNLGRIDTRAVERSER_IMPL_H
+#pragma once
+
+namespace TNL {
 
 /****
  * 1D traverser, host
@@ -576,6 +577,5 @@ processEntities(
 #endif
 }
 
-
-#endif	/* TNLGRIDTRAVERSER_IMPL_H */
+} // namespace TNL
 

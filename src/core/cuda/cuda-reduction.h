@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef CUDA_REDUCTION_H_
-#define CUDA_REDUCTION_H_
+#pragma once 
+
+namespace TNL {
 
 template< typename Operation >
 bool reductionOnCudaDevice( const Operation& operation,
@@ -18,6 +19,7 @@ bool reductionOnCudaDevice( const Operation& operation,
                             const typename Operation :: RealType* deviceInput2,
                             typename Operation :: ResultType& result );
 
+} // namespace TNL
+
 #include <core/cuda/cuda-reduction_impl.h>
 
-#endif /* CUDA_REDUCTION_H_ */

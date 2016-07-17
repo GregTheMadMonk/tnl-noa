@@ -14,7 +14,7 @@
 #include <core/tnlTimerCPU.h>
 #include <core/tnlTimerRT.h>
 #include <core/mpi-supp.h>
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <matrices/tnlMatrix.h>
 #include <legacy/solvers/tnlPreconditioner.h>
 

@@ -19,11 +19,12 @@
  *  vol. 56, no. 4, pp. 447-466.
  */
 
-#ifndef TNLSLICEDELLPACKMATRIX_H_
-#define TNLSLICEDELLPACKMATRIX_H_
+#pragma once
 
 #include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
+
+namespace TNL {
 
 template< typename Device >
 class tnlSlicedEllpackMatrixDeviceDependentCode;
@@ -206,7 +207,6 @@ class tnlSlicedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
 };
 
+} // namespace TNL
+
 #include <matrices/tnlSlicedEllpackMatrix_impl.h>
-
-
-#endif /* TNLSLICEDELLPACKMATRIX_H_ */

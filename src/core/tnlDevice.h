@@ -8,9 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDEVICE_H_
-#define TNLDEVICE_H_
+#pragma once
+
+// TODO: remove this file
+
+namespace TNL {
 
 enum tnlDeviceEnum { tnlHostDevice, tnlCudaDevice };
 
-#endif /* TNLDEVICE_H_ */
+} // namespace TNL

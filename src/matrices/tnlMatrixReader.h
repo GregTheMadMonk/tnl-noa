@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMATRIXREADER_H_
-#define TNLMATRIXREADER_H_
+#pragma once
 
 #include <istream>
 #include <core/tnlString.h>
 #include <core/vectors/tnlVector.h>
+
+namespace TNL {
 
 template< typename Device >
 class tnlMatrixReaderDeviceDependentCode
@@ -79,8 +80,6 @@ class tnlMatrixReader
                                         RealType& value );
 };
 
-
+} // namespace TNL
 
 #include <matrices/tnlMatrixReader_impl.h>
-
-#endif /* TNLMATRIXREADER_H_ */

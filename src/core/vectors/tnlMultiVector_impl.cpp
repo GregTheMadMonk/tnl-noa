@@ -10,6 +10,8 @@
 
 #include <core/vectors/tnlMultiVector.h>
 
+namespace TNL {
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
@@ -103,5 +105,6 @@ template class tnlMultiVector< 4, double, tnlCuda, long int >;
 
 #endif
 
+} // namespace TNL
 
 

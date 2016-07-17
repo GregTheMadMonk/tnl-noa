@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGRIDENTITY_H
-#define	TNLGRIDENTITY_H
+#pragma once
 
 #include <mesh/grids/tnlNeighbourGridEntitiesStorage.h>
+
+namespace TNL {
 
 template< typename GridEntity,
           int NeighbourEntityDimensions,
@@ -408,7 +409,7 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
       friend class tnlGridEntityCenterGetter< ThisType >;
 };
 
-#include <mesh/grids/tnlGridEntity_impl.h>
+} // namespace TNL
 
-#endif	/* TNLGRIDENTITY_H */
+#include <mesh/grids/tnlGridEntity_impl.h>
 

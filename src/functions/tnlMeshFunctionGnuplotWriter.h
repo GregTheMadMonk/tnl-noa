@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHFUNCTIONGNUPLOTWRITER_H
-#define	TNLMESHFUNCTIONGNUPLOTWRITER_H
+#pragma once
 
 #include<mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename, int, typename > class tnlMeshFunction;
 
@@ -115,6 +116,5 @@ class tnlMeshFunctionGnuplotWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Devic
                          ostream& str );
 };
 
-
-#endif	/* TNLMESHFUNCTIONGNUPLOTWRITER_H */
+} // namespace TNL
 

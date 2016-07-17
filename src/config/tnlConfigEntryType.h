@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCONFIGENTRYTYPE_H_
-#define TNLCONFIGENTRYTYPE_H_
+#pragma once 
+
+namespace TNL {
 
 template< typename EntryType >
 inline tnlString getUIEntryType() { return "Unknown type."; };
@@ -44,4 +45,4 @@ struct tnlConfigEntryType
    };
 };
 
-#endif /* TNLCONFIGENTRYTYPE_H_ */
+} // namespace TNL

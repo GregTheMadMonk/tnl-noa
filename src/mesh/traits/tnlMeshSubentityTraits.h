@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHSUBENTITYTRAITS_H_
-#define TNLMESHSUBENTITYTRAITS_H_
+#pragma once
 
 #include <core/arrays/tnlStaticArray.h>
 #include <core/arrays/tnlSharedArray.h>
@@ -17,6 +16,7 @@
 #include <mesh/config/tnlMeshConfigBase.h>
 #include <mesh/topologies/tnlMeshEntityTopology.h>
 
+namespace TNL {
 
 template< typename MeshConfig, typename EntityTopology > class tnlMeshEntityOrientation;
 
@@ -63,6 +63,4 @@ class tnlMeshSubentityTraits
       static_assert( EntityTopology::dimensions > Dimensions, "You try to create subentities traits where subentity dimensions are not smaller than the entity dimensions." );
 };
 
-
-
-#endif /* TNLMESHSUBENTITYTRAITS_H_ */
+} // namespace TNL

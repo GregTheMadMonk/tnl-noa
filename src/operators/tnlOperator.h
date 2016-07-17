@@ -8,11 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-
-#ifndef TNLOPERATOR_H
-#define	TNLOPERATOR_H
+#pragma once
 
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< typename Mesh,
           tnlDomainType DomainType = MeshInteriorDomain,
@@ -43,5 +43,6 @@ class tnlOperator : public tnlDomain< Mesh::getMeshDimensions(), DomainType >
       template< typename MeshFunction >
       void setPreimageFunction( const MeshFunction& f ){}
 };
-#endif	/* TNLOPERATOR_H */
+
+} // namespace TNL
 

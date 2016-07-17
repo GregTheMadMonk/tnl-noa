@@ -12,6 +12,7 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 
+namespace TNL {
 
 /*void tnlCuda::configSetup( tnlConfigDescription& config, const tnlString& prefix )
 {
@@ -411,3 +412,5 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
    //throw EXIT_FAILURE;
    return false;
 }
+
+} // namespace TNL

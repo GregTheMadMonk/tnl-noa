@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLLIST_IMPL_H
-#define	TNLLIST_IMPL_H
+#pragma once
 
 #include <core/tnlFile.h>
+
+namespace TNL {
 
 template< typename T >
 tnlList< T >::tnlList()
@@ -378,7 +379,6 @@ ostream& operator << ( ostream& str, const tnlList< T >& list )
    return str;
 };
 
+} // namespace TNL
 
-
-#endif	/* TNLLIST_IMPL_H */
 

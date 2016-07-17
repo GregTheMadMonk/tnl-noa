@@ -11,8 +11,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDICOMSERIESINFO_H
-#define TNLDICOMSERIESINFO_H
+#pragma once
 
 #include <core/tnlString.h>
 #include <tnlConfig.h>
@@ -24,6 +23,9 @@
 #define HAVE_STD_STRING
 #include <dcmtk/ofstd/ofstring.h>
 #endif
+
+namespace TNL {
+
 class tnlDicomHeader;
 
 /***
@@ -103,6 +105,7 @@ class tnlDicomSeriesInfo
        tnlString acquisitionTime;
 };
 
+} // namespace TNL
+
 #include <core/images/tnlDicomSeriesInfo_impl.h>
 
-#endif // SERIESINFOOBJ_H

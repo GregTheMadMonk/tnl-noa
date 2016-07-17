@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlParameterContainerH
-#define tnlParameterContainerH
+#pragma once 
 
 #include <core/tnlList.h>
 #include <config/tnlConfigDescription.h>
 #include <core/mpi-supp.h>
 #include <core/param-types.h>
+
+namespace TNL {
 
 struct tnlParameterBase
 {
@@ -139,4 +140,5 @@ setParameter( const tnlString& name,
    }
    return addParameter< T >( name, value );
 };
-#endif
+
+} // namespace TNL

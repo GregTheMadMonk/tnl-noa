@@ -12,6 +12,8 @@
 
 #include <core/tnlCudaDeviceInfo.h>
 
+namespace TNL {
+
 int
 tnlCudaDeviceInfo::
 getNumberOfDevices()
@@ -96,5 +98,6 @@ getCudaCores( int deviceNum )
    return 0;
 }
 
+} // namespace TNL
 
 #endif

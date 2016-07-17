@@ -8,14 +8,15 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUDA_H_
-#define TNLCUDA_H_
+#pragma once
 
 #include <iostream>
 #include <unistd.h>
 #include <core/tnlDevice.h>
 #include <core/tnlString.h>
 #include <core/tnlAssert.h>
+
+namespace TNL {
 
 class tnlConfigDescription;
 class tnlParameterContainer;
@@ -123,6 +124,6 @@ class tnlCuda
 
 #endif
 
+} // namespace TNL   
+   
 #include <core/tnlCuda_impl.h>
-
-#endif /* TNLCUDA_H_ */

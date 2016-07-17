@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITIESINTERPOLANTS_H
-#define	TNLMESHENTITIESINTERPOLANTS_H
+#pragma once
 
 #include <type_traits>
 #include<functions/tnlDomain.h>
+
+namespace TNL {
 
 template< typename Mesh,
           int InEntityDimensions,
@@ -298,5 +299,5 @@ class tnlMeshEntitiesInterpolants< tnlGrid< 3, Real, Device, Index >, 2, 3 >
       }
 };
 
-#endif	/* TNLMESHENTITIESINTERPOLANTS_H */
+} // namespace TNL
 

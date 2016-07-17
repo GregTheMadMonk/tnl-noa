@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLONESIDEDTOTALVARIATIONMINIMIZATION_H
-#define	TNLONESIDEDTOTALVARIATIONMINIMIZATION_H
+#pragma once
 
 #include <operators/tnlOperator.h>
 #include <operators/tnlFunctionInverseOperator.h>
@@ -20,6 +19,7 @@
 #include <functions/tnlConstantFunction.h>
 #include <operators/diffusion/tnlExactMeanCurvature.h>
 
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -124,5 +124,4 @@ class tnlOneSidedMeanCurvature
       NonlinearDiffusion nonlinearDiffusion;
 };
 
-#endif	/* TNLONESIDEDTOTALVARIATIONMINIMIZATION_H */
-
+} // namespace TNL

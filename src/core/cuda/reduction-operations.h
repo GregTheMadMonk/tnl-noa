@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef REDUCTION_OPERATIONS_H_
-#define REDUCTION_OPERATIONS_H_
+#pragma once 
 
 #include <core/tnlConstants.h>
 #include <core/tnlCuda.h>
@@ -17,7 +16,12 @@
 #ifdef HAVE_CUDA
 #include <cuda.h>
 #include <core/mfuncs.h>
+#endif
 
+
+namespace TNL {
+
+#ifdef HAVE_CUDA
 /***
  * This function returns minimum of two numbers stored on the device.
  * TODO: Make it tnlMin, tnlMax etc.
@@ -899,4 +903,5 @@ class tnlParallelReductionDiffLpNorm : public tnlParallelReductionSum< Real, Ind
 };
 
 
-#endif /* REDUCTION_OPERATIONS_H_ */
+} // namespace TNL
+

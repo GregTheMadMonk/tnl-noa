@@ -8,9 +8,10 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef CUDA_PREFIX_SUM_IMPL_H_
-#define CUDA_PREFIX_SUM_IMPL_H_
+#pragma once
 
+namespace TNL {
+   
 #ifdef HAVE_CUDA
 
 #include <iostream>
@@ -418,4 +419,4 @@ extern template bool cudaPrefixSum( const long int size,
 
 #endif
 
-#endif /* CUDA_PREFIX_SUM_IMPL_H_ */
+} // namespace TNL

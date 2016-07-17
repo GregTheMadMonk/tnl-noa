@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXACTIDENTITYOPERATOR_H
-#define TNLEXACTIDENTITYOPERATOR_H
+#pragma once
 
 #include <core/tnlString.h>
 #include <core/tnlCuda.h>
 #include <operators/tnlOperator.h>
+
+namespace TNL {
 
 template< int Dimensions >
 class tnlExactIdentityOperator
@@ -54,7 +55,5 @@ class tnlExactIdentityOperator
       }
 };
 
-
-
-#endif /* TNLEXACTIDENTITYOPERATOR_H */
+} // namespace TNL
 

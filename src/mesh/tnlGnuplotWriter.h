@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGNUPLOTWRITER_H_
-#define TNLGNUPLOTWRITER_H_
+#pragma once
 
 #include <ostream>
 #include <core/vectors/tnlStaticVector.h>
+
+namespace TNL {
 
 class tnlGnuplotWriter
 {
@@ -48,5 +49,4 @@ class tnlGnuplotWriter
 
 };
 
-
-#endif /* TNLGNUPLOTWRITER_H_ */
+} // namespace TNL

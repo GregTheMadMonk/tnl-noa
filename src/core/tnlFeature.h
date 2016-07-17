@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLFEATURE_H_
-#define TNLFEATURE_H_
+#pragma once
+
+namespace TNL {
 
 template< bool featureEnabled >
 class tnlFeature
@@ -19,5 +20,4 @@ class tnlFeature
    enum{ enabled = featureEnabled };
 };
 
-
-#endif /* TNLFEATURE_H_ */
+} // namespace TNL

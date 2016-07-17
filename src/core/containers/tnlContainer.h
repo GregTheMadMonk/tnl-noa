@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCONTAINER_H_
-#define TNLCONTAINER_H_
+#pragma once
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/arrays/tnlArray.h>
+
+namespace TNL {
 
 template< typename Element, typename Device = tnlHost, typename Index = int >
 class tnlContainer : public tnlObject
@@ -52,6 +53,6 @@ class tnlContainer : public tnlObject
    tnlArray< Element, Device, Index > data;
 };
 
-#include <core/containers/tnlContainer_impl.h>
+} // namespace TNL
 
-#endif /* TNLCONTAINER_H_ */
+#include <core/containers/tnlContainer_impl.h>

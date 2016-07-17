@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXACTFUNCTIONINVERSEOPERATOR_H
-#define	TNLEXACTFUNCTIONINVERSEOPERATOR_H
+#pragma once
 
 #include <core/tnlString.h>
 #include <core/tnlCuda.h>
 #include <operators/tnlOperator.h>
 #include <operators/tnlExactIdentityOperator.h>
+
+namespace TNL {
 
 template< int Dimensions,
           typename InnerOperator= tnlExactIdentityOperator< Dimensions > >
@@ -90,5 +91,5 @@ class tnlExactFunctionInverseOperator
       InnerOperator innerOperator;
 };
 
-#endif	/* TNLEXACTFUNCTIONINVERSEOPERATOR_H */
+} // namespace TNL
 

@@ -8,12 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLELLPACKINDEXMULTIMAP_IMPL_H
-#define	TNLELLPACKINDEXMULTIMAP_IMPL_H
+#pragma once 
 
 #include <core/multimaps/tnlEllpackIndexMultimap.h>
 #include <core/multimaps/tnlEllpackIndexMultimapValues.h>
 
+namespace TNL {
 
 template< typename Index,
           typename Device >
@@ -105,5 +105,5 @@ getValues( const IndexType& inputIndex ) const
    return ConstPortsType( this->values.getData(), inputIndex, this->valuesMaxCount );
 }
 
-#endif	/* TNLELLPACKGRAPH_IMPL_H */
+} // namespace TNL
 

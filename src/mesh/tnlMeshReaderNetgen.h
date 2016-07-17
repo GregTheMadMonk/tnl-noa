@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHREADERNETGEN_H_
-#define TNLMESHREADERNETGEN_H_
+#pragma once
 
 #include <fstream>
 #include <istream>
@@ -17,7 +16,7 @@
 
 #include <mesh/tnlMeshBuilder.h>
 
-using namespace std;
+namespace TNL {
 
 class tnlMeshReaderNetgen
 {
@@ -241,5 +240,4 @@ class tnlMeshReaderNetgen
 
 };
 
-
-#endif /* TNLMESHREADERNETGEN_H_ */
+} // namespace TNL

@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHFUNCTIONVTKWRITER_H
-#define	TNLMESHFUNCTIONVTKWRITER_H
+#pragma once
+
+namespace TNL {
 
 template< typename MeshFunction >
 class tnlMeshFunctionVTKWriter
@@ -202,5 +203,5 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, M
                          ostream& str );
 };
 
-#endif	/* TNLMESHFUNCTIONVTKWRITER_H */
+} // namespace TNL
 

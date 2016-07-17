@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICVECTOR_H_
-#define TNLSTATICVECTOR_H_
+#pragma once
 
 #include <core/arrays/tnlStaticArray.h>
+
+namespace TNL {
 
 template< int Size, typename Real = double >
 class tnlStaticVector : public tnlStaticArray< Size, Real >
@@ -375,4 +376,5 @@ Real tnlTriangleArea( const tnlStaticVector< 3, Real >& a,
    const tnlStaticVector< 3, Real > v = tnlVectorProduct( u1, u2 );
    return 0.5 * sqrt( tnlScalarProduct( v, v ) );
 };
-#endif /* TNLSTATICVECTOR_H_ */
+
+} // namespace TNL

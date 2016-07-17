@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSHAREDARRAY_H_
-#define TNLSHAREDARRAY_H_
+#pragma once 
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 class tnlFile;
 class tnlHost;
@@ -145,6 +146,6 @@ class tnlSharedArray : public tnlObject
 template< typename Element, typename Device, typename Index >
 ostream& operator << ( ostream& str, const tnlSharedArray< Element, Device, Index >& v );
 
-#include <core/arrays/tnlSharedArray_impl.h>
+} // namespace TNL
 
-#endif /* TNLSHAREDARRAY_H_ */
+#include <core/arrays/tnlSharedArray_impl.h>

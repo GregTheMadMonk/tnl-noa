@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICMULTIINDEX_H
-#define	TNLSTATICMULTIINDEX_H
+#pragma once
+
+namespace TNL {
 
 template< int i1_ >
 class tnlStaticMultiIndex1D
@@ -50,8 +51,5 @@ class tnlStaticMultiIndex3D
       static const int size = 3;
 };
 
-
-
-
-#endif	/* TNLSTATICMULTIINDEX_H */
+} // namespace TNL
 

@@ -14,6 +14,8 @@
 #include <core/tnlString.h>
 #include <core/mfuncs.h>
 
+namespace TNL {
+
 void FileNameBaseNumberEnding( const char* base_name,
                                int number,
                                int index_size,
@@ -52,3 +54,5 @@ void RemoveFileExtension( tnlString& fileName )
    while( fileName. getString()[ size - i ] != '.' && size > i  ) i ++ ;
    fileName. setString( fileName. getString(), 0, i );
 }
+
+} // namespace TNL

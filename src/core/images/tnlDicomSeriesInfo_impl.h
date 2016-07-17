@@ -11,9 +11,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
+
 #include <core/images/tnlDicomSeriesInfo.h>
 #include <core/images/tnlDicomHeader.h>
 #include <stdio.h>
+
+namespace TNL {
 
 inline tnlDicomSeriesInfo::tnlDicomSeriesInfo( tnlDicomHeader &dicomHeader)
 : dicomHeader( dicomHeader )
@@ -174,3 +178,5 @@ inline const tnlString& tnlDicomSeriesInfo::getAcquisitionTime()
         retrieveInfo();
     return this->acquisitionTime;
 }
+
+} // namespace TNL

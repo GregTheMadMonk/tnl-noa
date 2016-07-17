@@ -8,14 +8,15 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMEANCURVATUREFLOWPROBLEM_H_
-#define TNLMEANCURVATUREFLOWPROBLEM_H_
+#pragma once
 
 #include <operators/diffusion/tnlOneSidedMeanCurvature.h>
 #include <problems/tnlPDEProblem.h>
 #include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <matrices/tnlCSRMatrix.h>
 #include <functions/tnlMeshFunction.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -100,6 +101,7 @@ class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
       RightHandSide rightHandSide;
 };
 
-#include "tnlMeanCurvatureFlowProblem_impl.h"
 
-#endif /* TNLMEANCURVATUREFLOWPROBLEM_H_ */
+} // namespace TNL
+
+#include "tnlMeanCurvatureFlowProblem_impl.h"

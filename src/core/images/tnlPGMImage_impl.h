@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLPGMIMAGE_IMPL_H
-#define	TNLPGMIMAGE_IMPL_H
+#pragma once 
 
 #include <cstring>
 #include <core/images/tnlPGMImage.h>
+
+namespace TNL {
 
 template< typename Index >
 tnlPGMImage< Index >::
@@ -215,5 +216,5 @@ tnlPGMImage< Index >::
    close();
 }
 
-#endif	/* TNLPGMIMAGE_IMPL_H */
+} // namespace TNL
 

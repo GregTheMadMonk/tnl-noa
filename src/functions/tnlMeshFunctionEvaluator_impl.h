@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHFUNCTIONEVALUATOR_IMPL_H
-#define	TNLMESHFUNCTIONEVALUATOR_IMPL_H
+#pragma once
 
 #include <functions/tnlMeshFunctionEvaluator.h>
 #include <mesh/tnlTraverser.h>
+
+namespace TNL {
 
 template< typename OutMeshFunction,
           typename InFunction >
@@ -201,5 +202,5 @@ evaluateEntities( OutMeshFunction& meshFunction,
    }
 }
 
-#endif	/* TNLMESHFUNCTIONEVALUATOR_IMPL_H */
+} // namespace TNL
 

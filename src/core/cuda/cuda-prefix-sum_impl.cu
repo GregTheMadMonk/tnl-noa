@@ -7,11 +7,13 @@
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
- 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #include <core/cuda/cuda-prefix-sum.h>
  
+namespace TNL {
+
+#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
+
 template bool cudaPrefixSum( const int size,
                              const int blockSize,
                              const int *deviceInput,
@@ -80,3 +82,5 @@ template bool cudaPrefixSum( const long int size,
 #endif
 #endif
 #endif
+
+} // namespace TNL

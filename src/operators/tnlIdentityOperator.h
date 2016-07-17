@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLIDENTITYOPERATOR_H
-#define	TNLIDENTITYOPERATOR_H
+#pragma once
 
 #include<functions/tnlMeshFunction.h>
+
+namespace TNL {
 
 template< typename MeshFunction >
 class tnlIdentityOperator
@@ -44,5 +45,5 @@ class tnlIdentityOperator
       const MeshFunction& meshFunction;
 };
 
-#endif	/* TNLIDENTITYOPERATOR_H */
+} // namespace TNL
 

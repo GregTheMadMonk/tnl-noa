@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLFILE_H_
-#define TNLFILE_H_
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -24,6 +23,8 @@
 #include <core/tnlString.h>
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 enum tnlIOMode { tnlUndefinedMode = 0,
                  tnlReadMode = 1,
@@ -117,6 +118,7 @@ class tnlFile
 
 bool fileExists( const tnlString& fileName );
 
+} // namespace TNL
+
 #include <core/tnlFile_impl.h>
 
-#endif /* TNLFILE_H_ */

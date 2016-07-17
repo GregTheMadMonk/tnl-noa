@@ -8,11 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITY_IMPL_H
-#define	TNLMESHENTITY_IMPL_H
+#pragma once
 
 #include "tnlMeshEntity.h"
 
+namespace TNL {
 
 template< typename MeshConfig,
           typename EntityTopology >
@@ -488,5 +488,5 @@ ostream& operator <<( ostream& str, const tnlMeshEntity< MeshConfig, EntityTopol
    return str;
 }
 
-#endif	/* TNLMESHENTITY_IMPL_H */
+} // namespace TNL
 

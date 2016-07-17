@@ -13,6 +13,8 @@
 #include <core/tnlCudaDeviceInfo.h>
 #include <core/tnlCuda.h>
 
+namespace TNL {
+
 int
 tnlCudaDeviceInfo::
 getNumberOfDevices()
@@ -138,5 +140,6 @@ getCudaCores( int deviceNum )
            tnlCudaDeviceInfo::getCudaCoresPerMultiprocessors( deviceNum );
 }
 
+} // namespace TNL
 
 #endif

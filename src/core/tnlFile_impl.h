@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLFILE_IMPL_H
-#define	TNLFILE_IMPL_H
+#pragma once 
+
+namespace TNL {
 
 template< typename Type, typename Device >
 bool tnlFile :: read( Type* buffer )
@@ -208,7 +209,6 @@ bool tnlFile ::  write( const Type* buffer,
    return true;
 };
 
+} // namespace TNL
 
-
-#endif	/* TNLFILE_IMPL_H */
 

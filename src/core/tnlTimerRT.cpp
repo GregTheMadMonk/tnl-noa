@@ -17,6 +17,9 @@
    #define HAVE_TIME
 #endif
 
+// TODO: remove this file
+
+namespace TNL {
 
 tnlTimerRT defaultRTTimer;
 
@@ -66,3 +69,5 @@ double tnlTimerRT::getTime()
 #endif
    return -1;
 }
+
+} // namespace TNL

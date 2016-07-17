@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLFUNCTIONADAPTER_H
-#define	TNLFUNCTIONADAPTER_H
+#pragma once
+
+namespace TNL {
 
 /***
  * MeshType is a type of mesh on which we evaluate the function.
@@ -170,5 +171,5 @@ class tnlFunctionAdapter< Mesh, Function, SpaceDomain >
 };
 #endif
 
-#endif	/* TNLFUNCTIONADAPTER_H */
+} // namespace TNL
 

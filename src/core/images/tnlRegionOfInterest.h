@@ -8,13 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLREGIONOFINTEREST_H
-#define	TNLREGIONOFINTEREST_H
+#pragma once
 
 #include <config/tnlParameterContainer.h>
 #include <mesh/tnlGrid.h>
 #include <core/images/tnlImage.h>
 
+namespace TNL {
 
 template< typename Index = int >
 class tnlRegionOfInterest
@@ -51,7 +51,8 @@ class tnlRegionOfInterest
       Index top, bottom, left, right;
 };
 
+} // namespace TNL
+
 #include <core/images/tnlRegionOfInterest_impl.h>
 
-#endif	/* TNLREGIONOFINTEREST_H */
 

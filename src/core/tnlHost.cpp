@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLHOSTL_H_
-#define TNLHOSTL_H_
+#pragma once 
 
 #include <core/tnlHost.h>
 #ifdef HAVE_OPENMP
@@ -17,6 +16,8 @@
 #endif
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
+
+namespace TNL {
 
 
 bool tnlHost::ompEnabled( true );
@@ -92,5 +93,5 @@ bool tnlHost::setup( const tnlParameterContainer& parameters,
    return true;
 }
 
+} // namespace TNL
 
-#endif /* TNLHOST_H_ */

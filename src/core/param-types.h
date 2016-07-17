@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef param_typesH
-#define param_typesH
+#pragma once 
 
 #include <core/tnlReal.h>
 #include <core/tnlString.h>
+
+namespace TNL {
 
 template< typename T >
 tnlString getType() { return T :: getType(); };
@@ -29,4 +30,4 @@ template<> inline tnlString getType< long double >() { return tnlString( "long d
 template<> inline tnlString getType< tnlFloat >() { return tnlString( "tnlFloat" ); };
 template<> inline tnlString getType< tnlDouble> () { return tnlString( "tnlDouble" ); };
 
-#endif
+} // namespace TNL

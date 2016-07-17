@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHINTEGRITYCHECKER_H_
-#define TNLMESHINTEGRITYCHECKER_H_
+#pragma once
 
 #include <mesh/tnlMesh.h>
 #include <mesh/tnlMeshIntegrityCheckerLayer.h>
+
+namespace TNL {
 
 template< typename MeshType >
 class tnlMeshIntegrityChecker
@@ -31,5 +32,4 @@ class tnlMeshIntegrityChecker
       }
 };
 
-
-#endif /* TNLMESHINTEGRITYCHECKER_H_ */
+} // namespace TNL

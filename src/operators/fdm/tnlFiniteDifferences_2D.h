@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLFINITEDIFFERENCES_2D_H
-#define	TNLFINITEDIFFERENCES_2D_H
+#pragma once
+
+namespace TNL {
 
 /***
  * Default implementation for case when one differentiate with respect
@@ -358,5 +359,4 @@ class tnlFiniteDifferences<
       }
 };
 
-#endif	/* TNLFINITEDIFFERENCES_2D_H */
-
+} // namespace TNL

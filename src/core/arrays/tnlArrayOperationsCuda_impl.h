@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLARRAYOPERATIONSCUDA_IMPL_H_
-#define TNLARRAYOPERATIONSCUDA_IMPL_H_
+#pragma once 
 
 #include <iostream>
 #include <tnlConfig.h>
@@ -17,6 +16,7 @@
 #include <core/cuda/cuda-reduction.h>
 #include <core/cuda/reduction-operations.h>
 
+namespace TNL {
 
 template< typename Element, typename Index >
 bool tnlArrayOperations< tnlCuda >::allocateMemory( Element*& data,
@@ -642,4 +642,4 @@ extern template bool tnlArrayOperations< tnlCuda >::setMemory< long double, long
 
 #endif
 
-#endif /* TNLARRAYOPERATIONSCUDA_IMPL_H_ */
+} // namespace TNL

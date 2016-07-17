@@ -16,8 +16,9 @@
 #include <functions/tnlMeshFunctionGnuplotWriter.h>
 #include <functions/tnlMeshFunctionVTKWriter.h>
 
-#ifndef TNLMESHFUNCTION_IMPL_H
-#define	TNLMESHFUNCTION_IMPL_H
+#pragma once
+
+namespace TNL {
 
 template< typename Mesh,
           int MeshEntityDimensions,
@@ -400,7 +401,5 @@ write( const tnlString& fileName,
    return true;
 }
  
-
-
-#endif	/* TNLMESHFUNCTION_IMPL_H */
+} // namespace TNL
 

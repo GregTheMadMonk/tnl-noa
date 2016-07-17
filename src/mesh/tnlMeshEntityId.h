@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITYID_H_
-#define TNLMESHENTITYID_H_
+#pragma once
+
+namespace TNL {
 
 template< typename IDType,
           typename GlobalIndexType >
@@ -54,5 +55,4 @@ class tnlMeshEntityId< void, GlobalIndexType >
    }
 };
 
-
-#endif /* TNLMESHENTITYID_H_ */
+} // namespace TNL

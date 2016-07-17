@@ -13,7 +13,7 @@
 
 
 #include <math.h>
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlSharedVector.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>

@@ -1,9 +1,20 @@
-#ifndef TNLFINITEVOLUMEOPERATORQ_H
-#define	TNLFINITEVOLUMEOPERATORQ_H
+/***************************************************************************
+                          tnlFiniteVolumeOperatorQ.h  -  description
+                             -------------------
+    begin                : Jan 25, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
 
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlSharedVector.h>
 #include <mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -337,7 +348,6 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, 
       RealType eps;
 };
 
+} // namespace TNL
+
 #include <operators/operator-Q/tnlFiniteVolumeOperatorQ_impl.h>
-
-
-#endif	/* TNLFINITEVOLUMEOPERATORQ_H */

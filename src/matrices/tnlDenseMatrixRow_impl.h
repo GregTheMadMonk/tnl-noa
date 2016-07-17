@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDENSEMATRIXROW_IMPL_H_
-#define TNLDENSEMATRIXROW_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Real, typename Index >
 __cuda_callable__
@@ -62,5 +63,4 @@ setElement( const Index& elementIndex,
    this->values[ column * this->step ] = value;
 }
 
-
-#endif /* TNLDENSEMATRIXROW_IMPL_H_ */
+} // namespace TNL

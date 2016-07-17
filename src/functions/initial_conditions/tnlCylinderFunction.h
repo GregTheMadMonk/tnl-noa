@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCYLINDERFUNCTION_H_
-#define TNLCYLINDERFUNCTION_H_
+#pragma once
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlDomain.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 template< typename Real,
           int Dimensions >
@@ -152,7 +153,7 @@ ostream& operator << ( ostream& str, const tnlCylinderFunction< Dimensions, Real
    return str;
 }
 
+} // namespace TNL
+
 #include <functions/initial_conditions/tnlCylinderFunction_impl.h>
 
-
-#endif /* TNLEXPBUMPFUNCTION_H_ */

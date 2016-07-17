@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLARRAY_H_IMPLEMENTATION
-#define TNLARRAY_H_IMPLEMENTATION
+#pragma once
 
 #include <iostream>
 #include <core/tnlAssert.h>
@@ -20,6 +19,8 @@
 #include <core/arrays/tnlArrayIO.h>
 
 #include "tnlArray.h"
+
+namespace TNL {
 
 template< typename Element,
            typename Device,
@@ -658,4 +659,4 @@ extern template class tnlArray< long double, tnlHost, long int >;
 
 #endif
 
-#endif /* TNLARRAY_H_IMPLEMENTATION */
+} // namespace TNL

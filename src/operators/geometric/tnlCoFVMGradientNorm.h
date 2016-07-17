@@ -8,14 +8,15 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCOFVMGRADIENTNORM_H
-#define	TNLCOFVMGRADIENTNORM_H
+#pragma once
 
 #include <mesh/tnlGrid.h>
 #include <operators/geometric/tnlExactGradientNorm.h>
 #include <operators/interpolants/tnlMeshEntitiesInterpolants.h>
 #include <operators/tnlOperator.h>
 #include <operators/tnlOperatorComposition.h>
+
+namespace TNL {
 
 template< typename Mesh,
           int MeshEntityDimensions = Mesh::getMeshDimensions(),
@@ -499,5 +500,5 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
    RealType epsSquare;
 };
 
-#endif	/* TNLCOFVMGRADIENTNORM_H */
+} // namespace TNL
 

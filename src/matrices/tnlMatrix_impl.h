@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMATRIX_IMPL_H_
-#define TNLMATRIX_IMPL_H_
+#pragma once
 
 #include <matrices/tnlMatrix.h>
 #include <core/tnlAssert.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -264,4 +265,4 @@ void tnlMatrixVectorProductCuda( const Matrix& matrix,
 #endif
 }
 
-#endif /* TNLMATRIX_IMPL_H_ */
+} // namespace TNL

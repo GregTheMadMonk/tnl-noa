@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLFUNCTIONINVERSEOPERATOR_H
-#define	TNLFUNCTIONINVERSEOPERATOR_H
+#pragma once
 
 #include <core/tnlString.h>
 #include <core/tnlCuda.h>
 #include <operators/tnlOperator.h>
+
+namespace TNL {
 
 template< typename Operator >
 class tnlFunctionInverseOperator
@@ -59,6 +60,5 @@ class tnlFunctionInverseOperator
       const OperatorType& operator_;
 };
 
-
-#endif	/* TNLINVERSEFUNCTIONOPERATOR_H */
+} // namespace TNL
 

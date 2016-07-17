@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLARRAYOPERATIONSHOST_IMPL_H_
-#define TNLARRAYOPERATIONSHOST_IMPL_H_
+#pragma once 
 
 #include <type_traits>
 #include <tnlConfig.h>
 #include <string.h>
+
+namespace TNL {
 
 template< typename Element, typename Index >
 bool tnlArrayOperations< tnlHost >::allocateMemory( Element*& data,
@@ -282,5 +283,4 @@ extern template bool tnlArrayOperations< tnlHost >::setMemory< long double, long
 
 #endif
 
-
-#endif /* TNLARRAYOPERATIONSHOST_IMPL_H_ */
+} // namespace TNL

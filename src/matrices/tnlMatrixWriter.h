@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMATRIXWRITER_H_
-#define TNLMATRIXWRITER_H_
+#pragma once
 
 #include <ostream>
+
+namespace TNL {
 
 template< typename Matrix >
 class tnlMatrixWriter
@@ -42,5 +43,4 @@ class tnlMatrixWriter
 
 };
 
-
-#endif /* TNLMATRIXWRITER_H_ */
+} // namespace TNL

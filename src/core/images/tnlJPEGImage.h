@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLJPEGIMAGE_H
-#define	TNLJPEGIMAGE_H
+#pragam once
 
 #include <tnlConfig.h>
 
@@ -28,6 +27,8 @@ struct my_error_mgr
    jmp_buf setjmp_buffer;
 };
 #endif
+
+namespace TNL {
 
 template< typename Index = int >
 class tnlJPEGImage : public tnlImage< Index >
@@ -83,8 +84,7 @@ class tnlJPEGImage : public tnlImage< Index >
 #endif
 };
 
+} // namespace TNL
+
 #include <core/images/tnlJPEGImage_impl.h>
-
-
-#endif	/* TNLJPEGIMAGE_H */
 

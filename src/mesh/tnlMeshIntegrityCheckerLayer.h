@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHINTEGRITYCHECKERLAYER_H_
-#define TNLMESHINTEGRITYCHECKERLAYER_H_
+#pragma once
 
 #include <mesh/traits/tnlMeshEntityTraits.h>
 #include <mesh/tnlDimensionsTag.h>
+
+namespace TNL {
 
 template< typename MeshType,
           typename DimensionsTag,
@@ -95,5 +96,4 @@ class tnlMeshIntegrityCheckerLayer< MeshType,
 
 };
 
-
-#endif /* TNLMESHINTEGRITYCHECKERLAYER_H_ */
+} // namespace TNL

@@ -7,14 +7,16 @@
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
-#ifndef SRC_FUNCTIONS_TNLFUNCTIONEVALUATOR_IMPL_H_
-#define SRC_FUNCTIONS_TNLFUNCTIONEVALUATOR_IMPL_H_
+
+#pragma once
 
 #include <type_traits>
 #include <functions/tnlFunctionEvaluator.h>
 #include <mesh/grids/tnlTraverser_Grid1D.h>
 #include <mesh/grids/tnlTraverser_Grid2D.h>
 #include <mesh/grids/tnlTraverser_Grid3D.h>
+
+namespace TNL {
 
 template< typename MeshFunction,
           typename Function >
@@ -71,4 +73,4 @@ assignment( const Function& function,
    }
 }
 
-#endif /* SRC_FUNCTIONS_TNLFUNCTIONEVALUATOR_IMPL_H_ */
+} // namespace TNL

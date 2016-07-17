@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMULTIDIAGONALMATRIXROW_H_
-#define TNLMULTIDIAGONALMATRIXROW_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Real, typename Index >
 class tnlMultidiagonalMatrixRow
@@ -49,7 +50,7 @@ class tnlMultidiagonalMatrixRow
       Index row, columns, maxRowLength, step;
 };
 
+} // namespace TNL
+
 #include <matrices/tnlMultidiagonalMatrixRow_impl.h>
 
-
-#endif /* TNLMULTIDIAGONALMATRIXROW_H_ */

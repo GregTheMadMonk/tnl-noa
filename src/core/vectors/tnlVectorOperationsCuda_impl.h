@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLVECTOROPERATIONSCUDA_IMPL_H_
-#define TNLVECTOROPERATIONSCUDA_IMPL_H_
+#pragma once
 
 #include <tnlConfig.h>
 #include <core/cuda/cuda-prefix-sum.h>
 #include <core/cuda/tnlCublasWrapper.h>
+
+namespace TNL {
 
 template< typename Vector >
 void tnlVectorOperations< tnlCuda >::addElement( Vector& v,
@@ -869,4 +870,4 @@ extern template long double tnlVectorOperations< tnlCuda >::getVectorDifferenceA
 
 #endif
 
-#endif /* TNLVECTOROPERATIONSCUDA_IMPL_H_ */
+} // namespace TNL

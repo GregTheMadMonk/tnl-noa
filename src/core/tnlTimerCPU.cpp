@@ -10,6 +10,10 @@
 
 #include <core/tnlTimerCPU.h>
 
+// TODO: remove this file
+
+namespace TNL {
+
 tnlTimerCPU defaultCPUTimer;
 
 tnlTimerCPU :: tnlTimerCPU()
@@ -61,3 +65,6 @@ double tnlTimerCPU::getTime( int root, MPI_Comm comm )
    return -1;
 #endif
 }
+
+
+} // namespace TNL

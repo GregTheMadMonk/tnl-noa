@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLFINITEDIFFERENCES_3D_H
-#define	TNLFINITEDIFFERENCES_3D_H
+#pragma once
+
+namespace TNL {
 
 /****
  * 1st order forward difference
@@ -473,6 +474,5 @@ class tnlFiniteDifferences<
       }
 };
 
-
-#endif	/* TNLFINITEDIFFERENCES_3D_H */
+} // namespace TNL
 

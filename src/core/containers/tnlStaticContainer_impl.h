@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICCONTAINER_IMPL_H_
-#define TNLSTATICCONTAINER_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< int Size, typename Element >
 tnlStaticContainer< Size, Element >::tnlStaticContainer()
@@ -109,4 +110,4 @@ extern template class tnlStaticContainer< 4, double >;
 #endif /* TEMPLATE_EXPLICIT_INSTANTIATION */
 
 
-#endif /* TNLSTATICCONTAINER_IMPL_H_ */
+} // namespace TNL

@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSINWAVEFUNCTION_H_
-#define TNLSINWAVEFUNCTION_H_
+#pragma once
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< int dimensions,
           typename Real = double >
@@ -141,6 +142,7 @@ ostream& operator << ( ostream& str, const tnlSinWaveFunction< Dimensions, Real 
    return str;
 }
 
+} // namespace TNL
+
 #include <functions/tnlSinWaveFunction_impl.h>
 
-#endif /* TNLSINWAVEFUNCTION_H_ */

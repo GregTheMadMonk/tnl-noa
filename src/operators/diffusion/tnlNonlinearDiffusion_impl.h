@@ -1,10 +1,10 @@
 
-#ifndef TNLNONLINEARDIFFUSION_IMPL_H
-#define	TNLNONLINEARDIFFUSION_IMPL_H
+#pragma once
 
 #include "tnlNonlinearDiffusion.h"
-
 #include <mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename MeshReal,
           typename Device,
@@ -237,4 +237,4 @@ setMatrixElements( const RealType& time,
     nonlinearDiffusionOperator.setMatrixElements( time, tau, mesh, index, entity, u, b, matrix );
 }
 
-#endif	/* TNLNONLINEARDIFFUSION_IMPL_H */
+} // namespace TNL

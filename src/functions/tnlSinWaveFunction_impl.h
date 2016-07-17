@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSINWAVEFUNCTION_IMPL_H_
-#define TNLSINWAVEFUNCTION_IMPL_H_
+#pragma once
 
 #include <functions/tnlSinWaveFunction.h>
+
+namespace TNL {
 
 template< int dimensions, typename Real >
 tnlSinWaveFunctionBase< dimensions, Real >::tnlSinWaveFunctionBase()
@@ -208,5 +209,4 @@ operator()( const VertexType& v,
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
-
-#endif /* TNLSINWAVEFUNCTION_IMPL_H_ */
+} // namespace TNL

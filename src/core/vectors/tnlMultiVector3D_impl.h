@@ -8,10 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMULTIVECTOR3D_IMPL_H_
-#define TNLMULTIVECTOR3D_IMPL_H_
+#pragma once
 
-
+namespace TNL {
 
 template< typename Real, typename Device, typename Index >
 tnlMultiVector< 3, Real, Device, Index > :: tnlMultiVector()
@@ -290,5 +289,4 @@ extern template class tnlMultiVector< 3, double, tnlCuda, long int >;
 
 #endif
 
-
-#endif /* TNLMULTIVECTOR3D_IMPL_H_ */
+} // namespace TNL

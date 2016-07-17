@@ -8,12 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-
-#ifndef TNLMESH_IMPL_H
-#define	TNLMESH_IMPL_H
+#pragma once
 
 #include "tnlMesh.h"
 
+namespace TNL {
 
 template< typename MeshConfig >
 tnlString
@@ -179,5 +178,6 @@ std::ostream& operator <<( std::ostream& str, const tnlMesh< MeshConfig >& mesh 
    return str;
 }
 
-#endif	/* TNLMESH_IMPL_H */
+
+} // namespace TNL
 

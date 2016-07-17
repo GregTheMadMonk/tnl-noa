@@ -8,12 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-
-#ifndef TNLNEIGHBOURGRIDENTITIESSTORAGE_H
-#define	TNLNEIGHBOURGRIDENTITIESSTORAGE_H
+#pragma once
 
 #include <core/tnlCuda.h>
 #include <mesh/tnlDimensionsTag.h>
+
+namespace TNL {
 
 template< typename GridEntity,
           int NeighbourEntityDimensions >
@@ -116,5 +116,5 @@ class tnlNeighbourGridEntitiesStorage
  
 };
 
-#endif	/* TNLNEIGHBOURGRIDENTIESSTORAGE_H */
+} // namespace TNL
 

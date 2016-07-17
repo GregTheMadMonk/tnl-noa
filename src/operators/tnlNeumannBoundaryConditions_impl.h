@@ -1,7 +1,18 @@
-#ifndef TNLNEUMANNBOUNDARYCONDITIONS_IMPL_H
-#define	TNLNEUMANNBOUNDARYCONDITIONS_IMPL_H
+/***************************************************************************
+                          tnlIdentityOperator.h  -  description
+                             -------------------
+    begin                : Nov 17, 2014
+    copyright            : (C) 2014 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
 
 #include <functions/tnlFunctionAdapter.h>
+
+namespace TNL {
 
 template< typename Function >
 void
@@ -383,5 +394,5 @@ setMatrixElements( const RealType& time,
 }
 */
 
-#endif	/* TNLNEUMANNBOUNDARYCONDITIONS_IMPL_H */
+} // namespace TNL
 

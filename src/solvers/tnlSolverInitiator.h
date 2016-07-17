@@ -11,7 +11,7 @@
 #ifndef TNLSOLVERINITIATOR_H_
 #define TNLSOLVERINITIATOR_H_
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <config/tnlParameterContainer.h>
 #include <solvers/tnlBuildConfigTags.h>
 

@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLASSERT_H_
-#define TNLASSERT_H_
+#pragma once
 
 /****
  * Debugging assert
@@ -20,6 +19,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <assert.h>
+
+namespace TNL {
 
 #ifdef HAVE_CUDA
 #define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )                                    \
@@ -47,7 +48,8 @@
 #endif /* HAVE_CUDA */
 #else /* #ifndef NDEBUG */
 #define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )
+
+} // namespace TNL
+
 #endif /* #ifndef NDEBUG */
 
-
-#endif /* TNLASSERT_H_ */

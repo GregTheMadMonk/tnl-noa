@@ -11,8 +11,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
+
 #include <core/images/tnlDicomImageInfo.h>
 #include <core/images/tnlDicomHeader.h>
+
+namespace TNL {
 
 inline tnlDicomImageInfo::tnlDicomImageInfo( tnlDicomHeader& dicomHeader )
 : dicomHeader( dicomHeader )
@@ -98,3 +102,5 @@ inline int tnlDicomImageInfo::getNumberOfSlices()
         retrieveInfo();
     return numberOfSlices;
 }
+
+} // namespace TNL

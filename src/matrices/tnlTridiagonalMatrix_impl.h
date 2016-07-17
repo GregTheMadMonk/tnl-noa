@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTRIDIAGONALMATRIX_IMPL_H_
-#define TNLTRIDIAGONALMATRIX_IMPL_H_
+#pragma once
 
 #include <core/tnlAssert.h>
 #include <matrices/tnlTridiagonalMatrix.h>
+
+namespace TNL {
 
 template< typename Device >
 class tnlTridiagonalMatrixDeviceDependentCode;
@@ -703,6 +704,4 @@ class tnlTridiagonalMatrixDeviceDependentCode< tnlCuda >
       }
 };
 
-
-
-#endif /* TNLTRIDIAGONALMATRIX_IMPL_H_ */
+} // namespace TNL

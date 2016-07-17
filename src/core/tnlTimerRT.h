@@ -13,6 +13,10 @@
 
 #include "mpi-supp.h"
 
+// TODO: remove this file
+
+namespace TNL {
+
 class tnlTimerRT
 {
    public:
@@ -37,4 +41,7 @@ class tnlTimerRT
 };
 
 extern tnlTimerRT defaultRTTimer;
+
+} // namespace TNL
+
 #endif

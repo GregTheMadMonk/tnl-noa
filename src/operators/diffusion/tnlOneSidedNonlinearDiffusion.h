@@ -9,12 +9,13 @@
 /* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLONESIDEDNONLINEARDIFFUSION_H
-#define	TNLONESIDEDNONLINEARDIFFUSION_H
+#pragma once
 
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
 #include <operators/diffusion/tnlExactNonlinearDiffusion.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Nonlinearity,
@@ -355,4 +356,4 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
       const Nonlinearity& nonlinearity;
 };
 
-#endif	/* TNLONESIDEDNONLINEARDIFFUSION_H */
+} // namespace TNL

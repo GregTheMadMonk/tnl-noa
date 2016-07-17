@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICFOR_H_
-#define TNLSTATICFOR_H_
+#pragma once
+
+namespace TNL {
 
 template< typename IndexType, IndexType val >
 class tnlStaticForIndexTag
@@ -196,4 +197,4 @@ class tnlStaticFor
 };
 
 
-#endif /* TNLSTATICFOR_H_ */
+} // namespace TNL

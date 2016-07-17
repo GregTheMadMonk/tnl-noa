@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMATRIXREADER_IMPL_H_
-#define TNLMATRIXREADER_IMPL_H_
+#pragma once
 
 #include <iomanip>
 #include <core/tnlList.h>
@@ -17,7 +16,7 @@
 #include <core/vectors/tnlVector.h>
 #include <core/tnlTimerRT.h>
 
-using namespace std;
+namespace TNL {
 
 template< typename Matrix >
 bool tnlMatrixReader< Matrix >::readMtxFile( const tnlString& fileName,
@@ -414,5 +413,4 @@ class tnlMatrixReaderDeviceDependentCode< tnlCuda >
    }
 };
 
-
-#endif /* TNLMATRIXREADER_IMPL_H_ */
+} // namespace TNL

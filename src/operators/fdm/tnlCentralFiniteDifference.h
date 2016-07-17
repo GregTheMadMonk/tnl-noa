@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCENTRALFINITEDIFFERENCE_H
-#define	TNLCENTRALFINITEDIFFERENCE_H
+#pragma once
 
 #include <operators/fdm/tnlFiniteDifferences.h>
 #include <operators/fdm/tnlExactDifference.h>
 #include <operators/tnlOperator.h>
+
+namespace TNL {
 
 template< typename Mesh,
           int Xdifference = 0,
@@ -72,6 +73,5 @@ class tnlCentralFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Mes
       };
 };
 
-
-#endif	/* TNLCENTRALFINITEDIFFERENCE_H */
+} // namespace TNL
 

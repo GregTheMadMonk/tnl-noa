@@ -8,14 +8,15 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTESTFUNCTION_H_
-#define TNLTESTFUNCTION_H_
+#pragma once
 
 #include <core/tnlHost.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< int FunctionDimensions,
           typename Real = double,
@@ -139,6 +140,7 @@ ostream& operator << ( ostream& str, const tnlTestFunction< FunctionDimensions, 
    return f.print( str );
 }
 
+} // namespace TNL
+
 #include <functions/tnlTestFunction_impl.h>
 
-#endif /* TNLTESTFUNCTION_H_ */

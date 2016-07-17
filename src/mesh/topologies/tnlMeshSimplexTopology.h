@@ -9,9 +9,10 @@
 /* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLMESHSIMPLEXTOPOLOGY_H
-#define TNLMESHSIMPLEXTOPOLOGY_H
+#pragma once
 
+
+namespace TNL {
 
 template< int dimensions_ >
 class tnlMeshSimplexTopology
@@ -177,5 +178,5 @@ class tnlCombinationIncrement
 	   static const unsigned int valueIndex = tnlCombinationIncrementImpl< n, k, combinationIndex, k - 1 >::valueIndex;
 };
 
-#endif	/* TNLMESHSIMPLEXTOPOLOGY_H */
+} // namespace TNL
 

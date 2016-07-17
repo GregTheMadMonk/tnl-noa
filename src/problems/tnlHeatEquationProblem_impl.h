@@ -14,8 +14,7 @@
  * Szekely Ondrej, ondra.szekely@gmail.com
  */
 
-#ifndef TNLHEATEQUATIONPROBLEM_IMPL_H_
-#define TNLHEATEQUATIONPROBLEM_IMPL_H_
+#pragma once
 
 #include <core/mfilename.h>
 #include <matrices/tnlMatrixSetter.h>
@@ -28,6 +27,7 @@
 
 #include "tnlHeatEquationProblem.h"
 
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -299,4 +299,4 @@ assemblyLinearSystem( const RealType& time,
    abort();*/
 }
 
-#endif /* TNLHEATEQUATIONPROBLEM_IMPL_H_ */
+} // namespace TNL

@@ -8,9 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATISTICS_H_
-#define TNLSTATISTICS_H_
+#pragma once
 
+namespace TNL {
 
 class tnlStatistics
 {
@@ -32,4 +32,4 @@ class tnlStatistics
 
 extern tnlStatistics defaultTnlStatistics;
 
-#endif /* TNLSTATISTICS_H_ */
+} // namespace TNL

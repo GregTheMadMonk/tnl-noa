@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXACTOPERATORCURVATURE_IMPL_H_
-#define TNLEXACTOPERATORCURVATURE_IMPL_H_
+#pragma once
 
 #include <operators/operator-curvature/tnlExactOperatorCurvature.h>
+
+namespace TNL {
 
 template< typename ExactOperatorQ >
 tnlString
@@ -78,4 +79,4 @@ getType()
    return "tnlExactOperatorCurvature< " + ExactOperatorQ::getType() + ",3 >";
 }
 
-#endif /* TNLEXACTOPERATORCURVATURE_IMPL_H_ */
+} //namespace TNL

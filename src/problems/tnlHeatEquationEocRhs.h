@@ -14,10 +14,11 @@
  * Szekely Ondrej, ondra.szekely@gmail.com
  */
 
-#ifndef TNLHEATEQUATIONEOCRHS_H_
-#define TNLHEATEQUATIONEOCRHS_H_
+#pragma once
 
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< typename ExactOperator,
           typename TestFunction >
@@ -53,4 +54,4 @@ class tnlHeatEquationEocRhs
       TestFunction testFunction;
 };
 
-#endif /* TNLHEATEQUATIONEOCRHS_H_ */
+} // namespace TNL

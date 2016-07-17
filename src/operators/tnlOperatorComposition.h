@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLOPERATORCOMPOSITION_H
-#define	TNLOPERATORCOMPOSITION_H
+#pragma once
 
 #include<functions/tnlOperatorFunction.h>
 #include<functions/tnlMeshFunction.h>
 #include<operators/tnlOperator.h>
 #include<operators/tnlExactOperatorComposition.h>
+
+namespace TNL {
 
 /****
  * This object serves for composition of two operators F and G into an operator F( G( u ) ).
@@ -187,6 +188,5 @@ class tnlOperatorComposition< OuterOperator, InnerOperator, void >
       InnerOperatorFunction innerOperatorFunction;
 };
 
-
-#endif	/* TNLOPERATORCOMPOSITION_H */
+} // namespace TNL
 

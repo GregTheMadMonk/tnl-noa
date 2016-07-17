@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef SRC_MESH_TNLGRID3D_H_
-#define SRC_MESH_TNLGRID3D_H_
+#pragma once
 
 #include <mesh/tnlGrid.h>
 #include <mesh/grids/tnlGridEntityTopology.h>
 #include <mesh/grids/tnlGridEntityGetter.h>
 #include <mesh/grids/tnlNeighbourGridEntityGetter.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -162,6 +163,6 @@ class tnlGrid< 3, Real, Device, Index > : public tnlObject
    friend class tnlNeighbourGridEntityGetter;
 };
 
-#include <mesh/grids/tnlGrid3D_impl.h>
+} // namespace TNL
 
-#endif /* SRC_MESH_TNLGRID3D_H_ */
+#include <mesh/grids/tnlGrid3D_impl.h>

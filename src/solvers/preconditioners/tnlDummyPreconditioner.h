@@ -11,7 +11,7 @@
 #ifndef TNLDUMMYPRECONDITIONER_H_
 #define TNLDUMMYPRECONDITIONER_H_
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 
 template< typename Real, typename Device, typename Index >
 class tnlDummyPreconditioner

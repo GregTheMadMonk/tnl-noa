@@ -11,6 +11,8 @@
 #include <core/cuda/reduction-operations.h>
 #include <core/cuda/cuda-reduction.h>
  
+namespace TNL {
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 /****
@@ -93,3 +95,5 @@ template bool reductionOnCudaDevice< tnlParallelReductionDiffSum< long double, l
 #endif
 #endif
 #endif
+
+} // namespace TNL

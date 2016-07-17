@@ -11,8 +11,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDICOMIMAGEINFO_H
-#define TNLDICOMIMAGEINFO_H
+#pragma once
 
 #include <tnlConfig.h>
 
@@ -21,6 +20,8 @@
 #include <dcmtk/dcmdata/dcfilefo.h>
 #include <dcmtk/dcmdata/dcdeftag.h>
 #endif
+
+namespace TNL {
 
 class tnlDicomHeader;
 
@@ -91,6 +92,7 @@ class tnlDicomImageInfo
       int width, height, depth;
 };
 
+} // namespace TNL
+
 #include <core/images/tnlDicomImageInfo_impl.h>
 
-#endif // TNLDICOMIMAGEINFO_H

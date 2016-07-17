@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITYSEED_H
-#define	TNLMESHENTITYSEED_H
+#pragma once
 
 #include <mesh/traits/tnlMeshTraits.h>
+
+namespace TNL {
 
 template< typename MeshConfig,
           typename EntityTopology >
@@ -68,5 +69,5 @@ ostream& operator << ( ostream& str, const tnlMeshEntitySeed< MeshConfig, Entity
    return str;
 };
 
-#endif	/* TNLMESHENTITYSEED_H */
+} // namespace TNL
 

@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef mfilenameH
-#define mfilenameH
+#pragma once 
+
+namespace TNL {
 
 class tnlString;
 
@@ -23,4 +24,4 @@ tnlString getFileExtension( const tnlString fileName );
 
 void RemoveFileExtension( tnlString& file_name );
 
-#endif
+} // namespace TNL

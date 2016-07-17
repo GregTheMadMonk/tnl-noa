@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHSUPERENTITYTRAITS_H_
-#define TNLMESHSUPERENTITYTRAITS_H_
+#pragma once
 
 #include <core/arrays/tnlArray.h>
 #include <core/arrays/tnlConstSharedArray.h>
@@ -20,6 +19,8 @@
 #include <mesh/traits/tnlMeshEntityTraits.h>
 #include <core/multimaps/tnlEllpackIndexMultimap.h>
 #include <mesh/layers/tnlMeshSuperentityAccessor.h>
+
+namespace TNL {
 
 template< typename MeshConfig,
           typename EntityTopology,
@@ -62,5 +63,4 @@ class tnlMeshSuperentityTraits
 
 };
 
-
-#endif /* TNLMESHSUPERENTITYTRAITS_H_ */
+} // namespace TNL

@@ -8,16 +8,17 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESH_H_
-#define TNLMESH_H_
+#pragma once
 
 #include <ostream>
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <mesh/tnlMeshEntity.h>
 #include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/layers/tnlMeshStorageLayer.h>
 #include <mesh/config/tnlMeshConfigValidator.h>
 #include <mesh/initializer/tnlMeshInitializer.h>
+
+namespace TNL {
 
 template< typename MeshConfig > //,
           //typename Device = tnlHost >
@@ -103,6 +104,6 @@ class tnlMesh : public tnlObject/*,
 template< typename MeshConfig >
 std::ostream& operator <<( std::ostream& str, const tnlMesh< MeshConfig >& mesh );
 
-#include <mesh/tnlMesh_impl.h>
+} // namespace TNL
 
-#endif /* TNLMESH_H_ */
+#include <mesh/tnlMesh_impl.h>

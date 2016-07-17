@@ -8,14 +8,15 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITYINITIALIZER_H_
-#define TNLMESHENTITYINITIALIZER_H_
+#pragma once
 
 #include <core/tnlStaticFor.h>
 #include <mesh/initializer/tnlMeshSuperentityStorageInitializer.h>
 #include <mesh/initializer/tnlMeshSubentitySeedCreator.h>
 
 #include "tnlMeshEntitySeed.h"
+
+namespace TNL {
 
 template< typename MeshConfig >
 class tnlMeshInitializer;
@@ -538,5 +539,4 @@ class tnlMeshEntityInitializerLayer< MeshConfig,
                          InitializerType& ) {}
 };
 
-
-#endif /* TNLMESHENTITYINITIALIZER_H_ */
+} // namespace TNL

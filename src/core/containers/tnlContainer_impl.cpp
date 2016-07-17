@@ -10,6 +10,8 @@
 
 #include <core/containers/tnlContainer.h>
 
+namespace TNL {
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 template class tnlContainer< float, tnlHost, int >;
@@ -25,5 +27,7 @@ template class tnlContainer< double, tnlCuda, long int >;
 #endif
 
 #endif
+
+} // namespace TNL
 
 

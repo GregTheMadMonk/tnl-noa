@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef mpi_suppH
-#define mpi_suppH
+#pragma once
 
 #include <iostream>
 #include <cstdlib>
@@ -25,6 +24,8 @@
    #define MPI_SUM 0
 #endif
 
+namespace TNL {
+   
 class tnlString;
 
 #ifdef HAVE_MPI
@@ -164,4 +165,4 @@ template< typename T > void MPIAllreduce( T& data,
 };
 #endif
 
-#endif
+} // namespace TNL

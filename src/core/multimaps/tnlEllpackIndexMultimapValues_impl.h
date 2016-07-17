@@ -8,12 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLELLPACKINDEXMULTIMAPVALUES_IMPL_H
-#define TNLELLPACKINDEXMULTIMAPVALUES_IMPL_H
+#pragma once
 
 #include "tnlEllpackIndexMultimapValues.h"
 
-
+namespace TNL {
+ 
 template< typename Index,
           typename Device >
 tnlEllpackIndexMultimapValues< Index, Device >::
@@ -103,5 +103,5 @@ std::ostream& operator << ( std::ostream& str, const tnlEllpackIndexMultimapValu
    return str;
 }
 
-#endif	/* TNLELLPACKGRAPHLINKSACCESSOR_IMPL_H */
+} // namespace TNL
 

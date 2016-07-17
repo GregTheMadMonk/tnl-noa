@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDIMENSIONSTAG_H_
-#define TNLDIMENSIONSTAG_H_
+#pragma once
 
 #include <core/tnlAssert.h>
+
+namespace TNL {
 
 /***
  * This tag or integer wrapper is necessary for C++ templates specializations.
@@ -49,4 +50,4 @@ class tnlDimensionsTag< 0 >
       static const int value = 0;
 };
 
-#endif /* TNLDIMENSIONSTAG_H_ */
+} // namespace TNL

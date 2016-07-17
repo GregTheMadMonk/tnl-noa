@@ -9,8 +9,9 @@
 /* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLBOUNDARYGRIDENTITYCHECKER_H
-#define	TNLBOUNDARYGRIDENTITYCHECKER_H
+#pragma once
+
+namespace TNL{
 
 template< typename GridEntity >
 class tnlBoundaryGridEntityChecker
@@ -207,5 +208,5 @@ class tnlBoundaryGridEntityChecker< tnlGridEntity< tnlGrid< 3, Real, Device, Ind
       }
 };
 
-#endif	/* TNLBOUNDARYGRIDENTITYCHECKER_H */
+} // namespace TNL
 

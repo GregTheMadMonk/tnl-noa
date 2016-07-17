@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLARRAYOPERATIONS_H_
-#define TNLARRAYOPERATIONS_H_
+#pragma once
 
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 template< typename DestinationDevice,
           typename SourceDevice = DestinationDevice >
@@ -150,7 +151,7 @@ class tnlArrayOperations< tnlHost, tnlCuda >
                               const Index size );
 };
 
+} // namespace TNL
+
 #include <core/arrays/tnlArrayOperationsHost_impl.h>
 #include <core/arrays/tnlArrayOperationsCuda_impl.h>
-
-#endif /* TNLARRAYOPERATIONS_H_ */

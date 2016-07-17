@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLLAXFRIDRICHS_H_
-#define TNLLAXFRIDRICHS_H_
+#pragma once
 
 #include <core/vectors/tnlSharedVector.h>
 #include <mesh/tnlGrid.h>
 #include <mesh/tnlIdenticalGridGeometry.h>
 #include <operators/gradient/tnlCentralFDMGradient.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename PressureGradient = tnlCentralFDMGradient< Mesh > >
@@ -161,6 +162,6 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry
    tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2, energy, p;
 };
 
-#include <implementation/operators/euler/fvm/tnlLaxFridrichs_impl.h>
+} // namespace TNL
 
-#endif
+#include <implementation/operators/euler/fvm/tnlLaxFridrichs_impl.h>

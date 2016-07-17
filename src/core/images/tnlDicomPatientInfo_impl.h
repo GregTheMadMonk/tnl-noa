@@ -11,6 +11,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
 
 #include "tnlDicomPatientInfo.h"
 #include "tnlDicomHeader.h"
@@ -20,6 +21,8 @@
 #define HAVE_STD_STRING
 #include <dcmtk/ofstd/ofstring.h>
 #endif
+
+namespace TNL
 
 inline tnlDicomPatientInfo::tnlDicomPatientInfo( tnlDicomHeader &dicomHeader )
 : dicomHeader( dicomHeader )
@@ -97,3 +100,5 @@ inline const tnlString& tnlDicomPatientInfo::getOrientation()
         retrieveInfo();
     return patientOrientation;
 }
+
+} // namespace TNL

@@ -4,7 +4,7 @@
 
 #include <umfpack.h>
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <config/tnlConfigDescription.h>
 #include <matrices/tnlCSRMatrix.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>

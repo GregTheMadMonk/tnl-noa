@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLFDMGRADIENTNORM_H
-#define	TNLFDMGRADIENTNORM_H
+#pragma once
 
 #include <operators/fdm/tnlForwardFiniteDifference.h>
 #include <operators/geometric/tnlExactGradientNorm.h>
 #include <operators/tnlOperator.h>
+
+namespace TNL {
 
 template< typename Mesh,
           template< typename, int, int, int, typename, typename > class DifferenceOperatorTemplate = tnlForwardFiniteDifference,
@@ -206,6 +207,5 @@ class tnlFDMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, DifferenceO
       RealType epsSquare;
 };
 
-
-#endif	/* TNLFDMGRADIENTNORM_H */
+} // namespace TNL
 

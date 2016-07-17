@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHCONFIGVALIDATOR_H
-#define	TNLMESHCONFIGVALIDATOR_H
+#pragma once
 
 #include <core/tnlAssert.h>
 #include <mesh/topologies/tnlMeshEntityTopology.h>
 #include <mesh/tnlDimensionsTag.h>
+
+namespace TNL {
 
 template< typename MeshConfig,
           typename MeshEntity,
@@ -102,6 +103,5 @@ class tnlMeshConfigValidator : public tnlMeshConfigValidatorLayerCell< MeshConfi
 	static_assert( MeshConfig::entityStorage( meshDimensions ), "mesh cells must be stored");
 };
 
-
-#endif	/* TNLMESHCONFIGVALIDATOR_H */
+} // namespace TNL
 

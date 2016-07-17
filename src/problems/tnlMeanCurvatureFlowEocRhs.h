@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMEANCURVATUREFLOWEOCRHS_H_
-#define TNLMEANCURVATUREFLOWEOCRHS_H_
+#pragma once
 
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< typename ExactOperator,
           typename TestFunction,
@@ -50,5 +51,4 @@ class tnlMeanCurvatureFlowEocRhs : public tnlDomain< Dimensions, SpaceDomain >
       TestFunction testFunction;
 };
 
-
-#endif /* TNLMEANCURVATUREFLOWEOCRHS_H_ */
+} // namespace TNL

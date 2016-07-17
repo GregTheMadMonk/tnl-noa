@@ -8,17 +8,18 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlCurveH
-#define tnlCurveH
+#pragma once
 
 #include <iomanip>
 #include <fstream>
 #include <cstring>
 #include <core/tnlList.h>
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/mfuncs.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <core/param-types.h>
+
+namespace TNL {
 
 //! Basic structure for curves
 template< class T > class tnlCurveElement
@@ -230,6 +231,5 @@ template< class T > bool Read( tnlCurve< T >& crv,
 // Explicit instatiation
 template class tnlCurve< tnlStaticVector< 2, double > >;
 
+} // namespace TNL
 
-
-#endif

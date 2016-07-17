@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef SRC_FUNCTIONS_TNLFUNCTIONEVALUATOR_H_
-#define SRC_FUNCTIONS_TNLFUNCTIONEVALUATOR_H_
+#pragma once
 
 #include <functions/tnlFunctionAdapter.h>
+
+namespace TNL {
 
 template< typename MeshFunction,
           typename Function >
@@ -98,8 +99,7 @@ class tnlFunctionEvaluator
 
 };
 
+} // namespace TNL
+
 #include <functions/tnlFunctionEvaluator_impl.h>
 
-
-
-#endif /* SRC_FUNCTIONS_TNLFUNCTIONEVALUATOR_H_ */

@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHFUNCTIONVTKWRITER_IMPL_H
-#define	TNLMESHFUNCTIONVTKWRITER_IMPL_H
+#pragma once
+
+namespace TNL {
 
 template< typename MeshFunction >
 bool
@@ -1013,5 +1014,5 @@ write( const MeshFunctionType& function,
    return true;
 }
 
-#endif	/* TNLMESHFUNCTIONVTKWRITER_IMPL_H */
+} // namespace TNL
 

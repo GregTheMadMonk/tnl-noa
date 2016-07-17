@@ -14,7 +14,7 @@
 #include <ostream>
 #include <iomanip>
 #include <string.h>
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/tnlString.h>
 #include <core/tnlList.h>
 #include <core/tnlFile.h>

@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTRIDIAGONALMATRIXROW_IMPL_H_
-#define TNLTRIDIAGONALMATRIXROW_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Real, typename Index >
 __cuda_callable__
@@ -72,6 +73,4 @@ setElement( const Index& elementIndex,
    this->values[ ( column - row ) * this->step ] = value;
 }
 
-
-
-#endif /* TNLTRIDIAGONALMATRIXROW_IMPL_H_ */
+} // namespace TNL

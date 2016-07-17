@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLUNIQUECONTAINER_IMPL_H_
-#define TNLUNIQUECONTAINER_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Element, typename Key >
 class tnlUniqueContainer : public tnlObject
@@ -75,4 +76,4 @@ template< typename Element, typename Key >
 bool tnlUniqueContainer< Element, Key >::load( tnlFile& file );
 
 
-#endif /* TNLUNIQUECONTAINER_IMPL_H_ */
+} // namespace TNL

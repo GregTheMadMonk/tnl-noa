@@ -8,13 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHVERTEXTOPOLOGY_H_
-#define TNLMESHVERTEXTOPOLOGY_H_
+#pragma once
+
+namespace TNL {
 
 struct tnlMeshVertexTopology
 {
    static const int dimensions = 0;
 };
 
-
-#endif /* TNLMESHVERTEXTOPOLOGY_H_ */
+} // namespace TNL

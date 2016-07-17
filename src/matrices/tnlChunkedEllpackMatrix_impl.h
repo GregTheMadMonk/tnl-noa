@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCHUNKEDELLPACKMATRIX_IMPL_H_
-#define TNLCHUNKEDELLPACKMATRIX_IMPL_H_
+#pragma once
 
 #include <matrices/tnlChunkedEllpackMatrix.h>
 #include <core/vectors/tnlVector.h>
@@ -18,6 +17,8 @@
 #ifdef HAVE_CUDA
 #include <cuda.h>
 #endif
+
+namespace TNL {
 
 template< typename Real,
           typename Index,
@@ -1398,4 +1399,4 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlCuda >
 
 };
 
-#endif /* TNLCHUNKEDELLPACKMATRIX_IMPL_H_ */
+} // namespace TNL

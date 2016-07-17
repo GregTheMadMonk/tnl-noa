@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLELLPACKMATRIX_H_
-#define TNLELLPACKMATRIX_H_
+#pragma once
 
 #include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
+
+namespace TNL {
 
 template< typename Device >
 class tnlEllpackMatrixDeviceDependentCode;
@@ -173,7 +174,6 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    friend class tnlEllpackMatrixDeviceDependentCode< DeviceType >;
 };
 
+} // namespace TNL
+
 #include <matrices/tnlEllpackMatrix_impl.h>
-
-
-#endif /* TNLELLPACKMATRIX_H_ */

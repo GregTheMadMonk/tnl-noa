@@ -10,6 +10,8 @@
 
 #include <core/arrays/tnlMultiArray.h>
 
+namespace TNL {
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
@@ -104,8 +106,9 @@ template class tnlMultiArray< 4, double, tnlCuda, long int >;
 
 #endif
 
-
 #endif
+
+} // namespace TNL
 
 
 

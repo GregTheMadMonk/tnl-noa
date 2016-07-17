@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDEFAULTBASICTYPESCHECKER_H_
-#define TNLDEFAULTBASICTYPESCHECKER_H_
+#pragma once
 
 #include <core/tnlString.h>
 #include <config/tnlParameterContainer.h>
+
+namespace TNL {
 
 class tnlDefaultBasicTypesChecker
 {
@@ -28,6 +29,7 @@ class tnlDefaultBasicTypesChecker
                                       const tnlParameterContainer& parameters );
 };
 
+} // namespace TNL
+
 #include <implementation/config/tnlDefaultBasicTypesChecker_impl.h>
 
-#endif /* TNLDEFAULTBASICTYPESCHECKER_H_ */

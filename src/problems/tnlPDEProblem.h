@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLPDEPROBLEM_H_
-#define TNLPDEPROBLEM_H_
+#pragma once
 
 #include <problems/tnlProblem.h>
 #include <matrices/tnlCSRMatrix.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -75,6 +76,6 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
 
 };
 
-#include <problems/tnlPDEProblem_impl.h>
+} //namespace TNL
 
-#endif /* TNLPDEPROBLEM_H_ */
+#include <problems/tnlPDEProblem_impl.h>

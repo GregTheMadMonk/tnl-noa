@@ -10,6 +10,8 @@
 
 #include <core/vectors/tnlVectorOperations.h>
 
+namespace TNL {
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 /****
@@ -318,4 +320,4 @@ template long double tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMin( 
 
 #endif
 
-
+} // namespace TNL

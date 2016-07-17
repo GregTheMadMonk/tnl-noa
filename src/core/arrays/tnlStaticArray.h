@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICARRAY_H_
-#define TNLSTATICARRAY_H_
+#pragma once 
 
 #include <core/tnlString.h>
 #include <core/tnlFile.h>
+
+namespace TNL {
 
 //! Aliases for the coordinates
 // TODO: Remove this - it is here only because of some legact code
@@ -369,9 +370,10 @@ class tnlStaticArray< 3, Element >
 template< int Size, typename Element >
 ostream& operator << ( ostream& str, const tnlStaticArray< Size, Element >& a );
 
+} // namespace TNL
+
 #include <core/arrays/tnlStaticArray_impl.h>
 #include <core/arrays/tnlStaticArray1D_impl.h>
 #include <core/arrays/tnlStaticArray2D_impl.h>
 #include <core/arrays/tnlStaticArray3D_impl.h>
 
-#endif /* TNLSTATICARRAY_H_ */

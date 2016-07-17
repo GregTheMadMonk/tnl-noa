@@ -10,6 +10,8 @@
 
 #include <core/arrays/tnlSharedArray.h>
 
+namespace TNL {
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef HAVE_CUDA
@@ -33,3 +35,5 @@ extern template class tnlSharedArray< long double, tnlCuda, long int >;
 #endif
 
 #endif
+
+} // namespace TNL

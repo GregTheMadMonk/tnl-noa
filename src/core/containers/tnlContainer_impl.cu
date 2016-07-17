@@ -10,6 +10,8 @@
 
 #include <core/containers/tnlContainer.h>
 
+namespace TNL {
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef HAVE_CUDA
@@ -20,3 +22,5 @@ template class tnlContainer< double, tnlCuda, long int >;
 #endif
 
 #endif
+
+} // namespace TNL

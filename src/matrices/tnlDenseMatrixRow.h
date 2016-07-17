@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDENSEMATRIXROW_H_
-#define TNLDENSEMATRIXROW_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Real, typename Index >
 class tnlDenseMatrixRow
@@ -41,7 +42,7 @@ class tnlDenseMatrixRow
       Index columns, step;
 };
 
+} // namespace TNL
+
 #include <matrices/tnlDenseMatrixRow_impl.h>
 
-
-#endif /* TNLDENSEMATRIXROW_H_ */

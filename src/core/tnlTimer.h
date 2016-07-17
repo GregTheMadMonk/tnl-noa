@@ -9,10 +9,11 @@
 /* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLTIMER_H
-#define	TNLTIMER_H
+#pragma once
 
 #include <core/tnlLogger.h>
+
+namespace TNL {
 
 class tnlTimer
 {
@@ -53,5 +54,5 @@ class tnlTimer
 
 extern tnlTimer defaultTimer;
 
-#endif	/* TNLTIMER_H */
+} // namespace TNL
 

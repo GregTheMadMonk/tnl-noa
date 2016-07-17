@@ -8,14 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-
-
-#ifndef TNLREAL_H_
-#define TNLREAL_H_
+#pragma once
 
 #include <iostream>
 #include <math.h>
 #include <core/tnlFlopsCounter.h>
+
+namespace TNL {
 
 template< class T > class tnlReal
 {
@@ -425,4 +424,4 @@ std::ostream& operator << ( std::ostream& str, const tnlReal< T >& v )
 typedef tnlReal< float > tnlFloat;
 typedef tnlReal< double > tnlDouble;
 
-#endif /* TNLREAL_H_ */
+} // namespace TNL

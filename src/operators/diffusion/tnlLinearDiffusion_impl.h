@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLLINEARDIFFUSION_IMP_H
-#define	TNLLINEARDIFFUSION_IMP_H
+#pragma once
 
 #include <operators/diffusion/tnlLinearDiffusion.h>
 #include <mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename MeshReal,
           typename Device,
@@ -295,4 +296,4 @@ setMatrixElements( const PreimageFunction& u,
    matrixRow.setElement( 6, neighbourEntities.template getEntityIndex< 0, 0, 1 >(),   -lambdaZ );
 }
 
-#endif	/* TNLLINEARDIFFUSION_IMP_H */
+} // namespace TNL

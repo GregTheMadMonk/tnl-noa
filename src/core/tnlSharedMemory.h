@@ -14,6 +14,8 @@
 #include <errno.h>
 #include <sys/shm.h>
 
+// TODO: remove this file
+
 /*!***
  * This template wraps shared memory for IPC. For the communication
  * in MPI style we usually allocate the shared memory which is accessed by

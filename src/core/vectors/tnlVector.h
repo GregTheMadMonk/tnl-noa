@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLVECTOR_H_
-#define TNLVECTOR_H_
+#pragma once
 
 #include <core/arrays/tnlArray.h>
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 class tnlHost;
 
@@ -129,6 +130,6 @@ class tnlVector : public tnlArray< Real, Device, Index >
    void computeExclusivePrefixSum( const IndexType begin, const IndexType end );
 };
 
-#include <core/vectors/tnlVector_impl.h>
+} // namespace TNL
 
-#endif /* TNLVECTOR_H_ */
+#include <core/vectors/tnlVector_impl.h>

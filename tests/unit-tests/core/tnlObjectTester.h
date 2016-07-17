@@ -17,7 +17,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/tnlFile.h>
 
 class tnlObjectTester : public CppUnit :: TestCase

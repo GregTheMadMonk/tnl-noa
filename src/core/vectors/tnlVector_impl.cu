@@ -10,6 +10,8 @@
 
 #include <core/vectors/tnlVector.h>
 
+namespace TNL {
+
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef HAVE_CUDA
@@ -33,3 +35,5 @@ template class tnlVector< long double, tnlCuda, long int >;
 #endif
 
 #endif
+
+} // namespace TNL

@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUDADEVICEINFO_H
-#define	TNLCUDADEVICEINFO_H
+#pragma once
 
 #include <stdlib.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 class tnlCudaDeviceInfo
 {
@@ -44,8 +45,5 @@ class tnlCudaDeviceInfo
 
 };
 
-
-
-
-#endif	/* TNLCUDADEVICEINFO_H */
+} // namespace TNL
 

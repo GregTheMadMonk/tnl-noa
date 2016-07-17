@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLPGMIMAGE_H
-#define	TNLPGMIMAGE_H
+#pragma once 
 
 #include <core/tnlString.h>
 #include <core/images/tnlImage.h>
 #include <core/images/tnlRegionOfInterest.h>
 #include <fstream>
+
+namespace TNL {
 
 template< typename Index = int >
 class tnlPGMImage : public tnlImage< Index >
@@ -69,7 +70,8 @@ class tnlPGMImage : public tnlImage< Index >
          bool fileOpen;
 };
 
+} // namespace TNL
+
 #include <core/images/tnlPGMImage_impl.h>
 
-#endif	/* TNLPGMIMAGE_H */
 

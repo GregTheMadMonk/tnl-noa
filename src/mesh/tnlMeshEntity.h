@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITY_H_
-#define TNLMESHENTITY_H_
+#pragma once
 
 #include <core/tnlFile.h>
 #include <core/tnlDynamicTypeTag.h>
@@ -21,6 +20,8 @@
 #include <mesh/layers/tnlMeshSuperentityStorageLayer.h>
 #include <mesh/layers/tnlMeshSuperentityAccess.h>
 #include <mesh/initializer/tnlMeshEntitySeed.h>
+
+namespace TNL {
 
 template< typename MeshConfig >
 class tnlMeshInitializer;
@@ -225,6 +226,6 @@ struct tnlDynamicTypeTag< tnlMeshEntity< MeshConfig, EntityTopology > >
    enum { value = true };
 };
 
-#include <mesh/tnlMeshEntity_impl.h>
+} // namespace TNL
 
-#endif /* TNLMESHENTITY_H_ */
+#include <mesh/tnlMeshEntity_impl.h>

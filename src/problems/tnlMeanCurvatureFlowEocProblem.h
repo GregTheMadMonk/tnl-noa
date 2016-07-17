@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMEANCURVATUREFLOWEOCPROBLEM_H_
-#define TNLMEANCURVATUREFLOWEOCPROBLEM_H_
+#pragma once
 
 #include <problems/tnlMeanCurvatureFlowProblem.h>
 #include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -30,6 +31,6 @@ class tnlMeanCurvatureFlowEocProblem : public tnlMeanCurvatureFlowProblem< Mesh,
       bool setup( const tnlParameterContainer& parameters );
 };
 
-#include <problems/tnlMeanCurvatureFlowEocProblem_impl.h>
+} // namespace TNL
 
-#endif /* TNLMEANCURVATUREFLOWEOCPROBLEM_H_ */
+#include <problems/tnlMeanCurvatureFlowEocProblem_impl.h>

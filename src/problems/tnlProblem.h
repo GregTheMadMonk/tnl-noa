@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLPROBLEM_H_
-#define TNLPROBLEM_H_
+#pragma once
 
 #include <matrices/tnlSlicedEllpackMatrix.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -25,5 +26,4 @@ class tnlProblem
       typedef Index IndexType;
 };
 
-
-#endif /* TNLPROBLEM_H_ */
+} //namespace TNL

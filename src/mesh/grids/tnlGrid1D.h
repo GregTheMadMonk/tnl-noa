@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef SRC_MESH_TNLGRID1D_H_
-#define SRC_MESH_TNLGRID1D_H_
+#pragma once
 
 #include <mesh/tnlGrid.h>
 #include <core/tnlLogger.h>
@@ -18,6 +17,8 @@
 #include <mesh/grids/tnlNeighbourGridEntityGetter.h>
 #include <mesh/grids/tnlGridEntity.h>
 #include <mesh/grids/tnlGridEntityConfig.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -151,6 +152,6 @@ class tnlGrid< 1, Real, Device, Index > : public tnlObject
    RealType spaceStepsProducts[ 5 ];
 };
 
-#include <mesh/grids/tnlGrid1D_impl.h>
+} // namespace TNL
 
-#endif /* SRC_MESH_TNLGRID1D_H_ */
+#include <mesh/grids/tnlGrid1D_impl.h>

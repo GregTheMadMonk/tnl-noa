@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITYREFERENCEORIENTATION_H
-#define	TNLMESHENTITYREFERENCEORIENTATION_H
+#pragma once
+
+namespace TNL {
 
 template< typename MeshConfig, typename EntityTopology >
 class tnlMeshEntityReferenceOrientation
@@ -51,6 +52,5 @@ class tnlMeshEntityReferenceOrientation
       std::map< GlobalIndexType, LocalIndexType > cornerIdsMap;
 };
 
-
-#endif	/* TNLMESHENTITYREFERENCEORIENTATION_H */
+} // namespace TNL
 

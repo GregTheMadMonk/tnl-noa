@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHSUPERENTITYSTORAGEINITIALIZER_H_
-#define TNLMESHSUPERENTITYSTORAGEINITIALIZER_H_
+#pragma once
 
 #include <mesh/tnlDimensionsTag.h>
 #include <algorithm>
 #include <vector>
+
+namespace TNL {
 
 template< typename MeshConfig >
 class tnlMeshInitializer;
@@ -191,7 +192,4 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
    void initSuperentities( MeshInitializerType& ) {}
 };
 
-
-
-
-#endif /* TNLMESHSUPERENTITYSTORAGEINITIALIZER_H_ */
+} // namespace TNL

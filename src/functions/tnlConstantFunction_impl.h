@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCONSTANTFUNCTION_IMPL_H_
-#define TNLCONSTANTFUNCTION_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< int Dimensions,
           typename Real >
@@ -73,4 +74,4 @@ getPartialDerivative( const VertexType& v,
    return constant;
 }
 
-#endif
+} // namespace TNL

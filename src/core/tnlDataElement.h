@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef __mDATAELEMENT_H__
-#define __mDATAELEMENT_H__
+#pragma once
+
+namespace TNL {
 
 //! Data element for tnlList and mStack
 template< class T > class tnlDataElement
@@ -60,4 +61,4 @@ template< class T > class tnlDataElement
 
 };
 
-#endif
+} // namespace TNL

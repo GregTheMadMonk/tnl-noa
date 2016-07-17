@@ -13,7 +13,9 @@
 #include <stdio.h>
 
 #include "tnlParameterContainer.h"
-#include <core/tnlObject.h>
+#include <tnlObject.h>
+
+namespace TNL {
 
 bool matob( const char* value, bool& ret_val )
 {
@@ -335,3 +337,5 @@ parseCommandLine( int argc, char* argv[],
       return false;
    return ! parse_error;
 }
+
+} // namespace TNL

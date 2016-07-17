@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHCONFIGBASE_H_
-#define TNLMESHCONFIGBASE_H_
+#pragma once
+
+namespace TNL {
 
 /****
  * Basic structure for mesh configuration.
@@ -87,4 +88,4 @@ struct tnlMeshConfigBase
    static_assert( WorldDimensions >= Cell::dimensions, "The number of the cell dimensions cannot be larger than the world dimension." );
 };
 
-#endif /* TNLMESHCONFIGBASE_H_ */
+} // namespace TNL

@@ -7,7 +7,10 @@
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
+
 #include <core/arrays/tnlSharedArray.h>
+
+namespace TNL {
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -51,5 +54,6 @@ template class tnlSharedArray< long double, tnlCuda, long int >;
 
 #endif
 
+} // namespace TNL
 
 

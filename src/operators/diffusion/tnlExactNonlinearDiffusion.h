@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXACTNONLINEARDIFFUSION_H_
-#define TNLEXACTNONLINEARDIFFUSION_H_
+#pragma once
 
 #include <functions/tnlDomain.h>
 #include <operators/tnlExactIdentityOperator.h>
 
+
+namespace TNL {
 
 template<  int Dimensions,
            typename Nonlinearity,
@@ -196,5 +197,4 @@ class tnlExactNonlinearDiffusion< 3, Nonlinearity, InnerOperator >
          InnerOperator innerOperator;
 };
 
-
-#endif /* TNLEXACTNONLINEARDIFFUSION_H_ */
+} // namespace TNL

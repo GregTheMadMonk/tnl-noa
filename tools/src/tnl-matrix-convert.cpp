@@ -11,7 +11,7 @@
 #include "tnl-matrix-convert.h"
 #include <string.h>
 #include <debug/tnlDebug.h>
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 

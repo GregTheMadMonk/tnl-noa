@@ -1,7 +1,7 @@
 #ifndef TNLDIAGONALPRECONDITIONER_H_
 #define TNLDIAGONALPRECONDITIONER_H_
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/vectors/tnlVector.h>
 
 template< typename Real, typename Device, typename Index >

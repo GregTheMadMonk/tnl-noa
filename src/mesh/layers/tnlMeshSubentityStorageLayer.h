@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHSUBENTITYSTORAGELAYER_H_
-#define TNLMESHSUBENTITYSTORAGELAYER_H_
+#pragma once
 
 #include <core/tnlFile.h>
 #include <mesh/tnlDimensionsTag.h>
 #include <mesh/traits/tnlMeshSubentityTraits.h>
 #include <mesh/tnlMeshEntityOrientation.h>
+
+namespace TNL {
 
 template< typename MeshConfig,
           typename EntityTopology,
@@ -396,5 +397,4 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
 
 };
 
-
-#endif /* TNLMESHSUBENTITYSTORAGELAYER_H_ */
+} // namespace TNL

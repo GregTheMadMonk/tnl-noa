@@ -10,6 +10,8 @@
 
 #include <core/tnlStatistics.h>
 
+namespace TNL {
+
 tnlStatistics defaultTnlStatistics;
 
 tnlStatistics :: tnlStatistics()
@@ -32,3 +34,5 @@ void tnlStatistics :: addTransferedBytes( const long int transfered )
 {
    transferedBytes += transfered;
 }
+
+} // namespace TNL

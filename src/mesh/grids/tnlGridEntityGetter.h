@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGRIDENTITYGETTER_H
-#define TNLGRIDENTITYGETTER_H
+#pragma once
+
+namespace TNL {
 
 template< typename Grid,
           typename GridEntity,
@@ -23,5 +24,5 @@ class tnlGridEntityGetter
  * The main code is in template specializations in tnlGridEntityIndexer.h
  */
 
-#endif	/* TNLGRIDENTITYGETTER_H */
+} // namespace TNL
 

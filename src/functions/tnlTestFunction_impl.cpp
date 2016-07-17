@@ -13,6 +13,8 @@
 
 #include <functions/tnlTestFunction.h>
 
+namespace TNL {
+
 #ifdef INSTANTIATE_FLOAT
 template class tnlTestFunction< 1, float, tnlHost >;
 template class tnlTestFunction< 2, float, tnlHost >;
@@ -28,6 +30,8 @@ template class tnlTestFunction< 1, long double, tnlHost >;
 template class tnlTestFunction< 2, long double, tnlHost >;
 template class tnlTestFunction< 3, long double, tnlHost >;
 #endif
+
+} // namespace TNL
 
 #endif
 

@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSPARSEMATRIX_IMPL_H_
-#define TNLSPARSEMATRIX_IMPL_H_
+#pragma ocne
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -131,4 +132,4 @@ void tnlSparseMatrix< Real, Device, Index >::printStructure( ostream& str ) cons
 {
 }
 
-#endif /* TNLSPARSEMATRIX_IMPL_H_ */
+} // namespace TNL

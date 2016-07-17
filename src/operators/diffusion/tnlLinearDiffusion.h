@@ -8,14 +8,15 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLLINEARDIFFUSION_H
-#define	TNLLINEARDIFFUSION_H
+#pragma once
 
 #include <core/vectors/tnlVector.h>
 #include <functions/tnlMeshFunction.h>
 #include <mesh/tnlGrid.h>
 #include <operators/tnlOperator.h>
 #include <operators/diffusion/tnlExactLinearDiffusion.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -177,8 +178,6 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
                                      Vector& b ) const;
 };
 
+} //namespace TNL
 
 #include <operators/diffusion/tnlLinearDiffusion_impl.h>
-
-
-#endif	/* TNLLINEARDIFFUSION_H */

@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMULTIDIAGONALMATRIXSETTER_IMPL_H_
-#define TNLMULTIDIAGONALMATRIXSETTER_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename MeshReal,
           typename Device,
@@ -95,4 +96,4 @@ setupMatrix( const MeshType& mesh,
    return matrix.setDiagonals( diagonals );
 }
 
-#endif /* TNLMULTIDIAGONALMATRIXSETTER_IMPL_H_ */
+} // namespace TNL

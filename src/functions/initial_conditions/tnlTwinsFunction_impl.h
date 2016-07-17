@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTWINSFUNCTION_IMPL_H_
-#define TNLTWINSFUNCTION_IMPL_H_
+#pragma once
 
 #include <functions/initial_conditions/tnlTwinsFunction.h>
+
+namespace TNL {
 
 template< typename Real,
           int Dimensions >
@@ -159,4 +160,5 @@ operator()( const VertexType& v,
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
-#endif /* TNLTWINSFUNCTION_IMPL_H_ */
+} // namespace TNL
+

@@ -8,15 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHWRITERNETGEN_H_
-#define TNLMESHWRITERNETGEN_H_
+#pragma once
 
 #include <fstream>
 #include <istream>
 #include <sstream>
 #include <iomanip>
 
-using namespace std;
+namespace TNL {
 
 class tnlMeshWriterNetgen
 {
@@ -72,5 +71,4 @@ class tnlMeshWriterNetgen
    }
 };
 
-
-#endif /* TNLMESHWRITERNETGEN_H_ */
+} // namespace TNL

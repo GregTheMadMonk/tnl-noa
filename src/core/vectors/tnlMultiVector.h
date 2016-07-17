@@ -8,14 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMULTIVECTOR_H_
-#define TNLMULTIVECTOR_H_
+#pragma once 
 
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <core/tnlAssert.h>
 
-
+namespace TNL {
+   
 template< int Dimensions, typename Real = double, typename Device = tnlHost, typename Index = int >
 class tnlMultiVector : public tnlVector< Real, Device, Index >
 {
@@ -359,10 +359,9 @@ ostream& operator << ( ostream& str, const tnlMultiVector< 3, Real, device, Inde
 template< typename Real, typename device, typename Index >
 ostream& operator << ( ostream& str, const tnlMultiVector< 4, Real, device, Index >& Vector );
 
+} // namespace TNL
 
 #include <core/vectors/tnlMultiVector1D_impl.h>
 #include <core/vectors/tnlMultiVector2D_impl.h>
 #include <core/vectors/tnlMultiVector3D_impl.h>
 #include <core/vectors/tnlMultiVector4D_impl.h>
-
-#endif /* TNLMULTIVECTOR_H_ */

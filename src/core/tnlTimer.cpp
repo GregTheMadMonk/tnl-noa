@@ -20,6 +20,7 @@
    #define HAVE_TIME
 #endif
 
+namespace TNL {
 
 tnlTimer defaultTimer;
 
@@ -143,3 +144,5 @@ bool tnlTimer::writeLog( tnlLogger& logger, int logLevel )
    logger.writeParameter< unsigned long long int >( "CPU Cycles:", this->getCPUCycles(), logLevel );
 
 }
+
+} // namespace TNL

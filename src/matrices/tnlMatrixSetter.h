@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMATRIXSETTER_H_
-#define TNLMATRIXSETTER_H_
+#pragma once
+
+namespace TNL {
 
 template< typename DifferentialOperator,
           typename BoundaryConditions,
@@ -149,6 +150,6 @@ class tnlMatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
 
 };
 
-#include <matrices/tnlMatrixSetter_impl.h>
+} // namespace TNL
 
-#endif /* TNLMATRIXSETTER_H_ */
+#include <matrices/tnlMatrixSetter_impl.h>

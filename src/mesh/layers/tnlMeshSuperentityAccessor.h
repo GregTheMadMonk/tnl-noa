@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHSUPERENTITYACCESSOR_H
-#define	TNLMESHSUPERENTITYACCESSOR_H
+#pragma once
+
+namespace TNL {
 
 template< typename IndexMultimapValues >
 class tnlMeshSuperentityAccessor
@@ -65,5 +66,5 @@ ostream& operator << ( ostream& str, const tnlMeshSuperentityAccessor< IndexMult
    return str;
 }
 
-#endif	/* TNLMESHSUPERENTITYACCESSOR_H */
+} // namespace TNL
 

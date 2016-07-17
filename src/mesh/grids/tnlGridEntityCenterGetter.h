@@ -9,8 +9,9 @@
 /* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLGRIDENTITYCENTERGETTER_H
-#define	TNLGRIDENTITYCENTERGETTER_H
+#pragma once
+
+namespace TNL {
 
 template< typename GridEntity >
 class tnlGridEntityCenterGetter
@@ -211,5 +212,5 @@ class tnlGridEntityCenterGetter< tnlGridEntity< tnlGrid< 3, Real, Device, Index 
       }
 };
 
-#endif	/* TNLGRIDENTITYCENTERGETTER_H */
+} // namespace TNL
 

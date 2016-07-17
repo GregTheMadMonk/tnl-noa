@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLVECTOROPERATIONS_H_
-#define TNLVECTOROPERATIONS_H_
+#pragma once 
 
 #include <core/cuda/cuda-reduction.h>
 #include <core/cuda/reduction-operations.h>
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 template< typename Device >
 class tnlVectorOperations{};
@@ -236,7 +237,8 @@ class tnlVectorOperations< tnlCuda >
                                           const typename Vector::IndexType end );
 };
 
+} // namespace TNL
+
 #include <core/vectors/tnlVectorOperationsHost_impl.h>
 #include <core/vectors/tnlVectorOperationsCuda_impl.h>
 
-#endif /* TNLVECTOROPERATIONS_H_ */

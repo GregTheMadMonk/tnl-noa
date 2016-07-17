@@ -10,6 +10,8 @@
 
 #include <core/arrays/tnlArrayOperations.h>
 
+namespace TNL {
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 template bool tnlArrayOperations< tnlCuda >::allocateMemory< char,        int >( char*& data, const int size );
@@ -286,3 +288,5 @@ template bool tnlArrayOperations< tnlCuda >::setMemory< long double, long int >(
 #endif
 
 #endif
+
+} // namespace TNL

@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMEANCURVATUREFLOWPROBLEM_IMPL_H_
-#define TNLMEANCURVATUREFLOWPROBLEM_IMPL_H_
+#pragma once
 
 #include <core/mfilename.h>
 #include <matrices/tnlMatrixSetter.h>
@@ -22,6 +21,7 @@
 
 #include "tnlMeanCurvatureFlowProblem.h"
 
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -264,4 +264,4 @@ assemblyLinearSystem( const RealType& time,
    //abort();*/
 }
 
-#endif /* TNLMEANCURVATUREFLOWPROBLEM_IMPL_H_ */
+} // namespace TNL

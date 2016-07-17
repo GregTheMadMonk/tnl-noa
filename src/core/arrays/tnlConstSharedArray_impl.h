@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCONSTSHAREDARRAY_IMPL_H_
-#define TNLCONSTSHAREDARRAY_IMPL_H_
+#pragma once
 
 #include <iostream>
 #include <core/tnlFile.h>
@@ -17,6 +16,8 @@
 #include <core/arrays/tnlArrayOperations.h>
 #include <core/mfuncs.h>
 #include <core/param-types.h>
+
+namespace TNL {
 
 template< typename Element,
           typename Device,
@@ -314,6 +315,4 @@ extern template class tnlConstSharedArray< long double, tnlCuda, long int >;
 
 #endif
 
-
-
-#endif /* TNLCONSTSHAREDARRAY_IMPL_H_ */
+} // namespace TNL

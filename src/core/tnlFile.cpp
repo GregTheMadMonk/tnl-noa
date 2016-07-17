@@ -10,6 +10,8 @@
 
 #include <core/tnlFile.h>
 
+namespace TNL {
+
 int tnlFile :: verbose = 0;
 
 tnlFile :: tnlFile()
@@ -73,3 +75,4 @@ bool fileExists( const tnlString& fileName )
   return result;
 };
 
+} // namespace TNL

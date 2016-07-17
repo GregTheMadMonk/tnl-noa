@@ -13,7 +13,7 @@
 
 #include <fstream>
 #include <core/tnlFile.h>
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/tnlCuda.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>

@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGRIDENTITYMEASUREGETTER_H
-#define	TNLGRIDENTITYMEASUREGETTER_H
+#pragma once
+
+namespace TNL {
 
 template< typename Grid,
           int EntityDimensions >
@@ -163,5 +164,5 @@ class tnlGridEntityMeasureGetter< tnlGrid< 3, Real, Device, Index >, 1 >
       }
 };
 
-#endif	/* TNLGRIDENTITYMEASUREGETTER_H */
+} // namespace TNL
 

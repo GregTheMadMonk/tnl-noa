@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMULTIARRAY1D_IMPL_H_
-#define TNLMULTIARRAY1D_IMPL_H_
+#pragma once 
+
+namespace TNL {
 
 template< typename Element, typename Device, typename Index >
 tnlMultiArray< 1, Element, Device, Index > :: tnlMultiArray()
@@ -235,4 +236,4 @@ ostream& operator << ( ostream& str, const tnlMultiArray< 1, Element, Device, In
    return str;
 }
 
-#endif /* TNLMULTIARRAY1D_IMPL_H_ */
+} // namespace TNL

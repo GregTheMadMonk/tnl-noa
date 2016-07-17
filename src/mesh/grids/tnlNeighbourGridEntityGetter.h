@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLNEIGHBOURGRIDENTITYGETTER_H
-#define	TNLNEIGHBOURGRIDENTITYGETTER_H
+#pragma once
 
 #include <core/tnlAssert.h>
+
+namespace TNL {
 
 enum tnlGridEntityStencilStorage
 {
@@ -53,6 +54,5 @@ class tnlNeighbourGridEntityGetter
 
 };
 
-
-#endif	/* TNLNEIGHBOURGRIDENTITYGETTER_H */
+} // namespace TNL
 

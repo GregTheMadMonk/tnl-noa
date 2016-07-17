@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDENSEMATRIX_IMPL_H_
-#define TNLDENSEMATRIX_IMPL_H_
+#pragma once
 
 #include <core/tnlAssert.h>
 #include <matrices/tnlDenseMatrix.h>
@@ -17,6 +16,8 @@
 #ifdef HAVE_CUDA
 #include <core/cuda/reduction-operations.h>
 #endif
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -951,4 +952,4 @@ class tnlDenseMatrixDeviceDependentCode< tnlCuda >
       }
 };
 
-#endif /* TNLDENSEMATRIX_IMPL_H_ */
+} // namespace TNL

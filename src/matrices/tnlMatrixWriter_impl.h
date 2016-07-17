@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMATRIXWRITER_IMPL_H_
-#define TNLMATRIXWRITER_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Matrix >
 bool tnlMatrixWriter< Matrix >::writeToGnuplot( std::ostream str,
@@ -92,4 +93,4 @@ bool tnlMatrixWriter< Matrix >::writeEpsBody( std::ostream str,
    return true;
 }
 
-#endif /* TNLMATRIXWRITER_IMPL_H_ */
+} // namespace TNL

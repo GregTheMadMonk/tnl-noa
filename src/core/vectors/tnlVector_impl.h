@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLVECTOR_H_IMPLEMENTATION
-#define TNLVECTOR_H_IMPLEMENTATION
+#pragma once 
 
 #include <core/vectors/tnlVectorOperations.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -394,4 +395,4 @@ extern template class tnlVector< long double, tnlCuda, long int >;
 
 #endif
 
-#endif /* TNLVECTOR_H_IMPLEMENTATION */
+} // namespace TNL

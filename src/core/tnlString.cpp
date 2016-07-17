@@ -21,6 +21,8 @@
    #include <mpi.h>
 #endif
 
+namespace TNL {
+
 const unsigned int STRING_PAGE = 256;
 
 tnlString :: tnlString()
@@ -455,3 +457,5 @@ ostream& operator << ( ostream& stream, const tnlString& str )
    stream << str. getString();
    return stream;
 }
+
+} // namespace TNL

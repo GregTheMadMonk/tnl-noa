@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMEANCURVATUREFLOWEOCPROBLEM_IMPL_H_
-#define TNLMEANCURVATUREFLOWEOCPROBLEM_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -38,4 +39,4 @@ setup( const tnlParameterContainer& parameters )
    return true;
 }
 
-#endif /* TNLMEANCURVATUREFLOWEOCPROBLEM_IMPL_H_ */
+} // namespace TNL

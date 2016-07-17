@@ -8,13 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-
-#ifndef TNLEXACTMEANCURVATURE_H
-#define	TNLEXACTMEANCURVATURE_H
+#pragma once
 
 #include<operators/diffusion/tnlExactNonlinearDiffusion.h>
 #include<operators/tnlExactFunctionInverseOperator.h>
 #include<operators/geometric/tnlExactGradientNorm.h>
+
+namespace TNL {
 
 template< int Dimensions,
           typename InnerOperator = tnlExactIdentityOperator< Dimensions > >
@@ -87,6 +87,5 @@ class tnlExactMeanCurvature
  
 };
 
-
-#endif	/* TNLEXACTMEANCURVATURE_H */
+} // namespace TNL
 

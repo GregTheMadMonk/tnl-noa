@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlConfigDescriptionH
-#define tnlConfigDescriptionH
+#pragma once
 
 #include <core/tnlString.h>
 #include <core/tnlList.h>
@@ -18,6 +17,8 @@
 #include <config/tnlConfigEntry.h>
 #include <config/tnlConfigEntryList.h>
 #include <config/tnlConfigDelimiter.h>
+
+namespace TNL {
 
 class tnlParameterContainer;
 
@@ -170,5 +171,5 @@ class tnlConfigDescription
 
 };
 
+} //namespace TNL
 
-#endif

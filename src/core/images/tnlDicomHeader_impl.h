@@ -11,10 +11,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
+
 #include <core/images/tnlDicomHeader.h>
 #include <core/images/tnlDicomSeriesInfo.h>
 #include <core/images/tnlDicomPatientInfo.h>
 #include <core/images/tnlDicomImageInfo.h>
+
+namespace TNL {
 
 inline tnlDicomHeader::tnlDicomHeader()
 {
@@ -72,4 +76,6 @@ inline tnlDicomSeriesInfo &tnlDicomHeader::getSeriesInfo()
 {
     return *seriesInfoObj;
 }
+
+} // namespace TNL
 

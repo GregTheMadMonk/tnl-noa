@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLELLPACKINDEXMULTIMAPVALUES_H
-#define	TNLELLPACKINDEXMULTIMAPVALUES_H
+#pragma once
 
 #include <ostream>
 #include <core/multimaps/tnlEllpackIndexMultimap.h>
+
+namespace TNL {
 
 template< typename Index,
           typename Device >
@@ -56,8 +57,7 @@ template< typename Index,
           typename Device >
 std::ostream& operator << ( std::ostream& str, const tnlEllpackIndexMultimapValues< Index, Device>& ports );
 
+} // namespace TNL
+
 #include <core/multimaps/tnlEllpackIndexMultimapValues_impl.h>
-
-
-#endif	/* TNLELLPACKINDEXMULTIMAPVALUES_H */
 

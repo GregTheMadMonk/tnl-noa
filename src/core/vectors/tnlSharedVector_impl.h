@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSHAREDVECTOR_H_IMPLEMENTATION
-#define TNLSHAREDVECTOR_H_IMPLEMENTATION
+#pragma once
 
 #include <core/vectors/tnlVectorOperations.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -411,4 +412,4 @@ extern template class tnlSharedVector< long double, tnlCuda, long int >;
 
 #endif
 
-#endif /* TNLSHAREDVECTOR_H_IMPLEMENTATION */
+} // namespace TNL

@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDENSEMATRIX_H_
-#define TNLDENSEMATRIX_H_
+#pragma once
 
 #include <core/tnlHost.h>
 #include <matrices/tnlMatrix.h>
 #include <matrices/tnlDenseMatrixRow.h>
 #include <core/arrays/tnlArray.h>
+
+namespace TNL {
 
 template< typename Device >
 class tnlDenseMatrixDeviceDependentCode;
@@ -201,6 +202,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
 
 };
 
+} // namespace TNL
+
 #include <matrices/tnlDenseMatrix_impl.h>
 
-#endif /* TNLDENSEMATRIX_H_ */

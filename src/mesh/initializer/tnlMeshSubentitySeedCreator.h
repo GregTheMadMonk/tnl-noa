@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHSUBENTITYSEEDCREATOR_H
-#define	TNLMESHSUBENTITYSEEDCREATOR_H
+#pragma once
 
 #include <core/tnlStaticFor.h>
+
+namespace TNL {
 
 template< typename MeshConfig,
           typename EntityTopology,
@@ -71,5 +72,5 @@ class tnlMeshSubentitySeedsCreator
       };
 };
 
-#endif	/* TNLMESHSUBENTITYSEEDCREATOR_H */
+} // namespace TNL
 

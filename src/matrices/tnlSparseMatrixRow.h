@@ -9,8 +9,9 @@
 /* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLSPARSEMATRIXROW_H_
-#define TNLSPARSEMATRIXROW_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Real, typename Index >
 class tnlSparseMatrixRow
@@ -55,6 +56,6 @@ ostream& operator << ( ostream& str, const tnlSparseMatrixRow< Real, Index >& ro
    return str;
 }
 
-#include <matrices/tnlSparseMatrixRow_impl.h>
+} // namespace TNL
 
-#endif /* TNLSPARSEMATRIXROW_H_ */
+#include <matrices/tnlSparseMatrixRow_impl.h>

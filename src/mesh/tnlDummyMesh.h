@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDUMMYMESH_H_
-#define TNLDUMMYMESH_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Real = double,
           typename Device = tnlHost,
@@ -60,5 +61,4 @@ class tnlDummyMesh
                 const tnlString& format ) const { return true; }
 };
 
-
-#endif /* TNLDUMMYMESH_H_ */
+} // namespace TNL

@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTWOSIDEDGRADIENTNORM_H
-#define	TNLTWOSIDEDGRADIENTNORM_H
+#pragma once
 
 #include <operators/fdm/tnlForwardFiniteDifference.h>
 #include <operators/fdm/tnlBackwardFiniteDifference.h>
 #include <operators/geometric/tnlExactGradientNorm.h>
 #include <operators/tnlOperator.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -205,6 +206,5 @@ class tnlTwoSidedGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, 
    RealType epsSquare;
 };
 
-
-#endif	/* TNLTWOSIDEDGRADIENTNORM_H */
+} // namespace TNL
 

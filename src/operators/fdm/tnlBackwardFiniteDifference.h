@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLBACKWARDFINITEDIFFERENCE_H
-#define	TNLBACKWARDFINITEDIFFERENCE_H
+#pragma once
 
 #include <operators/fdm/tnlFiniteDifferences.h>
 #include <operators/fdm/tnlExactDifference.h>
 #include <operators/tnlOperator.h>
+
+namespace TNL {
 
 template< typename Mesh,
           int Xdifference = 0,
@@ -83,5 +84,5 @@ class tnlBackwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Me
       };
 };
 
-#endif	/* TNLBACKWARDFINITEDIFFERENCE_H */
+} // namespace TNL
 

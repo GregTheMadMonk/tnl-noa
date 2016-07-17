@@ -8,11 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
 
-
-#ifndef TNLFLOPSCOUNTER_H_
-#define TNLFLOPSCOUNTER_H_
-
+namespace TNL {
 
 class tnlFlopsCounter
 {
@@ -82,4 +80,4 @@ class tnlFlopsCounter
 
 extern tnlFlopsCounter tnl_flops_counter;
 
-#endif /* TNLFLOPSCOUNTER_H_ */
+} // namespace TNL

@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITYORIENTATION_H
-#define	TNLMESHENTITYORIENTATION_H
+#pragma once
 
 #include <mesh/traits/tnlMeshTraits.h>
+
+namespace TNL {
 
 template< typename MeshConfig,
           typename EntityTopology>
@@ -42,6 +43,5 @@ class tnlMeshEntityOrientation
       IdPermutationArrayType subvertexPermutation;
 };
 
-
-#endif	/* TNLMESHENTITYORIENTATION_H */
+} // namespace TNL
 

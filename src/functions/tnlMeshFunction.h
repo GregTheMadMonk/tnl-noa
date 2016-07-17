@@ -8,13 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <functions/tnlDomain.h>
 #include <functions/tnlMeshFunctionGnuplotWriter.h>
 #include <functions/tnlMeshFunctionVTKWriter.h>
 
-#ifndef TNLMESHFUNCTION_H
-#define TNLMESHFUNCTION_H
+#pragma once
 
 template< typename Mesh,
           int MeshEntityDimensions = Mesh::meshDimensions,
@@ -138,10 +137,8 @@ class tnlMeshFunction :
       template< typename, typename > friend class tnlMeshFunctionEvaluator;
 };
 
+} // namespace TNL
+
 #include <functions/tnlMeshFunction_impl.h>
 #include <functions/tnlMeshFunctionGnuplotWriter_impl.h>
 #include <functions/tnlMeshFunctionVTKWriter_impl.h>
-
-
-#endif	/* TNLMESHFUNCTION_H */
-

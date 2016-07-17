@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSINBUMPSFUNCTION_H_
-#define TNLSINBUMPSFUNCTION_H_
+#pragma once
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< typename Vertex >
 class tnlSinBumpsFunctionBase : public tnlDomain< Vertex::size, SpaceDomain >
@@ -156,7 +157,8 @@ ostream& operator << ( ostream& str, const tnlSinBumpsFunction< Dimensions, Real
    return str;
 }
 
+} // namespace TNL
+
 #include <functions/tnlSinBumpsFunction_impl.h>
 
 
-#endif /* TNLSINBUMPSFUNCTION_H_ */

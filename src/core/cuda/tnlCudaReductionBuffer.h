@@ -8,12 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUDAREDUCTIONBUFFER_H
-#define	TNLCUDAREDUCTIONBUFFER_H
+#pragma once
 
 #include <stdlib.h>
-
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 class tnlCudaReductionBuffer
 {
@@ -85,5 +85,5 @@ class tnlCudaReductionBuffer
 };
 
 
-#endif	/* TNLCUDAREDUCTIONBUFFER_H */
+} // namespace TNL
 

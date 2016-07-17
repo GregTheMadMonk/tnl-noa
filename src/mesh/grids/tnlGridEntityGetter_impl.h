@@ -8,14 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGRIDENTITYINDEXER_IMPL_H
-#define	TNLGRIDENTITYINDEXER_IMPL_H
+#pragma once
 
 #include <mesh/grids/tnlGridEntityGetter.h>
 #include <mesh/grids/tnlGrid1D.h>
 #include <mesh/grids/tnlGrid2D.h>
 #include <mesh/grids/tnlGrid3D.h>
 
+namespace TNL {
 
 /****
  * 1D grid
@@ -524,6 +524,5 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 0 >
       }
 };
 
-
-#endif	/* TNLGRIDENTITYINDEXER_IMPL_H */
+} // namespace TNL
 

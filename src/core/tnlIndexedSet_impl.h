@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLINDEXEDSET_IMPL_H_
-#define TNLINDEXEDSET_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Element,
           typename Index,
@@ -105,4 +106,4 @@ ostream& operator<<( ostream& str, tnlIndexedSet< Element, Index, Key >& set )
    return str;
 }
 
-#endif /* TNLINDEXEDSET_IMPL_H_ */
+} // namespace TNL

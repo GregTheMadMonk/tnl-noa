@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXPBUMPFUNCTION_H_
-#define TNLEXPBUMPFUNCTION_H_
+#pragma once 
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< int dimensions,
           typename Real >
@@ -147,7 +148,8 @@ ostream& operator << ( ostream& str, const tnlExpBumpFunction< Dimensions, Real 
    return str;
 }
 
+} // namespace TNL
+
 #include <functions/tnlExpBumpFunction_impl.h>
 
 
-#endif /* TNLEXPBUMPFUNCTION_H_ */

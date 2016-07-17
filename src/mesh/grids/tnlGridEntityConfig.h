@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGRIDENTITYCONFIG_H
-#define	TNLGRIDENTITYCONFIG_H
+#pragma once
+
+namespace TNL {
 
 /****
  * This class says what neighbour grid entity indexes shall be pre-computed and stored in the
@@ -67,7 +68,5 @@ class tnlGridEntityCrossStencilStorage
       }
 };
 
-
-
-#endif	/* TNLGRIDENTITYCONFIG_H */
+} // namespace TNL
 

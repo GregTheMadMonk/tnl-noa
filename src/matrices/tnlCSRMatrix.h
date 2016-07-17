@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCSRMATRIX_H_
-#define TNLCSRMATRIX_H_
+#pragma once 
 
 #include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
+
+namespace TNL {
 
 #ifdef HAVE_UMFPACK
     template< typename Matrix, typename Preconditioner >
@@ -214,7 +215,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
 };
 
+} // namespace TNL
+
 #include <matrices/tnlCSRMatrix_impl.h>
 
-
-#endif /* TNLCSRMATRIX_H_ */

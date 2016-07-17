@@ -8,9 +8,10 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGRIDTRAVERSER_H
-#define	TNLGRIDTRAVERSER_H
+#pragma once
 
+
+namespace TNL {
 
 /****
  * This is only a helper class for tnlTraverser specializations for tnlGrid.
@@ -210,7 +211,7 @@ class tnlGridTraverser< tnlGrid< 3, Real, tnlCuda, Index > >
          UserData& userData );
 };
 
-#include <mesh/grids/tnlGridTraverser_impl.h>
+} // namespace TNL
 
-#endif	/* TNLGRIDTRAVERSER_H */
+#include <mesh/grids/tnlGridTraverser_impl.h>
 

@@ -8,14 +8,15 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHTRAITS_H_
-#define TNLMESHTRAITS_H_
+#pragma once
 
 #include <core/vectors/tnlStaticVector.h>
 #include <core/arrays/tnlArray.h>
 #include <core/arrays/tnlSharedArray.h>
 #include <core/arrays/tnlConstSharedArray.h>
 #include <mesh/tnlDimensionsTag.h>
+
+namespace TNL {
 
 struct tnlMeshVertexTopology;
 template< typename MeshConfig, typename EntityTopology > class tnlMeshEntity;
@@ -63,5 +64,4 @@ class tnlMeshTraits
 
 };
 
-
-#endif /* TNLMESHTRAITS_H_ */
+} // namespace TNL

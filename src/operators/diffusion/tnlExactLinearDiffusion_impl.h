@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXACTLINEARDIFFUSION_IMPL_H_
-#define TNLEXACTLINEARDIFFUSION_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 tnlString
 tnlExactLinearDiffusion< 1 >::
@@ -69,4 +70,4 @@ operator()( const Function& function,
 
 }
 
-#endif /* TNLEXACTLINEARDIFFUSION_IMPL_H_ */
+} // namespace TNL

@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHQUADRILATERALTOPOLOGY_H_
-#define TNLMESHQUADRILATERALTOPOLOGY_H_
+#pragma once
 
 #include <mesh/topologies/tnlMeshEdgeTopology.h>
+
+namespace TNL {
 
 struct tnlMeshQuadrilateralTopology
 {
@@ -75,5 +76,4 @@ template<> struct tnlSubentityVertex< tnlMeshQuadrilateralTopology, tnlMeshEdgeT
 template<> struct tnlSubentityVertex< tnlMeshQuadrilateralTopology, tnlMeshEdgeTopology, 3, 0> { enum { index = 3 }; };
 template<> struct tnlSubentityVertex< tnlMeshQuadrilateralTopology, tnlMeshEdgeTopology, 3, 1> { enum { index = 0 }; };
 
-
-#endif /* TNLMESHQUADRILATERALTOPOLOGY_H_ */
+} // namespace TNL

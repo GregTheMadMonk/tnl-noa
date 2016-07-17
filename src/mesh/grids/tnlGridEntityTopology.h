@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGRIDTOPOLOGIES_H
-#define	TNLGRIDTOPOLOGIES_H
+#pragma once
+
+namespace TNL {
 
 template< typename Grid,
           int EntityDimensions,
@@ -36,7 +37,5 @@ class tnlGridEntityTopology
    //               "Entity orientation is not a proper static multiindex." );
 };
 
-
-
-#endif	/* TNLGRIDTOPOLOGIES_H */
+} // namespace TNL
 

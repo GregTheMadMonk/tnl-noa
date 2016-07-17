@@ -12,8 +12,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDICOMSERIES_H
-#define TNLDICOMSERIES_H
+#pragma once
 
 #include <core/arrays/tnlArray.h>
 #include <core/tnlList.h>
@@ -25,7 +24,6 @@
 #include <mesh/tnlGrid.h>
 #include <tnlConfig.h>
 
-
 #ifdef HAVE_DCMTK_H
 #define USING_STD_NAMESPACE
 #include <dcmtk/config/osconfig.h>
@@ -34,6 +32,8 @@
 
 #include <dirent.h>
 #include <string>
+
+namespace TNL {
 
 template<> inline tnlString getType< tnlDicomHeader * > () { return tnlString( "tnlDicomHeader *" ); }
 
@@ -117,6 +117,7 @@ class tnlDicomSeries : public tnlImage< int >
       ImagesInfo imagesInfo;
 };
 
+} // namespace TNL
+
 #include <core/images/tnlDicomSeries_impl.h>
 
-#endif // TNLDICOMSERIES_H

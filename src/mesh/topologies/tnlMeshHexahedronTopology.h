@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHHEXAHEDRONTOPOLOGY_H_
-#define TNLMESHHEXAHEDRONTOPOLOGY_H_
+#pragma once
 
 #include <mesh/topologies/tnlMeshQuadrilateralTopology.h>
+
+namespace TNL {
 
 struct tnlMeshHexahedronTopology
 {
@@ -166,4 +167,4 @@ template<> struct tnlSubentityVertex< tnlMeshHexahedronTopology, tnlMeshQuadrila
 template<> struct tnlSubentityVertex< tnlMeshHexahedronTopology, tnlMeshQuadrilateralTopology, 5, 2> { enum { index = 6 }; };
 template<> struct tnlSubentityVertex< tnlMeshHexahedronTopology, tnlMeshQuadrilateralTopology, 5, 3> { enum { index = 7 }; };
 
-#endif /* TNLMESHHEXAHEDRONTOPOLOGY_H_ */
+} // namespace TNL

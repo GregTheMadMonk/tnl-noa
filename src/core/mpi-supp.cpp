@@ -10,7 +10,8 @@
 
 #include <core/mpi-supp.h>
 
-//--------------------------------------------------------------------------
+namespace TNL {
+
 void MPIInit( int* argc, char** argv[] )
 {
 #ifdef HAVE_MPI
@@ -63,4 +64,6 @@ void MPIBarrier( MPI_Comm comm )
    MPI_Barrier( comm );
 #endif
 }
+
+} // namespace TNL
 

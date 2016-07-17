@@ -11,7 +11,7 @@
 #ifndef TNLPDESOLVER_H_
 #define TNLPDESOLVER_H_
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <core/tnlLogger.h>

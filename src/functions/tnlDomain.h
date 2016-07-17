@@ -9,8 +9,9 @@
 /* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLFUNCTION_H
-#define	TNLFUNCTION_H
+#pragma once
+
+namespace TNL {
 
 enum tnlDomainType { NonspaceDomain, SpaceDomain, MeshDomain, MeshInteriorDomain, MeshBoundaryDomain };
 
@@ -28,5 +29,5 @@ class tnlDomain
       static constexpr tnlDomainType getDomainType() { return DomainType; }
 };
 
-#endif	/* TNLFUNCTION_H */
+} // namespace TNL
 

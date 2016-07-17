@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCSRMATRIX_IMPL_H_
-#define TNLCSRMATRIX_IMPL_H_
+#pragma once
 
 #include <matrices/tnlCSRMatrix.h>
 #include <core/vectors/tnlVector.h>
@@ -18,7 +17,11 @@
 
 #ifdef HAVE_CUSPARSE
 #include <cusparse.h>
+#endif
 
+namespace TNL {
+
+#ifdef HAVE_CUSPARSE
 template< typename Real, typename Index >
 class tnlCusparseCSRWrapper {};
 #endif
@@ -945,6 +948,4 @@ class tnlCSRMatrixDeviceDependentCode< tnlCuda >
 
 };
 
-
-
-#endif /* TNLCSRMATRIX_IMPL_H_ */
+} // namespace TNL

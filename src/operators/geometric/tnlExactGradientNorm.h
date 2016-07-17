@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXACTGRADIENTTNORM_H
-#define	TNLEXACTGRADIENTTNORM_H
+#pragma once
 
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlSharedVector.h>
 #include <mesh/tnlGrid.h>
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< int Dimensions,
           typename Real = double >
@@ -257,4 +258,4 @@ class tnlExactGradientNorm< 3, Real >
          Real epsilonSquare;
 };
 
-#endif	/* TNLEXACTGRADIENTTNORM_H */
+} // namespace TNL

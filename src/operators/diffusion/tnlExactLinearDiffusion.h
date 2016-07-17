@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXACTLINEARDIFFUSION_H_
-#define TNLEXACTLINEARDIFFUSION_H_
+#pragma once
 
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< int Dimensions >
 class tnlExactLinearDiffusion
@@ -65,6 +66,6 @@ class tnlExactLinearDiffusion< 3 > : public tnlDomain< 3 >
                                               const typename Function::RealType& time = 0.0 ) const;
 };
 
-#include <operators/diffusion/tnlExactLinearDiffusion_impl.h>
+} // namespace TNL
 
-#endif /* TNLEXACTLINEARDIFFUSION_H_ */
+#include <operators/diffusion/tnlExactLinearDiffusion_impl.h>

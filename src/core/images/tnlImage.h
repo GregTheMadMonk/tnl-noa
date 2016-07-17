@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLIMAGE_H
-#define	TNLIMAGE_H
+#pragma once
+
+namespace TNL {
 
 template< typename Index = int >
 class tnlImage
@@ -36,6 +37,5 @@ class tnlImage
  
 };
 
-
-#endif	/* TNLIMAGE_H */
+} // namespace TNL
 

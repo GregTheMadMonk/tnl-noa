@@ -8,12 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLINDEXEDSET_H_
-#define TNLINDEXEDSET_H_
+#pragma once
 
 #include <map>
 #include <stdexcept>
 
+namespace TNL {
 
 template< typename Element,
           typename Index,
@@ -75,6 +75,6 @@ template< typename Element,
           typename Key >
 ostream& operator <<( ostream& str, tnlIndexedSet< Element, Index, Key >& set );
 
-#include <core/tnlIndexedSet_impl.h>
+} // namespace TNL
 
-#endif /* TNLINDEXEDSET_H_ */
+#include <core/tnlIndexedSet_impl.h>

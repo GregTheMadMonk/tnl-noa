@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSHAREDVECTOR_H_
-#define TNLSHAREDVECTOR_H_
+#pragma once 
 
 #include <core/arrays/tnlSharedArray.h>
 #include <core/vectors/tnlVector.h>
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 class tnlHost;
 
@@ -144,6 +145,7 @@ class tnlSharedVector : public tnlSharedArray< Real, Device, Index >
 
 };
 
+} // namespace TNL
+
 #include <core/vectors/tnlSharedVector_impl.h>
 
-#endif /* TNLSHAREDVECTOR_H_ */

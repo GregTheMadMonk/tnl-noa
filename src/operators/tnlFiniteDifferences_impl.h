@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLFINITEDIFFERENCES_IMPL_H_
-#define TNLFINITEDIFFERENCES_IMPL_H_
+#pragma once
 
 #include <operators/tnlFiniteDifferences.h>
+
+namespace TNL {
 
 template< typename Real, typename Device, typename Index >
    template< typename GridFunction,
@@ -228,9 +229,6 @@ Real tnlFiniteDifferences< tnlGrid< 3, Real, Device, Index > >::getDifference( c
 
 }
 
+} // namespace TNL
 
 #include <operators/tnlFiniteDifferences_impl.h>
-
-
-
-#endif /* TNLFINITEDIFFERENCES_IMPL_H_ */

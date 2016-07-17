@@ -1,5 +1,15 @@
-#ifndef TNLFINITEVOLUMENONLINEAROPERATOR_H
-#define	TNLFINITEVOLUMENONLINEAROPERATOR_H
+/***************************************************************************
+                          tnlTraverser.h  -  description
+                             -------------------
+    begin                : Feb 17, 2016
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
+
+namespace TNL {
 
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
@@ -172,8 +182,6 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex 
    OperatorQ operatorQ;
 };
 
+} //namespace TNL
 
 #include "tnlFiniteVolumeNonlinearOperator_impl.h"
-
-
-#endif	/* TNLFINITEVOLUMENONLINEAROPERATOR_H */

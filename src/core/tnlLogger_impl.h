@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLLOGGER_IMPL_H_
-#define TNLLOGGER_IMPL_H_
+#pragma once
 
 #include <sstream>
 #include <iomanip>
+
+namespace TNL {
 
 template< typename T >
 void tnlLogger::writeParameter( const tnlString& label,
@@ -47,4 +48,4 @@ void tnlLogger :: writeParameter( const tnlString& label,
            << str.str() << " |" << endl;
 };
 
-#endif /* TNLLOGGER_IMPL_H_ */
+} // namespace TNL

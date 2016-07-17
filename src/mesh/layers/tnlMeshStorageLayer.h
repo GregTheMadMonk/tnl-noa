@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHSTORAGELAYER_H_
-#define TNLMESHSTORAGELAYER_H_
+#pragma once
 
 #include <core/tnlFile.h>
 #include <mesh/traits/tnlMeshTraits.h>
 #include <mesh/traits/tnlMeshEntityTraits.h>
 #include <mesh/traits/tnlMeshTraits.h>
+
+namespace TNL {
 
 template< typename MeshConfig,
           typename DimensionsTag,
@@ -331,5 +332,4 @@ class tnlMeshStorageLayer< MeshConfig, tnlDimensionsTag< 0 >, false >
 {
 };
 
-
-#endif /* TNLMESHSTORAGELAYER_H_ */
+} // namespace TNL

@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLARRAYIO_H_
-#define TNLARRAYIO_H_
+#pragma once
 
 #include <core/tnlDynamicTypeTag.h>
 #include <core/tnlFile.h>
+
+namespace TNL {
 
 template< typename Element,
           typename Device,
@@ -78,4 +79,4 @@ class tnlArrayIO< Element, Device, Index, false >
 
 };
 
-#endif /* TNLARRAYIO_H_ */
+} // namespace TNL

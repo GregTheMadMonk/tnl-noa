@@ -10,6 +10,8 @@
 
 #include <core/vectors/tnlStaticVector.h>
 
+namespace TNL {
+
 #ifndef HAVE_CUDA
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -48,4 +50,4 @@ template class tnlStaticVector< 4, long double >;
 #endif
 #endif
 
-
+} // namespace TNL

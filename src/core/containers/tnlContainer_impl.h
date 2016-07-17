@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCONTAINER_IMPL_H_
-#define TNLCONTAINER_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Element, typename Device, typename Index >
 tnlContainer< Element, Device, Index >::tnlContainer()
@@ -117,4 +118,4 @@ extern template class tnlContainer< double, tnlCuda, long int >;*/
 
 #endif
 
-#endif /* TNLCONTAINER_IMPL_H_ */
+} // namespace TNL

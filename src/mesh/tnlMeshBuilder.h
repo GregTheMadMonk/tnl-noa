@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHBUILDER_H
-#define	TNLMESHBUILDER_H
+#pragma once
 
 #include <mesh/traits/tnlMeshTraits.h>
+
+namespace TNL {
 
 template< typename Mesh >
 class tnlMeshBuilder
@@ -111,5 +112,5 @@ class tnlMeshBuilder
       tnlArray< bool, tnlHost, GlobalIndexType > pointsSet;
 };
 
-#endif	/* TNLMESHBUILDER_H */
+} // namespace TNL
 

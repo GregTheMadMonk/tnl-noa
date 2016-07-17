@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITYINTEGRITYCHECKER_H_
-#define TNLMESHENTITYINTEGRITYCHECKER_H_
+#pragma once
+
+namespace TNL {
 
 template< typename MeshEntity >
 class tnlMeshEntityIntegrityChecker
@@ -23,5 +24,4 @@ class tnlMeshEntityIntegrityChecker
 
 };
 
-
-#endif /* TNLMESHENTITYINTEGRITYCHECKER_H_ */
+} // namespace TNL

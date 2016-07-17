@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICARRAY1D_IMPL_H_
-#define TNLSTATICARRAY1D_IMPL_H_
+#pragma once
 
 #include <core/param-types.h>
+
+namespace TNL {
 
 template< typename Element >
 __cuda_callable__
@@ -214,4 +215,4 @@ extern template class tnlStaticArray< 1, long double >;
 
 #endif
 
-#endif /* TNLSTATICARRAY1D_IMPL_H_ */
+} // namespace TNL

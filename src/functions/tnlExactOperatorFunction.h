@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXACTOPERATORFUNCTION_H
-#define	TNLEXACTOPERATORFUNCTION_H
+#pragma once
 
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< typename Operator,
           typename Function >
@@ -49,5 +50,5 @@ class tnlExactOperatorFunction : public tnlDomain< Operator::getDimensions(), Sp
       const FunctionType& function;
 };
 
-#endif	/* TNLEXACTOPERATORFUNCTION_H */
+} // namespace TNL
 

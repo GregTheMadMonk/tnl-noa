@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICVECTOR_IMPL_H_
-#define TNLSTATICVECTOR_IMPL_H_
+#pragama once
+
+namespace TNL {
 
 template< int Size, typename Real >
 __cuda_callable__
@@ -200,4 +201,4 @@ extern template class tnlStaticVector< 4, long double >;
 
 #endif
 
-#endif /* TNLSTATICVECTOR_IMPL_H_ */
+} // namespace TNL

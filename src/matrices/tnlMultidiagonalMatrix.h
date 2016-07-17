@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMULTIDIAGONALMATRIX_H_
-#define TNLMULTIDIAGONALMATRIX_H_
+#pragma once
 
 #include <matrices/tnlMatrix.h>
 #include <core/vectors/tnlVector.h>
 #include <matrices/tnlMultidiagonalMatrixRow.h>
+
+namespace TNL {
 
 template< typename Device >
 class tnlMultidiagonalMatrixDeviceDependentCode;
@@ -197,6 +198,6 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
 };
 
-#include <matrices/tnlMultidiagonalMatrix_impl.h>
+} // namespace TNL
 
-#endif /* TNLMULTIDIAGONALMATRIX_H_ */
+#include <matrices/tnlMultidiagonalMatrix_impl.h>

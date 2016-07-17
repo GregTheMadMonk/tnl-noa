@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCONSTANTFUNCTION_H_
-#define TNLCONSTANTFUNCTION_H_
+#pragma once 
 
 #include <iostream>
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlDomain.h>
+
+namespace TNL {
 
 template< int dimensions,
           typename Real = double >
@@ -75,6 +76,7 @@ std::ostream& operator << ( std::ostream& str, const tnlConstantFunction< dimens
    return str;
 }
 
+} //namespace TNL
+
 #include <functions/tnlConstantFunction_impl.h>
 
-#endif /* TNLCONSTANTFUNCTION_H_ */

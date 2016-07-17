@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLHOST_H_
-#define TNLHOST_H_
+#pragam once 
 
 #include <unistd.h>
 #include <core/tnlDevice.h>
 #include <core/tnlString.h>
+
+namespace TNL {
 
 class tnlConfigDescription;
 class tnlParameterContainer;
@@ -59,4 +60,4 @@ class tnlHost
 
 };
 
-#endif /* TNLHOST_H_ */
+} // namespace TNL

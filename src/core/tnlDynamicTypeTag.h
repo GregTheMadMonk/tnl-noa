@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDYNAMICTYPETAG_H_
-#define TNLDYNAMICTYPETAG_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Element >
 struct tnlDynamicTypeTag
@@ -18,4 +19,4 @@ struct tnlDynamicTypeTag
 };
 
 
-#endif /* TNLDYNAMICTYPETAG_H_ */
+} // namespace TNL

@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLPSEUDOSQUAREFUNCTION_H_
-#define TNLPSEUDOSQUAREFUNCTION_H_
+#pragma once
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlDomain.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 template< typename Real,
           int Dimensions >
@@ -140,7 +141,6 @@ ostream& operator << ( ostream& str, const tnlPseudoSquareFunction< Dimensions, 
    return str;
 }
 
+} // namepsace TNL
+
 #include <functions/initial_conditions/level_set_functions/tnlPseudoSquareFunction_impl.h>
-
-
-#endif /* TNLPSEUDOSQUAREFUNCTION_H_ */

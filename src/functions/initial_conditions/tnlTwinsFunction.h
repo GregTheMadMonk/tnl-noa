@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTWINSFUNCTION_H_
-#define TNLTWINSFUNCTION_H_
+#pragma once
 
 #include <config/tnlParameterContainer.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <functions/tnlDomain.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 template< typename Real,
           int Dimensions >
@@ -144,7 +145,7 @@ ostream& operator << ( ostream& str, const tnlTwinsFunction< Dimensions, Real >&
    return str;
 }
 
+} // namespace TNL
+
 #include <functions/initial_conditions/tnlTwinsFunction_impl.h>
 
-
-#endif /* TNLTWINSFUNCTION_H_ */

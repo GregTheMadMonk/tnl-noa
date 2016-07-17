@@ -46,7 +46,6 @@ set( common_SOURCES
      ${CURRENT_DIR}/tnlFile.cpp
      ${CURRENT_DIR}/tnlFlopsCounter.cpp 
      ${CURRENT_DIR}/tnlLogger.cpp 
-     ${CURRENT_DIR}/tnlObject.cpp
      ${CURRENT_DIR}/tnlStatistics.cpp
      ${CURRENT_DIR}/tnlString.cpp 
      ${CURRENT_DIR}/tnlSystemInfo.cpp 

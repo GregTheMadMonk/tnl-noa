@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <debug/tnlDebug.h>
 #include <core/tnlAssert.h>
 #include <core/tnlFile.h>

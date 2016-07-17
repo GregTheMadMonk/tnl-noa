@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TERMINAL_COLORS_H
-#define	TERMINAL_COLORS_H
+#pragma once
+
+namespace TNL {
 
 const tnlString red( "\033[0;31m" );
 const tnlString green( "\033[1;32m" );
@@ -19,6 +20,5 @@ const tnlString magenta( "\033[0;35m" );
 const tnlString bold();
 const tnlString reset( "\033[0m" );
 
-
-#endif	/* TERMINAL_COLORS_H */
+} // namespace TNL
 

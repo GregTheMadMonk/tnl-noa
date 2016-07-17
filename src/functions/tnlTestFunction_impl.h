@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTESTFUNCTION_IMPL_H_
-#define TNLTESTFUNCTION_IMPL_H_
+#pragma once
 
 #include <core/tnlCuda.h>
 #include <functions/tnlConstantFunction.h>
@@ -27,6 +26,8 @@
 #include <functions/initial_conditions/tnlTwinsFunction.h>
 #include <functions/initial_conditions/level_set_functions/tnlBlobFunction.h>
 #include <functions/initial_conditions/level_set_functions/tnlPseudoSquareFunction.h>
+
+namespace TNL {
 
 template< int FunctionDimensions,
           typename Real,
@@ -564,5 +565,5 @@ extern template class tnlTestFunction< 3, long double, tnlCuda >;
 
 #endif
 
+} // namespace TNL
 
-#endif /* TNLTESTFUNCTION_IMPL_H_ */

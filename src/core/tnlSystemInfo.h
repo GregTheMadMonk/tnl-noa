@@ -7,6 +7,8 @@
 
 #include <core/tnlString.h>
 
+namespace TNL {
+
 struct tnlCacheSizes {
    int L1instruction = 0;
    int L1data = 0;
@@ -56,3 +58,5 @@ protected:
       return result;
    }
 };
+
+} // namespace TNL

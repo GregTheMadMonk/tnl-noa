@@ -11,8 +11,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDICOMHEADER_H
-#define TNLDICOMHEADER_H
+#pragma once 
 
 #include <tnlConfig.h>
 
@@ -21,6 +20,8 @@
 #include <dcmtk/dcmdata/dcfilefo.h>
 #include <dcmtk/dcmdata/dcdeftag.h>
 #endif
+
+namespace TNL {
 
 class tnlDicomSeriesInfo;
 class tnlDicomPatientInfo;
@@ -66,6 +67,7 @@ class tnlDicomHeader
       bool isLoaded;
 };
 
+} // namespace TNL
+
 #include <core/images/tnlDicomHeader_impl.h>
 
-#endif // TNLDICOMHEADER_H

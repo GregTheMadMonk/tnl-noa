@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXACTDIFFERENCE_H
-#define	TNLEXACTDIFFERENCE_H
+#pragma once
+
+namespace TNL {
 
 template< int Dimensions,
           int XDerivative,
@@ -45,6 +46,5 @@ class tnlExactDifference
       }
 };
 
-
-#endif	/* TNLEXACTDIFFERENCE_H */
+} // namespace TNL
 

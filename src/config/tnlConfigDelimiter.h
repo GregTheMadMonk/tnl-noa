@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCONFIGDELIMITER_H_
-#define TNLCONFIGDELIMITER_H_
+#pragma once 
+
+namespace TNL {
 
 struct tnlConfigDelimiter : public tnlConfigEntryBase
 {
@@ -25,4 +26,4 @@ struct tnlConfigDelimiter : public tnlConfigEntryBase
    tnlString getUIEntryType() const { return ""; };
 };
 
-#endif /* TNLCONFIGDELIMITER_H_ */
+} //namespace TNL

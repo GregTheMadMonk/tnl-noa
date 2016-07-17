@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHFUNCTIONNORMGETTER_H
-#define	TNLMESHFUNCTIONNORMGETTER_H
+#pragma once
+
+namespace TNL {
 
 template< typename MeshFunction,
           typename Mesh = typename MeshFunction::MeshType >
@@ -144,5 +145,5 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
 };
 
 
-#endif	/* TNLMESHFUNCTIONNORMGETTER_H */
+} // namespace TNL
 

@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLELLPACKINDEXMULTIMAP_H
-#define	TNLELLPACKINDEXMULTIMAP_H
+#pragma once 
 
 #include <core/vectors/tnlVector.h>
+
+namespace TNL {
 
 template< typename Index = int,
           typename Device = tnlHost >
@@ -59,7 +60,7 @@ class tnlEllpackIndexMultimap
       IndexType keysRange, valuesRange, valuesMaxCount;
 };
 
-#include <core/multimaps/tnlEllpackIndexMultimap_impl.h>
+} // namespace TNL
 
-#endif	/* TNLELLPACKINDEXMULTIMAP_H */
+#include <core/multimaps/tnlEllpackIndexMultimap_impl.h>
 

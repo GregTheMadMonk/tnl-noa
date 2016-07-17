@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHINITIALIZER_H_
-#define TNLMESHINITIALIZER_H_
+#pragma once
 
 #include <mesh/tnlDimensionsTag.h>
 #include <mesh/traits/tnlMeshEntityTraits.h>
@@ -22,6 +21,8 @@
 #include <mesh/tnlMeshEntityReferenceOrientation.h>
 #include <mesh/initializer/tnlMeshEntitySeed.h>
 #include <mesh/initializer/tnlMeshEntitySeedKey.h>
+
+namespace TNL {
 
 template< typename MeshConfig >
 class tnlMesh;
@@ -617,7 +618,4 @@ class tnlMeshInitializerLayer< MeshConfig,
       MeshType* mesh;
 };
 
-
-
-
-#endif /* TNLMESHINITIALIZER_H_ */
+} // namespace TNL

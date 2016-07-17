@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCYLINDERFUNCTION_IMPL_H_
-#define TNLCYLINDERFUNCTION_IMPL_H_
+#pragma once
 
 #include <functions/initial_conditions/tnlCylinderFunction.h>
+
+namespace TNL {
 
 template< typename Real,
           int Dimensions >
@@ -176,5 +177,4 @@ operator()( const VertexType& v,
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
-
-#endif /* TNLCYLINDERFUNCTION_IMPL_H_ */
+} // namespace TNL

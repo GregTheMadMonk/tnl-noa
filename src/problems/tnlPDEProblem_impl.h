@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLPDEPROBLEM_IMPL_H_
-#define TNLPDEPROBLEM_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real,
@@ -141,5 +142,4 @@ getSolverMonitor()
    return 0;
 }
 
-
-#endif /* TNLPDEPROBLEM_IMPL_H_ */
+} // namespace TNL

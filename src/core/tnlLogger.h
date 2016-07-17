@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef mLoggerH
-#define mLoggerH
+#pragma once
 
 #include <ostream>
 #include <config/tnlParameterContainer.h>
+
+namespace TNL {
 
 class tnlLogger
 {
@@ -77,4 +78,4 @@ extern template void tnlLogger::writeParameter< int >( const tnlString&,
                                                        int );
 #endif
 
-#endif
+} // namespace TNL

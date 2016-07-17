@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDIRICHLETBOUNDARYCONDITIONS_H_
-#define TNLDIRICHLETBOUNDARYCONDITIONS_H_
+#pragma once
 
 #include <operators/tnlOperator.h>
 #include <functions/tnlConstantFunction.h>
 #include <functions/tnlFunctionAdapter.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Function = tnlConstantFunction< Mesh::getMeshDimensions(), typename Mesh::RealType >,
@@ -122,4 +123,4 @@ ostream& operator << ( ostream& str, const tnlDirichletBoundaryConditions< Mesh,
    return str;
 }
 
-#endif /* TNLDIRICHLETBOUNDARYCONDITIONS_H_ */
+} // namespace TNL

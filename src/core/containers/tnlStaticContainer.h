@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICCONTAINER_H_
-#define TNLSTATICCONTAINER_H_
+#pragma once
 
-#include <core/tnlObject.h>
+#include <tnlObject.h>
 #include <core/arrays/tnlStaticArray.h>
+
+namespace TNL {
 
 template< int Size, typename Element >
 class tnlStaticContainer : public tnlObject
@@ -48,7 +49,7 @@ class tnlStaticContainer : public tnlObject
    tnlStaticArray< Size, Element > data;
 };
 
+} // namespace TNL
+
 #include <core/containers/tnlStaticContainer_impl.h>
 
-
-#endif /* TNLSTATICCONTAINER_H_ */

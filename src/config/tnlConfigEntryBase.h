@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCONFIGENTRYBASE_H_
-#define TNLCONFIGENTRYBASE_H_
+#pragma once
+
+namespace TNL {
 
 struct tnlConfigEntryBase
 {
@@ -42,4 +43,4 @@ struct tnlConfigEntryBase
    virtual void printEnumValues() const{};
 };
 
-#endif /* TNLCONFIGENTRYBASE_H_ */
+} // namespace TNL

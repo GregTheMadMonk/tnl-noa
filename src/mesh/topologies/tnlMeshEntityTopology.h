@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHENTITYTOPOLOGY_H_
-#define TNLMESHENTITYTOPOLOGY_H_
+#pragma once
+
+namespace TNL {
 
 template< typename MeshEntityTopology,
           int SubentityDimension >
@@ -42,4 +43,5 @@ class tnlMeshEntityTopology< MeshConfig,
 
    typedef typename MeshConfig::CellTopology Topology;
 };
-#endif /* TNLMESHENTITYTOPOLOGY_H_ */
+
+} // namespace TNL

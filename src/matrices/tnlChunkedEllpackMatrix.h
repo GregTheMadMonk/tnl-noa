@@ -20,11 +20,12 @@
  */
 
 
-#ifndef TNLCHUNKEDELLPACKMATRIX_H_
-#define TNLCHUNKEDELLPACKMATRIX_H_
+#pragma once
 
 #include <matrices/tnlSparseMatrix.h>
 #include <core/vectors/tnlVector.h>
+
+namespace TNL {
 
 template< typename Device >
 class tnlChunkedEllpackMatrixDeviceDependentCode;
@@ -321,7 +322,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 #endif
 };
 
+} // namespace TNL
+
 #include <matrices/tnlChunkedEllpackMatrix_impl.h>
 
-
-#endif /* TNLCHUNKEDELLPACKMATRIX_H_ */

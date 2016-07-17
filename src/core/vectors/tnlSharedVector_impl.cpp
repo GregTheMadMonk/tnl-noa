@@ -10,6 +10,8 @@
 
 #include <core/vectors/tnlSharedVector.h>
 
+namespace TNL {
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
@@ -52,5 +54,5 @@ template class tnlSharedVector< long double, tnlCuda, long int >;
 
 #endif
 
-
+} // namespace TNL
 

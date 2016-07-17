@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSPARSEMATRIXROW_IMPL_H_
-#define TNLSPARSEMATRIXROW_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Real, typename Index >
 __cuda_callable__
@@ -83,4 +84,4 @@ print( ostream& str ) const
    }
 }
 
-#endif /* TNLSPARSEMATRIXROW_IMPL_H_ */
+} // namespace TNL

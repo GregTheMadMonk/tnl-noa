@@ -9,10 +9,11 @@
 /* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLTRAVERSER_GRID2D_IMPL_H_
-#define TNLTRAVERSER_GRID2D_IMPL_H_
+#pragma once
 
 #include <mesh/grids/tnlGridTraverser.h>
+
+namespace TNL {
 
 /****
  * Grid 2D, cells
@@ -268,4 +269,5 @@ processAllEntities( const GridType& grid,
       CoordinatesType(),
       userData );
 }
-#endif /* TNLTRAVERSER_GRID2D_IMPL_H_ */
+
+} // namespace TNL

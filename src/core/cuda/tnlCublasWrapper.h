@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUBLASWARPER_H
-#define	TNLCUBLASWARPER_H
+#pragma once
 
 #if defined HAVE_CUBLAS && defined HAVE_CUDA
 #include <cublas_v2.h>
 #endif
+
+namespace TNL {
 
 template< typename Real1,
           typename Real2,
@@ -59,5 +60,5 @@ class tnlCublasWrapper< double, double, Index >
 };
 #endif
 
-#endif	/* TNLCUBLASWARPER_H */
+} // namespace TNL
 

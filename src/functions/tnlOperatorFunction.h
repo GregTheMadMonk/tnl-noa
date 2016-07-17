@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLOPERATORFUNCTION_H
-#define	TNLOPERATORFUNCTION_H
+#pragma once
 
 #include <type_traits>
 #include <core/tnlCuda.h>
 #include <functions/tnlMeshFunction.h>
 #include <solvers/pde/tnlBoundaryConditionsSetter.h>
+
+namespace TNL {
 
 /***
  * This class evaluates given operator on given preimageFunction. If the flag
@@ -26,7 +27,7 @@
  * values on the boundary mesh entities are undefined. In this case, the mesh
  * preimageFunction evaluator evaluates this preimageFunction only on the INTERIOR mesh entities.
  */
-
+   
 template< typename Operator,
           typename MeshFunction,
           typename BoundaryConditions = void,
@@ -339,5 +340,5 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
       template< typename, typename > friend class tnlMeshFunctionEvaluator;
 };
 
-#endif	/* TNLOPERATORFUNCTION_H */
+} // namespace TNL
 

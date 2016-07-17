@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLVECTOROPERATIONSHOST_IMPL_H_
-#define TNLVECTOROPERATIONSHOST_IMPL_H_
+#pragma once 
+
+namespace TNL {
 
 static const int OpenMPVectorOperationsThreshold = 65536; // TODO: check this threshold
 
@@ -733,4 +734,4 @@ extern template long double tnlVectorOperations< tnlHost >::getVectorDifferenceA
 #endif
 
 
-#endif /* TNLVECTOROPERATIONSHOST_IMPL_H_ */
+} // namespace TNL

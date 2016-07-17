@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGRID3D_IMPL_H_
-#define TNLGRID3D_IMPL_H_
+#pragma once
 
 #include <iomanip>
 #include <core/tnlAssert.h>
@@ -17,6 +16,8 @@
 #include <mesh/grids/tnlNeighbourGridEntityGetter3D_impl.h>
 #include <mesh/grids/tnlGrid3D.h>
 #include <mesh/grids/tnlGridEntityMeasureGetter.h>
+
+namespace TNL {
 
 template< typename Real,
           typename Device,
@@ -578,5 +579,4 @@ writeProlog( tnlLogger& logger )
    logger.writeParameter( "Space steps:", this->getSpaceSteps() );
 }
 
-
-#endif /* TNLGRID3D_IMPL_H_ */
+} // namespace TNL

@@ -8,13 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTRAVERSER_H_
-#define TNLTRAVERSER_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Mesh,
           typename MeshEntity,
           int EntitiesDimensions = MeshEntity::entityDimensions >
 class tnlTraverser{};
 
-
-#endif /* TNLTRAVERSER_H_ */
+} // namespace TNL

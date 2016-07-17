@@ -8,15 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef __MSTRING_H__
-#define __MSTRING_H__
+#pragma once
 
 #include <stdio.h>
 #include <iostream>
 #include <sstream>
 #include "mpi-supp.h"
 
-using namespace :: std;
+namespace TNL {
 
 template< class T > class tnlList;
 class tnlFile;
@@ -170,4 +169,4 @@ template<> inline tnlString convertToString( const bool& b )
    return "false";
 }
 
-#endif
+} // namespace TNL

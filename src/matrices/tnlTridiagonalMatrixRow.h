@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTRIDIAGONALMATRIXROW_H_
-#define TNLTRIDIAGONALMATRIXROW_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Real, typename Index >
 class tnlTridiagonalMatrixRow
@@ -43,7 +44,6 @@ class tnlTridiagonalMatrixRow
       Index row, columns, step;
 };
 
+} // namespace TNL
+
 #include <matrices/tnlTridiagonalMatrixRow_impl.h>
-
-
-#endif /* TNLTRIDIAGONALMATRIXROW_H_ */

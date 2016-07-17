@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHFUNCTIONEVALUATOR_H
-#define	TNLMESHFUNCTIONEVALUATOR_H
+#pragma once
 
 #include <mesh/tnlGrid.h>
 #include <functions/tnlMeshFunction.h>
 #include <functions/tnlOperatorFunction.h>
+
+namespace TNL {
 
 template< typename OutMeshFunction,
           typename InFunction,
@@ -157,8 +158,7 @@ class tnlMeshFunctionEvaluatorAdditionEntitiesProcessor
       }
 };
 
+} // namespace TNL
 
 #include <functions/tnlMeshFunctionEvaluator_impl.h>
-
-#endif	/* TNLMESHFUNCTIONEVALUATOR_H */
 

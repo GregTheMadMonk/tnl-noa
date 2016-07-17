@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUDAREDUCTION_IMPL_H
-#define	TNLCUDAREDUCTION_IMPL_H
+#pragma once
+
+namespace TNL {
 
 template< typename Operation, int blockSize >
 __device__
@@ -285,5 +286,5 @@ reduce( Operation& operation,
 
 #endif
 
-#endif	/* TNLCUDAREDUCTION_IMPL_H */
+} // namespace TNL
 

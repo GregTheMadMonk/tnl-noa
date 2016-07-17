@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMATRIXSETTER_IMPL_H_
-#define TNLMATRIXSETTER_IMPL_H_
+#pragma once
 
 #include <mesh/tnlTraverser.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename DifferentialOperator,
@@ -116,5 +117,4 @@ getCompressedRowsLengths( const MeshType& mesh,
    }
 }
 
-
-#endif /* TNLMATRIXSETTER_IMPL_H_ */
+} // namespace TNL

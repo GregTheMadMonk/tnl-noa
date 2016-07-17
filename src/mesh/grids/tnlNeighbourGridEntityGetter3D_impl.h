@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLNEIGHBOURGRIDENTITYGETTER3D_IMPL_H
-#define	TNLNEIGHBOURGRIDENTITYGETTER3D_IMPL_H
+#pragma once
 
 #include <mesh/grids/tnlNeighbourGridEntityGetter.h>
 #include <mesh/grids/tnlGrid1D.h>
@@ -17,6 +16,7 @@
 #include <mesh/grids/tnlGrid3D.h>
 #include <core/tnlStaticFor.h>
 
+namespace TNL {
 
 /****
  * +-----------------+---------------------------+-------------------+
@@ -769,6 +769,5 @@ class tnlNeighbourGridEntityGetter<
  
 };
 
-
-#endif	/* TNLNEIGHBOURGRIDENTITYGETTER3D_IMPL_H */
+} // namespace TNL
 

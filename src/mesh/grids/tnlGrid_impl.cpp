@@ -10,6 +10,8 @@
 
 #include <mesh/tnlGrid.h>
 
+namespace TNL {
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 template class tnlGrid< 1, float,  tnlHost, int >;
@@ -59,7 +61,7 @@ template class tnlGrid< 3, double, tnlCuda, long int >;
 
 #endif
 
-
+} // namespace TNL
 
 
 

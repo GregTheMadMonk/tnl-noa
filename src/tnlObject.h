@@ -8,13 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-
-
-#ifndef tnlObjectH
-#define tnlObjectH
+#pragma once
 
 #include <core/tnlCuda.h>
 #include <core/tnlString.h>
+
+
+namespace TNL {
 
 class tnlFile;
 template< class T > class tnlList;
@@ -85,4 +85,4 @@ bool getObjectType( const tnlString& file_name, tnlString& type );
 bool parseObjectType( const tnlString& objectType,
                       tnlList< tnlString >& parsedObjectType );
 
-#endif
+} // namespace TNL

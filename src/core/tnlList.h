@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef mListH
-#define mListH
+#pragma once
 
 #include <core/tnlAssert.h>
 #include <stdlib.h>
@@ -18,6 +17,8 @@
 #include <core/tnlString.h>
 
 #include <core/param-types.h>
+
+namespace TNL {
 
 class tnlFile;
 
@@ -135,6 +136,7 @@ template< class T > class tnlList
 
 template< typename T > ostream& operator << ( ostream& str, const tnlList< T >& list );
 
+} // namespace TNL
+
 #include<core/tnlList_impl.h>
 
-#endif

@@ -1,10 +1,21 @@
-#ifndef TNLEXACTOPERATORCURVATURE_H
-#define	TNLEXACTOPERATORCURVATURE_H
+/***************************************************************************
+                          tnlExactOperatorCurvature.h  -  description
+                             -------------------
+    begin                : Jan 25, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
 
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlSharedVector.h>
 #include <mesh/tnlGrid.h>
 #include <functions/tnlFunction.h>
+
+namespace TNL {
 
 template< typename ExactOperatorQ, int Dimensions >
 class tnlExactOperatorCurvature
@@ -87,7 +98,6 @@ class tnlFunctionType< tnlExactOperatorCurvature< ExactOperatorQ, Dimensions > >
       enum { Type = tnlSpaceDomain };
 };
 
+} // namespace TNL
+
 #include <operators/operator-curvature/tnlExactOperatorCurvature_impl.h>
-
-
-#endif	/* TNLEXACTOPERATORCURVATURE_H */

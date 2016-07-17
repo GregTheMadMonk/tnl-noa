@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHFUNCTIONGNUPLOTWRITER_IMPL_H
-#define	TNLMESHFUNCTIONGNUPLOTWRITER_IMPL_H
+#pragma once
+
+namespace TNL {
 
 template< typename MeshFunction >
 bool
@@ -194,5 +195,5 @@ write( const MeshFunctionType& function,
    return true;
 }
 
-#endif	/* TNLMESHFUNCTIONGNUPLOTWRITER_IMPL_H */
+} // namespace TNL
 

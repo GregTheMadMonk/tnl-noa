@@ -8,9 +8,10 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUDAREDUCTION_H
-#define	TNLCUDAREDUCTION_H
+#pragma once
 
+namespace TNL {
+   
 #ifdef HAVE_CUDA
 
 template< typename Operation, int blockSize >
@@ -51,5 +52,5 @@ class tnlCUDAReduction< tnlParallelReductionScalarProduct< Real, Index >, blockS
 
 #endif
 
-#endif	/* TNLCUDAREDUCTION_H */
+} // namespace TNL
 

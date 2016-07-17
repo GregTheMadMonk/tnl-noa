@@ -9,6 +9,8 @@
 
 #include "tnlSystemInfo.h"
 
+namespace TNL {
+
 tnlSystemInfo::tnlSystemInfo()
 {
    uname( &uts );
@@ -172,3 +174,5 @@ tnlSystemInfo::getCPUCacheSizes( int cpu_id ) const
    }
    return sizes;
 }
+
+} // namespace TNL

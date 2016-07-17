@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCONFIGENTRY_H_
-#define TNLCONFIGENTRY_H_
+#pragma once 
 
 #include <config/tnlConfigEntryBase.h>
+
+namespace TNL {
 
 template< typename EntryType >
 struct tnlConfigEntry : public tnlConfigEntryBase
@@ -104,5 +105,4 @@ struct tnlConfigEntry : public tnlConfigEntryBase
    };
 };
 
-
-#endif /* TNLCONFIGENTRY_H_ */
+} // namespace TNL

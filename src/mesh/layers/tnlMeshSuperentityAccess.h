@@ -8,11 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSUPERENTITYACCESS_H
-#define	TNLSUPERENTITYACCESS_H
+#pragma once
 
 #include <mesh/traits/tnlMeshTraits.h>
 
+namespace TNL {
 
 template< typename MeshConfig,
           typename MeshEntity,
@@ -147,6 +147,5 @@ class tnlMeshSuperentityAccessLayer< MeshConfig,
       void print( ostream& str ) const {};
 };
 
-
-#endif	/* TNLSUPERENTITYACCESS_H */
+} // namespace TNL
 

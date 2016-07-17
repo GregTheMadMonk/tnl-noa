@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLJPEGIMAGE_IMPL_H
-#define	TNLJPEGIMAGE_IMPL_H
+#pragma once
 
 #include <core/images/tnlJPEGImage.h>
 #include <setjmp.h>
+
+namespace TNL {
 
 #ifdef HAVE_JPEG_H
 inline void my_error_exit( j_common_ptr cinfo )
@@ -276,7 +277,6 @@ tnlJPEGImage< Index >::
    close();
 }
 
+} // namespace TNL
 
-
-#endif	/* TNLJPEGIMAGE_IMPL_H */
 

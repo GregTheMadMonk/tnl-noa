@@ -14,6 +14,8 @@
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 
+namespace TNL {
+ 
 tnlString tnlCuda :: getDeviceType()
 {
    return tnlString( "tnlCuda" );
@@ -63,4 +65,6 @@ bool tnlCuda::setup( const tnlParameterContainer& parameters,
 #endif
    return true;
 }
+
+} // namespace TNL
 
