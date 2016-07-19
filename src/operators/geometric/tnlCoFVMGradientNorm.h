@@ -61,8 +61,8 @@ class tnlCoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex
          return tnlString( "tnlCoFVMGradientNorm< " ) +
             MeshType::getType() + ", " +
             tnlString( MeshDimensions ) + ", " +
-            ::getType< Real >() + ", " +
-            ::getType< Index >() + " >";
+           TNL::getType< Real >() + ", " +
+           TNL::getType< Index >() + " >";
       }
  
       void setEps( const RealType& eps )
@@ -102,8 +102,8 @@ class tnlCoFVMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, 0, Real, I
    {
       return tnlString( "tnlCoFVMGradientNorm< " ) +
          MeshType::getType() + ", 0, " +
-         ::getType< Real >() + ", " +
-         ::getType< Index >() + " >";
+        TNL::getType< Real >() + ", " +
+        TNL::getType< Index >() + " >";
    }
 
    template< typename MeshFunction, typename MeshEntity >
@@ -121,7 +121,7 @@ class tnlCoFVMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, 0, Real, I
       const RealType& hxDiv = entity.getMesh().template getSpaceStepsProducts< -1 >();
       const RealType& u_x = ( u[ neighbourEntities.template getEntityIndex<  1 >() ] -
                               u[ neighbourEntities.template getEntityIndex< -1 >() ] ) * hxDiv;
-      return sqrt( this->epsSquare + ( u_x * u_x ) );
+      return ::sqrt( this->epsSquare + ( u_x * u_x ) );
    }
  
    void setEps( const Real& eps )
@@ -163,8 +163,8 @@ class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, 
    {
       return tnlString( "tnlCoFVMGradientNorm< " ) +
          MeshType::getType() + ", 1, " +
-         ::getType< Real >() + ", " +
-         ::getType< Index >() + " >";
+        TNL::getType< Real >() + ", " +
+        TNL::getType< Index >() + " >";
 
    }
  
@@ -210,7 +210,7 @@ class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, 
                  u[ neighbourEntities.template getEntityIndex<  1,  0 >() ] -
                  u[ neighbourEntities.template getEntityIndex< -1,  0 >() ] ) * hyDiv;
          }
-         return sqrt( this->epsSquare + u_x * u_x + u_y * u_y );
+         return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y );
       }
       RealType u_x;
       if( entity.getCoordinates().x() > 0 )
@@ -239,7 +239,7 @@ class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, 
       const RealType u_y =
          ( u[ neighbourEntities.template getEntityIndex< 0,  1 >()] -
            u[ neighbourEntities.template getEntityIndex< 0, -1 >()] ) * hyDiv;
-      return sqrt( this->epsSquare + u_x * u_x + u_y * u_y );
+      return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y );
    }
  
    void setEps( const Real& eps )
@@ -280,8 +280,8 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
    {
       return tnlString( "tnlCoFVMGradientNorm< " ) +
          MeshType::getType() + ", 2, " +
-         ::getType< Real >() + ", " +
-         ::getType< Index >() + " >";
+        TNL::getType< Real >() + ", " +
+        TNL::getType< Index >() + " >";
    }
 
    template< typename MeshFunction, typename MeshEntity >
@@ -361,7 +361,7 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
               u[ neighbourEntities.template getEntityIndex<  1,  0,  0 >() ] -
               u[ neighbourEntities.template getEntityIndex< -1,  0,  0 >() ] ) * hzDiv;
          }
-         return sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );
+         return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );
       }
       if( entity.getOrientation().y() != 0.0 )
       {
@@ -424,7 +424,7 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
               u[ neighbourEntities.template getEntityIndex<  0,  1,  0 >() ] -
               u[ neighbourEntities.template getEntityIndex<  0, -1,  0 >() ] ) * hzDiv;
          }
-         return sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );
+         return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );
       }
       RealType u_x;
       if( entity.getCoordinates().x() > 0 )
@@ -486,7 +486,7 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
       const RealType u_z =
          ( u[ neighbourEntities.template getEntityIndex<  0,  0,  1 >()] -
            u[ neighbourEntities.template getEntityIndex<  0,  0, -1 >()] ) * hzDiv;
-      return sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );
+      return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );
    }
  
  

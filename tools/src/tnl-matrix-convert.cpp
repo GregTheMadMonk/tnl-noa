@@ -41,7 +41,7 @@ int main( int argc, char* argv[] )
    bool verify = parameters. getParameter< bool >( "verify");
 
    if( verbose )
-      cout << "Processing file " << input_file << " ... " << endl;
+      std::cout << "Processing file " << input_file << " ... " << std::endl;
 
    if( precision == "float" )
    {
@@ -68,6 +68,6 @@ int main( int argc, char* argv[] )
    }
 
 
-   cerr << "Unknnown precision " << precision << " was given. Can be only float of double." << endl;
+   std::cerr << "Unknnown precision " << precision << " was given. Can be only float of double." << std::endl;
    return EXIT_FAILURE;
 }

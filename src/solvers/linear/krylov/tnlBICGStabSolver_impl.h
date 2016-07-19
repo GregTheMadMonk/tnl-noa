@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlBICGStabSolver_implH
-#define tnlBICGStabSolver_implH
+#pragma once
 
 #include <debug/tnlDebug.h>
+
+namespace TNL {
 
 template< typename RealType,
           typename Vector >
@@ -143,7 +144,7 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
       /*if( M ) // preconditioner
       {
          A. vectorProduct( s, M_tmp );
-         DrawVector( "As", M_tmp, ( m_int ) sqrt( ( m_real ) size ) );
+         DrawVector( "As", M_tmp, ( m_int ) ::sqrt( ( m_real ) size ) );
          M -> Solve( M_tmp, As );
       }
       else*/
@@ -208,12 +209,11 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: setSize( IndexType size )
        ! As. setSize( size ) ||
        ! M_tmp. setSize( size ) )
    {
-      cerr << "I am not able to allocate all supporting arrays for the BICGStab solver." << endl;
+      std::cerr << "I am not able to allocate all supporting arrays for the BICGStab solver." << std::endl;
       return false;
    }
    return true;
 
 };
 
-
-#endif
+} // namespace TNL

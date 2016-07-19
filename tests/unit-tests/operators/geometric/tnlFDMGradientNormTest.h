@@ -20,6 +20,7 @@
 #include "../tnlPDEOperatorEocTest.h"
 #include "../tnlPDEOperatorEocUnitTest.h"
 
+using namespace TNL;
 
 template< typename ApproximateOperator >
 class tnlFDMGradientNormEocTestResults

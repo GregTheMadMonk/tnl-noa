@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLNOTIMEDISCRETISATION_H
-#define	TNLNOTIMEDISCRETISATION_H
+#pragma once
 
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 class tnlNoTimeDiscretisation
 {
@@ -31,5 +32,5 @@ class tnlNoTimeDiscretisation
         }
 };
 
-#endif	/* TNLNOTIMEDISCRETISATION_H */
+} // namespace TNL
 

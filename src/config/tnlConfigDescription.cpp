@@ -12,7 +12,6 @@
 #include <iomanip>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
-#include <core/mfuncs.h>
 
 namespace TNL {
 
@@ -28,7 +27,7 @@ tnlConfigDescription :: ~tnlConfigDescription()
 
 void tnlConfigDescription::printUsage( const char* program_name ) const
 {
-   cout << "Usage of: " << program_name << endl << endl;
+   std::cout << "Usage of: " << program_name << std::endl << std::endl;
    int i, j;
    //const int group_num = groups. getSize();
    const int entries_num = entries. getSize();
@@ -37,9 +36,9 @@ void tnlConfigDescription::printUsage( const char* program_name ) const
    for( j = 0; j < entries_num; j ++ )
       if( ! entries[ j ]->isDelimiter() )
       {
-         max_name_length = Max( max_name_length,
+         max_name_length = std::max( max_name_length,
                      entries[ j ] -> name. getLength() );
-         max_type_length = Max( max_type_length,
+         max_type_length = std::max( max_type_length,
                      entries[ j ] -> getUIEntryType().getLength() );
       }
    max_name_length += 2; // this is for '--'
@@ -48,37 +47,37 @@ void tnlConfigDescription::printUsage( const char* program_name ) const
    {
       if( entries[ j ]->isDelimiter() )
       {
-         cout << endl;
-         cout << entries[ j ]->description;
-         cout << endl << endl;
+         std::cout << std::endl;
+         std::cout << entries[ j ]->description;
+         std::cout << std::endl << std::endl;
       }
       else
       {
-         cout << setw( max_name_length + 3 ) << tnlString( "--" ) + entries[ j ]->name
-              << setw( max_type_length + 5 ) << entries[ j ] -> getUIEntryType()
+         std::cout << std::setw( max_name_length + 3 ) << tnlString( "--" ) + entries[ j ]->name
+              << std::setw( max_type_length + 5 ) << entries[ j ] -> getUIEntryType()
               << "    " << entries[ j ]->description;
          if( entries[ j ] -> required )
-            cout << " *** REQUIRED ***";
+            std::cout << " *** REQUIRED ***";
          if( entries[ j ]->hasEnumValues() )
          {
-            cout << endl
-                 << setw( max_name_length + 3 ) << ""
-                 << setw( max_type_length + 5 ) << ""
+            std::cout << std::endl
+                 << std::setw( max_name_length + 3 ) << ""
+                 << std::setw( max_type_length + 5 ) << ""
                  << "    ";
             entries[ j ]->printEnumValues();
          }
          if( entries[ j ]->hasDefaultValue )
          {
-            cout << endl
-                 << setw( max_name_length + 3 ) << ""
-                 << setw( max_type_length + 5 ) << ""
+            std::cout << std::endl
+                 << std::setw( max_name_length + 3 ) << ""
+                 << std::setw( max_type_length + 5 ) << ""
                  << "    ";
-            cout << "- Default value is: " << entries[ j ]->printDefaultValue();
+            std::cout << "- Default value is: " << entries[ j ]->printDefaultValue();
          }
-         cout << endl;
+         std::cout << std::endl;
       }
    }
-   cout << endl;
+   std::cout << std::endl;
 }
 
 void tnlConfigDescription :: addMissingEntries( tnlParameterContainer& parameter_container ) const
@@ -139,13 +138,13 @@ bool tnlConfigDescription :: checkMissingEntries( tnlParameterContainer& paramet
    }
    if( missingParameters.getSize() != 0 )
    {
-      cerr << "Some mandatory parameters are misssing. They are listed at the end. " << endl;
+      std::cerr << "Some mandatory parameters are misssing. They are listed at the end. " << std::endl;
       if( printUsage )
          this->printUsage( programName );
-      cerr << "Add the following missing  parameters to the command line: " << endl << "   ";
+      std::cerr << "Add the following missing  parameters to the command line: " << std::endl << "   ";
       for( int i = 0; i < missingParameters.getSize(); i++ )
-         cerr << "--" << missingParameters[ i ] << " ... ";
-      cerr << endl;
+         std::cerr << "--" << missingParameters[ i ] << " ... ";
+      std::cerr << std::endl;
       return false;
    }
    return true;

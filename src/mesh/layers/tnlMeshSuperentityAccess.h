@@ -36,7 +36,7 @@ class tnlMeshSuperentityAccess :
  
       bool operator == ( const tnlMeshSuperentityAccess< MeshConfig, MeshEntity>& a ) const { return true; } // TODO: fix
  
-      void print( ostream& str ) const
+      void print( std::ostream& str ) const
       {
          BaseType::print( str );
       };
@@ -72,20 +72,20 @@ class tnlMeshSuperentityAccessLayer< MeshConfig,
       using BaseType::getSuperentityIndices;
       const SuperentityAccessorType& getSuperentityIndices( Dimensions ) const
       {
-         cerr << "###" << endl;
+         std::cerr << "###" << std::endl;
          return this->superentityIndices;
       }
  
       SuperentityAccessorType& getSuperentityIndices( Dimensions )
       {
-         cerr << "######" << endl;
+         std::cerr << "######" << std::endl;
          return this->superentityIndices;
       }
  
-      void print( ostream& str ) const
+      void print( std::ostream& str ) const
       {
          str << "Superentities with " << Dimensions::value << " dimensions are: " <<
-            this->superentityIndices << endl;
+            this->superentityIndices << std::endl;
          BaseType::print( str );
       }
  
@@ -125,7 +125,7 @@ class tnlMeshSuperentityAccessLayer< MeshConfig,
  
       void getSuperentityIndices() {};
  
-      void print( ostream& str ) const {};
+      void print( std::ostream& str ) const {};
 };
 
 template< typename MeshConfig,
@@ -144,7 +144,7 @@ class tnlMeshSuperentityAccessLayer< MeshConfig,
  
       void getSuperentityIndices() {};
  
-      void print( ostream& str ) const {};
+      void print( std::ostream& str ) const {};
 };
 
 } // namespace TNL

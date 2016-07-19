@@ -94,20 +94,20 @@ setInitialCondition( const tnlParameterContainer& parameters,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
 {
-   cout << "vaules adding";
+  std::cout << "vaules adding";
    typedef typename MeshType::Cell Cell;
    int dimensions = parameters.getParameter< int >( "dimension" );
    int count = mesh.template getEntitiesCount< Cell >();
-   const RealType& size = parameters.getParameter< double >( "realSize" ) / pow(count, 1.0/dimensions);
+   const RealType& size = parameters.getParameter< double >( "realSize" ) / ::pow(count, 1.0/dimensions);
    const tnlString& beginChoice = parameters.getParameter< tnlString >( "begin" );
-   cout << beginChoice << " " << dimensions << "   " << size << "   " << count << "   "<< 1/dimensions << endl;
+  std::cout << beginChoice << " " << dimensions << "   " << size << "   " << count << "   "<< 1/dimensions << std::endl;
    getchar();
    if (beginChoice == "sin_square")
       {
 	   double constantFunction;
 	   if (dimensions == 1)
 	       {
-                   cout << "adding DOFS" << endl;
+                  std::cout << "adding DOFS" << std::endl;
 		   dofs[0] = 0;
 		   double expValue;
 		   for (IndexType i = 1; i < count-2; i++)
@@ -120,7 +120,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
 		}
 	    else if (dimensions == 2)
 	       {
-                   count = sqrt(count);
+                   count = ::sqrt(count);
 		   double expValue;
 		   for (IndexType i = 0; i < count-1; i++)
                       for (IndexType j = 0; j < count-1; j++)
@@ -144,7 +144,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
 		}
 	    else if (dimensions == 2)
 	       {
-                   count = sqrt(count);
+                   count = ::sqrt(count);
 		   for (IndexType i = 1; i < count-1; i++)
 		      for (IndexType j = 1; j < count-1; j++)
 		      {
@@ -153,12 +153,12 @@ setInitialCondition( const tnlParameterContainer& parameters,
 		};
      };
    //setting velocity field
-   cout << dofs << endl;
+  std::cout << dofs << std::endl;
    getchar();
    /*const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
    if( ! dofs.load( initialConditionFile ) )
    {
-      cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
+      std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
    }
    return true;*/
@@ -170,7 +170,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
    differentialOperator.setAdvectionSpeedX(advectionSpeedX);
    const double advectionSpeedY = parameters.getParameter< double >( "advection-speedY" );
    differentialOperator.setAdvectionSpeedY(advectionSpeedY);
-   cout << "vaules added";
+  std::cout << "vaules added";
    return true;
 }
 
@@ -212,7 +212,7 @@ makeSnapshot( const RealType& time,
               DofVectorType& dofs,
               MeshDependentDataType& meshDependentData )
 {
-   cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
+  std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
    tnlString fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
@@ -243,15 +243,15 @@ getExplicitRHS( const RealType& time,
     * You may use supporting mesh dependent data if you need.
     */
    typedef typename MeshType::Cell Cell;
-   int count = sqrt(mesh.template getEntitiesCount< Cell >());
-//   const RealType& size = parameters.getParameter< double >( "realSize" ) / pow(count, 0.5);
+   int count = ::sqrt(mesh.template getEntitiesCount< Cell >());
+//   const RealType& size = parameters.getParameter< double >( "realSize" ) / ::pow(count, 0.5);
 /*   if (this->velocityType == "rotation")
    {
       double radius;
       for (int i =1; i < count; i++)
          for (int j =1; j < count; j++)
             {
-               radius = sqrt(pow(i-1-(count/2.0),2) + pow(j-1-(count/2.0),2));
+               radius = ::sqrt(pow(i-1-(count/2.0),2) + ::pow(j-1-(count/2.0),2));
             if (radius != 0.0)
                _fu[(i-1)*count+j-1] =(0.25*tau)*differentialOperator.artificalViscosity*			//smoothening part
                (_u[(i-1)*count-2+j]+_u[(i-1)*count+j]+

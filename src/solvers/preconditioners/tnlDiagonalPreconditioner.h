@@ -1,8 +1,10 @@
-#ifndef TNLDIAGONALPRECONDITIONER_H_
-#define TNLDIAGONALPRECONDITIONER_H_
+
+#pragma once
 
 #include <tnlObject.h>
 #include <core/vectors/tnlVector.h>
+
+namespace TNL {
 
 template< typename Real, typename Device, typename Index >
 class tnlDiagonalPreconditioner
@@ -28,6 +30,6 @@ class tnlDiagonalPreconditioner
    VectorType diagonal;
 };
 
-#include <solvers/preconditioners/tnlDiagonalPreconditioner_impl.h>
+} // namespace TNL
 
-#endif /* TNLDIAGONALPRECONDITIONER_H_ */
+#include <solvers/preconditioners/tnlDiagonalPreconditioner_impl.h>

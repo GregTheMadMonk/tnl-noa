@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXPLICITUPDATER_IMPL_H_
-#define TNLEXPLICITUPDATER_IMPL_H_
+#pragma once
 
 #include <type_traits>
 #include <mesh/grids/tnlTraverser_Grid1D.h>
@@ -17,6 +16,9 @@
 #include <mesh/grids/tnlTraverser_Grid3D.h>
 
 #include "tnlExplicitUpdater.h"
+
+
+namespace TNL {
 
 template< typename Mesh,
           typename MeshFunction,
@@ -96,4 +98,4 @@ update( const RealType& time,
    }
 }
 
-#endif /* TNLEXPLICITUPDATER_IMPL_H_ */
+} // namespace TNL

@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlTFQMRSolver_implH
-#define tnlTFQMRSolver_implH
+#pragma once
+
+namespace TNL {
 
 template< typename Matrix,
           typename Preconditioner >
@@ -131,12 +132,12 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       d.addVector( u, 1.0, theta * theta * eta / alpha );
       w_norm = w. lpNorm( 2.0 );
       theta = w_norm / tau;
-      const RealType c = 1.0 / sqrt( 1.0 + theta * theta );
+      const RealType c = 1.0 / std::sqrt( 1.0 + theta * theta );
       tau = tau * theta * c;
       eta = c * c  * alpha;
       x.addVector( d, eta );
 
-      this->setResidue( tau * sqrt(iter+1) / b_norm );
+      this->setResidue( tau * std::sqrt(iter+1) / b_norm );
       if( iter > this->getMinIterations() && this->getResidue() < this->getConvergenceResidue() ) {
           break;
       }
@@ -194,11 +195,12 @@ bool tnlTFQMRSolver< Matrix, Preconditioner > :: setSize( IndexType size )
        ! Au. setSize( size ) ||
        ! M_tmp. setSize( size ) )
    {
-      cerr << "I am not able to allocate all supporting vectors for the TFQMR solver." << endl;
+      std::cerr << "I am not able to allocate all supporting vectors for the TFQMR solver." << std::endl;
       return false;
    }
    return true;
 
 };
 
-#endif
+} // namespace TNL
+

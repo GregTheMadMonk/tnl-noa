@@ -63,9 +63,9 @@ template< typename Element,
 tnlString tnlSharedArray< Element, Device, Index > :: getType()
 {
    return tnlString( "tnlSharedArray< " ) + ", " +
-                     ::getType< Element >() + ", " +
+                    TNL::getType< Element >() + ", " +
                      Device::getDeviceType() + ", " +
-                     ::getType< Index >() + " >";
+                    TNL::getType< Index >() + " >";
 };
 
 template< typename Element,
@@ -155,8 +155,8 @@ template< typename Element,
           typename Index >
 void tnlSharedArray< Element, Device, Index > :: swap( tnlSharedArray< Element, Device, Index >& array )
 {
-   :: swap( this->size, array. size );
-   :: swap( this->data, array. data );
+   TNL::swap( this->size, array. size );
+   TNL::swap( this->data, array. data );
 };
 
 template< typename Element,
@@ -411,7 +411,7 @@ bool tnlSharedArray< Element, Device, Index > :: load( const tnlString& fileName
 
 
 template< typename Element, typename Device, typename Index >
-ostream& operator << ( ostream& str, const tnlSharedArray< Element, Device, Index >& v )
+std::ostream& operator << ( std::ostream& str, const tnlSharedArray< Element, Device, Index >& v )
 {
    str << "[ ";
    if( v.getSize() > 0 )

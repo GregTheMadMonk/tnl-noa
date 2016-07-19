@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLLINEARRESIDUEGETTER_IMPL_H_
-#define TNLLINEARRESIDUEGETTER_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Matrix, typename Vector >
 typename tnlLinearResidueGetter< Matrix, Vector > :: RealType
@@ -24,10 +25,10 @@ typename tnlLinearResidueGetter< Matrix, Vector > :: RealType
       bNorm = b. lpNorm( 2.0 );
    for( IndexType i = 0; i < size; i ++ )
    {
-      RealType err = fabs( matrix. rowVectorProduct( i, x ) - b[ i ] );
+      RealType err = abs( matrix. rowVectorProduct( i, x ) - b[ i ] );
       res += err * err;
    }
-   return sqrt( res ) / bNorm;
+   return std::sqrt( res ) / bNorm;
 }
 
-#endif /* TNLLINEARRESIDUEGETTER_IMPL_H_ */
+} // namespace TNL

@@ -36,7 +36,7 @@ class tnlOperatorComposition
                          typename InnerOperator::RealType,
                          typename OuterOperator::IndexType >
 {
-      static_assert( is_same< typename OuterOperator::MeshType, typename InnerOperator::MeshType >::value,
+      static_assert( std::is_same< typename OuterOperator::MeshType, typename InnerOperator::MeshType >::value,
          "Both operators have different mesh types." );
    public:
  
@@ -118,7 +118,7 @@ template< typename OuterOperator,
 class tnlOperatorComposition< OuterOperator, InnerOperator, void >
    : public tnlDomain< InnerOperator::getDimensions(), InnerOperator::getDomainType() >
 {
-      static_assert( is_same< typename OuterOperator::MeshType, typename InnerOperator::MeshType >::value,
+      static_assert( std::is_same< typename OuterOperator::MeshType, typename InnerOperator::MeshType >::value,
          "Both operators have different mesh types." );
    public:
  

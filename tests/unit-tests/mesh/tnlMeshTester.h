@@ -29,6 +29,8 @@
 #include <mesh/initializer/tnlMeshInitializer.h>
 #include <mesh/tnlMeshBuilder.h>
 
+using namespace TNL;
+
 class TestTriangleMeshConfig : public tnlMeshConfigBase< tnlMeshTriangleTopology >
 {
    public:
@@ -147,8 +149,8 @@ class tnlMeshTester : public CppUnit :: TestCase
        //CPPUNIT_ASSERT( mesh2.load( "mesh.tnl" ) );
        //CPPUNIT_ASSERT( mesh == mesh2 );
 
-       //mesh.print( cout );
-       //mesh2.print( cout );
+       //mesh.print(std::cout );
+       //mesh2.print(std::cout );
     };
 
    void tetrahedronsTest()
@@ -313,7 +315,7 @@ class tnlMeshTester : public CppUnit :: TestCase
       /*CPPUNIT_ASSERT( mesh.save( "mesh.tnl" ) );
       CPPUNIT_ASSERT( mesh2.load( "mesh.tnl" ) );
       CPPUNIT_ASSERT( mesh == mesh2 );*/
-      //mesh.print( cout );
+      //mesh.print(std::cout );
    }
 
    void regularMeshOfTrianglesTest()
@@ -366,7 +368,7 @@ class tnlMeshTester : public CppUnit :: TestCase
       //CPPUNIT_ASSERT( mesh.save( "mesh-test.tnl" ) );
       //CPPUNIT_ASSERT( mesh2.load( "mesh-test.tnl" ) );
       //CPPUNIT_ASSERT( mesh == mesh2 );
-      //mesh.print( cout );
+      //mesh.print(std::cout );
    }
 
    void regularMeshOfQuadrilateralsTest()
@@ -417,7 +419,7 @@ class tnlMeshTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( mesh.save( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh2.load( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh == mesh2 );
-      //mesh.print( cout );
+      //mesh.print(std::cout );
 #endif
    }
 
@@ -481,7 +483,7 @@ class tnlMeshTester : public CppUnit :: TestCase
       /*CPPUNIT_ASSERT( mesh.save( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh2.load( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh == mesh2 );*/
-      //mesh.print( cout );
+      //mesh.print(std::cout );
 #endif
    }
 

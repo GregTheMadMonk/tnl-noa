@@ -3,6 +3,8 @@
 
 #include <solvers/tnlBuildConfigTags.h>
 
+namespace TNL {
+
 class advectionBuildConfigTag{};
 
 /****
@@ -39,5 +41,7 @@ template<> struct tnlConfigTagTimeDiscretisation< advectionBuildConfigTag, tnlIm
  * Only the Runge-Kutta-Merson solver is enabled by default.
  */
 template<> struct tnlConfigTagExplicitSolver< advectionBuildConfigTag, tnlExplicitEulerSolverTag >{ enum { enabled = true }; };
+
+} // namespace TNL
 
 #endif /* advectionBUILDCONFIGTAG_H_ */

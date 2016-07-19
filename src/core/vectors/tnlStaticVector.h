@@ -309,13 +309,17 @@ template< int Size, typename Real >
 tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector< Size, Real >& u );
 
 template< int Size, typename Real >
-tnlStaticVector< Size, Real > tnlAbs( const tnlStaticVector< Size, Real >& u ) { return u.abs(); };
+tnlStaticVector< Size, Real > abs( const tnlStaticVector< Size, Real >& u ) { return u.abs(); };
+
+} // namespace TNL
 
 #include <core/vectors/tnlStaticVector_impl.h>
 #include <core/vectors/tnlStaticVector1D_impl.h>
 #include <core/vectors/tnlStaticVector2D_impl.h>
 #include <core/vectors/tnlStaticVector3D_impl.h>
 
+
+namespace TNL {
 // TODO: move to some other source file
 
 template< typename Real >
@@ -357,7 +361,7 @@ Real tnlTriangleArea( const tnlStaticVector< 2, Real >& a,
    u2. z() = 0;
 
    const tnlStaticVector< 3, Real > v = tnlVectorProduct( u1, u2 );
-   return 0.5 * sqrt( tnlScalarProduct( v, v ) );
+   return 0.5 * ::sqrt( tnlScalarProduct( v, v ) );
 };
 
 template< typename Real >
@@ -374,7 +378,7 @@ Real tnlTriangleArea( const tnlStaticVector< 3, Real >& a,
    u2. z() = 0;
 
    const tnlStaticVector< 3, Real > v = tnlVectorProduct( u1, u2 );
-   return 0.5 * sqrt( tnlScalarProduct( v, v ) );
+   return 0.5 * ::sqrt( tnlScalarProduct( v, v ) );
 };
 
 } // namespace TNL

@@ -13,6 +13,8 @@
 
 #include "tnlSparseMatrixTester.h"
 
+using namespace TNL;
+
 template< int SliceSize, int ChunkSize >
 class tnlChunkedEllpackMatrixTestSetup
 {
@@ -40,6 +42,5 @@ class tnlSparseMatrixTesterMatrixSetter< tnlChunkedEllpackMatrix< Real, Device, 
       return true;
    }
 };
-
 
 #endif /* TNLCHUNKEDELLPACKMATRIXTESTSETUP_H_ */

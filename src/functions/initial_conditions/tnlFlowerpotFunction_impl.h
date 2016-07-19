@@ -47,7 +47,7 @@ template< typename Real >
 tnlString
 tnlFlowerpotFunction< 1, Real >::getType()
 {
-   return "tnlFlowerpotFunction< 1, " + ::getType< Real >() + tnlString( " >" );
+   return "tnlFlowerpotFunction< 1, " + TNL::getType< Real >() + tnlString( " >" );
 }
 
 template< typename Real >
@@ -69,7 +69,7 @@ tnlFlowerpotFunction< 1, Real >::getPartialDerivative( const Vertex& v,
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 )
-      return sin( M_PI * tanh( 5 * ( x * x - this->diameter ) ) );
+      return ::sin( M_PI * ::tanh( 5 * ( x * x - this->diameter ) ) );
    return 0.0;
 }
 
@@ -91,7 +91,7 @@ template< typename Real >
 tnlString
 tnlFlowerpotFunction< 2, Real >::getType()
 {
-   return tnlString( "tnlFlowerpotFunction< 2, " ) + ::getType< Real >() + " >";
+   return tnlString( "tnlFlowerpotFunction< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -115,7 +115,7 @@ getPartialDerivative( const Vertex& v,
    if( ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 && YDiffOrder == 0 )
-      return sin( M_PI * tanh( 5 * ( x * x + y * y - this->diameter ) ) );
+      return ::sin( M_PI * ::tanh( 5 * ( x * x + y * y - this->diameter ) ) );
    return 0.0;
 }
 
@@ -138,7 +138,7 @@ template< typename Real >
 tnlString
 tnlFlowerpotFunction< 3, Real >::getType()
 {
-   return tnlString( "tnlFlowerpotFunction< 3, " ) + ::getType< Real >() + " >";
+   return tnlString( "tnlFlowerpotFunction< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -161,7 +161,7 @@ getPartialDerivative( const Vertex& v,
    const RealType& y = v.y();
    const RealType& z = v.z();
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
-      return sin( M_PI * tanh( 5 * ( x * x + y * y + z * z - 0.25 ) ) );
+      return ::sin( M_PI * ::tanh( 5 * ( x * x + y * y + z * z - 0.25 ) ) );
    return 0.0;
 }
 

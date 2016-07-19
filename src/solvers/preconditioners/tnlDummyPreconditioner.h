@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDUMMYPRECONDITIONER_H_
-#define TNLDUMMYPRECONDITIONER_H_
+#pragma once
 
 #include <tnlObject.h>
+
+namespace TNL {
 
 template< typename Real, typename Device, typename Index >
 class tnlDummyPreconditioner
@@ -50,5 +51,4 @@ class tnlSolverStarterSolverPreconditionerSetter< LinearSolver, tnlDummyPrecondi
         }
 };
 
-
-#endif /* TNLDUMMYPRECONDITIONER_H_ */
+} // namespace TNL

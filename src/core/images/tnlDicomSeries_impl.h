@@ -109,11 +109,11 @@ getImage( const int imageIdx,
          }
          position++;
       }
-      //cout << endl;
+      //cout << std::endl;
    }
    return true;
 #else
-   cerr << "DICOM format is not supported in this build of TNL." << endl;
+   std::cerr << "DICOM format is not supported in this build of TNL." << std::endl;
    return false;
 #endif
 }
@@ -128,7 +128,7 @@ inline bool tnlDicomSeries::retrieveFileList( const tnlString& filePath)
      */
    if( suffix != "ima" && suffix != "dcm" )
    {
-       cerr << "The given file is not a DICOM file." << endl;
+       std::cerr << "The given file is not a DICOM file." << std::endl;
       return false;
    }
 
@@ -199,13 +199,13 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
 
    if(dicomImage->getFrameCount() > 1)
    {
-      cout << filePath <<" not supported format-Dicom Image has more than one frame";
+     std::cout << filePath <<" not supported format-Dicom Image has more than one frame";
       return false;
    }
 
    if(!dicomImage->isMonochrome())
    {
-      cout << filePath <<" not supported format--Dicom Image is not monochrome";
+     std::cout << filePath <<" not supported format--Dicom Image is not monochrome";
       return false;
    }
 
@@ -219,7 +219,7 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
         else if (EIS_MissingAttribute)
         {
             //bitmap is propably old ARC/NEMA format
-            cerr << "Error: cannot load DICOM image(ACR/NEMA) (" << DicomImage::getString (dicomImage->getStatus()) << ")" << endl;
+            std::cerr << "Error: cannot load DICOM image(ACR/NEMA) (" << DicomImage::getString (dicomImage->getStatus()) << ")" << std::endl;
 
             delete dicomImage;
             dicomImage = NULL;
@@ -229,7 +229,7 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
         {
             delete dicomImage;
             dicomImage = NULL;
-            cerr << "Error: cannot load DICOM image (" << DicomImage::getString (dicomImage->getStatus()) << ")" << endl;
+            std::cerr << "Error: cannot load DICOM image (" << DicomImage::getString (dicomImage->getStatus()) << ")" << std::endl;
             return false;
         }
     }
@@ -240,7 +240,7 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
     }
     else if(dicomImage->getHeight() != this->height)
     {
-        cerr << filePath <<" image has bad height value\n";
+        std::cerr << filePath <<" image has bad height value\n";
     }
 
     if(number == 0)
@@ -249,7 +249,7 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
     }
     else if(dicomImage->getWidth() != this->width)
     {
-        cerr << filePath <<" image has bad width value\n";
+        std::cerr << filePath <<" image has bad width value\n";
     }
 
     if(number == 0)
@@ -258,7 +258,7 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
     }
     else if( dicomImage->getDepth() != imagesInfo.bps )
     {
-        cerr << filePath <<" image has bad bps value\n";
+        std::cerr << filePath <<" image has bad bps value\n";
     }
 
     //update vales
@@ -288,7 +288,7 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
     {//check image size for compatibility
         if( imagesInfo.frameSize != size )
         {
-            cerr << filePath << " image has bad frame size value\n";
+            std::cerr << filePath << " image has bad frame size value\n";
             return false;
         }
     }
@@ -309,7 +309,7 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
     dicomImage = NULL;
     return true;
 #else
-    cerr << "DICOM format is not supported in this build of TNL." << endl;
+    std::cerr << "DICOM format is not supported in this build of TNL." << std::endl;
     return false;
 #endif
 }
@@ -322,7 +322,7 @@ inline bool tnlDicomSeries::loadDicomSeries( const tnlString& filePath )
     */
    if( ! retrieveFileList( filePath ) )
    {
-      cerr << "I am not able to retrieve the files of the DICOM series in " << filePath << "." << endl;
+      std::cerr << "I am not able to retrieve the files of the DICOM series in " << filePath << "." << std::endl;
       return false;
    }
 
@@ -332,7 +332,7 @@ inline bool tnlDicomSeries::loadDicomSeries( const tnlString& filePath )
    {
       if( !loadImage( fileList[ i ].getString(),i ) )
       {
-         cerr << fileList[ i ] << " skipped";
+         std::cerr << fileList[ i ] << " skipped";
       }
    }
    return true;

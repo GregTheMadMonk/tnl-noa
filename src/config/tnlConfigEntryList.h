@@ -48,12 +48,12 @@ struct tnlConfigEntryList : public tnlConfigEntryBase
 
    tnlString getEntryType() const
    {
-      return ::getType< tnlList< EntryType > >();
+      return TNL::getType< tnlList< EntryType > >();
    }
 
    tnlString getUIEntryType() const
    {
-      return ::getUIEntryType< tnlList< EntryType > >();
+      return TNL::getUIEntryType< tnlList< EntryType > >();
    }
 
    tnlString printDefaultValue() const
@@ -75,12 +75,12 @@ struct tnlConfigEntryList : public tnlConfigEntryBase
 
    void printEnumValues() const
    {
-      cout << "- Can be:           ";
+     std::cout << "- Can be:           ";
       int i;
       for( i = 0; i < enumValues.getSize() - 1; i++ )
-         cout << enumValues[ i ] << ", ";
-      cout << enumValues[ i ];
-      cout << " ";
+        std::cout << enumValues[ i ] << ", ";
+     std::cout << enumValues[ i ];
+     std::cout << " ";
    }
 
    bool checkValue( const tnlList< EntryType >& values ) const
@@ -99,9 +99,9 @@ struct tnlConfigEntryList : public tnlConfigEntryBase
                }
             if( ! found )
             {
-               cerr << "The value " << value << " is not allowed for the config entry " << this->name << "." << endl;
+               std::cerr << "The value " << value << " is not allowed for the config entry " << this->name << "." << std::endl;
                this->printEnumValues();
-               cerr << endl;
+               std::cerr << std::endl;
                return false;
             }
          }

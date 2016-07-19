@@ -14,9 +14,7 @@
 #include <cusparse.h>
 #endif
 
-template< typename Real >
-class tnlCusparseCSRMatrix
-{};
+namespace TNL {
 
 template< typename Real >
 class tnlCusparseCSRMatrixBase
@@ -91,6 +89,10 @@ class tnlCusparseCSRMatrixBase
 };
 
 
+template< typename Real >
+class tnlCusparseCSRMatrix
+{};
+
 template<>
 class tnlCusparseCSRMatrix< double > : public tnlCusparseCSRMatrixBase< double >
 {
@@ -146,4 +148,6 @@ class tnlCusparseCSRMatrix< float > : public tnlCusparseCSRMatrixBase< float >
 #endif
       }
 };
+
+} // namespace TNL
 

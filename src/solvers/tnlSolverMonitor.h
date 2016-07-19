@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSOLVERMONITOR_H_
-#define TNLSOLVERMONITOR_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Real, typename Index >
 class tnlSolverMonitor
@@ -22,5 +23,5 @@ class tnlSolverMonitor
  
 };
 
+} // namespace TNL
 
-#endif /* TNLSOLVERMONITOR_H_ */

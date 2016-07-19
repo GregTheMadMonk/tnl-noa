@@ -56,9 +56,9 @@ template< typename Real,
 tnlString tnlSharedVector< Real, Device, Index > :: getType()
 {
    return tnlString( "tnlSharedVector< " ) +
-                     ::getType< Real >() + ", " +
+                    TNL::getType< Real >() + ", " +
                      Device :: getDeviceType() + ", " +
-                     ::getType< Index >() + " >";
+                    TNL::getType< Index >() + " >";
 };
 
 template< typename Real,

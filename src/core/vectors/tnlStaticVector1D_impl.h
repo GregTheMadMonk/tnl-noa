@@ -38,7 +38,7 @@ tnlString tnlStaticVector< 1, Real >::getType()
    return tnlString( "tnlStaticVector< " ) +
           tnlString( 1 ) +
           tnlString( ", " ) +
-          ::getType< Real >() +
+          TNL::getType< Real >() +
           tnlString( " >" );
 }
 
@@ -144,7 +144,7 @@ __cuda_callable__
 tnlStaticVector< 1, Real >
 tnlStaticVector< 1, Real >::abs() const
 {
-   return tnlStaticVector< 1, Real >( tnlAbs( this->data[ 0 ] ) );
+   return tnlStaticVector< 1, Real >( TNL::abs( this->data[ 0 ] ) );
 }
 
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION

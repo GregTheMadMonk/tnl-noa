@@ -43,7 +43,7 @@ template< typename T > class tnlPETSCPreconditioner : public tnlPreconditioner< 
       if( strcmp( type, "ilu" ) == 0 )
          PCSetType( petsc_preconditioner, PCILU );
 #else
-      cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
+      std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
 #endif
    };
  
@@ -52,13 +52,13 @@ template< typename T > class tnlPETSCPreconditioner : public tnlPreconditioner< 
 #ifdef HAVE_PETSC
       precond = petsc_preconditioner;
 #else
-      cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
+      std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
 #endif
    };
  
    bool Solve( const T* b, T* x ) const
    {
-      cerr << "Do not call tnlPETSCPreconditioner :: Solve. Connect it to tnlPETSCSolver using tnlPETSCPreconditioner :: GetData( PC& precond )." << endl;
+      std::cerr << "Do not call tnlPETSCPreconditioner :: Solve. Connect it to tnlPETSCSolver using tnlPETSCPreconditioner :: GetData( PC& precond )." << std::endl;
       abort();
    };
 
@@ -67,7 +67,7 @@ template< typename T > class tnlPETSCPreconditioner : public tnlPreconditioner< 
 #ifdef HAVE_PETSC
       PCDestroy( petsc_preconditioner );
 #else
-      cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
+      std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
 #endif
    };
 };

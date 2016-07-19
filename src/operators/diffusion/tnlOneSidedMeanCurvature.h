@@ -51,8 +51,8 @@ class tnlOneSidedMeanCurvature
       {
          return tnlString( "tnlOneSidedMeanCurvature< " ) +
             MeshType::getType() + ", " +
-            ::getType< Real >() + ", " +
-            ::getType< Index >() + " >";
+           TNL::getType< Real >() + ", " +
+           TNL::getType< Index >() + " >";
       }
  
       void setRegularizationEpsilon( const RealType& eps )

@@ -29,7 +29,7 @@ class tnlSpmvBenchmarkCusparseCSRMatrix : public tnlSpmvBenchmark< Real, tnlCuda
 
    void writeProgress() const;
 
-   void writeToLogTable( ostream& logFile,
+   void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
                          const tnlString& inputMtxFile,
                          const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
@@ -65,19 +65,19 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: writeProgress() const
 {
-   cout << left << setw( this->formatColumnWidth ) << "Cusparse";
-   //   cout << left << setw( 25 ) << matrixFormat << setw( 5 ) << cudaBlockSize;
-   cout << right << setw( this->timeColumnWidth ) << setprecision( 2 ) << this->getTime()
-        << right << setw( this->iterationsColumnWidth ) << this->getIterations()
-        << right << setw( this->gflopsColumnWidth ) << setprecision( 2 ) << this->getGflops();
+  std::cout << left << std::setw( this->formatColumnWidth ) << "Cusparse";
+   //  std::cout << left << std::setw( 25 ) << matrixFormat << std::setw( 5 ) << cudaBlockSize;
+  std::cout << right << std::setw( this->timeColumnWidth ) << std::setprecision( 2 ) << this->getTime()
+        << right << std::setw( this->iterationsColumnWidth ) << this->getIterations()
+        << right << std::setw( this->gflopsColumnWidth ) << std::setprecision( 2 ) << this->getGflops();
    if( this->getBenchmarkWasSuccesful() )
-        cout << right << setw( this->benchmarkStatusColumnWidth ) << "OK ";
+       std::cout << right << std::setw( this->benchmarkStatusColumnWidth ) << "OK ";
    else
-        cout << right << setw( this->benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this->maxError << ". ";
+       std::cout << right << std::setw( this->benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this->maxError << ". ";
 #ifndef HAVE_CUSP
-   cout << "CUSPARSE library is missing.";
+  std::cout << "CUSPARSE library is missing.";
 #endif
-   cout << endl;
+  std::cout << std::endl;
 }
 
 template< typename Real,
@@ -89,7 +89,7 @@ tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: tnlSpmvBenchmarkCusparseCSRM
 
 template< typename Real,
           typename Index >
-void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: writeToLogTable( ostream& logFile,
+void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: writeToLogTable( std::ostream& logFile,
                                                                        const double& csrGflops,
                                                                        const tnlString& inputMtxFile,
                                                                        const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
@@ -99,16 +99,16 @@ void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: writeToLogTable( ostrea
    {
       double speedUp = this->getGflops() / csrGflops;
       tnlString bgColor = this->getBgColorBySpeedUp( speedUp );
-      logFile << "             <td bgcolor=" << bgColor << ">" << this->getTime() << "</td>" << endl;
-      logFile << "             <td bgcolor=" << bgColor << ">" << this->getGflops() << "</td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << ">" << this->getTime() << "</td>" << std::endl;
+      logFile << "             <td bgcolor=" << bgColor << ">" << this->getGflops() << "</td>" << std::endl;
 
-      logFile << "             <td bgcolor=" << bgColor << "> " << speedUp << "</td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << "> " << speedUp << "</td>" << std::endl;
    }
    else
    {
-      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
-      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
-      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << std::endl;
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << std::endl;
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << std::endl;
    }
 }
 

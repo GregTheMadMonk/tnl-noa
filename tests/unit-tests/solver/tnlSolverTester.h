@@ -20,6 +20,8 @@
 #include <mesh/tnlGrid.h>
 #include <tnlConfig.h>
 
+using namespace TNL;
+
 template< typename Mesh >
 class tnlSolverTesterProblem
 {
@@ -72,7 +74,7 @@ class tnlSolverTesterSetter
       int dimensions = parameters. getParameter< int >( "dimensions" );
       if( dimensions <= 0 || dimensions > 3 )
       {
-         cerr << "The problem is not defined for " << dimensions << "dimensions." << endl;
+         std::cerr << "The problem is not defined for " << dimensions << "dimensions." << std::endl;
          return false;
       }
       SolverStarter solverStarter;

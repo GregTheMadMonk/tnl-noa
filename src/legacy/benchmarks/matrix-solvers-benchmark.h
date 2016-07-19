@@ -35,18 +35,18 @@ const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-matrix-solvers-benchmark.cfg
 void writeTestFailToLog( const tnlParameterContainer& parameters )
 {
    const tnlString& logFileName = parameters. getParameter< tnlString >( "log-file" );
-   fstream logFile;
+   std::fstream logFile;
    if( logFileName != "" )
    {
-      logFile. open( logFileName. getString(), ios :: out | ios :: app );
+      logFile. open( logFileName. getString(), std::ios::out | std::ios::app );
       if( ! logFile )
-         cerr << "Unable to open the log file " << logFileName << endl;
+         std::cerr << "Unable to open the log file " << logFileName << std::endl;
       else
       {
          tnlString bgColor( "#FF0000" );
-         logFile << "             <td bgcolor=" << bgColor << "> N/A </td> " << endl
-                 << "             <td bgcolor=" << bgColor << "> N/A </td> " << endl
-                 << "             <td bgcolor=" << bgColor << "> N/A </td> " << endl;
+         logFile << "             <td bgcolor=" << bgColor << "> N/A </td> " << std::endl
+                 << "             <td bgcolor=" << bgColor << "> N/A </td> " << std::endl
+                 << "             <td bgcolor=" << bgColor << "> N/A </td> " << std::endl;
          logFile. close();
       }
    }
@@ -68,7 +68,7 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
    const IndexType nonZeros = matrix. getNumberOfMatrixElements();
    //const IndexType maxIterations = size * ( ( double ) size * size / ( double ) nonZeros );
    const IndexType maxIterations = size;
-   cout << "Setting max. number of iterations to " << maxIterations << endl;
+  std::cout << "Setting max. number of iterations to " << maxIterations << std::endl;
 
    solver. setMatrix( matrix );
    solver. setMaxIterations( maxIterations );
@@ -86,12 +86,12 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
 
    bool solverConverged( solver. getResidue() < maxResidue );
    const tnlString& logFileName = parameters. getParameter< tnlString >( "log-file" );
-   fstream logFile;
+   std::fstream logFile;
    if( logFileName != "" )
    {
-      logFile. open( logFileName. getString(), ios :: out | ios :: app );
+      logFile. open( logFileName. getString(), std::ios::out | std::ios::app );
       if( ! logFile )
-         cerr << "Unable to open the log file " << logFileName << endl;
+         std::cerr << "Unable to open the log file " << logFileName << std::endl;
       else
       {
          tnlString bgColor( "#FF0000" );
@@ -103,9 +103,9 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
          }
          double cpuTime = solverMonitor. getCPUTime();
          double realTime = solverMonitor. getRealTime();
-         logFile << "             <td bgcolor=" << bgColor << "> " << solver. getResidue() << " </td> " << endl
-                 << "             <td bgcolor=" << bgColor << "> " << solver. getIterations() << " </td> " << endl
-                 << "             <td bgcolor=" << bgColor << "> " << cpuTime << " </td> " << endl;
+         logFile << "             <td bgcolor=" << bgColor << "> " << solver. getResidue() << " </td> " << std::endl
+                 << "             <td bgcolor=" << bgColor << "> " << solver. getIterations() << " </td> " << std::endl
+                 << "             <td bgcolor=" << bgColor << "> " << cpuTime << " </td> " << std::endl;
          logFile. close();
       }
    }
@@ -159,19 +159,19 @@ bool benchmarkMatrixOnDevice( const tnlParameterContainer&  parameters,
          tnlTFQMRSolver< Matrix > solver;
          return benchmarkSolver( parameters, solver, matrix, b, x );
       }
-      cerr << "Unknown solver " << solverName << endl;
+      std::cerr << "Unknown solver " << solverName << std::endl;
       return false;
    }
    if( solverClass == "petsc" )
    {
 #ifndef HAVE_PETSC
-      cerr << "PETSC is not installed on this system." << endl;
+      std::cerr << "PETSC is not installed on this system." << std::endl;
       writeTestFailToLog( parameters );
       return false;
 #else
       if( DeviceType :: getDeviceType() != "tnlHost" )
       {
-         cerr << "PETSC tests can run only on host. The current device is " << DeviceType :: getDeviceType() << endl;
+         std::cerr << "PETSC tests can run only on host. The current device is " << DeviceType :: getDeviceType() << std::endl;
          writeTestFailToLog( parameters );
          return false;
       }
@@ -221,12 +221,12 @@ bool benchmarkMatrixOnDevice( const tnlParameterContainer&  parameters,
             MatGetValues( A, 1, &i, 1, &j, &value );
             if( matrix. getElement( i, j ) != value )
             {
-               cerr << "Conversion to PETSC matrix was not correct at position " << i << " " << j << "." << endl;
-               cerr << "Values are " << value << " and " << matrix. getElement( i, j ) << endl;
+               std::cerr << "Conversion to PETSC matrix was not correct at position " << i << " " << j << "." << std::endl;
+               std::cerr << "Values are " << value << " and " << matrix. getElement( i, j ) << std::endl;
                return false;
             }
          }
-      cerr << "PETSC CONVERSION WAS OK!!!" << endl;
+      std::cerr << "PETSC CONVERSION WAS OK!!!" << std::endl;
       return true;*/
 
       Vec petscB, petscX;
@@ -251,7 +251,7 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
    csrMatrixType csrMatrix;
    if( ! csrMatrix. load( inputFile ) )
    {
-      cerr << "Unable to load file " << inputFile << endl;
+      std::cerr << "Unable to load file " << inputFile << std::endl;
       return false;
    }
 
@@ -261,15 +261,15 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
    tnlString matrixStatsFileName = parameters. getParameter< tnlString >( "matrix-stats-file" );
    if( matrixStatsFileName )
    {
-      fstream matrixStatsFile;
-      matrixStatsFile. open( matrixStatsFileName. getString(), ios :: out );
+      std::fstream matrixStatsFile;
+      matrixStatsFile. open( matrixStatsFileName. getString(), std::ios::out );
       if( ! matrixStatsFile )
       {
-         cerr << "Unable to open matrix statistics file " << matrixStatsFileName << endl;
+         std::cerr << "Unable to open matrix statistics file " << matrixStatsFileName << std::endl;
          return false;
       }
-      matrixStatsFile << "             <td> " << csrMatrix. getRows() << " </td> " << endl
-                      << "             <td> " << csrMatrix. getNumberOfMatrixElements() << " </td> " << endl;
+      matrixStatsFile << "             <td> " << csrMatrix. getRows() << " </td> " << std::endl
+                      << "             <td> " << csrMatrix. getNumberOfMatrixElements() << " </td> " << std::endl;
       matrixStatsFile. close();
    }
 
@@ -277,7 +277,7 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
     * Setting up the linear problem
     */
    const Index size = csrMatrix. getRows();
-   cout << "Matrix size is " << size << endl;
+  std::cout << "Matrix size is " << size << std::endl;
    tnlVector< Real, tnlHost, Index > x1( "matrix-solvers-benchmark:x1" );
    tnlVector< Real, tnlHost, Index > x( "matrix-solvers-benchmark:x" );
    tnlVector< Real, tnlHost, Index > b( "matrix-solvers-benchmark:b" );
@@ -285,7 +285,7 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
        ! x. setSize( size ) ||
        ! b. setSize( size ) )
    {
-      cerr << "Sorry, I do not have enough memory for the benchmark." << endl;
+      std::cerr << "Sorry, I do not have enough memory for the benchmark." << std::endl;
       return false;
    }
    x1. setValue( ( Real ) 1.0 );
@@ -318,9 +318,9 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
 #endif
    }
 
-   cout << endl << "L1 diff. norm = " << x. differenceLpNorm( x1, ( Real ) 1.0 )
+  std::cout << std::endl << "L1 diff. norm = " << x. differenceLpNorm( x1, ( Real ) 1.0 )
         << " L2 diff. norm = " << x. differenceLpNorm( x1, ( Real ) 2.0 )
-        << " Max. diff. norm = " << x. differenceMax( x1 ) << endl;
+        << " Max. diff. norm = " << x. differenceMax( x1 ) << std::endl;
    return true;
 }
 
@@ -354,7 +354,7 @@ int main( int argc, char* argv[] )
    tnlString objectType;
    if( ! getObjectType( inputFile, objectType ) )
    {
-      cerr << "Unable to detect object type in " << inputFile << endl;
+      std::cerr << "Unable to detect object type in " << inputFile << std::endl;
       return EXIT_FAILURE;
    }
    tnlList< tnlString > parsedObjectType;
@@ -363,7 +363,7 @@ int main( int argc, char* argv[] )
    tnlString objectClass = parsedObjectType[ 0 ];
    if( objectClass != "tnlCSRMatrix" )
    {
-      cerr << "I am sorry, I am expecting tnlCSRMatrix in the input file but I found " << objectClass << "." << endl;
+      std::cerr << "I am sorry, I am expecting tnlCSRMatrix in the input file but I found " << objectClass << "." << std::endl;
       return EXIT_FAILURE;
    }
 
@@ -387,16 +387,16 @@ int main( int argc, char* argv[] )
          return EXIT_FAILURE;
       }
 
-   fstream log_file;
+   std::fstream log_file;
    if( log_file_name )
    {
-      log_file. open( log_file_name. getString(), ios :: out | ios :: app );
+      log_file. open( log_file_name. getString(), std::ios::out | std::ios::app );
       if( ! log_file )
       {
-         cerr << "Unable to open log file " << log_file_name << " for appending logs." << endl;
+         std::cerr << "Unable to open log file " << log_file_name << " for appending logs." << std::endl;
          return EXIT_FAILURE;
       }
-      cout << "Writing to log file " << log_file_name << "..." << endl;
+     std::cout << "Writing to log file " << log_file_name << "..." << std::endl;
    }
 #ifdef HAVE_PETSC
    PetscFinalize();

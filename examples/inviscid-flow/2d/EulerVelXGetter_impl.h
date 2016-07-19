@@ -1,5 +1,6 @@
-#ifndef EulerVelXGetter_IMPL_H
-#define EulerVelXGetter_IMPL_H
+#pragma once
+
+namespace TNL {
 
 /****
  * 1D problem
@@ -15,8 +16,8 @@ getType()
 {
    return tnlString( "EulerVelXGetter< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -118,8 +119,8 @@ getType()
 {
    return tnlString( "EulerVelXGetter< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -224,8 +225,8 @@ getType()
 {
    return tnlString( "EulerVelXGetter< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -332,5 +333,7 @@ updateLinearSystem( const RealType& time,
    matrixRow.setElement( 6, up,     -lambdaZ );
 }
 
-#endif	/* EulerVelXGetterIMPL_H */
+}// namespace TNL
+
+
 

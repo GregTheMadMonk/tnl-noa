@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLLINEARSYSTEMASSEMBLER_H_
-#define TNLLINEARSYSTEMASSEMBLER_H_
+#pragma once
 
 #include <functions/tnlFunctionAdapter.h>
+
+namespace TNL {
 
 template< typename Real,
           typename MeshFunction,
@@ -159,6 +160,6 @@ class tnlLinearSystemAssembler
    };
 };
 
-#include <solvers/pde/tnlLinearSystemAssembler_impl.h>
+} // namespace TNL
 
-#endif /* TNLLINEARSYSTEMASSEMBLER_H_ */
+#include <solvers/pde/tnlLinearSystemAssembler_impl.h>

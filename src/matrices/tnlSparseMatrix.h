@@ -53,7 +53,7 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
 
    bool load( tnlFile& file );
 
-   void printStructure( ostream& str ) const;
+   void printStructure( std::ostream& str ) const;
 
    protected:
 

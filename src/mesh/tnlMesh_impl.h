@@ -106,7 +106,7 @@ save( tnlFile& file ) const
    if( ! tnlObject::save( file ) ||
        ! entitiesStorage.save( file ) )
    {
-      cerr << "Mesh saving failed." << endl;
+      std::cerr << "Mesh saving failed." << std::endl;
       return false;
    }
    return true;
@@ -120,7 +120,7 @@ load( tnlFile& file )
    if( ! tnlObject::load( file ) ||
        ! entitiesStorage.load( file ) )
    {
-      cerr << "Mesh loading failed." << endl;
+      std::cerr << "Mesh loading failed." << std::endl;
       return false;
    }
    return true;
@@ -129,7 +129,7 @@ load( tnlFile& file )
 template< typename MeshConfig >
 void
 tnlMesh< MeshConfig >::
-print( ostream& str ) const
+print( std::ostream& str ) const
 {
    entitiesStorage.print( str );
 }

@@ -48,7 +48,7 @@ class tnlMeshSuperentityAccessor
          return this->indexes[ localIndex ];
       }
  
-      void print( ostream& str ) const
+      void print( std::ostream& str ) const
       {
          str << indexes;
       }
@@ -60,7 +60,7 @@ class tnlMeshSuperentityAccessor
 };
 
 template< typename IndexMultimapValues >
-ostream& operator << ( ostream& str, const tnlMeshSuperentityAccessor< IndexMultimapValues >& superentityAccessor )
+std::ostream& operator << ( std::ostream& str, const tnlMeshSuperentityAccessor< IndexMultimapValues >& superentityAccessor )
 {
    superentityAccessor.print( str );
    return str;

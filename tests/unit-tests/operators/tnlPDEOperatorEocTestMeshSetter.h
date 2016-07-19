@@ -13,6 +13,8 @@
 
 #include <mesh/tnlGrid.h>
 
+using namespace TNL;
+
 template< typename Mesh >
 class tnlPDEOperatorEocTestMeshSetter
 {

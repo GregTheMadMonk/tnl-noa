@@ -63,27 +63,28 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
 	
       void addSuperentity( DimensionsTag, GlobalIndexType entityIndex, GlobalIndexType superentityIndex)
       {
-         //cout << "Adding superentity with " << DimensionsTag::value << " dimensions of enity with " << EntityDimensions::value << " ... " << endl;
+         //cout << "Adding superentity with " << DimensionsTag::value << " dimensions of enity with " << EntityDimensions::value << " ... " << std::endl;
          indexPairs.push_back( IndexPair{ entityIndex, superentityIndex } );
       }
 
       using BaseType::initSuperentities;
       void initSuperentities( MeshInitializer& meshInitializer )
       {
-         std::sort( indexPairs.begin(),
+         throw( 0 ); // TODO: fix this - or it may work with newer version of gcc
+         /*std::sort( indexPairs.begin(),
                     indexPairs.end(),
-                    []( IndexPair pair0, IndexPair pair1 ){ return ( pair0.entityIndex < pair1.entityIndex ); } );
+                    []( IndexPair pair0, IndexPair pair1 ){ return ( pair0.entityIndex < pair1.entityIndex ); } );*/
 
          GlobalIdArrayType &superentityIdsArray = meshInitializer.template meshSuperentityIdsArray< EntityDimensions, DimensionsTag >();
          superentityIdsArray.setSize( static_cast< GlobalIndexType >( indexPairs.size() )  );
          GlobalIndexType currentBegin = 0;
          GlobalIndexType lastEntityIndex = 0;
-         cout << "There are " << superentityIdsArray.getSize() << " superentities with " << DimensionsTag::value << " dimensions of enities with " << EntityDimensions::value << " ... " << endl;
+        std::cout << "There are " << superentityIdsArray.getSize() << " superentities with " << DimensionsTag::value << " dimensions of enities with " << EntityDimensions::value << " ... " << std::endl;
          for( GlobalIndexType i = 0; i < superentityIdsArray.getSize(); i++)
          {
             superentityIdsArray[ i ] = indexPairs[i].superentityIndex;
  
-            //cout << "Adding superentity " << indexPairs[i].superentityIndex << " to entity " << lastEntityIndex << endl;
+            //cout << "Adding superentity " << indexPairs[i].superentityIndex << " to entity " << lastEntityIndex << std::endl;
             if( indexPairs[ i ].entityIndex != lastEntityIndex )
             {
                meshInitializer.template superentityIdsArray< DimensionsTag >( meshInitializer.template meshEntitiesArray< EntityDimensions >()[ lastEntityIndex ] ).bind( superentityIdsArray, currentBegin, i - currentBegin );
@@ -161,7 +162,7 @@ class tnlMeshSuperentityStorageInitializerLayer< MeshConfig,
    public:
    void addSuperentity()                           {} // This method is due to 'using BaseType::...;' in the derived classes.
    using BaseType::initSuperentities;
-   void initSuperentities( MeshInitializerType& ) {cerr << "***" << endl;}
+   void initSuperentities( MeshInitializerType& ) { std::cerr << "***" << std::endl;}
 };
 
 template< typename MeshConfig,

@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXPLICITTIMESTEPPER_H_
-#define TNLEXPLICITTIMESTEPPER_H_
+#pragma once
 
 #include <solvers/ode/tnlODESolverMonitor.h>
 #include <config/tnlConfigDescription.h>
@@ -17,6 +16,7 @@
 #include <core/tnlTimer.h>
 #include <core/tnlLogger.h>
 
+namespace TNL {
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
@@ -83,6 +83,7 @@ class tnlExplicitTimeStepper
    long long int allIterations;
 };
 
+} // namespace TNL
+
 #include <solvers/pde/tnlExplicitTimeStepper_impl.h>
 
-#endif /* TNLEXPLICITTIMESTEPPER_H_ */

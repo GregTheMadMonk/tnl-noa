@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSOLVER_H_
-#define TNLSOLVER_H_
+#pragma once
 
 #include <solvers/tnlBuildConfigTags.h>
+
+namespace TNL {
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           template< typename ConfTag > class ProblemConfig,
@@ -24,5 +25,7 @@ class tnlSolver
    protected:
 };
 
+} // namespace TNL
+
 #include <solvers/tnlSolver_impl.h>
-#endif /* TNLSOLVER_H_ */
+

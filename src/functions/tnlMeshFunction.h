@@ -15,6 +15,8 @@
 
 #pragma once
 
+namespace TNL {
+
 template< typename Mesh,
           int MeshEntityDimensions = Mesh::meshDimensions,
           typename Real = typename Mesh::RealType >

@@ -92,7 +92,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
             y_norm += a_ik * a_ik;
          }
          // get 2-norm of the i-th row for the dropping rule on y_k
-         y_norm = sqrt( y_norm );
+         y_norm = ::sqrt( y_norm );
          const T threshold_i = y_norm * threshold;
          M -> Data( M_data, M_rows_info );
          for( k = 0; k < i; k ++ )
@@ -121,32 +121,32 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
             }
             if( i == j && M -> getElement( i, i ) == 0.0 )
             {
-               cerr << endl << "Zero pivot appears at line " << i << "!" << endl;
+               std::cerr << std::endl << "Zero pivot appears at line " << i << "!" << std::endl;
                M -> setElement( i, i, 1.0 );
                abort();
                //return 0;
             }
          }
-        cout << "Computing ILUT ... " << 100.0 * ( float ) ( i + 1 ) / ( float ) ( size ) << "%    \r" << flush;
+       std::cout << "Computing ILUT ... " << 100.0 * ( float ) ( i + 1 ) / ( float ) ( size ) << "%    \r" << std::flush;
          dbgExpr( i );
          //dbgExpr( * M );
       }
-      cout << non_zero_elements / size << " elems. per line in average ";
+     std::cout << non_zero_elements / size << " elems. per line in average ";
       //dbgExpr( * M );
 
 #ifdef ILU_DEBUG
-      fstream file;
-      /*file. open( "orig_full_M2", ios :: out );
+      std::fstream file;
+      /*file. open( "orig_full_M2", std::ios::out );
       WriteFullMatrix( file, full_M, size );
       file. close();*/
  
-      /*file. open( "M", ios :: out );
-      file << *M << endl;
+      /*file. open( "M", std::ios::out );
+      file << *M << std::endl;
       file. close();*/
 
       for( i = 0; i < size; i ++ )
       {
-   cout << "LU: " << ( float ) i / ( float ) size * 100.0 << " % done   \r" << flush;
+  std::cout << "LU: " << ( float ) i / ( float ) size * 100.0 << " % done   \r" << std::flush;
          // y = a_i*  - i-th row
          bzero( y, size * sizeof( T ) );
          T y_norm( 0.0 );
@@ -155,10 +155,10 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
             const T& m_ik = full_M[ i * size + k ];
             y[ k ] = m_ik;
             y_norm += m_ik * m_ik;
-            //cout << i << ", " << k << " <- " << y[ k ] << endl;
+            //cout << i << ", " << k << " <- " << y[ k ] << std::endl;
          }
          // get 2-norm of the i-th row for the dropping rule on y_k
-         y_norm = sqrt( y_norm );
+         y_norm = ::sqrt( y_norm );
          const T threshold_i = y_norm * threshold;
          for( k = 0; k < i; k ++ )
          {
@@ -179,30 +179,30 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
                full_M[ i * size + j  ] = 0.0;
          }
          if( full_M[ i * size + i ] == 0.0 )
-            cerr << endl << "FULL MATRIX ILU CHECK: Zero pivot appears at line " << i << "!" << endl;
+            std::cerr << std::endl << "FULL MATRIX ILU CHECK: Zero pivot appears at line " << i << "!" << std::endl;
       }
-      /*file. open( "full_M", ios :: out );
+      /*file. open( "full_M", std::ios::out );
       WriteFullMatrix( file, full_M, size );
       file. close();*/
 
-      cout << endl;
-      cout << "Checking if M == full M..." << endl;
+     std::cout << std::endl;
+     std::cout << "Checking if M == full M..." << std::endl;
       for( i = 0; i < size; i ++ )
          for( j = 0; j < size; j ++ )
             if( full_M[ i * size + j ] != ( *M )( i, j ) )
             {
-               cerr << "M != full M at " << i << ", " << j << " : " <<
-               fabs( full_M[ i * size + j ] - ( *M )( i, j ) ) << endl;
+               std::cerr << "M != full M at " << i << ", " << j << " : " <<
+               fabs( full_M[ i * size + j ] - ( *M )( i, j ) ) << std::endl;
                break;
             }
  
-      /*cout << "Checking  if LU = A" << endl;
+      /*cout << "Checking  if LU = A" << std::endl;
       // check whether L U == A
       for( i = 0; i < size; i ++ )
          for( j = 0; j < size; j ++ )
          {
-            cout << i << " : " << j << "     \r" << flush;
-            int l = Min( i, j );
+           std::cout << i << " : " << j << "     \r" << std::flush;
+            int l = min( i, j );
             T sum( 0.0 );
             for( k = 0; k <= l; k ++ )
                if( k < i )
@@ -212,12 +212,12 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
             if( fabs( sum ) < 1.0e-15 ) sum = 0.0;
             ilu_check[ i * size + j ] = sum;
          }
-      cout << endl;
+     std::cout << std::endl;
       T ilu_diff( 0.0 );
       for( i = 0; i < size; i ++ )
          for( j = 0; j < size; j ++ )
-            ilu_diff = Max( ilu_diff, fabs( ilu_check[ i * size +j ] - A( i, j ) ) );
-      cout << "ILU Max. error is " << ilu_diff << endl;*/
+            ilu_diff = max( ilu_diff, fabs( ilu_check[ i * size +j ] - A( i, j ) ) );
+     std::cout << "ILU Max. error is " << ilu_diff << std::endl;*/
 #endif
 
 #ifdef CSR_MATRIX_TUNING

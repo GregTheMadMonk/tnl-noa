@@ -38,7 +38,7 @@ class tnlDebugParser: public tnlDebugParserBase
 
        tnlDebugParser();
 
-       void setScanner( istream* in_stream );
+       void setScanner( std::istream* in_stream );
 
        int runParsing( tnlDebugStructure* _debug_structure );
 

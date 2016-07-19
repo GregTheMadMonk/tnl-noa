@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLODESOLVERMONITOR_IMPL_H_
-#define TNLODESOLVERMONITOR_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename RealType, typename IndexType >
 tnlODESolverMonitor< RealType, IndexType> :: tnlODESolverMonitor()
@@ -25,18 +26,18 @@ void tnlODESolverMonitor< RealType, IndexType> :: refresh()
    {
       // TODO: add EST
       //cout << " EST: " << estimated;
-      cout << " ITER:" << setw( 8 ) << this->getIterations()
-           << " TAU:" << setprecision( 5 ) << setw( 12 ) << this->getTimeStep()
-           << " T:" << setprecision( 5 ) << setw( 12 ) << this->getTime()
-           << " RES:" << setprecision( 5 ) << setw( 12 ) << this->getResidue()
-           << " CPU: " << setw( 8 ) << this->getCPUTime()
-           << " ELA: " << setw( 8 ) << this->getRealTime();
+     std::cout << " ITER:" << std::setw( 8 ) << this->getIterations()
+           << " TAU:" << std::setprecision( 5 ) << std::setw( 12 ) << this->getTimeStep()
+           << " T:" << std::setprecision( 5 ) << std::setw( 12 ) << this->getTime()
+           << " RES:" << std::setprecision( 5 ) << std::setw( 12 ) << this->getResidue()
+           << " CPU: " << std::setw( 8 ) << this->getCPUTime()
+           << " ELA: " << std::setw( 8 ) << this->getRealTime();
        /*double flops = ( double ) tnl_flops_counter. getFlops();
        if( flops )
        {
-         cout << " GFLOPS:  " << setw( 8 ) << 1.0e-9 * flops / rt_timer -> getTime();
+        std::cout << " GFLOPS:  " << std::setw( 8 ) << 1.0e-9 * flops / rt_timer -> getTime();
        }*/
-       cout << "   \r" << flush;
+      std::cout << "   \r" << std::flush;
     }
    this->refreshing ++;
 }
@@ -65,4 +66,4 @@ const RealType& tnlODESolverMonitor< RealType, IndexType> :: getTime() const
    return this->time;
 }
 
-#endif /* TNLODESOLVERMONITOR_IMPL_H_ */
+} // namespace TNL

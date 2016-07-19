@@ -13,7 +13,9 @@
 #include <core/vectors/tnlStaticVector.h>
 
 #include "tnlConfig.h"
-const char configFile[] = TNL_CONFIG_DIRECTORY "tnlcurve2gnuplot.cfg.desc";
+//const char configFile[] = TNL_CONFIG_DIRECTORY "tnlcurve2gnuplot.cfg.desc";
+
+using namespace TNL;
 
 void setupConfig( tnlConfigDescription& config )
 {
@@ -40,7 +42,7 @@ int main( int argc, char* argv[] )
    tnlList< tnlString > input_files = parameters. getParameter< tnlList< tnlString > >( "input-files" );
    tnlList< tnlString > output_files;
    if( ! parameters. getParameter< tnlList< tnlString > >( "output-files", output_files ) )
-      cout << "No output files were given." << endl;
+      std::cout << "No output files were given." << std::endl;
    int output_step( 1 );
    parameters. getParameter< int >( "output-step", output_step );
    tnlString output_file_format = parameters. getParameter< tnlString >( "output-file-format" );
@@ -48,7 +50,7 @@ int main( int argc, char* argv[] )
    int size = input_files. getSize();
    /*if( size != output_files. getSize() )
    {
-      cerr << "Sorry, there is different number of input and output files." << endl;
+      std::cerr << "Sorry, there is different number of input and output files." << std::endl;
       return 1;
    }*/
    int i;
@@ -56,17 +58,17 @@ int main( int argc, char* argv[] )
    for( i = 0; i < size; i ++ )
    {
       const char* input_file = input_files[ i ]. getString();
-      cout << "Processing file " << input_file << " ... " << flush;
+      std::cout << "Processing file " << input_file << " ... " << std::flush;
  
       tnlFile file;
       if( ! file. open( input_files[ i ], tnlReadMode ) )
       {
-         cout << " unable to open file " << input_files[ i ] << endl;
+         std::cout << " unable to open file " << input_files[ i ] << std::endl;
          continue;
       }
       if( ! crv. load( file ) )
       {
-         cout << " unable to restore the data " << endl;
+         std::cout << " unable to restore the data " << std::endl;
          continue;
       }
       file. close();
@@ -90,10 +92,10 @@ int main( int argc, char* argv[] )
          if( output_file_format == "gnuplot" )
             output_file_name += ".gplt";
       }
-      cout << " writing... " << output_file_name << endl;
+      std::cout << " writing... " << output_file_name << std::endl;
       if( ! Write( out_crv, output_file_name. getString(), output_file_format. getString() ) )
       {
-         cerr << " unable to write to " << output_file_name << endl;
+         std::cerr << " unable to write to " << output_file_name << std::endl;
       }
    }
 }

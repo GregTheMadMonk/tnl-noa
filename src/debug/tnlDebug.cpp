@@ -22,28 +22,28 @@ static tnlDebugStructure __tnl_debug_structure;
 //--------------------------------------------------------------------------
 bool tnlInitDebug( const char* file_name, const char* program_name )
 {
-   cout << "tnlDebug initiation..." << endl;
+   std::cout << "tnlDebug initiation..." << std::endl;
    __tnl_debug_structure. setDebug( true );
    tnlDebugParser debug_parser;
-   fstream in_file;
-   in_file. open( file_name, ios :: in );
+   std::fstream in_file;
+   in_file. open( file_name, std::ios::in );
    if( ! in_file )
    {
-      cerr << "Unable to open file " << file_name << endl;
+      std::cerr << "Unable to open file " << file_name << std::endl;
       return false;
    }
    debug_parser. setScanner( &in_file );
    int errs = debug_parser. runParsing( &__tnl_debug_structure );
    if( errs != 0 )
    {
-      cerr << errs << " errors occurred while parsing " << file_name << endl;
+      std::cerr << errs << " errors occurred while parsing " << file_name << std::endl;
       return false;
    }
-   cout << "Parsing of " << file_name << " successful done ..." << endl;
+   std::cout << "Parsing of " << file_name << " successful done ..." << std::endl;
 #ifdef DEBUG
-   cout << "Parsed data are ... " << endl;
+   std::cout << "Parsed data are ... " << std::endl;
    __tnl_debug_structure. Print();
-   cout << "---------- end of listing -----------" << endl;
+   std::cout << "---------- end of listing -----------" << std::endl;
 #endif
    return true;
 }
@@ -53,7 +53,7 @@ bool _tnldbg_debug_func( const char* group_name,
 {
    bool debug = __tnl_debug_structure. Debug( group_name, function_name );
    //cout << "Debug ( " << group_name << ", " << function_name
-   //     << " ) -> " << debug << endl;
+   //     << " ) -> " << debug << std::endl;
    return debug;
 }
 //--------------------------------------------------------------------------

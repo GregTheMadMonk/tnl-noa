@@ -22,7 +22,7 @@ class tnlMeshFunctionGnuplotWriter
    public:
 
       static bool write( const MeshFunction& function,
-                         ostream& str );
+                         std::ostream& str );
 };
 
 /***
@@ -40,7 +40,7 @@ class tnlMeshFunctionGnuplotWriter< tnlMeshFunction< tnlGrid< 1, MeshReal, Devic
       typedef tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
 };
 
 /***
@@ -58,7 +58,7 @@ class tnlMeshFunctionGnuplotWriter< tnlMeshFunction< tnlGrid< 1, MeshReal, Devic
       typedef tnlMeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
 };
 
 /***
@@ -76,7 +76,7 @@ class tnlMeshFunctionGnuplotWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Devic
       typedef tnlMeshFunction< MeshType, 2, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
 };
 
 /***
@@ -94,7 +94,7 @@ class tnlMeshFunctionGnuplotWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Devic
       typedef tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
 };
 
 
@@ -113,7 +113,7 @@ class tnlMeshFunctionGnuplotWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Devic
       typedef tnlMeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
 };
 
 } // namespace TNL

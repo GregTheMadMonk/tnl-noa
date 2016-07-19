@@ -48,7 +48,7 @@ class tnlSharedMemory
 
    void setReadingCounter( int value );
 
-   void setWritingCounter( int value );
+   void std::setwritingCounter( int value );
 
    void increaseReadingCounter();
 
@@ -97,7 +97,7 @@ tnlSharedMemory< DataType, Index > :: tnlSharedMemory( key_t sharedMemoryKey, In
                             0666 | IPC_CREAT );
    if( sharedMemoryId == -1 )
    {
-      cerr << "Sorry, I was not able to allocate the shared memory for the IPC ( errno = " << errno << ")." << endl;
+      std::cerr << "Sorry, I was not able to allocate the shared memory for the IPC ( errno = " << errno << ")." << std::endl;
       isOk = false;
       return;
    }
@@ -110,7 +110,7 @@ tnlSharedMemory< DataType, Index > :: tnlSharedMemory( key_t sharedMemoryKey, In
                          0 );
    if( sharedMemory == ( void* ) -1 )
    {
-      cerr << "Sorry, I was not able to attach to the shared memory for the IPC ( errno = " << errno << ")." << endl;
+      std::cerr << "Sorry, I was not able to attach to the shared memory for the IPC ( errno = " << errno << ")." << std::endl;
       isOk = false;
       return;
    }
@@ -163,7 +163,7 @@ void tnlSharedMemory< DataType, Index > :: setReadingCounter( int value )
 }
 
 template< typename DataType, typename Index >
-void tnlSharedMemory< DataType, Index > :: setWritingCounter( int value )
+void tnlSharedMemory< DataType, Index > :: std::setwritingCounter( int value )
 {
    tnlAssert( writingCounter != 0, );
    *writingCounter = value;
@@ -193,13 +193,13 @@ tnlSharedMemory< DataType, Index > :: ~tnlSharedMemory()
    dbgCout( "Releasing the shared memory..." );
    if( shmdt( sharedMemory ) == -1 )
    {
-      cerr << "Sorry I am not able to detach the shared memory after sending data ( errno = " << errno << ")." << endl;
+      std::cerr << "Sorry I am not able to detach the shared memory after sending data ( errno = " << errno << ")." << std::endl;
    }
    if( sharedMemoryMaster )
    {
       dbgCout( "Deleting the shared memory..." );
       if( shmctl( sharedMemoryId, IPC_RMID, 0 ) == -1 )
-         cerr << "I am not able to delete allocated shared memory ( errno = " << errno << ")." << endl;
+         std::cerr << "I am not able to delete allocated shared memory ( errno = " << errno << ")." << std::endl;
    }
 }
 

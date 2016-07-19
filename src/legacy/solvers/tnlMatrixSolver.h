@@ -119,13 +119,13 @@ void tnlMatrixSolver< Real, Device, Index > :: printOut()
       if( MPIGetRank() != 0 ) return;
       // TODO: add EST
       //cout << " EST: " << estimated;
-      cout << " ITER:" << setw( 8 ) << getIterationNumber()
-           << " RES:" << setprecision( 5 ) << setw( 12 ) << getResidue();
+     std::cout << " ITER:" << std::setw( 8 ) << getIterationNumber()
+           << " RES:" << std::setprecision( 5 ) << std::setw( 12 ) << getResidue();
       if( this->cpu_timer )
-         cout << " CPU: " << setw( 8 ) << cpu_time;
+        std::cout << " CPU: " << std::setw( 8 ) << cpu_time;
       if( this->rt_timer )
-         cout << " ELA: " << setw( 8 ) << this->rt_timer -> getTime();
-      cout << "   \r" << flush;
+        std::cout << " ELA: " << std::setw( 8 ) << this->rt_timer -> getTime();
+     std::cout << "   \r" << std::flush;
    }
 };
 
@@ -142,7 +142,7 @@ Real tnlMatrixSolver< Real, Device, Index > :: getResidue( const tnlMatrix< Real
       Real err = fabs( A. rowProduct( i, x ) - b[ i ] );
       res += err * err;
    }
-   return sqrt( res ) / b_norm;
+   return ::sqrt( res ) / b_norm;
    //return res;// / ( Real ) size;
 };
 

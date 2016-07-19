@@ -15,7 +15,6 @@
 #include <iostream>
 #include <core/tnlDataElement.h>
 #include <core/tnlString.h>
-
 #include <core/param-types.h>
 
 namespace TNL {
@@ -134,9 +133,8 @@ template< class T > class tnlList
 
 };
 
-template< typename T > ostream& operator << ( ostream& str, const tnlList< T >& list );
+template< typename T > std::ostream& operator << ( std::ostream& str, const tnlList< T >& list );
 
 } // namespace TNL
 
 #include<core/tnlList_impl.h>
-

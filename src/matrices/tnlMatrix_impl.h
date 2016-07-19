@@ -31,7 +31,7 @@ template< typename Real,
                                                        const IndexType columns )
 {
    tnlAssert( rows > 0 && columns > 0,
-            cerr << " rows = " << rows << " columns = " << columns );
+            std::cerr << " rows = " << rows << " columns = " << columns );
    this->rows = rows;
    this->columns = columns;
    return true;
@@ -212,7 +212,7 @@ bool tnlMatrix< Real, Device, Index >::load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-void tnlMatrix< Real, Device, Index >::print( ostream& str ) const
+void tnlMatrix< Real, Device, Index >::print( std::ostream& str ) const
 {
 }
 

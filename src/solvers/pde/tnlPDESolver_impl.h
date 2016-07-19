@@ -8,11 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLPDESOLVER_IMPL_H_
-#define TNLPDESOLVER_IMPL_H_
+#pragma once
 
 #include "tnlPDESolver.h"
 
+namespace TNL {
 
 template< typename Problem,
           typename TimeStepper >
@@ -56,28 +56,28 @@ setup( const tnlParameterContainer& parameters,
     * Load the mesh from the mesh file
     */
    const tnlString& meshFile = parameters.getParameter< tnlString >( "mesh" );
-   cout << "Loading a mesh from the file " << meshFile << "...";
+  std::cout << "Loading a mesh from the file " << meshFile << "...";
    if( ! this->mesh.load( meshFile ) )
    {
-      cerr << endl;
-      cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
-      cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << endl;
+      std::cerr << std::endl;
+      std::cerr << "I am not able to load the mesh from the file " << meshFile << "." << std::endl;
+      std::cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << std::endl;
       return false;
    }
-   cout << " [ OK ] " << endl;
+  std::cout << " [ OK ] " << std::endl;
 
    /****
     * Set DOFs (degrees of freedom)
     */
    tnlAssert( problem->getDofs( this->mesh ) != 0, );
-   cout << "Allocating dofs ... ";
+  std::cout << "Allocating dofs ... ";
    if( ! this->dofs.setSize( problem->getDofs( this->mesh ) ) )
    {
-      cerr << endl;
-      cerr << "I am not able to allocate DOFs (degrees of freedom)." << endl;
+      std::cerr << std::endl;
+      std::cerr << "I am not able to allocate DOFs (degrees of freedom)." << std::endl;
       return false;
    }
-   cout << " [ OK ]" << endl;
+  std::cout << " [ OK ]" << std::endl;
    this->dofs.setValue( 0.0 );
    this->problem->bindDofs( this->mesh, this->dofs );
  
@@ -90,11 +90,11 @@ setup( const tnlParameterContainer& parameters,
    /***
     * Set-up the initial condition
     */
-   cout << "Setting up the initial condition ... ";
+  std::cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
    if( ! this->problem->setInitialCondition( parameters, this->mesh, this->dofs, this->meshDependentData ) )
       return false;
-   cout << " [ OK ]" << endl;
+  std::cout << " [ OK ]" << std::endl;
 
    /****
     * Initialize the time discretisation
@@ -120,7 +120,7 @@ writeProlog( tnlLogger& logger,
    mesh.writeProlog( logger );
    logger.writeSeparator();
    logger.writeParameter< tnlString >( "Time discretisation:", "time-discretisation", parameters );
-   logger.writeParameter< double >( "Initial time step:", this->timeStep * pow( mesh.getSmallestSpaceStep(), this->timeStepOrder ) );
+   logger.writeParameter< double >( "Initial time step:", this->timeStep * std::pow( mesh.getSmallestSpaceStep(), this->timeStepOrder ) );
    logger.writeParameter< double >( "Initial time:", "initial-time", parameters );
    logger.writeParameter< double >( "Final time:", "final-time", parameters );
    logger.writeParameter< double >( "Snapshot period:", "snapshot-period", parameters );
@@ -193,7 +193,7 @@ setFinalTime( const RealType& finalTime )
 {
    if( finalTime <= this->initialTime )
    {
-      cerr << "Final time for tnlPDESolver must larger than the initial time which is now " << this->initialTime << "." << endl;
+      std::cerr << "Final time for tnlPDESolver must larger than the initial time which is now " << this->initialTime << "." << std::endl;
       return false;
    }
    this->finalTime = finalTime;
@@ -217,7 +217,7 @@ setSnapshotPeriod( const RealType& period )
 {
    if( period <= 0 )
    {
-      cerr << "Snapshot tau for tnlPDESolver must be positive value." << endl;
+      std::cerr << "Snapshot tau for tnlPDESolver must be positive value." << std::endl;
       return false;
    }
    this->snapshotPeriod = period;
@@ -241,7 +241,7 @@ setTimeStep( const RealType& timeStep )
 {
    if( timeStep <= 0 )
    {
-      cerr << "The time step for tnlPDESolver must be positive value." << endl;
+      std::cerr << "The time step for tnlPDESolver must be positive value." << std::endl;
       return false;
    }
    this->timeStep = timeStep;
@@ -265,7 +265,7 @@ setTimeStepOrder( const RealType& timeStepOrder )
 {
    if( timeStepOrder < 0 )
    {
-      cerr << "The time step order for tnlPDESolver must be zero or positive value." << endl;
+      std::cerr << "The time step order for tnlPDESolver must be zero or positive value." << std::endl;
       return false;
    }
    this->timeStepOrder = timeStepOrder;
@@ -299,13 +299,13 @@ tnlPDESolver< Problem, TimeStepper >::
 solve()
 {
    tnlAssert( timeStepper != 0,
-              cerr << "No time stepper was set in tnlPDESolver." );
+              std::cerr << "No time stepper was set in tnlPDESolver." );
    tnlAssert( problem != 0,
-              cerr << "No problem was set in tnlPDESolver." );
+              std::cerr << "No problem was set in tnlPDESolver." );
 
    if( snapshotPeriod == 0 )
    {
-      cerr << "No snapshot tau was set in tnlPDESolver." << endl;
+      std::cerr << "No snapshot tau was set in tnlPDESolver." << std::endl;
       return false;
    }
    RealType t( this->initialTime );
@@ -318,7 +318,7 @@ solve()
    this->ioTimer->start();
    if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->meshDependentData ) )
    {
-      cerr << "Making the snapshot failed." << endl;
+      std::cerr << "Making the snapshot failed." << std::endl;
       return false;
    }
    this->ioTimer->stop();
@@ -329,10 +329,10 @@ solve()
     */
    this->timeStepper->setProblem( * ( this->problem ) );
    this->timeStepper->init( this->mesh );
-   this->timeStepper->setTimeStep( this->timeStep * pow( mesh.getSmallestSpaceStep(), this->timeStepOrder ) );
+   this->timeStepper->setTimeStep( this->timeStep * std::pow( mesh.getSmallestSpaceStep(), this->timeStepOrder ) );
    while( step < allSteps )
    {
-      RealType tau = Min( this->snapshotPeriod,
+      RealType tau = min( this->snapshotPeriod,
                           this->finalTime - t );
       if( ! this->timeStepper->solve( t, t + tau, mesh, this->dofs, this->meshDependentData ) )
          return false;
@@ -343,7 +343,7 @@ solve()
       this->computeTimer->stop();
       if( ! this->problem->makeSnapshot( t, step, mesh, this->dofs, this->meshDependentData ) )
       {
-         cerr << "Making the snapshot failed." << endl;
+         std::cerr << "Making the snapshot failed." << std::endl;
          return false;
       }
       this->ioTimer->stop();
@@ -362,4 +362,4 @@ writeEpilog( tnlLogger& logger ) const
       this->problem->writeEpilog( logger ) );
 }
 
-#endif /* TNLPDESOLVER_IMPL_H_ */
+} // namespace TNL

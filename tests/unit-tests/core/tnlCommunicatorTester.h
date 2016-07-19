@@ -94,7 +94,7 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
       if( com. getDeviceId() == 1 )
       {
          com. receive( &dataReceive, 0 );
-         cerr << "Received data = " << dataReceive << endl;
+         std::cerr << "Received data = " << dataReceive << std::endl;
          CPPUNIT_ASSERT( dataReceive == 721 );
          com. send( &dataReceive, 0 );
       }
@@ -202,7 +202,7 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
 
       if( com. getDeviceId() == 0 )
       {
-         cerr << gatheredData << endl;
+         std::cerr << gatheredData << std::endl;
          for( int i = 0; i < groupSize; i ++ )
             CPPUNIT_ASSERT( gatheredData[ i ] == i );
       }

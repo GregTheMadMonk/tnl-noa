@@ -18,6 +18,8 @@
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
 
+namespace TNL {
+
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename ConfigTag,
@@ -45,14 +47,14 @@ bool tnlSolverInitiator< ProblemSetter, ConfigTag > :: run( const tnlParameterCo
 {
    const tnlString& realType = parameters. getParameter< tnlString >( "real-type" );
    if( parameters. getParameter< int >( "verbose" ) )
-      cout << "Setting RealType to   ... " << realType << endl;
+     std::cout << "Setting RealType to   ... " << realType << std::endl;
    if( realType == "float" )
       return tnlSolverInitiatorRealResolver< ProblemSetter, float, ConfigTag >::run( parameters );
    if( realType == "double" )
       return tnlSolverInitiatorRealResolver< ProblemSetter, double, ConfigTag >::run( parameters );
    if( realType == "long-double" )
       return tnlSolverInitiatorRealResolver< ProblemSetter, long double, ConfigTag >::run( parameters );
-   cerr << "The real type '" << realType << "' is not defined. " << endl;
+   std::cerr << "The real type '" << realType << "' is not defined. " << std::endl;
    return false;
 };
 
@@ -66,13 +68,13 @@ class tnlSolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
       {
          const tnlString& device = parameters. getParameter< tnlString >( "device" );
          if( parameters. getParameter< int >( "verbose" ) )
-            cout << "Setting DeviceType to ... " << device << endl;
+           std::cout << "Setting DeviceType to ... " << device << std::endl;
 
          if( device == "host" )
             return tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, tnlHost, ConfigTag >::run( parameters );
          if( device == "cuda" )
             return tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, tnlCuda, ConfigTag >::run( parameters );
-         cerr << "The device '" << device << "' is not defined. " << endl;
+         std::cerr << "The device '" << device << "' is not defined. " << std::endl;
          return false;
       }
 };
@@ -85,7 +87,7 @@ class tnlSolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, false >
    public:
       static bool run( const tnlParameterContainer& parameters )
       {
-         cerr << "The real type " << parameters.getParameter< tnlString >( "real-type" ) << " is not supported." << endl;
+         std::cerr << "The real type " << parameters.getParameter< tnlString >( "real-type" ) << " is not supported." << std::endl;
          return false;
       }
 };
@@ -101,14 +103,14 @@ class tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, 
       {
          const tnlString& indexType = parameters. getParameter< tnlString >( "index-type" );
          if( parameters. getParameter< int >( "verbose" ) )
-            cout << "Setting IndexType to  ... " << indexType << endl;
+           std::cout << "Setting IndexType to  ... " << indexType << std::endl;
          if( indexType == "short-int" )
             return tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, short int, ConfigTag >::run( parameters );
          if( indexType == "int" )
             return tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, int, ConfigTag >::run( parameters );
          if( indexType == "long int" )
             return tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, long int, ConfigTag >::run( parameters );
-         cerr << "The index type '" << indexType << "' is not defined. " << endl;
+         std::cerr << "The index type '" << indexType << "' is not defined. " << std::endl;
          return false;
       }
 };
@@ -122,7 +124,7 @@ class tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, 
    public:
       static bool run( const tnlParameterContainer& parameters )
       {
-         cerr << "The device " << parameters.getParameter< tnlString >( "device" ) << " is not supported." << endl;
+         std::cerr << "The device " << parameters.getParameter< tnlString >( "device" ) << " is not supported." << std::endl;
          return false;
       }
 };
@@ -137,7 +139,7 @@ class tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, Confi
    public:
       static bool run( const tnlParameterContainer& parameters )
       {
-         cerr << "The index " << parameters.getParameter< tnlString >( "index-type" ) << " is not supported." << endl;
+         std::cerr << "The index " << parameters.getParameter< tnlString >( "index-type" ) << " is not supported." << std::endl;
          return false;
       }
 };
@@ -156,4 +158,5 @@ class tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, Confi
       }
 };
 
+} // namespace TNL
 

@@ -147,7 +147,7 @@ class tnlCylinderFunction< 3, Real > : public tnlCylinderFunctionBase< Real, 3 >
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlCylinderFunction< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const tnlCylinderFunction< Dimensions, Real >& f )
 {
    str << "Cylinder function.";
    return str;

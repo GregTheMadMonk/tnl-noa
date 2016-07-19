@@ -31,7 +31,7 @@ readHeader()
    this->file >> magicNumber;
    if( this->file.fail() )
    {
-      cerr << "Unable to read the magic number." << endl;
+      std::cerr << "Unable to read the magic number." << std::endl;
       return false;
    }
 
@@ -64,12 +64,12 @@ openForRead( const tnlString& fileName )
 {
    this->close();
    if ( this->binary )
-   	this->file.open( fileName.getString(), fstream::in | fstream::binary);
+   	this->file.open( fileName.getString(), std::fstream::in | std::fstream::binary);
    else
-	this->file.open( fileName.getString(), fstream::in );
+	this->file.open( fileName.getString(), std::fstream::in );
    if( ! this->file )
    {
-      cerr << "Unable to open the file " << fileName << endl;
+      std::cerr << "Unable to open the file " << fileName << std::endl;
       return false;
    }
    this->fileOpen = true;
@@ -144,12 +144,12 @@ openForWrite( const tnlString& fileName,
 {
    this->close();
    if( binary )
-        this->file.open( fileName.getString(), fstream::out | fstream::binary);
+        this->file.open( fileName.getString(), std::fstream::out | std::fstream::binary);
    else
-        this->file.open( fileName.getString(), fstream::out);
+        this->file.open( fileName.getString(), std::fstream::out);
    if( this->file.fail() )
    {
-      cerr << "Unable to open the file " << fileName << endl;
+      std::cerr << "Unable to open the file " << fileName << std::endl;
       return false;
    }
    this->fileOpen = true;

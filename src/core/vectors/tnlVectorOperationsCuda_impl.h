@@ -142,7 +142,7 @@ getVectorL2Norm( const Vector& v )
                           v. getData(),
                           ( Real* ) 0,
                           result );
-   return sqrt( result );
+   return std::sqrt( result );
 }
 
 
@@ -157,7 +157,7 @@ getVectorLpNorm( const Vector& v,
 
    tnlAssert( v. getSize() > 0, );
    tnlAssert( p > 0.0,
-              cerr << " p = " << p );
+              std::cerr << " p = " << p );
  
    if( p == 1 )
       return getVectorL1Norm( v );
@@ -171,7 +171,7 @@ getVectorLpNorm( const Vector& v,
                           v. getData(),
                           ( Real* ) 0,
                           result );
-   return pow( result, 1.0 / p );
+   return std::pow( result, 1.0 / p );
 }
 
 template< typename Vector >
@@ -314,7 +314,7 @@ getVectorDifferenceL2Norm( const Vector1& v1,
                           v1. getData(),
                           v2. getData(),
                           result );
-   return sqrt( result );
+   return ::sqrt( result );
 }
 
 
@@ -329,7 +329,7 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    typedef typename Vector1 :: IndexType Index;
 
    tnlAssert( p > 0.0,
-              cerr << " p = " << p );
+              std::cerr << " p = " << p );
    tnlAssert( v1. getSize() > 0, );
    tnlAssert( v1. getSize() == v2. getSize(), );
 
@@ -341,7 +341,7 @@ getVectorDifferenceLpNorm( const Vector1& v1,
                           v1. getData(),
                           v2. getData(),
                           result );
-   return pow( result, 1.0 / p );
+   return ::pow( result, 1.0 / p );
 }
 
 template< typename Vector1, typename Vector2 >
@@ -394,7 +394,7 @@ void tnlVectorOperations< tnlCuda > :: vectorScalarMultiplication( Vector& v,
       const Index& size = v.getSize();
       blockSize. x = 256;
       Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
-      gridSize. x = Min( blocksNumber, tnlCuda::getMaxGridSize() );
+      gridSize. x = min( blocksNumber, tnlCuda::getMaxGridSize() );
       vectorScalarMultiplicationCudaKernel<<< gridSize, blockSize >>>( v.getData(),
                                                                        size,
                                                                        alpha );
@@ -479,7 +479,7 @@ void tnlVectorOperations< tnlCuda > :: addVector( Vector1& y,
       const Index& size = x.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
-      cudaBlocks.x = Min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
+      cudaBlocks.x = min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
 
       vectorAddVectorCudaKernel<<< cudaBlocks, cudaBlockSize >>>( y.getData(),
                                                                   x.getData(),
@@ -552,7 +552,7 @@ addVectors( Vector1& v,
       const Index& size = v.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
-      cudaBlocks.x = Min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
+      cudaBlocks.x = min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
 
       vectorAddVectorsCudaKernel<<< cudaBlocks, cudaBlockSize >>>( v.getData(),
                                                                    v1.getData(),

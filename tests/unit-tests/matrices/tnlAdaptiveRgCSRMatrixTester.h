@@ -19,6 +19,8 @@
 #include <legacy/matrices/tnlAdaptiveRgCSRMatrix.h>
 #include "tnlMatrixTester.h"
 
+using namespace TNL;
+
 template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : public CppUnit :: TestCase,
                                                                            public tnlMatrixTester< Real >
 {
@@ -370,13 +372,13 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
       Real maxError( 0.0 );
       for( int j = 0; j < b1. getSize(); j ++ )
       {
-         //f << refB[ j ] << " - " << host_b[ j ] << " = "  << refB[ j ] - host_b[ j ] <<  endl;
+         //f << refB[ j ] << " - " << host_b[ j ] << " = "  << refB[ j ] - host_b[ j ] <<  std::endl;
          Real error( 0.0 );
          if( b1. getElement( j ) != 0.0 )
             error = ( Real ) fabs( b1. getElement( j ) - b2. getElement( j ) ) /  ( Real ) fabs( b1. getElement( j ) );
          else
             error = ( Real ) fabs( b2. getElement( j ) );
-         maxError = Max( maxError, error );
+         maxError = max( maxError, error );
       }
       CPPUNIT_ASSERT( maxError < 1.0e-12 );
    }

@@ -84,7 +84,7 @@ template< class T > class tnlRealTester : public CppUnit :: TestCase
 
       const tnlReal< T > tbi = 1.0 / ( T ) ia;
 
-      //cerr << tbi << endl;
+      //cerr << tbi << std::endl;
 
       CPPUNIT_ASSERT( b == tbi );
    };

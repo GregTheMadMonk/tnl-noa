@@ -23,6 +23,8 @@
 #include <core/arrays/tnlArrayOperations.h>
 #include <core/tnlCuda.h>
 
+using namespace TNL;
+
 template< typename Element, typename Device >
 class tnlArrayOperationsTester{};
 

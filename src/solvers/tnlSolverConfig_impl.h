@@ -8,14 +8,15 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSOLVERCONFIG_IMPL_H_
-#define TNLSOLVERCONFIG_IMPL_H_
+#pragma once
 
 #include <tnlConfig.h>
 #include <solvers/tnlBuildConfigTags.h>
 #include <solvers/tnlDummyProblem.h>
 #include <solvers/pde/tnlExplicitTimeStepper.h>
 #include <solvers/pde/tnlPDESolver.h>
+
+namespace TNL {
 
 template< typename ConfigTag,
           typename ProblemConfig >
@@ -159,4 +160,5 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
 
 }
 
-#endif /* TNLSOLVERCONFIG_IMPL_H_ */
+} // namespace TNL
+

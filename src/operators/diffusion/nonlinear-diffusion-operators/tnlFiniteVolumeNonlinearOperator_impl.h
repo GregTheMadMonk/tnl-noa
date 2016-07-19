@@ -26,8 +26,8 @@ getType()
 {
    return tnlString( "tnlFiniteVolumeNonlinearOperator< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + ", " +
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + ", " +
 	  OperatorQ::getType() + " >";
 }
 
@@ -103,8 +103,8 @@ getType()
 {
    return tnlString( "tnlFiniteVolumeNonlinearOperator< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + ", " +
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + ", " +
 	  OperatorQ::getType() + " >";
 }
 
@@ -206,8 +206,8 @@ getType()
 {
    return tnlString( "tnlFiniteVolumeNonlinearOperator< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + ", " +
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + ", " +
 	  OperatorQ::getType() + " >";
 }
 

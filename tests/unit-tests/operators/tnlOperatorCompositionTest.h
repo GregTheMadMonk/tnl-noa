@@ -26,6 +26,7 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 
+using namespace TNL;
 
 template< typename Operator >
 class tnlOperatorCompositionTest
@@ -100,7 +101,7 @@ class tnlOperatorCompositionTest
       {
          auto entity = mesh.template getEntity< typename MeshType::Cell >( i );
          entity.refresh();
-         //cerr << entity.getIndex() << " " << operatorFunction2( entity ) << " " << operatorFunction3( entity ) << endl;
+         //cerr << entity.getIndex() << " " << operatorFunction2( entity ) << " " << operatorFunction3( entity ) << std::endl;
          CPPUNIT_ASSERT( operatorFunction2( entity ) == operatorFunction3( entity ) );
          /*if( entity.isBoundaryEntity() )
             CPPUNIT_ASSERT( boundaryConditions( f1, entity ) == operatorFunction( entity ) );
@@ -126,6 +127,8 @@ bool runTest()
    return false;
 #endif
 }
+
+using namespace TNL;
 
 template< typename MeshType >
 bool setOperator()

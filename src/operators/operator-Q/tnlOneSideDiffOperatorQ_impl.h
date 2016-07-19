@@ -26,8 +26,8 @@ getType()
 {
    return tnlString( "tnlOneSideDiffOperatorQ< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -61,7 +61,7 @@ operator()( const MeshFunction& u,
    const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const RealType& u_x = ( u[ neighbourEntities.template getEntityIndex< 1 >() ] - u[ cellIndex ] ) *
                          mesh.template getSpaceStepsProducts< -1 >();
-   return sqrt( this->epsSquare + u_x * u_x );          
+   return ::sqrt( this->epsSquare + u_x * u_x );          
 }
 
 template< typename MeshReal,
@@ -85,7 +85,7 @@ getValueStriped( const MeshFunction& u,
                            mesh.template getSpaceStepsProducts< -1 >();
    const RealType& u_x_b = ( u_c - u[ neighbourEntities.template getEntityIndex< -1 >() ] ) * 
                            mesh.template getSpaceStepsProducts< -1 >();   
-   return sqrt( this->epsSquare + 0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b ) );
+   return ::sqrt( this->epsSquare + 0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b ) );
 }
 
 /***
@@ -102,8 +102,8 @@ getType()
 {
    return tnlString( "tnlOneSideDiffOperatorQ< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -140,7 +140,7 @@ operator()( const MeshFunction& u,
                          mesh.template getSpaceStepsProducts< -1, 0 >();
    const RealType u_y = ( u[ neighbourEntities.template getEntityIndex< 0, 1 >() ] - u_c ) *
                          mesh.template getSpaceStepsProducts< 0, -1 >();
-   return sqrt( this->epsSquare + u_x * u_x + u_y * u_y ); 
+   return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y ); 
 }
 
 template< typename MeshReal,
@@ -169,7 +169,7 @@ getValueStriped( const MeshFunction& u,
    const RealType u_y_b = ( u_c - u[ neighbourEntities.template getEntityIndex< 0, -1 >() ] ) *
                           mesh.template getSpaceStepsProducts< 0, -1 >();
    
-   return sqrt( this->epsSquare + 
+   return ::sqrt( this->epsSquare + 
                 0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b +
                         u_y_f * u_y_f + u_y_b * u_y_b ) );
 }
@@ -187,8 +187,8 @@ getType()
 {
    return tnlString( "tnlOneSideDiffOperatorQ< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -228,7 +228,7 @@ operator()( const MeshFunction& u,
                          mesh.template getSpaceStepsProducts< 0, -1, 0 >();
    const RealType u_z = ( u[ neighbourEntities.template getEntityIndex< 0, 0, 1 >() ] - u_c ) *
                          mesh.template getSpaceStepsProducts< 0, 0, -1 >();
-   return sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z ); 
+   return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z ); 
 }
    
 template< typename MeshReal,
@@ -262,7 +262,7 @@ getValueStriped( const MeshFunction& u,
    const RealType u_z_b = ( u_c - u[ neighbourEntities.template getEntityIndex< 0, 0, -1 >() ] ) *
                           mesh.template getSpaceStepsProducts< 0, 0, -1 >();
    
-   return sqrt( this->epsSquare + 
+   return ::sqrt( this->epsSquare + 
                 0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b +
                         u_y_f * u_y_f + u_y_b * u_y_b + 
                         u_z_f * u_z_f + u_z_b * u_z_b ) );

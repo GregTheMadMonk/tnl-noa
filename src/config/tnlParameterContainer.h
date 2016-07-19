@@ -72,7 +72,7 @@ class tnlParameterContainer
             return true;
          }
       if( verbose )
-         cerr << "Missing parameter '" << name << "'." << endl;
+         std::cerr << "Missing parameter '" << name << "'." << std::endl;
       return false;
    }
 
@@ -83,8 +83,8 @@ class tnlParameterContainer
       for( i = 0; i < size; i ++ )
          if( parameters[ i ] -> name == name )
             return ( ( tnlParameter< T >* ) parameters[ i ] ) -> value;
-      cerr << "The program attempts to get unknown parameter " << name << endl;
-      cerr << "Aborting the program." << endl;
+      std::cerr << "The program attempts to get unknown parameter " << name << std::endl;
+      std::cerr << "Aborting the program." << std::endl;
       abort();
    }
  
@@ -109,7 +109,7 @@ bool
 tnlParameterContainer::
 addParameter( const tnlString& name, const T& value )
 {
-   return parameters. Append( new tnlParameter< T >( name, ::getType< T >(). getString(), value ) );
+   return parameters. Append( new tnlParameter< T >( name, TNL::getType< T >(). getString(), value ) );
 };
 
 template< class T >
@@ -130,9 +130,9 @@ setParameter( const tnlString& name,
          }
          else
          {
-            cerr << "Parameter " << name << " already exists with different type "
+            std::cerr << "Parameter " << name << " already exists with different type "
                  << parameters[ i ] -> type << " not "
-                 << getType( value ) << endl;
+                 << getType( value ) << std::endl;
             abort( );
             return false;
          }

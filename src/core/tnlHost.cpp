@@ -8,8 +8,6 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
-
 #include <core/tnlHost.h>
 #ifdef HAVE_OPENMP
 #include <omp.h>

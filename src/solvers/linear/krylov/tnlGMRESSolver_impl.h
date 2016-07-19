@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLGMRESSOLVER_IMPL_H_
-#define TNLGMRESSOLVER_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Matrix,
            typename Preconditioner >
@@ -83,16 +84,16 @@ template< typename Matrix,
  template< typename Vector, typename ResidueGetter >
 bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
 {
-   tnlAssert( matrix, cerr << "No matrix was set in tnlGMRESSolver. Call setMatrix() before solve()." << endl );
+   tnlAssert( matrix, std::cerr << "No matrix was set in tnlGMRESSolver. Call setMatrix() before solve()." << std::endl );
    if( restarting <= 0 )
    {
-      cerr << "I have wrong value for the restarting of the GMRES solver. It is set to " << restarting
-           << ". Please set some positive value using the SetRestarting method." << endl;
+      std::cerr << "I have wrong value for the restarting of the GMRES solver. It is set to " << restarting
+           << ". Please set some positive value using the SetRestarting method." << std::endl;
       return false;
    }
    if( ! setSize( matrix -> getRows(), restarting ) )
    {
-       cerr << "I am not able to allocate enough memory for the GMRES solver. You may try to decrease the restarting parameter." << endl;
+       std::cerr << "I am not able to allocate enough memory for the GMRES solver. You may try to decrease the restarting parameter." << std::endl;
        return false;
    }
 
@@ -130,11 +131,11 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       normb = b. lpNorm( ( RealType ) 2.0 );
       _r. addVector( b, ( RealType ) 1.0, -1.0 );
       beta = _r. lpNorm( ( RealType ) 2.0 );
-      //cout << "x = " << x << endl;
+      //cout << "x = " << x << std::endl;
    }
  
-    //cout << "norm b = " << normb << endl;
-    //cout << " beta = " << beta << endl;
+    //cout << "norm b = " << normb << std::endl;
+    //cout << " beta = " << beta << std::endl;
 
 
    if( normb == 0.0 ) normb = 1.0;
@@ -182,7 +183,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          else
              matrix->vectorProduct( vi, w );
  
-         //cout << " i = " << i << " vi = " << vi << endl;
+         //cout << " i = " << i << " vi = " << vi << std::endl;
 
          for( IndexType k = 0; k <= i; k++ )
             H[ k + i * ( m + 1 ) ] = 0.0;
@@ -201,8 +202,8 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
                 */
                w. addVector( vk, -H_k_i );
 
-               //cout << "H_ki = " << H_k_i << endl;
-               //cout << "w = " << w << endl;
+               //cout << "H_ki = " << H_k_i << std::endl;
+               //cout << "w = " << w << std::endl;
             }
          /***
           * H_{i+1,i} = |w|
@@ -210,7 +211,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          RealType normw = w. lpNorm( ( RealType ) 2.0 );
          H[ i + 1 + i * ( m + 1 ) ] = normw;
 
-         //cout << "normw = " << normw << endl;
+         //cout << "normw = " << normw << std::endl;
  
          /***
           * v_{i+1} = w / |w|
@@ -218,7 +219,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
          vi. bind( &( _v. getData()[ ( i + 1 ) * size ] ), size );
          vi. addVector( w, ( RealType ) 1.0 / normw );
  
-         //cout << "vi = " << vi << endl;
+         //cout << "vi = " << vi << std::endl;
  
          /****
           * Applying the Givens rotations
@@ -242,7 +243,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
                              cs[ i ],
                              sn[ i ] );
 
-         this->setResidue( fabs( s[ i + 1 ] ) / normb );
+         this->setResidue( std::fabs( s[ i + 1 ] ) / normb );
          if( ! this->checkNextIteration() ) {
             update( i, m, _H, _s, _v, x );
             this->refreshSolverMonitor( true );
@@ -253,9 +254,9 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
             this->refreshSolverMonitor();
          }
       }
-      //cout << "x = " << x << endl;
+      //cout << "x = " << x << std::endl;
       update( m - 1, m, _H, _s, _v, x );
-      //cout << "x = " << x << endl;
+      //cout << "x = " << x << std::endl;
 
       /****
        * r = M.solve(b - A * x);
@@ -276,9 +277,9 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
       }
       this->setResidue( beta / normb );
 
-      //cout << " x = " << x << endl;
-      //cout << " beta = " << beta << endl;
-      //cout << "residue = " << beta / normb << endl;
+      //cout << " x = " << x << std::endl;
+      //cout << " beta = " << beta << std::endl;
+      //cout << "residue = " << beta / normb << std::endl;
 
    }
    this->refreshSolverMonitor( true );
@@ -311,7 +312,7 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
    // Backsolve:
    for( i = k; i >= 0; i--)
    {
-      //cout << " y = " << y << endl;
+      //cout << " y = " << y << std::endl;
       y[ i ] /= H[ i + i * ( m + 1 ) ];
       for( j = i - 1; j >= 0; j--)
          y[ j ] -= H[ j + i * ( m + 1 ) ] * y[ i ];
@@ -338,16 +339,16 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: generatePlaneRotation( RealType
       sn = 0.0;
    }
    else
-      if( fabs( dy ) > fabs( dx ) )
+      if( std::fabs( dy ) > std::fabs( dx ) )
       {
          RealType temp = dx / dy;
-         sn = 1.0 / sqrt( 1.0 + temp * temp );
+         sn = 1.0 / std::sqrt( 1.0 + temp * temp );
          cs = temp * sn;
       }
       else
       {
          RealType temp = dy / dx;
-         cs = 1.0 / sqrt( 1.0 + temp * temp );
+         cs = 1.0 / std::sqrt( 1.0 + temp * temp );
          sn = temp * cs;
       }
 };
@@ -380,10 +381,10 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: setSize( IndexType _size, Index
        ! _H. setSize( ( restarting + 1 ) * restarting ) ||
        ! _M_tmp. setSize( size ) )
    {
-      cerr << "I could not allocate all supporting arrays for the GMRES solver." << endl;
+      std::cerr << "I could not allocate all supporting arrays for the GMRES solver." << std::endl;
       return false;
    }
    return true;
 };
 
-#endif /* TNLGMRESSOLVER_IMPL_H_ */
+} // namespace TNL

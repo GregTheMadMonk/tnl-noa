@@ -95,7 +95,7 @@ class tnlMeshStorageLayer< MeshConfig,
          if( ! BaseType::save( file ) ||
              ! this->entities.save( file ) )
          {
-            cerr << "Saving of the mesh entities with " << DimensionsTag::value << " dimensions failed." << endl;
+            std::cerr << "Saving of the mesh entities with " << DimensionsTag::value << " dimensions failed." << std::endl;
             return false;
          }
          return true;
@@ -103,26 +103,26 @@ class tnlMeshStorageLayer< MeshConfig,
 
       bool load( tnlFile& file )
       {
-         //cout << "Loading mesh layer with dimensions " << DimensionsTag::value << endl;
+         //cout << "Loading mesh layer with dimensions " << DimensionsTag::value << std::endl;
          if( ! BaseType::load( file ) ||
              ! this->entities.load( file ) )
          {
-            cerr << "Loading of the mesh entities with " << DimensionsTag::value << " dimensions failed." << endl;
+            std::cerr << "Loading of the mesh entities with " << DimensionsTag::value << " dimensions failed." << std::endl;
             return false;
          }
          this->entitiesAccess.bind( this->entities );
          return true;
       }
 
-      void print( ostream& str ) const
+      void print( std::ostream& str ) const
       {
          BaseType::print( str );
-         str << "The entities with " << DimensionsTag::value << " dimensions are: " << endl;
+         str << "The entities with " << DimensionsTag::value << " dimensions are: " << std::endl;
          for( GlobalIndexType i = 0; i < entities.getSize();i ++ )
          {
             str << i << " ";
             entities[ i ].print( str );
-            str << endl;
+            str << std::endl;
          }
          SuperentityStorageBaseType::print( str );
       }
@@ -263,7 +263,7 @@ class tnlMeshStorageLayer< MeshConfig, tnlDimensionsTag< 0 >, true > :
    {
       if( ! this->vertices.save( file ) )
       {
-         cerr << "Saving of the mesh entities with " << DimensionsTag::value << " dimensions failed." << endl;
+         std::cerr << "Saving of the mesh entities with " << DimensionsTag::value << " dimensions failed." << std::endl;
          return false;
       }
       return true;
@@ -273,19 +273,19 @@ class tnlMeshStorageLayer< MeshConfig, tnlDimensionsTag< 0 >, true > :
    {
       if( ! this->vertices.load( file ) )
       {
-         cerr << "Loading of the mesh entities with " << DimensionsTag::value << " dimensions failed." << endl;
+         std::cerr << "Loading of the mesh entities with " << DimensionsTag::value << " dimensions failed." << std::endl;
          return false;
       }
       this->verticesAccess.bind( this->vertices );
       return true;
    }
 
-   void print( ostream& str ) const
+   void print( std::ostream& str ) const
    {
-      str << "The mesh vertices are: " << endl;
+      str << "The mesh vertices are: " << std::endl;
       for( GlobalIndexType i = 0; i < vertices.getSize();i ++ )
       {
-         str << i << vertices[ i ] << endl;
+         str << i << vertices[ i ] << std::endl;
       }
       SuperentityStorageBaseType::print( str );
    }

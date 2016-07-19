@@ -22,6 +22,8 @@
 #include <problems/tnlHeatEquationProblem.h>
 #include <mesh/tnlGrid.h>
 
+using namespace TNL;
+
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
 

@@ -10,8 +10,6 @@
 
 #pragma once 
 
-namespace TNL {
-
 //#define CUDA_REDUCTION_PROFILING
 
 #ifdef HAVE_CUDA
@@ -29,7 +27,8 @@ namespace TNL {
 #include <core/tnlTimerRT.h>
 #endif
 
-using namespace std;
+namespace TNL {
+
 
 /****
  * Arrays smaller than the following constant
@@ -66,7 +65,7 @@ typename Operation::IndexType reduceOnCudaDevice( Operation& operation,
  
    const IndexType desGridSize( minGPUReductionDataSize );
    dim3 blockSize( 256 ), gridSize( 0 );
-   gridSize.x = Min( tnlCuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
+   gridSize.x = min( tnlCuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
  
    // create reference to the reduction buffer singleton and set default size
    tnlCudaReductionBuffer & cudaReductionBuffer = tnlCudaReductionBuffer::getInstance( 8 * minGPUReductionDataSize );
@@ -119,9 +118,9 @@ typename Operation::IndexType reduceOnCudaDevice( Operation& operation,
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case   1:
-         tnlAssert( false, cerr << "blockSize should not be 1." << endl );
+         tnlAssert( false, std::cerr << "blockSize should not be 1." << std::endl );
       default:
-         tnlAssert( false, cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
+         tnlAssert( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
    }
    //checkCudaDevice;
    return gridSize. x;
@@ -178,7 +177,7 @@ bool reductionOnCudaDevice( Operation& operation,
                                                deviceAux1 );
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
-      cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getTime() << " sec. " << endl;
+     std::cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getTime() << " sec. " << std::endl;
       timer.reset();
       timer.start();
    #endif
@@ -192,7 +191,7 @@ bool reductionOnCudaDevice( Operation& operation,
  
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
-      cout << "   Transferring data to CPU took " << timer.getTime() << " sec. " << endl;
+     std::cout << "   Transferring data to CPU took " << timer.getTime() << " sec. " << std::endl;
    #endif
 
    #ifdef CUDA_REDUCTION_PROFILING
@@ -210,7 +209,7 @@ bool reductionOnCudaDevice( Operation& operation,
  
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
-      cout << "   Reduction of small data set on CPU took " << timer.getTime() << " sec. " << endl;
+     std::cout << "   Reduction of small data set on CPU took " << timer.getTime() << " sec. " << std::endl;
    #endif
  
    return checkCudaDevice;

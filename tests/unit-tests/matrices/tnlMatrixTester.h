@@ -13,6 +13,8 @@
 
 #include <matrices/tnlCSRMatrix.h>
 
+using namespace TNL;
+
 template< typename Real, typename Index = int >
 class tnlMatrixTester
 {

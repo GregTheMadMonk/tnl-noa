@@ -27,7 +27,7 @@ void FileNameBaseNumberEnding( const char* base_name,
    sprintf( snumber, "%d", number );
    int len = strlen( snumber );
 
-   const int k = Min( 1024, index_size );
+   const int k = min( 1024, index_size );
    int i;
    for( i = len; i < k ; i ++ )
       zeros[ i - len ] = '0';

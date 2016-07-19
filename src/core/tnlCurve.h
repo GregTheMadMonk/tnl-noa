@@ -88,7 +88,7 @@ template< class T > class tnlCurve : public tnlObject, public tnlList< tnlCurveE
 
    tnlString getType() const
    {
-      return tnlString( "tnlCurve< " ) + tnlString( ::getType< T >() ) + tnlString( " >" );
+      return tnlString( "tnlCurve< " ) + tnlString( TNL::getType< T >() ) + tnlString( " >" );
    };
 
    //! Append new point
@@ -134,18 +134,18 @@ template< class T > class tnlCurve : public tnlObject, public tnlList< tnlCurveE
 };
 
 template< class T > bool Write( const tnlCurve< T >& curve,
-                                ostream& str,
+                                std::ostream& str,
                                 const char* format,
                                 const int step = 1 )
 {
    if( ! format )
    {
-      cerr << "No format given for drawing 2D grid. " << endl;
+      std::cerr << "No format given for drawing 2D grid. " << std::endl;
       return false;
    }
    if( curve. isEmpty() )
    {
-      cerr << "Unable to draw curve, it's empty!" << endl;
+      std::cerr << "Unable to draw curve, it's empty!" << std::endl;
       return false;
    }
    if( strcmp( format, "gnuplot" ) == 0 )
@@ -155,17 +155,17 @@ template< class T > bool Write( const tnlCurve< T >& curve,
       for( i = 0; i < size; i += step )
       {
          if( curve[ i ]. separator )
-            str << endl;
+            str << std::endl;
          else
-            str << setprecision( 12 )
+            str << std::setprecision( 12 )
                 << curve[ i ]. position[ 0 ] << " "
-                << curve[ i ]. position[ 1 ] << endl;
+                << curve[ i ]. position[ 1 ] << std::endl;
          for( j = 0; j < step; j ++ )
-            if( curve[ i + j ]. separator ) str << endl;
+            if( curve[ i + j ]. separator ) str << std::endl;
       }
       return true;
    }
-   cerr << "Unknown format '" << format << "' for drawing a curve." << endl;
+   std::cerr << "Unknown format '" << format << "' for drawing a curve." << std::endl;
    return false;
 };
 
@@ -180,30 +180,30 @@ template< class T > bool Write( const tnlCurve< T >& curve,
       tnlFile file;
       if( ! file. open( tnlString( file_name ) + tnlString( ".tnl" ), tnlWriteMode ) )
       {
-         cerr << "I am not able to open the file " << file_name << " for drawing curve." << endl;
+         std::cerr << "I am not able to open the file " << file_name << " for drawing curve." << std::endl;
          return false;
       }
       if( ! curve. save( file ) )
       {
-         cerr << "I am not able to write to the file " << file_name << " for drawing grid." << endl;
+         std::cerr << "I am not able to write to the file " << file_name << " for drawing grid." << std::endl;
          return false;
       }
       file. close();
    }
    else
    {
-      fstream file;
-      file. open( file_name, ios :: out );
+      std::fstream file;
+      file. open( file_name, std::ios::out );
       if( ! file )
       {
-         cerr << "I am not able to to open the file " << file_name << " for drawing curve." << endl;
+         std::cerr << "I am not able to to open the file " << file_name << " for drawing curve." << std::endl;
          return false;
       }
       bool result = Write( curve, file, format, step );
       file. close();
       if( ! result )
       {
-         cerr << "Sorry I could not write to the file " << file_name << endl;
+         std::cerr << "Sorry I could not write to the file " << file_name << std::endl;
          return false;
       }
    }
@@ -216,12 +216,12 @@ template< class T > bool Read( tnlCurve< T >& crv,
    tnlFile file;
    if( ! file. open( tnlString( input_file ), tnlReadMode  ) )
    {
-      cout << " unable to open file " << input_file << endl;
+     std::cout << " unable to open file " << input_file << std::endl;
       return false;
    }
    if( ! crv. load( file ) )
    {
-      cout << " unable to restore the data " << endl;
+     std::cout << " unable to restore the data " << std::endl;
       return false;
    }
    file. close();

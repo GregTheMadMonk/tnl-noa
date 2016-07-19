@@ -37,7 +37,7 @@ template< typename MeshConfig,
 tnlMeshEntity< MeshConfig, EntityTopology >::
 ~tnlMeshEntity()
 {
-   //cerr << "   Destroying entity with " << EntityTopology::dimensions << " dimensions..." << endl;
+   //cerr << "   Destroying entity with " << EntityTopology::dimensions << " dimensions..." << std::endl;
 }
 
 template< typename MeshConfig,
@@ -86,9 +86,9 @@ template< typename MeshConfig,
           typename EntityTopology >
 void
 tnlMeshEntity< MeshConfig, EntityTopology >::
-print( ostream& str ) const
+print( std::ostream& str ) const
 {
-   str << "\t Mesh entity dimensions: " << EntityTopology::dimensions << endl;
+   str << "\t Mesh entity dimensions: " << EntityTopology::dimensions << std::endl;
    tnlMeshSubentityStorageLayers< MeshConfig, EntityTopology >::print( str );
    tnlMeshSuperentityAccess< MeshConfig, EntityTopology >::print( str );
 }
@@ -147,7 +147,7 @@ getSubentityIndex( const LocalIndexType localIndex) const
    static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to get subentity which is not configured for storage." );
    tnlAssert( 0 <= localIndex &&
               localIndex < SubentityTraits< Subdimensions >::count,
-              cerr << "localIndex = " << localIndex
+              std::cerr << "localIndex = " << localIndex
                    << " subentitiesCount = "
                    << SubentityTraits< Subdimensions >::count );
    typedef tnlMeshSubentityStorageLayers< MeshConfig, EntityTopology >  SubentityBaseType;
@@ -200,8 +200,8 @@ getSuperentityIndex( const LocalIndexType localIndex ) const
 {
    static_assert( SuperentityTraits< SuperDimensions >::storageEnabled, "You try to get superentity which is not configured for storage." );
    tnlAssert( localIndex < this->getNumberOfSuperentities< SuperDimensions >(),
-              cerr << " localIndex = " << localIndex
-                   << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< SuperDimensions >() << endl; );
+              std::cerr << " localIndex = " << localIndex
+                   << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< SuperDimensions >() << std::endl; );
    typedef tnlMeshSuperentityAccess< MeshConfig, EntityTopology >  SuperentityBaseType;
    return SuperentityBaseType::getSuperentityIndex( tnlDimensionsTag< SuperDimensions >(),
                                                     localIndex );
@@ -295,7 +295,7 @@ setSubentityIndex( const LocalIndexType localIndex,
    static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to set subentity which is not configured for storage." );
    tnlAssert( 0 <= localIndex &&
               localIndex < SubentityTraits< Subdimensions >::count,
-              cerr << "localIndex = " << localIndex
+              std::cerr << "localIndex = " << localIndex
                    << " subentitiesCount = "
                    << SubentityTraits< Subdimensions >::count );
    typedef tnlMeshSubentityStorageLayers< MeshConfig, EntityTopology >  SubentityBaseType;
@@ -357,7 +357,7 @@ template< typename MeshConfig >
 tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::
 ~tnlMeshEntity()
 {
-   //cerr << "   Destroying entity with " << tnlMeshVertexTopology::dimensions << " dimensions..." << endl;
+   //cerr << "   Destroying entity with " << tnlMeshVertexTopology::dimensions << " dimensions..." << std::endl;
 }
 
 template< typename MeshConfig >
@@ -385,9 +385,9 @@ load( tnlFile& file )
 template< typename MeshConfig >
 void
 tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::
-print( ostream& str ) const
+print( std::ostream& str ) const
 {
-   str << "\t Mesh entity dimensions: " << tnlMeshVertexTopology::dimensions << endl;
+   str << "\t Mesh entity dimensions: " << tnlMeshVertexTopology::dimensions << std::endl;
    str << "\t Coordinates = ( " << point << " )";
    tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTopology >::print( str );
 }
@@ -448,8 +448,8 @@ tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::
 getSuperentityIndex( const LocalIndexType localIndex ) const
 {
    tnlAssert( localIndex < this->getNumberOfSuperentities< Dimensions >(),
-              cerr << " localIndex = " << localIndex
-                   << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << endl; );
+              std::cerr << " localIndex = " << localIndex
+                   << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << std::endl; );
    typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTopology >  SuperentityBaseType;
    return SuperentityBaseType::getSuperentityIndex( tnlDimensionsTag< Dimensions >(),
                                                     localIndex );
@@ -482,7 +482,7 @@ superentityIdsArray()
 
 template< typename MeshConfig,
           typename EntityTopology >
-ostream& operator <<( ostream& str, const tnlMeshEntity< MeshConfig, EntityTopology >& entity )
+std::ostream& operator <<( std::ostream& str, const tnlMeshEntity< MeshConfig, EntityTopology >& entity )
 {
    entity.print( str );
    return str;

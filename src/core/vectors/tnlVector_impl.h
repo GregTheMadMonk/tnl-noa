@@ -37,9 +37,9 @@ template< typename Real,
 tnlString tnlVector< Real, Device, Index >::getType()
 {
    return tnlString( "tnlVector< " ) +
-                     ::getType< Real >() + ", " +
+                    TNL::getType< Real >() + ", " +
                      Device::getDeviceType() + ", " +
-                     ::getType< Index >() + " >";
+                    TNL::getType< Index >() + " >";
 };
 
 template< typename Real,

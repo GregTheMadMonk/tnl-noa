@@ -23,13 +23,13 @@ bool tnlMatrixWriter< Matrix >::writeToGnuplot( std::ostream str,
       {
          RealType elementValue = maytrix.getElement( row, column );
          if(  elementValue != ( RealType ) 0.0 )
-            str << column << " " << getSize() - row << " " << elementValue << endl;
+            str << column << " " << getSize() - row << " " << elementValue << std::endl;
       }
       if( verbose )
-         cout << "Drawing the row " << row << "      \r" << flush;
+        std::cout << "Drawing the row " << row << "      \r" << std::flush;
    }
    if( verbose )
-      cout << endl;
+     std::cout << std::endl;
    return true;
 }
 
@@ -44,11 +44,11 @@ bool tnlMatrixWriter< Matrix >::writeToEps( std::ostream str,
    if( !writeEpsBody( str, matrix, elementSize, verbose ) )
       return false;
 
-   str << "showpage" << endl;
-   str << "%%EOF" << endl;
+   str << "showpage" << std::endl;
+   str << "%%EOF" << std::endl;
 
    if( verbose )
-      cout << endl;
+     std::cout << std::endl;
    return true;
 }
 
@@ -57,13 +57,13 @@ bool tnlMatrixWriter< Matrix >::writeEpsHeader( std::ostream str,
                                                 const Marix& matrix,
                                                 const int elementSize )
 {
-   const double scale = elementSize * Max( matrix.getRows(), matrix.getColumns() );
-   str << "%!PS-Adobe-2.0 EPSF-2.0" << endl;
-   str << "%%BoundingBox: 0 0 " << scale << " " << scale << endl;
-   str << "%%Creator: TNL" << endl;
-   str << "%%LanguageLevel: 2" << endl;
-   str << "%%EndComments" << endl << endl;
-   str << "0 " << scale << " translate" << endl;
+   const double scale = elementSize * max( matrix.getRows(), matrix.getColumns() );
+   str << "%!PS-Adobe-2.0 EPSF-2.0" << std::endl;
+   str << "%%BoundingBox: 0 0 " << scale << " " << scale << std::endl;
+   str << "%%Creator: TNL" << std::endl;
+   str << "%%LanguageLevel: 2" << std::endl;
+   str << "%%EndComments" << std::endl << std::endl;
+   str << "0 " << scale << " translate" << std::endl;
    return true;
 }
 
@@ -82,13 +82,13 @@ bool tnlMatrixWriter< Matrix >::writeEpsBody( std::ostream str,
          {
             str << ( column - lastColumn ) * elementSize
                 << " " << -( row - lastRow ) * elementSize
-                << " translate newpath 0 0 " << elementSize << " " << elementSize << " rectstroke" << endl;
+                << " translate newpath 0 0 " << elementSize << " " << elementSize << " rectstroke" << std::endl;
             lastColumn = column;
             lastRow = row;
          }
       }
       if( verbose )
-         cout << "Drawing the row " << row << "      \r" << flush;
+        std::cout << "Drawing the row " << row << "      \r" << std::flush;
    }
    return true;
 }

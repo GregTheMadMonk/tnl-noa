@@ -147,7 +147,7 @@ class tnlFlowerpotFunction< 3, Real > : public tnlFlowerpotFunctionBase< Real, 3
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlFlowerpotFunction< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const tnlFlowerpotFunction< Dimensions, Real >& f )
 {
    str << "Flowerpot function.";
    return str;

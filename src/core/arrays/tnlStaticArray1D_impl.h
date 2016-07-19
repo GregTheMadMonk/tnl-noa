@@ -47,7 +47,7 @@ tnlString tnlStaticArray< 1, Element >::getType()
    return tnlString( "tnlStaticArray< " ) +
           tnlString( size ) +
           tnlString( ", " ) +
-          ::getType< Element >() +
+          TNL::getType< Element >() +
           tnlString( " >" );
 }
 
@@ -77,7 +77,7 @@ __cuda_callable__
 inline const Element& tnlStaticArray< 1, Element >::operator[]( int i ) const
 {
    tnlAssert( i >= 0 && i < size,
-            cerr << "i = " << i << " size = " << size << endl; );
+            std::cerr << "i = " << i << " size = " << size << std::endl; );
    return data[ i ];
 }
 
@@ -86,7 +86,7 @@ __cuda_callable__
 inline Element& tnlStaticArray< 1, Element >::operator[]( int i )
 {
    tnlAssert( i >= 0 && i < size,
-            cerr << "i = " << i << " size = " << size << endl; );
+            std::cerr << "i = " << i << " size = " << size << std::endl; );
    return data[ i ];
 }
 
@@ -161,7 +161,7 @@ bool tnlStaticArray< 1, Element >::save( tnlFile& file ) const
 {
    if( ! file. write< Element, tnlHost, int >( data, size ) )
    {
-      cerr << "Unable to write " << getType() << "." << endl;
+      std::cerr << "Unable to write " << getType() << "." << std::endl;
       return false;
    }
    return true;
@@ -176,7 +176,7 @@ bool tnlStaticArray< 1, Element >::load( tnlFile& file)
    if( ! file.read( data, size ) )
 #endif
    {
-      cerr << "Unable to read " << getType() << "." << endl;
+      std::cerr << "Unable to read " << getType() << "." << std::endl;
       return false;
    }
    return true;
@@ -188,7 +188,7 @@ void tnlStaticArray< 1, Element >::sort()
 }
 
 template< typename Element >
-ostream& tnlStaticArray< 1, Element >::write( ostream& str, const char* separator ) const
+std::ostream& tnlStaticArray< 1, Element >::write( std::ostream& str, const char* separator ) const
 {
    str << data[ 0 ];
    return str;

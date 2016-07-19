@@ -39,7 +39,7 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
       if( ! SetSize( A. GetSize() ) ) return false;
       if( ! A_T )
       {
-         cerr << "I need to know the transpose matrix for BICG solver. Use the SetTransposeMatrix method, please." << endl;
+         std::cerr << "I need to know the transpose matrix for BICG solver. Use the SetTransposeMatrix method, please." << std::endl;
          return false;
       }
 
@@ -158,7 +158,7 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
          T v = tmp[ i ] - b[ i ];
          res += v * v;
       }
-      return sqrt( res ) / b_norm;
+      return ::sqrt( res ) / b_norm;
    };
 
    bool AllocateSupportingArrays( int size )
@@ -172,7 +172,7 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
       tmp = new T[ size ];
       if( ! r || ! r_ast || ! r_ast_new || ! p || ! p_ast || ! tmp )
       {
-         cerr << "I could not allocated all supporting arrays for the CG solver." << endl;
+         std::cerr << "I could not allocated all supporting arrays for the CG solver." << std::endl;
          return false;
       }
       return true;

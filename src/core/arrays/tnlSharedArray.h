@@ -144,7 +144,7 @@ class tnlSharedArray : public tnlObject
 };
 
 template< typename Element, typename Device, typename Index >
-ostream& operator << ( ostream& str, const tnlSharedArray< Element, Device, Index >& v );
+std::ostream& operator << ( std::ostream& str, const tnlSharedArray< Element, Device, Index >& v );
 
 } // namespace TNL
 

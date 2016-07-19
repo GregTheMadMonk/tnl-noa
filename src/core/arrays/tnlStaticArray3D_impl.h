@@ -62,7 +62,7 @@ tnlString tnlStaticArray< 3, Element >::getType()
    return tnlString( "tnlStaticArray< " ) +
           tnlString( size ) +
           tnlString( ", " ) +
-          ::getType< Element >() +
+          TNL::getType< Element >() +
           tnlString( " >" );
 }
 
@@ -91,7 +91,7 @@ __cuda_callable__
 inline const Element& tnlStaticArray< 3, Element >::operator[]( int i ) const
 {
    tnlAssert( i >= 0 && i < size,
-            cerr << "i = " << i << " size = " << size << endl; );
+            std::cerr << "i = " << i << " size = " << size << std::endl; );
    return data[ i ];
 }
 
@@ -100,7 +100,7 @@ __cuda_callable__
 inline Element& tnlStaticArray< 3, Element >::operator[]( int i )
 {
    tnlAssert( i >= 0 && i < size,
-            cerr << "i = " << i << " size = " << size << endl; );
+            std::cerr << "i = " << i << " size = " << size << std::endl; );
    return data[ i ];
 }
 
@@ -210,7 +210,7 @@ bool tnlStaticArray< 3, Element >::save( tnlFile& file ) const
 {
    if( ! file. write< Element, tnlHost, int >( data, size ) )
    {
-      cerr << "Unable to write " << getType() << "." << endl;
+      std::cerr << "Unable to write " << getType() << "." << std::endl;
       return false;
    }
    return true;
@@ -221,7 +221,7 @@ bool tnlStaticArray< 3, Element >::load( tnlFile& file)
 {
    if( ! file.read< Element, tnlHost, int >( data, size ) )
    {
-      cerr << "Unable to read " << getType() << "." << endl;
+      std::cerr << "Unable to read " << getType() << "." << std::endl;
       return false;
    }
    return true;
@@ -234,15 +234,15 @@ void tnlStaticArray< 3, Element >::sort()
     * Bubble sort on three elements
     */
    if( data[ 0 ] > data[ 1 ] )
-      Swap( data[ 0 ], data[ 1 ] );
+      swap( data[ 0 ], data[ 1 ] );
    if( data[ 1 ] > data[ 2 ] )
-      Swap( data[ 1 ], data[2  ] );
+      swap( data[ 1 ], data[2  ] );
    if( data[ 0 ] > data[ 1 ] )
-      Swap( data[ 0 ], data[ 1 ] );
+      swap( data[ 0 ], data[ 1 ] );
 }
 
 template< typename Element >
-ostream& tnlStaticArray< 3, Element >::write( ostream& str, const char* separator ) const
+std::ostream& tnlStaticArray< 3, Element >::write( std::ostream& str, const char* separator ) const
 {
    str << data[ 0 ] << separator << data[ 1 ] << separator << data[ 2 ];
    return str;

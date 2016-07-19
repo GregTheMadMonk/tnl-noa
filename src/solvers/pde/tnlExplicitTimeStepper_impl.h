@@ -8,11 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXPLICITTIMESTEPPER_IMPL_H_
-#define TNLEXPLICITTIMESTEPPER_IMPL_H_
+#pragma once
 
 #include "tnlExplicitTimeStepper.h"
 
+namespace TNL {
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
@@ -92,7 +92,7 @@ setTimeStep( const RealType& timeStep )
 {
    if( timeStep <= 0.0 )
    {
-      cerr << "Tau for tnlExplicitTimeStepper must be positive. " << endl;
+      std::cerr << "Tau for tnlExplicitTimeStepper must be positive. " << std::endl;
       return false;
    }
    this->timeStep = timeStep;
@@ -143,7 +143,7 @@ getExplicitRHS( const RealType& time,
                                     u,
                                     *( this->meshDependentData ) ) )
    {
-      cerr << endl << "Preiteration failed." << endl;
+      std::cerr << std::endl << "Preiteration failed." << std::endl;
       return;
       //return false; // TODO: throw exception
    }
@@ -159,7 +159,7 @@ getExplicitRHS( const RealType& time,
                                      u,
                                      *( this->meshDependentData ) ) )
    {
-      cerr << endl << "Postiteration failed." << endl;
+      std::cerr << std::endl << "Postiteration failed." << std::endl;
       return;
       //return false; // TODO: throw exception
    }
@@ -184,4 +184,4 @@ writeEpilog( tnlLogger& logger )
    return true;
 }
 
-#endif /* TNLEXPLICITTIMESTEPPER_IMPL_H_ */
+} // namespace TNL

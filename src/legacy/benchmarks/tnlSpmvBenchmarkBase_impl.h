@@ -113,14 +113,14 @@ void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const tnlVector< RealType, De
    tnlVector< RealType, tnlHost, IndexType > resB( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
    if( ! resB. setSize( b. getSize() ) )
    {
-      cerr << "I am not able to allocate copy of vector b on the host." << endl;
+      std::cerr << "I am not able to allocate copy of vector b on the host." << std::endl;
       return;
    }
    resB = b;
    benchmarkWasSuccesful = true;
    for( IndexType j = 0; j < refB. getSize(); j ++ )
    {
-      //f << refB[ j ] << " - " << host_b[ j ] << " = "  << refB[ j ] - host_b[ j ] <<  endl;
+      //f << refB[ j ] << " - " << host_b[ j ] << " = "  << refB[ j ] - host_b[ j ] <<  std::endl;
       RealType error( 0.0 );
       if( refB[ j ] != 0.0 )
          error = ( RealType ) fabs( refB[ j ] - resB[ j ] ) /  ( RealType ) fabs( refB[ j ] );
@@ -128,13 +128,13 @@ void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const tnlVector< RealType, De
          error = ( RealType ) fabs( refB[ j ] );
       if( error > maxError )
          firstErrorOccurence = j;
-      this->maxError = Max( this->maxError, error );
+      this->maxError = max( this->maxError, error );
 
       /*if( error > tnlSpmvBenchmarkPrecision( error ) )
          benchmarkWasSuccesful = false;*/
 
    }
-   //cout << "First error was on " << firstErrorOccurence << endl;
+   //cout << "First error was on " << firstErrorOccurence << std::endl;
 
    double flops = 2.0 * iterations * matrix.getNumberOfNonzeroMatrixElements();
    this->gflops = flops / time * 1.0e-9;
@@ -154,14 +154,14 @@ void tnlSpmvBenchmarkBase< Matrix >::writeProgressTableHeader()
                     this->benchmarkStatusColumnWidth +
                     this->infoColumnWidth;
 
-   cout << left << setw( this->formatColumnWidth - 5 ) << "MATRIX FORMAT"
-        << left << setw( 5 ) << "BLOCK"
-        << right << setw( this->timeColumnWidth ) << "TIME"
-        << right << setw( this->iterationsColumnWidth ) << "ITERATIONS"
-        << right << setw( this->gflopsColumnWidth ) << "GFLOPS"
-        << right << setw( this->benchmarkStatusColumnWidth ) << "CHECK"
-        << left << setw(  this->infoColumnWidth ) << " INFO" << endl
-        << setfill( '-' ) << setw( totalWidth ) << "--" << endl
+  std::cout << left << std::setw( this->formatColumnWidth - 5 ) << "MATRIX FORMAT"
+        << left << std::setw( 5 ) << "BLOCK"
+        << right << std::setw( this->timeColumnWidth ) << "TIME"
+        << right << std::setw( this->iterationsColumnWidth ) << "ITERATIONS"
+        << right << std::setw( this->gflopsColumnWidth ) << "GFLOPS"
+        << right << std::setw( this->benchmarkStatusColumnWidth ) << "CHECK"
+        << left << std::setw(  this->infoColumnWidth ) << " INFO" << std::endl
+        << setfill( '-' ) << std::setw( totalWidth ) << "--" << std::endl
         << setfill( ' ');
 }
 
@@ -190,19 +190,19 @@ template< typename Matrix >
 bool tnlSpmvBenchmarkBase< Matrix > :: printMatrixInHtml( const tnlString& fileName,
                                                           tnlMatrix< RealType, tnlHost, IndexType >& matrix ) const
 {
-   //cout << "Writing to file " << fileName << endl;
-   fstream file;
-   file. open( fileName. getString(), ios :: out );
+   //cout << "Writing to file " << fileName << std::endl;
+   std::fstream file;
+   file. open( fileName. getString(), std::ios::out );
    if( ! file )
    {
-      cerr << "I am not able to open the file " << fileName << endl;
+      std::cerr << "I am not able to open the file " << fileName << std::endl;
       return false;
    }
-   file << "<html>" << endl;
-   file << "   <body>" << endl;
+   file << "<html>" << std::endl;
+   file << "   <body>" << std::endl;
    matrix. printOut( file, "html" );
-   file << "   </body>" << endl;
-   file << "</html>" << endl;
+   file << "   </body>" << std::endl;
+   file << "</html>" << std::endl;
    file. close();
    return true;
 }

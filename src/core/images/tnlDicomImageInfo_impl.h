@@ -56,7 +56,7 @@ inline bool tnlDicomImageInfo::retrieveInfo()
    isObjectRetrieved = true;
    return true;
 #else
-   cerr << "DICOM format is not supported in this build of TNL." << endl;
+   std::cerr << "DICOM format is not supported in this build of TNL." << std::endl;
    return false;
 #endif
 }

@@ -14,6 +14,8 @@
 #include <mesh/tnlGrid.h>
 #include <functions/tnlExpBumpFunction.h>
 
+using namespace TNL;
+
 template< typename ApproximateOperator,
           typename ExactOperator,
           typename Mesh,

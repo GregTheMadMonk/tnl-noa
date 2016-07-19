@@ -63,7 +63,7 @@ class tnlMeshEntity
 
       bool load( tnlFile& file );
 
-      void print( ostream& str ) const;
+      void print( std::ostream& str ) const;
 
       bool operator==( const tnlMeshEntity& entity ) const;
  
@@ -174,7 +174,7 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >
 
       bool load( tnlFile& file );
 
-      void print( ostream& str ) const;
+      void print( std::ostream& str ) const;
 
       bool operator==( const tnlMeshEntity& entity ) const;
  
@@ -213,7 +213,7 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >
 
 template< typename MeshConfig,
           typename EntityTopology >
-ostream& operator <<( ostream& str, const tnlMeshEntity< MeshConfig, EntityTopology >& entity );
+std::ostream& operator <<( std::ostream& str, const tnlMeshEntity< MeshConfig, EntityTopology >& entity );
 
 /****
  * This tells the compiler that theMeshEntity is a type with a dynamic memory allocation.

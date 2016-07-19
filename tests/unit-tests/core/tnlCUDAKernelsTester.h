@@ -21,11 +21,12 @@
 #include <core/vectors/tnlVectorHost.h>
 #include <core/mfuncs.h>
 
-using namespace std;
-
 #ifdef HAVE_CUDA
 #include <core/tnl-cuda-kernels.h>
 #endif
+
+using namespace std;
+using namespace TNL;
 
 
 template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
@@ -109,8 +110,8 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 
       for( int i = 1; i < size; i ++ )
       {
-         seq_min = :: Min( seq_min, host_input[ i ] );
-         seq_max = :: Max( seq_max, host_input[ i ] );
+         seq_min = :: min( seq_min, host_input[ i ] );
+         seq_max = :: max( seq_max, host_input[ i ] );
          seq_sum += host_input[ i ];
       }
 
@@ -150,26 +151,26 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 
 
       /*if( min == seq_min )
-		   cout << "Min: " << min << " Seq. min: " << seq_min << " :-)" << endl;
+		  std::cout << "Min: " << min << " Seq. min: " << seq_min << " :-)" << std::endl;
 	   else
-		   cout << "Min: " << min << " Seq. min: " << seq_min << " !!!!!!!!!!" << endl;
+		  std::cout << "Min: " << min << " Seq. min: " << seq_min << " !!!!!!!!!!" << std::endl;
 	   if( max == seq_max )
-		   cout	<< "Max: " << max << " Seq. max: " << seq_max << " :-)" << endl;
+		  std::cout	<< "Max: " << max << " Seq. max: " << seq_max << " :-)" << std::endl;
 	   else
-		   cout	<< "Max: " << max << " Seq. max: " << seq_max << " !!!!!!!!!!" << endl;
+		  std::cout	<< "Max: " << max << " Seq. max: " << seq_max << " !!!!!!!!!!" << std::endl;
 	   if( sum == seq_sum )
-		   cout << "Sum: " << sum << " Seq. sum: " << seq_sum << " :-)" << endl;
+		  std::cout << "Sum: " << sum << " Seq. sum: " << seq_sum << " :-)" << std::endl;
 	   else
-		   cout << "Sum: " << sum << " Seq. sum: " << seq_sum << " !!!!!!!!!!" << endl;*/
+		  std::cout << "Sum: " << sum << " Seq. sum: " << seq_sum << " !!!!!!!!!!" << std::endl;*/
 
       T param;
       if( getType( param ) == "float" ||
                getType( param ) == "double" )
       {
          if( min != seq_min )
-            cout << "Diff. min = " << min << " seq. min = " << seq_min;
+           std::cout << "Diff. min = " << min << " seq. min = " << seq_min;
          if( max != seq_max )
-            cout << "Diff. max = " << max << " seq. max = " << seq_max;
+           std::cout << "Diff. max = " << max << " seq. max = " << seq_max;
          CPPUNIT_ASSERT( min == seq_min );
          CPPUNIT_ASSERT( max == seq_max );
          if( sum == 0.0 )
@@ -181,7 +182,7 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
             double diff = ( ( double ) sum - ( double ) seq_sum ) / ( double) sum;
             if( fabs( diff > 1.0e-5 ) )
             {
-               cout << "Diff is " << diff << " for " << getType( param ) << endl;
+              std::cout << "Diff is " << diff << " for " << getType( param ) << std::endl;
                abort();
             }
             CPPUNIT_ASSERT( fabs( diff ) < 1.0e-5 );
@@ -191,17 +192,17 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
       {
          if( min != seq_min )
          {
-            cout << "Diff. min = " << min << " seq. min = " << seq_min;
+           std::cout << "Diff. min = " << min << " seq. min = " << seq_min;
             abort();
          }
          if( max != seq_max )
          {
-            cout << "Diff. max = " << max << " seq. max = " << seq_max;
+           std::cout << "Diff. max = " << max << " seq. max = " << seq_max;
             abort();
          }
          if( sum != seq_sum )
          {
-            cout << "Diff. sum = " << sum << " seq. sum = " << seq_sum;
+           std::cout << "Diff. sum = " << sum << " seq. sum = " << seq_sum;
             abort();
          }
          CPPUNIT_ASSERT( min == seq_min );
@@ -249,7 +250,7 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
                   256,
                   2048 );
          size *= 2;
-         //cout << endl;
+         //cout << std::endl;
       }
       for( size = 1; size < 5000; size ++ )
       {
@@ -285,43 +286,43 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
                   algorithm_efficiency,
                   256,
                   2048 );
-         //cout << endl;
+         //cout << std::endl;
       }
    };
 
    void testReduction()
    {
-      //cout << "Test FAST reduction" << endl;
+      //cout << "Test FAST reduction" << std::endl;
       testReduction( 0 );
    }
 
    void testSimpleReduction5()
    {
-      //cout << "Test reduction 5" << endl;
+      //cout << "Test reduction 5" << std::endl;
       testReduction( 5 );
    };
 
    void testSimpleReduction4()
    {
-      //cout << "Test reduction 4" << endl;
+      //cout << "Test reduction 4" << std::endl;
       testReduction( 4 );
    };
 
    void testSimpleReduction3()
    {
-      //cout << "Test reduction 3" << endl;
+      //cout << "Test reduction 3" << std::endl;
       testReduction( 3 );
    };
 
    void testSimpleReduction2()
    {
-      //cout << "Test reduction 2" << endl;
+      //cout << "Test reduction 2" << std::endl;
       testReduction( 2 );
    };
 
    void testSimpleReduction1()
    {
-      //cout << "Test reduction 1" << endl;
+      //cout << "Test reduction 1" << std::endl;
       testReduction( 1 );
    };
 

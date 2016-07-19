@@ -56,8 +56,8 @@ class tnlBackwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Me
             tnlString( XDifference ) + ", " +
             tnlString( YDifference ) + ", " +
             tnlString( ZDifference ) + ", " +
-            ::getType< RealType >() + ", " +
-            ::getType< IndexType >() + " >";
+           TNL::getType< RealType >() + ", " +
+           TNL::getType< IndexType >() + " >";
       }
  
       template< typename MeshFunction, typename MeshEntity >

@@ -22,6 +22,8 @@
 #include <core/tnlString.h>
 #include <core/tnlFile.h>
 
+using namespace TNL;
+
 class tnlStringTester : public CppUnit :: TestCase
 {
    public:

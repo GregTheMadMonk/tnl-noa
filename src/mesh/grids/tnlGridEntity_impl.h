@@ -140,10 +140,10 @@ getIndex() const
    typedef typename GridType::template MeshEntity< EntityDimensions > EntityType;
    tnlAssert( this->entityIndex >= 0 &&
               this-> entityIndex < grid.template getEntitiesCount< EntityType >(),
-              cerr << "this->entityIndex = " << this->entityIndex
+              std::cerr << "this->entityIndex = " << this->entityIndex
                    << " grid.template getEntitiesCount< EntityDimensions >() = " << grid.template getEntitiesCount< EntityType >() );
    tnlAssert( this->entityIndex == grid.getEntityIndex( *this ),
-              cerr << "this->entityIndex = " << this->entityIndex
+              std::cerr << "this->entityIndex = " << this->entityIndex
                    << " grid.getEntityIndex( *this ) = " << grid.getEntityIndex( *this ) );
    return this->entityIndex;
 }
@@ -174,7 +174,7 @@ tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Con
 setOrientation( const EntityOrientationType& orientation )
 {
    this->orientation = orientation;
-   this->basis = EntityBasisType( 1 ) - tnlAbs( orientation );
+   this->basis = EntityBasisType( 1 ) - abs( orientation );
 }
 
 template< int Dimensions,
@@ -203,7 +203,7 @@ tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions, Con
 setBasis( const EntityBasisType& basis )
 {
    this->basis = basis;
-   this->orientation = EntityOrientationType( 1 ) - tnlAbs( basis );
+   this->orientation = EntityOrientationType( 1 ) - abs( basis );
 }
 
 template< int Dimensions,
@@ -392,10 +392,10 @@ getIndex() const
 {
    tnlAssert( this->entityIndex >= 0 &&
               this-> entityIndex < grid.template getEntitiesCount< ThisType >(),
-              cerr << "this->entityIndex = " << this->entityIndex
+              std::cerr << "this->entityIndex = " << this->entityIndex
                    << " grid.template getEntitiesCount< Dimensions >() = " << grid.template getEntitiesCount< ThisType >() );
    tnlAssert( this->entityIndex == grid.getEntityIndex( *this ),
-              cerr << "this->index = " << this->entityIndex
+              std::cerr << "this->index = " << this->entityIndex
                    << " grid.getEntityIndex( *this ) = " << grid.getEntityIndex( *this ) );
    return this->entityIndex;
 }
@@ -612,10 +612,10 @@ getIndex() const
    typedef typename GridType::Vertex Vertex;
    tnlAssert( this->entityIndex >= 0 &&
               this-> entityIndex < grid.template getEntitiesCount< Vertex >(),
-              cerr << "this->entityIndex = " << this->entityIndex
+              std::cerr << "this->entityIndex = " << this->entityIndex
                    << " grid.template getEntitiesCount< 0 >() = " << grid.template getEntitiesCount< Vertex >() );
    tnlAssert( this->entityIndex == grid.getEntityIndex( *this ),
-              cerr << "this->entityIndex = " << this->entityIndex
+              std::cerr << "this->entityIndex = " << this->entityIndex
                    << " grid.getEntityIndex( *this ) = " << grid.getEntityIndex( *this ) );
    return this->entityIndex;
 }

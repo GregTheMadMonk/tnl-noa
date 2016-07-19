@@ -10,6 +10,8 @@
 
 #pragma once 
 
+#include <core/mfuncs.h>
+
 namespace TNL {
 
 template< typename Real >
@@ -52,7 +54,7 @@ tnlString tnlStaticVector< 2, Real >::getType()
    return tnlString( "tnlStaticVector< " ) +
           tnlString( 2 ) +
           tnlString( ", " ) +
-          ::getType< Real >() +
+         TNL::getType< Real >() +
           tnlString( " >" );
 }
 
@@ -170,8 +172,8 @@ __cuda_callable__
 tnlStaticVector< 2, Real >
 tnlStaticVector< 2, Real >::abs() const
 {
-   return tnlStaticVector< 2, Real >( tnlAbs( this->data[ 0 ] ),
-                                      tnlAbs( this->data[ 1 ] ) );
+   return tnlStaticVector< 2, Real >( ::abs( this->data[ 0 ] ),
+                                      ::abs( this->data[ 1 ] ) );
 }
 
 

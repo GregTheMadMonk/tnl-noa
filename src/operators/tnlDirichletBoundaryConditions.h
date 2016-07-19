@@ -117,7 +117,7 @@ class tnlDirichletBoundaryConditions
 
 template< typename Mesh,
           typename Function >
-ostream& operator << ( ostream& str, const tnlDirichletBoundaryConditions< Mesh, Function >& bc )
+std::ostream& operator << ( std::ostream& str, const tnlDirichletBoundaryConditions< Mesh, Function >& bc )
 {
    str << "Dirichlet boundary conditions: vector = " << bc.getVector();
    return str;

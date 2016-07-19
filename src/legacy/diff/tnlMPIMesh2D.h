@@ -281,8 +281,8 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: Init( const tnlGridOld< 2, Real, De
       if( mesh_comm == MPI_COMM_NULL )
       {
          if( MPIGetRank( comm ) == root )
-            cerr << "Not enough nodes for creating mesh " << mesh_x_size <<
-                    "x" << mesh_y_size << endl;
+            std::cerr << "Not enough nodes for creating mesh " << mesh_x_size <<
+                    "x" << mesh_y_size << std::endl;
          return false;
       }
       MPI_Cart_coords( mesh_comm, MPIGetRank( mesh_comm ), 2, dims );
@@ -396,11 +396,11 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: Init( const tnlGridOld< 2, Real, De
          top_right_send_buff = new T[ top_overlap * right_overlap ];
          top_right_recieve_buff = new T[ top_overlap * right_overlap ];
       }
-      cout << "Node " << MPIGetRank()
+     std::cout << "Node " << MPIGetRank()
            << " has position (" << GetXPos()
            << ", " << GetYPos()
            << ") and dimensions " << GetSubdomainXSize()
-           << " x " << GetSubdomainYSize() << endl;
+           << " x " << GetSubdomainYSize() << std::endl;
 #else
       domain_x_size = u. getDimensions(). x();
       domain_y_size = u. getDimensions(). y();
@@ -463,9 +463,9 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: CreateMesh( const tnlGridOld< 2, Re
    if( ! sub_u. SetNewDimensions( subdomain_x_size + left_overlap + right_overlap,
                                   subdomain_y_size + bottom_overlap + top_overlap ) )
    {
-      cerr << "Unable to allocate subdomain grids for '" << name
+      std::cerr << "Unable to allocate subdomain grids for '" << name
            << "' on the node ( " << node_x_pos << ", " << node_y_pos
-           << " rank " << MPIGetRank( original_comm ) << "." << endl;
+           << " rank " << MPIGetRank( original_comm ) << "." << std::endl;
       err = 1;
    }
    sub_u. SetNewDomain( ax + ( node_x_pos * subdomain_x_size - left_overlap ) * hx,
@@ -474,7 +474,7 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: CreateMesh( const tnlGridOld< 2, Re
                         ay + ( ( node_y_pos + 1 ) * subdomain_y_size + top_overlap - 1 ) * hx,
                         hx, hy );
    //cout << "Node " << MPIGetRank() << " mesh size "
-   //     << sub_u -> GetXSize() << "x" << sub_u -> GetYSize() << endl;
+   //     << sub_u -> GetXSize() << "x" << sub_u -> GetYSize() << std::endl;
    MPI_Allreduce( &err, &all_err, 1, MPI_INT,MPI_SUM, mesh_comm );
    if( all_err != 0 ) return false;
 #else
@@ -493,7 +493,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: ScatterToNode( const tnlGridOld< 2,
 #ifdef HAVE_MPI
    if( MPIGetRank( original_comm ) == root )
    {
-      //cout << "Node " << MPIGetRank() << " scatter to " << dest_node << endl;
+      //cout << "Node " << MPIGetRank() << " scatter to " << dest_node << std::endl;
       int dest_x_pos;
       int dest_y_pos;
       int coords[ 2 ];
@@ -560,7 +560,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: ScatterToNode( const tnlGridOld< 2,
              0,
              mesh_comm,
              &status );
-   //cout << "Receiving data on node " << node_rank << endl;
+   //cout << "Receiving data on node " << node_rank << std::endl;
 #endif
 }
 
@@ -649,7 +649,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Gather( tnlGridOld< 2, Real, Device
             for( i = i1; i < i2; i ++ )
                for( j = j1; j < j2; j ++ )
                {
-                  //cout << "Node recv" << MPIGetRank( original_comm ) << " i = " << i << " j = " << j << endl;
+                  //cout << "Node recv" << MPIGetRank( original_comm ) << " i = " << i << " j = " << j << std::endl;
                   u( i, j ) = mpi_buff( i - i1 + src_left_overlap, j - j1 + src_bottom_overlap );
                }
          }
@@ -662,7 +662,7 @@ void tnlMPIMesh< 2, Real, Device, Index > :: Gather( tnlGridOld< 2, Real, Device
             for( i = i1; i < i2; i ++ )
                for( j = j1; j < j2; j ++ )
                {
-                  //cout << "Node cp" << MPIGetRank( original_comm ) << " i = " << i << " j = " << j << endl;
+                  //cout << "Node cp" << MPIGetRank( original_comm ) << " i = " << i << " j = " << j << std::endl;
                   u( i, j ) = sub_u( i - i1 + src_left_overlap, j - j1 + bottom_overlap );
                }
          }

@@ -44,7 +44,7 @@ class tnlGridEntityGetter<
                                    const IndexType& index )
       {
          tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-              cerr << " index = " << index
+              std::cerr << " index = " << index
                    << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                    << " entityDimensions = " << entityDimensions );
          return GridEntity
@@ -60,7 +60,7 @@ class tnlGridEntityGetter<
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() < grid.getDimensions() + CoordinatesType( 1 - entityDimensions ),
-              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
+              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " grid.getDimensions() = " << grid.getDimensions()
                    << " EntityDimensions = " << entityDimensions );
          return entity.getCoordinates().x();
@@ -90,7 +90,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 2 >
                                    const IndexType& index )
       {
          tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           cerr << " index = " << index
+           std::cerr << " index = " << index
                 << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
 
@@ -110,7 +110,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 2 >
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
                     entity.getCoordinates() < grid.getDimensions(),
-              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
+              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " grid.getDimensions() = " << grid.getDimensions() );
 
          //const CoordinatesType coordinates = entity.getCoordinates();
@@ -142,7 +142,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 1 >
                                    const IndexType& index )
       {
          tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           cerr << " index = " << index
+           std::cerr << " index = " << index
                 << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
  
@@ -171,10 +171,10 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 1 >
                                        const GridEntity& entity )
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0 ) &&
-                    entity.getCoordinates() < grid.getDimensions() + tnlAbs( entity.getOrientation() ),
-                 cerr << "entity.getCoordinates() = " << entity.getCoordinates()
+                    entity.getCoordinates() < grid.getDimensions() + abs( entity.getOrientation() ),
+                 std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                       << " dimensions.x() = " << grid.getDimensions()
-                      << " tnlAbs( entity.getOrientation() ) = " << tnlAbs( entity.getOrientation() ) );
+                      << " abs( entity.getOrientation() ) = " << abs( entity.getOrientation() ) );
  
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
@@ -205,7 +205,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 0 >
                                    const IndexType& index )
       {
          tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           cerr << " index = " << index
+           std::cerr << " index = " << index
                 << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
 
@@ -225,7 +225,7 @@ class tnlGridEntityGetter< tnlGrid< 2, Real, Device, Index >, GridEntity, 0 >
                                        const GridEntity& entity )
       {
          tnlAssert( entity.getCoordinates() >= 0 && entity.getCoordinates() <= grid.getDimensions(),
-            cerr << "entity.getCoordinates() = " << entity.getCoordinates()
+            std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                  << " grid.getDimensions() = " << grid.getDimensions() );
  
          const CoordinatesType coordinates = entity.getCoordinates();
@@ -258,7 +258,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 3 >
                                    const IndexType& index )
       {
          tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           cerr << " index = " << index
+           std::cerr << " index = " << index
                 << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
 
@@ -279,7 +279,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 3 >
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
                     entity.getCoordinates() < grid.getDimensions(),
-              cerr << "entity.getCoordinates() = " << entity.getCoordinates()
+              std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " grid.getDimensions() = " << grid.getDimensions() );
 
          const CoordinatesType coordinates = entity.getCoordinates();
@@ -310,7 +310,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 2 >
                                    const IndexType& index )
       {
          tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           cerr << " index = " << index
+           std::cerr << " index = " << index
                 << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
 
@@ -354,10 +354,10 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 2 >
                                        const GridEntity& entity )
       {
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
-                    entity.getCoordinates() < grid.getDimensions() + tnlAbs( entity.getOrientation() ),
-                 cerr << "entity.getCoordinates() = " << entity.getCoordinates()
+                    entity.getCoordinates() < grid.getDimensions() + abs( entity.getOrientation() ),
+                 std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                       << " dimensions.x() = " << grid.getDimensions()
-                      << " tnlAbs( entity.getOrientation() ) = " << tnlAbs( entity.getOrientation() ) );
+                      << " abs( entity.getOrientation() ) = " << abs( entity.getOrientation() ) );
  
          const CoordinatesType coordinates = entity.getCoordinates();
          const CoordinatesType dimensions = grid.getDimensions();
@@ -400,7 +400,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 1 >
                                    const IndexType& index )
       {
          tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           cerr << " index = " << index
+           std::cerr << " index = " << index
                 << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
  
@@ -449,7 +449,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 1 >
          tnlAssert( entity.getCoordinates() >= CoordinatesType( 0, 0, 0 ) &&
                     entity.getCoordinates() < grid.getDimensions() +
                        CoordinatesType( 1, 1, 1 ) - entity.getBasis(),
-            cerr << "entity.getCoordinates() = " << entity.getCoordinates()
+            std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                  << " dimensions.x() = " << grid.getDimensions()
                  << " CoordinatesType( 1, 1, 1 ) - entity.getBasis() = " << CoordinatesType( 1, 1, 1 ) - entity.getBasis() );
  
@@ -490,7 +490,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 0 >
                                    const IndexType& index )
       {
          tnlAssert( index >= 0 && index < grid.template getEntitiesCount< GridEntity >(),
-           cerr << " index = " << index
+           std::cerr << " index = " << index
                 << " grid.getEntitiesCount<>() = " << grid.template getEntitiesCount< GridEntity >()
                 << " entityDimensions = " << entityDimensions );
 
@@ -512,7 +512,7 @@ class tnlGridEntityGetter< tnlGrid< 3, Real, Device, Index >, GridEntity, 0 >
                                        const GridEntity& entity )
       {
          tnlAssert( entity.getCoordinates() >= 0 && entity.getCoordinates() <= grid.getDimensions(),
-            cerr << "entity.getCoordinates() = " << entity.getCoordinates()
+            std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                  << " grid.getDimensions() = " << grid.getDimensions() );
  
          const CoordinatesType coordinates = entity.getCoordinates();

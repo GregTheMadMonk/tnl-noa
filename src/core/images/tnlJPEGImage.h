@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragam once
+#pragma once
 
 #include <tnlConfig.h>
 

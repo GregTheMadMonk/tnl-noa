@@ -313,31 +313,31 @@ template< class T > const tnlReal< T > fabs( const tnlReal< T >& v )
 template< class T > const tnlReal< T > sqrt( const tnlReal< T >& v )
 {
    tnl_flops_counter. recordFunction();
-   return tnlReal< T >( sqrt( v. Data() ) );
+   return tnlReal< T >( ::sqrt( v. Data() ) );
 };
 
 template< class T > const tnlReal< T > pow( const tnlReal< T >& x, const tnlReal< T >& exp )
 {
    tnl_flops_counter. recordFunction();
-   return tnlReal< T >( pow( x. Data(), exp. Data() ) );
+   return tnlReal< T >( ::pow( x. Data(), exp. Data() ) );
 };
 
 template< class T > const tnlReal< T > pow( const tnlReal< T >& x, const T& exp )
 {
    tnl_flops_counter. recordFunction();
-   return tnlReal< T >( pow( x. Data(), exp ) );
+   return tnlReal< T >( ::pow( x. Data(), exp ) );
 };
 
 template< class T > const tnlReal< T > cos( const tnlReal< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return tnlReal< T >( cos( x. Data() ) );
+   return tnlReal< T >( ::cos( x. Data() ) );
 };
 
 template< class T > const tnlReal< T > sin( const tnlReal< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return tnlReal< T >( sin( x. Data() ) );
+   return tnlReal< T >( ::sin( x. Data() ) );
 };
 
 template< class T > const tnlReal< T > tan( const tnlReal< T >& x )
@@ -392,7 +392,7 @@ template< class T > const tnlReal< T > sinh( const tnlReal< T >& x )
 template< class T > const tnlReal< T > tanh( const tnlReal< T >& x )
 {
    tnl_flops_counter. recordFunction();
-   return tnlReal< T >( tanh( x. Data() ) );
+   return tnlReal< T >( ::tanh( x. Data() ) );
 };
 
 

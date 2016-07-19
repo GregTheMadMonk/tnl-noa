@@ -39,9 +39,9 @@ tnlString tnlGrid< 2, Real, Device, Index > :: getType()
 {
    return tnlString( "tnlGrid< " ) +
           tnlString( getMeshDimensions() ) + ", " +
-          tnlString( ::getType< RealType >() ) + ", " +
+          tnlString( TNL::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
-          tnlString( ::getType< IndexType >() ) + " >";
+          tnlString( TNL::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
@@ -133,8 +133,8 @@ template< typename Real,
           typename Index >
 void tnlGrid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
 {
-   tnlAssert( xSize > 0, cerr << "xSize = " << xSize );
-   tnlAssert( ySize > 0, cerr << "ySize = " << ySize );
+   tnlAssert( xSize > 0, std::cerr << "xSize = " << xSize );
+   tnlAssert( ySize > 0, std::cerr << "ySize = " << ySize );
 
    this->dimensions.x() = xSize;
    this->dimensions.y() = ySize;
@@ -294,9 +294,9 @@ tnlGrid< 2, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
    tnlAssert( xPow >= -2 && xPow <= 2,
-              cerr << " xPow = " << xPow );
+              std::cerr << " xPow = " << xPow );
    tnlAssert( yPow >= -2 && yPow <= 2,
-              cerr << " yPow = " << yPow );
+              std::cerr << " yPow = " << yPow );
 
    return this->spaceStepsProducts[ yPow + 2 ][ xPow + 2 ];
 }
@@ -307,7 +307,7 @@ template< typename Real,
 __cuda_callable__ inline
 Real tnlGrid< 2, Real, Device, Index > :: getSmallestSpaceStep() const
 {
-   return Min( this->spaceSteps.x(), this->spaceSteps.y() );
+   return min( this->spaceSteps.x(), this->spaceSteps.y() );
 }
 
 template< typename Real,
@@ -338,10 +338,10 @@ template< typename Real,
            cell.getCoordinates().x()++ )
       {
          IndexType c = this->getEntityIndex( cell );
-         lpNorm += pow( tnlAbs( f1[ c ] ), p );
+         lpNorm += ::pow( abs( f1[ c ] ), p );
       }
    lpNorm *= this->getSpaceSteps().x() * this->getSpaceSteps().y();
-   return pow( lpNorm, 1.0/p );
+   return ::pow( lpNorm, 1.0/p );
 }
 
 template< typename Real,
@@ -374,10 +374,10 @@ template< typename Real,
            cell.getCoordinates().x()++ )
       {
          IndexType c = this->getEntityIndex( cell );
-         lpNorm += pow( tnlAbs( f1[ c ] - f2[ c ] ), p );
+         lpNorm += ::pow( abs( f1[ c ] - f2[ c ] ), p );
       }
    lpNorm *= this->getSpaceSteps().x() * this->getSpaceSteps().y();
-   return pow( lpNorm, 1.0 / p );
+   return ::pow( lpNorm, 1.0 / p );
 }
 
 template< typename Real,
@@ -391,7 +391,7 @@ bool tnlGrid< 2, Real, Device, Index > :: save( tnlFile& file ) const
        ! this->proportions.save( file ) ||
        ! this->dimensions.save( file ) )
    {
-      cerr << "I was not able to save the domain description of a tnlGrid." << endl;
+      std::cerr << "I was not able to save the domain description of a tnlGrid." << std::endl;
       return false;
    }
    return true;
@@ -409,7 +409,7 @@ bool tnlGrid< 2, Real, Device, Index > :: load( tnlFile& file )
        ! this->proportions.load( file ) ||
        ! dimensions.load( file ) )
    {
-      cerr << "I was not able to load the domain description of a tnlGrid." << endl;
+      std::cerr << "I was not able to load the domain description of a tnlGrid." << std::endl;
       return false;
    }
    this->setDimensions( dimensions );
@@ -438,11 +438,11 @@ template< typename Real,
 bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
                                                      const tnlString& format ) const
 {
-   fstream file;
-   file. open( fileName. getString(), ios :: out );
+   std::fstream file;
+   file. open( fileName. getString(), std::ios::out );
    if( ! file )
    {
-      cerr << "I am not able to open the file " << fileName << "." << endl;
+      std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
       return false;
    }
    if( format == "asymptote" )
@@ -450,7 +450,7 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
       file << "size( "
            << this->getProportions(). x() << "cm , "
            << this->getProportions(). y() << "cm );"
-           << endl << endl;
+           << std::endl << std::endl;
       MeshEntity< 0 > vertex( *this );
       CoordinatesType& vertexCoordinates = vertex.getCoordinates();
       VertexType v;
@@ -468,9 +468,9 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
             v = vertex.getCenter();
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
-         file << " );" << endl;
+         file << " );" << std::endl;
       }
-      file << endl;
+      file << std::endl;
       for( Index i = 0; i < this->dimensions. x(); i ++ )
       {
          file << "draw( ";
@@ -485,9 +485,9 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
             v = vertex.getCenter();
             file << "--( " << v. x() << ", " << v. y() << " )";
          }
-         file << " );" << endl;
+         file << " );" << std::endl;
       }
-      file << endl;
+      file << std::endl;
 
       MeshEntity< 2 > cell( *this );
       CoordinatesType& cellCoordinates = cell.getCoordinates();
@@ -498,8 +498,8 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
             cellCoordinates.x() = i;
             cellCoordinates.y() = j;
             v = vertex.getCenter();
-            file << "label( scale(0.33) * Label( \"$" << setprecision( 3 ) << cellMeasure << setprecision( 8 )
-                 << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" << endl;
+            file << "label( scale(0.33) * Label( \"$" << std::setprecision( 3 ) << cellMeasure << std::setprecision( 8 )
+                 << "$\" ), ( " << v. x() << ", " << v. y() << " ), S );" << std::endl;
          }
 
       for( Index i = 0; i < this->dimensions. x(); i ++ )
@@ -516,7 +516,7 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
             this->getEdgeNormal< 1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << std::endl;
             */
             /****
              * West edge normal
@@ -527,7 +527,7 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
             this->getEdgeNormal< -1, 0 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << std::endl;
             */
             /****
              * North edge normal
@@ -538,7 +538,7 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
             this->getEdgeNormal< 0, 1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=green);" << std::endl;
             */
             /****
              * South edge normal
@@ -549,7 +549,7 @@ bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
             this->getEdgeNormal< 0, -1 >( CoordinatesType( i, j ), v );
             v *= 0.5;
             file << "draw( ( " << c. x() << ", " << c. y() << " )--( "
-                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << endl;
+                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << std::endl;
             */
          }
       return true;
@@ -567,19 +567,19 @@ bool tnlGrid< 2, Real, Device, Index > :: write( const MeshFunction& function,
 {
    if( this->template getEntitiesCount< Cell >() != function. getSize() )
    {
-      cerr << "The size ( " << function. getSize()
+      std::cerr << "The size ( " << function. getSize()
            << " ) of a mesh function does not agree with the DOFs ( "
-           << this->template getEntitiesCount< Cell >() << " ) of a mesh." << endl;
+           << this->template getEntitiesCount< Cell >() << " ) of a mesh." << std::endl;
       return false;
    }
-   fstream file;
-   file. open( fileName. getString(), ios :: out );
+   std::fstream file;
+   file. open( fileName. getString(), std::ios::out );
    if( ! file )
    {
-      cerr << "I am not able to open the file " << fileName << "." << endl;
+      std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
       return false;
    }
-   file << setprecision( 12 );
+   file << std::setprecision( 12 );
    if( format == "gnuplot" )
    {
       Cell cell( *this );
@@ -591,9 +591,9 @@ bool tnlGrid< 2, Real, Device, Index > :: write( const MeshFunction& function,
             VertexType v = cell.getCenter();
             tnlGnuplotWriter::write( file,  v );
             tnlGnuplotWriter::write( file,  function[ this->getEntityIndex( cell ) ] );
-            file << endl;
+            file << std::endl;
          }
-         file << endl;
+         file << std::endl;
       }
    }
    file. close();

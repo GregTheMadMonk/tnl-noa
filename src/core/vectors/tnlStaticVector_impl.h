@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragama once
+#pragma once
 
 namespace TNL {
 
@@ -45,7 +45,7 @@ tnlString tnlStaticVector< Size, Real >::getType()
    return tnlString( "tnlStaticVector< " ) +
           tnlString( Size ) +
           tnlString( ", " ) +
-          ::getType< Real >() +
+          TNL::getType< Real >() +
           tnlString( " >" );
 }
 
@@ -175,7 +175,7 @@ tnlStaticVector< Size, Real >::abs() const
 {
    tnlStaticVector< Size, Real > v;
    for( int i = 0; i < Size; i++ )
-      v.data[ i ] = tnlAbs( this->data[ i ] );
+      v.data[ i ] = TNL::abs( this->data[ i ] );
    return v;
 }
 

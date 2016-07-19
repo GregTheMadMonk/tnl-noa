@@ -11,6 +11,17 @@
 #ifndef TNLINDEXMULTIMAPTESTER_H_
 #define TNLINDEXMULTIMAPTESTER_H_
 
+#ifdef HAVE_CPPUNIT
+#include <cppunit/TestSuite.h>
+#include <cppunit/TestResult.h>
+#include <cppunit/TestCaller.h>
+#include <cppunit/TestCase.h>
+#include <cppunit/Message.h>
+#include <core/tnlFile.h>
+#include <core/vectors/tnlVector.h>
+
+using namespace TNL;
+
 template< typename Multimap,
           typename TestSetup >
 class tnlIndexMultimapTesterSetter
@@ -23,14 +34,6 @@ class tnlIndexMultimapTesterSetter
    }
 };
 
-#ifdef HAVE_CPPUNIT
-#include <cppunit/TestSuite.h>
-#include <cppunit/TestResult.h>
-#include <cppunit/TestCaller.h>
-#include <cppunit/TestCase.h>
-#include <cppunit/Message.h>
-#include <core/tnlFile.h>
-#include <core/vectors/tnlVector.h>
 
 #ifdef HAVE_CUDA
 template< typename IndexMultimapType >

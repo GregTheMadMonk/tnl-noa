@@ -29,6 +29,7 @@
 #include "tnlCusparseCSRMatrix.h"
 
 using namespace std;
+using namespace TNL;
 
 void setupConfig( tnlConfigDescription& config )
 {
@@ -43,127 +44,127 @@ void setupConfig( tnlConfigDescription& config )
    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
 }
 
-bool initLogFile( fstream& logFile, const tnlString& fileName )
+bool initLogFile( std::fstream& logFile, const tnlString& fileName )
 {
    if( access( fileName.getString(), F_OK ) == -1 )
    {
-      logFile.open( fileName.getString(), ios::out );
+      logFile.open( fileName.getString(), std::ios::out );
       if( ! logFile )
          return false;
       const tnlString fillingColoring = " : COLORING 0 #FFF8DC 20 #FFFF00 40 #FFD700 60 #FF8C0 80 #FF0000 100";
       const tnlString speedupColoring = " : COLORING #0099FF 1 #FFFFFF 2 #00FF99 4 #33FF99 8 #33FF22 16 #FF9900";
       const tnlString paddingColoring = " : COLORING #FFFFFF 1 #FFFFCC 10 #FFFF99 100 #FFFF66 1000 #FFFF33 10000 #FFFF00";
-      logFile << "#Matrix file " << endl;
-      logFile << "#Rows" << endl;
-      logFile << "#Columns" << endl;
-      logFile << "#Non-zero elements" << endl;
-      logFile << "#Filling (in %)" << fillingColoring << endl;
-      logFile << "#CSR Format" << endl;
-      logFile << "# CPU" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << endl;
+      logFile << "#Matrix file " << std::endl;
+      logFile << "#Rows" << std::endl;
+      logFile << "#Columns" << std::endl;
+      logFile << "#Non-zero elements" << std::endl;
+      logFile << "#Filling (in %)" << fillingColoring << std::endl;
+      logFile << "#CSR Format" << std::endl;
+      logFile << "# CPU" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << std::endl;
 #ifdef HAVE_CUDA
-      logFile << "# Cusparse CSR" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - cusparse-csr-speedup.txt" << endl;
-      logFile << "# CUDA" << endl;
-      logFile << "#  Scalar" << endl;
-      logFile << "#   Gflops" << endl;
-      logFile << "#   Throughput" << endl;
-      logFile << "#   Speedup" << speedupColoring << " SORT - csr-scalar-cuda-speedup.txt" << endl;
-      logFile << "#  Vector" << endl;
-      logFile << "#   Warp Size 1" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-1-cuda-speedup.txt" << endl;
-      logFile << "#   Warp Size 2" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-2-cuda-speedup.txt" << endl;
-      logFile << "#   Warp Size 4" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-4-cuda-speedup.txt" << endl;
-      logFile << "#   Warp Size 8" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-8-cuda-speedup.txt" << endl;
-      logFile << "#   Warp Size 16" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-16-cuda-speedup.txt" << endl;
-      logFile << "#   Warp Size 32" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-32-cuda-speedup.txt" << endl;
-      logFile << "#  Hybrid" << endl;
-      logFile << "#   Split 2" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-2-cuda-speedup.txt" << endl;
-      logFile << "#   Split 4" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-4-cuda-speedup.txt" << endl;
-      logFile << "#   Split 8" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-8-cuda-speedup.txt" << endl;
-      logFile << "#   Split 16" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-16-cuda-speedup.txt" << endl;
-      logFile << "#   Split 32" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-32-cuda-speedup.txt" << endl;
-      logFile << "#   Split 64" << endl;
-      logFile << "#    Gflops" << endl;
-      logFile << "#    Throughput" << endl;
-      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-64-cuda-speedup.txt" << endl;
+      logFile << "# Cusparse CSR" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - cusparse-csr-speedup.txt" << std::endl;
+      logFile << "# CUDA" << std::endl;
+      logFile << "#  Scalar" << std::endl;
+      logFile << "#   Gflops" << std::endl;
+      logFile << "#   Throughput" << std::endl;
+      logFile << "#   Speedup" << speedupColoring << " SORT - csr-scalar-cuda-speedup.txt" << std::endl;
+      logFile << "#  Vector" << std::endl;
+      logFile << "#   Warp Size 1" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-1-cuda-speedup.txt" << std::endl;
+      logFile << "#   Warp Size 2" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-2-cuda-speedup.txt" << std::endl;
+      logFile << "#   Warp Size 4" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-4-cuda-speedup.txt" << std::endl;
+      logFile << "#   Warp Size 8" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-8-cuda-speedup.txt" << std::endl;
+      logFile << "#   Warp Size 16" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-16-cuda-speedup.txt" << std::endl;
+      logFile << "#   Warp Size 32" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-vector-32-cuda-speedup.txt" << std::endl;
+      logFile << "#  Hybrid" << std::endl;
+      logFile << "#   Split 2" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-2-cuda-speedup.txt" << std::endl;
+      logFile << "#   Split 4" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-4-cuda-speedup.txt" << std::endl;
+      logFile << "#   Split 8" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-8-cuda-speedup.txt" << std::endl;
+      logFile << "#   Split 16" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-16-cuda-speedup.txt" << std::endl;
+      logFile << "#   Split 32" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-32-cuda-speedup.txt" << std::endl;
+      logFile << "#   Split 64" << std::endl;
+      logFile << "#    Gflops" << std::endl;
+      logFile << "#    Throughput" << std::endl;
+      logFile << "#    Speedup" << speedupColoring << " SORT - csr-hybrid-64-cuda-speedup.txt" << std::endl;
 #endif
-      logFile << "#Ellpack Format" << endl;
-      logFile << "# Padding (in %)" << paddingColoring << endl;
-      logFile << "# CPU" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - ellpack-host-speedup.txt" << endl;
+      logFile << "#Ellpack Format" << std::endl;
+      logFile << "# Padding (in %)" << paddingColoring << std::endl;
+      logFile << "# CPU" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - ellpack-host-speedup.txt" << std::endl;
 #ifdef HAVE_CUDA
-      logFile << "# CUDA" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - ellpack-cuda-speedup.txt" << endl;
+      logFile << "# CUDA" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - ellpack-cuda-speedup.txt" << std::endl;
 #endif
-      logFile << "#SlicedEllpack Format" << endl;
-      logFile << "# Padding (in %)" << paddingColoring << endl;
-      logFile << "# CPU" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - sliced-ellpack-host-speedup.txt" << endl;
+      logFile << "#SlicedEllpack Format" << std::endl;
+      logFile << "# Padding (in %)" << paddingColoring << std::endl;
+      logFile << "# CPU" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - sliced-ellpack-host-speedup.txt" << std::endl;
 #ifdef HAVE_CUDA
-      logFile << "# CUDA" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - sliced-ellpack-cuda-speedup.txt" << endl;
+      logFile << "# CUDA" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - sliced-ellpack-cuda-speedup.txt" << std::endl;
 #endif
-      logFile << "#ChunkedEllpack Format" << endl;
-      logFile << "# Padding (in %)" << paddingColoring << endl;
-      logFile << "# CPU" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - chunked-ellpack-host-speedup.txt" << endl;
+      logFile << "#ChunkedEllpack Format" << std::endl;
+      logFile << "# Padding (in %)" << paddingColoring << std::endl;
+      logFile << "# CPU" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - chunked-ellpack-host-speedup.txt" << std::endl;
 #ifdef HAVE_CUDA
-      logFile << "# CUDA" << endl;
-      logFile << "#  Gflops" << endl;
-      logFile << "#  Throughput" << endl;
-      logFile << "#  Speedup" << speedupColoring << " SORT - chunked-ellpack-cuda-speedup.txt" << endl;
+      logFile << "# CUDA" << std::endl;
+      logFile << "#  Gflops" << std::endl;
+      logFile << "#  Throughput" << std::endl;
+      logFile << "#  Speedup" << speedupColoring << " SORT - chunked-ellpack-cuda-speedup.txt" << std::endl;
 #endif
       return true;
    }
-   logFile.open( fileName.getString(), ios::out | ios::app );
-   //logFile << setprecision( 2 );
+   logFile.open( fileName.getString(), std::ios::out | std::ios::app );
+   //logFile << std::setprecision( 2 );
    if( ! logFile )
       return false;
    return true;
@@ -172,34 +173,34 @@ bool initLogFile( fstream& logFile, const tnlString& fileName )
 template< typename Matrix >
 void printMatrixInfo( const tnlString& inputFileName,
                       const Matrix& matrix,
-                      ostream& str )
+                      std::ostream& str )
 {
-   str << " Rows: " << setw( 8 ) << matrix.getRows();
-   str << " Columns: " << setw( 8 ) << matrix.getColumns();
-   str << " Nonzero Elements: " << setw( 10 ) << matrix.getNumberOfNonzeroMatrixElements();
+   str << " Rows: " << std::setw( 8 ) << matrix.getRows();
+   str << " Columns: " << std::setw( 8 ) << matrix.getColumns();
+   str << " Nonzero Elements: " << std::setw( 10 ) << matrix.getNumberOfNonzeroMatrixElements();
    const double fillingRatio = ( double ) matrix.getNumberOfNonzeroMatrixElements() / ( double ) matrix.getNumberOfMatrixElements();
-   str << " Filling: " << setw( 5 ) << 100.0 * fillingRatio << "%" << endl;
-   str << setw( 25 ) << "Format"
-       << setw( 15 ) << "Padding"
-       << setw( 15 ) << "Time"
-       << setw( 15 ) << "GFLOPS"
-       << setw( 15 ) << "Throughput"
-       << setw( 15 ) << "Speedup" << endl;
+   str << " Filling: " << std::setw( 5 ) << 100.0 * fillingRatio << "%" << std::endl;
+   str << std::setw( 25 ) << "Format"
+       << std::setw( 15 ) << "Padding"
+       << std::setw( 15 ) << "Time"
+       << std::setw( 15 ) << "GFLOPS"
+       << std::setw( 15 ) << "Throughput"
+       << std::setw( 15 ) << "Speedup" << std::endl;
 }
 
 template< typename Matrix >
 bool writeMatrixInfo( const tnlString& inputFileName,
                       const Matrix& matrix,
-                      ostream& logFile )
+                      std::ostream& logFile )
 {
-   logFile << endl;
-   logFile << inputFileName << endl;
-   logFile << " " << matrix.getRows() << endl;
-   logFile << " " << matrix.getColumns() << endl;
-   logFile << " " << matrix.getNumberOfNonzeroMatrixElements() << endl;
+   logFile << std::endl;
+   logFile << inputFileName << std::endl;
+   logFile << " " << matrix.getRows() << std::endl;
+   logFile << " " << matrix.getColumns() << std::endl;
+   logFile << " " << matrix.getNumberOfNonzeroMatrixElements() << std::endl;
    const double fillingRatio = ( double ) matrix.getNumberOfNonzeroMatrixElements() / ( double ) matrix.getNumberOfMatrixElements();
-   logFile << " " << 100.0 * fillingRatio << endl;
-   logFile << flush;
+   logFile << " " << 100.0 * fillingRatio << std::endl;
+   logFile << std::flush;
    if( ! logFile.good() )
       return false;
    return true;
@@ -231,7 +232,7 @@ double benchmarkMatrix( const Matrix& matrix,
                         const double& stopTime,
                         const double& baseline,
                         int verbose,
-                        fstream& logFile )
+                        std::fstream& logFile )
 {
    tnlTimerRT timer;
    timer.reset();
@@ -253,30 +254,30 @@ double benchmarkMatrix( const Matrix& matrix,
    const double padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
    if( verbose )
    {
-      cout << setw( 25 ) << format
-           << setw( 15 ) << padding
-           << setw( 15 ) << time
-           << setw( 15 ) << gflops
-           << setw( 15 ) << throughput;
+     std::cout << std::setw( 25 ) << format
+           << std::setw( 15 ) << padding
+           << std::setw( 15 ) << time
+           << std::setw( 15 ) << gflops
+           << std::setw( 15 ) << throughput;
       if( baseline )
-         cout << setw( 15 ) << gflops / baseline << endl;
+        std::cout << std::setw( 15 ) << gflops / baseline << std::endl;
       else
-         cout << setw( 15 ) << "N/A" << endl;
+        std::cout << std::setw( 15 ) << "N/A" << std::endl;
    }
-   logFile << "  " << gflops << endl;
-   logFile << "  " << throughput << endl;
+   logFile << "  " << gflops << std::endl;
+   logFile << "  " << throughput << std::endl;
    if( baseline )
-      logFile << gflops / baseline << endl;
+      logFile << gflops / baseline << std::endl;
    else
-      logFile << "N/A" << endl;
+      logFile << "N/A" << std::endl;
    return gflops;
 }
 
-void writeTestFailed( fstream& logFile,
+void writeTestFailed( std::fstream& logFile,
                       int repeat )
 {
    for( int i = 0; i < repeat; i++ )
-      logFile << "N/A" << endl;
+      logFile << "N/A" << std::endl;
 }
 
 template< typename Real >
@@ -287,10 +288,10 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
    const tnlString& logFileName = parameters.getParameter< tnlString >( "log-file" );
    const int verbose = parameters.getParameter< int >( "verbose" );
    const double stopTime = parameters.getParameter< double >( "stop-time" );
-   fstream logFile;
+   std::fstream logFile;
    if( ! initLogFile( logFile, logFileName ) )
    {
-      cerr << "I am not able to open the file " << logFileName << "." << endl;
+      std::cerr << "I am not able to open the file " << logFileName << "." << std::endl;
       return false;
    }
    if( test == "mtx" )
@@ -301,26 +302,26 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       {
          if( ! tnlMatrixReader< CSRMatrixType >::readMtxFile( inputFileName, csrMatrix ) )
          {
-            cerr << "I am not able to read the matrix file " << inputFileName << "." << endl;
-            logFile << endl;
-            logFile << inputFileName << endl;
-            logFile << "Benchmark failed: Unable to read the matrix." << endl;
+            std::cerr << "I am not able to read the matrix file " << inputFileName << "." << std::endl;
+            logFile << std::endl;
+            logFile << inputFileName << std::endl;
+            logFile << "Benchmark failed: Unable to read the matrix." << std::endl;
             return false;
          }
       }
       catch( std::bad_alloc )
       {
-         cerr << "Not enough memory to read the matrix." << endl;
-         logFile << endl;
-         logFile << inputFileName << endl;
-         logFile << "Benchmark failed: Not enough memory." << endl;
+         std::cerr << "Not enough memory to read the matrix." << std::endl;
+         logFile << std::endl;
+         logFile << inputFileName << std::endl;
+         logFile << "Benchmark failed: Not enough memory." << std::endl;
          return false;
       }
       if( verbose )
-         printMatrixInfo( inputFileName, csrMatrix, cout );
+         printMatrixInfo( inputFileName, csrMatrix,std::cout );
       if( ! writeMatrixInfo( inputFileName, csrMatrix, logFile ) )
       {
-         cerr << "I am not able to write new matrix to the log file." << endl;
+         std::cerr << "I am not able to write new matrix to the log file." << std::endl;
          return false;
       }
       const int rows = csrMatrix.getRows();
@@ -363,7 +364,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       //cout << "Copying matrix to GPU... ";
       if( ! cudaCSRMatrix.copyFrom( csrMatrix, rowLengthsCuda ) )
       {
-         cerr << "I am not able to transfer the matrix on GPU." << endl;
+         std::cerr << "I am not able to transfer the matrix on GPU." << std::endl;
          writeTestFailed( logFile, 21 );
       }
       else
@@ -381,7 +382,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
                           logFile );
          cusparseDestroy( cusparseHandle );
 
-         cout << " done.   \r";
+        std::cout << " done.   \r";
          /*cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::scalar );
          benchmarkMatrix( cudaCSRMatrix,
                           cudaX,
@@ -528,7 +529,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       {
          allocatedElements = ellpackMatrix.getNumberOfMatrixElements();
          padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
-         logFile << "    " << padding << endl;
+         logFile << "    " << padding << std::endl;
          benchmarkMatrix( ellpackMatrix,
                           hostX,
                           hostB,
@@ -541,15 +542,15 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
 #ifdef HAVE_CUDA
          typedef tnlEllpackMatrix< Real, tnlCuda, int > EllpackMatrixCudaType;
          EllpackMatrixCudaType cudaEllpackMatrix;
-         cout << "Copying matrix to GPU... ";
+        std::cout << "Copying matrix to GPU... ";
          if( ! cudaEllpackMatrix.copyFrom( ellpackMatrix, rowLengthsCuda ) )
          {
-            cerr << "I am not able to transfer the matrix on GPU." << endl;
+            std::cerr << "I am not able to transfer the matrix on GPU." << std::endl;
             writeTestFailed( logFile, 3 );
          }
          else
          {
-            cout << " done.   \r";
+           std::cout << " done.   \r";
             benchmarkMatrix( cudaEllpackMatrix,
                              cudaX,
                              cudaB,
@@ -573,7 +574,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       {
          allocatedElements = slicedEllpackMatrix.getNumberOfMatrixElements();
          padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
-         logFile << "    " << padding << endl;
+         logFile << "    " << padding << std::endl;
          benchmarkMatrix( slicedEllpackMatrix,
                           hostX,
                           hostB,
@@ -586,15 +587,15 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
 #ifdef HAVE_CUDA
          typedef tnlSlicedEllpackMatrix< Real, tnlCuda, int > SlicedEllpackMatrixCudaType;
          SlicedEllpackMatrixCudaType cudaSlicedEllpackMatrix;
-         cout << "Copying matrix to GPU... ";
+        std::cout << "Copying matrix to GPU... ";
          if( ! cudaSlicedEllpackMatrix.copyFrom( slicedEllpackMatrix, rowLengthsCuda ) )
          {
-            cerr << "I am not able to transfer the matrix on GPU." << endl;
+            std::cerr << "I am not able to transfer the matrix on GPU." << std::endl;
             writeTestFailed( logFile, 3 );
          }
          else
          {
-            cout << " done.   \r";
+           std::cout << " done.   \r";
             benchmarkMatrix( cudaSlicedEllpackMatrix,
                              cudaX,
                              cudaB,
@@ -618,7 +619,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
       {
          allocatedElements = chunkedEllpackMatrix.getNumberOfMatrixElements();
          padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
-         logFile << "    " << padding << endl;
+         logFile << "    " << padding << std::endl;
          benchmarkMatrix( chunkedEllpackMatrix,
                           hostX,
                           hostB,
@@ -631,15 +632,15 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
 #ifdef HAVE_CUDA
          typedef tnlChunkedEllpackMatrix< Real, tnlCuda, int > ChunkedEllpackMatrixCudaType;
          ChunkedEllpackMatrixCudaType cudaChunkedEllpackMatrix;
-         cout << "Copying matrix to GPU... ";
+        std::cout << "Copying matrix to GPU... ";
          if( ! cudaChunkedEllpackMatrix.copyFrom( chunkedEllpackMatrix, rowLengthsCuda ) )
          {
-            cerr << "I am not able to transfer the matrix on GPU." << endl;
+            std::cerr << "I am not able to transfer the matrix on GPU." << std::endl;
             writeTestFailed( logFile, 3 );
          }
          else
          {
-            cout << " done.    \r";
+           std::cout << " done.    \r";
             benchmarkMatrix( cudaChunkedEllpackMatrix,
                              cudaX,
                              cudaB,

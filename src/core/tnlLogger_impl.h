@@ -28,8 +28,8 @@ void tnlLogger::writeParameter( const tnlString& label,
    std::stringstream str;
    str << parameters.getParameter< T >( parameterName );
    stream  << label
-           << setw( width - label.getLength() - parameterLevel - 3 )
-           << str.str() << " |" << endl;
+           << std::setw( width - label.getLength() - parameterLevel - 3 )
+           << str.str() << " |" << std::endl;
 }
 
 template< typename T >
@@ -44,8 +44,8 @@ void tnlLogger :: writeParameter( const tnlString& label,
    std::stringstream str;
    str << value;
    stream  << label
-           << setw( width - label.getLength() - parameterLevel - 3 )
-           << str.str() << " |" << endl;
+           << std::setw( width - label.getLength() - parameterLevel - 3 )
+           << str.str() << " |" << std::endl;
 };
 
 } // namespace TNL

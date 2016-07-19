@@ -4,7 +4,7 @@
 
 #include <core/arrays/tnlArray.h>
 
-namespace tnl
+namespace TNL
 {
 namespace benchmarks
 {
@@ -30,7 +30,7 @@ benchmarkArrayOperations( Benchmark & benchmark,
         ! deviceArray2.setSize( size ) )
     {
         const char* msg = "error: allocation of arrays failed";
-        cerr << msg << endl;
+        std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg );
         return false;
     }

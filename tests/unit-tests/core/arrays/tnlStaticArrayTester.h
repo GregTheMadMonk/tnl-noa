@@ -22,6 +22,7 @@
 #include <core/arrays/tnlSharedArray.h>
 #include <core/arrays/tnlConstSharedArray.h>
 
+using namespace TNL;
 
 class testingClassForStaticArrayTester
 {
@@ -183,7 +184,7 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
    void testStreamOperator()
    {
       tnlStaticArray< Size, ElementType > u;
-      stringstream testStream;
+      std::stringstream testStream;
       testStream << u;
    }
 

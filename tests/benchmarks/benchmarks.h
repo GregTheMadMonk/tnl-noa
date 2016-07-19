@@ -8,7 +8,7 @@
 #include <core/tnlTimerRT.h>
 #include <core/tnlString.h>
 
-namespace tnl
+namespace TNL
 {
 namespace benchmarks
 {
@@ -94,26 +94,26 @@ public:
 
         if( verbose && header_changed ) {
             for( auto & it : metadataColumns ) {
-                cout << setw( 20 ) << it.first;
+               std::cout << std::setw( 20 ) << it.first;
             }
 
             // spanning element is printed as usual column to stdout,
             // but is excluded from header
-            cout << setw( 15 ) << "";
+           std::cout << std::setw( 15 ) << "";
 
             for( auto & it : subElements ) {
-                cout << setw( 15 ) << it;
+               std::cout << std::setw( 15 ) << it;
             }
-            cout << endl;
+           std::cout << std::endl;
 
             header_changed = false;
         }
 
         // initial indent string
         header_indent = "!";
-        log << endl;
+        log << std::endl;
         for( auto & it : metadataColumns ) {
-            log << header_indent << " " << it.first << endl;
+            log << header_indent << " " << it.first << std::endl;
         }
 
         // dump stacked spanning columns
@@ -124,14 +124,14 @@ public:
             }
         for( int i = 0; i < horizontalGroups.size(); i++ ) {
             if( horizontalGroups[ i ].second > 0 ) {
-                log << header_indent << " " << horizontalGroups[ i ].first << endl;
+                log << header_indent << " " << horizontalGroups[ i ].first << std::endl;
                 header_indent += "!";
             }
         }
 
-        log << header_indent << " " << spanningElement << endl;
+        log << header_indent << " " << spanningElement << std::endl;
         for( auto & it : subElements ) {
-            log << header_indent << "! " << it << endl;
+            log << header_indent << "! " << it << std::endl;
         }
 
         if( horizontalGroups.size() > 0 ) {
@@ -148,29 +148,29 @@ public:
 
         if( verbose ) {
             for( auto & it : metadataColumns ) {
-                cout << setw( 20 ) << it.second;
+               std::cout << std::setw( 20 ) << it.second;
             }
             // spanning element is printed as usual column to stdout
-            cout << setw( 15 ) << spanningElement;
+           std::cout << std::setw( 15 ) << spanningElement;
             for( auto & it : subElements ) {
-                cout << setw( 15 );
-                if( it != 0.0 ) cout << it;
-                else cout << "N/A";
+               std::cout << std::setw( 15 );
+                if( it != 0.0 )std::cout << it;
+                else std::cout << "N/A";
             }
-            cout << endl;
+           std::cout << std::endl;
         }
 
         // only when changed (the header has been already adjusted)
         // print each element on separate line
         for( auto & it : metadataColumns ) {
-            log << it.second << endl;
+            log << it.second << std::endl;
         }
 
         // benchmark data are indented
         const tnlString indent = "    ";
         for( auto & it : subElements ) {
-            if( it != 0.0 ) log << indent << it << endl;
-            else log << indent << "N/A" << endl;
+            if( it != 0.0 ) log << indent << it << std::endl;
+            else log << indent << "N/A" << std::endl;
         }
     }
 
@@ -180,9 +180,9 @@ public:
     {
         // initial indent string
         header_indent = "!";
-        log << endl;
+        log << std::endl;
         for( auto & it : metadataColumns ) {
-            log << header_indent << " " << it.first << endl;
+            log << header_indent << " " << it.first << std::endl;
         }
 
         // make sure there is a header column for the message
@@ -196,7 +196,7 @@ public:
         }
         for( int i = 0; i < horizontalGroups.size(); i++ ) {
             if( horizontalGroups[ i ].second > 0 ) {
-                log << header_indent << " " << horizontalGroups[ i ].first << endl;
+                log << header_indent << " " << horizontalGroups[ i ].first << std::endl;
                 header_indent += "!";
             }
         }
@@ -208,15 +208,15 @@ public:
         // only when changed (the header has been already adjusted)
         // print each element on separate line
         for( auto & it : metadataColumns ) {
-            log << it.second << endl;
+            log << it.second << std::endl;
         }
-        log << msg << endl;
+        log << msg << std::endl;
     }
 
     void
     closeTable()
     {
-        log << endl;
+        log << std::endl;
         header_indent = body_indent = "";
         header_changed = true;
         horizontalGroups.clear();

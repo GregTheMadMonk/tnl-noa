@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSOLVER_IMPL_H_
-#define TNLSOLVER_IMPL_H_
+#pragma once
 
 #include <solvers/tnlSolverInitiator.h>
 #include <solvers/tnlSolverStarter.h>
 #include <solvers/tnlSolverConfig.h>
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
           template< typename MeshConfig > class ProblemConfig,
@@ -38,4 +39,4 @@ run( int argc, char* argv[] )
    return solverInitiator.run( parameters );
 };
 
-#endif /* TNLSOLVER_IMPL_H_ */
+} // namespace TNL

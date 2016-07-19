@@ -21,6 +21,8 @@
 #include <problems/tnlHeatEquationEocProblem.h>
 #include <operators/tnlDirichletBoundaryConditions.h>
 
+using namespace TNL;
+
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
 

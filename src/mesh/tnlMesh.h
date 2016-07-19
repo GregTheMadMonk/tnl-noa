@@ -71,7 +71,7 @@ class tnlMesh : public tnlObject/*,
       using tnlObject::load;
       using tnlObject::save;
  
-      void print( ostream& str ) const;
+      void print( std::ostream& str ) const;
 
       bool operator==( const tnlMesh& mesh ) const;
 

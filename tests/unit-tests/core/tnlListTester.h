@@ -22,6 +22,8 @@
 #include <core/tnlList.h>
 #include <core/tnlFile.h>
 
+using namespace TNL;
+
 class tnlListTester : public CppUnit :: TestCase
 {
    public:

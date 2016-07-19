@@ -13,6 +13,8 @@
 #include "EulerVelYGetter.h"
 #include "EulerVelGetter.h"
 
+namespace TNL {
+
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
@@ -33,5 +35,7 @@ class LaxFridrichs
       typedef EulerPressureGetter< Mesh, Real, Index > Pressure;
    
 };
+
+} //namespace TNL
 
 #endif	/* LaxFridrichs_H */

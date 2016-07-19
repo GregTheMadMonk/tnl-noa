@@ -68,7 +68,7 @@ void navierStokesBoundaryConditions< Mesh >::apply( const RealType& time,
    const RealType hy = this->mesh->getParametricStep().y();
    RealType startUpCoefficient( 1.0 );
    if( this->startUp != 0.0 )
-      startUpCoefficient = Min( ( RealType ) 1.0, time / this->startUp );
+      startUpCoefficient = min( ( RealType ) 1.0, time / this->startUp );
 
    for( IndexType i = 0; i < xSize; i ++ )
    {
@@ -86,7 +86,7 @@ void navierStokesBoundaryConditions< Mesh >::apply( const RealType& time,
       {
          u1[ c1 ] = 0;
          u2[ c1 ] = 0;
-         u1[ c3 ] = sin( M_PI * x ) * startUpCoefficient * this->maxInflowVelocity;
+         u1[ c3 ] = ::sin( M_PI * x ) * startUpCoefficient * this->maxInflowVelocity;
          u2[ c3 ] = 0;
 
          rho[ c1 ] = rho[ c2 ];

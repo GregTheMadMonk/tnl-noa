@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLLINEARSYSTEMASSEMBLER_IMPL_H_
-#define TNLLINEARSYSTEMASSEMBLER_IMPL_H_
+#pragma once
 
 #include <type_traits>
 #include <mesh/grids/tnlTraverser_Grid1D.h>
 #include <mesh/grids/tnlTraverser_Grid2D.h>
 #include <mesh/grids/tnlTraverser_Grid3D.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename MeshFunction,
@@ -108,4 +109,4 @@ assembly( const RealType& time,
    }
 }
 
-#endif /* TNLLINEARSYSTEMASSEMBLER_IMPL_H_ */
+} // namespace TNL

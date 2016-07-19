@@ -86,7 +86,7 @@ class tnlStaticArray
 
    void sort();
  
-   ostream& write( ostream& str, const char* separator = " " ) const;
+   std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
    protected:
    Element data[ Size ];
@@ -168,7 +168,7 @@ class tnlStaticArray< 1, Element >
 
    void sort();
  
-   ostream& write( ostream& str, const char* separator = " " ) const;
+   std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
    protected:
    Element data[ size ];
@@ -260,7 +260,7 @@ class tnlStaticArray< 2, Element >
 
    void sort();
  
-   ostream& write( ostream& str, const char* separator = " " ) const;
+   std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
    protected:
    Element data[ size ];
@@ -360,7 +360,7 @@ class tnlStaticArray< 3, Element >
 
    void sort();
  
-   ostream& write( ostream& str, const char* separator = " " ) const;
+   std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
    protected:
    Element data[ size ];
@@ -368,7 +368,7 @@ class tnlStaticArray< 3, Element >
 };
 
 template< int Size, typename Element >
-ostream& operator << ( ostream& str, const tnlStaticArray< Size, Element >& a );
+std::ostream& operator << ( std::ostream& str, const tnlStaticArray< Size, Element >& a );
 
 } // namespace TNL
 

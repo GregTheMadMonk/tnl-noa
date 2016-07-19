@@ -23,11 +23,11 @@ tnlString tnlMultiArray< 1, Element, Device, Index > :: getType()
    return tnlString( "tnlMultiArray< ") +
           tnlString( Dimensions ) +
           tnlString( ", " ) +
-          tnlString( ::getType< Element >() ) +
+          tnlString( TNL::getType< Element >() ) +
           tnlString( ", " ) +
           tnlString( Device :: getDeviceType() ) +
           tnlString( ", " ) +
-          tnlString( ::getType< Index >() ) +
+          tnlString( TNL::getType< Index >() ) +
           tnlString( " >" );
 }
 
@@ -59,7 +59,7 @@ template< typename Element, typename Device, typename Index >
 bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const Index iSize )
 {
    tnlAssert( iSize > 0,
-              cerr << "iSize = " << iSize );
+              std::cerr << "iSize = " << iSize );
    dimensions[ 0 ] = iSize;
    return tnlArray< Element, Device, Index >::setSize( iSize );
 }
@@ -68,7 +68,7 @@ template< typename Element, typename Device, typename Index >
 bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const tnlStaticVector< 1, Index >& dimensions )
 {
    tnlAssert( dimensions[ 0 ] > 0,
-              cerr << " dimensions[ 0 ] = " << dimensions[ 0 ] );
+              std::cerr << " dimensions[ 0 ] = " << dimensions[ 0 ] );
    this->dimensions = dimensions;
    return tnlArray< Element, Device, Index >::setSize( this->dimensions[ 0 ] );
 }
@@ -106,7 +106,7 @@ __cuda_callable__
 Index tnlMultiArray< 1, Element, Device, Index > :: getElementIndex( const Index i ) const
 {
    tnlAssert( i >= 0 && i < this->dimensions[ 0 ],
-              cerr << "i = " << i << " this->dimensions[ 0 ] = " <<  this->dimensions[ 0 ] );
+              std::cerr << "i = " << i << " this->dimensions[ 0 ] = " <<  this->dimensions[ 0 ] );
    return i;
 }
 
@@ -142,9 +142,9 @@ bool tnlMultiArray< 1, Element, Device, Index > :: operator == ( const MultiArra
 {
    // TODO: Static assert on dimensions
    tnlAssert( this->getDimensions() == array. getDimensions(),
-              cerr << "You are attempting to compare two arrays with different dimensions." << endl
-                   << "First array dimensions are ( " << this->getDimensions() << " )" << endl
-                   << "Second array dimensions are ( " << array. getDimensions() << " )" << endl; );
+              std::cerr << "You are attempting to compare two arrays with different dimensions." << std::endl
+                   << "First array dimensions are ( " << this->getDimensions() << " )" << std::endl
+                   << "Second array dimensions are ( " << array. getDimensions() << " )" << std::endl; );
    return tnlArray< Element, Device, Index > :: operator == ( array );
 }
 
@@ -161,9 +161,9 @@ tnlMultiArray< 1, Element, Device, Index >&
 {
    // TODO: Static assert on dimensions
    tnlAssert( this->getDimensions() == array. getDimensions(),
-              cerr << "You are attempting to assign two arrays with different dimensions." << endl
-                   << "First array dimensions are ( " << this->getDimensions() << " )" << endl
-                   << "Second array dimensions are ( " << array. getDimensions() << " )" << endl; );
+              std::cerr << "You are attempting to assign two arrays with different dimensions." << std::endl
+                   << "First array dimensions are ( " << this->getDimensions() << " )" << std::endl
+                   << "Second array dimensions are ( " << array. getDimensions() << " )" << std::endl; );
    tnlArray< Element, Device, Index > :: operator = ( array );
    return ( *this );
 }
@@ -175,9 +175,9 @@ tnlMultiArray< 1, Element, Device, Index >&
 {
    // TODO: Static assert on dimensions
    tnlAssert( this->getDimensions() == array. getDimensions(),
-              cerr << "You are attempting to assign two arrays with different dimensions." << endl
-                   << "First array dimensions are ( " << this->getDimensions() << " )" << endl
-                   << "Second array dimensions are ( " << array. getDimensions() << " )" << endl; );
+              std::cerr << "You are attempting to assign two arrays with different dimensions." << std::endl
+                   << "First array dimensions are ( " << this->getDimensions() << " )" << std::endl
+                   << "Second array dimensions are ( " << array. getDimensions() << " )" << std::endl; );
    tnlArray< Element, Device, Index > :: operator = ( array );
    return ( *this );
 }
@@ -187,12 +187,12 @@ bool tnlMultiArray< 1, Element, Device, Index > :: save( tnlFile& file ) const
 {
    if( ! tnlArray< Element, Device, Index > :: save( file ) )
    {
-      cerr << "I was not able to write the tnlArray of tnlMultiArray." << endl;
+      std::cerr << "I was not able to write the tnlArray of tnlMultiArray." << std::endl;
       return false;
    }
    if( ! dimensions. save( file ) )
    {
-      cerr << "I was not able to write the dimensions of tnlMultiArray." << endl;
+      std::cerr << "I was not able to write the dimensions of tnlMultiArray." << std::endl;
       return false;
    }
    return true;
@@ -203,12 +203,12 @@ bool tnlMultiArray< 1, Element, Device, Index > :: load( tnlFile& file )
 {
    if( ! tnlArray< Element, Device, Index > :: load( file ) )
    {
-      cerr << "I was not able to read the tnlArray of tnlMultiArray." << endl;
+      std::cerr << "I was not able to read the tnlArray of tnlMultiArray." << std::endl;
       return false;
    }
    if( ! dimensions. load( file ) )
    {
-      cerr << "I was not able to read the dimensions of tnlMultiArray." << endl;
+      std::cerr << "I was not able to read the dimensions of tnlMultiArray." << std::endl;
       return false;
    }
    return true;
@@ -227,7 +227,7 @@ bool tnlMultiArray< 1, Element, Device, Index > :: load( const tnlString& fileNa
 }
 
 template< typename Element, typename Device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiArray< 1, Element, Device, Index >& array )
+std::ostream& operator << ( std::ostream& str, const tnlMultiArray< 1, Element, Device, Index >& array )
 {
    for( Index i = 0; i < array. getDimensions()[ 0 ]; i ++ )
    {

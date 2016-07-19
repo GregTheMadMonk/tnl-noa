@@ -8,14 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlMersonSolver_implH
-#define tnlMersonSolver_implH
+#pragma once
 
 #include <core/tnlHost.h>
 #include <core/tnlCuda.h>
 #include <config/tnlParameterContainer.h>
 
-using namespace std;
+namespace TNL {
 
 /****
  * In this code we do not use constants and references as we would like to.
@@ -123,7 +122,7 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
 {
    if( ! this->problem )
    {
-      cerr << "No problem was set for the Merson ODE solver." << endl;
+      std::cerr << "No problem was set for the Merson ODE solver." << std::endl;
       return false;
    }
    /****
@@ -136,7 +135,7 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
        ! k5. setLike( u ) ||
        ! kAux. setLike( u ) )
    {
-      cerr << "I do not have enough memory to allocate supporting grids for the Merson explicit solver." << endl;
+      std::cerr << "I do not have enough memory to allocate supporting grids for the Merson explicit solver." << std::endl;
       return false;
    }
    k1. setValue( 0.0 );
@@ -151,7 +150,7 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
     * Set necessary parameters
     */
    RealType& time = this->time;
-   RealType currentTau = Min( this->getTau(), this->getMaxTau() );
+   RealType currentTau = min( this->getTau(), this->getMaxTau() );
    if( time + currentTau > this->getStopTime() )
       currentTau = this->getStopTime() - time;
    if( currentTau == 0.0 ) return true;
@@ -203,9 +202,9 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
        */
       if( adaptivity != 0.0 && eps != 0.0 )
       {
-         currentTau *= 0.8 * pow( adaptivity / eps, 0.2 );
-         currentTau = Min( currentTau, this->getMaxTau() );
-         :: MPIBcast( currentTau, 1, 0, this->solver_comm );
+         currentTau *= 0.8 * ::pow( adaptivity / eps, 0.2 );
+         currentTau = min( currentTau, this->getMaxTau() );
+         MPIBcast( currentTau, 1, 0, this->solver_comm );
       }
       if( time + currentTau > this->getStopTime() )
          currentTau = this->getStopTime() - time; //we don't want to keep such tau
@@ -215,8 +214,8 @@ bool tnlMersonSolver< Problem > :: solve( DofVectorType& u )
       /****
        * Check stop conditions.
        */
-      //cerr << "residue = " << residue << endl;
-      //cerr << "this->getConvergenceResidue() = " << this->getConvergenceResidue() << endl;
+      //cerr << "residue = " << residue << std::endl;
+      //cerr << "this->getConvergenceResidue() = " << this->getConvergenceResidue() << std::endl;
       if( time >= this->getStopTime() ||
           ( this->getConvergenceResidue() != 0.0 && this->getResidue() < this->getConvergenceResidue() ) )
       {
@@ -300,7 +299,7 @@ void tnlMersonSolver< Problem > :: computeKFunctions( DofVectorType& u,
       dim3 cudaBlockSize( 512 );
       const IndexType cudaBlocks = tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x );
       const IndexType cudaGrids = tnlCuda::getNumberOfGrids( cudaBlocks );
-      this->cudaBlockResidue.setSize( Min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
+      this->cudaBlockResidue.setSize( min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
       const IndexType threadsPerGrid = tnlCuda::getMaxGridSize() * cudaBlockSize.x;
 
       this->problem->getExplicitRHS( time, tau, u, k1 );
@@ -309,7 +308,7 @@ void tnlMersonSolver< Problem > :: computeKFunctions( DofVectorType& u,
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
       {
          const IndexType gridOffset = gridIdx * threadsPerGrid;
-         const IndexType currentSize = Min( size - gridOffset, threadsPerGrid );
+         const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
          computeK2Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_kAux[ gridOffset ] );
       }
       cudaThreadSynchronize();
@@ -319,7 +318,7 @@ void tnlMersonSolver< Problem > :: computeKFunctions( DofVectorType& u,
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
       {
          const IndexType gridOffset = gridIdx * threadsPerGrid;
-         const IndexType currentSize = Min( size - gridOffset, threadsPerGrid );
+         const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
          computeK3Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k2[ gridOffset ], &_kAux[ gridOffset ] );
       }
       cudaThreadSynchronize();
@@ -329,7 +328,7 @@ void tnlMersonSolver< Problem > :: computeKFunctions( DofVectorType& u,
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
       {
          const IndexType gridOffset = gridIdx * threadsPerGrid;
-         const IndexType currentSize = Min( size - gridOffset, threadsPerGrid );
+         const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
          computeK4Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k3[ gridOffset ], &_kAux[ gridOffset ] );
       }
       cudaThreadSynchronize();
@@ -339,7 +338,7 @@ void tnlMersonSolver< Problem > :: computeKFunctions( DofVectorType& u,
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
       {
          const IndexType gridOffset = gridIdx * threadsPerGrid;
-         const IndexType currentSize = Min( size - gridOffset, threadsPerGrid );
+         const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
          computeK5Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k3[ gridOffset ], &_k4[ gridOffset ], &_kAux[ gridOffset ] );
       }
       cudaThreadSynchronize();
@@ -381,11 +380,11 @@ typename Problem :: RealType tnlMersonSolver< Problem > :: computeError( const R
       for( IndexType i = 0; i < size; i ++  )
       {
          RealType err = ( RealType ) ( tau / 3.0 *
-                              fabs( 0.2 * _k1[ i ] +
-                                   -0.9 * _k3[ i ] +
-                                    0.8 * _k4[ i ] +
-                                   -0.1 * _k5[ i ] ) );
-         eps = Max( eps, err );
+                              abs( 0.2 * _k1[ i ] +
+                                  -0.9 * _k3[ i ] +
+                                   0.8 * _k4[ i ] +
+                                  -0.1 * _k5[ i ] ) );
+         eps = max( eps, err );
       }
    }
    if( DeviceType :: getDevice() == tnlCudaDevice )
@@ -394,13 +393,13 @@ typename Problem :: RealType tnlMersonSolver< Problem > :: computeError( const R
       dim3 cudaBlockSize( 512 );
       const IndexType cudaBlocks = tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x );
       const IndexType cudaGrids = tnlCuda::getNumberOfGrids( cudaBlocks );
-      this->cudaBlockResidue.setSize( Min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
+      this->cudaBlockResidue.setSize( min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
       const IndexType threadsPerGrid = tnlCuda::getMaxGridSize() * cudaBlockSize.x;
 
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
       {
          const IndexType gridOffset = gridIdx * threadsPerGrid;
-         const IndexType currentSize = Min( size - gridOffset, threadsPerGrid );
+         const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
          computeErrorKernel<<< cudaBlocks, cudaBlockSize >>>( currentSize,
                                                               tau,
                                                               &_k1[ gridOffset ],
@@ -409,11 +408,11 @@ typename Problem :: RealType tnlMersonSolver< Problem > :: computeError( const R
                                                               &_k5[ gridOffset ],
                                                               &_kAux[ gridOffset ] );
          cudaThreadSynchronize();
-         eps = Max( eps, kAux.max() );
+         eps = max( eps, kAux.max() );
       }
 #endif
    }
-   :: MPIAllreduce( eps, maxEps, 1, MPI_MAX, this->solver_comm );
+   MPIAllreduce( eps, maxEps, 1, MPI_MAX, this->solver_comm );
    return maxEps;
 }
 
@@ -453,7 +452,7 @@ void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
       {
          const RealType add = tau / 6.0 * ( _k1[ i ] + 4.0 * _k4[ i ] + _k5[ i ] );
          _u[ i ] += add;
-         localResidue += fabs( ( RealType ) add );
+         localResidue += abs( ( RealType ) add );
       }
    }
    if( DeviceType :: getDevice() == tnlCudaDevice )
@@ -462,7 +461,7 @@ void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
       dim3 cudaBlockSize( 512 );
       const IndexType cudaBlocks = tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x );
       const IndexType cudaGrids = tnlCuda::getNumberOfGrids( cudaBlocks );
-      this->cudaBlockResidue.setSize( Min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
+      this->cudaBlockResidue.setSize( min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
       const IndexType threadsPerGrid = tnlCuda::getMaxGridSize() * cudaBlockSize.x;
 
       localResidue = 0.0;
@@ -470,7 +469,7 @@ void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
       {
          const IndexType sharedMemory = cudaBlockSize.x * sizeof( RealType );
          const IndexType gridOffset = gridIdx * threadsPerGrid;
-         const IndexType currentSize = Min( size - gridOffset, threadsPerGrid );
+         const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
 
          updateUMerson<<< cudaBlocks, cudaBlockSize, sharedMemory >>>( currentSize,
                                                                        tau,
@@ -486,21 +485,21 @@ void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
 #endif
    }
    localResidue /= tau * ( RealType ) size;
-   :: MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this->solver_comm );
+   MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this->solver_comm );
 
 }
 
 template< typename Problem >
 void tnlMersonSolver< Problem > :: writeGrids( const DofVectorType& u )
 {
-   cout << "Writing Merson solver grids ...";
+  std::cout << "Writing Merson solver grids ...";
    u. save( "tnlMersonSolver-u.tnl" );
    k1. save( "tnlMersonSolver-k1.tnl" );
    k2. save( "tnlMersonSolver-k2.tnl" );
    k3. save( "tnlMersonSolver-k3.tnl" );
    k4. save( "tnlMersonSolver-k4.tnl" );
    k5. save( "tnlMersonSolver-k5.tnl" );
-   cout << " done. PRESS A KEY." << endl;
+  std::cout << " done. PRESS A KEY." << std::endl;
    getchar();
 }
 
@@ -569,10 +568,10 @@ __global__ void computeErrorKernel( const Index size,
 {
    Index i = blockIdx. x * blockDim. x + threadIdx. x;
    if( i < size )
-      err[ i ] = 1.0 / 3.0 *  tau * fabs( 0.2 * k1[ i ] +
-                                         -0.9 * k3[ i ] +
-                                          0.8 * k4[ i ] +
-                                         -0.1 * k5[ i ] );
+      err[ i ] = 1.0 / 3.0 *  tau * abs( 0.2 * k1[ i ] +
+                                        -0.9 * k3[ i ] +
+                                         0.8 * k4[ i ] +
+                                        -0.1 * k5[ i ] );
 }
 
 template< typename RealType, typename Index >
@@ -591,7 +590,7 @@ __global__ void updateUMerson( const Index size,
       u[ i ] += du[ threadIdx.x ] = 1.0 / 6.0 * tau * ( k1[ i ] + 4.0 * k4[ i ] + k5[ i ] );
    else
       du[ threadIdx.x ] = 0.0;
-   du[ threadIdx.x ] = fabs( du[ threadIdx.x ] );
+   du[ threadIdx.x ] = abs( du[ threadIdx.x ] );
    __syncthreads();
 
    const Index rest = size - blockOffset;
@@ -604,4 +603,4 @@ __global__ void updateUMerson( const Index size,
 
 #endif
 
-#endif
+} // namespace TNL

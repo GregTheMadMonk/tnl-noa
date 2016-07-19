@@ -8,12 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSEMIIMPLICITTIMESTEPPER_IMPL_H_
-#define TNLSEMIIMPLICITTIMESTEPPER_IMPL_H_
+#pragma once
 
 #include <core/mfuncs.h>
-
 #include "tnlSemiImplicitTimeStepper.h"
+
+namespace TNL {
 
 template< typename Problem,
           typename LinearSystemSolver >
@@ -53,18 +53,18 @@ bool
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
 init( const MeshType& mesh )
 {
-   cout << "Setting up the linear system...";
+  std::cout << "Setting up the linear system...";
    if( ! this->problem->setupLinearSystem( mesh, this->matrix ) )
       return false;
-   cout << " [ OK ]" << endl;
+  std::cout << " [ OK ]" << std::endl;
    if( this->matrix.getRows() == 0 || this->matrix.getColumns() == 0 )
    {
-      cerr << "The matrix for the semi-implicit time stepping was not set correctly." << endl;
+      std::cerr << "The matrix for the semi-implicit time stepping was not set correctly." << std::endl;
       if( ! this->matrix.getRows() )
-         cerr << "The matrix dimensions are set to 0 rows." << endl;
+         std::cerr << "The matrix dimensions are set to 0 rows." << std::endl;
       if( ! this->matrix.getColumns() )
-         cerr << "The matrix dimensions are set to 0 columns." << endl;
-      cerr << "Please check the method 'setupLinearSystem' in your solver." << endl;
+         std::cerr << "The matrix dimensions are set to 0 columns." << std::endl;
+      std::cerr << "Please check the method 'setupLinearSystem' in your solver." << std::endl;
       return false;
    }
    if( ! this->rightHandSide.setSize( this->matrix.getRows() ) )
@@ -123,7 +123,7 @@ setTimeStep( const RealType& timeStep )
 {
    if( timeStep <= 0.0 )
    {
-      cerr << "Time step for tnlSemiImplicitTimeStepper must be positive. " << endl;
+      std::cerr << "Time step for tnlSemiImplicitTimeStepper must be positive. " << std::endl;
       return false;
    }
    this->timeStep = timeStep;
@@ -149,7 +149,7 @@ solve( const RealType& time,
 
    while( t < stopTime )
    {
-      RealType currentTau = Min( this->timeStep, stopTime - t );
+      RealType currentTau = min( this->timeStep, stopTime - t );
 
       this->preIterateTimer.start();
       if( ! this->problem->preIterate( t,
@@ -158,13 +158,13 @@ solve( const RealType& time,
                                        dofVector,
                                        meshDependentData ) )
       {
-         cerr << endl << "Preiteration failed." << endl;
+         std::cerr << std::endl << "Preiteration failed." << std::endl;
          return false;
       }
       this->preIterateTimer.stop();
 
       if( verbose )
-         cout << "                                                                  Assembling the linear system ... \r" << flush;
+        std::cout << "                                                                  Assembling the linear system ... \r" << std::flush;
 
       this->linearSystemAssemblerTimer.start();
       this->problem->assemblyLinearSystem( t,
@@ -177,7 +177,7 @@ solve( const RealType& time,
       this->linearSystemAssemblerTimer.stop();
 
       if( verbose )
-         cout << "                                                                  Solving the linear system for time " << t + currentTau << "             \r" << flush;
+        std::cout << "                                                                  Solving the linear system for time " << t + currentTau << "             \r" << std::flush;
 
       this->preconditionerUpdateTimer.start();
       preconditioner.update( this->matrix );
@@ -186,14 +186,14 @@ solve( const RealType& time,
       this->linearSystemSolverTimer.start();
       if( ! this->linearSystemSolver->template solve< DofVectorType, tnlLinearResidueGetter< MatrixType, DofVectorType > >( this->rightHandSide, dofVector ) )
       {
-         cerr << endl << "The linear system solver did not converge." << endl;
+         std::cerr << std::endl << "The linear system solver did not converge." << std::endl;
          return false;
       }
       this->linearSystemSolverTimer.stop();
       this->allIterations += this->linearSystemSolver->getIterations();
 
       //if( verbose )
-      //   cout << endl;
+      //  std::cout << std::endl;
 
       this->postIterateTimer.start();
       if( ! this->problem->postIterate( t,
@@ -202,7 +202,7 @@ solve( const RealType& time,
                                         dofVector,
                                         meshDependentData ) )
       {
-         cerr << endl << "Postiteration failed." << endl;
+         std::cerr << std::endl << "Postiteration failed." << std::endl;
          return false;
       }
       this->postIterateTimer.stop();
@@ -232,4 +232,4 @@ writeEpilog( tnlLogger& logger )
    return true;
 }
 
-#endif /* TNLSEMIIMPLICITTIMESTEPPER_IMPL_H_ */
+} // namespace TNL

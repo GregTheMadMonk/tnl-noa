@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlEulerSolver_implH
-#define tnlEulerSolver_implH
+#pragma once
+
+namespace TNL {
 
 #ifdef HAVE_CUDA
 template< typename RealType, typename Index >
@@ -19,7 +20,6 @@ __global__ void updateUEuler( const Index size,
                               RealType* u,
                               RealType* cudaBlockResidue );
 #endif
-
 
 template< typename Problem >
 tnlEulerSolver< Problem > :: tnlEulerSolver()
@@ -76,7 +76,7 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
    //timer.start();
    if( ! k1. setLike( u ) )
    {
-      cerr << "I do not have enough memory to allocate a supporting grid for the Euler explicit solver." << endl;
+      std::cerr << "I do not have enough memory to allocate a supporting grid for the Euler explicit solver." << std::endl;
       return false;
    }
    k1. setValue( 0.0 );
@@ -86,7 +86,7 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
     * Set necessary parameters
     */
    RealType& time = this->time;
-   RealType currentTau = Min( this->getTau(), this->getMaxTau() );
+   RealType currentTau = min( this->getTau(), this->getMaxTau() );
    if( time + currentTau > this->getStopTime() ) currentTau = this->getStopTime() - time;
    if( currentTau == 0.0 ) return true;
    this->resetIterations();
@@ -157,7 +157,7 @@ bool tnlEulerSolver< Problem > :: solve( DofVectorType& u )
       if( this->cflCondition != 0.0 )
       {
          currentTau /= 0.95;
-         currentTau = Min( currentTau, this->getMaxTau() );
+         currentTau = min( currentTau, this->getMaxTau() );
       }
    }
 };
@@ -181,7 +181,7 @@ void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
       {
          const RealType add = tau * _k1[ i ];
          _u[ i ] += add;
-         localResidue += fabs( add );
+         localResidue += std::fabs( add );
       }
    }
    if( std::is_same< DeviceType, tnlCuda >::value )
@@ -190,7 +190,7 @@ void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
       dim3 cudaBlockSize( 512 );
       const IndexType cudaBlocks = tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x );
       const IndexType cudaGrids = tnlCuda::getNumberOfGrids( cudaBlocks );
-      this->cudaBlockResidue.setSize( Min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
+      this->cudaBlockResidue.setSize( min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
       const IndexType threadsPerGrid = tnlCuda::getMaxGridSize() * cudaBlockSize.x;
 
       localResidue = 0.0;
@@ -198,7 +198,7 @@ void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
       {
          const IndexType sharedMemory = cudaBlockSize.x * sizeof( RealType );
          const IndexType gridOffset = gridIdx * threadsPerGrid;
-         const IndexType currentSize = Min( size - gridOffset, threadsPerGrid );
+         const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
 
          updateUEuler<<< cudaBlocks, cudaBlockSize, sharedMemory >>>( currentSize,
                                                                       tau,
@@ -211,7 +211,7 @@ void tnlEulerSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
 #endif
    }
    localResidue /= tau * ( RealType ) size;
-   :: MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this->solver_comm );
+   MPIAllreduce( localResidue, currentResidue, 1, MPI_SUM, this->solver_comm );
 }
 
 #ifdef HAVE_CUDA
@@ -229,7 +229,7 @@ __global__ void updateUEuler( const Index size,
       u[ i ] += du[ threadIdx.x ] = tau * k1[ i ];
    else
       du[ threadIdx.x ] = 0.0;
-   du[ threadIdx.x ] = fabs( du[ threadIdx.x ] );
+   du[ threadIdx.x ] = abs( du[ threadIdx.x ] );
    __syncthreads();
 
    const Index rest = size - blockOffset;
@@ -241,4 +241,4 @@ __global__ void updateUEuler( const Index size,
 }
 #endif
 
-#endif
+} // namespace TNL

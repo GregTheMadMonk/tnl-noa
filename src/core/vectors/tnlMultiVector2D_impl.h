@@ -23,11 +23,11 @@ tnlString tnlMultiVector< 2, Real, Device, Index > :: getType()
    return tnlString( "tnlMultiVector< ") +
           tnlString( Dimensions ) +
           tnlString( ", " ) +
-          tnlString( ::getType< Real >() ) +
+          tnlString( TNL::getType< Real >() ) +
           tnlString( ", " ) +
           tnlString( Device :: getDeviceType() ) +
           tnlString( ", " ) +
-          tnlString( ::getType< Index >() ) +
+          tnlString( TNL::getType< Index >() ) +
           tnlString( " >" );
 }
 
@@ -60,7 +60,7 @@ bool tnlMultiVector< 2, Real, Device, Index > :: setDimensions( const Index jSiz
                                                                        const Index iSize )
 {
    tnlAssert( iSize > 0 && jSize > 0,
-              cerr << "iSize = " << iSize
+              std::cerr << "iSize = " << iSize
                    << "jSize = " << jSize );
 
    dimensions[ 0 ] = iSize;
@@ -72,7 +72,7 @@ template< typename Real, typename Device, typename Index >
 bool tnlMultiVector< 2, Real, Device, Index > :: setDimensions( const tnlStaticVector< 2, Index >& dimensions )
 {
    tnlAssert( dimensions[ 0 ] > 0 && dimensions[ 1 ] > 0,
-              cerr << "dimensions = " << dimensions );
+              std::cerr << "dimensions = " << dimensions );
    this->dimensions = dimensions;
    return tnlVector< Real, Device, Index > :: setSize( this->dimensions[ 1 ] * this->dimensions[ 0 ] );
 }
@@ -101,7 +101,7 @@ template< typename Real, typename Device, typename Index >
 Index tnlMultiVector< 2, Real, Device, Index > :: getElementIndex( const Index j, const Index i ) const
 {
    tnlAssert( i >= 0 && i < this->dimensions[ 0 ] && j >= 0 && j < this->dimensions[ 1 ],
-              cerr << "i = " << i
+              std::cerr << "i = " << i
                    << "j = " << j
                    << "this->dimensions[ 0 ] = " << this->dimensions[ 0 ]
                    << "this->dimensions[ 1 ] = " << this->dimensions[ 1 ] );
@@ -139,9 +139,9 @@ bool tnlMultiVector< 2, Real, Device, Index > :: operator == ( const MultiVector
 {
    // TODO: Static assert on dimensions
    tnlAssert( this->getDimensions() == Vector. getDimensions(),
-              cerr << "You are attempting to compare two Vectors with different dimensions." << endl
-                   << "First vector dimensions are ( " << this->getDimensions() << " )" << endl
-                   << "Second vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
+              std::cerr << "You are attempting to compare two Vectors with different dimensions." << std::endl
+                   << "First vector dimensions are ( " << this->getDimensions() << " )" << std::endl
+                   << "Second vector dimensions are ( " << Vector. getDimensions() << " )" << std::endl; );
    return tnlVector< Real, Device, Index > :: operator == ( Vector );
 }
 
@@ -158,9 +158,9 @@ tnlMultiVector< 2, Real, Device, Index >&
 {
    // TODO: Static assert on dimensions
    tnlAssert( this->getDimensions() == Vector. getDimensions(),
-              cerr << "You are attempting to assign two Vectors with different dimensions." << endl
-                   << "First vector dimensions are ( " << this->getDimensions() << " )" << endl
-                   << "Second vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
+              std::cerr << "You are attempting to assign two Vectors with different dimensions." << std::endl
+                   << "First vector dimensions are ( " << this->getDimensions() << " )" << std::endl
+                   << "Second vector dimensions are ( " << Vector. getDimensions() << " )" << std::endl; );
    tnlVector< Real, Device, Index > :: operator = ( Vector );
    return ( *this );
 }
@@ -172,9 +172,9 @@ tnlMultiVector< 2, Real, Device, Index >&
 {
    // TODO: Static assert on dimensions
    tnlAssert( this->getDimensions() == Vector. getDimensions(),
-              cerr << "You are attempting to assign two Vectors with different dimensions." << endl
-                   << "First vector dimensions are ( " << this->getDimensions() << " )" << endl
-                   << "Second vector dimensions are ( " << Vector. getDimensions() << " )" << endl; );
+              std::cerr << "You are attempting to assign two Vectors with different dimensions." << std::endl
+                   << "First vector dimensions are ( " << this->getDimensions() << " )" << std::endl
+                   << "Second vector dimensions are ( " << Vector. getDimensions() << " )" << std::endl; );
    tnlVector< Real, Device, Index > :: operator = ( Vector );
    return ( *this );
 }
@@ -184,12 +184,12 @@ bool tnlMultiVector< 2, Real, Device, Index > :: save( tnlFile& file ) const
 {
    if( ! tnlVector< Real, Device, Index > :: save( file ) )
    {
-      cerr << "I was not able to write the tnlVector of tnlMultiVector."  << endl;
+      std::cerr << "I was not able to write the tnlVector of tnlMultiVector."  << std::endl;
       return false;
    }
    if( ! dimensions. save( file ) )
    {
-      cerr << "I was not able to write the dimensions of tnlMultiVector." << endl;
+      std::cerr << "I was not able to write the dimensions of tnlMultiVector." << std::endl;
       return false;
    }
    return true;
@@ -200,12 +200,12 @@ bool tnlMultiVector< 2, Real, Device, Index > :: load( tnlFile& file )
 {
    if( ! tnlVector< Real, Device, Index > :: load( file ) )
    {
-      cerr << "I was not able to read the tnlVector of tnlMultiVector." << endl;
+      std::cerr << "I was not able to read the tnlVector of tnlMultiVector." << std::endl;
       return false;
    }
    if( ! dimensions. load( file ) )
    {
-      cerr << "I was not able to read the dimensions of tnlMultiVector." << endl;
+      std::cerr << "I was not able to read the dimensions of tnlMultiVector." << std::endl;
       return false;
    }
    return true;
@@ -224,7 +224,7 @@ bool tnlMultiVector< 2, Real, Device, Index > :: load( const tnlString& fileName
 }
 
 template< typename Real, typename Device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiVector< 2, Real, Device, Index >& Vector )
+std::ostream& operator << ( std::ostream& str, const tnlMultiVector< 2, Real, Device, Index >& Vector )
 {
    for( Index j = 0; j < Vector. getDimensions()[ 1 ]; j ++ )
    {
@@ -232,7 +232,7 @@ ostream& operator << ( ostream& str, const tnlMultiVector< 2, Real, Device, Inde
       {
          str << Vector. getElement( j, i ) << " ";
       }
-      str << endl;
+      str << std::endl;
    }
    return str;
 }

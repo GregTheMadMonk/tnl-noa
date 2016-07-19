@@ -139,7 +139,7 @@ class tnlTwinsFunction< 3, Real > : public tnlTwinsFunctionBase< Real, 3 >
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlTwinsFunction< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const tnlTwinsFunction< Dimensions, Real >& f )
 {
    str << "Twins function.";
    return str;

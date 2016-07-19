@@ -4,6 +4,8 @@
 #include <problems/tnlPDEProblem.h>
 #include <functions/tnlMeshFunction.h>
 
+using namespace TNL;
+
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,

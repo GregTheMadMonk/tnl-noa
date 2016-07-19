@@ -104,7 +104,7 @@ bool tnlArrayOperations< tnlCuda >::setMemory( Element* data,
    dim3 blockSize( 0 ), gridSize( 0 );
    blockSize. x = 256;
    Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
-   gridSize. x = Min( blocksNumber, tnlCuda::getMaxGridSize() );
+   gridSize. x = min( blocksNumber, tnlCuda::getMaxGridSize() );
    setArrayValueCudaKernel<<< gridSize, blockSize >>>( data, size, value );
    return checkCudaDevice;
 #else
@@ -154,7 +154,7 @@ bool tnlArrayOperations< tnlCuda >::copyMemory( DestinationElement* destination,
          dim3 blockSize( 0 ), gridSize( 0 );
          blockSize. x = 256;
          Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
-         gridSize. x = Min( blocksNumber, tnlCuda::getMaxGridSize() );
+         gridSize. x = min( blocksNumber, tnlCuda::getMaxGridSize() );
          copyMemoryCudaToCudaKernel<<< gridSize, blockSize >>>( destination, source, size );
          return checkCudaDevice;
       }
@@ -202,7 +202,7 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory( DestinationElement* des
                   cudaMemcpyDeviceToHost );
       if( ! checkCudaDevice )
       {
-         cerr << "Transfer of data from CUDA device to host failed." << endl;
+         std::cerr << "Transfer of data from CUDA device to host failed." << std::endl;
          return false;
       }
       return true;
@@ -212,7 +212,7 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory( DestinationElement* des
       SourceElement* buffer = new SourceElement[ tnlCuda::getGPUTransferBufferSize() ];
       if( ! buffer )
       {
-         cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << endl;
+         std::cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << std::endl;
          return false;
       }
       Index i( 0 );
@@ -220,7 +220,7 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory( DestinationElement* des
       {
          if( cudaMemcpy( buffer,
                          &source[ i ],
-                         Min( size - i, tnlCuda::getGPUTransferBufferSize() ) * sizeof( SourceElement ),
+                         min( size - i, tnlCuda::getGPUTransferBufferSize() ) * sizeof( SourceElement ),
                          cudaMemcpyDeviceToHost ) != cudaSuccess )
          {
             checkCudaDevice;
@@ -254,24 +254,24 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( const Element1* dest
     */
    tnlAssert( destination, );
    tnlAssert( source, );
-   tnlAssert( size >= 0, cerr << "size = " << size );
+   tnlAssert( size >= 0, std::cerr << "size = " << size );
    #ifdef HAVE_CUDA
    Element2* host_buffer = new Element2[ tnlCuda::getGPUTransferBufferSize() ];
    if( ! host_buffer )
    {
-      cerr << "I am sorry but I cannot allocate supporting buffer on the host for comparing data between CUDA GPU and CPU." << endl;
+      std::cerr << "I am sorry but I cannot allocate supporting buffer on the host for comparing data between CUDA GPU and CPU." << std::endl;
       return false;
    }
    Index compared( 0 );
    while( compared < size )
    {
-      Index transfer = Min( size - compared, tnlCuda::getGPUTransferBufferSize() );
+      Index transfer = min( size - compared, tnlCuda::getGPUTransferBufferSize() );
       if( cudaMemcpy( ( void* ) host_buffer,
                       ( void* ) & ( source[ compared ] ),
                       transfer * sizeof( Element2 ),
                       cudaMemcpyDeviceToHost ) != cudaSuccess )
       {
-         cerr << "Transfer of data from the device failed." << endl;
+         std::cerr << "Transfer of data from the device failed." << std::endl;
          checkCudaDevice;
          delete[] host_buffer;
          return false;
@@ -303,7 +303,7 @@ bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory( DestinationElement* des
 {
    tnlAssert( destination, );
    tnlAssert( source, );
-   tnlAssert( size >= 0, cerr << "size = " << size );
+   tnlAssert( size >= 0, std::cerr << "size = " << size );
    #ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
@@ -313,7 +313,7 @@ bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory( DestinationElement* des
                   cudaMemcpyHostToDevice );
       if( ! checkCudaDevice )
       {
-         cerr << "Transfer of data from host to CUDA device failed." << endl;
+         std::cerr << "Transfer of data from host to CUDA device failed." << std::endl;
          return false;
       }
       return true;
@@ -323,7 +323,7 @@ bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory( DestinationElement* des
       DestinationElement* buffer = new DestinationElement[ tnlCuda::getGPUTransferBufferSize() ];
       if( ! buffer )
       {
-         cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << endl;
+         std::cerr << "Unable to allocate supporting buffer to transfer data between the CUDA device and the host." << std::endl;
          return false;
       }
       Index i( 0 );
@@ -361,7 +361,7 @@ bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory( const Element1* host
 {
    tnlAssert( hostData, );
    tnlAssert( deviceData, );
-   tnlAssert( size >= 0, cerr << "size = " << size );
+   tnlAssert( size >= 0, std::cerr << "size = " << size );
    return tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( deviceData, hostData, size );
 }
 

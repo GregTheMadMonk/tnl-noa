@@ -73,7 +73,7 @@ class tnlEllpackMatrix< Real, tnlCuda, Index > : public tnlMatrix< Real, tnlCuda
    { abort(); };
 
    //! Prints out the matrix structure
-   void printOut( ostream& str ) const;
+   void printOut( std::ostream& str ) const;
 
    protected:
 
@@ -252,13 +252,13 @@ void tnlEllpackMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlVector<
                                                                 tnlVector< Real, tnlCuda, Index >& b ) const
 {
    tnlAssert( x. getSize() == this->getSize(),
-              cerr << "The matrix and vector for a multiplication have different sizes. "
+              std::cerr << "The matrix and vector for a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << x. getSize() << endl; );
+                   << "The vector size is " << x. getSize() << std::endl; );
    tnlAssert( b. getSize() == this->getSize(),
-              cerr << "The matrix and result vector of a multiplication have different sizes. "
+              std::cerr << "The matrix and result vector of a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << b. getSize() << endl; );
+                   << "The vector size is " << b. getSize() << std::endl; );
 #ifdef HAVE_CUDA
 	sparseEllpackMatrixVectorProductKernelCaller( this->getSize(),
 	                                       row_length,
@@ -276,15 +276,15 @@ Real tnlEllpackMatrix< Real, tnlCuda, Index > :: rowProduct( Index row,
                                                              const tnlVector< Real, tnlCuda, Index >& vector ) const
 {
    tnlAssert( vector. getSize() == this->getSize(),
-              cerr << "The matrix and vector for a multiplication have different sizes. "
+              std::cerr << "The matrix and vector for a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << vector. getSize() << endl; );
+                   << "The vector size is " << vector. getSize() << std::endl; );
 
 	tnlAssert( false, );
 };
 
 template< typename Real, typename Index >
-void tnlEllpackMatrix< Real, tnlCuda, Index > :: printOut( ostream& str ) const
+void tnlEllpackMatrix< Real, tnlCuda, Index > :: printOut( std::ostream& str ) const
 {
 	tnlAssert( false, );
 };

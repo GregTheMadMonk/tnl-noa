@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSOLVERSTARTER_H_
-#define TNLSOLVERSTARTER_H_
+#pragma once
 
 #include <config/tnlParameterContainer.h>
 #include <core/tnlTimer.h>
 #include <ostream>
+
+namespace TNL {
 
 template< typename MeshConfig >
 class tnlSolverStarter
@@ -26,7 +27,7 @@ class tnlSolverStarter
    static bool run( const tnlParameterContainer& parameters );
 
    template< typename Solver >
-   bool writeEpilog( ostream& str, const Solver& solver );
+   bool writeEpilog( std::ostream& str, const Solver& solver );
 
    template< typename Problem, typename TimeStepper >
    bool runPDESolver( Problem& problem,
@@ -40,6 +41,6 @@ class tnlSolverStarter
    tnlTimer ioTimer, computeTimer, totalTimer;
 };
 
-#include <solvers/tnlSolverStarter_impl.h>
+} // namespace TNL
 
-#endif /* TNLSOLVERSTARTER_H_ */
+#include <solvers/tnlSolverStarter_impl.h>

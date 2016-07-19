@@ -135,7 +135,7 @@ class tnlBlobFunction< 3, Real > : public tnlBlobFunctionBase< Real, 3 >
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlBlobFunction< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const tnlBlobFunction< Dimensions, Real >& f )
 {
    str << "Level-set pseudo square function.";
    return str;

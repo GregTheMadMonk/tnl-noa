@@ -4,6 +4,8 @@
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
 
+namespace TNL {
+
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
@@ -172,6 +174,8 @@ class EulerVelYGetter< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
                                Vector& b,
                                MatrixRow& matrixRow ) const;
 };
+
+} //namespace TNL
 
 
 #include "EulerVelYGetter_impl.h"

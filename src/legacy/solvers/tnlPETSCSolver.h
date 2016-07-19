@@ -46,7 +46,7 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
          KSPSetType( petsc_solver, KSPGMRES );
       else assert( 0 );
 #else
-      cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
+      std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
 #endif
    };
 
@@ -56,7 +56,7 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
       KSPGMRESSetRestart( petsc_solver, rest );
       gmre_restarting = rest;
 #else
-      cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
+      std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
 #endif
    };
  
@@ -71,7 +71,7 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
       tnlMatrixSolver< T > :: residue = res;
       tnlMatrixSolver< T > :: PrintOut();
 #else
-      cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
+      std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
 #endif
    };
 
@@ -103,7 +103,7 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
       {
          normb += b[ i ] * b[ i ];
       }
-      normb = sqrt( normb );
+      normb = ::sqrt( normb );
  
       KSPGMRESSetCGSRefinementType( petsc_solver, KSP_GMRES_CGS_REFINE_IFNEEDED );
  
@@ -138,7 +138,7 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
  
       return true;
 #else
-      cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
+      std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
       return false;
 #endif
 
@@ -149,7 +149,7 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
 #ifdef HAVE_PETSC
       KSPDestroy( petsc_solver );
 #else
-      cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
+      std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
 #endif
    };
 

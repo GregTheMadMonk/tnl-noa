@@ -4,6 +4,8 @@
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
 
+namespace TNL {
+
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
@@ -175,6 +177,7 @@ class LaxFridrichsContinuity< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, In
                                MatrixRow& matrixRow ) const;
 };
 
+} // namespace TNL
 
 #include "LaxFridrichsContinuity_impl.h"
 

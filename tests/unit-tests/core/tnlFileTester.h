@@ -18,6 +18,8 @@
 #include <cuda.h>
 #endif
 
+using namespace TNL;
+
 class tnlFileTester : public CppUnit :: TestCase
 {
    public:
@@ -45,7 +47,7 @@ class tnlFileTester : public CppUnit :: TestCase
       tnlFile file;
       if( ! file. open( tnlString( "test-file.tnl" ), tnlWriteMode ) )
       {
-         cerr << "Unable to create file test-file.tnl for the testing." << endl;
+         std::cerr << "Unable to create file test-file.tnl for the testing." << std::endl;
          return;
       }
       int intData( 5 );
@@ -62,13 +64,13 @@ class tnlFileTester : public CppUnit :: TestCase
 #endif
       if( ! file. close() )
       {
-         cerr << "Unable to close the file test-file.tnl" << endl;
+         std::cerr << "Unable to close the file test-file.tnl" << std::endl;
          return;
       }
 
       if( ! file. open( tnlString( "test-file.tnl" ), tnlReadMode ) )
       {
-         cerr << "Unable to open the file test-file.tnl for the testing." << endl;
+         std::cerr << "Unable to open the file test-file.tnl for the testing." << std::endl;
          return;
       }
       int newIntData;
@@ -107,7 +109,7 @@ class tnlFileTester : public CppUnit :: TestCase
       tnlFile file;
       if( ! file. open( tnlString( "test-file.tnl" ), tnlWriteMode ) )
       {
-         cerr << "Unable to create file test-file.tnl for the testing." << endl;
+         std::cerr << "Unable to create file test-file.tnl for the testing." << std::endl;
          return;
       }
 
@@ -115,13 +117,13 @@ class tnlFileTester : public CppUnit :: TestCase
       file. write< float, tnlCuda, int >( cudaFloatData, 3 );
       if( ! file. close() )
       {
-         cerr << "Unable to close the file test-file.tnl" << endl;
+         std::cerr << "Unable to close the file test-file.tnl" << std::endl;
          return;
       }
 
       if( ! file. open( tnlString( "test-file.tnl" ), tnlReadMode ) )
       {
-         cerr << "Unable to open the file test-file.tnl for the testing." << endl;
+         std::cerr << "Unable to open the file test-file.tnl for the testing." << std::endl;
          return;
       }
       int newIntData;

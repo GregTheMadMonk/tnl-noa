@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlBICGStabSolverH
-#define tnlBICGStabSolverH
+#pragma once
 
 #include <math.h>
 #include <tnlObject.h>
@@ -18,6 +17,8 @@
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <solvers/tnlIterativeSolver.h>
 #include <solvers/linear/tnlLinearResidueGetter.h>
+
+namespace TNL {
 
 template< typename Matrix,
           typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
@@ -74,6 +75,6 @@ class tnlBICGStabSolver : public tnlObject,
    const PreconditionerType* preconditioner;
 };
 
-#include <solvers/linear/krylov/tnlBICGStabSolver_impl.h>
+} // namespace TNL
 
-#endif
+#include <solvers/linear/krylov/tnlBICGStabSolver_impl.h>

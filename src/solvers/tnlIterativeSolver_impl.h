@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLITERATIVESOLVER_IMPL_H_
-#define TNLITERATIVESOLVER_IMPL_H_
+#pragma once
 
 #include <cmath>
 #include <float.h>
+
+namespace TNL {
 
 template< typename Real, typename Index >
 tnlIterativeSolver< Real, Index> :: tnlIterativeSolver()
@@ -117,23 +118,23 @@ checkConvergence()
 {
    if( std::isnan( this->getResidue() ) )
    {
-      cerr << endl << "The residue is NaN." << endl;
+      std::cerr << std::endl << "The residue is NaN." << std::endl;
       return false;
    }
    if(( this->getResidue() > this->getDivergenceResidue() &&
          this->getIterations() > this->minIterations ) )
    {
-      cerr << endl  << "The residue has exceeded allowed tolerance " << this->getDivergenceResidue() << "." << endl;
+      std::cerr << std::endl  << "The residue has exceeded allowed tolerance " << this->getDivergenceResidue() << "." << std::endl;
       return false;
    }
    if( this->getIterations() >= this->getMaxIterations() )
    {
-      cerr << endl  << "The solver has exceeded maximal allowed number of iterations " << this->getMaxIterations() << "." << endl;
+      std::cerr << std::endl  << "The solver has exceeded maximal allowed number of iterations " << this->getMaxIterations() << "." << std::endl;
       return false;
    }
    if( this->getResidue() > this->getConvergenceResidue() )
    {
-      cerr << endl  << "The residue ( = " << this->getResidue() << " ) is too large( > " << this->getConvergenceResidue() << " )." << endl;
+      std::cerr << std::endl  << "The residue ( = " << this->getResidue() << " ) is too large( > " << this->getConvergenceResidue() << " )." << std::endl;
       return false;
    }
    return true;
@@ -225,4 +226,4 @@ extern template class tnlIterativeSolver< double, long int >;
 
 #endif
 
-#endif /* TNLITERATIVESOLVER_IMPL_H_ */
+} // namespace TNL

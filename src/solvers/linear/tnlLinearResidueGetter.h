@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLLINEARRESIDUEGETTER_H_
-#define TNLLINEARRESIDUEGETTER_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Matrix, typename Vector >
 class tnlLinearResidueGetter
@@ -26,6 +27,6 @@ class tnlLinearResidueGetter
                                RealType bNorm = 0 );
 };
 
-#include <solvers/linear/tnlLinearResidueGetter_impl.h>
+} // namespace TNL
 
-#endif /* TNLLINEARRESIDUEGETTER_H_ */
+#include <solvers/linear/tnlLinearResidueGetter_impl.h>

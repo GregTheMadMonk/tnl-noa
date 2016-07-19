@@ -5,6 +5,8 @@
 #include <mesh/tnlGrid.h>
 #include <functions/tnlDomain.h>
 
+namespace TNL {
+
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
@@ -54,5 +56,7 @@ class EulerPressureGetter
       const MeshFunctionType& energy;
 
 };
+
+} //namespace TNL
 
 #endif	/* EulerPressureGetter_H */

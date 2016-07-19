@@ -26,7 +26,7 @@ class tnlSpmvBenchmarkRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index
 
    void writeProgress() const;
 
-   void writeToLogTable( ostream& logFile,
+   void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
                          const tnlString& inputMtxFile,
                          const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
@@ -69,7 +69,7 @@ template< typename Real,
           typename Index>
 bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix )
 {
-   tnlAssert( this->groupSize > 0, cerr << "groupSize = " << this->groupSize );
+   tnlAssert( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
    if( Device :: getDevice() == tnlHostDevice )
    {
       this->matrix. tuneFormat( groupSize,
@@ -109,34 +109,34 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeProgress() const
 {
-   cout << left << setw( this->formatColumnWidth - 15 ) << "Row-grouped CSR ";
+  std::cout << left << std::setw( this->formatColumnWidth - 15 ) << "Row-grouped CSR ";
    if( Device :: getDevice() == tnlCudaDevice )
    {
       if( useAdaptiveGroupSize )
-         cout << setw( 5 ) << "Var.";
+        std::cout << std::setw( 5 ) << "Var.";
       else
-         cout << setw( 5 ) << this->groupSize;
-      cout << setw( 10 ) << this->cudaBlockSize;
+        std::cout << std::setw( 5 ) << this->groupSize;
+     std::cout << std::setw( 10 ) << this->cudaBlockSize;
    }
    else
    {
       if( useAdaptiveGroupSize )
-         cout << setw( 15 ) << "Var.";
+        std::cout << std::setw( 15 ) << "Var.";
       else
-         cout << setw( 15 ) << this->groupSize;
+        std::cout << std::setw( 15 ) << this->groupSize;
    }
-   cout << right << setw( this->timeColumnWidth ) << setprecision( 2 ) << this->getTime()
-        << right << setw( this->iterationsColumnWidth ) << this->getIterations()
-        << right << setw( this->gflopsColumnWidth ) << setprecision( 2 ) << this->getGflops();
+  std::cout << right << std::setw( this->timeColumnWidth ) << std::setprecision( 2 ) << this->getTime()
+        << right << std::setw( this->iterationsColumnWidth ) << this->getIterations()
+        << right << std::setw( this->gflopsColumnWidth ) << std::setprecision( 2 ) << this->getGflops();
    if( this->getBenchmarkWasSuccesful() )
-        cout << right << setw( this->benchmarkStatusColumnWidth ) << "  OK  - maxError is " << this->maxError << ". ";
+       std::cout << right << std::setw( this->benchmarkStatusColumnWidth ) << "  OK  - maxError is " << this->maxError << ". ";
    else
-        cout << right << setw( this->benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this->maxError << ". ";
+       std::cout << right << std::setw( this->benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this->maxError << ". ";
 #ifndef HAVE_CUDA
    if( Device :: getDevice() == tnlCudaDevice )
       tnlCudaSupportMissingMessage;;
 #endif
-      cout << endl;
+     std::cout << std::endl;
 }
 
 template< typename Real,
@@ -183,7 +183,7 @@ Index tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: getArtificialZeroEle
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( ostream& logFile,
+void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( std::ostream& logFile,
                                                                             const double& csrGflops,
                                                                             const tnlString& inputMtxFile,
                                                                             const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
@@ -212,22 +212,22 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( ostr
                                this->adaptiveGroupSizeStrategy );
       rgCsrMatrix. copyFrom( csrMatrix );
       this->printMatrixInHtml( matrixHtmlFile, rgCsrMatrix );
-      logFile << "             <td bgcolor=" << bgColor << "> <a href=\"" << matrixPdfFile << "\">PDF</a>,<a href=\"" << matrixHtmlFile << "\"> HTML</a></td>" << endl;
-      logFile << "             <td bgcolor=" << bgColor << "> " << this->getArtificialZeroElements() << "</td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << "> <a href=\"" << matrixPdfFile << "\">PDF</a>,<a href=\"" << matrixHtmlFile << "\"> HTML</a></td>" << std::endl;
+      logFile << "             <td bgcolor=" << bgColor << "> " << this->getArtificialZeroElements() << "</td>" << std::endl;
    }
    if( this->getBenchmarkWasSuccesful() )
    {
       const double speedUp = this->getGflops() / csrGflops;
       bgColor =  this->getBgColorBySpeedUp( speedUp );
-      logFile << "             <td bgcolor=" << bgColor << ">" << this->getTime() << "</td>" << endl;
-      logFile << "             <td bgcolor=" << bgColor << "> " << this->getGflops() << "</td>" << endl;
-      logFile << "             <td bgcolor=" << bgColor << "> " << speedUp << "</td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << ">" << this->getTime() << "</td>" << std::endl;
+      logFile << "             <td bgcolor=" << bgColor << "> " << this->getGflops() << "</td>" << std::endl;
+      logFile << "             <td bgcolor=" << bgColor << "> " << speedUp << "</td>" << std::endl;
    }
    else
    {
-      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
-      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
-      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << std::endl;
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << std::endl;
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << std::endl;
    }
 }
 

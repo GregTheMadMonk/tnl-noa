@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLPDESOLVER_H_
-#define TNLPDESOLVER_H_
+#pragma once
 
 #include <tnlObject.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <core/tnlLogger.h>
+
+namespace TNL {
 
 template< typename Problem,
           typename TimeStepper >
@@ -90,6 +91,6 @@ class tnlPDESolver : public tnlObject
       tnlTimer *ioTimer, *computeTimer;
 };
 
-#include <solvers/pde/tnlPDESolver_impl.h>
+} // namespace TNL
 
-#endif /* TNLPDESOLVER_H_ */
+#include <solvers/pde/tnlPDESolver_impl.h>

@@ -15,6 +15,7 @@
 #include <sstream>
 #include "mpi-supp.h"
 
+
 namespace TNL {
 
 template< class T > class tnlList;
@@ -127,11 +128,11 @@ class tnlString
 
    // TODO: remove
    //! Write to a binary file
-   bool save( ostream& file ) const;
+   bool save( std::ostream& file ) const;
 
    // TODO: remove
    //! Read from binary file
-   bool load( istream& file );
+   bool load( std::istream& file );
 
    //! Write to a binary file
    bool save( tnlFile& file ) const;
@@ -143,17 +144,17 @@ class tnlString
    void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
    //! Read one line from given stream.
-   bool getLine( istream& stream );
+   bool getLine( std::istream& stream );
 
    //! Parse the string into list of strings w.r.t. given separator.
    int parse( tnlList< tnlString >& list, const char separator = ' ' ) const;
 
-   friend ostream& operator << ( ostream& stream, const tnlString& str );
+   friend std::ostream& operator << ( std::ostream& stream, const tnlString& str );
 };
 
 tnlString operator + ( const char* string1, const tnlString& string2 );
 
-ostream& operator << ( ostream& stream, const tnlString& str );
+std::ostream& operator << ( std::ostream& stream, const tnlString& str );
 
 template< typename T >
 tnlString convertToString( const T& value )

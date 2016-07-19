@@ -75,16 +75,16 @@ class tnlMeshInitializer
                        const CellSeedArrayType& cellSeeds,
                        MeshType& mesh )
       {
-         cout << "======= Starting mesh initiation ========" << endl;
+        std::cout << "======= Starting mesh initiation ========" << std::endl;
          this->mesh = &mesh;
 
-         cout << "========= Creating entity seeds =============" << endl;
+        std::cout << "========= Creating entity seeds =============" << std::endl;
          BaseType::createEntitySeedsFromCellSeeds( cellSeeds );
 
-         cout << "========= Creating entity reference orientations =============" << endl;
+        std::cout << "========= Creating entity reference orientations =============" << std::endl;
          BaseType::createEntityReferenceOrientations();
 
-         cout << "====== Initiating entities ==============" << endl;
+        std::cout << "====== Initiating entities ==============" << std::endl;
          BaseType::initEntities( *this, points, cellSeeds );
 
          return true;
@@ -205,11 +205,11 @@ class tnlMeshInitializerLayer< MeshConfig,
       void initEntities( InitializerType &initializer, const PointArrayType &points, const CellSeedArrayType &cellSeeds)
       {
          StorageArrayType &entityArray = initializer.template meshEntitiesArray< DimensionsTag >();
-         //cout << " Initiating entities with " << DimensionsTag::value << " dimensions ... " << endl;
+         //cout << " Initiating entities with " << DimensionsTag::value << " dimensions ... " << std::endl;
          entityArray.setSize( cellSeeds.getSize() );
          for( GlobalIndexType i = 0; i < entityArray.getSize(); i++ )
          {
-            //cout << "  Initiating entity " << i << endl;
+            //cout << "  Initiating entity " << i << std::endl;
             EntityInitializerType::initEntity( entityArray[i], i, cellSeeds[i], initializer );
          }
          /***
@@ -244,15 +244,15 @@ class tnlMeshInitializerLayer< MeshConfig,
             {
                if( this->getMesh().getCell( cell ).getVerticesIndices()[ i ] == - 1 )
                {
-                  cerr << "The cell number " << cell << " does not have properly set vertex index number " << i << "." << endl;
+                  std::cerr << "The cell number " << cell << " does not have properly set vertex index number " << i << "." << std::endl;
                   return false;
                }
                if( this->getMesh().getCell( cell ).getVerticesIndices()[ i ] >= numberOfVertices )
                {
-                  cerr << "The cell number " << cell << " does not have properly set vertex index number " << i
+                  std::cerr << "The cell number " << cell << " does not have properly set vertex index number " << i
                        << ". The index " << this->getMesh().getCell( cell ).getVerticesIndices()[ i ]
                        << "is higher than the number of all vertices ( " << numberOfVertices
-                       << " )." << endl;
+                       << " )." << std::endl;
                   return false;
                }
             }
@@ -318,15 +318,15 @@ class tnlMeshInitializerLayer< MeshConfig,
       void createEntitySeedsFromCellSeeds( const CellSeedArrayType& cellSeeds )
       {
          typedef tnlMeshSubentitySeedsCreator< MeshConfig, CellTopology, DimensionsTag >  SubentitySeedsCreator;
-         //cout << " Creating mesh entities with " << DimensionsTag::value << " dimensions ... " << endl;
+         //cout << " Creating mesh entities with " << DimensionsTag::value << " dimensions ... " << std::endl;
          for( GlobalIndexType i = 0; i < cellSeeds.getSize(); i++ )
          {
-            //cout << "  Creating mesh entities from cell number " << i << " : " << cellSeeds[ i ] << endl;
+            //cout << "  Creating mesh entities from cell number " << i << " : " << cellSeeds[ i ] << std::endl;
             typedef typename SubentitySeedsCreator::SubentitySeedArray SubentitySeedArray;
             SubentitySeedArray subentytiSeeds( SubentitySeedsCreator::create( cellSeeds[ i ] ) );
             for( LocalIndexType j = 0; j < subentytiSeeds.getSize(); j++ )
             {
-               //cout << "Creating subentity seed no. " << j << " : " << subentytiSeeds[ j ] << endl;
+               //cout << "Creating subentity seed no. " << j << " : " << subentytiSeeds[ j ] << std::endl;
                //tnlMeshEntitySeed< tnlMeshConfigBase< CellTopology >, EntityTopology >& entitySeed = subentytiSeeds[ j ];
                this->seedsIndexedSet.insert( subentytiSeeds[ j ] );
             }
@@ -351,14 +351,14 @@ class tnlMeshInitializerLayer< MeshConfig,
       void initEntities( InitializerType& initializer, const PointArrayType& points )
       {
          StorageArrayType &entityArray = initializer.template meshEntitiesArray< DimensionsTag >();
-         //cout << " Initiating entities with " << DimensionsTag::value << " dimensions ... " << endl;
+         //cout << " Initiating entities with " << DimensionsTag::value << " dimensions ... " << std::endl;
          entityArray.setSize( this->seedsIndexedSet.getSize() );
          EntitySeedArrayType seedsArray;
          seedsArray.setSize( this->seedsIndexedSet.getSize() );
          this->seedsIndexedSet.toArray( seedsArray );
          for( GlobalIndexType i = 0; i < this->seedsIndexedSet.getSize(); i++ )
          {
-            //cout << "  Initiating entity " << i << endl;
+            //cout << "  Initiating entity " << i << std::endl;
             EntityInitializerType::initEntity( entityArray[ i ], i, seedsArray[ i ], initializer );
          }
          this->seedsIndexedSet.reset();
@@ -434,15 +434,15 @@ class tnlMeshInitializerLayer< MeshConfig,
       void createEntitySeedsFromCellSeeds( const CellSeedArrayType& cellSeeds )
       {
          typedef tnlMeshSubentitySeedsCreator< MeshConfig, CellTopology, DimensionsTag >  SubentitySeedsCreator;
-         //cout << " Creating mesh entities with " << DimensionsTag::value << " dimensions ... " << endl;
+         //cout << " Creating mesh entities with " << DimensionsTag::value << " dimensions ... " << std::endl;
          for( GlobalIndexType i = 0; i < cellSeeds.getSize(); i++ )
          {
-            //cout << "  Creating mesh entities from cell number " << i << " : " << cellSeeds[ i ] << endl;
+            //cout << "  Creating mesh entities from cell number " << i << " : " << cellSeeds[ i ] << std::endl;
             typedef typename SubentitySeedsCreator::SubentitySeedArray SubentitySeedArray;
             SubentitySeedArray subentytiSeeds( SubentitySeedsCreator::create( cellSeeds[ i ] ) );
             for( LocalIndexType j = 0; j < subentytiSeeds.getSize(); j++ )
             {
-               //cout << "Creating subentity seed no. " << j << " : " << subentytiSeeds[ j ] << endl;
+               //cout << "Creating subentity seed no. " << j << " : " << subentytiSeeds[ j ] << std::endl;
                //tnlMeshEntitySeed< tnlMeshConfigBase< CellTopology >, EntityTopology >& entitySeed = subentytiSeeds[ j ];
                this->seedsIndexedSet.insert( subentytiSeeds[ j ] );
             }
@@ -467,14 +467,14 @@ class tnlMeshInitializerLayer< MeshConfig,
       void initEntities( InitializerType& initializer, const PointArrayType& points )
       {
          EntityArrayType &entityArray = initializer.template meshEntitiesArray< DimensionsTag >();
-         //cout << " Initiating entities with " << DimensionsTag::value << " dimensions ... " << endl;
+         //cout << " Initiating entities with " << DimensionsTag::value << " dimensions ... " << std::endl;
          entityArray.setSize( this->seedsIndexedSet.getSize() );
          SeedArrayType seedsArray;
          seedsArray.setSize( this->seedsIndexedSet.getSize() );
          this->seedsIndexedSet.toArray( seedsArray );
          for( GlobalIndexType i = 0; i < this->seedsIndexedSet.getSize(); i++ )
          {
-            //cout << "  Initiating entity " << i << endl;
+            //cout << "  Initiating entity " << i << std::endl;
             EntityInitializerType::initEntity( entityArray[ i ], i, seedsArray[ i ], initializer );
          }
          this->seedsIndexedSet.reset();
@@ -492,14 +492,14 @@ class tnlMeshInitializerLayer< MeshConfig,
  
       void createEntityReferenceOrientations()
       {
-         //cout << " Creating entity reference orientations with " << DimensionsTag::value << " dimensions ... " << endl;
+         //cout << " Creating entity reference orientations with " << DimensionsTag::value << " dimensions ... " << std::endl;
          SeedArrayType seedsArray;
          seedsArray.setSize( this->seedsIndexedSet.getSize() );
          this->seedsIndexedSet.toArray( seedsArray );
          this->referenceOrientations.setSize( seedsArray.getSize() );
          for( GlobalIndexType i = 0; i < seedsArray.getSize(); i++ )
          {
-            //cout << "  Creating reference orientation for entity " << i << endl;
+            //cout << "  Creating reference orientation for entity " << i << std::endl;
             this->referenceOrientations[ i ] = ReferenceOrientationType( seedsArray[ i ] );
          }
          BaseType::createEntityReferenceOrientations();
@@ -576,8 +576,8 @@ class tnlMeshInitializerLayer< MeshConfig,
       VertexInitializerType& getEntityInitializer( DimensionsTag, GlobalIndexType index )
       {
          tnlAssert( index >= 0 && index < vertexInitializerContainer.getSize(),
-                  cerr << " index = " << index
-                       << " vertexInitializerContainer.getSize() = " << vertexInitializerContainer.getSize() << endl; );
+                  std::cerr << " index = " << index
+                       << " vertexInitializerContainer.getSize() = " << vertexInitializerContainer.getSize() << std::endl; );
          return vertexInitializerContainer[ index ];
       }
  

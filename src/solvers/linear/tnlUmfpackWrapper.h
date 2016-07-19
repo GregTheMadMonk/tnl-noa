@@ -1,3 +1,5 @@
+
+
 #pragma once
 
 #ifdef HAVE_UMFPACK
@@ -11,6 +13,8 @@
 #include <solvers/tnlIterativeSolver.h>
 #include <solvers/linear/tnlLinearResidueGetter.h>
 
+
+namespace TNL {
 
 template< typename Matrix >
 struct is_csr_matrix
@@ -45,13 +49,13 @@ public:
     tnlUmfpackWrapper()
     {
         if( ! is_csr_matrix< Matrix >::value )
-            cerr << "The tnlUmfpackWrapper solver is available only for CSR matrices." << endl;
+            std::cerr << "The tnlUmfpackWrapper solver is available only for CSR matrices." << std::endl;
         if( std::is_same< typename Matrix::DeviceType, tnlCuda >::value )
-            cerr << "The tnlUmfpackWrapper solver is not available on CUDA." << endl;
+            std::cerr << "The tnlUmfpackWrapper solver is not available on CUDA." << std::endl;
         if( ! std::is_same< RealType, double >::value )
-            cerr << "The tnlUmfpackWrapper solver is available only for double precision." << endl;
+            std::cerr << "The tnlUmfpackWrapper solver is available only for double precision." << std::endl;
         if( ! std::is_same< IndexType, int >::value )
-            cerr << "The tnlUmfpackWrapper solver is available only for 'int' index type." << endl;
+            std::cerr << "The tnlUmfpackWrapper solver is available only for 'int' index type." << std::endl;
     }
 
     static void configSetup( tnlConfigDescription& config,
@@ -117,6 +121,9 @@ protected:
    const PreconditionerType* preconditioner;
 };
 
+} // namespace TNL
+
 #include "tnlUmfpackWrapper_impl.h"
+
 
 #endif

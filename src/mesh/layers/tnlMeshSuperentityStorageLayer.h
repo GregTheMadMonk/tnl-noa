@@ -70,9 +70,9 @@ class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionsTag,
 
     /*~tnlMeshSuperentityStorageLayer()
     {
-       cerr << "      Destroying " << this->superentitiesIndices.getSize() << " superentities with "<< DimensionsTag::value << " dimensions." << endl;
-       cerr << "         this->superentitiesIndices.getName() = " << this->superentitiesIndices.getName() << endl;
-       cerr << "         this->sharedSuperentitiesIndices.getName() = " << this->sharedSuperentitiesIndices.getName() << endl;
+       std::cerr << "      Destroying " << this->superentitiesIndices.getSize() << " superentities with "<< DimensionsTag::value << " dimensions." << std::endl;
+       std::cerr << "         this->superentitiesIndices.getName() = " << this->superentitiesIndices.getName() << std::endl;
+       std::cerr << "         this->sharedSuperentitiesIndices.getName() = " << this->sharedSuperentitiesIndices.getName() << std::endl;
     }*/
 
     tnlMeshSuperentityStorageLayer& operator = ( const tnlMeshSuperentityStorageLayer& layer )
@@ -129,7 +129,7 @@ class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionsTag,
        if( ! BaseType::save( file ) ||
            ! this->superentitiesIndices.save( file ) )
        {
-          //cerr << "Saving of the entity superentities layer with " << DimensionsTag::value << " failed." << endl;
+          //cerr << "Saving of the entity superentities layer with " << DimensionsTag::value << " failed." << std::endl;
           return false;
        }
        return true;
@@ -140,16 +140,16 @@ class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionsTag,
        if( ! BaseType::load( file ) ||
            ! this->superentitiesIndices.load( file ) )
        {
-          //cerr << "Loading of the entity superentities layer with " << DimensionsTag::value << " failed." << endl;
+          //cerr << "Loading of the entity superentities layer with " << DimensionsTag::value << " failed." << std::endl;
           return false;
        }
        return true;
     }
 
-    void print( ostream& str ) const
+    void print( std::ostream& str ) const
     {
        BaseType::print( str );
-       str << endl << "\t Superentities with " << DimensionsTag::value << " dimensions are: " << this->superentitiesIndices << ".";
+       str << std::endl << "\t Superentities with " << DimensionsTag::value << " dimensions are: " << this->superentitiesIndices << ".";
     }
 
     bool operator==( const tnlMeshSuperentityStorageLayer& layer  ) const
@@ -226,7 +226,7 @@ class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, tnlDimensionsT
                              const LocalIndexType localIndex,
                              const GlobalIndexType globalIndex ) {}
 
-   void print( ostream& str ) const{}
+   void print( std::ostream& str ) const{}
 
    bool operator==( const ThisType& layer  ) const
    {
@@ -299,7 +299,7 @@ class tnlMeshSuperentityStorageLayer< MeshConfig,
                              const LocalIndexType localIndex,
                              const GlobalIndexType globalIndex ) {}
 
-   void print( ostream& str ) const{}
+   void print( std::ostream& str ) const{}
 
    bool operator==( const ThisType& layer  ) const
    {

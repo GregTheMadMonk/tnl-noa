@@ -1494,6 +1494,8 @@ template bool reductionOnCudaDevice< tnlParallelReductionDiffLpNorm< long double
 #endif
 #endif
 
+#endif
+
 } // namespace TNL
 
 

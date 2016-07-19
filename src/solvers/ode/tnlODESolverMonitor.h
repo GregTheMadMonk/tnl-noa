@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLODESOLVERMONITOR_H_
-#define TNLODESOLVERMONITOR_H_
+#pragma once
 
 #include <solvers/tnlIterativeSolverMonitor.h>
+
+namespace TNL {
 
 template< typename Real, typename Index>
 class tnlODESolverMonitor : public tnlIterativeSolverMonitor< Real, Index >
@@ -41,6 +42,6 @@ class tnlODESolverMonitor : public tnlIterativeSolverMonitor< Real, Index >
 
 };
 
-#include <solvers/ode/tnlODESolverMonitor_impl.h>
+} // namespace TNL
 
-#endif /* TNLODESOLVERMONITOR_H_ */
+#include <solvers/ode/tnlODESolverMonitor_impl.h>

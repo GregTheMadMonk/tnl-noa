@@ -22,7 +22,6 @@ set (headers tnlAssert.h
              tnlList.h
              tnlList_impl.h
              tnlLogger.h
-             tnlObject.h 
              tnlStack.h
              tnlStaticFor.h
              tnlStatistics.h 

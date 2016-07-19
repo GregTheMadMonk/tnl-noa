@@ -33,7 +33,7 @@ class tnlCudaReductionBuffer
             this->size = size;
             if( cudaMalloc( ( void** ) &this->data, size ) != cudaSuccess )
             {
-               cerr << "I am not able to allocate reduction buffer on the GPU." << endl;
+               std::cerr << "I am not able to allocate reduction buffer on the GPU." << std::endl;
                this->data = 0;
             }
             return checkCudaDevice;

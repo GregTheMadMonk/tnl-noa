@@ -61,7 +61,7 @@ class tnlSpmvBenchmarkBase
                               const tnlVector< RealType, tnlHost, IndexType >& refB,
                               bool verbose );
 
-   virtual void writeToLogTable( ostream& logFile,
+   virtual void writeToLogTable( std::ostream& logFile,
                                  const double& csrGflops,
                                  const tnlString& inputMtxFile,
                                  const tnlCSRMatrix< RealType, tnlHost, IndexType >& csrMatrix,

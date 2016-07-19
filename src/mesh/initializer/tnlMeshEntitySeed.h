@@ -36,8 +36,8 @@ class tnlMeshEntitySeed
 
       void setCornerId( LocalIndexType cornerIndex, GlobalIndexType pointIndex )
       {
-         tnlAssert( 0 <= cornerIndex && cornerIndex < getCornersCount(), cerr << "cornerIndex = " << cornerIndex );
-         tnlAssert( 0 <= pointIndex, cerr << "pointIndex = " << pointIndex );
+         tnlAssert( 0 <= cornerIndex && cornerIndex < getCornersCount(), std::cerr << "cornerIndex = " << cornerIndex );
+         tnlAssert( 0 <= pointIndex, std::cerr << "pointIndex = " << pointIndex );
 
          this->cornerIds[ cornerIndex ] = pointIndex;
       }
@@ -63,7 +63,7 @@ class tnlMeshEntitySeed
 };
 
 template< typename MeshConfig, typename EntityTopology >
-ostream& operator << ( ostream& str, const tnlMeshEntitySeed< MeshConfig, EntityTopology >& e )
+std::ostream& operator << ( std::ostream& str, const tnlMeshEntitySeed< MeshConfig, EntityTopology >& e )
 {
    str << e.getCornerIds();
    return str;

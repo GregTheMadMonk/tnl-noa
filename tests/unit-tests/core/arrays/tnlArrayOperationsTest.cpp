@@ -12,6 +12,8 @@
 #include "../../tnlUnitTestStarter.h"
 #include <core/tnlHost.h>
 
+using namespace TNL;
+
 int main( int argc, char* argv[] )
 {
    if( ! tnlUnitTestStarter :: run< tnlArrayOperationsTester< int, tnlHost > >() )

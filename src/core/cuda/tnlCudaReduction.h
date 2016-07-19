@@ -48,9 +48,11 @@ class tnlCUDAReduction< tnlParallelReductionScalarProduct< Real, Index >, blockS
                                      ResultType* output );
 };*/
 
-#include <core/cuda/tnlCudaReduction_impl.h>
-
 #endif
 
 } // namespace TNL
+
+#ifdef HAVE_CUDA
+#include <core/cuda/tnlCudaReduction_impl.h>
+#endif
 

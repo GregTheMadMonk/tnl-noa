@@ -122,12 +122,12 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 setup( const tnlParameterContainer& parameters,
        const tnlString& prefix )
 {
-   cout << "Test function setup ... " << endl;
+  std::cout << "Test function setup ... " << std::endl;
    const tnlString& timeDependence =
             parameters.getParameter< tnlString >(
                      prefix +
                      "time-dependence" );
-   cout << "Time dependence ... " << timeDependence << endl;
+  std::cout << "Time dependence ... " << timeDependence << std::endl;
    if( timeDependence == "none" )
       this->timeDependence = none;
    if( timeDependence == "linear" )
@@ -140,7 +140,7 @@ setup( const tnlParameterContainer& parameters,
    this->timeScale = parameters.getParameter< double >( prefix + "time-scale" );
 
    const tnlString& testFunction = parameters.getParameter< tnlString >( prefix + "test-function" );
-   cout << "Test function ... " << testFunction << endl;
+  std::cout << "Test function ... " << testFunction << std::endl;
    if( testFunction == "constant" )
    {
       typedef tnlConstantFunction< Dimensions, Real > FunctionType;
@@ -195,7 +195,7 @@ setup( const tnlParameterContainer& parameters,
       functionType = blob;
       return setupFunction< FunctionType >( parameters );
    }
-   cerr << "Unknown function " << testFunction << endl;
+   std::cerr << "Unknown function " << testFunction << std::endl;
    return false;
 }
 
@@ -278,7 +278,7 @@ getPartialDerivative( const VertexType& vertex,
          scale = 1.0 - scale;
          break;
       case cosine:
-         scale = cos( this->timeScale * time );
+         scale = ::cos( this->timeScale * time );
          break;
    }
    switch( functionType )
@@ -339,7 +339,7 @@ getTimeDerivative( const VertexType& vertex,
          scale = -2.0 * this->timeScale * this->timeScale * time;
          break;
       case cosine:
-         scale = -this->timeScale * sin( this->timeScale * time );
+         scale = -this->timeScale * ::sin( this->timeScale * time );
          break;
    }
    switch( functionType )
@@ -465,9 +465,9 @@ template< int FunctionDimensions,
           typename Real,
           typename Device >
    template< typename FunctionType >
-ostream&
+std::ostream&
 tnlTestFunction< FunctionDimensions, Real, Device >::
-printFunction( ostream& str ) const
+printFunction( std::ostream& str ) const
 {
    FunctionType* f = ( FunctionType* ) this->function;
    if( std::is_same< Device, tnlHost >::value )
@@ -486,9 +486,9 @@ printFunction( ostream& str ) const
 template< int FunctionDimensions,
           typename Real,
           typename Device >
-ostream&
+std::ostream&
 tnlTestFunction< FunctionDimensions, Real, Device >::
-print( ostream& str ) const
+print( std::ostream& str ) const
 {
    str << " timeDependence = " << this->timeDependence;
    str << " functionType = " << this->functionType;

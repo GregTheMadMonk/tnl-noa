@@ -28,355 +28,355 @@ inline bool checkCUDAError( const char* file_name, int line )
    cudaError error = cudaGetLastError();
    if( error == cudaSuccess )
       return true;
-   cerr << "CUDA ERROR(" << error << ") at line " << line << " in " << file_name << ":" << endl;
+   std::cerr << "CUDA ERROR(" << error << ") at line " << line << " in " << file_name << ":" << std::endl;
    switch( error )
    {
       case cudaErrorMissingConfiguration:
-         cerr
-          << "The device function being invoked (usually via ::cudaLaunch()) was not " << endl
-          << "previously configured via the ::cudaConfigureCall() function. " << endl;
+         std::cerr
+          << "The device function being invoked (usually via ::cudaLaunch()) was not " << std::endl
+          << "previously configured via the ::cudaConfigureCall() function. " << std::endl;
        break;
 
       case cudaErrorMemoryAllocation:
-         cerr
-          << "The API call failed because it was unable to allocate enough memory to " << endl
-          << "perform the requested operation. " << endl;
+         std::cerr
+          << "The API call failed because it was unable to allocate enough memory to " << std::endl
+          << "perform the requested operation. " << std::endl;
        break;
 
       case cudaErrorInitializationError:
-         cerr
-          << "The API call failed because the CUDA driver and runtime could not be " << endl
-          << "initialized. " << endl;
+         std::cerr
+          << "The API call failed because the CUDA driver and runtime could not be " << std::endl
+          << "initialized. " << std::endl;
        break;
 
       case cudaErrorLaunchFailure:
-         cerr
-          << "An exception occurred on the device while executing a kernel. Common " << endl
-          << "causes include dereferencing an invalid device pointer and accessing " << endl
-          << "out of bounds shared memory. The device cannot be used until " << endl
-          << "::cudaThreadExit() is called. All existing device memory allocations " << endl
-          << "are invalid and must be reconstructed if the program is to continue " << endl
-          << "using CUDA. " << endl;
+         std::cerr
+          << "An exception occurred on the device while executing a kernel. Common " << std::endl
+          << "causes include dereferencing an invalid device pointer and accessing " << std::endl
+          << "out of bounds shared memory. The device cannot be used until " << std::endl
+          << "::cudaThreadExit() is called. All existing device memory allocations " << std::endl
+          << "are invalid and must be reconstructed if the program is to continue " << std::endl
+          << "using CUDA. " << std::endl;
        break;
 
       case cudaErrorPriorLaunchFailure:
-         cerr
-          << "This indicated that a previous kernel launch failed. This was previously " << endl
-          << "used for device emulation of kernel launches. " << endl
-          << "This error return is deprecated as of CUDA 3.1. Device emulation mode was " << endl
-          << "removed with the CUDA 3.1 release. " << endl;
+         std::cerr
+          << "This indicated that a previous kernel launch failed. This was previously " << std::endl
+          << "used for device emulation of kernel launches. " << std::endl
+          << "This error return is deprecated as of CUDA 3.1. Device emulation mode was " << std::endl
+          << "removed with the CUDA 3.1 release. " << std::endl;
        break;
 
       case cudaErrorLaunchTimeout:
-         cerr
-          << "This indicates that the device kernel took too long to execute. This can " << endl
-          << "only occur if timeouts are enabled - see the device property " << endl
-          << "ref ::cudaDeviceProp::kernelExecTimeoutEnabled \"kernelExecTimeoutEnabled\" " << endl
-          << "for more information. The device cannot be used until ::cudaThreadExit() " << endl
-          << "is called. All existing device memory allocations are invalid and must be " << endl
-          << "reconstructed if the program is to continue using CUDA. " << endl;
+         std::cerr
+          << "This indicates that the device kernel took too long to execute. This can " << std::endl
+          << "only occur if timeouts are enabled - see the device property " << std::endl
+          << "ref ::cudaDeviceProp::kernelExecTimeoutEnabled \"kernelExecTimeoutEnabled\" " << std::endl
+          << "for more information. The device cannot be used until ::cudaThreadExit() " << std::endl
+          << "is called. All existing device memory allocations are invalid and must be " << std::endl
+          << "reconstructed if the program is to continue using CUDA. " << std::endl;
        break;
 
       case cudaErrorLaunchOutOfResources:
-         cerr
-          << "This indicates that a launch did not occur because it did not have " << endl
-          << "appropriate resources. Although this error is similar to " << endl
-          << "::cudaErrorInvalidConfiguration, this error usually indicates that the " << endl
-          << "user has attempted to pass too many arguments to the device kernel, or the " << endl
-          << "kernel launch specifies too many threads for the kernel's register count. " << endl;
+         std::cerr
+          << "This indicates that a launch did not occur because it did not have " << std::endl
+          << "appropriate resources. Although this error is similar to " << std::endl
+          << "::cudaErrorInvalidConfiguration, this error usually indicates that the " << std::endl
+          << "user has attempted to pass too many arguments to the device kernel, or the " << std::endl
+          << "kernel launch specifies too many threads for the kernel's register count. " << std::endl;
        break;
 
       case cudaErrorInvalidDeviceFunction:
-         cerr
-          << "The requested device function does not exist or is not compiled for the " << endl
-          << "proper device architecture. " << endl;
+         std::cerr
+          << "The requested device function does not exist or is not compiled for the " << std::endl
+          << "proper device architecture. " << std::endl;
        break;
 
       case cudaErrorInvalidConfiguration:
-         cerr
-          << "This indicates that a kernel launch is requesting resources that can " << endl
-          << "never be satisfied by the current device. Requesting more shared memory " << endl
-          << "per block than the device supports will trigger this error, as will " << endl
-          << "requesting too many threads or blocks. See ::cudaDeviceProp for more " << endl
-          << "device limitations. " << endl;
+         std::cerr
+          << "This indicates that a kernel launch is requesting resources that can " << std::endl
+          << "never be satisfied by the current device. Requesting more shared memory " << std::endl
+          << "per block than the device supports will trigger this error, as will " << std::endl
+          << "requesting too many threads or blocks. See ::cudaDeviceProp for more " << std::endl
+          << "device limitations. " << std::endl;
        break;
 
       case cudaErrorInvalidDevice:
-         cerr
-          << "This indicates that the device ordinal supplied by the user does not " << endl
-          << "correspond to a valid CUDA device. " << endl;
+         std::cerr
+          << "This indicates that the device ordinal supplied by the user does not " << std::endl
+          << "correspond to a valid CUDA device. " << std::endl;
        break;
 
       case cudaErrorInvalidValue:
-         cerr
-          << "This indicates that one or more of the parameters passed to the API call " << endl
-          << "is not within an acceptable range of values. " << endl;
+         std::cerr
+          << "This indicates that one or more of the parameters passed to the API call " << std::endl
+          << "is not within an acceptable range of values. " << std::endl;
        break;
 
       case cudaErrorInvalidPitchValue:
-         cerr
-          << "This indicates that one or more of the pitch-related parameters passed " << endl
-          << "to the API call is not within the acceptable range for pitch. " << endl;
+         std::cerr
+          << "This indicates that one or more of the pitch-related parameters passed " << std::endl
+          << "to the API call is not within the acceptable range for pitch. " << std::endl;
        break;
 
       case cudaErrorInvalidSymbol:
-         cerr
-          << "This indicates that the symbol name/identifier passed to the API call " << endl
-          << "is not a valid name or identifier. " << endl;
+         std::cerr
+          << "This indicates that the symbol name/identifier passed to the API call " << std::endl
+          << "is not a valid name or identifier. " << std::endl;
        break;
 
       case cudaErrorMapBufferObjectFailed:
-      cerr
-       << "This indicates that the buffer object could not be mapped. " << endl;
+      std::cerr
+       << "This indicates that the buffer object could not be mapped. " << std::endl;
        break;
 
       case cudaErrorUnmapBufferObjectFailed:
-         cerr
-          << "This indicates that the buffer object could not be unmapped. " << endl;
+         std::cerr
+          << "This indicates that the buffer object could not be unmapped. " << std::endl;
        break;
 
       case cudaErrorInvalidHostPointer:
-         cerr
-          << "This indicates that at least one host pointer passed to the API call is " << endl
-          << "not a valid host pointer. " << endl;
+         std::cerr
+          << "This indicates that at least one host pointer passed to the API call is " << std::endl
+          << "not a valid host pointer. " << std::endl;
        break;
 
       case cudaErrorInvalidDevicePointer:
-         cerr
-          << "This indicates that at least one device pointer passed to the API call is " << endl
-          << "not a valid device pointer. " << endl;
+         std::cerr
+          << "This indicates that at least one device pointer passed to the API call is " << std::endl
+          << "not a valid device pointer. " << std::endl;
        break;
 
       case cudaErrorInvalidTexture:
-         cerr
-          << "This indicates that the texture passed to the API call is not a valid " << endl
-          << "texture. " << endl;
+         std::cerr
+          << "This indicates that the texture passed to the API call is not a valid " << std::endl
+          << "texture. " << std::endl;
        break;
 
       case cudaErrorInvalidTextureBinding:
-         cerr
-          << "This indicates that the texture binding is not valid. This occurs if you " << endl
-          << "call ::cudaGetTextureAlignmentOffset() with an unbound texture. " << endl;
+         std::cerr
+          << "This indicates that the texture binding is not valid. This occurs if you " << std::endl
+          << "call ::cudaGetTextureAlignmentOffset() with an unbound texture. " << std::endl;
        break;
 
       case cudaErrorInvalidChannelDescriptor:
-         cerr
-          << "This indicates that the channel descriptor passed to the API call is not " << endl
-          << "valid. This occurs if the format is not one of the formats specified by " << endl
-          << "::cudaChannelFormatKind, or if one of the dimensions is invalid. " << endl;
+         std::cerr
+          << "This indicates that the channel descriptor passed to the API call is not " << std::endl
+          << "valid. This occurs if the format is not one of the formats specified by " << std::endl
+          << "::cudaChannelFormatKind, or if one of the dimensions is invalid. " << std::endl;
        break;
 
       case cudaErrorInvalidMemcpyDirection:
-         cerr
-          << "This indicates that the direction of the memcpy passed to the API call is " << endl
-          << "not one of the types specified by ::cudaMemcpyKind. " << endl;
+         std::cerr
+          << "This indicates that the direction of the memcpy passed to the API call is " << std::endl
+          << "not one of the types specified by ::cudaMemcpyKind. " << std::endl;
        break;
 
       case cudaErrorAddressOfConstant:
-         cerr
-          << "This indicated that the user has taken the address of a constant variable, " << endl
-          << "which was forbidden up until the CUDA 3.1 release. " << endl
-          << "This error return is deprecated as of CUDA 3.1. Variables in constant " << endl
-          << "memory may now have their address taken by the runtime via " << endl
-          << "::cudaGetSymbolAddress(). " << endl;
+         std::cerr
+          << "This indicated that the user has taken the address of a constant variable, " << std::endl
+          << "which was forbidden up until the CUDA 3.1 release. " << std::endl
+          << "This error return is deprecated as of CUDA 3.1. Variables in constant " << std::endl
+          << "memory may now have their address taken by the runtime via " << std::endl
+          << "::cudaGetSymbolAddress(). " << std::endl;
        break;
 
       case cudaErrorTextureFetchFailed:
-         cerr
-          << "This indicated that a texture fetch was not able to be performed. " << endl
-          << "This was previously used for device emulation of texture operations. " << endl
-          << "This error return is deprecated as of CUDA 3.1. Device emulation mode was " << endl
-          << "removed with the CUDA 3.1 release. " << endl;
+         std::cerr
+          << "This indicated that a texture fetch was not able to be performed. " << std::endl
+          << "This was previously used for device emulation of texture operations. " << std::endl
+          << "This error return is deprecated as of CUDA 3.1. Device emulation mode was " << std::endl
+          << "removed with the CUDA 3.1 release. " << std::endl;
        break;
 
       case cudaErrorTextureNotBound:
-         cerr
-          << "This indicated that a texture was not bound for access. " << endl
-          << "This was previously used for device emulation of texture operations. " << endl
-          << "This error return is deprecated as of CUDA 3.1. Device emulation mode was " << endl
-          << "removed with the CUDA 3.1 release. " << endl;
+         std::cerr
+          << "This indicated that a texture was not bound for access. " << std::endl
+          << "This was previously used for device emulation of texture operations. " << std::endl
+          << "This error return is deprecated as of CUDA 3.1. Device emulation mode was " << std::endl
+          << "removed with the CUDA 3.1 release. " << std::endl;
        break;
 
       case cudaErrorSynchronizationError:
-         cerr
-          << "This indicated that a synchronization operation had failed. " << endl
-          << "This was previously used for some device emulation functions. " << endl
-          << "This error return is deprecated as of CUDA 3.1. Device emulation mode was " << endl
-          << "removed with the CUDA 3.1 release. " << endl;
+         std::cerr
+          << "This indicated that a synchronization operation had failed. " << std::endl
+          << "This was previously used for some device emulation functions. " << std::endl
+          << "This error return is deprecated as of CUDA 3.1. Device emulation mode was " << std::endl
+          << "removed with the CUDA 3.1 release. " << std::endl;
        break;
 
       case cudaErrorInvalidFilterSetting:
-         cerr
-          << "This indicates that a non-float texture was being accessed with linear " << endl
-          << "filtering. This is not supported by CUDA. " << endl;
+         std::cerr
+          << "This indicates that a non-float texture was being accessed with linear " << std::endl
+          << "filtering. This is not supported by CUDA. " << std::endl;
        break;
 
       case cudaErrorInvalidNormSetting:
-         cerr
-          << "This indicates that an attempt was made to read a non-float texture as a " << endl
-          << "normalized float. This is not supported by CUDA. " << endl;
+         std::cerr
+          << "This indicates that an attempt was made to read a non-float texture as a " << std::endl
+          << "normalized float. This is not supported by CUDA. " << std::endl;
        break;
 
       case cudaErrorMixedDeviceExecution:
-         cerr
-          << "Mixing of device and device emulation code was not allowed. " << endl
-          << "This error return is deprecated as of CUDA 3.1. Device emulation mode was " << endl
-          << "removed with the CUDA 3.1 release. " << endl;
+         std::cerr
+          << "Mixing of device and device emulation code was not allowed. " << std::endl
+          << "This error return is deprecated as of CUDA 3.1. Device emulation mode was " << std::endl
+          << "removed with the CUDA 3.1 release. " << std::endl;
        break;
 
       case cudaErrorCudartUnloading:
-         cerr
-          << "This indicated an issue with calling API functions during the unload " << endl
-          << "process of the CUDA runtime in prior releases. " << endl
-          << "This error return is deprecated as of CUDA 3.2. " << endl;
+         std::cerr
+          << "This indicated an issue with calling API functions during the unload " << std::endl
+          << "process of the CUDA runtime in prior releases. " << std::endl
+          << "This error return is deprecated as of CUDA 3.2. " << std::endl;
        break;
 
       case cudaErrorUnknown:
-         cerr
-          << "This indicates that an unknown internal error has occurred. " << endl;
+         std::cerr
+          << "This indicates that an unknown internal error has occurred. " << std::endl;
        break;
 
       case cudaErrorNotYetImplemented:
-         cerr
-          << "This indicates that the API call is not yet implemented. Production " << endl
-          << "releases of CUDA will never return this error. " << endl;
+         std::cerr
+          << "This indicates that the API call is not yet implemented. Production " << std::endl
+          << "releases of CUDA will never return this error. " << std::endl;
        break;
 
       case cudaErrorMemoryValueTooLarge:
-         cerr
-          << "This indicated that an emulated device pointer exceeded the 32-bit address " << endl
-          << "range. " << endl
-          << "This error return is deprecated as of CUDA 3.1. Device emulation mode was " << endl
-          << "removed with the CUDA 3.1 release. " << endl;
+         std::cerr
+          << "This indicated that an emulated device pointer exceeded the 32-bit address " << std::endl
+          << "range. " << std::endl
+          << "This error return is deprecated as of CUDA 3.1. Device emulation mode was " << std::endl
+          << "removed with the CUDA 3.1 release. " << std::endl;
        break;
 
       case cudaErrorInvalidResourceHandle:
-         cerr
-          << "This indicates that a resource handle passed to the API call was not " << endl
-          << "valid. Resource handles are opaque types like ::cudaStream_t and " << endl
-          << "::cudaEvent_t. " << endl;
+         std::cerr
+          << "This indicates that a resource handle passed to the API call was not " << std::endl
+          << "valid. Resource handles are opaque types like ::cudaStream_t and " << std::endl
+          << "::cudaEvent_t. " << std::endl;
        break;
 
       case cudaErrorNotReady:
-         cerr
-          << "This indicates that asynchronous operations issued previously have not " << endl
-          << "completed yet. This result is not actually an error, but must be indicated " << endl
-          << "differently than ::cudaSuccess (which indicates completion). Calls that " << endl
-          << "may return this value include ::cudaEventQuery() and ::cudaStreamQuery(). " << endl;
+         std::cerr
+          << "This indicates that asynchronous operations issued previously have not " << std::endl
+          << "completed yet. This result is not actually an error, but must be indicated " << std::endl
+          << "differently than ::cudaSuccess (which indicates completion). Calls that " << std::endl
+          << "may return this value include ::cudaEventQuery() and ::cudaStreamQuery(). " << std::endl;
        break;
 
       case cudaErrorInsufficientDriver:
-         cerr
-          << "This indicates that the installed NVIDIA CUDA driver is older than the " << endl
-          << "CUDA runtime library. This is not a supported configuration. Users should " << endl
-          << "install an updated NVIDIA display driver to allow the application to run. " << endl;
+         std::cerr
+          << "This indicates that the installed NVIDIA CUDA driver is older than the " << std::endl
+          << "CUDA runtime library. This is not a supported configuration. Users should " << std::endl
+          << "install an updated NVIDIA display driver to allow the application to run. " << std::endl;
        break;
 
       case cudaErrorSetOnActiveProcess:
-         cerr
-          << "This indicates that the user has called ::cudaSetDevice(), " << endl
-          << "::cudaSetValidDevices(), ::cudaSetDeviceFlags(), " << endl
-          << "::cudaD3D9SetDirect3DDevice(), ::cudaD3D10SetDirect3DDevice, " << endl
-          << "::cudaD3D11SetDirect3DDevice(), * or ::cudaVDPAUSetVDPAUDevice() after " << endl
-          << "initializing the CUDA runtime by calling non-device management operations " << endl
-          << "(allocating memory and launching kernels are examples of non-device " << endl
-          << "management operations). This error can also be returned if using " << endl
-          << "runtime/driver interoperability and there is an existing ::CUcontext " << endl
-          << "active on the host thread. " << endl;
+         std::cerr
+          << "This indicates that the user has called ::cudaSetDevice(), " << std::endl
+          << "::cudaSetValidDevices(), ::cudaSetDeviceFlags(), " << std::endl
+          << "::cudaD3D9SetDirect3DDevice(), ::cudaD3D10SetDirect3DDevice, " << std::endl
+          << "::cudaD3D11SetDirect3DDevice(), * or ::cudaVDPAUSetVDPAUDevice() after " << std::endl
+          << "initializing the CUDA runtime by calling non-device management operations " << std::endl
+          << "(allocating memory and launching kernels are examples of non-device " << std::endl
+          << "management operations). This error can also be returned if using " << std::endl
+          << "runtime/driver interoperability and there is an existing ::CUcontext " << std::endl
+          << "active on the host thread. " << std::endl;
        break;
 
       case cudaErrorInvalidSurface:
-         cerr
-          << "This indicates that the surface passed to the API call is not a valid " << endl
-          << "surface. " << endl;
+         std::cerr
+          << "This indicates that the surface passed to the API call is not a valid " << std::endl
+          << "surface. " << std::endl;
        break;
 
       case cudaErrorNoDevice:
-      cerr
-       << "This indicates that no CUDA-capable devices were detected by the installed " << endl
-       << "CUDA driver. " << endl;
+      std::cerr
+       << "This indicates that no CUDA-capable devices were detected by the installed " << std::endl
+       << "CUDA driver. " << std::endl;
        break;
 
       case cudaErrorECCUncorrectable:
-      cerr
-       << "This indicates that an uncorrectable ECC error was detected during " << endl
-       << "execution. " << endl;
+      std::cerr
+       << "This indicates that an uncorrectable ECC error was detected during " << std::endl
+       << "execution. " << std::endl;
        break;
 
       case cudaErrorSharedObjectSymbolNotFound:
-      cerr
-       << "This indicates that a link to a shared object failed to resolve. " << endl;
+      std::cerr
+       << "This indicates that a link to a shared object failed to resolve. " << std::endl;
        break;
 
       case cudaErrorSharedObjectInitFailed:
-      cerr
-       << "This indicates that initialization of a shared object failed. " << endl;
+      std::cerr
+       << "This indicates that initialization of a shared object failed. " << std::endl;
        break;
 
       case cudaErrorUnsupportedLimit:
-      cerr
-       << "This indicates that the ::cudaLimit passed to the API call is not " << endl
-       << "supported by the active device. " << endl;
+      std::cerr
+       << "This indicates that the ::cudaLimit passed to the API call is not " << std::endl
+       << "supported by the active device. " << std::endl;
        break;
 
       case cudaErrorDuplicateVariableName:
-      cerr
-       << "This indicates that multiple global or constant variables (across separate " << endl
-       << "CUDA source files in the application) share the same string name. " << endl;
+      std::cerr
+       << "This indicates that multiple global or constant variables (across separate " << std::endl
+       << "CUDA source files in the application) share the same string name. " << std::endl;
        break;
 
       case cudaErrorDuplicateTextureName:
-      cerr
-       << "This indicates that multiple textures (across separate CUDA source " << endl
-       << "files in the application) share the same string name. " << endl;
+      std::cerr
+       << "This indicates that multiple textures (across separate CUDA source " << std::endl
+       << "files in the application) share the same string name. " << std::endl;
        break;
 
       case cudaErrorDuplicateSurfaceName:
-      cerr
-       << "This indicates that multiple surfaces (across separate CUDA source " << endl
-       << "files in the application) share the same string name. " << endl;
+      std::cerr
+       << "This indicates that multiple surfaces (across separate CUDA source " << std::endl
+       << "files in the application) share the same string name. " << std::endl;
        break;
 
       case cudaErrorDevicesUnavailable:
-      cerr
-       << "This indicates that all CUDA devices are busy or unavailable at the current " << endl
-       << "time. Devices are often busy/unavailable due to use of " << endl
-       << "::cudaComputeModeExclusive or ::cudaComputeModeProhibited. They can also " << endl
-       << "be unavailable due to memory constraints on a device that already has " << endl
-       << "active CUDA work being performed. " << endl;
+      std::cerr
+       << "This indicates that all CUDA devices are busy or unavailable at the current " << std::endl
+       << "time. Devices are often busy/unavailable due to use of " << std::endl
+       << "::cudaComputeModeExclusive or ::cudaComputeModeProhibited. They can also " << std::endl
+       << "be unavailable due to memory constraints on a device that already has " << std::endl
+       << "active CUDA work being performed. " << std::endl;
        break;
 
       case cudaErrorInvalidKernelImage:
-      cerr
-       << "This indicates that the device kernel image is invalid. " << endl;
+      std::cerr
+       << "This indicates that the device kernel image is invalid. " << std::endl;
        break;
 
       case cudaErrorNoKernelImageForDevice:
-      cerr
-       << "This indicates that there is no kernel image available that is suitable " << endl
-       << "for the device. This can occur when a user specifies code generation " << endl
-       << "options for a particular CUDA source file that do not include the " << endl
-       << "corresponding device configuration. " << endl;
+      std::cerr
+       << "This indicates that there is no kernel image available that is suitable " << std::endl
+       << "for the device. This can occur when a user specifies code generation " << std::endl
+       << "options for a particular CUDA source file that do not include the " << std::endl
+       << "corresponding device configuration. " << std::endl;
        break;
 
       case cudaErrorIncompatibleDriverContext:
-      cerr
-       << "This indicates that the current context is not compatible with this " << endl
-       << "version of the CUDA Runtime. This can only occur if you are using CUDA " << endl
-       << "Runtime/Driver interoperability and have created an existing Driver " << endl
-       << "context using an older API. Please see \ref CUDART_DRIVER " << endl
-       << "\"Interactions with the CUDA Driver API\" for more information. " << endl;
+      std::cerr
+       << "This indicates that the current context is not compatible with this " << std::endl
+       << "version of the CUDA Runtime. This can only occur if you are using CUDA " << std::endl
+       << "Runtime/Driver interoperability and have created an existing Driver " << std::endl
+       << "context using an older API. Please see \ref CUDART_DRIVER " << std::endl
+       << "\"Interactions with the CUDA Driver API\" for more information. " << std::endl;
        break;
 
       case cudaErrorStartupFailure:
-      cerr
-       << "This indicates an internal startup failure in the CUDA runtime. " << endl;
+      std::cerr
+       << "This indicates an internal startup failure in the CUDA runtime. " << std::endl;
        break;
 
       case cudaErrorApiFailureBase:
-      cerr
-       << "Any unhandled CUDA driver error is added to this value and returned via " << endl
-       << "the runtime. Production releases of CUDA should not return such errors. " << endl;
+      std::cerr
+       << "Any unhandled CUDA driver error is added to this value and returned via " << std::endl
+       << "the runtime. Production releases of CUDA should not return such errors. " << std::endl;
        break;
 
    }
@@ -397,7 +397,7 @@ bool tnlAllocateOnCudaDevice( Type*& pointer, Index elements = 1 )
    if( cudaMalloc( ( void** ) & pointer,
                      sizeof( Type ) * elements ) != cudaSuccess )
    {
-      cerr << "I am not able to allocate new variable(s) on the CUDA device." << endl;
+      std::cerr << "I am not able to allocate new variable(s) on the CUDA device." << std::endl;
       checkCUDAError( __FILE__, __LINE__ );
       return false;
    }
@@ -417,7 +417,7 @@ bool tnlAllocateOnCudaDevice( Type*& pointer, int elements = 1 )
    if( cudaMalloc( ( void** ) & pointer,
                      sizeof( Type ) * elements ) != cudaSuccess )
    {
-      cerr << "I am not able to allocate new variable(s) on the CUDA device." << endl;
+      std::cerr << "I am not able to allocate new variable(s) on the CUDA device." << std::endl;
       checkCUDAError( __FILE__, __LINE__ );
       return false;
    }
@@ -439,13 +439,13 @@ Type* tnlPassToCudaDevice( const Type& data )
    Type* cuda_data;
    if( cudaMalloc( ( void** ) & cuda_data, sizeof( Type ) ) != cudaSuccess )
    {
-      cerr << "Unable to allocate CUDA device memory to pass a data structure there." << endl;
+      std::cerr << "Unable to allocate CUDA device memory to pass a data structure there." << std::endl;
       checkCUDAError( __FILE__, __LINE__ );
       return 0;
    }
    if( cudaMemcpy( cuda_data, &data, sizeof( Type ), cudaMemcpyHostToDevice ) != cudaSuccess )
    {
-      cerr << "Unable to pass data structure to CUDA device." << endl;
+      std::cerr << "Unable to pass data structure to CUDA device." << std::endl;
       checkCUDAError( __FILE__, __LINE__ );
       return 0;
    }
@@ -466,7 +466,7 @@ Type tnlGetFromCudaDevice( const Type* device_data )
                    sizeof( Type ),
                    cudaMemcpyHostToDevice ) != cudaSuccess )
    {
-      cerr << "Unable to get data from the CUDA device." << endl;
+      std::cerr << "Unable to get data from the CUDA device." << std::endl;
       checkCUDAError( __FILE__, __LINE__ );
       return host_data;
    }
@@ -489,13 +489,13 @@ Type tnlPassFromCudaDevice( const Type* device_data )
                    sizeof( Type ),
                    cudaMemcpyHostToDevice ) != cudaSuccess )
    {
-      cerr << "Unable to get data from the CUDA device." << endl;
+      std::cerr << "Unable to get data from the CUDA device." << std::endl;
       checkCUDAError( __FILE__, __LINE__ );
       return host_data;
    }
    if( ! cudaFree( device_data, sizeof( Type ) ) )
    {
-      cerr << "Unable to free memory on the CUDA device." << endl;
+      std::cerr << "Unable to free memory on the CUDA device." << std::endl;
       checkCUDAError( __FILE__, __LINE__ );
       return host_data;
    }

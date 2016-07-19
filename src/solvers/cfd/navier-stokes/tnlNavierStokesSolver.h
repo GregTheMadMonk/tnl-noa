@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlNavierStokesSolver_H_
-#define tnlNavierStokesSolver_H_
+#pragma once
 
 #include <core/tnlString.h>
 #include <core/vectors/tnlVector.h>
+
+namespace TNL {
 
 template< typename AdvectionScheme,
           typename DiffusionScheme,
@@ -145,6 +146,6 @@ class tnlNavierStokesSolver
 
 };
 
-#include <solvers/cfd/navier-stokes/tnlNavierStokesSolver_impl.h>
+} // namespace TNL
 
-#endif /* tnlNavierStokesSolver_H_ */
+#include <solvers/cfd/navier-stokes/tnlNavierStokesSolver_impl.h>

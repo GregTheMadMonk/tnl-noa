@@ -18,6 +18,8 @@
 #include <cstring>
 #include <stdio.h>
 
+namespace TNL {
+
 const char magic_number[] = "TNLMN";
 
 tnlString tnlObject :: getType()
@@ -59,7 +61,7 @@ bool tnlObject :: load( tnlFile& file )
       return false;
    if( objectType != this->getSerializationTypeVirtual() )
    {
-      cerr << "Given file contains instance of " << objectType << " but " << getSerializationTypeVirtual() << " is expected." << endl;
+      std::cerr << "Given file contains instance of " << objectType << " but " << getSerializationTypeVirtual() << " is expected." << std::endl;
       return false;
    }
    return true;
@@ -75,14 +77,14 @@ bool tnlObject :: save( const tnlString& fileName ) const
    tnlFile file;
    if( ! file. open( fileName, tnlWriteMode ) )
    {
-      cerr << "I am not bale to open the file " << fileName << " for writing." << endl;
+      std::cerr << "I am not bale to open the file " << fileName << " for writing." << std::endl;
       return false;
    }
    if( ! this->save( file ) )
       return false;
    if( ! file. close() )
    {
-      cerr << "An error occurred when I was closing the file " << fileName << "." << endl;
+      std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
       return false;
    }
    return true;
@@ -93,14 +95,14 @@ bool tnlObject :: load( const tnlString& fileName )
    tnlFile file;
    if( ! file. open( fileName, tnlReadMode ) )
    {
-      cerr << "I am not bale to open the file " << fileName << " for reading." << endl;
+      std::cerr << "I am not bale to open the file " << fileName << " for reading." << std::endl;
       return false;
    }
    if( ! this->load( file ) )
       return false;
    if( ! file. close() )
    {
-      cerr << "An error occurred when I was closing the file " << fileName << "." << endl;
+      std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
       return false;
    }
    return true;
@@ -111,14 +113,14 @@ bool tnlObject :: boundLoad( const tnlString& fileName )
    tnlFile file;
    if( ! file. open( fileName, tnlReadMode ) )
    {
-      cerr << "I am not bale to open the file " << fileName << " for reading." << endl;
+      std::cerr << "I am not bale to open the file " << fileName << " for reading." << std::endl;
       return false;
    }
    if( ! this->boundLoad( file ) )
       return false;
    if( ! file. close() )
    {
-      cerr << "An error occurred when I was closing the file " << fileName << "." << endl;
+      std::cerr << "An error occurred when I was closing the file " << fileName << "." << std::endl;
       return false;
    }
    return true;
@@ -135,7 +137,7 @@ bool getObjectType( tnlFile& file, tnlString& type )
    if( ! file. read( mn, strlen( magic_number ) ) )
 #endif
    {
-      cerr << "Unable to read file " << file. getFileName() << " ... " << endl;
+      std::cerr << "Unable to read file " << file. getFileName() << " ... " << std::endl;
       return false;
    }
    if( strncmp( mn, magic_number, 5 ) != 0 &&
@@ -149,7 +151,7 @@ bool getObjectType( const tnlString& fileName, tnlString& type )
    tnlFile binaryFile;
    if( ! binaryFile. open( fileName, tnlReadMode ) )
    {
-      cerr << "I am not able to open the file " << fileName << " for detecting the object inside!" << endl;
+      std::cerr << "I am not able to open the file " << fileName << " for detecting the object inside!" << std::endl;
       return false;
    }
    bool ret_val = getObjectType( binaryFile, type );
@@ -211,3 +213,4 @@ bool parseObjectType( const tnlString& objectType,
    return true;
 }
 
+} // namespace TNL

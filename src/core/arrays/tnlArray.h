@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragam once 
+#pragma once 
 
 #include <tnlObject.h>
 #include <core/arrays/tnlSharedArray.h>
@@ -178,7 +178,7 @@ class tnlArray : public virtual tnlObject
 };
 
 template< typename Element, typename Device, typename Index >
-ostream& operator << ( ostream& str, const tnlArray< Element, Device, Index >& v );
+std::ostream& operator << ( std::ostream& str, const tnlArray< Element, Device, Index >& v );
 
 } // namespace TNL
 

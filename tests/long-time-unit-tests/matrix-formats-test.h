@@ -24,6 +24,8 @@
 #include <matrices/tnlChunkedEllpackMatrix.h>
 #include <matrices/tnlCSRMatrix.h>
 
+using namespace TNL;
+
 void setupConfig( tnlConfigDescription& config )
 {
     config.addDelimiter                            ( "General settings:" );
@@ -50,11 +52,11 @@ bool testMatrix( const tnlParameterContainer& parameters )
 
    const tnlString& fileName = parameters.getParameter< tnlString >( "input-file" );
    bool verbose = parameters.getParameter< bool >( "verbose" );
-   fstream file;
-   file.open( fileName.getString(), ios::in );
+   std::fstream file;
+   file.open( fileName.getString(), std::ios::in );
    if( ! file )
    {
-      cerr << "Cannot open the file " << fileName << endl;
+      std::cerr << "Cannot open the file " << fileName << std::endl;
       return false;
    }
    if( ! tnlMatrixReader< Matrix >::readMtxFile( file, matrix, verbose ) )
@@ -69,29 +71,29 @@ bool testMatrix( const tnlParameterContainer& parameters )
          return false;
       if( ! tnlMatrixReader< DenseMatrix >::verifyMtxFile( file, denseMatrix, verbose ) )
          return false;
-      //matrix.print( cout );
-      //denseMatrix.print( cout );
+      //matrix.print(std::cout );
+      //denseMatrix.print(std::cout );
       for( IndexType i = 0; i < matrix.getRows(); i++ )
       {
          for( IndexType j = 0; j < matrix.getColumns(); j++ )
             if( matrix.getElement( i, j ) != denseMatrix.getElement( i, j ) )
             {
-               cerr << "The matrices differ at position " << i << ", " << j << "." << endl
+               std::cerr << "The matrices differ at position " << i << ", " << j << "." << std::endl
                     << " The values are " << matrix.getElement( i, j ) << " (sparse) and "
-                    << denseMatrix.getElement( i, j ) << " (dense)." << endl;
+                    << denseMatrix.getElement( i, j ) << " (dense)." << std::endl;
                tnlString line;
                IndexType lineNumber;
                if( tnlMatrixReader< Matrix >::findLineByElement( file, i, j, line, lineNumber ) )
-                  cerr << "The mtx file says ( line " << lineNumber << " ): " << line << endl;
+                  std::cerr << "The mtx file says ( line " << lineNumber << " ): " << line << std::endl;
                else
-                  cerr << "The element is missing in the file. Should be zero therefore." << endl;
+                  std::cerr << "The element is missing in the file. Should be zero therefore." << std::endl;
                return false;
             }
          if( verbose )
-            cout << " Comparing the sparse matrix with the dense matrix ... " << i << " / " << matrix.getRows() << "             \r" << flush;
+           std::cout << " Comparing the sparse matrix with the dense matrix ... " << i << " / " << matrix.getRows() << "             \r" << std::flush;
       }
       if( verbose )
-         cout << " Comparing the sparse matrix with the dense matrix ... OK.           " << endl;
+        std::cout << " Comparing the sparse matrix with the dense matrix ... OK.           " << std::endl;
    }
    if( parameters.getParameter< bool >( "multiplication-test" ) )
    {
@@ -106,16 +108,16 @@ bool testMatrix( const tnlParameterContainer& parameters )
          for( IndexType j = 0; j < b.getSize(); j++ )
             if( b.getElement( j ) != matrix.getElement( j, i ) )
             {
-               cerr << "The matrix-vector multiplication gives wrong result at positions "
+               std::cerr << "The matrix-vector multiplication gives wrong result at positions "
                     << j << ", " << i << ". The result is " << b.getElement( j ) << " and it should be "
-                    << matrix.getElement( j, i ) << "." << endl;
+                    << matrix.getElement( j, i ) << "." << std::endl;
                return false;
             }
          if( verbose )
-            cerr << " Testing the matrix-vector multiplication ... " << i << " / " << matrix.getRows() << "            \r" << flush;
+            std::cerr << " Testing the matrix-vector multiplication ... " << i << " / " << matrix.getRows() << "            \r" << std::flush;
       }
       if( verbose )
-         cerr << " Testing the matrix-vector multiplication ...  OK.                                       " << endl;
+         std::cerr << " Testing the matrix-vector multiplication ...  OK.                                       " << std::endl;
    }
    return true;
 }
@@ -164,7 +166,7 @@ int main( int argc, char* argv[] )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
-   cerr << "Uknown matrix format " << matrixFormat << "." << endl;
+   std::cerr << "Uknown matrix format " << matrixFormat << "." << std::endl;
    return EXIT_FAILURE;
 }
 

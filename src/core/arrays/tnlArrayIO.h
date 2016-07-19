@@ -36,7 +36,7 @@ class tnlArrayIO< Element, Device, Index, true >
       for( Index i = 0; i < elements; i++ )
          if( ! data[ i ].save( file ) )
          {
-            cerr << "I was not able to save " << i << "-th of " << elements << " elements." << endl;
+            std::cerr << "I was not able to save " << i << "-th of " << elements << " elements." << std::endl;
             return false;
          }
       return true;
@@ -49,7 +49,7 @@ class tnlArrayIO< Element, Device, Index, true >
       for( Index i = 0; i < elements; i++ )
          if( ! data[ i ].load( file ) )
          {
-            cerr << "I was not able to load " << i << "-th of " << elements << " elements." << endl;
+            std::cerr << "I was not able to load " << i << "-th of " << elements << " elements." << std::endl;
             return false;
          }
       return true;

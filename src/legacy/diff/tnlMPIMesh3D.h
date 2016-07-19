@@ -338,8 +338,8 @@ bool tnlMPIMesh< 3, Real, Device, Index > :: Init( const tnlGridOld< 3, Real, De
       if( mesh_comm == MPI_COMM_NULL )
       {
          if( MPIGetRank( comm ) == root )
-            cerr << "Not enough nodes for creating mesh " << mesh_x_size <<
-                    "x" << mesh_y_size << "x" << mesh_z_size << endl;
+            std::cerr << "Not enough nodes for creating mesh " << mesh_x_size <<
+                    "x" << mesh_y_size << "x" << mesh_z_size << std::endl;
          return false;
       }
  
@@ -508,13 +508,13 @@ bool tnlMPIMesh< 3, Real, Device, Index > :: Init( const tnlGridOld< 3, Real, De
          top_right_send_buff = new T[ top_overlap * right_overlap ];
          top_right_recieve_buff = new T[ top_overlap * right_overlap ];
       }
-      cout << "Node " << MPIGetRank()
+     std::cout << "Node " << MPIGetRank()
            << " has position (" << GetXPos()
            << ", " << GetYPos()
            << ", " << GetZPos()
            << ") and dimensions " << GetSubdomainXSize()
            << " x " << GetSubdomainYSize()
-           << " x " << GetSubdomainZSize() << endl;
+           << " x " << GetSubdomainZSize() << std::endl;
 #else
    domain_x_size = u. getDimensions(). x();
    domain_y_size = u. getDimensions(). y();
@@ -601,9 +601,9 @@ bool tnlMPIMesh< 3, Real, Device, Index > :: CreateMesh( const tnlGridOld< 3, Re
                         hx, hy, hz );
    if( ! sub_u )
    {
-      cerr << "Unable to allocate subdomain grids for '" << name
+      std::cerr << "Unable to allocate subdomain grids for '" << name
            << "' on the node ( " << node_x_pos << ", " << node_y_pos
-           << " rank " << MPIGetRank( original_comm ) << "." << endl;
+           << " rank " << MPIGetRank( original_comm ) << "." << std::endl;
       err = 1;
    }
    dbgMPIBarrier;
@@ -681,7 +681,7 @@ void tnlMPIMesh< 3, Real, Device, Index > :: ScatterToNode( const tnlGridOld< 3,
          dbgExpr( mpi_buff -> GetSize() );
          if( ! mpi_buff )
          {
-            cerr << "Unable to allocate MPI buffer." << endl;
+            std::cerr << "Unable to allocate MPI buffer." << std::endl;
             abort();
          }
       }
@@ -837,7 +837,7 @@ void tnlMPIMesh< 3, Real, Device, Index > :: Gather( tnlGridOld< 3, Real, Device
                for( j = j1; j < j2; j ++ )
                   for( k = k1; k < k2; k ++ )
                   {
-                     //cout << "Node recv" << MPIGetRank( original_comm ) << " i = " << i << " j = " << j << endl;
+                     //cout << "Node recv" << MPIGetRank( original_comm ) << " i = " << i << " j = " << j << std::endl;
                      u( i, j, k ) = mpi_buff( i - i1 + src_left_overlap,
                                               j - j1 + src_bottom_overlap,
                                               k - k1 + src_closer_overlap );
@@ -855,7 +855,7 @@ void tnlMPIMesh< 3, Real, Device, Index > :: Gather( tnlGridOld< 3, Real, Device
                for( j = j1; j < j2; j ++ )
                   for( k = k1; k < k2; k ++ )
                   {
-                     //cout << "Node cp" << MPIGetRank( original_comm ) << " i = " << i << " j = " << j << endl;
+                     //cout << "Node cp" << MPIGetRank( original_comm ) << " i = " << i << " j = " << j << std::endl;
                      u( i, j, k ) = sub_u( i - i1 + src_left_overlap,
                                            j - j1 + bottom_overlap,
                                            k - k1 + closer_overlap );

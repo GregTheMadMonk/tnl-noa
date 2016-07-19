@@ -28,8 +28,6 @@
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-sparse-matrix-benchmark.cfg.desc";
 
 
-using namespace std;
-
 /*
 double bestCudaRgCSRGflops( 0 );
 
@@ -46,7 +44,7 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
                            bool verbose,
                            const tnlString& inputMtxFile,
                            const tnlString& logFileName,
-                           fstream& logFile )
+                           std::fstream& logFile )
 {
    tnlSpmvBenchmarkRgCSRMatrix< Real, tnlHost, int > hostRgCsrMatrixBenchmark;
    for( int groupSize = 16; groupSize <= 64; groupSize *= 2 )
@@ -85,7 +83,7 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
                                                        inputMtxFile,
                                                        csrMatrix,
                                                        false );
-         bestCudaRgCSRGflops = Max( bestCudaRgCSRGflops, cudaRgCsrMatrixBenchmark. getGflops() );
+         bestCudaRgCSRGflops = max( bestCudaRgCSRGflops, cudaRgCsrMatrixBenchmark. getGflops() );
       }
       cudaRgCsrMatrixBenchmark. tearDown();
    }
@@ -108,11 +106,11 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
    bool verbose = parameters.getParameter< bool >( "verbose" );
    const int maxIterations = parameters.getParameter< int >( "max-iterations" );
 
-   fstream inputFile;
-   inputFile.open( inputMtxFileName.getString(), ios::in );
+   std::fstream inputFile;
+   inputFile.open( inputMtxFileName.getString(), std::ios::in );
    if( ! inputFile )
    {
-      cerr << "I am not able to open the file " << inputMtxFileName << "." << endl;
+      std::cerr << "I am not able to open the file " << inputMtxFileName << "." << std::endl;
       return false;
    }
    if( ! tnlMatrixReader< CsrMatrix >::readMtxFile( inputFile, csrMatrix ) )
@@ -123,9 +121,9 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
     */
    const long int nonzeroElements = csrMatrix. getNumberOfNonzeroMatrixElements();
    if( verbose )
-      cout << "Matrix rows: " << csrMatrix.getRows()
+     std::cout << "Matrix rows: " << csrMatrix.getRows()
            << " Matrix columns: " << csrMatrix.getColumns()
-           << " Non-zero elements: " << nonzeroElements << endl;
+           << " Non-zero elements: " << nonzeroElements << std::endl;
 
    const long int rows = csrMatrix.getRows();
    const long int columns = csrMatrix.getColumns();
@@ -157,24 +155,24 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
    /****
     * Open and write one line to the log file
     */
-   fstream logFile;
+   std::fstream logFile;
    if( logFileName )
    {
-      logFile. open( logFileName. getString(), ios :: out | ios :: app );
+      logFile. open( logFileName. getString(), std::ios::out | std::ios::app );
       if( ! logFile )
       {
-         cerr << "Unable to open log file " << logFileName << " for appending logs." << endl;
+         std::cerr << "Unable to open log file " << logFileName << " for appending logs." << std::endl;
          return false;
       }
       /****
        * Open new line of the table and write basic matrix information
        */
       long int allElements = csrMatrix. getRows() * csrMatrix. getColumns();
-      logFile << "          <tr>" << endl;
-      logFile << "             <td> <a href=\"" << pdfFileName << "\">" << inputFile << "</a> </td>" << endl;
-      logFile << "             <td> " << csrMatrix. getRows() << "</td>" << endl;
-      logFile << "             <td> " << nonzeroElements << "</td>" << endl;
-      logFile << "             <td> " << ( double ) nonzeroElements / allElements * 100.0 << "</td>" << endl;
+      logFile << "          <tr>" << std::endl;
+      logFile << "             <td> <a href=\"" << pdfFileName << "\">" << inputFile << "</a> </td>" << std::endl;
+      logFile << "             <td> " << csrMatrix. getRows() << "</td>" << std::endl;
+      logFile << "             <td> " << nonzeroElements << "</td>" << std::endl;
+      logFile << "             <td> " << ( double ) nonzeroElements / allElements * 100.0 << "</td>" << std::endl;
       csrMatrixBenchmark. writeToLogTable( logFile,
                                            csrMatrixBenchmark. getGflops(),
                                            inputMtxFileName,
@@ -279,7 +277,7 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
     * The rows are now sorted decreasingly by the number of the nonzero elements
     */
    if( verbose )
-      cout << "          ------------------------------- Test with sorted matrix ----------------------------------          " << endl;
+     std::cout << "          ------------------------------- Test with sorted matrix ----------------------------------          " << std::endl;
 
    tnlVector< int, tnlHost > rowPermutation( "rowPermutation" );
    {
@@ -294,7 +292,7 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
       {
          if( rowSize < csrMatrix. getNonzeroElementsInRow( rowPermutation[ i ] ) )
          {
-            cerr << "The rows are not sorted properly. Error is at row number " << i << endl;
+            std::cerr << "The rows are not sorted properly. Error is at row number " << i << std::endl;
          }
          rowSize = csrMatrix. getNonzeroElementsInRow( rowPermutation[ i ] );
       }
@@ -386,7 +384,7 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
 
    if( logFileName )
    {
-      logFile << "          </tr>" << endl;
+      logFile << "          </tr>" << std::endl;
       logFile. close();
    }
    return true;

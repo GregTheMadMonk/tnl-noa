@@ -149,7 +149,7 @@ class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStatic
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlSinBumpsFunction< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const tnlSinBumpsFunction< Dimensions, Real >& f )
 {
    str << "Sin Bumps. function: amplitude = " << f.getAmplitude()
        << " wavelength = " << f.getWaveLength()

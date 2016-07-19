@@ -35,12 +35,12 @@ int main(int argc, char* argv[]) {
 	tnlString inputFile = parameters.getParameter <tnlString> ("input-file");
 	tnlFile binaryFile;
 	if(! binaryFile.open(inputFile, tnlReadMode)) {
-		cerr << "I am not able to open the file " << inputFile << "." << endl;
+		cerr << "I am not able to open the file " << inputFile << "." << std::endl;
 		return 1;
 	}
 	tnlCSRMatrix <double> doubleMatrix("double");
 	if(! doubleMatrix.load(binaryFile)) {
-		cerr << "Unable to restore the CSR matrix." << endl;
+		cerr << "Unable to restore the CSR matrix." << std::endl;
 		return 1;
 	}
 	binaryFile.close();

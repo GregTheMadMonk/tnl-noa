@@ -24,6 +24,8 @@
 #include <mesh/topologies/tnlMeshTriangleTopology.h>
 #include <mesh/topologies/tnlMeshTetrahedronTopology.h>
  
+using namespace TNL;
+
 //typedef tnlMeshConfigBase< tnlMeshTriangleTopology, 2, double, int, int, void > TestTriangleEntityTopology;
 typedef tnlMeshConfigBase< tnlMeshEdgeTopology, 2, double, int, int, void > TestEdgeEntityTopology;
 typedef tnlMeshConfigBase< tnlMeshVertexTopology, 2, double, int, int, void > TestVertexEntityTopology;

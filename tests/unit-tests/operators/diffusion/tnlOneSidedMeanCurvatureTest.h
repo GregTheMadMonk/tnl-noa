@@ -18,6 +18,8 @@
 #include "../tnlPDEOperatorEocTest.h"
 #include "../../tnlUnitTestStarter.h"
 
+using namespace TNL;
+
 template< typename ApproximateOperator,
           typename TestFunction,
           bool write = false,

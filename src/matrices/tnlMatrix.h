@@ -100,7 +100,7 @@ class tnlMatrix : public virtual tnlObject
 
    virtual bool load( tnlFile& file );
 
-   virtual void print( ostream& str ) const;
+   virtual void print( std::ostream& str ) const;
 
    protected:
 
@@ -112,7 +112,7 @@ class tnlMatrix : public virtual tnlObject
 };
 
 template< typename Real, typename Device, typename Index >
-ostream& operator << ( ostream& str, const tnlMatrix< Real, Device, Index >& m )
+std::ostream& operator << ( std::ostream& str, const tnlMatrix< Real, Device, Index >& m )
 {
    m.print( str );
    return str;

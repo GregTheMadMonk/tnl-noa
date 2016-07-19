@@ -30,7 +30,7 @@ tnlString tnlEllpackIndexMultimap< Index, Device > :: getType()
    return tnlString( "tnlEllpackIndexMultimap< ") +
           Device :: getDeviceType() +
           tnlString( ", " ) +
-          tnlString( ::getType< Index >() ) +
+          tnlString( TNL::getType< Index >() ) +
           tnlString( " >" );
 }
 
@@ -77,12 +77,12 @@ tnlEllpackIndexMultimap< Index, Device >::
 allocate( const ValuesAllocationVectorType& portsCount )
 {
    tnlAssert( portsCount.getSize() == this->keysRange,
-              cerr << "portsCount.getSize() =  " << portsCount.getSize()
+              std::cerr << "portsCount.getSize() =  " << portsCount.getSize()
                    << "this->inputs = " << this->keysRange );
    this->valuesMaxCount = portsCount.max();
  
    tnlAssert( this->valuesMaxCount >= 0 && this->valuesMaxCount <= this->valuesRange,
-              cerr << "this->portsMaxCount = " << this->valuesMaxCount
+              std::cerr << "this->portsMaxCount = " << this->valuesMaxCount
                    << " this->outputs = " << this->valuesRange );
    this->values.setSize( this->keysRange * this->valuesMaxCount );
 }

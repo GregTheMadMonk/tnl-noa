@@ -90,12 +90,12 @@ bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 2, Real, Device
    meshes.y() = parameters.getParameter< int >( "y-size" );
    if( meshes.x() <= 0 )
    {
-      cerr << "Error: x-size must be positive integer number! It is " << meshes. x() << " now." << endl;
+      std::cerr << "Error: x-size must be positive integer number! It is " << meshes. x() << " now." << std::endl;
       return false;
    }
    if( meshes.y() <= 0 )
    {
-      cerr << "Error: y-size must be positive integer number! It is " << meshes. y() << " now." << endl;
+      std::cerr << "Error: y-size must be positive integer number! It is " << meshes. y() << " now." << std::endl;
       return false;
    }
    mesh.setDimensions( meshes. x(), meshes. y() );
@@ -114,7 +114,7 @@ bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 3, Real, Device
 template< typename Mesh, typename EulerScheme >
 bool navierStokesSolver< Mesh, EulerScheme >::setup( const tnlParameterContainer& parameters )
 {
-   cout << "Initiating solver ... " << endl;
+  std::cout << "Initiating solver ... " << std::endl;
 
    /****
     * Set-up problem type
@@ -131,7 +131,7 @@ bool navierStokesSolver< Mesh, EulerScheme >::setup( const tnlParameterContainer
    const tnlString& meshFile = parameters.getParameter< tnlString >( "mesh" );
    if( ! this->mesh.load( meshFile ) )
    {
-      cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
+      std::cerr << "I am not able to load the mesh from the file " << meshFile << "." << std::endl;
       return false;
    }
    /*tnlStaticVector< 2, RealType > proportions;
@@ -139,12 +139,12 @@ bool navierStokesSolver< Mesh, EulerScheme >::setup( const tnlParameterContainer
    proportions. y() = parameters. getParameter< double >( "height" );
    if( proportions. x() <= 0 )
    {
-      cerr << "Error: width must be positive real number! It is " << proportions. x() << " now." << endl;
+      std::cerr << "Error: width must be positive real number! It is " << proportions. x() << " now." << std::endl;
       return false;
    }
    if( proportions. y() <= 0 )
    {
-      cerr << "Error: height must be positive real number! It is " << proportions. y() << " now." << endl;
+      std::cerr << "Error: height must be positive real number! It is " << proportions. y() << " now." << std::endl;
       return false;
    }
    this->mesh. setOrigin( tnlStaticVector< 2, RealType >( 0, 0 ) );
@@ -251,7 +251,7 @@ template< typename Mesh, typename EulerScheme >
 bool navierStokesSolver< Mesh, EulerScheme > :: makeSnapshot( const RealType& t,
                                                               const IndexType step )
 {
-   cout << endl << "Writing output at time " << t << " step " << step << "." << endl;
+  std::cout << std::endl << "Writing output at time " << t << " step " << step << "." << std::endl;
    if( !nsSolver.writePhysicalVariables( t, step ) )
       return false;
    if( !nsSolver.writeConservativeVariables( t, step ) )

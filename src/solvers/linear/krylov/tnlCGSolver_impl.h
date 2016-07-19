@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlCGSolver_implH
-#define tnlCGSolver_implH
+#pragma once
+
+namespace TNL {
 
 template< typename Matrix,
           typename Preconditioner >
@@ -154,10 +155,10 @@ bool tnlCGSolver< Matrix, Preconditioner > :: setSize( IndexType size )
        ! p. setSize( size ) ||
        ! Ap. setSize( size ) )
    {
-      cerr << "I am not able to allocated all supporting arrays for the CG solver." << endl;
+      std::cerr << "I am not able to allocated all supporting arrays for the CG solver." << std::endl;
       return false;
    }
    return true;
 };
 
-#endif
+} // namespace TNL

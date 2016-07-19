@@ -134,7 +134,7 @@ class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< 3, Real >
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlSinWaveFunction< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const tnlSinWaveFunction< Dimensions, Real >& f )
 {
    str << "Sin Wave. function: amplitude = " << f.getAmplitude()
        << " wavelength = " << f.getWaveLength()

@@ -100,7 +100,7 @@ class tnlFastRgCSRMatrix< Real, tnlCuda, Index > : public tnlMatrix< Real, tnlCu
    { abort(); };
 
    //! Prints out the matrix structure
-   void printOut( ostream& str,
+   void printOut( std::ostream& str,
 		          const int lines = 0 ) const;
 
    protected:
@@ -263,7 +263,7 @@ bool tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: copyFrom( const tnlFastRgCSRM
 
 	if( coa_fast_csr_matrix. getMaxColumnSequenceDictionarySize() > 10240 / 4 )
 	{
-		cerr << "ERROR: This matrix requires too large column sequences dictionary ( " << coa_fast_csr_matrix. getMaxColumnSequenceDictionarySize() << " )." << endl;
+		cerr << "ERROR: This matrix requires too large column sequences dictionary ( " << coa_fast_csr_matrix. getMaxColumnSequenceDictionarySize() << " )." << std::endl;
 		return false;
 	}
 	block_size = coa_fast_csr_matrix. block_size;
@@ -282,7 +282,7 @@ bool tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: copyFrom( const tnlFastRgCSRM
 	column_sequences_lengths =  coa_fast_csr_matrix. column_sequences_lengths;
 
 	/*{
-		cerr << "Unable to transfer data from the host to the CUDA device." << endl;
+		cerr << "Unable to transfer data from the host to the CUDA device." << std::endl;
 		return false;
 	}*/
 	artificial_zeros = coa_fast_csr_matrix. getArtificialZeroElements();
@@ -298,10 +298,10 @@ Real tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: getElement( int row,
                                                         int column ) const
 {
     tnlAssert( 0 <= row && row < this->getSize(),
-	 		   cerr << "The row is outside the matrix." );
+	 		   std::cerr << "The row is outside the matrix." );
     tnlAssert( 0 <= column && column < this->getSize(),
-	    	   cerr << "The column is outside the matrix." );
-	 tnlAssert( false, cerr << "Not Implemeted Yet!" );
+	    	   std::cerr << "The column is outside the matrix." );
+	 tnlAssert( false, std::cerr << "Not Implemeted Yet!" );
 	 return 0;
 }
 
@@ -310,9 +310,9 @@ Real tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: rowProduct( int row,
                                                                const tnlVector< Real, tnlCuda, Index >& vec ) const
 {
    tnlAssert( 0 <= row && row < this->getSize(),
-			  cerr << "The row is outside the matrix." );
+			  std::cerr << "The row is outside the matrix." );
    tnlAssert( vec != NULL, );
-   tnlAssert( false, cerr << "Not Implemented Yet!" );
+   tnlAssert( false, std::cerr << "Not Implemented Yet!" );
    return 0;
 }
 
@@ -342,15 +342,15 @@ void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlVecto
 
 
 template< typename Real, typename Index >
-void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: printOut( ostream& str,
+void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: printOut( std::ostream& str,
                                                              const tnlString& name,
 		                                                       const int lines ) const
 {
-   str << "Structure of tnlFastRgCSRMatrix" << endl;
-   str << "Matrix name:" << name << endl;
-   str << "Matrix size:" << this->getSize() << endl;
-   str << "Allocated elements:" << nonzero_elements. getSize() << endl;
-   str << "Matrix blocks: " << block_offsets. getSize() << endl;
+   str << "Structure of tnlFastRgCSRMatrix" << std::endl;
+   str << "Matrix name:" << name << std::endl;
+   str << "Matrix size:" << this->getSize() << std::endl;
+   str << "Allocated elements:" << nonzero_elements. getSize() << std::endl;
+   str << "Matrix blocks: " << block_offsets. getSize() << std::endl;
 
    int print_lines = lines;
    if( ! print_lines )
@@ -360,40 +360,40 @@ void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: printOut( ostream& str,
    {
 	   if( i * block_size > print_lines )
 		   continue;
-	   str << endl << "Block number: " << i << endl;
-	   str << " Lines: " << i * block_size << " -- " << ( i + 1 ) * block_size << endl;
-	   str << " Column sequences: " << column_sequences_in_block. getElement( i ) << endl;
+	   str << std::endl << "Block number: " << i << std::endl;
+	   str << " Lines: " << i * block_size << " -- " << ( i + 1 ) * block_size << std::endl;
+	   str << " Column sequences: " << column_sequences_in_block. getElement( i ) << std::endl;
 	   for( int k = i * block_size; k < ( i + 1 ) * block_size && k < this->getSize(); k ++ )
 	   {
-		   str << " Line: " << k << flush
-			   << " Line length: " << column_sequences_lengths. getElement( k ) << flush
-			   << " Column sequence offset: " << columns_sequences_offsets. getElement( k ) << endl
+		   str << " Line: " << k << std::flush
+			   << " Line length: " << column_sequences_lengths. getElement( k ) << std::flush
+			   << " Column sequence offset: " << columns_sequences_offsets. getElement( k ) << std::endl
 			   << " Column sequence: ";
 		   for( int l = 0; l < column_sequences_lengths. getElement( k ); l ++ )
 		      str << column_sequences. getElement( columns_sequences_offsets. getElement( k ) + l * column_sequences_in_block. getElement( i ) ) + k << "  ";
-		   str << endl;
+		   str << std::endl;
 	   }
-	   str << endl;
+	   str << std::endl;
 
 	   int current_block_size = block_size;
 	   if( ( i + 1 ) * block_size > this->getSize() )
 	      current_block_size = this->getSize() % block_size;
 	   int block_length = block_offsets. getElement( i + 1 ) - block_offsets. getElement( i );
 	   int row_length = block_length / block_size;
-	   str << " Block data: " << block_offsets. getElement( i ) << " -- " << block_offsets. getElement( i + 1 ) << endl;
-	   str << " Block size: " << current_block_size << endl;
-	   str << " Data:   " << endl;
+	   str << " Block data: " << block_offsets. getElement( i ) << " -- " << block_offsets. getElement( i + 1 ) << std::endl;
+	   str << " Block size: " << current_block_size << std::endl;
+	   str << " Data:   " << std::endl;
 	   for( int k = 0; k < current_block_size; k ++ )
 	   {
 	      str << " Block row " << k << " (" << i * block_size + k << ") : ";
 	      for( int l = 0; l < row_length; l ++ )
-	         str << setprecision( 5 ) << setw( 8 ) << nonzero_elements. getElement( block_offsets. getElement( i ) + l * current_block_size + k ) << " ";
-	      str << endl;
+	         str << std::setprecision( 5 ) << std::setw( 8 ) << nonzero_elements. getElement( block_offsets. getElement( i ) + l * current_block_size + k ) << " ";
+	      str << std::endl;
 	   }
    }
-   str << endl;
-   /*str << "*********************************************************" << endl;
-   str << column_sequences << endl;*/
+   str << std::endl;
+   /*str << "*********************************************************" << std::endl;
+   str << column_sequences << std::endl;*/
 };
 
 #ifdef HAVE_CUDA

@@ -32,9 +32,9 @@ template< typename Real,
 tnlString tnlDenseMatrix< Real, Device, Index >::getType()
 {
    return tnlString( "tnlDenseMatrix< " ) +
-          tnlString( ::getType< RealType >() ) + ", " +
+          tnlString( TNL::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
-          tnlString( ::getType< IndexType >() ) + " >";
+          tnlString( TNL::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
@@ -142,7 +142,7 @@ bool tnlDenseMatrix< Real, Device, Index >::setElementFast( const IndexType row,
 {
    tnlAssert( row >= 0 && row < this->getRows() &&
               column >= 0 && column < this->getColumns(),
-              cerr << " row = " << row << " column = " << column << " this->getRows() = " << this->getRows()
+              std::cerr << " row = " << row << " column = " << column << " this->getRows() = " << this->getRows()
                    << " this->getColumns() = " << this->getColumns() );
    this->values.operator[]( this->getElementIndex( row, column ) ) = value;
    return true;
@@ -210,7 +210,7 @@ bool tnlDenseMatrix< Real, Device, Index >::setRowFast( const IndexType row,
                                                         const IndexType elements )
 {
    tnlAssert( elements <= this->getColumns(),
-            cerr << " elements = " << elements
+            std::cerr << " elements = " << elements
                  << " this->columns = " << this->getColumns() );
    for( IndexType i = 0; i < elements; i++ )
       this->setElementFast( row, columns[ i ], values[ i ] );
@@ -226,7 +226,7 @@ bool tnlDenseMatrix< Real, Device, Index >::setRow( const IndexType row,
                                                     const IndexType elements )
 {
    tnlAssert( elements <= this->getColumns(),
-            cerr << " elements = " << elements
+            std::cerr << " elements = " << elements
                  << " this->columns = " << this->getColumns() );
    for( IndexType i = 0; i < elements; i++ )
       this->setElement( row, columns[ i ], values[ i ] );
@@ -244,7 +244,7 @@ bool tnlDenseMatrix< Real, Device, Index >::addRowFast( const IndexType row,
                                                         const RealType& thisRowMultiplicator )
 {
    tnlAssert( elements <= this->columns,
-            cerr << " elements = " << elements
+            std::cerr << " elements = " << elements
                  << " this->columns = " << this->columns );
    for( IndexType i = 0; i < elements; i++ )
       this->setElementFast( row, columns[ i ],
@@ -262,7 +262,7 @@ bool tnlDenseMatrix< Real, Device, Index >::addRow( const IndexType row,
                                                     const RealType& thisRowMultiplicator )
 {
    tnlAssert( elements <= this->columns,
-            cerr << " elements = " << elements
+            std::cerr << " elements = " << elements
                  << " this->columns = " << this->columns );
    for( IndexType i = 0; i < elements; i++ )
       this->setElement( row, columns[ i ],
@@ -367,11 +367,11 @@ void tnlDenseMatrix< Real, Device, Index >::vectorProduct( const InVector& inVec
                                                            OutVector& outVector ) const
 {
    tnlAssert( this->getColumns() == inVector.getSize(),
-            cerr << "Matrix columns: " << this->getColumns() << endl
-                 << "Vector size: " << inVector.getSize() << endl );
+            std::cerr << "Matrix columns: " << this->getColumns() << std::endl
+                 << "Vector size: " << inVector.getSize() << std::endl );
    tnlAssert( this->getRows() == outVector.getSize(),
-               cerr << "Matrix rows: " << this->getRows() << endl
-                    << "Vector size: " << outVector.getSize() << endl );
+               std::cerr << "Matrix rows: " << this->getRows() << std::endl
+                    << "Vector size: " << outVector.getSize() << std::endl );
 
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
@@ -386,10 +386,10 @@ void tnlDenseMatrix< Real, Device, Index >::addMatrix( const Matrix& matrix,
 {
    tnlAssert( this->getColumns() == matrix.getColumns() &&
               this->getRows() == matrix.getRows(),
-            cerr << "This matrix columns: " << this->getColumns() << endl
-                 << "This matrix rows: " << this->getRows() << endl
-                 << "That matrix columns: " << matrix.getColumns() << endl
-                 << "That matrix rows: " << matrix.getRows() << endl );
+            std::cerr << "This matrix columns: " << this->getColumns() << std::endl
+                 << "This matrix rows: " << this->getRows() << std::endl
+                 << "That matrix columns: " << matrix.getColumns() << std::endl
+                 << "That matrix rows: " << matrix.getRows() << std::endl );
 
    if( thisMatrixMultiplicator == 1.0 )
       this->values.addVector( matrix.values, matrixMultiplicator );
@@ -508,26 +508,26 @@ void tnlDenseMatrix< Real, Device, Index >::getMatrixProduct( const Matrix1& mat
    tnlAssert( matrix1.getColumns() == matrix2.getRows() &&
               this->getRows() == matrix1.getRows() &&
               this->getColumns() == matrix2.getColumns(),
-            cerr << "This matrix columns: " << this->getColumns() << endl
-                 << "This matrix rows: " << this->getRows() << endl
-                 << "Matrix1 columns: " << matrix1.getColumns() << endl
-                 << "Matrix1 rows: " << matrix1.getRows() << endl
-                 << "Matrix2 columns: " << matrix2.getColumns() << endl
-                 << "Matrix2 rows: " << matrix2.getRows() << endl );
+            std::cerr << "This matrix columns: " << this->getColumns() << std::endl
+                 << "This matrix rows: " << this->getRows() << std::endl
+                 << "Matrix1 columns: " << matrix1.getColumns() << std::endl
+                 << "Matrix1 rows: " << matrix1.getRows() << std::endl
+                 << "Matrix2 columns: " << matrix2.getColumns() << std::endl
+                 << "Matrix2 rows: " << matrix2.getRows() << std::endl );
 
    if( Device::getDevice() == tnlHostDevice )
       for( IndexType i = 0; i < this->getRows(); i += tileDim )
          for( IndexType j = 0; j < this->getColumns(); j += tileDim )
          {
-            const IndexType tileRows = Min( tileDim, this->getRows() - i );
-            const IndexType tileColumns = Min( tileDim, this->getColumns() - j );
+            const IndexType tileRows = min( tileDim, this->getRows() - i );
+            const IndexType tileColumns = min( tileDim, this->getColumns() - j );
             for( IndexType i1 = i; i1 < i + tileRows; i1++ )
                for( IndexType j1 = j; j1 < j + tileColumns; j1++ )
                   this->setElementFast( i1, j1, 0.0 );
 
             for( IndexType k = 0; k < matrix1.getColumns(); k += tileDim )
             {
-               const IndexType lastK = Min( k + tileDim, matrix1.getColumns() );
+               const IndexType lastK = min( k + tileDim, matrix1.getColumns() );
                for( IndexType i1 = 0; i1 < tileRows; i1++ )
                   for( IndexType j1 = 0; j1 < tileColumns; j1++ )
                      for( IndexType k1 = k; k1 < lastK; k1++ )
@@ -743,10 +743,10 @@ void tnlDenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matr
 {
    tnlAssert( this->getColumns() == matrix.getRows() &&
               this->getRows() == matrix.getColumns(),
-               cerr << "This matrix columns: " << this->getColumns() << endl
-                    << "This matrix rows: " << this->getRows() << endl
-                    << "That matrix columns: " << matrix.getColumns() << endl
-                    << "That matrix rows: " << matrix.getRows() << endl );
+               std::cerr << "This matrix columns: " << this->getColumns() << std::endl
+                    << "This matrix rows: " << this->getRows() << std::endl
+                    << "That matrix columns: " << matrix.getColumns() << std::endl
+                    << "That matrix rows: " << matrix.getRows() << std::endl );
  
    if( Device::getDevice() == tnlHostDevice )
    {
@@ -884,14 +884,14 @@ bool tnlDenseMatrix< Real, Device, Index >::load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-void tnlDenseMatrix< Real, Device, Index >::print( ostream& str ) const
+void tnlDenseMatrix< Real, Device, Index >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
       str <<"Row: " << row << " -> ";
       for( IndexType column = 0; column < this->getColumns(); column++ )
          str << " Col:" << column << "->" << this->getElement( row, column ) << "\t";
-      str << endl;
+      str << std::endl;
    }
 }
 

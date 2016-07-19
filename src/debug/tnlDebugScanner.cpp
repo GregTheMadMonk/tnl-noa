@@ -826,25 +826,25 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 19 "tnlDebugScanner.l"
-{ //cout << "CLASS" << endl; 
+{ //cout << "CLASS" << std::endl; 
                                                 return tnlDebugParser :: __CLASS__; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 21 "tnlDebugScanner.l"
-{ //cout << "DEBUG" << endl;
+{ //cout << "DEBUG" << std::endl;
                                                 return tnlDebugParser :: __DEBUG__; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 23 "tnlDebugScanner.l"
-{ //cout << "DEFAULT" << endl;
+{ //cout << "DEFAULT" << std::endl;
                                                 return tnlDebugParser :: __DEFAULT__; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 25 "tnlDebugScanner.l"
-{ // cout << "BOOL TRUE" << endl;
+{ // std::cout << "BOOL TRUE" << std::endl;
                                                 tnlDebugParser :: current_parser -> 
                                                    setBVal( true );
                                                 return tnlDebugParser :: __BOOL_TRUE__;}
@@ -852,7 +852,7 @@ YY_RULE_SETUP
 case 5:
 YY_RULE_SETUP
 #line 30 "tnlDebugScanner.l"
-{ //cout << "BOOL FALSE" << endl;
+{ //cout << "BOOL FALSE" << std::endl;
                                                 tnlDebugParser :: current_parser ->
                                                    setBVal( false );
                                                 return tnlDebugParser :: __BOOL_FALSE__;}
@@ -860,7 +860,7 @@ YY_RULE_SETUP
 case 6:
 YY_RULE_SETUP
 #line 34 "tnlDebugScanner.l"
-{ //cout << "IDENTIFIER " << yytext <<  endl;
+{ //cout << "IDENTIFIER " << yytext <<  std::endl;
                                                 tnlDebugParser :: current_parser -> 
                                                    setSVal( yytext );
                                                 return tnlDebugParser :: __IDENTIFIER__; }
@@ -1499,7 +1499,7 @@ int yyFlexLexer::yy_get_next_buffer()
 
 	if ( YY_CURRENT_BUFFER )
 		{
-		/* Flush out information for old buffer. */
+		/* std::flush out information for old buffer. */
 		*(yy_c_buf_p) = (yy_hold_char);
 		YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);
@@ -1630,7 +1630,7 @@ extern "C" int isatty (int );
 }
 
 /** Discard all buffered characters. On the next scan, YY_INPUT will be called.
- * @param b the buffer state to be flushed, usually @c YY_CURRENT_BUFFER.
+ * @param b the buffer state to be std::flushed, usually @c YY_CURRENT_BUFFER.
  * 
  */
 /* %if-c-only */
@@ -1681,7 +1681,7 @@ void yyFlexLexer::yypush_buffer_state (YY_BUFFER_STATE new_buffer)
 	/* This block is copied from yy_switch_to_buffer. */
 	if ( YY_CURRENT_BUFFER )
 		{
-		/* Flush out information for old buffer. */
+		/* std::flush out information for old buffer. */
 		*(yy_c_buf_p) = (yy_hold_char);
 		YY_CURRENT_BUFFER_LVALUE->yy_buf_pos = (yy_c_buf_p);
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = (yy_n_chars);

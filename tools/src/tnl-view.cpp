@@ -68,14 +68,14 @@ int main( int argc, char* argv[] )
    tnlString meshType;
    if( ! getObjectType( meshFile, meshType ) )
    {
-      cerr << "I am not able to detect the mesh type from the file " << meshFile << "." << endl;
+      std::cerr << "I am not able to detect the mesh type from the file " << meshFile << "." << std::endl;
       return EXIT_FAILURE;
    }
-   cout << meshType << " detected in " << meshFile << " file." << endl;
+   std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
    tnlList< tnlString > parsedMeshType;
    if( ! parseObjectType( meshType, parsedMeshType ) )
    {
-      cerr << "Unable to parse the mesh type " << meshType << "." << endl;
+      std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
       return false;
    }
    if( parsedMeshType[ 0 ] == "tnlGrid" )

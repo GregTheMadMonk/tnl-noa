@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXPLICITSOLVER_IMPL_H_
-#define TNLEXPLICITSOLVER_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Problem >
 tnlExplicitSolver< Problem >::
@@ -344,4 +345,4 @@ __device__ void computeBlockResidue( Real* du,
 }
 #endif
 
-#endif /* TNLEXPLICITSOLVER_IMPL_H_ */
+} // namespace TNL

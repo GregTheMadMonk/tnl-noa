@@ -19,6 +19,8 @@
 #include <core/arrays/tnlSharedArray.h>
 #include <core/tnlFile.h>
 
+using namespace TNL;
+
 template< typename ElementType, typename Device, typename IndexType >
 class tnlSharedArrayTester : public CppUnit :: TestCase
 {

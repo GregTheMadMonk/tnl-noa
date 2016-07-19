@@ -20,6 +20,8 @@
 #include <core/arrays/tnlArray.h>
 #include <core/tnlFile.h>
 
+using namespace TNL;
+
 #ifdef HAVE_CUDA
 template< typename ElementType, typename IndexType >
 __global__ void testSetGetElementKernel( tnlArray< ElementType, tnlCuda, IndexType >* u );

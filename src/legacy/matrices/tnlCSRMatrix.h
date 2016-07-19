@@ -127,7 +127,7 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    void multiplyRow( Index row, const Real& value );
 
-   bool read( istream& str, int verbose = 0 );
+   bool read( std::istream& str, int verbose = 0 );
 
    //! Method for saving the matrix to a file as a binary data
    bool save( tnlFile& file ) const;
@@ -143,7 +143,7 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
    tnlCSRMatrix< Real, Device, Index >& operator = ( const tnlCSRMatrix< Real2, Device, Index >& csrMatrix );
 
    //! Prints out the matrix structure
-   void printOut( ostream& str,
+   void printOut( std::ostream& str,
                   const tnlString& format = tnlString( "" ),
 		            const Index lines = 0 ) const;
 
@@ -198,7 +198,7 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
                               const Real& value,
                               Index insertedElements = 0 );
 
-   void writePostscriptBody( ostream& str,
+   void writePostscriptBody( std::ostream& str,
                              const int elementSize,
                              bool verbose ) const;
 
@@ -253,7 +253,7 @@ template< typename Real, typename Device, typename Index >
 tnlString tnlCSRMatrix< Real, Device, Index > :: getType() const
 {
    return tnlString( "tnlCSRMatrix< ") +
-           tnlString( ::getType< Real >() ) +
+           tnlString( TNL::getType< Real >() ) +
            tnlString( ", " ) +
            Device :: getDeviceType() +
            tnlString( " >" );
@@ -317,7 +317,7 @@ template< typename Real, typename Device, typename Index >
 Index tnlCSRMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& row ) const
 {
    tnlAssert( row >= 0 && row < this->getSize(),
-              cerr << "row = " << row << " this->getSize() = " << this->getSize() );
+              std::cerr << "row = " << row << " this->getSize() = " << this->getSize() );
    return row_offsets[ row + 1 ] - row_offsets[ row ];
 }
 
@@ -345,15 +345,15 @@ bool tnlCSRMatrix< Real, Device, Index > :: shiftElements( Index position,
    dbgFunctionName( "tnlCSRMatrix< Real, Device, Index >", "shiftElements" );
    dbgCout( "Shifting non-zero elements by " << shift << " elements." );
    tnlAssert( position <= last_nonzero_element,
-              cerr << "Starting position for the shift in tnlCSRMatrix is behind the last element." );
+              std::cerr << "Starting position for the shift in tnlCSRMatrix is behind the last element." );
    if( last_nonzero_element + shift > nonzero_elements. getSize() )
    {
-      cerr << "Not enough allocated memory to shift the data in tnlCSRMatrix." << endl;
+      std::cerr << "Not enough allocated memory to shift the data in tnlCSRMatrix." << std::endl;
       return false;
    }
    if( position + shift < 0 )
    {
-      cerr << "Attempt to shift to negative values." << endl;
+      std::cerr << "Attempt to shift to negative values." << std::endl;
       return false;
    }
    if( shift == 0 )
@@ -389,8 +389,8 @@ bool tnlCSRMatrix< Real, Device, Index > :: shiftElements( Index position,
          row_offsets[ i ] += shift;
          if( i > 1 && row_offsets[ i ] < row_offsets[ i -1 ] )
          {
-            cerr << "The shift in the tnlCSRMatrix lead to the row pointer crossing for rows "
-                 << i - 1 << " and " << i << "." << endl;
+            std::cerr << "The shift in the tnlCSRMatrix lead to the row pointer crossing for rows "
+                 << i - 1 << " and " << i << "." << std::endl;
             return false;
          }
       }
@@ -406,15 +406,15 @@ bool tnlCSRMatrix< Real, Device, Index > :: insertRow( Index row,
 {
    dbgFunctionName( "tnlCSRMatrix< Real, Device, Index >", "insertRow" )
    tnlAssert( row >=0 && row < this->getSize(),
-              cerr << "The row " << row << " is out of the matrix." );
+              std::cerr << "The row " << row << " is out of the matrix." );
    tnlAssert( elements > 0,
-              cerr << "The number of elements to insert is negative:" << elements << "." );
+              std::cerr << "The number of elements to insert is negative:" << elements << "." );
    tnlAssert( data != NULL,
-              cerr << "Null pointer passed as data for the inserted row." );
+              std::cerr << "Null pointer passed as data for the inserted row." );
    tnlAssert( first_column >=0 &&  first_column < this->getSize(),
-              cerr << "first_column is out of the matrix" );
+              std::cerr << "first_column is out of the matrix" );
    tnlAssert( offsets != NULL,
-              cerr << "Null pointer passed as data for the column offsets." );
+              std::cerr << "Null pointer passed as data for the column offsets." );
 
    /*
     *  Cut off elements which do not fit into the matrix.
@@ -456,7 +456,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: insertRow( Index row,
      cls[ first_in_row + i ] = column;
      if( i > 0 && offsets[ i - 1 ] >= offsets[ i ] )
      {
-        cerr << "The offsets of the elements inserted to the tnlCSRMatrix are not sorted monotonicaly increasingly." << endl;
+        std::cerr << "The offsets of the elements inserted to the tnlCSRMatrix are not sorted monotonicaly increasingly." << std::endl;
         return false;
      }
    }
@@ -468,9 +468,9 @@ Index tnlCSRMatrix< Real, Device, Index > :: getElementPosition( Index row,
                                                                   Index column ) const
 {
    tnlAssert( 0 <= row && row < this->getSize(),
-              cerr << "The row is outside the matrix." );
+              std::cerr << "The row is outside the matrix." );
    tnlAssert( 0 <= column && column < this->getSize(),
-              cerr << "The column is outside the matrix." );
+              std::cerr << "The column is outside the matrix." );
    Index first_in_row = row_offsets[ row ];
    Index last_in_row = row_offsets[ row + 1 ];
    const Index* cols = columns. getData();
@@ -548,11 +548,11 @@ Real tnlCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
                                                          const tnlVector< Real, Device, Index >& vec ) const
 {
    tnlAssert( 0 <= row && row < this->getSize(),
-              cerr << "The row is outside the matrix." );
+              std::cerr << "The row is outside the matrix." );
    tnlAssert( vec. getSize() == this->getSize(),
-              cerr << "The matrix and vector for multiplication have different sizes. "
+              std::cerr << "The matrix and vector for multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << vec. getSize() << endl; );
+                   << "The vector size is " << vec. getSize() << std::endl; );
    Index i = row_offsets[ row ];
    Index last_in_row = row_offsets[ row + 1 ];
    const Index* cols = columns. getData();
@@ -574,13 +574,13 @@ void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const Vector1& vec,
                                                            Vector2& result ) const
 {
    tnlAssert( vec. getSize() == this->getSize(),
-              cerr << "The matrix and vector for a multiplication have different sizes. "
+              std::cerr << "The matrix and vector for a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << vec. getSize() << endl; );
+                   << "The vector size is " << vec. getSize() << std::endl; );
    tnlAssert( result. getSize() == this->getSize(),
-              cerr << "The matrix and result vector of a multiplication have different sizes. "
+              std::cerr << "The matrix and result vector of a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << result. getSize() << endl; );
+                   << "The vector size is " << result. getSize() << std::endl; );
 
    const Index* cols = columns. getData();
    const Index* rw_offsets = row_offsets. getData();
@@ -632,11 +632,11 @@ bool tnlCSRMatrix< Real, Device, Index > :: performSORIteration( const Real& ome
                                                                  Index lastRow ) const
 {
    tnlAssert( firstRow >=0 && firstRow < this->getSize(),
-              cerr << "Wrong parameter firstRow. Should be in 0..." << this->getSize()
-                   << " but it equals " << firstRow << endl; );
+              std::cerr << "Wrong parameter firstRow. Should be in 0..." << this->getSize()
+                   << " but it equals " << firstRow << std::endl; );
    tnlAssert( lastRow >=0 && lastRow < this->getSize(),
-              cerr << "Wrong parameter lastRow. Should be in 0..." << this->getSize()
-                   << " but it equals " << lastRow << endl; );
+              std::cerr << "Wrong parameter lastRow. Should be in 0..." << this->getSize()
+                   << " but it equals " << lastRow << std::endl; );
 
    if( lastRow == 0 )
       lastRow = this->getSize();
@@ -654,7 +654,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: performSORIteration( const Real& ome
       }
       if( diagonal == ( Real ) 0.0 )
       {
-         cerr << "There is zero on the diagonal in " << i << "-th row. I cannot perform SOR iteration." << endl;
+         std::cerr << "There is zero on the diagonal in " << i << "-th row. I cannot perform SOR iteration." << std::endl;
          return false;
       }
       x[ i ] = ( ( Real ) 1.0 - omega ) * x[ i ] + omega / diagonal * update;
@@ -673,7 +673,7 @@ template< typename Real, typename Device, typename Index >
 Real tnlCSRMatrix< Real, Device, Index > :: getRowL1Norm( Index row ) const
 {
    tnlAssert( 0 <= row && row < this->getSize(),
-                 cerr << "The row is outside the matrix." );
+                 std::cerr << "The row is outside the matrix." );
    Index i = row_offsets[ row ];
    Index last_in_row = row_offsets[ row + 1 ];
    const Real* els = nonzero_elements. getData();
@@ -687,7 +687,7 @@ template< typename Real, typename Device, typename Index >
 void tnlCSRMatrix< Real, Device, Index > :: multiplyRow( Index row, const Real& value )
 {
    tnlAssert( 0 <= row && row < this->getSize(),
-                 cerr << "The row is outside the matrix." );
+                 std::cerr << "The row is outside the matrix." );
    Index i = row_offsets[ row ];
    Index last_in_row = row_offsets[ row + 1 ];
    Real* els = nonzero_elements. getData();
@@ -703,7 +703,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: reorderRows( const tnlVector< Index,
    last_nonzero_element = 0;
    if( ! this->setLike( inputCsrMatrix ) )
    {
-      cerr << "I am not able to allocate new memory for matrix reordering." << endl;
+      std::cerr << "I am not able to allocate new memory for matrix reordering." << std::endl;
       return false;
    }
    for( Index i = 0; i < this->getSize(); i ++ )
@@ -779,7 +779,7 @@ tnlCSRMatrix< Real, Device, Index >& tnlCSRMatrix< Real, Device, Index > :: oper
        ! columns. setSize( csrMatrix. columns. getSize() ) ||
        ! row_offsets. setSize( csrMatrix. row_offsets. getSize() ) )
    {
-      cerr << "I am unable to allocate memory for new matrix!" << endl;
+      std::cerr << "I am unable to allocate memory for new matrix!" << std::endl;
       abort();
    }
    nonzero_elements = csrMatrix. nonzero_elements;
@@ -790,16 +790,16 @@ tnlCSRMatrix< Real, Device, Index >& tnlCSRMatrix< Real, Device, Index > :: oper
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
+void tnlCSRMatrix< Real, Device, Index > :: printOut( std::ostream& str,
                                                       const tnlString& name,
                                                       const tnlString& format,
 		                                                const Index lines ) const
 {
-   str << "Structure of tnlCSRMatrix" << endl;
-   str << "Matrix name:" << name << endl;
-   str << "Matrix size:" << this->getSize() << endl;
-   str << "Allocated elements:" << nonzero_elements. getSize() << endl;
-   str << "Matrix rows:" << endl;
+   str << "Structure of tnlCSRMatrix" << std::endl;
+   str << "Matrix name:" << name << std::endl;
+   str << "Matrix size:" << this->getSize() << std::endl;
+   str << "Allocated elements:" << nonzero_elements. getSize() << std::endl;
+   str << "Matrix rows:" << std::endl;
    Index print_lines = lines;
    if( ! print_lines )
 	   print_lines = this->getSize();
@@ -809,16 +809,16 @@ void tnlCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
       Index last = row_offsets[ i + 1 ];
       str << " Row number " << i
           << " - elements " << first
-          << " -- " << last << endl;
+          << " -- " << last << std::endl;
       str << " Data:   ";
       for( Index j = first; j < last; j ++ )
-         str << setprecision( 5 ) << setw( 8 ) << nonzero_elements[ j ] << " ";
-      str << endl;
+         str << std::setprecision( 5 ) << std::setw( 8 ) << nonzero_elements[ j ] << " ";
+      str << std::endl;
       str << "Columns: ";
       for( Index j = first; j < last; j ++ )
-         str << setw( 8 ) << columns[ j ] << " ";
-      str << endl;
-      str << "Last non-zero element: " << last_nonzero_element << endl;
+         str << std::setw( 8 ) << columns[ j ] << " ";
+      str << std::endl;
+      str << "Last non-zero element: " << last_nonzero_element << std::endl;
    }
 };
 
@@ -833,8 +833,8 @@ void tnlCSRMatrix< Real, Device, Index > :: getRowStatistics( Index& min_row_len
    for( Index i = 0; i < this->getSize(); i ++ )
    {
       Index row_length = row_offsets[ i + 1 ] - row_offsets[ i ];
-      min_row_length = Min( min_row_length, row_length );
-      max_row_length = Max( max_row_length, row_length );
+      min_row_length = min( min_row_length, row_length );
+      max_row_length = max( max_row_length, row_length );
       average_row_length += row_length;
    }
    average_row_length /= ( double ) this->getSize();
@@ -852,7 +852,7 @@ void tnlCSRMatrix< Real, Device, Index > :: insertToAllocatedRow( Index row,
     {
        Index element_pos = row_offsets[ row ] + insertedElements - 1;
        tnlAssert( element_pos < row_offsets[ row + 1 ],
-                  cerr << "element_pos = " << element_pos
+                  std::cerr << "element_pos = " << element_pos
                        << "row_offsets[ row + 1 ] = " << row_offsets[ row + 1 ]
                        << "row_offsets[ row ] = " << row_offsets[ row ]);
        while( element_pos > row_offsets[ row ] &&
@@ -862,7 +862,7 @@ void tnlCSRMatrix< Real, Device, Index > :: insertToAllocatedRow( Index row,
           columns[ element_pos + 1 ] = columns[ element_pos ];
           nonzero_elements[ element_pos + 1 ] = nonzero_elements[ element_pos ];
           element_pos --;
-          cerr << "*";
+          std::cerr << "*";
        }
        tnlAssert( element_pos >= row_offsets[ row ], );
        //dbgExpr( element_pos );
@@ -879,7 +879,7 @@ void tnlCSRMatrix< Real, Device, Index > :: insertToAllocatedRow( Index row,
            columns[ element_pos ] != -1 )
     {
        element_pos ++;
-       cerr << "X";
+       std::cerr << "X";
     }
     //dbgExpr( element_pos );
 
@@ -909,7 +909,7 @@ void tnlCSRMatrix< Real, Device, Index > :: insertToAllocatedRow( Index row,
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
+bool tnlCSRMatrix< Real, Device, Index > :: read( std::istream& file,
                                                    int verbose )
 {
    dbgFunctionName( "tnlCSRMatrix< T >", "read" );
@@ -944,9 +944,9 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
       if( line[ 0 ] == '%' ) continue;
       if( ! format_ok )
       {
-         cerr << "Unknown format of the file: " << line << endl;
-         cerr << "We expect header line like this:" << endl;
-         cerr << "%%MatrixMarket matrix coordinate real general/symmetric" << endl;
+         std::cerr << "Unknown format of the file: " << line << std::endl;
+         std::cerr << "We expect header line like this:" << std::endl;
+         std::cerr << "%%MatrixMarket matrix coordinate real general/symmetric" << std::endl;
          return false;
       }
 
@@ -956,7 +956,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
          line. parse( parsed_line );
          if( parsed_line. getSize() != 3 )
          {
-           cerr << "Wrong number of parameters in the matrix header." << endl;
+           std::cerr << "Wrong number of parameters in the matrix header." << std::endl;
            return false;
          }
          Index M = atoi( parsed_line[ 0 ]. getString() );
@@ -966,18 +966,18 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
         	 L = 2 * L - M;
          if( verbose )
          {
-         	cout << "Matrix size:                " << setw( 9 ) << right << M << endl;
-         	cout << "Non-zero elements expected: " << setw( 9 ) << right << L << endl;
+         	cout << "Matrix size:                " << std::setw( 9 ) << right << M << std::endl;
+         	cout << "Non-zero elements expected: " << std::setw( 9 ) << right << L << std::endl;
          }
 
          if( M <= 0 || N <= 0 || L <= 0 )
          {
-           cerr << "Wrong parameters in the matrix header." << endl;
+           std::cerr << "Wrong parameters in the matrix header." << std::endl;
            return false;
          }
          if( M  != N )
          {
-           cerr << "There is not square matrix in the file." << endl;
+           std::cerr << "There is not square matrix in the file." << std::endl;
            return false;
          }
 
@@ -991,7 +991,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
       }
       if( parsed_line. getSize() != 3 )
       {
-         cerr << "Wrong number of parameters in the matrix row at line:" << line << endl;
+         std::cerr << "Wrong number of parameters in the matrix row at line:" << line << std::endl;
          return false;
       }
 
@@ -1001,7 +1001,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
       Index J = atoi( parsed_line[ 1 ]. getString() ) - 1;
       if( I < 0 || I >= size )
       {
-         cerr << "The row index " << I << " is out of the matrix." << endl;
+         std::cerr << "The row index " << I << " is out of the matrix." << std::endl;
          return false;
       }
       rows_length[ I ] ++;
@@ -1014,12 +1014,12 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
    }
 
    if( verbose )
-      cout << "Non-zero elements parsed:   " << setw( 9 ) << right << parsed_elements << endl;
+     std::cout << "Non-zero elements parsed:   " << std::setw( 9 ) << right << parsed_elements << std::endl;
 
    if( ! this->setSize( size ) ||
        ! this->setNonzeroElements( parsed_elements ) )
    {
-      cerr << "Not enough memory to allocate the sparse or the full matrix for testing." << endl;
+      std::cerr << "Not enough memory to allocate the sparse or the full matrix for testing." << std::endl;
       return false;
    }
    parsed_elements = 0;
@@ -1045,7 +1045,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
    dbgCout( "Reading the matrix ..." );
    dbgExpr( header_end );
    file. clear();
-   file. seekg( header_end, ios :: beg );
+   file. seekg( header_end, std::ios::beg );
    tnlVector< Index, tnlHost > insertedElementsInRows( "tnlCSRMatrix::insertedElementsInRows" );
    insertedElementsInRows. setSize( size );
    insertedElementsInRows. setValue( 0 );
@@ -1055,7 +1055,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
       line. parse( parsed_line );
       if( parsed_line. getSize() != 3 )
       {
-         cerr << "Wrong number of parameters in the matrix row at line:" << line << endl;
+         std::cerr << "Wrong number of parameters in the matrix row at line:" << line << std::endl;
          return false;
       }
       Index I = atoi( parsed_line[ 0 ]. getString() ) - 1;
@@ -1064,7 +1064,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
 
       if( I < 0 || I >= size || J < 0 || J >= size )
       {
-         cerr << "Index outside of the matrix at line: " << line << endl;
+         std::cerr << "Index outside of the matrix at line: " << line << std::endl;
          return false;
       }
 
@@ -1081,14 +1081,14 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( istream& file,
       }
 
       if( verbose )
-    	 cout << "Parsed elements:            " << setw( 9 ) << right << parsed_elements << "\r" << flush;
+    	std::cout << "Parsed elements:            " << std::setw( 9 ) << right << parsed_elements << "\r" << std::flush;
 
    }
    return true;
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlCSRMatrix< Real, Device, Index > :: writePostscriptBody( ostream& str,
+void tnlCSRMatrix< Real, Device, Index > :: writePostscriptBody( std::ostream& str,
                                                                  const int elementSize,
                                                                  bool verbose ) const
 {
@@ -1105,13 +1105,13 @@ void tnlCSRMatrix< Real, Device, Index > :: writePostscriptBody( ostream& str,
             Index column = this->columns[ i ];
             str << ( column - lastColumn ) * elementSize
                 << " " << -( row - lastRow ) * elementSize
-                << " translate newpath 0 0 " << elementSize << " " << elementSize << " rectstroke" << endl;
+                << " translate newpath 0 0 " << elementSize << " " << elementSize << " rectstroke" << std::endl;
             lastColumn = column;
             lastRow = row;
          }
       }
       if( verbose )
-         cout << "Drawing the row " << row << "      \r" << flush;
+        std::cout << "Drawing the row " << row << "      \r" << std::flush;
    }
 }
 

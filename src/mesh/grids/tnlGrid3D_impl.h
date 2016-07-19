@@ -45,9 +45,9 @@ tnlString tnlGrid< 3, Real, Device, Index > :: getType()
 {
    return tnlString( "tnlGrid< " ) +
           tnlString( meshDimensions ) + ", " +
-          tnlString( ::getType< RealType >() ) + ", " +
+          tnlString( TNL::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
-          tnlString( ::getType< IndexType >() ) + " >";
+          tnlString( TNL::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
@@ -163,9 +163,9 @@ template< typename Real,
           typename Index >
 void tnlGrid< 3, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize, const Index zSize )
 {
-   tnlAssert( xSize > 0, cerr << "xSize = " << xSize );
-   tnlAssert( ySize > 0, cerr << "ySize = " << ySize );
-   tnlAssert( zSize > 0, cerr << "zSize = " << zSize );
+   tnlAssert( xSize > 0, std::cerr << "xSize = " << xSize );
+   tnlAssert( ySize > 0, std::cerr << "ySize = " << ySize );
+   tnlAssert( zSize > 0, std::cerr << "zSize = " << zSize );
 
    this->dimensions.x() = xSize;
    this->dimensions.y() = ySize;
@@ -341,11 +341,11 @@ tnlGrid< 3, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
    tnlAssert( xPow >= -2 && xPow <= 2,
-              cerr << " xPow = " << xPow );
+              std::cerr << " xPow = " << xPow );
    tnlAssert( yPow >= -2 && yPow <= 2,
-              cerr << " yPow = " << yPow );
+              std::cerr << " yPow = " << yPow );
    tnlAssert( zPow >= -2 && zPow <= 2,
-              cerr << " zPow = " << zPow );
+              std::cerr << " zPow = " << zPow );
 
    return this->spaceStepsProducts[ zPow + 2 ][ yPow + 2 ][ xPow + 2 ];
 }
@@ -356,7 +356,7 @@ template< typename Real,
 __cuda_callable__ inline
 Real tnlGrid< 3, Real, Device, Index > :: getSmallestSpaceStep() const
 {
-   return Min( this->spaceSteps.x(), Min( this->spaceSteps.y(), this->spaceSteps.z() ) );
+   return min( this->spaceSteps.x(), min( this->spaceSteps.y(), this->spaceSteps.z() ) );
 }
 
 template< typename Real,
@@ -390,10 +390,10 @@ typename GridFunction::RealType
               cell.getCoordinates().x()++ )
          {
             IndexType c = this->getEntityIndex( cell );
-            lpNorm += pow( tnlAbs( f1[ c ] ), p );;
+            lpNorm += ::pow( abs( f1[ c ] ), p );;
          }
    lpNorm *= this->getSpaceSteps()().x() * this->getSpaceSteps()().y() * this->getSpaceSteps()().z();
-   return pow( lpNorm, 1.0/p );
+   return ::pow( lpNorm, 1.0/p );
 }
 
 
@@ -418,7 +418,7 @@ template< typename Real,
               cell.getCoordinates().x()++ )
          {
             IndexType c = this->getEntityIndex( cell );
-            maxDiff = Max( maxDiff, tnlAbs( f1[ c ] - f2[ c ] ) );
+            maxDiff = max( maxDiff, abs( f1[ c ] - f2[ c ] ) );
          }
    return maxDiff;
 }
@@ -446,10 +446,10 @@ template< typename Real,
               cell.getCoordinates().x()++ )
          {
             IndexType c = this->getEntityIndex( cell );
-            lpNorm += pow( tnlAbs( f1[ c ] - f2[ c ] ), p );
+            lpNorm += ::pow( abs( f1[ c ] - f2[ c ] ), p );
          }
    lpNorm *= this->getSpaceSteps().x() * this->getSpaceSteps().y() * this->getSpaceSteps().z();
-   return pow( lpNorm, 1.0 / p );
+   return ::pow( lpNorm, 1.0 / p );
 }
 
 template< typename Real,
@@ -463,7 +463,7 @@ bool tnlGrid< 3, Real, Device, Index > :: save( tnlFile& file ) const
        ! this->proportions.save( file ) ||
        ! this->dimensions.save( file ) )
    {
-      cerr << "I was not able to save the domain description of a tnlGrid." << endl;
+      std::cerr << "I was not able to save the domain description of a tnlGrid." << std::endl;
       return false;
    }
    return true;
@@ -481,7 +481,7 @@ bool tnlGrid< 3, Real, Device, Index > :: load( tnlFile& file )
        ! this->proportions.load( file ) ||
        ! dimensions.load( file ) )
    {
-      cerr << "I was not able to load the domain description of a tnlGrid." << endl;
+      std::cerr << "I was not able to load the domain description of a tnlGrid." << std::endl;
       return false;
    }
    this->setDimensions( dimensions );
@@ -510,7 +510,7 @@ template< typename Real,
 bool tnlGrid< 3, Real, Device, Index >::writeMesh( const tnlString& fileName,
                                                    const tnlString& format ) const
 {
-   tnlAssert( false, cerr << "TODO: FIX THIS"); // TODO: FIX THIS
+   tnlAssert( false, std::cerr << "TODO: FIX THIS"); // TODO: FIX THIS
    return true;
 }
 
@@ -524,18 +524,18 @@ bool tnlGrid< 3, Real, Device, Index > :: write( const MeshFunction& function,
 {
    if( this->template getEntitiesCount< Cell >() != function. getSize() )
    {
-      cerr << "The size ( " << function. getSize()
-           << " ) of a mesh function does not agree with the DOFs ( " << this->template getEntitiesCount< Cell >() << " ) of a mesh." << endl;
+      std::cerr << "The size ( " << function. getSize()
+           << " ) of a mesh function does not agree with the DOFs ( " << this->template getEntitiesCount< Cell >() << " ) of a mesh." << std::endl;
       return false;
    }
-   fstream file;
-   file. open( fileName. getString(), ios :: out );
+   std::fstream file;
+   file. open( fileName. getString(), std::ios::out );
    if( ! file )
    {
-      cerr << "I am not able to open the file " << fileName << "." << endl;
+      std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
       return false;
    }
-   file << setprecision( 12 );
+   file << std::setprecision( 12 );
    if( format == "gnuplot" )
    {
       Cell cell( *this );
@@ -554,10 +554,10 @@ bool tnlGrid< 3, Real, Device, Index > :: write( const MeshFunction& function,
                VertexType v = cell.getCenter();
                tnlGnuplotWriter::write( file, v );
                tnlGnuplotWriter::write( file, function[ this->template getEntityIndex( cell ) ] );
-               file << endl;
+               file << std::endl;
             }
          }
-         file << endl;
+         file << std::endl;
       }
    }
 

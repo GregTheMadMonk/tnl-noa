@@ -103,11 +103,11 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
    { abort(); };
 
    //! Prints out the matrix structure
-   void printOut( ostream& str,
+   void printOut( std::ostream& str,
                   const tnlString& format = tnlString( "" ),
 		            const Index lines = 0 ) const;
 
-   bool draw( ostream& str,
+   bool draw( std::ostream& str,
               const tnlString& format,
               tnlCSRMatrix< Real, Device, Index >* csrMatrix = 0,
               int verbose = 0 );
@@ -344,7 +344,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
    if( Device :: getDevice() == tnlCudaDevice )
    {
       tnlAssert( false,
-                 cerr << "Conversion from tnlCSRMatrix on the host to the tnlRgCSRMatrix on the CUDA device is not implemented yet."; );
+                 std::cerr << "Conversion from tnlCSRMatrix on the host to the tnlRgCSRMatrix on the CUDA device is not implemented yet."; );
       //TODO: implement this
       return false;
    }
@@ -408,7 +408,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
 		nonzeroElementsInRow[ i ] = csr_matrix. row_offsets[ i + 1 ] - csr_matrix. row_offsets[ i ];
 		nonzeroElementsInGroup += nonzeroElementsInRow[ i ];
 		//dbgExpr( nonzeroElementsInRow[ i ] );
-		max_row_in_block = Max( max_row_in_block, nonzeroElementsInRow[ i ] );
+		max_row_in_block = max( max_row_in_block, nonzeroElementsInRow[ i ] );
 
 	}
 	dbgExpr( processedLines );
@@ -434,8 +434,8 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
 	/****
 	 * Allocate the non-zero elements (they contain some artificial zeros.)
 	 */
-	dbgCout( "Allocating " << Max( 1, total_elements ) << " elements.");
-	if( ! setNonzeroElements( Max( 1, total_elements ) ) )
+	dbgCout( "Allocating " << max( 1, total_elements ) << " elements.");
+	if( ! setNonzeroElements( max( 1, total_elements ) ) )
 		return false;
 	artificial_zeros = total_elements - csr_matrix. getNonzeroElements();
 
@@ -470,7 +470,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real
             /****
              * Get the element position
              */
-            tnlAssert( elementRow < this->getSize(), cerr << "Element row = " << elementRow );
+            tnlAssert( elementRow < this->getSize(), std::cerr << "Element row = " << elementRow );
             Index elementPos = csr_matrix. row_offsets[ elementRow ];
             while( elementPos < csr_matrix. row_offsets[ elementRow + 1 ] )
             {
@@ -496,7 +496,7 @@ tnlRgCSRMatrix< Real, Device, Index >::
 copyFrom( const tnlRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix )
 {
    dbgFunctionName( "tnlRgCSRMatrix< Real, Device, Index >", "copyFrom" );
-   tnlAssert( rgCSRMatrix. getSize() > 0, cerr << "Copying from matrix with non-positiove size." );
+   tnlAssert( rgCSRMatrix. getSize() > 0, std::cerr << "Copying from matrix with non-positiove size." );
 
    this->cudaBlockSize = rgCSRMatrix. cudaBlockSize;
    this->groupSize = rgCSRMatrix. groupSize;
@@ -534,7 +534,7 @@ Real tnlRgCSRMatrix< Real, Device, Index > :: getElement( Index row,
 {
    dbgFunctionName( "tnlRgCSRMatrix< Real, Device, Index >", "getElement" );
 	tnlAssert( 0 <= row && row < this->getSize(),
-			   cerr << "The row is outside the matrix." );
+			   std::cerr << "The row is outside the matrix." );
    if( Device :: getDevice() == tnlHostDevice )
    {
       Index groupId = getGroupIndexFromRow( row );
@@ -560,7 +560,7 @@ Real tnlRgCSRMatrix< Real, Device, Index > :: getElement( Index row,
    if( Device :: getDevice() == tnlCudaDevice )
    {
       tnlAssert( false,
-                cerr << "tnlRgCSRMatrix< Real, tnlCuda, Index > ::getElement is not implemented yet." );
+                std::cerr << "tnlRgCSRMatrix< Real, tnlCuda, Index > ::getElement is not implemented yet." );
       //TODO: implement this
 
    }
@@ -571,11 +571,11 @@ Real tnlRgCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
                                                           const tnlVector< Real, Device, Index >& vec ) const
 {
    tnlAssert( 0 <= row && row < this->getSize(),
-              cerr << "The row is outside the matrix." );
+              std::cerr << "The row is outside the matrix." );
    tnlAssert( vec. getSize() == this->getSize(),
-              cerr << "The matrix and vector for multiplication have different sizes. "
+              std::cerr << "The matrix and vector for multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << vec. getSize() << endl; );
+                   << "The vector size is " << vec. getSize() << std::endl; );
 
    if( Device :: getDevice() == tnlHostDevice )
    {
@@ -601,7 +601,7 @@ Real tnlRgCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
    if( Device :: getDevice() == tnlCudaDevice )
    {
       tnlAssert( false,
-               cerr << "tnlRgCSRMatrix< Real, tnlCuda > :: rowProduct is not implemented yet." );
+               std::cerr << "tnlRgCSRMatrix< Real, tnlCuda > :: rowProduct is not implemented yet." );
       //TODO: implement this
    }
 }
@@ -612,13 +612,13 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
 {
    dbgFunctionName( "tnlRgCSRMatrix< Real, tnlHost >", "vectorProduct" )
    tnlAssert( vec. getSize() == this->getSize(),
-              cerr << "The matrix and vector for a multiplication have different sizes. "
+              std::cerr << "The matrix and vector for a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << vec. getSize() << endl; );
+                   << "The vector size is " << vec. getSize() << std::endl; );
    tnlAssert( result. getSize() == this->getSize(),
-              cerr << "The matrix and result vector of a multiplication have different sizes. "
+              std::cerr << "The matrix and result vector of a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << vec. getSize() << endl; );
+                   << "The vector size is " << vec. getSize() << std::endl; );
 
    if( Device :: getDevice() == tnlHostDevice )
    {
@@ -640,7 +640,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
             const Index globalGroupIndex = this->getGroupIndexFromRow( rowIndex );
             const Index rowOffsetInGroup = this->getRowIndexInGroup( rowIndex, globalGroupIndex );
             const Index currentGroupSize = this->getCurrentGroupSize( globalGroupIndex );
-            tnlAssert( rowOffsetInGroup < currentGroupSize, cerr << "rowOffsetInGroup = " << rowOffsetInGroup << ", currentGroupSize = " << currentGroupSize  );
+            tnlAssert( rowOffsetInGroup < currentGroupSize, std::cerr << "rowOffsetInGroup = " << rowOffsetInGroup << ", currentGroupSize = " << currentGroupSize  );
 
             Real product( 0.0 );
             Index pos = groupOffsets[ globalGroupIndex ] + rowOffsetInGroup;
@@ -654,12 +654,12 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
                if( column != -1 )
                   product += nonzeroElements[ pos ] * vec[ column ];
                /*else
-                  cerr << "row = " << rowIndex
+                  std::cerr << "row = " << rowIndex
                        << " globalGroupId = " << globalGroupIndex << "/" << numberOfGroups - 1
                        << " i = " << i
                        << " group size = " << currentGroupSize
                        << " offset = " << pos
-                       << " nonzeros = " <<  nonzeros << endl;*/
+                       << " nonzeros = " <<  nonzeros << std::endl;*/
                pos += currentGroupSize;
             }
             //printf( "rowIndex = %d \n", rowIndex );
@@ -736,8 +736,8 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
          int gridNumber( 0 );
          while( gridSize > 0 )
          {
-            int currentGridSize = Min( gridSize, maxCudaGridSize );
-            //cerr << "Current grid size = " << currentGridSize << endl;
+            int currentGridSize = min( gridSize, maxCudaGridSize );
+            //cerr << "Current grid size = " << currentGridSize << std::endl;
             dim3 gridDim( currentGridSize ), blockDim( blockSize );
             size_t sharedBytes = blockDim. x * sizeof( Real );
             /*tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel< Real, Index >
@@ -762,7 +762,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
          int gridNumber( 0 );
          while( gridSize > 0 )
          {
-            /*int currentGridSize = Min( gridSize, this->maxCudaGridSize );
+            /*int currentGridSize = min( gridSize, this->maxCudaGridSize );
             dim3 gridDim( currentGridSize ), blockDim( blockSize );
             tnlRgCSRMatrixVectorProductKernel< Real, Index >
                                              <<< gridDim, blockDim >>>
@@ -791,18 +791,18 @@ void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Re
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
+void tnlRgCSRMatrix< Real, Device, Index > :: printOut( std::ostream& str,
                                                         const tnlString& name,
                                                         const tnlString& format,
 		                                                  const Index lines ) const
 {
    if( format == "" || format == "text" )
    {
-      str << "Structure of tnlRgCSRMatrix" << endl;
-      str << "Matrix name:" << name << endl;
-      str << "Matrix size:" << this->getSize() << endl;
-      str << "Allocated elements:" << nonzeroElements. getSize() << endl;
-      str << "Number of groups: " << groupOffsets. getSize() << endl;
+      str << "Structure of tnlRgCSRMatrix" << std::endl;
+      str << "Matrix name:" << name << std::endl;
+      str << "Matrix size:" << this->getSize() << std::endl;
+      str << "Allocated elements:" << nonzeroElements. getSize() << std::endl;
+      str << "Number of groups: " << groupOffsets. getSize() << std::endl;
 
       Index print_lines = lines;
       if( ! print_lines )
@@ -812,47 +812,47 @@ void tnlRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
       {
          if( i * groupSize > print_lines )
             return;
-         str << endl << "Block number: " << i << endl;
-         str << " Group size: " << this->getCurrentGroupSize( i ) << endl;
+         str << std::endl << "Block number: " << i << std::endl;
+         str << " Group size: " << this->getCurrentGroupSize( i ) << std::endl;
          str << " Group non-zeros: ";
          for( Index k = i * groupSize; k < ( i + 1 ) * groupSize && k < this->getSize(); k ++ )
             str << nonzeroElementsInRow. getElement( k ) << "  ";
-         str << endl;
+         str << std::endl;
          str << " Group data: "
              << groupOffsets. getElement( i ) << " -- "
-             << groupOffsets. getElement( i + 1 ) << endl;
+             << groupOffsets. getElement( i + 1 ) << std::endl;
          str << " Data:   ";
          for( Index k = groupOffsets. getElement( i );
               k < groupOffsets. getElement( i + 1 );
               k ++ )
-            str << setprecision( 5 ) << setw( 8 )
+            str << std::setprecision( 5 ) << std::setw( 8 )
                 << nonzeroElements. getElement( k ) << " ";
-         str << endl << "Columns: ";
+         str << std::endl << "Columns: ";
          for( Index k = groupOffsets. getElement( i );
               k < groupOffsets. getElement( i + 1 );
               k ++ )
-            str << setprecision( 5 ) << setw( 8 )
+            str << std::setprecision( 5 ) << std::setw( 8 )
                 << columns. getElement( k ) << " ";
-         str << endl << "Offsets: ";
+         str << std::endl << "Offsets: ";
          for( Index k = groupOffsets. getElement( i );
               k < groupOffsets. getElement( i + 1 );
               k ++ )
-            str << setprecision( 5 ) << setw( 8 )
+            str << std::setprecision( 5 ) << std::setw( 8 )
                 << k << " ";
 
       }
-      str << endl;
+      str << std::endl;
       return;
    }
    if( format == "html" )
    {
-      str << "<h1>Structure of tnlRgCSRMatrix</h1>" << endl;
-      str << "<b>Matrix name:</b> " << name << "<p>" << endl;
-      str << "<b>Matrix size:</b> " << this->getSize() << "<p>" << endl;
-      str << "<b>Allocated elements:</b> " << nonzeroElements. getSize() << "<p>" << endl;
-      str << "<b>Number of groups:</b> " << this->numberOfGroups << "<p>" << endl;
-      str << "<table border=1>" << endl;
-      str << "<tr> <td> <b> GroupId </b> </td> <td> <b> Size </b> </td> <td> <b> % of nonzeros </b> </td> </tr>" << endl;
+      str << "<h1>Structure of tnlRgCSRMatrix</h1>" << std::endl;
+      str << "<b>Matrix name:</b> " << name << "<p>" << std::endl;
+      str << "<b>Matrix size:</b> " << this->getSize() << "<p>" << std::endl;
+      str << "<b>Allocated elements:</b> " << nonzeroElements. getSize() << "<p>" << std::endl;
+      str << "<b>Number of groups:</b> " << this->numberOfGroups << "<p>" << std::endl;
+      str << "<table border=1>" << std::endl;
+      str << "<tr> <td> <b> GroupId </b> </td> <td> <b> Size </b> </td> <td> <b> % of nonzeros </b> </td> </tr>" << std::endl;
       Index print_lines = lines;
       if( ! print_lines )
          print_lines = this->getSize();
@@ -863,22 +863,22 @@ void tnlRgCSRMatrix< Real, Device, Index > :: printOut( ostream& str,
             return;
          double filling = ( double ) ( this->groupOffsets. getElement( i + 1 ) - this->groupOffsets. getElement( i ) ) /
                           ( double ) this->nonzeroElements. getSize();
-         str << "<tr> <td> " << i << "</td> <td>" << this->getCurrentGroupSize( i ) << " </td> <td> " << 100.0 * filling << "% </td></tr>" << endl;
+         str << "<tr> <td> " << i << "</td> <td>" << this->getCurrentGroupSize( i ) << " </td> <td> " << 100.0 * filling << "% </td></tr>" << std::endl;
       }
-      str << "</table>" << endl;
-      str << endl;
+      str << "</table>" << std::endl;
+      str << std::endl;
    }
 };
 
 template< typename Real, typename Device, typename Index >
-bool tnlRgCSRMatrix< Real, Device, Index > :: draw( ostream& str,
+bool tnlRgCSRMatrix< Real, Device, Index > :: draw( std::ostream& str,
                                                     const tnlString& format,
                                                     tnlCSRMatrix< Real, Device, Index >* csrMatrix,
                                                     int verbose )
 {
    if( Device :: getDevice() == tnlCudaDevice )
    {
-      cerr << "Drawing of matrices stored on the GPU is not supported yet." << endl;
+      std::cerr << "Drawing of matrices stored on the GPU is not supported yet." << std::endl;
       return false;
    }
    if( format == "gnuplot" )
@@ -895,38 +895,38 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: draw( ostream& str,
       {
          const Index groupSize = getCurrentGroupSize( groupId );
          if( groupId % 2 == 0 )
-            str << "0.9 0.9 0.9 setrgbcolor" << endl;
+            str << "0.9 0.9 0.9 setrgbcolor" << std::endl;
          else
-            str << "0.8 0.8 0.8 setrgbcolor" << endl;
+            str << "0.8 0.8 0.8 setrgbcolor" << std::endl;
          str << "0 -" << groupSize * elementSize
              << " translate newpath 0 0 " << this->getSize() * elementSize
-             << " " << groupSize * elementSize << " rectfill" << endl;
+             << " " << groupSize * elementSize << " rectfill" << std::endl;
       }
       /****
        * Restore black color and the origin of the coordinates
        */
-      str << "0 0 0 setrgbcolor" << endl;
-      str << "0 " << this->getSize() * elementSize << " translate" << endl;
+      str << "0 0 0 setrgbcolor" << std::endl;
+      str << "0 " << this->getSize() * elementSize << " translate" << std::endl;
 
       if( csrMatrix )
          csrMatrix -> writePostscriptBody( str, elementSize, verbose );
       else
          this->writePostscriptBody( str, elementSize, verbose );
 
-      str << "showpage" << endl;
-      str << "%%EOF" << endl;
+      str << "showpage" << std::endl;
+      str << "%%EOF" << std::endl;
 
       if( verbose )
-         cout << endl;
+        std::cout << std::endl;
       return true;
    }
-   cerr << "The format " << format << " is not supported for matrix drawing." << endl;
+   std::cerr << "The format " << format << " is not supported for matrix drawing." << std::endl;
 }
 
 template< typename Real, typename Device, typename Index >
 Index tnlRgCSRMatrix< Real, Device, Index > :: getCurrentGroupSize( const Index groupId ) const
 {
-   tnlAssert( groupId < numberOfGroups, cerr << " groupId = " << groupId << " numberOfGroups = " << numberOfGroups );
+   tnlAssert( groupId < numberOfGroups, std::cerr << " groupId = " << groupId << " numberOfGroups = " << numberOfGroups );
    /****
     * If we use adaptive group sizes they are stored explicitly.
     */
@@ -947,7 +947,7 @@ Index tnlRgCSRMatrix< Real, Device, Index > :: getCurrentGroupSize( const Index 
 template< typename Real, typename Device, typename Index >
 Index tnlRgCSRMatrix< Real, Device, Index > :: getGroupIndexFromRow( const Index row ) const
 {
-   tnlAssert( row < this->getSize(), cerr << " row = " << row << " matrix size = " << this->getSize() );
+   tnlAssert( row < this->getSize(), std::cerr << " row = " << row << " matrix size = " << this->getSize() );
    if( this->useAdaptiveGroupSize )
    {
       Index groupId = -1;
@@ -961,8 +961,8 @@ Index tnlRgCSRMatrix< Real, Device, Index > :: getGroupIndexFromRow( const Index
 template< typename Real, typename Device, typename Index >
 Index tnlRgCSRMatrix< Real, Device, Index > :: getRowIndexInGroup( const Index row, const Index groupId ) const
 {
-   tnlAssert( row < this->getSize(), cerr << " row = " << row << " matrix size = " << this->getSize() );
-   tnlAssert( groupId < numberOfGroups, cerr << " groupId = " << groupId << " numberOfGroups = " << numberOfGroups );
+   tnlAssert( row < this->getSize(), std::cerr << " row = " << row << " matrix size = " << this->getSize() );
+   tnlAssert( groupId < numberOfGroups, std::cerr << " groupId = " << groupId << " numberOfGroups = " << numberOfGroups );
    if( this->useAdaptiveGroupSize )
       return row - adaptiveGroupSizes. getElement( groupId );
    return row % groupSize;

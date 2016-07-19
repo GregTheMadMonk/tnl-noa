@@ -10,6 +10,8 @@
 
 #include <solvers/tnlIterativeSolver.h>
 
+namespace TNL {
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 template class tnlIterativeSolver< float,  int >;
@@ -25,6 +27,4 @@ template class tnlIterativeSolver< double, long int >;
 #endif
 
 #endif
-
-
-
+} // namespace TNL

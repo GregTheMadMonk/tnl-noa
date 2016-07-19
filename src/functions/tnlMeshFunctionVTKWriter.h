@@ -18,9 +18,9 @@ class tnlMeshFunctionVTKWriter
    public:
  
       static bool write( const MeshFunction& function,
-                         ostream& str );
+                         std::ostream& str );
       static void writeHeader(const MeshFunction& function,
-                         ostream& str ){}
+                         std::ostream& str ){}
 };
 
 /***
@@ -38,9 +38,9 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 1, MeshReal, Device, M
       typedef tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
       static void writeHeader(const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
 };
  
 /***
@@ -58,9 +58,9 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 1, MeshReal, Device, M
       typedef tnlMeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
       static void writeHeader(const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
 };
 
 /***
@@ -78,9 +78,9 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Device, M
       typedef tnlMeshFunction< MeshType, 2, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
       static void writeHeader(const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
 };
 
 /***
@@ -98,9 +98,9 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Device, M
       typedef tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
       static void writeHeader(const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
 };
 
 /***
@@ -118,9 +118,9 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Device, M
       typedef tnlMeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
       static void writeHeader(const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
 };
 
 /***
@@ -138,9 +138,9 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, M
       typedef tnlMeshFunction< MeshType, 3, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
       static void writeHeader(const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
 };
 
 /***
@@ -158,9 +158,9 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, M
       typedef tnlMeshFunction< MeshType, 2, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
       static void writeHeader(const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
 };
 
 /***
@@ -178,9 +178,9 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, M
       typedef tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
       static void writeHeader(const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
 };
 
 /***
@@ -198,9 +198,9 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, M
       typedef tnlMeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
       static void writeHeader(const MeshFunctionType& function,
-                         ostream& str );
+                         std::ostream& str );
 };
 
 } // namespace TNL

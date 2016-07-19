@@ -142,7 +142,7 @@ class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< 3, Real >
 
 template< int Dimensions,
           typename Real >
-ostream& operator << ( ostream& str, const tnlExpBumpFunction< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const tnlExpBumpFunction< Dimensions, Real >& f )
 {
    str << "ExpBump. function: amplitude = " << f.getAmplitude() << " sigma = " << f.getSigma();
    return str;

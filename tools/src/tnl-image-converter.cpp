@@ -17,6 +17,8 @@
 #include <core/images/tnlJPEGImage.h>
 #include <core/images/tnlRegionOfInterest.h>
 
+using namespace TNL;
+
 void configSetup( tnlConfigDescription& config )
 {
    config.addDelimiter( "General parameters" );
@@ -46,18 +48,18 @@ bool processImages( const tnlParameterContainer& parameters )
     for( int i = 0; i < inputImages.getSize(); i++ )
     {
       const tnlString& fileName = inputImages[ i ];
-      cout << "Processing image file " << fileName << "... ";
+      std::cout << "Processing image file " << fileName << "... ";
       tnlPGMImage< int > pgmImage;
       if( pgmImage.openForRead( fileName ) )
       {
-         cout << "PGM format detected ...";
+         std::cout << "PGM format detected ...";
          if( i == 0 )
          {
             if( ! roi.setup( parameters, &pgmImage ) )
                return false;
             roi.setGrid( grid, verbose );
             vector.setSize( grid.template getEntitiesCount< typename GridType::Cell >() );
-            cout << "Writing grid to file " << meshFile << endl;
+            std::cout << "Writing grid to file " << meshFile << std::endl;
             grid.save( meshFile );
          }
          else
@@ -68,7 +70,7 @@ bool processImages( const tnlParameterContainer& parameters )
          tnlString outputFileName( fileName );
          RemoveFileExtension( outputFileName );
          outputFileName += ".tnl";
-         cout << "Writing image data to " << outputFileName << endl;
+         std::cout << "Writing image data to " << outputFileName << std::endl;
          vector.save( outputFileName );
          pgmImage.close();
          continue;
@@ -76,14 +78,14 @@ bool processImages( const tnlParameterContainer& parameters )
       tnlPNGImage< int > pngImage;
       if( pngImage.openForRead( fileName ) )
       {
-         cout << "PNG format detected ...";
+         std::cout << "PNG format detected ...";
          if( i == 0 )
          {
             if( ! roi.setup( parameters, &pngImage ) )
                return false;
             roi.setGrid( grid, verbose );
             vector.setSize( grid.template getEntitiesCount< typename GridType::Cell >() );
-            cout << "Writing grid to file " << meshFile << endl;
+            std::cout << "Writing grid to file " << meshFile << std::endl;
             grid.save( meshFile );
          }
          else
@@ -94,7 +96,7 @@ bool processImages( const tnlParameterContainer& parameters )
          tnlString outputFileName( fileName );
          RemoveFileExtension( outputFileName );
          outputFileName += ".tnl";
-         cout << "Writing image data to " << outputFileName << endl;
+         std::cout << "Writing image data to " << outputFileName << std::endl;
          vector.save( outputFileName );
          pgmImage.close();
          continue;
@@ -102,14 +104,14 @@ bool processImages( const tnlParameterContainer& parameters )
       tnlJPEGImage< int > jpegImage;
       if( jpegImage.openForRead( fileName ) )
       {
-         cout << "JPEG format detected ...";
+         std::cout << "JPEG format detected ...";
          if( i == 0 )
          {
             if( ! roi.setup( parameters, &jpegImage ) )
                return false;
             roi.setGrid( grid, verbose );
             vector.setSize( grid.template getEntitiesCount< typename GridType::Cell >() );
-            cout << "Writing grid to file " << meshFile << endl;
+            std::cout << "Writing grid to file " << meshFile << std::endl;
             grid.save( meshFile );
          }
          else
@@ -120,7 +122,7 @@ bool processImages( const tnlParameterContainer& parameters )
          tnlString outputFileName( fileName );
          RemoveFileExtension( outputFileName );
          outputFileName += ".tnl";
-         cout << "Writing image data to " << outputFileName << endl;
+         std::cout << "Writing image data to " << outputFileName << std::endl;
          vector.save( outputFileName );
          pgmImage.close();
          continue;
@@ -138,17 +140,17 @@ bool processTNLFiles( const tnlParameterContainer& parameters )
    tnlGrid< 2, double, tnlHost, int > grid;
    if( ! grid.load( meshFile ) )
    {
-      cerr << "I am not able to load the mesh file " << meshFile << "." << endl;
+      std::cerr << "I am not able to load the mesh file " << meshFile << "." << std::endl;
       return false;
    }
    tnlVector< double, tnlHost, int > vector;
    for( int i = 0; i < inputFiles.getSize(); i++ )
    {
       const tnlString& fileName = inputFiles[ i ];
-      cout << "Processing file " << fileName << "... ";
+      std::cout << "Processing file " << fileName << "... ";
       if( ! vector.load( fileName ) )
       {
-         cerr << "I am not able to load data from a file " << fileName << "." << endl;
+         std::cerr << "I am not able to load data from a file " << fileName << "." << std::endl;
          return false;
       }
       if( imageFormat == "pgm" || imageFormat == "pgm-binary" || imageFormat == "pgm-ascii" )
@@ -202,7 +204,7 @@ int main( int argc, char* argv[] )
    if( ! parameters.checkParameter( "input-images" ) &&
        ! parameters.checkParameter( "input-files") )
    {
-       cerr << "Neither input images nor input .tnl files are given." << endl;
+       std::cerr << "Neither input images nor input .tnl files are given." << std::endl;
        configDescription.printUsage( argv[ 0 ] );
        return EXIT_FAILURE;
    }

@@ -11,6 +11,7 @@
 #pragma once
 
 #include <core/param-types.h>
+#include <core/mfuncs.h>
 
 namespace TNL {
 
@@ -50,7 +51,7 @@ tnlString tnlStaticArray< Size, Element >::getType()
    return tnlString( "tnlStaticArray< " ) +
           tnlString( Size ) +
           tnlString( ", " ) +
-          ::getType< Element >() +
+          TNL::getType< Element >() +
           tnlString( " >" );
 }
 
@@ -80,7 +81,7 @@ __cuda_callable__
 inline const Element& tnlStaticArray< Size, Element >::operator[]( int i ) const
 {
    tnlAssert( i >= 0 && i < size,
-            cerr << "i = " << i << " size = " << size << endl; );
+            std::cerr << "i = " << i << " size = " << size << std::endl; );
    return data[ i ];
 }
 
@@ -89,7 +90,7 @@ __cuda_callable__
 inline Element& tnlStaticArray< Size, Element >::operator[]( int i )
 {
    tnlAssert( i >= 0 && i < size,
-            cerr << "i = " << i << " size = " << size << endl; );
+            std::cerr << "i = " << i << " size = " << size << std::endl; );
    return data[ i ];
 }
 
@@ -158,7 +159,7 @@ bool tnlStaticArray< Size, Element >::save( tnlFile& file ) const
 {
    if( ! file. write< Element, tnlHost, int >( data, size ) )
    {
-      cerr << "Unable to write " << getType() << "." << endl;
+      std::cerr << "Unable to write " << getType() << "." << std::endl;
       return false;
    }
    return true;
@@ -169,7 +170,7 @@ bool tnlStaticArray< Size, Element >::load( tnlFile& file)
 {
    if( ! file.read< Element, tnlHost, int >( data, size ) )
    {
-      cerr << "Unable to read " << getType() << "." << endl;
+      std::cerr << "Unable to read " << getType() << "." << std::endl;
       return false;
    }
    return true;
@@ -185,11 +186,11 @@ void tnlStaticArray< Size, Element >::sort()
    for( int k = Size - 1; k > 0; k--)
       for( int i = 0; i < k; i++ )
          if( data[ i ] > data[ i+1 ] )
-            Swap( data[ i ], data[ i+1 ] );
+            swap( data[ i ], data[ i+1 ] );
 }
 
 template< int Size, typename Element >
-ostream& tnlStaticArray< Size, Element >::write( ostream& str, const char* separator ) const
+std::ostream& tnlStaticArray< Size, Element >::write( std::ostream& str, const char* separator ) const
 {
    for( int i = 0; i < Size - 1; i++ )
       str << data[ i ] << separator;
@@ -199,7 +200,7 @@ ostream& tnlStaticArray< Size, Element >::write( ostream& str, const char* separ
 
 
 template< int Size, typename Element >
-ostream& operator << ( ostream& str, const tnlStaticArray< Size, Element >& a )
+std::ostream& operator << ( std::ostream& str, const tnlStaticArray< Size, Element >& a )
 {
    a.write( str, "," );
    /*for( int i = 0; i < Size - 1; i ++ )

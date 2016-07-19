@@ -57,64 +57,64 @@ class tnlMeshWriterVTKLegacy
    {
       if( MeshType::dimensions > 3 )
       {
-         cerr << "You try to write mesh with " << MeshType::dimensions
-              << "dimensions but VTK legacy format supports only 1D, 2D and 3D meshes." << endl;
+         std::cerr << "You try to write mesh with " << MeshType::dimensions
+              << "dimensions but VTK legacy format supports only 1D, 2D and 3D meshes." << std::endl;
          return false;
       }
-      fstream outputFile;
-      outputFile.open( fileName.getString(), ios::out );
+      std::fstream outputFile;
+      outputFile.open( fileName.getString(), std::ios::out );
       if( ! outputFile )
       {
-         cerr << "I am not able to open the output file " << fileName << "." << endl;
+         std::cerr << "I am not able to open the output file " << fileName << "." << std::endl;
          return false;
       }
-      outputFile << setprecision( 6 );
-      outputFile << fixed;
+      outputFile << std::setprecision( 6 );
+      outputFile << std::fixed;
 
       if( ! writeMesh( outputFile, mesh, verbose ) )
          return false;
    }
 
    template< typename MeshType >
-   static bool writeMesh( ostream& file,
+   static bool writeMesh( std::ostream& file,
                           MeshType& mesh,
                           bool verbose )
    {
       typedef typename MeshType::MeshTraits::CellType CellType;
-      file << "# vtk DataFile Version 2.0" << endl;
-      file << "TNL Mesh" << endl;
-      file << "ASCII" << endl;
-      file << "DATASET UNSTRUCTURED_GRID" << endl;
-      file << endl;
-      file << "POINTS " << mesh.template getNumberOfEntities< 0 >() << " double" << endl;
+      file << "# vtk DataFile Version 2.0" << std::endl;
+      file << "TNL Mesh" << std::endl;
+      file << "ASCII" << std::endl;
+      file << "DATASET UNSTRUCTURED_GRID" << std::endl;
+      file << std::endl;
+      file << "POINTS " << mesh.template getNumberOfEntities< 0 >() << " double" << std::endl;
       for( int i = 0; i < mesh.template getNumberOfEntities< 0 >(); i++ )
       {
          mesh.template getEntity< 0 >( i ).getPoint().write( file );
          for( int j = MeshType::dimensions; j < 3; j++ )
             file << " 0.0";
-         file << endl;
+         file << std::endl;
       }
-      file << endl;
+      file << std::endl;
       file << "CELLS " << mesh.getNumberOfCells();
       long int listSize( 0 );
       for( int i = 0; i < mesh.getNumberOfCells(); i++ )
          listSize += mesh.getCell( i ).template getNumberOfSubentities< 0 >() + 1;
-      file << " " << listSize << endl;
+      file << " " << listSize << std::endl;
       for( int i = 0; i < mesh.getNumberOfCells(); i++ )
       {
          int numberOfVertices = mesh.getCell( i ).template getNumberOfSubentities< 0 >();
          file << numberOfVertices << " ";
          for( int j = 0; j < numberOfVertices - 1; j++ )
             file << mesh.getCell( i ).template getSubentityIndex< 0 >( j ) << " ";
-         file << mesh.getCell( i ).template getSubentityIndex< 0 >( numberOfVertices - 1 ) << endl;
+         file << mesh.getCell( i ).template getSubentityIndex< 0 >( numberOfVertices - 1 ) << std::endl;
       }
-      file << endl;
-      file << "CELL_TYPES " <<  mesh.getNumberOfCells() << endl;
+      file << std::endl;
+      file << "CELL_TYPES " <<  mesh.getNumberOfCells() << std::endl;
       for( int i = 0; i < mesh.getNumberOfCells(); i++ )
       {
-         file << tnlMeshEntityVTKType< CellType >::VTKType << endl;
+         file << tnlMeshEntityVTKType< CellType >::VTKType << std::endl;
       }
-      file << endl;
+      file << std::endl;
       return true;
    }
 

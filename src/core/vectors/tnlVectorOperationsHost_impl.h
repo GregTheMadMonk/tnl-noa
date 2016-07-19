@@ -40,7 +40,7 @@ typename Vector::RealType tnlVectorOperations< tnlHost >::getVectorMax( const Ve
    Real result = v. getElement( 0 );
    const Index n = v. getSize();
    for( Index i = 1; i < n; i ++ )
-      result = Max( result, v. getElement( i ) );
+      result = max( result, v. getElement( i ) );
    return result;
 }
 
@@ -53,7 +53,7 @@ typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorMin( cons
    Real result = v. getElement( 0 );
    const Index n = v. getSize();
    for( Index i = 1; i < n; i ++ )
-      result = Min( result, v. getElement( i ) );
+      result = min( result, v. getElement( i ) );
    return result;
 }
 
@@ -63,10 +63,10 @@ typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorAbsMax( c
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
    tnlAssert( v. getSize() > 0, );
-   Real result = fabs( v. getElement( 0 ) );
+   Real result = std::fabs( v. getElement( 0 ) );
    const Index n = v. getSize();
    for( Index i = 1; i < n; i ++ )
-      result = Max( result, ( Real ) fabs( v. getElement( i ) ) );
+      result = max( result, ( Real ) std::fabs( v. getElement( i ) ) );
    return result;
 }
 
@@ -77,10 +77,10 @@ typename Vector :: RealType tnlVectorOperations< tnlHost > :: getVectorAbsMin( c
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
    tnlAssert( v. getSize() > 0, );
-   Real result = fabs( v. getElement( 0 ) );
+   Real result = std::fabs( v. getElement( 0 ) );
    const Index n = v. getSize();
    for( Index i = 1; i < n; i ++ )
-      result = Min( result, ( Real ) fabs( v. getElement( i ) ) );
+      result = min( result, ( Real ) std::fabs( v. getElement( i ) ) );
    return result;
 }
 
@@ -99,7 +99,7 @@ getVectorL1Norm( const Vector& v )
 #pragma omp parallel for reduction(+:result) if( tnlHost::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 0; i < n; i ++ )
-      result += fabs( v[ i ] );
+      result += std::fabs( v[ i ] );
    return result;
 }
 
@@ -121,7 +121,7 @@ getVectorL2Norm( const Vector& v )
       const Real& aux = v[ i ];
       result += aux * aux;
    }
-   return sqrt( result );
+   return std::sqrt( result );
 }
 
 template< typename Vector >
@@ -134,7 +134,7 @@ getVectorLpNorm( const Vector& v,
    typedef typename Vector :: IndexType Index;
    tnlAssert( v. getSize() > 0, );
    tnlAssert( p > 0.0,
-              cerr << " p = " << p );
+              std::cerr << " p = " << p );
    if( p == 1.0 )
       return getVectorL1Norm( v );
    if( p == 2.0 )
@@ -146,8 +146,8 @@ getVectorLpNorm( const Vector& v,
 #pragma omp parallel for reduction(+:result) if( tnlHost::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 0; i < n; i ++ )
-      result += pow( fabs( v[ i ] ), p );
-   return pow( result, 1.0 / p );
+      result += std::pow( std::fabs( v[ i ] ), p );
+   return std::pow( result, 1.0 / p );
 }
 
 template< typename Vector >
@@ -178,7 +178,7 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
    Real result = v1. getElement( 0 ) - v2. getElement( 0 );
    const Index n = v1. getSize();
    for( Index i = 1; i < n; i ++ )
-      result =  Max( result, v1. getElement( i ) - v2. getElement( i ) );
+      result =  max( result, v1. getElement( i ) - v2. getElement( i ) );
    return result;
 }
 
@@ -195,7 +195,7 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
    Real result = v1. getElement( 0 ) - v2. getElement( 0 );
    const Index n = v1. getSize();
    for( Index i = 1; i < n; i ++ )
-      result =  Min( result, v1. getElement( i ) - v2. getElement( i ) );
+      result =  min( result, v1. getElement( i ) - v2. getElement( i ) );
    return result;
 }
 
@@ -209,10 +209,10 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
    tnlAssert( v1. getSize() > 0, );
    tnlAssert( v1. getSize() == v2. getSize(), );
 
-   Real result = fabs( v1. getElement( 0 ) - v2. getElement( 0 ) );
+   Real result = std::fabs( v1. getElement( 0 ) - v2. getElement( 0 ) );
    const Index n = v1. getSize();
    for( Index i = 1; i < n; i ++ )
-      result =  Max( result, ( Real ) fabs( v1. getElement( i ) - v2. getElement( i ) ) );
+      result =  max( result, ( Real ) std::fabs( v1. getElement( i ) - v2. getElement( i ) ) );
    return result;
 }
 
@@ -226,10 +226,10 @@ typename Vector1 :: RealType tnlVectorOperations< tnlHost > :: getVectorDifferen
    tnlAssert( v1. getSize() > 0, );
    tnlAssert( v1. getSize() == v2. getSize(), );
 
-   Real result = fabs( v1[ 0 ] - v2[ 0 ] );
+   Real result = std::fabs( v1[ 0 ] - v2[ 0 ] );
    const Index n = v1. getSize();
    for( Index i = 1; i < n; i ++ )
-      result =  Min( result, ( Real ) fabs( v1[ i ] - v2[ i ] ) );
+      result =  min( result, ( Real ) std::fabs( v1[ i ] - v2[ i ] ) );
    return result;
 }
 
@@ -251,7 +251,7 @@ getVectorDifferenceL1Norm( const Vector1& v1,
 #pragma omp parallel for reduction(+:result) if( tnlHost::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 0; i < n; i ++ )
-      result += fabs( v1[ i ] - v2[ i ] );
+      result += std::fabs( v1[ i ] - v2[ i ] );
    return result;
 }
 
@@ -274,10 +274,10 @@ getVectorDifferenceL2Norm( const Vector1& v1,
 #endif
    for( Index i = 0; i < n; i ++ )
    {
-      Real aux = fabs( v1[ i ] - v2[ i ] );
+      Real aux = std::fabs( v1[ i ] - v2[ i ] );
       result += aux * aux;
    }
-   return sqrt( result );
+   return std::sqrt( result );
 }
 
 
@@ -292,7 +292,7 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    typedef typename Vector1 :: IndexType Index;
 
    tnlAssert( p > 0.0,
-              cerr << " p = " << p );
+              std::cerr << " p = " << p );
    tnlAssert( v1. getSize() > 0, );
    tnlAssert( v1. getSize() == v2. getSize(), );
 
@@ -307,8 +307,8 @@ getVectorDifferenceLpNorm( const Vector1& v1,
 #pragma omp parallel for reduction(+:result) if( tnlHost::isOMPEnabled() &&n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 0; i < n; i ++ )
-      result += pow( fabs( v1. getElement( i ) - v2. getElement( i ) ), p );
-   return pow( result, 1.0 / p );
+      result += std::pow( std::fabs( v1. getElement( i ) - v2. getElement( i ) ), p );
+   return std::pow( result, 1.0 / p );
 }
 
 template< typename Vector1, typename Vector2 >
@@ -476,9 +476,13 @@ void tnlVectorOperations< tnlHost >::computeExclusivePrefixSum( Vector& v,
    }
 }
 
+} //namespace TNL
+
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #include <core/vectors/tnlVector.h>
+
+namespace TNL {
 
 /****
  * Max
@@ -731,7 +735,7 @@ extern template long double tnlVectorOperations< tnlHost >::getVectorDifferenceA
 #endif
 #endif
 
+} // namespace TNL
 #endif
 
 
-} // namespace TNL

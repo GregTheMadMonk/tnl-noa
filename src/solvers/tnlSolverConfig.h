@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSOLVERCONFIG_H_
-#define TNLSOLVERCONFIG_H_
+#pragma once
 
 #include <config/tnlConfigDescription.h>
+
+namespace TNL {
 
 template< typename MeshConfig,
           typename ProblemConfig >
@@ -21,6 +22,6 @@ class tnlSolverConfig
       static bool configSetup( tnlConfigDescription& configDescription );
 };
 
-#include <solvers/tnlSolverConfig_impl.h>
+} // namespace TNL
 
-#endif /* TNLSOLVERCONFIG_H_ */
+#include <solvers/tnlSolverConfig_impl.h>

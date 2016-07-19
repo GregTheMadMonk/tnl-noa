@@ -17,7 +17,7 @@
 
 int main( int argc, char* argv[] )
 {
-   cout << "Benchmarking memory bandwidth when transfering int ..." << endl;
+   std::cout << "Benchmarking memory bandwidth when transfering int ..." << std::endl;
 
    const int size = 1 << 22;
    double host_to_host_band_width;
@@ -32,15 +32,15 @@ int main( int argc, char* argv[] )
                              device_to_device_band_width );
 
 
-   cout << "Benchmarking reduction of int ..." << endl;
+   std::cout << "Benchmarking reduction of int ..." << std::endl;
    for( int i = 0; i <= 6; i ++ )
       reductionBenchmark< int >( size, i );
 
-   cout << "Benchmarking reduction of float ..." << endl;
+   std::cout << "Benchmarking reduction of float ..." << std::endl;
    for( int i = 0; i <= 6; i ++ )
       reductionBenchmark< float >( size, i );
 
-   cout << "Benchmarking reduction of double ..." << endl;
+   std::cout << "Benchmarking reduction of double ..." << std::endl;
    for( int i = 0; i <= 6; i ++ )
       reductionBenchmark< double >( size / 2, i );
 

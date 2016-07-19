@@ -27,7 +27,7 @@ class tnlSpmvBenchmarkAdaptiveRgCSRMatrix : public tnlSpmvBenchmark< Real, Devic
 
    void writeProgress() const;
 
-   void writeToLogTable( ostream& logFile,
+   void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
                          const tnlString& inputMtxFile,
                          const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
@@ -77,14 +77,14 @@ template< typename Real,
           typename Index>
 bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
 {
-   //tnlAssert( this->groupSize > 0, cerr << "groupSize = " << this->groupSize );
+   //tnlAssert( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
    if( Device :: getDevice() == tnlHostDevice )
    {
       this->matrix. tuneFormat( desiredChunkSize, cudaBlockSize );
       if( ! this->matrix. copyFrom( matrix ) )
          return false;
-      //matrix. printOut( cout, "text", 30 );
-      //this->matrix. printOut( cout, "text", 30 );
+      //matrix. printOut(std::cout, "text", 30 );
+      //this->matrix. printOut(std::cout, "text", 30 );
    }
    if( Device :: getDevice() == tnlCudaDevice )
    {
@@ -116,30 +116,30 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeProgress() const
 {
-   cout << left << setw( this->formatColumnWidth - 15 ) << "Adap. Row-grouped CSR ";
+  std::cout << left << std::setw( this->formatColumnWidth - 15 ) << "Adap. Row-grouped CSR ";
    if( Device :: getDevice() == tnlCudaDevice )
-      cout << setw( 5 ) << this->desiredChunkSize
-           << setw( 10 ) << this->cudaBlockSize;
+     std::cout << std::setw( 5 ) << this->desiredChunkSize
+           << std::setw( 10 ) << this->cudaBlockSize;
    else
-      cout << setw( 15 ) << this->desiredChunkSize;
-   cout << right << setw( this->timeColumnWidth ) << setprecision( 2 ) << this->getTime()
-        << right << setw( this->iterationsColumnWidth ) << this->getIterations()
-        << right << setw( this->gflopsColumnWidth ) << setprecision( 2 ) << this->getGflops();
+     std::cout << std::setw( 15 ) << this->desiredChunkSize;
+  std::cout << right << std::setw( this->timeColumnWidth ) << std::setprecision( 2 ) << this->getTime()
+        << right << std::setw( this->iterationsColumnWidth ) << this->getIterations()
+        << right << std::setw( this->gflopsColumnWidth ) << std::setprecision( 2 ) << this->getGflops();
    if( this->getBenchmarkWasSuccesful() )
-        cout << right << setw( this->benchmarkStatusColumnWidth ) << " OK - maxError is " << this->maxError << ". ";
+       std::cout << right << std::setw( this->benchmarkStatusColumnWidth ) << " OK - maxError is " << this->maxError << ". ";
    else
-        cout << right << setw( this->benchmarkStatusColumnWidth ) << "  FAILED";
+       std::cout << right << std::setw( this->benchmarkStatusColumnWidth ) << "  FAILED";
 #ifndef HAVE_CUDA
    if( Device :: getDevice() == tnlCudaDevice )
       tnlCudaSupportMissingMessage;;
 #endif
-      cout << endl;
+     std::cout << std::endl;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTable( ostream& logFile,
+void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTable( std::ostream& logFile,
                                                                                     const double& csrGflops,
                                                                                     const tnlString& inputMtxFile,
                                                                                     const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
@@ -178,27 +178,27 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTab
          this->printMatrixInHtml( matrixHtmlFile, argCsrMatrix );
          if( rgCsrSpeedUp > 1.0 )
             bgColor=getBgColorByRgCSRSpeedUp( rgCsrSpeedUp );
-         logFile << "             <td bgcolor=" << bgColor << "> <a href=\"" << matrixPdfFile << "\">PDF</a>, <a href=\"" << matrixHtmlFile << "\">HTML</a></td> " << endl;
-         logFile << "             <td bgcolor=" << bgColor << "> " << this->getArtificialZeroElements() << "</td>" << endl;
+         logFile << "             <td bgcolor=" << bgColor << "> <a href=\"" << matrixPdfFile << "\">PDF</a>, <a href=\"" << matrixHtmlFile << "\">HTML</a></td> " << std::endl;
+         logFile << "             <td bgcolor=" << bgColor << "> " << this->getArtificialZeroElements() << "</td>" << std::endl;
       }
 
       bgColor = this->getBgColorBySpeedUp( speedUp );
       tnlString textColor = "#000000"; //getBgColorByRgCSRSpeedUp( rgCsrSpeedUp );
-      logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << this->getTime() << "</font></td>" << endl;
-      logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << this->getGflops() << "</font></td>" << endl;
-      logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << speedUp << "</font></td>" << endl;
+      logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << this->getTime() << "</font></td>" << std::endl;
+      logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << this->getGflops() << "</font></td>" << std::endl;
+      logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << speedUp << "</font></td>" << std::endl;
 
    }
    else
    {
       if( writeMatrixInfo )
       {
-         logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
-         logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+         logFile << "             <td bgcolor=#FF0000> N/A </td>" << std::endl;
+         logFile << "             <td bgcolor=#FF0000> N/A </td>" << std::endl;
       }
-      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
-      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
-      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << std::endl;
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << std::endl;
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << std::endl;
    }
 }
 

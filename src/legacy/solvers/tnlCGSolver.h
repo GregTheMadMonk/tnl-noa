@@ -39,7 +39,7 @@ template< typename T > class tnlCGSolverOld : public tnlMatrixSolver< T >
       T b_norm( 0.0 );
       for( i = 0; i < size; i ++ )
          b_norm += b[ i ] * b[ i ];
-      b_norm = sqrt( b_norm );
+      b_norm = ::sqrt( b_norm );
 
       // r_0 = b - A x_0, p_0 = r_0
       A. VectorProduct( x, r );
@@ -126,7 +126,7 @@ template< typename T > class tnlCGSolverOld : public tnlMatrixSolver< T >
          T v = tmp[ i ] - b[ i ];
          res += v * v;
       }
-      return sqrt( res ) / b_norm;
+      return ::sqrt( res ) / b_norm;
    };
 
    bool AllocateSupportingArrays( int size )
@@ -137,7 +137,7 @@ template< typename T > class tnlCGSolverOld : public tnlMatrixSolver< T >
       Ap = new T[ size ];
       if( ! r || ! new_r || ! p || ! Ap )
       {
-         cerr << "I could not allocated all supporting arrays for the CG solver." << endl;
+         std::cerr << "I could not allocated all supporting arrays for the CG solver." << std::endl;
          return false;
       }
       return true;

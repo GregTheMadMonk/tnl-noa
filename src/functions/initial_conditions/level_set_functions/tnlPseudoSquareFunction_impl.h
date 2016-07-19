@@ -35,7 +35,7 @@ template< typename Real >
 tnlString
 tnlPseudoSquareFunction< 1, Real >::getType()
 {
-   return "tnlPseudoSquareFunction< 1, " + ::getType< Real >() + tnlString( " >" );
+   return "tnlPseudoSquareFunction< 1, " + TNL::getType< Real >() + tnlString( " >" );
 }
 
 template< typename Real >
@@ -78,7 +78,7 @@ template< typename Real >
 tnlString
 tnlPseudoSquareFunction< 2, Real >::getType()
 {
-   return tnlString( "tnlPseudoSquareFunction< 2, " ) + ::getType< Real >() + " >";
+   return tnlString( "tnlPseudoSquareFunction< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -101,7 +101,7 @@ getPartialDerivative( const VertexType& v,
    if( ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 && YDiffOrder == 0 )
-      return x * x + y * y - this->height - cos( 2 * x * y ) * cos( 2 * x * y );
+      return x * x + y * y - this->height - ::cos( 2 * x * y ) * ::cos( 2 * x * y );
    return 0.0;
 }
 
@@ -122,7 +122,7 @@ template< typename Real >
 tnlString
 tnlPseudoSquareFunction< 3, Real >::getType()
 {
-   return tnlString( "tnlPseudoSquareFunction< 3, " ) + ::getType< Real >() + " >";
+   return tnlString( "tnlPseudoSquareFunction< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >

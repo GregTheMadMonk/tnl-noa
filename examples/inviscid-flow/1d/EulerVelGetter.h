@@ -4,6 +4,8 @@
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
 
+namespace TNL {
+
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
@@ -47,5 +49,7 @@ class EulerVelGetter
       const MeshFunctionType& rhoVel;
 
 };
+
+} // namespace TNL
 
 #endif	/* EulerVelGetter_H */

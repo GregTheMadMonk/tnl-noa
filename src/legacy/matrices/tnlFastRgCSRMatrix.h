@@ -80,7 +80,7 @@ class tnlFastRgCSRMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHo
    { abort(); };
 
    //! Prints out the matrix structure
-   void printOut( ostream& str,
+   void printOut( std::ostream& str,
 		          const Index lines = 0 ) const;
 
    protected:
@@ -295,7 +295,7 @@ bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlFastCSRMat
 		}
 		if( ! sequence_used )
 		{
-		   longest_sequence_length = Max( column_sequences_lengths[ i ], longest_sequence_length );
+		   longest_sequence_length = max( column_sequences_lengths[ i ], longest_sequence_length );
 		   dbgCout( "Counting new column-sequence at line " << i );
 		   column_sequences_in_block[ block_id ] ++;
 		}
@@ -307,13 +307,13 @@ bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlFastCSRMat
 				    << " Longest sequence: " << longest_sequence_length );
 		   col_seq_block_size[ block_id ] = column_sequences_in_block[ block_id ] * longest_sequence_length;
 		   longest_sequence_length = 0;
-		   max_column_sequences_block_size = Max( max_column_sequences_block_size, col_seq_block_size[ block_id ] );
+		   max_column_sequences_block_size = max( max_column_sequences_block_size, col_seq_block_size[ block_id ] );
 		}
 	}
 
 	/*if( max_column_sequences_block_size * sizeof( Index ) > 10240 )
 	{
-		cerr << "ERROR: This matrix requires too large column sequences dictionary ( " << max_column_sequences_block_size << " )." << endl;
+		cerr << "ERROR: This matrix requires too large column sequences dictionary ( " << max_column_sequences_block_size << " )." << std::endl;
 		return false;
 	}*/
 
@@ -374,19 +374,19 @@ bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlFastCSRMat
 			dbgCout( "Copying " << inserted_column_sequences << ". column sequence with the length "
 			         << column_sequences_lengths[ i ] << " from the fast CSR matrix column offset " << fast_csr_matrix. columns_sequences_offsets[ i ] );
          tnlAssert( inserted_column_sequences < column_sequences_in_block[ block_id ],
-                    cerr << "inserted_column_sequences = " << inserted_column_sequences << endl
-                         << "column_sequences_in_block[ block_id ] = " << column_sequences_in_block[ block_id ] << endl
+                    std::cerr << "inserted_column_sequences = " << inserted_column_sequences << std::endl
+                         << "column_sequences_in_block[ block_id ] = " << column_sequences_in_block[ block_id ] << std::endl
                          << "block_id = " << block_id );
 			for( Index j = 0; j < column_sequences_lengths[ i ]; j ++ )
 			{
 			   tnlAssert( columns_sequences_offsets[ i ] + j * column_sequences_in_block[ block_id ] < columns_sequences_blocks_offsets[ block_id + 1],
-			              cerr << "j = " << j << endl
-			                   << "columns_sequences_offsets[ i ] = " << columns_sequences_offsets[ i ] << endl
-			                   << "column_sequences_in_block[ block_id ] = " << column_sequences_in_block[ block_id ] << endl
-			                   << "columns_sequences_offsets[ i ] + j * column_sequences_in_block[ block_id ] = " << columns_sequences_offsets[ i ] + j * column_sequences_in_block[ block_id ] << endl
-			                   << "block_id = " << block_id << endl
-			                   << "columns_sequences_blocks_offsets[ block_id ] = " << columns_sequences_blocks_offsets[ block_id ] << endl
-			                   << "inserted_column_sequences = " << inserted_column_sequences << endl
+			              std::cerr << "j = " << j << std::endl
+			                   << "columns_sequences_offsets[ i ] = " << columns_sequences_offsets[ i ] << std::endl
+			                   << "column_sequences_in_block[ block_id ] = " << column_sequences_in_block[ block_id ] << std::endl
+			                   << "columns_sequences_offsets[ i ] + j * column_sequences_in_block[ block_id ] = " << columns_sequences_offsets[ i ] + j * column_sequences_in_block[ block_id ] << std::endl
+			                   << "block_id = " << block_id << std::endl
+			                   << "columns_sequences_blocks_offsets[ block_id ] = " << columns_sequences_blocks_offsets[ block_id ] << std::endl
+			                   << "inserted_column_sequences = " << inserted_column_sequences << std::endl
 			                   << "columns_sequences_blocks_offsets[ block_id + 1] = " << columns_sequences_blocks_offsets[ block_id + 1] );
 				column_sequences[ columns_sequences_offsets[ i ] + j * column_sequences_in_block[ block_id ] ] = fast_csr_matrix. column_sequences[ fast_csr_column_sequence_offset + j ];
 				//dbgExpr( fast_csr_matrix. column_sequences[ fast_csr_column_sequence_offset + j ] + i )
@@ -418,7 +418,7 @@ bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlFastCSRMat
 		}
 		//nonzeros_in_row[ i ] = fast_csr_matrix. row_offsets[ i + 1 ] - fast_csr_matrix. row_offsets[ i ];
 		//dbgExpr( nonzeros_in_row[ i ] );
-		max_row_in_block = Max( max_row_in_block, column_sequences_lengths[ i ] );
+		max_row_in_block = max( max_row_in_block, column_sequences_lengths[ i ] );
 	}
 	total_elements += max_row_in_block * ( this->getSize() - blocks_inserted * block_size );
 	block_offsets[ block_offsets. getSize() - 1 ] = total_elements;
@@ -494,9 +494,9 @@ Real tnlFastRgCSRMatrix< Real, tnlHost, Index > :: getElement( Index row,
                                                                Index column ) const
 {
    tnlAssert( 0 <= row && row < this->getSize(),
-			  cerr << "The row is outside the matrix." );
+			  std::cerr << "The row is outside the matrix." );
    tnlAssert( 0 <= column && column < this->getSize(),
-			  cerr << "The column is outside the matrix." );
+			  std::cerr << "The column is outside the matrix." );
 
 	Index block_id = row / block_size;
 	Index block_row = row % block_size;
@@ -529,11 +529,11 @@ Real tnlFastRgCSRMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
                                                                const tnlVector< Real, tnlHost, Index >& vec ) const
 {
    tnlAssert( 0 <= row && row < this->getSize(),
-           cerr << "The row is outside the matrix." );
+           std::cerr << "The row is outside the matrix." );
    tnlAssert( vec. getSize() == this->getSize(),
-              cerr << "The matrix and vector for multiplication have different sizes. "
+              std::cerr << "The matrix and vector for multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << vec. getSize() << endl; );
+                   << "The vector size is " << vec. getSize() << std::endl; );
 
    Index block_id = row / block_size;
    Index block_row = row % block_size;
@@ -564,13 +564,13 @@ void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVecto
                                                                   tnlVector< Real, tnlHost, Index >& result ) const
 {
    tnlAssert( vec. getSize() == this->getSize(),
-              cerr << "The matrix and vector for a multiplication have different sizes. "
+              std::cerr << "The matrix and vector for a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << vec. getSize() << endl; );
+                   << "The vector size is " << vec. getSize() << std::endl; );
    tnlAssert( result. getSize() == this->getSize(),
-              cerr << "The matrix and result vector of a multiplication have different sizes. "
+              std::cerr << "The matrix and result vector of a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << result. getSize() << endl; );
+                   << "The vector size is " << result. getSize() << std::endl; );
 
    for( Index row = 0; row < this->getSize(); row ++ )
    {
@@ -602,15 +602,15 @@ void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVecto
 
 
 template< typename Real, typename Index >
-void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: printOut( ostream& str,
+void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: printOut( std::ostream& str,
                                                              const tnlString& name,
 		                                                       const Index lines ) const
 {
-   str << "Structure of tnlFastRgCSRMatrix" << endl;
-   str << "Matrix name:" << name << endl;
-   str << "Matrix size:" << this->getSize() << endl;
-   str << "Allocated elements:" << nonzero_elements. getSize() << endl;
-   str << "Matrix blocks: " << block_offsets. getSize() << endl;
+   str << "Structure of tnlFastRgCSRMatrix" << std::endl;
+   str << "Matrix name:" << name << std::endl;
+   str << "Matrix size:" << this->getSize() << std::endl;
+   str << "Allocated elements:" << nonzero_elements. getSize() << std::endl;
+   str << "Matrix blocks: " << block_offsets. getSize() << std::endl;
 
    Index print_lines = lines;
    if( ! print_lines )
@@ -620,40 +620,40 @@ void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: printOut( ostream& str,
    {
 	   if( i * block_size > print_lines )
 		   continue;
-	   str << endl << "Block number: " << i << endl;
-	   str << " Lines: " << i * block_size << " -- " << ( i + 1 ) * block_size << endl;
-	   str << " Column sequences: " << column_sequences_in_block[ i ] << endl;
+	   str << std::endl << "Block number: " << i << std::endl;
+	   str << " Lines: " << i * block_size << " -- " << ( i + 1 ) * block_size << std::endl;
+	   str << " Column sequences: " << column_sequences_in_block[ i ] << std::endl;
 	   for( Index k = i * block_size; k < ( i + 1 ) * block_size && k < this->getSize(); k ++ )
 	   {
-		   str << " Line: " << k << flush
-			   << " Line length: " << column_sequences_lengths[ k ] << flush
-			   << " Column sequence offset: " << columns_sequences_offsets[ k ] << endl
-			   << " Column sequence: " << flush;
+		   str << " Line: " << k << std::flush
+			   << " Line length: " << column_sequences_lengths[ k ] << std::flush
+			   << " Column sequence offset: " << columns_sequences_offsets[ k ] << std::endl
+			   << " Column sequence: " << std::flush;
 		   for( Index l = 0; l < column_sequences_lengths[ k ]; l ++ )
 		      str << column_sequences[ columns_sequences_offsets[ k ] + l * column_sequences_in_block[ i ] ] + k << "  ";
-		   str << endl;
+		   str << std::endl;
 	   }
-	   str << endl;
+	   str << std::endl;
 
 	   Index current_block_size = block_size;
 	   if( ( i + 1 ) * block_size > this->getSize() )
 	      current_block_size = this->getSize() % block_size;
 	   Index block_length = block_offsets[ i + 1 ] - block_offsets[ i ];
 	   Index row_length = block_length / block_size;
-	   str << " Block data: " << block_offsets[ i ] << " -- " << block_offsets[ i + 1 ] << endl;
-	   str << " Block size: " << current_block_size << endl;
-	   str << " Data:   " << endl;
+	   str << " Block data: " << block_offsets[ i ] << " -- " << block_offsets[ i + 1 ] << std::endl;
+	   str << " Block size: " << current_block_size << std::endl;
+	   str << " Data:   " << std::endl;
 	   for( Index k = 0; k < current_block_size; k ++ )
 	   {
 	      str << " Block row " << k << " (" << i * block_size + k << ") : ";
 	      for( Index l = 0; l < row_length; l ++ )
-	         str << setprecision( 5 ) << setw( 8 ) << nonzero_elements[ block_offsets[ i ] + l * current_block_size + k ] << " ";
-	      str << endl;
+	         str << std::setprecision( 5 ) << std::setw( 8 ) << nonzero_elements[ block_offsets[ i ] + l * current_block_size + k ] << " ";
+	      str << std::endl;
 	   }
    }
-   str << endl;
-   /*str << "*********************************************************" << endl;
-   str << column_sequences << endl;*/
+   str << std::endl;
+   /*str << "*********************************************************" << std::endl;
+   str << column_sequences << std::endl;*/
 };
 
 

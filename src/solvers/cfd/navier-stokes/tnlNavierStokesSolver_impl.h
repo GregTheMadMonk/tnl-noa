@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlNavierStokesSolver_IMPL_H_
-#define tnlNavierStokesSolver_IMPL_H_
+#pragma once
 
 #include <solvers/cfd/navier-stokes/tnlNavierStokesSolver.h>
+
+namespace TNL {
 
 template< typename AdvectionScheme,
           typename DiffusionScheme,
@@ -323,7 +324,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
             this->rho[ c ] = dofs_rho[ c ];
             const RealType u1 = this->u1[ c ] = dofs_rho_u1[ c ] / dofs_rho[ c ];
             const RealType u2 = this->u2[ c ] = dofs_rho_u2[ c ] / dofs_rho[ c ];
-            this->u[ c ] = sqrt( u1*u1 + u2*u2 );
+            this->u[ c ] = ::sqrt( u1*u1 + u2*u2 );
             //this->p[ c ] = dofs_rho[ c ] * this->R * this->T;
             this->p[ c ] = ( this->gamma - 1.0 ) *
                            ( dofs_e[ c ] - 0.5 * this->rho[ c ] * ( this->u1[ c ] * this->u1[ c ] + this->u2[ c ] * this->u2[ c ] ) );
@@ -492,7 +493,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
 
 
         RealType k = 2.495*pow( 400.0, 1.5 ) / ( 400.0 + 194.0 );
-        //cout << k << endl;
+        //cout << k << std::endl;
         /*e_t[ c ] += this->mu*( u1Viscosity->getDiffusion( c,
                                                           this->u1, this->u1, this->u2,
                                                           1.0, 1.0, 0.0 ) +
@@ -637,5 +638,4 @@ bool tnlNavierStokesSolver< AdvectionScheme,
    return true;
 }
 
-
-#endif /* tnlNavierStokesSolver_IMPL_H_ */
+} // namespace TNL

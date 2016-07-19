@@ -52,7 +52,7 @@ int tnlDebugParser :: lex()
 void tnlDebugParser :: newLine()
 {
    line ++;
-   //cout << "New line " << line << endl;
+   //cout << "New line " << line << std::endl;
 }
 //--------------------------------------------------------------------------
 void tnlDebugParser :: setSVal( char* s )
@@ -63,13 +63,13 @@ void tnlDebugParser :: setSVal( char* s )
 void tnlDebugParser :: setBVal( bool b  )
 {
    d_val__. b_val = b;
-   //cout << " d_val. d_val is " << d_val. d_val << endl;
+   //cout << " d_val. d_val is " << d_val. d_val << std::endl;
 }
 //--------------------------------------------------------------------------
 void tnlDebugParser :: AddCurrentGroup()
 {
 #ifdef DEBUG
-   cout << "Inserting class " << current_group -> group_name << endl;
+   std::cout << "Inserting class " << current_group -> group_name << std::endl;
 #endif
    debug_structure -> AppendGroup( current_group );
    current_group = 0;
@@ -82,19 +82,19 @@ void tnlDebugParser :: AddCurrentEntry()
    current_entry -> debug = debug_value;
    debug_value = false;
 #ifdef DEBUG
-   cout << "Inserting function " << current_entry -> function_name;
+   std::cout << "Inserting function " << current_entry -> function_name;
 #endif
    if( current_group )
    {
 #ifdef DEBUG
-      cout << " into class " << current_group -> group_name << endl;
+      std::cout << " into class " << current_group -> group_name << std::endl;
 #endif
       current_group -> debug_entries. push_back( current_entry );
    }
    else
    {
 #ifdef DEBUG
-      cout << " as stand-alone function " << endl;
+      std::cout << " as stand-alone function " << std::endl;
 #endif
       debug_structure -> AppendAloneEntry( current_entry );
    }
@@ -104,7 +104,7 @@ void tnlDebugParser :: AddCurrentEntry()
 void tnlDebugParser :: SetCurrentClassId( char* s )
 {
 #ifdef DEBUG
-   cout << "Setting current class id to " << s << endl;
+   std::cout << "Setting current class id to " << s << std::endl;
 #endif
    current_group = new tnlDebugGroup;
    current_group -> group_name = string( s );
@@ -113,7 +113,7 @@ void tnlDebugParser :: SetCurrentClassId( char* s )
 void tnlDebugParser :: SetCurrentFunctionId( char* s )
 {
 #ifdef DEBUG
-   cout << "Setting current function id to " << s << endl;
+   std::cout << "Setting current function id to " << s << std::endl;
 #endif
    assert( current_group );
    current_entry = new tnlDebugEntry;
@@ -123,7 +123,7 @@ void tnlDebugParser :: SetCurrentFunctionId( char* s )
 void tnlDebugParser :: SetBool( bool v )
 {
 #ifdef DEBUG
-   cout << "Setting bool = " << v << endl;
+   std::cout << "Setting bool = " << v << std::endl;
 #endif
    bool_value = v;
 }
@@ -131,7 +131,7 @@ void tnlDebugParser :: SetBool( bool v )
 void tnlDebugParser :: SetDebugValue( )
 {
 #ifdef DEBUG
-   cout << "Setting debug value = " << bool_value << endl;
+   std::cout << "Setting debug value = " << bool_value << std::endl;
 #endif
    debug_value = bool_value;
 }
@@ -139,7 +139,7 @@ void tnlDebugParser :: SetDebugValue( )
 void tnlDebugParser :: SetDefaultDebugValue( )
 {
 #ifdef DEBUG
-   cout << "Setting default debug value = " << bool_value << endl;
+   std::cout << "Setting default debug value = " << bool_value << std::endl;
 #endif
    default_debug_value = bool_value;
 }
@@ -148,8 +148,8 @@ void tnlDebugParser :: SetClassDebugSettings()
 {
    assert( current_group );
 #ifdef DEBUG
-   cout << "Setting class debug value = " << debug_value << endl;
-   cout << "Setting class default debug value = " << default_debug_value << endl;
+   std::cout << "Setting class debug value = " << debug_value << std::endl;
+   std::cout << "Setting class default debug value = " << default_debug_value << std::endl;
 #endif
    current_group -> debug = debug_value;
    current_group -> default_debug = default_debug_value;

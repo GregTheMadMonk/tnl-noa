@@ -63,9 +63,9 @@ setElement( const Index& elementIndex,
    tnlAssert( this->values, );
    tnlAssert( this->step > 0,);
    tnlAssert( column >= 0 && column < this->columns,
-              cerr << "column = " << columns << " this->columns = " << this->columns );
+              std::cerr << "column = " << columns << " this->columns = " << this->columns );
    tnlAssert( abs( column - row ) <= 1,
-              cerr << "column = " << column << " row =  " << row );
+              std::cerr << "column = " << column << " row =  " << row );
 
    /****
     * this->values stores an adress of the diagonal element

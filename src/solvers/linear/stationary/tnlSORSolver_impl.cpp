@@ -13,6 +13,8 @@
 #include <matrices/tnlEllpackMatrix.h>
 #include <matrices/tnlMultidiagonalMatrix.h>
 
+namespace TNL {
+
 template class tnlSORSolver< tnlCSRMatrix< float,  tnlHost, int > >;
 template class tnlSORSolver< tnlCSRMatrix< double, tnlHost, int > >;
 template class tnlSORSolver< tnlCSRMatrix< float,  tnlHost, long int > >;
@@ -46,6 +48,6 @@ template class tnlSORSolver< tnlMultidiagonalMatrix< float,  tnlCuda, long int >
 template class tnlSORSolver< tnlMultidiagonalMatrix< double, tnlCuda, long int > >;
 #endif
 
-
+} // namespace TNL
 
 

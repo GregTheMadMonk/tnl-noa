@@ -19,6 +19,7 @@
 #include <cppunit/Message.h>
 #include <core/vectors/tnlStaticVector.h>
 
+using namespace TNL;
 
 template< int Size, typename RealType >
 class tnlStaticVectorTester : public CppUnit :: TestCase

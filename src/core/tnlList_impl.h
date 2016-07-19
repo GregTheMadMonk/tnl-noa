@@ -36,7 +36,7 @@ tnlList< T >::~tnlList()
 template< typename T >
 tnlString tnlList< T >::getType()
 {
-   return tnlString( "tnlList< " ) + ::getType< T >() +  tnlString( " >" );
+   return tnlString( "tnlList< " ) + TNL::getType< T >() +  tnlString( " >" );
 }
 
 template< typename T >
@@ -62,13 +62,13 @@ T& tnlList< T >::operator[]( const int& ind )
    {
       if( ind < size - ind )
       {
-         //cout << "Setting curent index to 0." << endl;
+         //cout << "Setting curent index to 0." << std::endl;
          index = 0;
          iterator = first;
       }
       else
       {
-         //cout << "Setting curent index to size - 1." << endl;
+         //cout << "Setting curent index to size - 1." << std::endl;
          index = size - 1;
          iterator = last;
       }
@@ -76,7 +76,7 @@ T& tnlList< T >::operator[]( const int& ind )
    while( index != ind )
    {
       //cout << " current index = " << index
-      //     << " index = " << ind << endl;
+      //     << " index = " << ind << std::endl;
       if( ind < index )
       {
          iterator = iterator -> Previous();
@@ -190,8 +190,8 @@ template< typename T >
 void tnlList< T >::toArray( Array& array )
 {
    tnlAssert( this->getSize() <= array.getSize(),
-              cerr << "this->getSize() = " << this->getSize()
-                   << " array.getSize() = " << array.getSize() << endl; );
+              std::cerr << "this->getSize() = " << this->getSize()
+                   << " array.getSize() = " << array.getSize() << std::endl; );
    for( int i = 0; i < this->getSize(); i++ )
       array[ i ] = ( *this )[ i ];
 }
@@ -301,7 +301,7 @@ bool tnlList< T >::Load( tnlFile& file )
    file. read< int, tnlHost >( &_size );
    if( _size < 0 )
    {
-      cerr << "The curve size is negative." << endl;
+      std::cerr << "The curve size is negative." << std::endl;
       return false;
    }
    T t;
@@ -318,7 +318,7 @@ bool tnlList< T >::Load( tnlFile& file )
    file. read( &_size, 1 );
    if( _size < 0 )
    {
-      cerr << "The curve size is negative." << endl;
+      std::cerr << "The curve size is negative." << std::endl;
       return false;
    }
    T t;
@@ -341,7 +341,7 @@ bool tnlList< T >::DeepLoad( tnlFile& file )
    file. read< int, tnlHost >( &_size );
    if( _size < 0 )
    {
-      cerr << "The list size is negative." << endl;
+      std::cerr << "The list size is negative." << std::endl;
       return false;
    }
    for( int i = 0; i < _size; i ++ )
@@ -357,7 +357,7 @@ bool tnlList< T >::DeepLoad( tnlFile& file )
    file. read( &_size );
    if( _size < 0 )
    {
-      cerr << "The list size is negative." << endl;
+      std::cerr << "The list size is negative." << std::endl;
       return false;
    }
    for( int i = 0; i < _size; i ++ )
@@ -371,11 +371,11 @@ bool tnlList< T >::DeepLoad( tnlFile& file )
 };
  
 template< typename T >
-ostream& operator << ( ostream& str, const tnlList< T >& list )
+std::ostream& operator << ( std::ostream& str, const tnlList< T >& list )
 {
    int i, size( list. getSize() );
    for( i = 0; i < size; i ++ )
-      str << "Item " << i << ":" << list[ i ] << endl;
+      str << "Item " << i << ":" << list[ i ] << std::endl;
    return str;
 };
 

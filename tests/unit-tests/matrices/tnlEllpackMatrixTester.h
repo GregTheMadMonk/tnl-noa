@@ -21,6 +21,8 @@
 #include <core/tnlFile.h>
 #include <core/vectors/tnlVector.h>
 
+using namespace TNL;
+
 template< typename RealType, typename Device, typename IndexType >
 class tnlEllpackMatrixTester : public CppUnit :: TestCase
 {

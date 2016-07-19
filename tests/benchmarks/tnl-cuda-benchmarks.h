@@ -20,7 +20,8 @@
 #include "vector-operations.h"
 #include "spmv.h"
 
-using namespace tnl::benchmarks;
+using namespace TNL;
+using namespace TNL::benchmarks;
 
 
 // TODO: should benchmarks check the result of the computation?
@@ -117,15 +118,15 @@ main( int argc, char* argv[] )
     const unsigned verbose = parameters.getParameter< unsigned >( "verbose" );
 
     if( sizeStepFactor <= 1 ) {
-        cerr << "The value of --size-step-factor must be greater than 1." << endl;
+        std::cerr << "The value of --size-step-factor must be greater than 1." << std::endl;
         return EXIT_FAILURE;
     }
 
     // open log file
-    auto mode = ios::out;
+    auto mode = std::ios::out;
     if( outputMode == "append" )
-        mode |= ios::app;
-    ofstream logFile( logFileName.getString(), mode );
+        mode |= std::ios::app;
+    std::ofstream logFile( logFileName.getString(), mode );
 
     // init benchmark and common metadata
     Benchmark benchmark( loops, verbose );
@@ -167,7 +168,7 @@ main( int argc, char* argv[] )
         runCudaBenchmarks< double >( benchmark, metadata, minSize, maxSize, sizeStepFactor, loops, elementsPerRow );
 
     if( ! benchmark.save( logFile ) ) {
-        cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< tnlString >( "log-file" ) << "'." << endl;
+        std::cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< tnlString >( "log-file" ) << "'." << std::endl;
         return EXIT_FAILURE;
     }
 

@@ -23,6 +23,8 @@
 #include <core/vectors/tnlVector.h>
 #include <core/vectors/tnlVectorOperations.h>
 
+using namespace TNL;
+
 template< typename Real, typename Device >
 class tnlVectorOperationsTester : public CppUnit :: TestCase
 {
@@ -187,7 +189,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       v. setSize( size );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorLpNorm( v, 2.0 ) == sqrt( size ) );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorLpNorm( v, 2.0 ) == ::sqrt( size ) );
    }
 
    void getVectorSumTest()
@@ -264,7 +266,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       v. setValue( 1.0 );
 
       CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 1.0 ) == 2.0 * size );
-      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 2.0 ) == sqrt( 4.0 * size ) );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 2.0 ) == ::sqrt( 4.0 * size ) );
    }
 
    void getVectorDifferenceSumTest()

@@ -270,7 +270,7 @@ QuadDouble abs(const QuadDouble& value) {
 	return qd;
 }
 
-QuadDouble sqrt(const QuadDouble& value) {
+QuadDouble ::sqrt(const QuadDouble& value) {
 	QuadDouble qd(value);
 	QuadDouble x(1/sqrt((double)qd));
 	QuadDouble step;

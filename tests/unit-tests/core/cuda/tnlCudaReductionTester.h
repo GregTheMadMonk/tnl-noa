@@ -23,6 +23,8 @@
 #include <core/tnlCuda.h>
 #include <core/cuda/cuda-reduction.h>
 
+using namespace TNL;
+
 class tnlCudaReductionTester : public CppUnit :: TestCase
 {
    public:
@@ -273,7 +275,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       tnlParallelReductionAbsSum< RealType, int > absSumOperation;
       CPPUNIT_ASSERT(
          ( reductionOnCudaDevice( absSumOperation, size, deviceData, ( RealType* ) 0, result ) ) );
-      CPPUNIT_ASSERT( result == tnlAbs( sum ) );
+      CPPUNIT_ASSERT( result == abs( sum ) );
 
       tnlParallelReductionAbsMin< RealType, int > absMinOperation;
       CPPUNIT_ASSERT(

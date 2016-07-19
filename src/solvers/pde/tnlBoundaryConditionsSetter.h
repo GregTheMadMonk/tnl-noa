@@ -9,11 +9,12 @@
 /* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLBOUNDARYCONDITIONSSETTER_H
-#define	TNLBOUNDARYCONDITIONSSETTER_H
+#pragma once
 
 #include <core/tnlCuda.h>
 #include <functions/tnlFunctionAdapter.h>
+
+namespace TNL {
 
 template< typename Real,
           typename DofVector,
@@ -76,8 +77,8 @@ class tnlBoundaryConditionsSetter
 
       };
 };
+} // namespace TNL
 
 #include <solvers/pde/tnlBoundaryConditionsSetter_impl.h>
 
-#endif	/* TNLBOUNDARYCONDITIONSSETTER_H */
 

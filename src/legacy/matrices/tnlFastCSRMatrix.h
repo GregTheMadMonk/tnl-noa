@@ -20,7 +20,6 @@
 #include <debug/tnlDebug.h>
 
 
-using namespace std;
 
 template< typename Real, typename Device, typename Index > class tnlFastRgCSRMatrix;
 
@@ -95,13 +94,13 @@ class tnlFastCSRMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHost
    void multiplyRow( Index row, const Real& value );
 
    //! Method for saving the matrix to a file as a binary data
-   bool Save( ostream& file ) const;
+   bool Save( std::ostream& file ) const;
 
    //! Method for restoring the matrix from a file
-   bool Load( istream& file );
+   bool Load( std::istream& file );
 
    //! Prints out the matrix structure
-   void printOut( ostream& str,
+   void printOut( std::ostream& str,
 		          const Index lines = 0 ) const;
 
    protected:
@@ -342,7 +341,7 @@ bool tnlFastCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlCSRMatrix< R
 			column_sequences_length += column_sequence_length;
 		}
 	}
-	//cout << "Column sequences compression is " << column_sequences_length << "/" << csr_matrix. columns. getSize() << endl;
+	//cout << "Column sequences compression is " << column_sequences_length << "/" << csr_matrix. columns. getSize() << std::endl;
 	return true;
 }
 
@@ -351,9 +350,9 @@ Real tnlFastCSRMatrix< Real, tnlHost, Index > :: getElement( Index row,
                                                       Index column ) const
 {
    tnlAssert( 0 <= row && row < this->getSize(),
-			  cerr << "The row is outside the matrix." );
+			  std::cerr << "The row is outside the matrix." );
    tnlAssert( 0 <= column && column < this->getSize(),
-			  cerr << "The column is outside the matrix." );
+			  std::cerr << "The column is outside the matrix." );
    Index column_offset = columns_sequences_offsets[ row ];
    Index data_offset = row_offsets[ row ];
    Index row_length = row_offsets[ row + 1 ] - data_offset;
@@ -373,11 +372,11 @@ Real tnlFastCSRMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
                                                              const tnlVector< Real, tnlHost, Index >& vec ) const
 {
    tnlAssert( 0 <= row && row < this->getSize(),
-			  cerr << "The row is outside the matrix." );
+			  std::cerr << "The row is outside the matrix." );
    tnlAssert( vec. getSize() == this->getSize(),
-              cerr << "The matrix and vector for multiplication have different sizes. "
+              std::cerr << "The matrix and vector for multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << vec. getSize() << endl; );
+                   << "The vector size is " << vec. getSize() << std::endl; );
 
    Index data_offset = row_offsets[ row ];
    Index column_offset =  columns_sequences_offsets[ row ];
@@ -406,13 +405,13 @@ void tnlFastCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVector<
                                                                 tnlVector< Real, tnlHost, Index >& result ) const
 {
    tnlAssert( vec. getSize() == this->getSize(),
-              cerr << "The matrix and vector for a multiplication have different sizes. "
+              std::cerr << "The matrix and vector for a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << vec. getSize() << endl; );
+                   << "The vector size is " << vec. getSize() << std::endl; );
    tnlAssert( result. getSize() == this->getSize(),
-              cerr << "The matrix and result vector of a multiplication have different sizes. "
+              std::cerr << "The matrix and result vector of a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << result. getSize() << endl; );
+                   << "The vector size is " << result. getSize() << std::endl; );
 
    const Index* cols = column_sequences. getData();
    const Real* els = nonzero_elements. getData();
@@ -451,7 +450,7 @@ void tnlFastCSRMatrix< Real, tnlHost, Index > :: multiplyRow( Index row, const R
 
 
 template< typename Real, typename Index >
-bool tnlFastCSRMatrix< Real, tnlHost, Index > :: Save( ostream& file ) const
+bool tnlFastCSRMatrix< Real, tnlHost, Index > :: Save( std::ostream& file ) const
 {
 	tnlAssert( false, );
 	return true;
@@ -459,22 +458,22 @@ bool tnlFastCSRMatrix< Real, tnlHost, Index > :: Save( ostream& file ) const
 
 
 template< typename Real, typename Index >
-bool tnlFastCSRMatrix< Real, tnlHost, Index > :: Load( istream& file )
+bool tnlFastCSRMatrix< Real, tnlHost, Index > :: Load( std::istream& file )
 {
 	tnlAssert( false, );
 	return true;
 };
 
 template< typename Real, typename Index >
-void tnlFastCSRMatrix< Real, tnlHost, Index > :: printOut( ostream& str,
+void tnlFastCSRMatrix< Real, tnlHost, Index > :: printOut( std::ostream& str,
                                                            const tnlString& name,
 		                                                     const Index lines ) const
 {
-   str << "Structure of tnlFastCSRMatrix" << endl;
-   str << "Matrix name:" << name << endl;
-   str << "Matrix size:" << this->getSize() << endl;
-   str << "Allocated elements:" << nonzero_elements. getSize() << endl;
-   str << "Matrix rows:" << endl;
+   str << "Structure of tnlFastCSRMatrix" << std::endl;
+   str << "Matrix name:" << name << std::endl;
+   str << "Matrix size:" << this->getSize() << std::endl;
+   str << "Allocated elements:" << nonzero_elements. getSize() << std::endl;
+   str << "Matrix rows:" << std::endl;
    Index print_lines = lines;
    if( ! print_lines )
 	   print_lines = this->getSize();
@@ -489,15 +488,15 @@ void tnlFastCSRMatrix< Real, tnlHost, Index > :: printOut( ostream& str,
           << " , Elements " << first
           << " -- " << last
           << " Col. Seq. Offset: " << column_offset
-          << " Col. Seq. Length: " << column_length << endl;
+          << " Col. Seq. Length: " << column_length << std::endl;
       str << " Data:   ";
       for( Index j = first; j < last; j ++ )
-         str << setprecision( 5 ) << setw( 8 ) << nonzero_elements[ j ] << " ";
-      str << endl;
+         str << std::setprecision( 5 ) << std::setw( 8 ) << nonzero_elements[ j ] << " ";
+      str << std::endl;
       str << "Columns: ";
       for( Index j = 0; j < column_length; j ++ )
-         str << setw( 8 ) << column_sequences[ column_offset + j ] + i << " ";
-      str << endl;
+         str << std::setw( 8 ) << column_sequences[ column_offset + j ] + i << " ";
+      str << std::endl;
    }
 };
 

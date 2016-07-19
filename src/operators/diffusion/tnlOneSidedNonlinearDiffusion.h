@@ -52,8 +52,8 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, N
          return tnlString( "tnlOneSidedNonlinearDiffusion< " ) +
             MeshType::getType() + ", " +
             Nonlinearity::getType() + "," +
-            ::getType< Real >() + ", " +
-            ::getType< Index >() + " >";
+           TNL::getType< Real >() + ", " +
+           TNL::getType< Index >() + " >";
       }
 
       template< typename MeshFunction,
@@ -146,8 +146,8 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, 
          return tnlString( "tnlOneSidedNonlinearDiffusion< " ) +
             MeshType::getType() + ", " +
             Nonlinearity::getType() + "," +
-            ::getType< Real >() + ", " +
-            ::getType< Index >() + " >";
+           TNL::getType< Real >() + ", " +
+           TNL::getType< Index >() + " >";
       }
 
       template< typename MeshFunction,
@@ -255,8 +255,8 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
          return tnlString( "tnlOneSidedNonlinearDiffusion< " ) +
             MeshType::getType() + ", " +
             Nonlinearity::getType() + "," +
-            ::getType< Real >() + ", " +
-            ::getType< Index >() + " >";
+           TNL::getType< Real >() + ", " +
+           TNL::getType< Index >() + " >";
       }
 
       template< typename MeshFunction,

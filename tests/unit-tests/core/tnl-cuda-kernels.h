@@ -17,6 +17,7 @@
 #include <legacy/core/tnlCudaSupport.h>
 
 using namespace std;
+using namespace TNL;
 
 #ifdef HAVE_CUDA
 
@@ -196,7 +197,7 @@ bool tnlCUDASimpleReduction5( const int size,
    tnlVector< T, tnlCuda > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
-      int sizeAlloc = :: Max( 1, size / desBlockSize );
+      int sizeAlloc = :: max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. getData();
@@ -213,15 +214,15 @@ bool tnlCUDASimpleReduction5( const int size,
    while( sizeReduced > 1 )
    {
       dim3 blockSize( 0 ), gridSize( 0 );
-      blockSize. x = :: Min( sizeReduced, desBlockSize );
-      gridSize. x = :: Min( ( int ) ( sizeReduced / blockSize. x + 1 ) / 2, desGridSize );
+      blockSize. x = :: min( sizeReduced, desBlockSize );
+      gridSize. x = :: min( ( int ) ( sizeReduced / blockSize. x + 1 ) / 2, desGridSize );
       //if( gridSize. x * 2 * blockSize. x < sizeReduced )
       //    gridSize. x ++;
       int shmem = blockSize. x * sizeof( T );
       /*cout << "Size: " << sizeReduced
            << " Grid size: " << gridSize. x
            << " Block size: " << blockSize. x
-           << " Shmem: " << shmem << endl;*/
+           << " Shmem: " << shmem << std::endl;*/
       tnlCUDASimpleReductionKernel5< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux, dbg_array1 );
       sizeReduced = gridSize. x;
       reductionInput = deviceAux;
@@ -229,16 +230,16 @@ bool tnlCUDASimpleReduction5( const int size,
       // debuging part
       /*T* host_array = new T[ desBlockSize ];
       cudaMemcpy( host_array, dbg_array1,  desBlockSize * sizeof( T ), cudaMemcpyDeviceToHost );
-      for( int i = 0; i< :: Min( ( int ) blockSize. x, desBlockSize ); i ++ )
-          cout << host_array[ i ] << " ";
-      cout << endl;
+      for( int i = 0; i< :: min( ( int ) blockSize. x, desBlockSize ); i ++ )
+         std::cout << host_array[ i ] << " ";
+     std::cout << std::endl;
 
       T* output = new T[ sizeReduced ];
       cudaMemcpy( output, deviceAux, sizeReduced * sizeof( T ), cudaMemcpyDeviceToHost );
-      cout << endl;
+     std::cout << std::endl;
       for( int i = 0; i < sizeReduced; i ++ )
-          cout << output[ i ] << "   ";
-      cout << endl;
+         std::cout << output[ i ] << "   ";
+     std::cout << std::endl;
       delete[] output;*/
    }
    /***
@@ -252,7 +253,7 @@ bool tnlCUDASimpleReduction5( const int size,
       cudaMemcpy( &result, deviceAux, sizeReduced * sizeof( T ), cudaMemcpyDeviceToHost );
    if( cudaGetLastError() != cudaSuccess )
    {
-      cerr << "Unable to transfer reduced data from device to host." << endl;
+      std::cerr << "Unable to transfer reduced data from device to host." << std::endl;
       return false;
    }
    return true;
@@ -423,7 +424,7 @@ bool tnlCUDASimpleReduction4( const int size,
    tnlVector< T, tnlCuda > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
-      int sizeAlloc = :: Max( 1, size / desBlockSize );
+      int sizeAlloc = :: max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. getData();
@@ -440,7 +441,7 @@ bool tnlCUDASimpleReduction4( const int size,
    while( sizeReduced > 1 )
    {
       dim3 blockSize( 0 ), gridSize( 0 );
-      blockSize. x = :: Min( sizeReduced, desBlockSize );
+      blockSize. x = :: min( sizeReduced, desBlockSize );
       /***
        * If 2 * blockSize. x does not devide sizeReduced we must increase the grid size by one block.
        * Example: sizeReduced = 5, blockSize. x = 2 => gridSize. x = 5 / 2 / 2 = 1.
@@ -455,7 +456,7 @@ bool tnlCUDASimpleReduction4( const int size,
       /*cout << "Size: " << sizeReduced
            << " Grid size: " << gridSize. x
            << " Block size: " << blockSize. x
-           << " Shmem: " << shmem << endl;*/
+           << " Shmem: " << shmem << std::endl;*/
       tnlCUDASimpleReductionKernel4< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux, dbg_array1 );
       sizeReduced = gridSize. x;
       reductionInput = deviceAux;
@@ -463,16 +464,16 @@ bool tnlCUDASimpleReduction4( const int size,
       // debuging part
       /*T* host_array = new T[ desBlockSize ];
       cudaMemcpy( host_array, dbg_array1,  desBlockSize * sizeof( T ), cudaMemcpyDeviceToHost );
-      for( int i = 0; i< :: Min( ( int ) blockSize. x, desBlockSize ); i ++ )
-    	  cout << host_array[ i ] << " ";
-      cout << endl;
+      for( int i = 0; i< :: min( ( int ) blockSize. x, desBlockSize ); i ++ )
+    	 std::cout << host_array[ i ] << " ";
+     std::cout << std::endl;
 
       T* output = new T[ sizeReduced ];
       cudaMemcpy( output, deviceAux, sizeReduced * sizeof( T ), cudaMemcpyDeviceToHost );
-      cout << endl;
+     std::cout << std::endl;
       for( int i = 0; i < sizeReduced; i ++ )
-    	  cout << output[ i ] << "   ";
-      cout << endl;
+    	 std::cout << output[ i ] << "   ";
+     std::cout << std::endl;
       delete[] output;*/
    }
    /***
@@ -486,7 +487,7 @@ bool tnlCUDASimpleReduction4( const int size,
       cudaMemcpy( &result, deviceAux, sizeReduced * sizeof( T ), cudaMemcpyDeviceToHost );
    if( cudaGetLastError() != cudaSuccess )
    {
-      cerr << "Unable to transfer reduced data from device to host." << endl;
+      std::cerr << "Unable to transfer reduced data from device to host." << std::endl;
       return false;
    }
    return true;
@@ -635,7 +636,7 @@ bool tnlCUDASimpleReduction3( const int size,
    tnlVector< T, tnlCuda > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
-      int sizeAlloc = :: Max( 1, size / desBlockSize );
+      int sizeAlloc = :: max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. getData();
@@ -652,7 +653,7 @@ bool tnlCUDASimpleReduction3( const int size,
    while( sizeReduced > 1 )
    {
       dim3 blockSize( 0 ), gridSize( 0 );
-      blockSize. x = :: Min( sizeReduced, desBlockSize );
+      blockSize. x = :: min( sizeReduced, desBlockSize );
       /***
        * If blockSize. x does not devide sizeReduced we must increase the grid size by one block.
        * Example: sizeReduced = 3, blockSize. x = 2 => gridSize. x = 3 / 2 = 1. Now we have one block with
@@ -663,7 +664,7 @@ bool tnlCUDASimpleReduction3( const int size,
       /*cout << "Size: " << sizeReduced
            << " Grid size: " << gridSize. x
            << " Block size: " << blockSize. x
-           << " Shmem: " << shmem << endl;*/
+           << " Shmem: " << shmem << std::endl;*/
       tnlCUDASimpleReductionKernel3< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux );
       sizeReduced = gridSize. x;
       reductionInput = deviceAux;
@@ -679,7 +680,7 @@ bool tnlCUDASimpleReduction3( const int size,
       cudaMemcpy( &result, deviceAux, sizeReduced * sizeof( T ), cudaMemcpyDeviceToHost );
    if( cudaGetLastError() != cudaSuccess )
    {
-      cerr << "Unable to transfer reduced data from device to host." << endl;
+      std::cerr << "Unable to transfer reduced data from device to host." << std::endl;
       return false;
    }
    return true;
@@ -812,7 +813,7 @@ bool tnlCUDASimpleReduction2( const int size,
    tnlVector< T, tnlCuda > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
-      int sizeAlloc = :: Max( 1, size / desBlockSize );
+      int sizeAlloc = :: max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. getData();
@@ -829,7 +830,7 @@ bool tnlCUDASimpleReduction2( const int size,
    while( sizeReduced > 1 )
    {
       dim3 blockSize( 0 ), gridSize( 0 );
-      blockSize. x = :: Min( sizeReduced, desBlockSize );
+      blockSize. x = :: min( sizeReduced, desBlockSize );
       /***
        * If blockSize. x does not devide sizeReduced we must increase the grid size by one block.
        * Example: sizeReduced = 3, blockSize. x = 2 => gridSize. x = 3 / 2 = 1. Now we have one block with
@@ -840,7 +841,7 @@ bool tnlCUDASimpleReduction2( const int size,
       /*cout << "Size: " << sizeReduced
            << " Grid size: " << gridSize. x
            << " Block size: " << blockSize. x
-           << " Shmem: " << shmem << endl;*/
+           << " Shmem: " << shmem << std::endl;*/
       tnlCUDASimpleReductionKernel2< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux );
       sizeReduced = gridSize. x;
       reductionInput = deviceAux;
@@ -857,7 +858,7 @@ bool tnlCUDASimpleReduction2( const int size,
       cudaMemcpy( &result, deviceAux, sizeReduced * sizeof( T ), cudaMemcpyDeviceToHost );
    if( cudaGetLastError() != cudaSuccess )
    {
-      cerr << "Unable to transfer reduced data from device to host." << endl;
+      std::cerr << "Unable to transfer reduced data from device to host." << std::endl;
       return false;
    }
    return true;
@@ -972,7 +973,7 @@ bool tnlCUDASimpleReduction1( const int size,
    tnlVector< T, tnlCuda > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
-      int sizeAlloc = :: Max( 1, size / desBlockSize );
+      int sizeAlloc = :: max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. getData();
@@ -989,7 +990,7 @@ bool tnlCUDASimpleReduction1( const int size,
    while( sizeReduced > 1 )
    {
       dim3 blockSize( 0 ), gridSize( 0 );
-      blockSize. x = :: Min( sizeReduced, desBlockSize );
+      blockSize. x = :: min( sizeReduced, desBlockSize );
       /***
        * If blockSize. x does not devide sizeReduced we must increase the grid size by one block.
        * Example: sizeReduced = 3, blockSize. x = 2 => gridSize. x = 3 / 2 = 1. Now we have one block with
@@ -1000,7 +1001,7 @@ bool tnlCUDASimpleReduction1( const int size,
       /*cout << "Size: " << sizeReduced
            << " Grid size: " << gridSize. x
            << " Block size: " << blockSize. x
-           << " Shmem: " << shmem << endl;*/
+           << " Shmem: " << shmem << std::endl;*/
       tnlCUDASimpleReductionKernel1< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux );
       sizeReduced = gridSize. x;
       reductionInput = deviceAux;
@@ -1016,7 +1017,7 @@ bool tnlCUDASimpleReduction1( const int size,
       cudaMemcpy( &result, deviceAux, sizeReduced * sizeof( T ), cudaMemcpyDeviceToHost );
    if( cudaGetLastError() != cudaSuccess )
    {
-      cerr << "Unable to transfer reduced data from device to host." << endl;
+      std::cerr << "Unable to transfer reduced data from device to host." << std::endl;
       return false;
    }
    return true;

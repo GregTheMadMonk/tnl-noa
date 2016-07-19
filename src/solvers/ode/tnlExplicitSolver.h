@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlExplicitSolverH
-#define tnlExplicitSolverH
+#pragma once
 
 #include <iomanip>
 #include <core/tnlTimerCPU.h>
@@ -20,6 +19,8 @@
 #include <solvers/tnlIterativeSolver.h>
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
+
+namespace TNL {
 
 template< class Problem >
 class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
@@ -116,7 +117,6 @@ protected:
    tnlVector< RealType, DeviceType, IndexType > cudaBlockResidue;
 };
 
+} // namespace TNL
+
 #include <solvers/ode/tnlExplicitSolver_impl.h>
-
-
-#endif

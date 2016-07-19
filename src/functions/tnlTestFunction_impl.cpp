@@ -13,6 +13,7 @@
 
 #include <functions/tnlTestFunction.h>
 
+
 namespace TNL {
 
 #ifdef INSTANTIATE_FLOAT
@@ -32,6 +33,7 @@ template class tnlTestFunction< 3, long double, tnlHost >;
 #endif
 
 } // namespace TNL
+
 
 #endif
 

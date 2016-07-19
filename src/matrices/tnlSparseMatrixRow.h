@@ -38,7 +38,7 @@ class tnlSparseMatrixRow
                        const Index& column,
                        const Real& value );
  
-      void print( ostream& str ) const;
+      void print( std::ostream& str ) const;
 
    protected:
 
@@ -50,7 +50,7 @@ class tnlSparseMatrixRow
 };
 
 template< typename Real, typename Index >
-ostream& operator << ( ostream& str, const tnlSparseMatrixRow< Real, Index >& row )
+std::ostream& operator << ( std::ostream& str, const tnlSparseMatrixRow< Real, Index >& row )
 {
    row.print( str );
    return str;

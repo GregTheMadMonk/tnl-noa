@@ -29,7 +29,7 @@ template< typename MeshType, typename SolverStarter >
              typename IndexType >
 bool navierStokesSetter< MeshType, SolverStarter > :: run( const tnlParameterContainer& parameters )
 {
-   cerr << "The solver is not implemented for the mesh " << MeshType::getType() << "." << endl;
+   std::cerr << "The solver is not implemented for the mesh " << MeshType::getType() << "." << std::endl;
    return false;
 }
 

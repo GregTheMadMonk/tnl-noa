@@ -30,6 +30,7 @@ __global__ void simpleKernel()
 }
 #endif
 
+using namespace TNL;
 
 class tnlCudaTester : public CppUnit :: TestCase
 {
@@ -60,7 +61,7 @@ class tnlCudaTester : public CppUnit :: TestCase
       simpleKernel<<< gridSize, blockSize >>>();
       if( ! checkCudaDevice )
       {
-         cerr << "Test with simple kernel failed. It seems that the CUDA device does not work properly." << endl;
+         std::cerr << "Test with simple kernel failed. It seems that the CUDA device does not work properly." << std::endl;
          CPPUNIT_ASSERT( false );
       }
 #endif

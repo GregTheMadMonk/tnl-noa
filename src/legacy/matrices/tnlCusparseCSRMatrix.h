@@ -25,8 +25,6 @@
 #include <cusparse.h>
 #endif
 
-using namespace std;
-
 //! Wrapper for Cusparse CSR matrix
 /*!
  */
@@ -92,11 +90,11 @@ class tnlCusparseCSRMatrix : public tnlMatrix< Real, Device, Index >
    void multiplyRow( Index row, const Real& value );
 
    //! Prints out the matrix structure
-   void printOut( ostream& str,
+   void printOut( std::ostream& str,
                   const tnlString& format = tnlString( "" ),
                   const Index lines = 0 ) const;
 
-   bool draw( ostream& str,
+   bool draw( std::ostream& str,
               const tnlString& format,
               tnlCSRMatrix< Real, Device, Index >* csrMatrix = 0,
               int verbose = 0 );
@@ -325,7 +323,7 @@ void tnlCusparseCSRMatrix< Real, Device, Index > :: multiplyRow( Index row, cons
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlCusparseCSRMatrix< Real, Device, Index > :: draw( ostream& str,
+bool tnlCusparseCSRMatrix< Real, Device, Index > :: draw( std::ostream& str,
                                                           const tnlString& format,
                                                           tnlCSRMatrix< Real, Device, Index >* csrMatrix,
                                                           int verbose )
@@ -335,7 +333,7 @@ bool tnlCusparseCSRMatrix< Real, Device, Index > :: draw( ostream& str,
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlCusparseCSRMatrix< Real, Device, Index > :: printOut( ostream& stream,
+void tnlCusparseCSRMatrix< Real, Device, Index > :: printOut( std::ostream& stream,
                                                               const tnlString& format,
                                                               const Index lines ) const
 {

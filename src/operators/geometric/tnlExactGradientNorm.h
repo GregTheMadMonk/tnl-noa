@@ -53,7 +53,7 @@ class tnlExactGradientNorm< 1, Real >
       {
          typedef typename Function::RealType RealType;
          const RealType f_x = function.template getPartialDerivative< 1, 0, 0 >( v, time );
-         return sqrt( this->epsilonSquare + f_x * f_x );
+         return ::sqrt( this->epsilonSquare + f_x * f_x );
       }
  
       template< typename Function,
@@ -75,7 +75,7 @@ class tnlExactGradientNorm< 1, Real >
          {
             const RealType f_x = function.template getPartialDerivative< 1, 0, 0 >( v, time );
             const RealType f_xx = function.template getPartialDerivative< 2, 0, 0 >( v, time );
-            const RealType Q = sqrt( this->epsilonSquare + f_x * f_x );
+            const RealType Q = ::sqrt( this->epsilonSquare + f_x * f_x );
             return ( f_x * f_xx ) / Q;
          }
          if( XDerivative == 0 )
@@ -122,7 +122,7 @@ class tnlExactGradientNorm< 2, Real >
          typedef typename Function::RealType RealType;
          const RealType f_x = function.template getPartialDerivative< 1, 0, 0 >( v, time );
          const RealType f_y = function.template getPartialDerivative< 0, 1, 0 >( v, time );
-         return sqrt( this->epsilonSquare + f_x * f_x + f_y * f_y );
+         return ::sqrt( this->epsilonSquare + f_x * f_x + f_y * f_y );
       }
  
       template< typename Function,
@@ -146,7 +146,7 @@ class tnlExactGradientNorm< 2, Real >
             const RealType f_y  = function.template getPartialDerivative< 0, 1, 0 >( v, time );
             const RealType f_xx = function.template getPartialDerivative< 2, 0, 0 >( v, time );
             const RealType f_xy = function.template getPartialDerivative< 1, 1, 0 >( v, time );
-            return ( f_x *  f_xx + f_y * f_xy ) / sqrt( this->epsilonSquare + f_x * f_x + f_y * f_y );
+            return ( f_x *  f_xx + f_y * f_xy ) / ::sqrt( this->epsilonSquare + f_x * f_x + f_y * f_y );
          }
          if( XDerivative == 0 && YDerivative == 1 )
          {
@@ -154,7 +154,7 @@ class tnlExactGradientNorm< 2, Real >
             const RealType f_y  = function.template getPartialDerivative< 0, 1, 0 >( v, time );
             const RealType f_xy = function.template getPartialDerivative< 1, 1, 0 >( v, time );
             const RealType f_yy = function.template getPartialDerivative< 0, 2, 0 >( v, time );
-            return ( f_x *  f_xy + f_y * f_yy ) / sqrt( this->epsilonSquare + f_x * f_x + f_y * f_y );
+            return ( f_x *  f_xy + f_y * f_yy ) / ::sqrt( this->epsilonSquare + f_x * f_x + f_y * f_y );
          }
          if( XDerivative == 0 && YDerivative == 0 )
             return this->operator()( function, v, time );
@@ -197,7 +197,7 @@ class tnlExactGradientNorm< 3, Real >
          const RealType f_x = function.template getPartialDerivative< 1, 0, 0 >( v, time );
          const RealType f_y = function.template getPartialDerivative< 0, 1, 0 >( v, time );
          const RealType f_z = function.template getPartialDerivative< 0, 0, 1 >( v, time );
-         return sqrt( this->epsilonSquare + f_x * f_x + f_y * f_y + f_z * f_z );
+         return std::sqrt( this->epsilonSquare + f_x * f_x + f_y * f_y + f_z * f_z );
       }
  
       template< typename Function,
@@ -225,7 +225,7 @@ class tnlExactGradientNorm< 3, Real >
             const RealType f_xy = function.template getPartialDerivative< 1, 1, 0 >( v, time );
             const RealType f_xz = function.template getPartialDerivative< 1, 0, 1 >( v, time );
             return ( f_x *  f_xx + f_y * f_xy + f_z * f_xz ) /
-               sqrt( this->epsilonSquare + f_x * f_x + f_y * f_y + f_z * f_z );
+               std::sqrt( this->epsilonSquare + f_x * f_x + f_y * f_y + f_z * f_z );
          }
          if( XDerivative == 0 && YDerivative == 1 && ZDerivative == 0 )
          {
@@ -236,7 +236,7 @@ class tnlExactGradientNorm< 3, Real >
             const RealType f_yy = function.template getPartialDerivative< 0, 2, 0 >( v, time );
             const RealType f_yz = function.template getPartialDerivative< 0, 1, 1 >( v, time );
             return ( f_x *  f_xy + f_y * f_yy + f_z * f_yz ) /
-               sqrt( this->epsilonSquare + f_x * f_x + f_y * f_y + f_z * f_z );
+               std::sqrt( this->epsilonSquare + f_x * f_x + f_y * f_y + f_z * f_z );
          }
          if( XDerivative == 0 && YDerivative == 0 && ZDerivative == 1 )
          {
@@ -247,7 +247,7 @@ class tnlExactGradientNorm< 3, Real >
             const RealType f_yz = function.template getPartialDerivative< 0, 1, 1 >( v, time );
             const RealType f_zz = function.template getPartialDerivative< 0, 0, 2 >( v, time );
             return ( f_x *  f_xz + f_y * f_yz + f_z * f_zz ) /
-               sqrt( this->epsilonSquare + f_x * f_x + f_y * f_y + f_z * f_z );
+               std::sqrt( this->epsilonSquare + f_x * f_x + f_y * f_y + f_z * f_z );
          }
          if( XDerivative == 0 && YDerivative == 0 && ZDerivative == 0 )
             return this->operator()( function, v, time );

@@ -21,6 +21,8 @@
 #include <core/arrays/tnlMultiArray.h>
 #include <core/tnlFile.h>
 
+using namespace TNL;
+
 #ifdef HAVE_CUDA
 template< typename ElementType, typename IndexType >
 __global__ void testSetGetElementKernel( tnlMultiArray< 1, ElementType, tnlCuda, IndexType >* u )

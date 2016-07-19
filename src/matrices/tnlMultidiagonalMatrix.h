@@ -175,7 +175,7 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    bool load( const tnlString& fileName );
 
-   void print( ostream& str ) const;
+   void print( std::ostream& str ) const;
 
    protected:
 

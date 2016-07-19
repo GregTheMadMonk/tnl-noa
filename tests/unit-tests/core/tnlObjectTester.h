@@ -20,6 +20,8 @@
 #include <tnlObject.h>
 #include <core/tnlFile.h>
 
+using namespace TNL;
+
 class tnlObjectTester : public CppUnit :: TestCase
 {
    public:

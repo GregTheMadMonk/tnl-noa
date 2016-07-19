@@ -10,6 +10,7 @@
 
 #pragma once 
 
+#include <cmath>
 #include <core/tnlConstants.h>
 #include <core/tnlCuda.h>
 
@@ -141,17 +142,17 @@ __device__  inline long int tnlCudaAbs( const long int& a )
 
 __device__  inline float tnlCudaAbs( const float& a )
 {
-   return fabs( a );
+   return abs( a );
 }
 
 __device__  inline double tnlCudaAbs( const double& a )
 {
-   return fabs( a );
+   return abs( a );
 }
 
 __device__  inline long double tnlCudaAbs( const long double& a )
 {
-   return fabs( ( double ) a );
+   return abs( ( double ) a );
 }
 
 __device__  inline int tnlCudaAbs( volatile const int& a )
@@ -166,24 +167,24 @@ __device__  inline long int tnlCudaAbs( volatile const long int& a )
 
 __device__  inline float tnlCudaAbs( volatile const float& a )
 {
-   return fabs( a );
+   return abs( a );
 }
 
 __device__  inline double tnlCudaAbs( volatile const double& a )
 {
-   return fabs( a );
+   return abs( a );
 }
 
 __device__  inline long double tnlCudaAbs( volatile const long double& a )
 {
-   return fabs( ( double ) a );
+   return abs( ( double ) a );
 }
 
 
 template< typename Type1, typename Type2 >
 __device__ Type1 tnlCudaPow( const Type1& x, const Type2& power )
 {
-   return ( Type1 ) pow( ( double ) x, ( double ) power );
+   return ( Type1 ) ::pow( ( double ) x, ( double ) power );
 }
 #endif
 
@@ -247,7 +248,7 @@ class tnlParallelReductionMin
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return Min( current, data1[ idx ] );
+      return min( current, data1[ idx ] );
    };
 
    __cuda_callable__ ResultType initialValue() { return tnlMaxValue< ResultType>(); };
@@ -292,7 +293,7 @@ class tnlParallelReductionMax
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return Max( current, data1[ idx ] );
+      return max( current, data1[ idx ] );
    };
 
    __cuda_callable__ ResultType initialValue() { return tnlMinValue< ResultType>(); };
@@ -426,7 +427,7 @@ class tnlParallelReductionAbsSum : public tnlParallelReductionSum< Real, Index >
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return current + tnlAbs( data1[ idx ] );
+      return current + abs( data1[ idx ] );
    };
 
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
@@ -455,7 +456,7 @@ class tnlParallelReductionAbsMin : public tnlParallelReductionMin< Real, Index >
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return Min( current, tnlAbs( data1[ idx ] ) );
+      return min( current, abs( data1[ idx ] ) );
    };
 
    __cuda_callable__ ResultType initialValue() { return tnlMaxValue< ResultType>(); };
@@ -484,7 +485,7 @@ class tnlParallelReductionAbsMax : public tnlParallelReductionMax< Real, Index >
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return Max( current, tnlAbs( data1[ idx ] ) );
+      return max( current, abs( data1[ idx ] ) );
    };
 
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
@@ -550,7 +551,7 @@ class tnlParallelReductionLpNorm : public tnlParallelReductionSum< Real, Index >
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return current + pow( tnlAbs( data1[ idx ] ), p );
+      return current + ::pow( abs( data1[ idx ] ), p );
    };
 
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
@@ -699,7 +700,7 @@ class tnlParallelReductionDiffMin : public tnlParallelReductionMin< Real, Index 
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return Min( current, data1[ idx ] - data2[ idx ] );
+      return min( current, data1[ idx ] - data2[ idx ] );
    };
 
    __cuda_callable__ ResultType initialValue() { return tnlMaxValue< ResultType>(); };
@@ -728,7 +729,7 @@ class tnlParallelReductionDiffMax : public tnlParallelReductionMax< Real, Index 
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return Max( current, data1[ idx ] - data2[ idx ] );
+      return max( current, data1[ idx ] - data2[ idx ] );
    };
 
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
@@ -757,7 +758,7 @@ class tnlParallelReductionDiffAbsSum : public tnlParallelReductionMax< Real, Ind
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return current + tnlAbs( data1[ idx ] - data2[ idx ] );
+      return current + abs( data1[ idx ] - data2[ idx ] );
    };
 
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
@@ -786,7 +787,7 @@ class tnlParallelReductionDiffAbsMin : public tnlParallelReductionMin< Real, Ind
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return Min( current, tnlAbs( data1[ idx ] - data2[ idx ] ) );
+      return min( current, abs( data1[ idx ] - data2[ idx ] ) );
    };
 
    __cuda_callable__ ResultType initialValue() { return tnlMaxValue< ResultType>(); };
@@ -815,7 +816,7 @@ class tnlParallelReductionDiffAbsMax : public tnlParallelReductionMax< Real, Ind
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return Max( current, tnlAbs( data1[ idx ] - data2[ idx ] ) );
+      return max( current, abs( data1[ idx ] - data2[ idx ] ) );
    };
 
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
@@ -884,7 +885,7 @@ class tnlParallelReductionDiffLpNorm : public tnlParallelReductionSum< Real, Ind
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return current + pow( tnlAbs( data1[ idx ] - data2[ idx ] ), p );
+      return current + ::pow( abs( data1[ idx ] - data2[ idx ] ), p );
    };
 
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };

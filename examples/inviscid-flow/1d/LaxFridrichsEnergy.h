@@ -4,6 +4,8 @@
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
 
+namespace TNL {
+
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
@@ -191,6 +193,7 @@ class LaxFridrichsEnergy< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index 
                                MatrixRow& matrixRow ) const;
 };
 
+} // namespace TNL
 
 #include "LaxFridrichsEnergy_impl.h"
 

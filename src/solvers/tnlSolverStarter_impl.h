@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSOLVERSTARTER_IMPL_H_
-#define TNLSOLVERSTARTER_IMPL_H_
+#pragma once
 
 #include <tnlConfig.h>
 #include <core/tnlLogger.h>
@@ -30,6 +29,8 @@
 #include <solvers/pde/tnlPDESolver.h>
 #include <solvers/tnlIterativeSolverMonitor.h>
 #include <solvers/ode/tnlODESolverMonitor.h>
+
+namespace TNL {
 
 template< typename Problem,
           typename ConfigTag,
@@ -91,7 +92,7 @@ bool tnlSolverStarter< ConfigTag > :: run( const tnlParameterContainer& paramete
    Problem problem;
    if( ! problem.setup( parameters ) )
    {
-      cerr << "The problem initiation failed!" << endl;
+      std::cerr << "The problem initiation failed!" << std::endl;
       return false;
    }
 
@@ -110,7 +111,7 @@ class tnlUserDefinedTimeDiscretisationSetter
          TimeStepper timeStepper;
          if( ! timeStepper.setup( parameters ) )
          {
-            cerr << "The time stepper initiation failed!" << endl;
+            std::cerr << "The time stepper initiation failed!" << std::endl;
             return false;
          }
          tnlSolverStarter< ConfigTag > solverStarter;
@@ -136,7 +137,7 @@ class tnlUserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
             return tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
          if( timeDiscretisation == "implicit" )
             return tnlSolverStarterTimeDiscretisationSetter< Problem, tnlImplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
-         cerr << "Uknown time discretisation: " << timeDiscretisation << "." << endl;
+         std::cerr << "Uknown time discretisation: " << timeDiscretisation << "." << std::endl;
          return false;
       }
 };
@@ -154,7 +155,7 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, TimeDiscretisation, Con
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
-         cerr << "The time discretisation " << parameters.getParameter< tnlString >( "time-discretisation" ) << " is not supported." << endl;
+         std::cerr << "The time discretisation " << parameters.getParameter< tnlString >( "time-discretisation" ) << " is not supported." << std::endl;
          return false;
       }
 };
@@ -171,7 +172,7 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlExplicitTimeDiscreti
          if( discreteSolver != "euler" &&
              discreteSolver != "merson" )
          {
-            cerr << "Unknown explicit discrete solver " << discreteSolver << ". It can be only: euler or merson." << endl;
+            std::cerr << "Unknown explicit discrete solver " << discreteSolver << ". It can be only: euler or merson." << std::endl;
             return false;
          }
          if( discreteSolver == "euler" )
@@ -198,7 +199,7 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
              discreteSolver != "gmres" &&
              discreteSolver != "tfqmr" )
          {
-            cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres or tfqmr." << endl;
+            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres or tfqmr." << std::endl;
             return false;
          }
 #else
@@ -209,7 +210,7 @@ class tnlSolverStarterTimeDiscretisationSetter< Problem, tnlSemiImplicitTimeDisc
              discreteSolver != "tfqmr" &&
              discreteSolver != "umfpack" )
          {
-            cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres, tfqmr or umfpack." << endl;
+            std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, gmres, tfqmr or umfpack." << std::endl;
             return false;
          }
 #endif
@@ -258,7 +259,7 @@ class tnlSolverStarterExplicitSolverSetter< Problem, ExplicitSolverTag, ConfigTa
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
-         cerr << "The explicit solver " << parameters.getParameter< tnlString >( "discrete-solver" ) << " is not supported." << endl;
+         std::cerr << "The explicit solver " << parameters.getParameter< tnlString >( "discrete-solver" ) << " is not supported." << std::endl;
          return false;
       }
 };
@@ -301,7 +302,7 @@ class tnlSolverStarterPreconditionerSetter
          if( preconditioner == "diagonal" )
             return tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, tnlDiagonalPreconditioner, ConfigTag >::run( problem, parameters );
 
-         cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal." << endl;
+         std::cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal." << std::endl;
          return false;
       }
 };
@@ -316,7 +317,7 @@ class tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, 
       static bool run( Problem& problem,
                        const tnlParameterContainer& parameters )
       {
-         cerr << "The semi-implicit solver " << parameters.getParameter< tnlString >( "discrete-solver" ) << " is not supported." << endl;
+         std::cerr << "The semi-implicit solver " << parameters.getParameter< tnlString >( "discrete-solver" ) << " is not supported." << std::endl;
          return false;
       }
 };
@@ -378,7 +379,7 @@ class tnlSolverStarterExplicitTimeStepperSetter
          TimeStepper timeStepper;
          if( ! timeStepper.setup( parameters ) )
          {
-            cerr << "The time stepper initiation failed!" << endl;
+            std::cerr << "The time stepper initiation failed!" << std::endl;
             return false;
          }
          timeStepper.setSolver( explicitSolver );
@@ -423,7 +424,7 @@ class tnlSolverStarterSemiImplicitTimeStepperSetter
          TimeStepper timeStepper;
          if( ! timeStepper.setup( parameters ) )
          {
-            cerr << "The time stepper initiation failed!" << endl;
+            std::cerr << "The time stepper initiation failed!" << std::endl;
             return false;
          }
          timeStepper.setSolver( linearSystemSolver );
@@ -450,8 +451,8 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
          discreteSolver == "gmres" ) &&
          timeDiscretisation != "semi-implicit" )
    {
-      cerr << "The '" << discreteSolver << "' solver can be used only with the semi-implicit time discretisation but not with the "
-           <<  timeDiscretisation << " one." << endl;
+      std::cerr << "The '" << discreteSolver << "' solver can be used only with the semi-implicit time discretisation but not with the "
+           <<  timeDiscretisation << " one." << std::endl;
       return false;
    }
 
@@ -494,7 +495,7 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
       //solver. setVerbose( this->verbose );
       return setSemiImplicitTimeDiscretisation< Problem >( problem, parameters, solver );
    }
-   cerr << "Unknown discrete solver " << discreteSolver << "." << endl;
+   std::cerr << "Unknown discrete solver " << discreteSolver << "." << std::endl;
    return false;
 }
 #endif
@@ -526,18 +527,18 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    parameters. getParameter< int >( "log-width", logWidth );
    if( verbose )
    {
-      tnlLogger logger( logWidth, cout );
+      tnlLogger logger( logWidth,std::cout );
       solver.writeProlog( logger, parameters );
    }
    tnlString logFileName;
    bool haveLogFile = parameters.getParameter< tnlString >( "log-file", logFileName );
    if( haveLogFile )
    {
-      fstream logFile;
-      logFile.open( logFileName.getString(), ios :: out );
+      std::fstream logFile;
+      logFile.open( logFileName.getString(), std::ios::out );
       if( ! logFile )
       {
-         cerr << "Unable to open the log file " << logFileName << "." << endl;
+         std::cerr << "Unable to open the log file " << logFileName << "." << std::endl;
          return false;
       }
       else
@@ -564,17 +565,17 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    {
       returnCode = false;
       if( verbose )
-         cerr << endl << "The solver did not converge. " << endl;
-      fstream logFile;
-      logFile.open( logFileName.getString(), ios::out | ios::app );
+         std::cerr << std::endl << "The solver did not converge. " << std::endl;
+      std::fstream logFile;
+      logFile.open( logFileName.getString(), std::ios::out | std::ios::app );
       if( ! logFile )
       {
-         cerr << "Unable to open the log file " << logFileName << "." << endl;
+         std::cerr << "Unable to open the log file " << logFileName << "." << std::endl;
          return false;
       }
       else
       {
-         logFile << "The solver did not converge. " << endl;
+         logFile << "The solver did not converge. " << std::endl;
          logFile.close();
       }
    }
@@ -589,14 +590,14 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
     * Write an epilog
     */
    if( verbose )
-      writeEpilog( cout, solver );
+      writeEpilog(std::cout, solver );
    if( haveLogFile )
    {
-      fstream logFile;
-      logFile.open( logFileName.getString(), ios::out | ios::app );
+      std::fstream logFile;
+      logFile.open( logFileName.getString(), std::ios::out | std::ios::app );
       if( ! logFile )
       {
-         cerr << "Unable to open the log file " << logFileName << "." << endl;
+         std::cerr << "Unable to open the log file " << logFileName << "." << std::endl;
          return false;
       }
       else
@@ -610,7 +611,7 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
 
 template< typename ConfigTag >
    template< typename Solver >
-bool tnlSolverStarter< ConfigTag > :: writeEpilog( ostream& str, const Solver& solver  )
+bool tnlSolverStarter< ConfigTag > :: writeEpilog( std::ostream& str, const Solver& solver  )
 {
    tnlLogger logger( logWidth, str );
    logger.writeSeparator();
@@ -630,4 +631,4 @@ bool tnlSolverStarter< ConfigTag > :: writeEpilog( ostream& str, const Solver& s
    return true;
 }
 
-#endif /* TNLSOLVERSTARTER_IMPL_H_ */
+} // namespace TNL

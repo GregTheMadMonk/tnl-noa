@@ -41,7 +41,7 @@ class tnlIndexedSet
 
    Element& getElement( KeyType key );
  
-   void print( ostream& str ) const;
+   void print( std::ostream& str ) const;
 
    protected:
 
@@ -73,7 +73,7 @@ class tnlIndexedSet
 template< typename Element,
           typename Index,
           typename Key >
-ostream& operator <<( ostream& str, tnlIndexedSet< Element, Index, Key >& set );
+std::ostream& operator <<( std::ostream& str, tnlIndexedSet< Element, Index, Key >& set );
 
 } // namespace TNL
 

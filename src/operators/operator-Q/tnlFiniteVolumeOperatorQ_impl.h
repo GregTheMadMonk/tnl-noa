@@ -26,8 +26,8 @@ getType()
 {
    return tnlString( "tnlFiniteVolumeOperatorQ< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + ", 0 >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + ", 0 >";
 }
 
 template< typename MeshReal,
@@ -41,8 +41,8 @@ getType()
 {
    return tnlString( "tnlFiniteVolumeOperatorQ< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + ", 1 >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + ", 1 >";
 }
 
 template< typename MeshReal,
@@ -175,8 +175,8 @@ getType()
 {
    return tnlString( "tnlFiniteVolumeOperatorQ< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + ", 0 >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + ", 0 >";
 }
 
 template< typename MeshReal,
@@ -190,8 +190,8 @@ getType()
 {
    return tnlString( "tnlFiniteVolumeOperatorQ< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + ", 1 >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + ", 1 >";
 }
 
 template< typename MeshReal,
@@ -324,27 +324,27 @@ operator()( const MeshEntity& entity,
    const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const IndexType& cellIndex = entity.getIndex();
     if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 0 ) )
-        return sqrt( this->eps + ( u[ neighbourEntities.template getEntityIndex< 0,1 >() ] - u[ cellIndex ] ) * 
+        return ::sqrt( this->eps + ( u[ neighbourEntities.template getEntityIndex< 0,1 >() ] - u[ cellIndex ] ) * 
                 ( u[ neighbourEntities.template getEntityIndex< 0,1 >() ] - u[ cellIndex ] )
                 * mesh.template getSpaceStepsProducts< 0, -1 >() * mesh.template getSpaceStepsProducts< 0, -1 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0 >() ] - u[ cellIndex ] ) 
                 * ( u[ neighbourEntities.template getEntityIndex< 1,0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0 >() * mesh.template getSpaceStepsProducts< -1, 0 >() );
     if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
-        return sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0 >( mesh, entity, u, time, 1, 0 ) * 
+        return ::sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0 >( mesh, entity, u, time, 1, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,1,0 >( mesh, entity, u, time, 1, 0 ) + 
                this->template boundaryDerivative< MeshEntity, Vector,0,1 >( mesh, entity, u, time, 1, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,1 >( mesh, entity, u, time, 1, 0 ) );
     if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
-        return sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0 >( mesh, entity, u, time, -1, 0 ) * 
+        return ::sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0 >( mesh, entity, u, time, -1, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,1,0 >( mesh, entity, u, time, -1, 0 ) + 
                this->template boundaryDerivative< MeshEntity, Vector,0,1 >( mesh, entity, u, time, -1, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,1 >( mesh, entity, u, time, -1, 0 ) );
     if ( ( dx == 0 ) && ( dy == 1 ) && ( dz == 0 ) )
-        return sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0 >( mesh, entity, u, time, 0, 1 ) * 
+        return ::sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0 >( mesh, entity, u, time, 0, 1 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,1,0 >( mesh, entity, u, time, 0, 1 ) + 
                this->template boundaryDerivative< MeshEntity, Vector,0,1 >( mesh, entity, u, time, 0, 1 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,1 >( mesh, entity, u, time, 0, 1 ) );
     if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
-        return sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0 >( mesh, entity, u, time, 0, -1 ) * 
+        return ::sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0 >( mesh, entity, u, time, 0, -1 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,1,0 >( mesh, entity, u, time, 0, -1 ) + 
                this->template boundaryDerivative< MeshEntity, Vector,0,1 >( mesh, entity, u, time, 0, -1 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,1 >( mesh, entity, u, time, 0, -1 ) );
@@ -382,8 +382,8 @@ getType()
 {
    return tnlString( "tnlFiniteVolumeOperatorQ< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + ", 0 >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + ", 0 >";
 }
 
 template< typename MeshReal,
@@ -397,8 +397,8 @@ getType()
 {
    return tnlString( "tnlFiniteVolumeOperatorQ< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + ", 1 >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + ", 1 >";
 }
 
 template< typename MeshReal,
@@ -574,49 +574,49 @@ operator()(
    const typename MeshEntity::MeshType& mesh = entity.getMesh();
    const IndexType& cellIndex = entity.getIndex();     
     if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 0 ) )
-        return sqrt( this->eps + ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] ) * 
+        return ::sqrt( this->eps + ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] ) * 
                 ( u[ neighbourEntities.template getEntityIndex< 0,1,0 >() ] - u[ cellIndex ] )
                 * mesh.template getSpaceStepsProducts< 0, -1, 0 >() * mesh.template getSpaceStepsProducts< 0, -1, 0 >() + ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] ) 
                 * ( u[ neighbourEntities.template getEntityIndex< 1,0,0 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< -1, 0, 0 >() * mesh.template getSpaceStepsProducts< -1, 0, 0 >()
                 + ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >() ] - u[ cellIndex ] ) 
                 * ( u[ neighbourEntities.template getEntityIndex< 0,0,1 >() ] - u[ cellIndex ] ) * mesh.template getSpaceStepsProducts< 0, 0, -1 >() * mesh.template getSpaceStepsProducts< 0, 0, -1 >() );
     if ( ( dx == 1 ) && ( dy == 0 ) && ( dz == 0 ) )
-        return sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 1, 0, 0 ) * 
+        return ::sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 1, 0, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 1, 0, 0 ) + 
                this->template boundaryDerivative< MeshEntity, Vector,0,1,0 >( mesh, entity, u, time, 1, 0, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,1,0 >( mesh, entity, u, time, 1, 0, 0 ) + 
                this->template boundaryDerivative< MeshEntity, Vector,0,0,1 >( mesh, entity, u, time, 1, 0, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,0,1 >( mesh, entity, u, time, 1, 0, 0 ) );
     if ( ( dx == -1 ) && ( dy == 0 ) && ( dz == 0 ) )
-        return sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, -1, 0, 0 ) * 
+        return ::sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, -1, 0, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, -1, 0, 0 ) + 
                this->template boundaryDerivative< MeshEntity, Vector,0,1,0 >( mesh, entity, u, time, -1, 0, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,1,0 >( mesh, entity, u, time, -1, 0, 0 ) +
                this->template boundaryDerivative< MeshEntity, Vector,0,0,1 >( mesh, entity, u, time, -1, 0, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,0,1 >( mesh, entity, u, time, -1, 0, 0 ) );
     if ( ( dx == 0 ) && ( dy == 1 ) && ( dz == 0 ) )
-        return sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 0, 1, 0 ) * 
+        return ::sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 0, 1, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 0, 1, 0 ) + 
                this->template boundaryDerivative< MeshEntity, Vector,0,1,0 >( mesh, entity, u, time, 0, 1, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,1,0 >( mesh, entity, u, time, 0, 1, 0 ) +
                this->template boundaryDerivative< MeshEntity, Vector,0,0,1 >( mesh, entity, u, time, 0, 1, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,0,1 >( mesh, entity, u, time, 0, 1, 0 ));
     if ( ( dx == 0 ) && ( dy == -1 ) && ( dz == 0 ) )
-        return sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 0, -1, 0 ) * 
+        return ::sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 0, -1, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 0, -1, 0 ) + 
                this->template boundaryDerivative< MeshEntity, Vector,0,1,0 >( mesh, entity, u, time, 0, -1, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,1,0 >( mesh, entity, u, time, 0, -1, 0 ) +
                this->template boundaryDerivative< MeshEntity, Vector,0,0,1 >( mesh, entity, u, time, 0, -1, 0 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,0,1 >( mesh, entity, u, time, 0, -1, 0 ) );
     if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == 1 ) )
-        return sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 0, 0, 1 ) * 
+        return ::sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 0, 0, 1 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 0, 0, 1 ) + 
                this->template boundaryDerivative< MeshEntity, Vector,0,1,0 >( mesh, entity, u, time, 0, 0, 1 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,1,0 >( mesh, entity, u, time, 0, 0, 1 ) +
                this->template boundaryDerivative< MeshEntity, Vector,0,0,1 >( mesh, entity, u, time, 0, 0, 1 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,0,1 >( mesh, entity, u, time, 0, 0, 1 ));
     if ( ( dx == 0 ) && ( dy == 0 ) && ( dz == -1 ) )
-        return sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 0, 0, -1 ) * 
+        return ::sqrt( this->eps + this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 0, 0, -1 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,1,0,0 >( mesh, entity, u, time, 0, 0, -1 ) + 
                this->template boundaryDerivative< MeshEntity, Vector,0,1,0 >( mesh, entity, u, time, 0, 0, -1 ) * 
                this->template boundaryDerivative< MeshEntity, Vector,0,1,0 >( mesh, entity, u, time, 0, 0, -1 ) +

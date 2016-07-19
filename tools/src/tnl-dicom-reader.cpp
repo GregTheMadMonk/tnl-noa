@@ -14,6 +14,8 @@
 #include <core/images/tnlDicomSeries.h>
 #include <core/mfilename.h>
 
+using namespace TNL;
+
 void setupConfig( tnlConfigDescription& config )
 {
    config.addDelimiter( "General parameters" );
@@ -47,11 +49,11 @@ bool processDicomSeries( const tnlParameterContainer& parameters )
    for( int i = 0; i < dicomSeriesNames.getSize(); i++ )
    {
       const tnlString& seriesName = dicomSeriesNames[ i ];
-      cout << "Reading a file " << seriesName << endl;
+      std::cout << "Reading a file " << seriesName << std::endl;
       tnlDicomSeries dicomSeries( seriesName.getString() );
       if( !dicomSeries.isDicomSeriesLoaded() )
       {
-         cerr << "Loading of the DICOM series " << seriesName << " failed." << endl;
+         std::cerr << "Loading of the DICOM series " << seriesName << " failed." << std::endl;
       }
       if( i == 0 )
       {
@@ -59,16 +61,16 @@ bool processDicomSeries( const tnlParameterContainer& parameters )
             return false;
          roi.setGrid( grid, verbose );
          vector.setSize( grid.template getEntitiesCount< typename GridType::Cell >() );
-         cout << "Writing grid to file " << meshFile << endl;
+         std::cout << "Writing grid to file " << meshFile << std::endl;
          grid.save( meshFile );
       }
-      cout << "The series consists of " << dicomSeries.getImagesCount() << " images." << endl;
+      std::cout << "The series consists of " << dicomSeries.getImagesCount() << " images." << std::endl;
       for( int imageIdx = 0; imageIdx < dicomSeries.getImagesCount(); imageIdx++ )
       {
          dicomSeries.getImage( imageIdx, grid, roi, vector );
          tnlString fileName;
          FileNameBaseNumberEnding( seriesName.getString(), imageIdx, 2, ".tnl", fileName );
-         cout << "Writing file " << fileName << " ... " << endl;
+         std::cout << "Writing file " << fileName << " ... " << std::endl;
          vector.save( fileName );
       }
    }
@@ -88,7 +90,7 @@ int main( int argc, char* argv[] )
    if( ! parameters.checkParameter( "dicom-files" ) &&
        ! parameters.checkParameter( "dicom-series") )
    {
-       cerr << "Neither DICOM series nor DICOM files are given." << endl;
+       std::cerr << "Neither DICOM series nor DICOM files are given." << std::endl;
        configDescription.printUsage( argv[ 0 ] );
        return EXIT_FAILURE;
    }
@@ -99,6 +101,6 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 #else
-   cerr << "TNL was not compiled with DCMTK support." << endl;
+   std::cerr << "TNL was not compiled with DCMTK support." << std::endl;
 #endif
 }

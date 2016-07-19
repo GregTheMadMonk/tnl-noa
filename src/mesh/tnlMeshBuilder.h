@@ -30,7 +30,7 @@ class tnlMeshBuilder
 
    bool setPointsCount( const GlobalIndexType& points )
    {
-      tnlAssert( 0 <= points, cerr << "pointsCount = " << points );
+      tnlAssert( 0 <= points, std::cerr << "pointsCount = " << points );
       this->points.setSize( points );
       this->pointsSet.setSize( points );
       pointsSet.setValue( false );
@@ -39,7 +39,7 @@ class tnlMeshBuilder
  
    bool setCellsCount( const GlobalIndexType& cellsCount )
    {
-      tnlAssert( 0 <= cellsCount, cerr << "cellsCount = " << cellsCount );
+      tnlAssert( 0 <= cellsCount, std::cerr << "cellsCount = " << cellsCount );
       this->cellSeeds.setSize( cellsCount );
       return true;
    }
@@ -51,7 +51,7 @@ class tnlMeshBuilder
    void setPoint( GlobalIndexType index,
                  const PointType& point )
    {
-	tnlAssert( 0 <= index && index < getPointsCount(), cerr << "Index = " << index );
+	tnlAssert( 0 <= index && index < getPointsCount(), std::cerr << "Index = " << index );
 
         this->points[ index ] = point;
         this->pointsSet[ index ] = true;
@@ -59,7 +59,7 @@ class tnlMeshBuilder
 
    CellSeedType& getCellSeed( GlobalIndexType index )
    {
-      tnlAssert( 0 <= index && index < getCellsCount(), cerr << "Index = " << index );
+      tnlAssert( 0 <= index && index < getCellsCount(), std::cerr << "Index = " << index );
  
       return this->cellSeeds[ index ];
    }
@@ -81,7 +81,7 @@ class tnlMeshBuilder
       {
          if( !allPointsSet() )
          {
-            cerr << "Mesh builder error: Not all points were set." << endl;
+            std::cerr << "Mesh builder error: Not all points were set." << std::endl;
             return false;
          }
 
@@ -91,7 +91,7 @@ class tnlMeshBuilder
             for( LocalIndexType j = 0; j < cornerIds.getSize(); j++ )
                if( cornerIds[ j ] < 0 || getPointsCount() <= cornerIds[ j ] )
                {
-                  cerr << "Cell seed " << i << " is referencing unavailable point " << cornerIds[ j ] << endl;
+                  std::cerr << "Cell seed " << i << " is referencing unavailable point " << cornerIds[ j ] << std::endl;
                   return false;
                }
          }

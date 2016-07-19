@@ -8,12 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLITERATIVESOLVERMONITOR_IMPL_H_
-#define TNLITERATIVESOLVERMONITOR_IMPL_H_
+#pragma once
 
 #include <iomanip>
 
-using namespace std;
+namespace TNL {
 
 template< typename Real, typename Index>
 tnlIterativeSolverMonitor< Real, Index > :: tnlIterativeSolverMonitor()
@@ -66,11 +65,11 @@ void tnlIterativeSolverMonitor< Real, Index > :: refresh( bool force )
 {
    if( this->verbose > 0 && ( force || this->getIterations() % this->refreshRate == 0 ) )
    {
-      cout << " ITER:" << setw( 8 ) << this->getIterations()
-           << " RES:" << setprecision( 5 ) << setw( 12 ) << this->getResidue()
-           << " CPU: " << setw( 8 ) << this->getCPUTime()
-           << " ELA: " << setw( 8 ) << this->getRealTime()
-           << "   \r" << flush;
+     std::cout << " ITER:" << std::setw( 8 ) << this->getIterations()
+           << " RES:" << std::setprecision( 5 ) << std::setw( 12 ) << this->getResidue()
+           << " CPU: " << std::setw( 8 ) << this->getCPUTime()
+           << " ELA: " << std::setw( 8 ) << this->getRealTime()
+           << "   \r" << std::flush;
    }
    this->refreshing ++;
 }
@@ -94,5 +93,4 @@ double tnlIterativeSolverMonitor< Real, Index > :: getRealTime()
    return rtTimer.getTime();
 }
 
-
-#endif /* TNLITERATIVESOLVERMONITOR_IMPL_H_ */
+} // namespace TNL

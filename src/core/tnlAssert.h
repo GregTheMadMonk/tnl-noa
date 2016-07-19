@@ -20,8 +20,12 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#endif
+
 namespace TNL {
 
+#ifndef NDEBUG   
+   
 #ifdef HAVE_CUDA
 #define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )                                    \
    if( ! ( ___tnl__assert_condition ) )                                                                  \
@@ -48,8 +52,6 @@ namespace TNL {
 #endif /* HAVE_CUDA */
 #else /* #ifndef NDEBUG */
 #define tnlAssert( ___tnl__assert_condition, ___tnl__assert_command )
-
-} // namespace TNL
-
 #endif /* #ifndef NDEBUG */
 
+} // namespace TNL

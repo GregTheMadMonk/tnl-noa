@@ -49,8 +49,8 @@ class tnlTwoSidedGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
    {
       return tnlString( "tnlTwoSidedGradientNorm< " ) +
          MeshType::getType() + ", " +
-         ::getType< Real >() + ", " +
-         ::getType< Index >() + " >";
+        TNL::getType< Real >() + ", " +
+        TNL::getType< Index >() + " >";
    }
 
    template< typename MeshFunction, typename MeshEntity >
@@ -63,7 +63,7 @@ class tnlTwoSidedGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
       tnlBackwardFiniteDifference< typename MeshEntity::MeshType, 1, 0, 0, Real, Index > XBackwardDifference;
       const RealType u_x_f = XForwardDifference( u, entity );
       const RealType u_x_b = XBackwardDifference( u, entity );
-      return sqrt( this->epsSquare + 0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b ) );
+      return ::sqrt( this->epsSquare + 0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b ) );
    }
  
    void setEps( const Real& eps )
@@ -103,8 +103,8 @@ class tnlTwoSidedGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
    {
       return tnlString( "tnlTwoSidedGradientNorm< " ) +
          MeshType::getType() + ", " +
-         ::getType< Real >() + ", " +
-         ::getType< Index >() + " >";
+        TNL::getType< Real >() + ", " +
+        TNL::getType< Index >() + " >";
 
    }
  
@@ -123,7 +123,7 @@ class tnlTwoSidedGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
       const RealType u_y_f = YForwardDifference( u, entity );
       const RealType u_y_b = YBackwardDifference( u, entity );
  
-      return sqrt( this->epsSquare +
+      return ::sqrt( this->epsSquare +
          0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b +
                  u_y_f * u_y_f + u_y_b * u_y_b ) );
    }
@@ -165,8 +165,8 @@ class tnlTwoSidedGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, 
    {
       return tnlString( "tnlTwoSidedGradientNorm< " ) +
          MeshType::getType() + ", " +
-         ::getType< Real >() + ", " +
-         ::getType< Index >() + " >";
+        TNL::getType< Real >() + ", " +
+        TNL::getType< Index >() + " >";
    }
 
    template< typename MeshFunction, typename MeshEntity >
@@ -188,7 +188,7 @@ class tnlTwoSidedGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, 
       const RealType u_z_f = ZForwardDifference( u, entity );
       const RealType u_z_b = ZBackwardDifference( u, entity );
  
-      return sqrt( this->epsSquare +
+      return ::sqrt( this->epsSquare +
          0.5 * ( u_x_f * u_x_f + u_x_b * u_x_b +
                  u_y_f * u_y_f + u_y_b * u_y_b +
                  u_z_f * u_z_f + u_z_b * u_z_b ) );

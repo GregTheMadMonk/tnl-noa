@@ -23,11 +23,11 @@ bool tnlMatrixReader< Matrix >::readMtxFile( const tnlString& fileName,
                                              Matrix& matrix,
                                              bool verbose )
 {
-   fstream file;
-   file.open( fileName.getString(), ios::in );
+   std::fstream file;
+   file.open( fileName.getString(), std::ios::in );
    if( ! file )
    {
-      cerr << "I am not able to open the file " << fileName << "." << endl;
+      std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
       return false;
    }
    return readMtxFile( file, matrix, verbose );
@@ -57,7 +57,7 @@ bool tnlMatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
    if( ! matrix.setDimensions( rows, columns ) ||
        ! rowLengths.setSize( rows ) )
    {
-      cerr << "Not enough memory to allocate the sparse or the full matrix for testing." << endl;
+      std::cerr << "Not enough memory to allocate the sparse or the full matrix for testing." << std::endl;
       return false;
    }
 
@@ -82,7 +82,7 @@ bool tnlMatrixReader< Matrix >::verifyMtxFile( std::istream& file,
    if( ! readMtxHeader( file, rows, columns, symmetricMatrix, false ) )
       return false;
    file.clear();
-   file.seekg( 0, ios::beg );
+   file.seekg( 0, std::ios::beg );
    tnlString line;
    bool dimensionsLine( false );
    IndexType processedElements( 0 );
@@ -102,24 +102,24 @@ bool tnlMatrixReader< Matrix >::verifyMtxFile( std::istream& file,
       if( value != matrix.getElement( row-1, column-1 ) ||
           ( symmetricMatrix && value != matrix.getElement( column-1, row-1 ) ) )
       {
-         cerr << "*** !!! VERIFICATION ERROR !!! *** " << endl
-              << "The elements differ at " << row-1 << " row " << column-1 << " column." << endl
+         std::cerr << "*** !!! VERIFICATION ERROR !!! *** " << std::endl
+              << "The elements differ at " << row-1 << " row " << column-1 << " column." << std::endl
               << "The matrix value is " << matrix.getElement( row-1, column-1 )
-              << " while the file value is " << value << "." << endl;
+              << " while the file value is " << value << "." << std::endl;
          return false;
       }
       processedElements++;
       if( symmetricMatrix && row != column )
          processedElements++;
       if( verbose )
-         cout << " Verifying the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements() << "                       \r" << flush;
+        std::cout << " Verifying the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements() << "                       \r" << std::flush;
    }
    file.clear();
    long int fileSize = file.tellg();
    if( verbose )
-      cout << " Verifying the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements()
+     std::cout << " Verifying the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements()
            << " -> " << timer.getTime()
-           << " sec. i.e. " << fileSize / ( timer.getTime() * ( 1 << 20 ))  << "MB/s." << endl;
+           << " sec. i.e. " << fileSize / ( timer.getTime() * ( 1 << 20 ))  << "MB/s." << std::endl;
    return true;
 }
 
@@ -131,7 +131,7 @@ bool tnlMatrixReader< Matrix >::findLineByElement( std::istream& file,
                                                    IndexType& lineNumber )
 {
    file.clear();
-   file.seekg( 0, ios::beg );
+   file.seekg( 0, std::ios::beg );
    bool symmetricMatrix( false );
    bool dimensionsLine( false );
    lineNumber = 0;
@@ -168,18 +168,18 @@ bool tnlMatrixReader< Matrix >::checkMtxHeader( const tnlString& header,
       return false;
    if( parsedLine[ 1 ] != "matrix" )
    {
-      cerr << "Error: 'matrix' expected in the header line (" << header << ")." << endl;
+      std::cerr << "Error: 'matrix' expected in the header line (" << header << ")." << std::endl;
       return false;
    }
    if( parsedLine[ 2 ] != "coordinates" &&
        parsedLine[ 2 ] != "coordinate" )
    {
-      cerr << "Error: Only 'coordinates' format is supported now, not " << parsedLine[ 2 ] << "." << endl;
+      std::cerr << "Error: Only 'coordinates' format is supported now, not " << parsedLine[ 2 ] << "." << std::endl;
       return false;
    }
    if( parsedLine[ 3 ] != "real" )
    {
-      cerr << "Error: Only 'real' matrices are supported, not " << parsedLine[ 3 ] << "." << endl;
+      std::cerr << "Error: Only 'real' matrices are supported, not " << parsedLine[ 3 ] << "." << std::endl;
       return false;
    }
    if( parsedLine[ 4 ] != "general" )
@@ -188,7 +188,7 @@ bool tnlMatrixReader< Matrix >::checkMtxHeader( const tnlString& header,
          symmetric = true;
       else
       {
-         cerr << "Error: Only 'general' matrices are supported, not " << parsedLine[ 4 ] << "." << endl;
+         std::cerr << "Error: Only 'general' matrices are supported, not " << parsedLine[ 4 ] << "." << std::endl;
          return false;
       }
    }
@@ -203,7 +203,7 @@ bool tnlMatrixReader< Matrix >::readMtxHeader( std::istream& file,
                                                bool verbose )
 {
    file.clear();
-   file.seekg( 0, ios::beg );
+   file.seekg( 0, std::ios::beg );
    tnlString line;
    bool headerParsed( false );
    tnlList< tnlString > parsedLine;
@@ -216,14 +216,14 @@ bool tnlMatrixReader< Matrix >::readMtxHeader( std::istream& file,
          if( ! headerParsed )
             return false;
          if( verbose && symmetric )
-            cout << "The matrix is SYMMETRIC ... ";
+           std::cout << "The matrix is SYMMETRIC ... ";
          continue;
       }
       if( line[ 0 ] == '%' ) continue;
       if( ! headerParsed )
       {
-         cerr << "Uknown format of the file. We expect line like this:" << endl;
-         cerr << "%%MatrixMarket matrix coordinate real general" << endl;
+         std::cerr << "Uknown format of the file. We expect line like this:" << std::endl;
+         std::cerr << "%%MatrixMarket matrix coordinate real general" << std::endl;
          return false;
       }
 
@@ -231,18 +231,18 @@ bool tnlMatrixReader< Matrix >::readMtxHeader( std::istream& file,
       line. parse( parsedLine );
       if( parsedLine. getSize() != 3 )
       {
-         cerr << "Wrong number of parameters in the matrix header." << endl;
+         std::cerr << "Wrong number of parameters in the matrix header." << std::endl;
          return false;
       }
       rows = atoi( parsedLine[ 0 ]. getString() );
       columns = atoi( parsedLine[ 1 ]. getString() );
       if( verbose )
-         cout << " The matrix has " << rows
-              << " rows and " << columns << " columns. " << endl;
+        std::cout << " The matrix has " << rows
+              << " rows and " << columns << " columns. " << std::endl;
 
       if( rows <= 0 || columns <= 0 )
       {
-         cerr << "Wrong parameters in the matrix header." << endl;
+         std::cerr << "Wrong parameters in the matrix header." << std::endl;
          return false;
       }
       return true;
@@ -258,7 +258,7 @@ bool tnlMatrixReader< Matrix >::computeCompressedRowsLengthsFromMtxFile( std::is
                                                               bool verbose )
 {
    file.clear();
-   file.seekg( 0,  ios::beg );
+   file.seekg( 0,  std::ios::beg );
    rowLengths.setValue( 0 );
    tnlString line;
    bool dimensionsLine( false );
@@ -279,15 +279,15 @@ bool tnlMatrixReader< Matrix >::computeCompressedRowsLengthsFromMtxFile( std::is
       numberOfElements++;
       if( column > columns || row > rows )
       {
-         cerr << "There is an element at position " << row << ", " << column << " out of the matrix dimensions " << rows << " x " << columns << "." << endl;
+         std::cerr << "There is an element at position " << row << ", " << column << " out of the matrix dimensions " << rows << " x " << columns << "." << std::endl;
          return false;
       }
       if( verbose )
-         cout << " Counting the matrix elements ... " << numberOfElements / 1000 << " thousands      \r" << flush;
+        std::cout << " Counting the matrix elements ... " << numberOfElements / 1000 << " thousands      \r" << std::flush;
       rowLengths[ row - 1 ]++;
       if( rowLengths[ row - 1 ] > columns )
       {
-         cerr << "There are more elements ( " << rowLengths[ row - 1 ] << " ) than the matrix columns ( " << columns << " ) at the row " << row << "." << endl;
+         std::cerr << "There are more elements ( " << rowLengths[ row - 1 ] << " ) than the matrix columns ( " << columns << " ) at the row " << row << "." << std::endl;
          return false;
       }
       if( symmetricMatrix && row != column )
@@ -295,7 +295,7 @@ bool tnlMatrixReader< Matrix >::computeCompressedRowsLengthsFromMtxFile( std::is
          rowLengths[ column - 1 ]++;
          if( rowLengths[ column - 1 ] > columns )
          {
-            cerr << "There are more elements ( " << rowLengths[ row - 1 ] << " ) than the matrix columns ( " << columns << " ) at the row " << column << " ." << endl;
+            std::cerr << "There are more elements ( " << rowLengths[ row - 1 ] << " ) than the matrix columns ( " << columns << " ) at the row " << column << " ." << std::endl;
             return false;
          }
       }
@@ -303,9 +303,9 @@ bool tnlMatrixReader< Matrix >::computeCompressedRowsLengthsFromMtxFile( std::is
    file.clear();
    long int fileSize = file.tellg();
    if( verbose )
-      cout << " Counting the matrix elements ... " << numberOfElements / 1000
+     std::cout << " Counting the matrix elements ... " << numberOfElements / 1000
            << " thousands  -> " << timer.getTime()
-           << " sec. i.e. " << fileSize / ( timer.getTime() * ( 1 << 20 ))  << "MB/s." << endl;
+           << " sec. i.e. " << fileSize / ( timer.getTime() * ( 1 << 20 ))  << "MB/s." << std::endl;
    return true;
 }
 
@@ -316,7 +316,7 @@ bool tnlMatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& fil
                                                                bool verbose )
 {
    file.clear();
-   file.seekg( 0,  ios::beg );
+   file.seekg( 0,  std::ios::beg );
    tnlString line;
    bool dimensionsLine( false );
    IndexType processedElements( 0 );
@@ -341,14 +341,14 @@ bool tnlMatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& fil
          processedElements++;
       }
       if( verbose )
-         cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements() << "                       \r" << flush;
+        std::cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements() << "                       \r" << std::flush;
    }
    file.clear();
    long int fileSize = file.tellg();
    if( verbose )
-      cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements()
+     std::cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements()
               << " -> " << timer.getTime()
-              << " sec. i.e. " << fileSize / ( timer.getTime() * ( 1 << 20 ))  << "MB/s." << endl;
+              << " sec. i.e. " << fileSize / ( timer.getTime() * ( 1 << 20 ))  << "MB/s." << std::endl;
    return true;
 }
 
@@ -362,7 +362,7 @@ bool tnlMatrixReader< Matrix >::parseMtxLineWithElement( const tnlString& line,
    line.parse( parsedLine );
    if( parsedLine.getSize() != 3 )
    {
-      cerr << "Wrong number of parameters in the matrix row at line:" << line << endl;
+      std::cerr << "Wrong number of parameters in the matrix row at line:" << line << std::endl;
       return false;
    }
    row = atoi( parsedLine[ 0 ].getString() );

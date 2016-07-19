@@ -21,7 +21,7 @@ int main( int argc, char* argv[] )
    dbgFunctionName( "", "main" );
    //dbgInit( "debug.dbg" );
 
-   cout << "tnlDebug test ... " << endl;
+   std::cout << "tnlDebug test ... " << std::endl;
    return 0;
 
 }

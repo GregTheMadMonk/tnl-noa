@@ -45,7 +45,7 @@ template< typename Device > class tnlSharedMemoryTester : public CppUnit :: Test
    {
       tnlSharedMemory< double > sharedMemory( 1234567, 100, true );
       sharedMemory. setReadingCounter( 0 );
-      sharedMemory. setWritingCounter( 0 );
+      sharedMemory. std::setwritingCounter( 0 );
       double* data = sharedMemory. getData();
       for( int i = 0; i < 100; i ++ )
          data[ i ] = 3.14567;
@@ -60,7 +60,7 @@ template< typename Device > class tnlSharedMemoryTester : public CppUnit :: Test
       CPPUNIT_ASSERT( sharedMemory. getReadingCounter() == 1 );
       CPPUNIT_ASSERT( sharedMemory. getWritingCounter() == 1 );
       sharedMemory. setReadingCounter( 2 );
-      sharedMemory. setWritingCounter( 2 );
+      sharedMemory. std::setwritingCounter( 2 );
       for( int i = 0; i < 100; i ++ )
          data[ i ] = 3.14567;
       CPPUNIT_ASSERT( sharedMemory. getReadingCounter() == 2 );

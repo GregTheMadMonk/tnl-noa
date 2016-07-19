@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLBOUNDARYCONDITIONSSETTER_IMPL_H
-#define	TNLBOUNDARYCONDITIONSSETTER_IMPL_H
+#pragma once
 
 #include <type_traits>
+
+namespace TNL {
 
 template< typename MeshFunction,
           typename BoundaryConditions >
@@ -50,7 +51,5 @@ apply( const BoundaryConditions& boundaryConditions,
    }
 }
 
-
-
-#endif	/* TNLBOUNDARYCONDITIONSSETTER_IMPL_H */
+} // namespace TNL
 

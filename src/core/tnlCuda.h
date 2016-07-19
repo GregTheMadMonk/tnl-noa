@@ -75,7 +75,7 @@ class tnlCuda
    static void freeFromDevice( ObjectType* object );
 
    template< typename ObjectType >
-   static void print( const ObjectType* object, ostream& str = std::cout );
+   static void print( const ObjectType* object, std::ostream& str = std::cout );
 
 #ifdef HAVE_CUDA
    template< typename Index >

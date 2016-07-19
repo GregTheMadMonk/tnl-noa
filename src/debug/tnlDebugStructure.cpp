@@ -39,13 +39,13 @@ void tnlDebugStructure :: setDebug( bool debug )
 
 void tnlDebugStructure :: AppendGroup( tnlDebugGroup* group )
 {
-  //cout << "Adding group ... " << endl;
+  //cout << "Adding group ... " << std::endl;
   debug_groups. push_back( group );
 }
 //--------------------------------------------------------------------------
 void tnlDebugStructure :: AppendAloneEntry( tnlDebugEntry* entry )
 {
-   //cout << "Adding entry ... " << endl;
+   //cout << "Adding entry ... " << std::endl;
    alone_entries. push_back( entry );
 }
 //--------------------------------------------------------------------------
@@ -54,20 +54,20 @@ bool tnlDebugStructure :: Debug( const char* group_name,
 {
    if( ! debug ) return false;
 #ifdef DEBUG
-   //cout << "Debug: " << group_name << " :: " << function_name << endl;
+   //cout << "Debug: " << group_name << " :: " << function_name << std::endl;
 #endif
    if( strlen( group_name ) != 0 )
    {
-      //cout << "size = " << debug_groups. Size() << endl;
+      //cout << "size = " << debug_groups. Size() << std::endl;
       list< tnlDebugGroup* > :: iterator it1 = debug_groups. begin();
       while( it1 != debug_groups. end() )
       {
          tnlDebugGroup* group = * it1;
-         //cout << group -> group_name << endl;
+         //cout << group -> group_name << std::endl;
          if( group -> group_name == group_name )
          {
 #ifdef DEBUG
-            //cout << "Class " << group_name << " found." << endl;
+            //cout << "Class " << group_name << " found." << std::endl;
 #endif
             if( ! group -> debug ) return false;
             list< tnlDebugEntry* > :: iterator it2 = group -> debug_entries. begin();
@@ -144,19 +144,19 @@ void tnlDebugStructure :: Print()
    while( it1 != debug_groups. end() )
    {
       tnlDebugGroup* grp = * it1;
-      cout << "class " << grp -> group_name
+      std::cout << "class " << grp -> group_name
            << "[ debug = " <<  booltostr( grp -> debug )
            << ", default = " << booltostr( grp -> default_debug )
-           << " ]" << endl << "{" << endl;
+           << " ]" << std::endl << "{" << std::endl;
       list< tnlDebugEntry* > :: iterator it2 = grp -> debug_entries. begin();
       while( it2 != grp -> debug_entries. end() )
       {
-         cout << "   " << ( * it2 ) -> function_name
+         std::cout << "   " << ( * it2 ) -> function_name
               << "[ debug = " << booltostr( ( * it2 ) -> debug )
-              << " ]" << endl;
+              << " ]" << std::endl;
          it2 ++;
       }
-      cout << "}" << endl;
+      std::cout << "}" << std::endl;
       it1 ++;
    }
 }

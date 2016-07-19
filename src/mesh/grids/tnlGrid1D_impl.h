@@ -38,9 +38,9 @@ tnlString tnlGrid< 1, Real, Device, Index >::getType()
 {
    return tnlString( "tnlGrid< " ) +
           tnlString( getMeshDimensions() ) + ", " +
-          tnlString( ::getType< RealType >() ) + ", " +
+          tnlString( TNL::getType< RealType >() ) + ", " +
           tnlString( Device::getDeviceType() ) + ", " +
-          tnlString( ::getType< IndexType >() ) + " >";
+          tnlString( TNL::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
@@ -89,7 +89,7 @@ template< typename Real,
           typename Index  >
 void tnlGrid< 1, Real, Device, Index >::setDimensions( const Index xSize )
 {
-   tnlAssert( xSize > 0, cerr << "xSize = " << xSize );
+   tnlAssert( xSize > 0, std::cerr << "xSize = " << xSize );
    this->dimensions.x() = xSize;
    this->numberOfCells = xSize;
    this->numberOfVertices = xSize + 1;
@@ -241,7 +241,7 @@ tnlGrid< 1, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
    tnlAssert( xPow >= -2 && xPow <= 2,
-              cerr << " xPow = " << xPow );
+              std::cerr << " xPow = " << xPow );
    return this->spaceStepsProducts[ xPow + 2 ];
 }
 
@@ -271,7 +271,7 @@ tnlGrid< 1, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
         cell.getCoordinates().x()++ )
    {
       IndexType c = this->getEntityIndex( cell );
-      maxDiff = Max( maxDiff, tnlAbs( f1[ c ] - f2[ c ] ) );
+      maxDiff = max( maxDiff, abs( f1[ c ] - f2[ c ] ) );
    }
    return maxDiff;
 }
@@ -294,10 +294,10 @@ tnlGrid< 1, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
         cell.getCoordinates().x()++ )
    {
       IndexType c = this->getEntityIndex( cell );
-      lpNorm += pow( tnlAbs( f1[ c ] - f2[ c ] ), p );
+      lpNorm += ::pow( abs( f1[ c ] - f2[ c ] ), p );
    }
    lpNorm *= cellVolume;
-   return pow( lpNorm, 1.0 / p );
+   return ::pow( lpNorm, 1.0 / p );
 }
 
 template< typename Real,
@@ -311,7 +311,7 @@ bool tnlGrid< 1, Real, Device, Index >::save( tnlFile& file ) const
        ! this->proportions.save( file ) ||
        ! this->dimensions.save( file ) )
    {
-      cerr << "I was not able to save the domain description of a tnlGrid." << endl;
+      std::cerr << "I was not able to save the domain description of a tnlGrid." << std::endl;
       return false;
    }
    return true;
@@ -329,7 +329,7 @@ bool tnlGrid< 1, Real, Device, Index >::load( tnlFile& file )
        ! this->proportions.load( file ) ||
        ! dimensions.load( file ) )
    {
-      cerr << "I was not able to load the domain description of a tnlGrid." << endl;
+      std::cerr << "I was not able to load the domain description of a tnlGrid." << std::endl;
       return false;
    }
    this->setDimensions( dimensions );
@@ -374,19 +374,19 @@ bool tnlGrid< 1, Real, Device, Index >::write( const MeshFunction& function,
 {
    if( this->template getEntitiesCount< Cell >() != function. getSize() )
    {
-      cerr << "The size ( " << function. getSize()
+      std::cerr << "The size ( " << function. getSize()
            << " ) of the mesh function does not agree with the DOFs ( "
-           << this->template getEntitiesCount< Cell >() << " ) of a mesh." << endl;
+           << this->template getEntitiesCount< Cell >() << " ) of a mesh." << std::endl;
       return false;
    }
-   fstream file;
-   file. open( fileName. getString(), ios::out );
+   std::fstream file;
+   file. open( fileName. getString(), std::ios::out );
    if( ! file )
    {
-      cerr << "I am not able to open the file " << fileName << "." << endl;
+      std::cerr << "I am not able to open the file " << fileName << "." << std::endl;
       return false;
    }
-   file << setprecision( 12 );
+   file << std::setprecision( 12 );
    const RealType hx = getSpaceSteps(). x();
    if( format == "gnuplot" )
    {
@@ -398,7 +398,7 @@ bool tnlGrid< 1, Real, Device, Index >::write( const MeshFunction& function,
          VertexType v = entity.getCenter();
          tnlGnuplotWriter::write( file,  v );
          tnlGnuplotWriter::write( file,  function[ this->getEntityIndex( entity ) ] );
-         file << endl;
+         file << std::endl;
       }
    }
    file. close();

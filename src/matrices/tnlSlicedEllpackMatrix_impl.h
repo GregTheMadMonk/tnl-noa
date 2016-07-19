@@ -31,7 +31,7 @@ template< typename Real,
 tnlString tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getType()
 {
    return tnlString( "tnlSlicedEllpackMatrix< ") +
-          tnlString( ::getType< Real >() ) +
+          tnlString( TNL::getType< Real >() ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( " >" );
@@ -54,8 +54,8 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setDimensions( co
                                                                               const IndexType columns )
 {
    tnlAssert( rows > 0 && columns > 0,
-              cerr << "rows = " << rows
-                   << " columns = " << columns << endl );
+              std::cerr << "rows = " << rows
+                   << " columns = " << columns << std::endl );
    return tnlSparseMatrix< Real, Device, Index >::setDimensions( rows, columns );
 }
 
@@ -128,7 +128,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::operator == ( con
 {
    tnlAssert( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
-              cerr << "this->getRows() = " << this->getRows()
+              std::cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
                    << " this->getColumns() = " << this->getColumns()
                    << " matrix.getColumns() = " << matrix.getColumns() );
@@ -184,7 +184,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElementFast( c
 {
    tnlAssert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
-              cerr << " row = " << row
+              std::cerr << " row = " << row
                    << " column = " << column
                    << " this->rows = " << this->rows
                    << " this->columns = " << this-> columns );
@@ -232,7 +232,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElement( const
 {
    tnlAssert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
-              cerr << " row = " << row
+              std::cerr << " row = " << row
                    << " column = " << column
                    << " this->rows = " << this->rows
                    << " this->columns = " << this-> columns );
@@ -512,7 +512,7 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addMatrix( const 
                                                                           const RealType& matrixMultiplicator,
                                                                           const RealType& thisMatrixMultiplicator )
 {
-   tnlAssert( false, cerr << "TODO: implement" );
+   tnlAssert( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -525,7 +525,7 @@ template< typename Real,
 void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getTransposition( const tnlSlicedEllpackMatrix< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   tnlAssert( false, cerr << "TODO: implement" );
+   tnlAssert( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -540,8 +540,8 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::performSORIterati
                                                                                     const RealType& omega ) const
 {
    tnlAssert( row >=0 && row < this->getRows(),
-              cerr << "row = " << row
-                   << " this->getRows() = " << this->getRows() << endl );
+              std::cerr << "row = " << row
+                   << " this->getRows() = " << this->getRows() << std::endl );
 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
@@ -564,7 +564,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::performSORIterati
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-      cerr << "There is zero on the diagonal in " << row << "-th row of a matrix. I cannot perform SOR iteration." << endl;
+      std::cerr << "There is zero on the diagonal in " << row << "-th row of a matrix. I cannot perform SOR iteration." << std::endl;
       return false;
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
@@ -620,7 +620,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::print( ostream& str ) const
+void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -638,7 +638,7 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::print( ostream& s
          str << " Col:" << column << "->" << this->values.getElement( elementPtr ) << "\t";
          elementPtr++;
       }
-      str << endl;
+      str << std::endl;
    }
 }
 
@@ -657,7 +657,7 @@ __device__ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::comput
       return;
    while( rowInSliceIdx < SliceSize && rowIdx < this->getRows() )
    {
-      maxRowLength = Max( maxRowLength, rowLengths[ rowIdx ] );
+      maxRowLength = max( maxRowLength, rowLengths[ rowIdx ] );
       rowIdx++;
       rowInSliceIdx++;
    }
@@ -723,7 +723,7 @@ class tnlSlicedEllpackMatrixDeviceDependentCode< tnlHost >
          Index row( 0 ), slice( 0 ), sliceRowLength( 0 );
          while( row < matrix.getRows() )
          {
-            sliceRowLength = Max( rowLengths.getElement( row++ ), sliceRowLength );
+            sliceRowLength = max( rowLengths.getElement( row++ ), sliceRowLength );
             if( row % SliceSize == 0 )
             {
                matrix.sliceCompressedRowsLengths.setElement( slice, sliceRowLength );

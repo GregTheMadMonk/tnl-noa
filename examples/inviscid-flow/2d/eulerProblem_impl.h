@@ -1,5 +1,4 @@
-#ifndef eulerPROBLEM_IMPL_H_
-#define eulerPROBLEM_IMPL_H_
+#pragma once
 
 #include <core/mfilename.h>
 #include <matrices/tnlMatrixSetter.h>
@@ -15,6 +14,8 @@
 #include "EulerVelXGetter.h"
 #include "EulerVelYGetter.h"
 #include "EulerVelGetter.h"
+
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -109,15 +110,15 @@ setInitialCondition( const tnlParameterContainer& parameters,
    double velLX = parameters.getParameter< double >( "left-velocityX" );
    double velLY = parameters.getParameter< double >( "left-velocityY" );
    double preL = parameters.getParameter< double >( "left-pressure" );
-   double eL = ( preL / (gamma - 1) ) + 0.5 * rhoL * pow(velLX,2)+pow(velLY,2);
+   double eL = ( preL / (gamma - 1) ) + 0.5 * rhoL * ::pow(velLX,2) + ::pow(velLY,2);
    double rhoR = parameters.getParameter< double >( "right-density" );
    double velRX = parameters.getParameter< double >( "right-velocityX" );
    double velRY = parameters.getParameter< double >( "right-velocityY" );
    double preR = parameters.getParameter< double >( "right-pressure" );
-   double eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * pow(velRX,2)+pow(velRY,2);
+   double eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * ::pow(velRX,2) + ::pow(velRY,2);
    double x0 = parameters.getParameter< double >( "riemann-border" );
    int size = mesh.template getEntitiesCount< Cell >();
-   int size2 = pow(size,2);
+   int size2 = ::pow(size,2);
    this->rho.bind(dofs,0,size2);
    this->rhoVelX.bind(dofs,size2,size2);
    this->rhoVelY.bind(dofs,2*size2,size2);
@@ -135,7 +136,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
                this->rhoVelX[j*size+i] = rhoL * velLX;
                this->rhoVelY[j*size+i] = rhoL * velLY;
                this->energy[j*size+i] = eL;
-               this->velocity[j*size+i] = sqrt(pow(velLX,2)+pow(velLY,2));
+               this->velocity[j*size+i] = ::sqrt( ::pow(velLX,2) + ::pow(velLY,2) );
                this->velocityX[j*size+i] = velLX;
                this->velocityY[j*size+i] = velLY;
                this->pressure[j*size+i] = preL;
@@ -146,7 +147,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
                this->rhoVelX[j*size+i] = rhoR * velRX;
                this->rhoVelY[j*size+i] = rhoR * velRY;
                this->energy[j*size+i] = eR;
-               this->velocity[j*size+i] = sqrt(pow(velRX,2)+pow(velRY,2));
+               this->velocity[j*size+i] = ::sqrt( ::pow(velRX,2) + :: pow(velRY,2) );
                this->velocityX[j*size+i] = velRX;
                this->velocityY[j*size+i] = velRY;
                this->pressure[j*size+i] = preR;
@@ -193,7 +194,7 @@ makeSnapshot( const RealType& time,
               DofVectorType& dofs,
               MeshDependentDataType& meshDependentData )
 {
-   cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
+  std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
    tnlString fileName;
    FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
@@ -431,4 +432,5 @@ postIterate( const RealType& time,
 
 }
 
-#endif /* eulerPROBLEM_IMPL_H_ */
+} // namespace TNL
+

@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLITERATIVESOLVER_H_
-#define TNLITERATIVESOLVER_H_
+#pragma once
 
 #include <config/tnlConfigDescription.h>
 #include <config/tnlParameterContainer.h>
 #include <solvers/tnlIterativeSolverMonitor.h>
+
+namespace TNL {
 
 template< typename Real, typename Index >
 class tnlIterativeSolver
@@ -87,6 +88,6 @@ class tnlIterativeSolver
    Index refreshRate;
 };
 
-#include <solvers/tnlIterativeSolver_impl.h>
+} // namespace TNL
 
-#endif /* TNLITERATIVESOLVER_H_ */
+#include <solvers/tnlIterativeSolver_impl.h>

@@ -43,7 +43,7 @@ template< typename Real,
 tnlString tnlCSRMatrix< Real, Device, Index >::getType()
 {
    return tnlString( "tnlCSRMatrix< ") +
-          tnlString( ::getType< Real>() ) +
+          tnlString( TNL::getType< Real>() ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( " >" );
@@ -164,7 +164,7 @@ bool tnlCSRMatrix< Real, Device, Index >::addElementFast( const IndexType row,
 {
    /*tnlAssert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
-              cerr << " row = " << row
+              std::cerr << " row = " << row
                    << " column = " << column
                    << " this->rows = " << this->rows
                    << " this->columns = " << this-> columns );*/
@@ -214,7 +214,7 @@ bool tnlCSRMatrix< Real, Device, Index >::addElement( const IndexType row,
 {
    tnlAssert( row >= 0 && row < this->rows &&
                column >= 0 && column < this->columns,
-               cerr << " row = " << row
+               std::cerr << " row = " << row
                     << " column = " << column
                     << " this->rows = " << this->rows
                     << " this->columns = " << this->columns );
@@ -454,7 +454,7 @@ void tnlCSRMatrix< Real, Device, Index >::addMatrix( const tnlCSRMatrix< Real2, 
                                                                           const RealType& matrixMultiplicator,
                                                                           const RealType& thisMatrixMultiplicator )
 {
-   tnlAssert( false, cerr << "TODO: implement" );
+   tnlAssert( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -466,7 +466,7 @@ template< typename Real,
 void tnlCSRMatrix< Real, Device, Index >::getTransposition( const tnlCSRMatrix< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   tnlAssert( false, cerr << "TODO: implement" );
+   tnlAssert( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -480,8 +480,8 @@ bool tnlCSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
                                                                const RealType& omega ) const
 {
    tnlAssert( row >=0 && row < this->getRows(),
-              cerr << "row = " << row
-                   << " this->getRows() = " << this->getRows() << endl );
+              std::cerr << "row = " << row
+                   << " this->getRows() = " << this->getRows() << std::endl );
 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
@@ -499,7 +499,7 @@ bool tnlCSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-      cerr << "There is zero on the diagonal in " << row << "-th row of the matrix. I cannot perform SOR iteration." << endl;
+      std::cerr << "There is zero on the diagonal in " << row << "-th row of the matrix. I cannot perform SOR iteration." << std::endl;
       return false;
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
@@ -548,7 +548,7 @@ bool tnlCSRMatrix< Real, Device, Index >::load( const tnlString& fileName )
 template< typename Real,
           typename Device,
           typename Index >
-void tnlCSRMatrix< Real, Device, Index >::print( ostream& str ) const
+void tnlCSRMatrix< Real, Device, Index >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -560,7 +560,7 @@ void tnlCSRMatrix< Real, Device, Index >::print( ostream& str ) const
              ( column = this->columnIndexes.getElement( elementPtr ) ) < this->columns &&
              column != this->getPaddingIndex() )
          str << " Col:" << column << "->" << this->values.getElement( elementPtr++ ) << "\t";
-      str << endl;
+      str << std::endl;
    }
 }
 
@@ -670,7 +670,7 @@ void tnlCSRMatrix< Real, Device, Index >::vectorProductCuda( const InVector& inV
 {
    IndexType globalIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    const IndexType warpStart = warpSize * ( globalIdx / warpSize );
-   const IndexType warpEnd = Min( warpStart + warpSize, this->getRows() );
+   const IndexType warpEnd = min( warpStart + warpSize, this->getRows() );
    const IndexType inWarpIdx = globalIdx % warpSize;
 
    if( this->getCudaKernelType() == vector )
@@ -680,7 +680,7 @@ void tnlCSRMatrix< Real, Device, Index >::vectorProductCuda( const InVector& inV
     * Hybrid mode
     */
    const Index firstRow = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x;
-   const IndexType lastRow = Min( this->getRows(), firstRow + blockDim. x );
+   const IndexType lastRow = min( this->getRows(), firstRow + blockDim. x );
    const IndexType nonzerosPerRow = ( this->rowPointers[ lastRow ] - this->rowPointers[ firstRow ] ) /
                                     ( lastRow - firstRow );
 

@@ -114,7 +114,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
    if( ! this->solution.load( initialConditionFile ) )
    {
-      cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
+      std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
    }
    return true;
@@ -160,10 +160,10 @@ makeSnapshot( const RealType& time,
               DofVectorType& dofs,
               MeshDependentDataType& meshDependentData )
 {
-   cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
+  std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
 
    this->bindDofs( mesh, dofs );
-   //cout << "dofs = " << dofs << endl;
+   //cout << "dofs = " << dofs << std::endl;
    tnlString fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
    if( ! this->solution.save( fileName ) )
@@ -195,7 +195,7 @@ getExplicitRHS( const RealType& time,
 
 //   this->differentialOperator.computeFirstGradient(mesh,time,u);
  
-   //cout << "u = " << u << endl;
+   //cout << "u = " << u << std::endl;
    //this->bindDofs( mesh, u );
    MeshFunctionType u( mesh, inDofs );
    MeshFunctionType fu( mesh, outDofs );
@@ -216,8 +216,8 @@ getExplicitRHS( const RealType& time,
       time,
       u );
 
-   /*cout << "u = " << u << endl;
-   cout << "fu = " << fu << endl;
+   /*cout << "u = " << u << std::endl;
+  std::cout << "fu = " << fu << std::endl;
    u.save( "u.tnl" );
    fu.save( "fu.tnl" );
    getchar();*/
@@ -257,9 +257,9 @@ assemblyLinearSystem( const RealType& time,
       u,
       matrix,
       b );
-   /*matrix.print( cout );
-   cout << endl << b << endl;
-   cout << endl << u << endl;
+   /*matrix.print(std::cout );
+  std::cout << std::endl << b << std::endl;
+  std::cout << std::endl << u << std::endl;
    getchar();
    //abort();*/
 }

@@ -9,10 +9,11 @@
 /* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLNEUMANNBOUNDARYCONDITIONS_H
-#define	TNLNEUMANNBOUNDARYCONDITIONS_H
+#pragma once
 
 #include <functions/tnlFunctionAdapter.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Function,
@@ -410,14 +411,15 @@ template< typename Mesh,
           typename Function,
           typename Real,
           typename Index >
-ostream& operator << ( ostream& str, const tnlNeumannBoundaryConditions< Mesh, Function, Real, Index >& bc )
+std::ostream& operator << ( std::ostream& str, const tnlNeumannBoundaryConditions< Mesh, Function, Real, Index >& bc )
 {
    str << "Neumann boundary conditions: function = " << bc.getFunction();
    return str;
 }
 
 
+} // namespace TNL
+
 #include <operators/tnlNeumannBoundaryConditions_impl.h>
 
-#endif	/* TNLNEUMANNBOUNDARYCONDITIONS_H */
 

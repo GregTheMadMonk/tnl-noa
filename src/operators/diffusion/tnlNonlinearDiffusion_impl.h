@@ -18,8 +18,8 @@ getType()
 {
    return tnlString( "tnlNonlinearDiffusion< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + "," +
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + "," +
           NonlinearDiffusionOperator::getType() + " >";
 }
 
@@ -95,8 +95,8 @@ getType()
 {
    return tnlString( "tnlNonlinearDiffusion< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + "," +
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + "," +
           NonlinearDiffusionOperator::getType() + " >";
 }
 
@@ -172,8 +172,8 @@ getType()
 {
    return tnlString( "tnlNonlinearDiffusion< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + "," +
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + "," +
           NonlinearDiffusionOperator::getType() + " >";
 }
 

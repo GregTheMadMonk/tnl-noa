@@ -1,8 +1,9 @@
-#ifndef eulerPROBLEM_H_
-#define eulerPROBLEM_H_
+#pragma once
 
 #include <problems/tnlPDEProblem.h>
 #include <functions/tnlMeshFunction.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -35,16 +36,16 @@ class eulerProblem:
       typedef typename DifferentialOperator::VelocityY VelocityY;
       typedef typename DifferentialOperator::Pressure Pressure;
 
-    //definition
-	tnlVector< RealType, DeviceType, IndexType > _uRho;
-	tnlVector< RealType, DeviceType, IndexType > _uRhoVelocityX;
-	tnlVector< RealType, DeviceType, IndexType > _uRhoVelocityY;
-	tnlVector< RealType, DeviceType, IndexType > _uEnergy;
+      //definition
+	   tnlVector< RealType, DeviceType, IndexType > _uRho;
+	   tnlVector< RealType, DeviceType, IndexType > _uRhoVelocityX;
+	   tnlVector< RealType, DeviceType, IndexType > _uRhoVelocityY;
+	   tnlVector< RealType, DeviceType, IndexType > _uEnergy;
 
-	tnlVector< RealType, DeviceType, IndexType > _fuRho;
-	tnlVector< RealType, DeviceType, IndexType > _fuRhoVelocityX;
-	tnlVector< RealType, DeviceType, IndexType > _fuRhoVelocityY;
-	tnlVector< RealType, DeviceType, IndexType > _fuEnergy;
+	   tnlVector< RealType, DeviceType, IndexType > _fuRho;
+	   tnlVector< RealType, DeviceType, IndexType > _fuRhoVelocityX;
+	   tnlVector< RealType, DeviceType, IndexType > _fuRhoVelocityY;
+	   tnlVector< RealType, DeviceType, IndexType > _fuEnergy;
 
       tnlVector< RealType, DeviceType, IndexType > rho;
       tnlVector< RealType, DeviceType, IndexType > rhoVelX;
@@ -115,6 +116,7 @@ class eulerProblem:
       RightHandSide rightHandSide;
 };
 
+} // namespace TNL
+
 #include "eulerProblem_impl.h"
 
-#endif /* eulerPROBLEM_H_ */

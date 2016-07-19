@@ -32,7 +32,8 @@ set( tnl_CUDA__SOURCES ${tnl_functions_CUDA__SOURCES}
                        ${tnl_matrices_CUDA__SOURCES}
                        ${tnl_problems_CUDA__SOURCES}
                        ${tnl_operators_CUDA__SOURCES}
-                       ${tnl_solvers_CUDA__SOURCES} )
+                       ${tnl_solvers_CUDA__SOURCES}
+                       tnlObject.cpp )
                  
                  
 if( BUILD_CUDA )

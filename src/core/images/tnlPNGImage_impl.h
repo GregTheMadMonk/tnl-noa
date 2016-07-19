@@ -34,7 +34,7 @@ readHeader()
    png_byte header[ headerSize ];
    if( fread( header, sizeof( char ), headerSize, this->file ) != headerSize )
    {
-      cerr << "I am not able to read PNG image header." << endl;
+      std::cerr << "I am not able to read PNG image header." << std::endl;
       return false;
    }
    bool isPNG = !png_sig_cmp( header, 0, headerSize );
@@ -90,10 +90,10 @@ readHeader()
    this->width = ( Index ) png_get_image_width( this->png_ptr, this->info_ptr );
    this->bit_depth = png_get_bit_depth( this->png_ptr, this->info_ptr );
    this->color_type = png_get_color_type( this->png_ptr, this->info_ptr );
-   cout << this->height << " x " << this->width << endl;
+  std::cout << this->height << " x " << this->width << std::endl;
    return true;
 #else
-   //cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
+   //cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << std::endl;
    return false;
 #endif
 }
@@ -107,7 +107,7 @@ openForRead( const tnlString& fileName )
    this->file = fopen( fileName.getString(), "r" );
    if( ! this->file )
    {
-      cerr << "Unable to open the file " << fileName << endl;
+      std::cerr << "Unable to open the file " << fileName << std::endl;
       return false;
    }
    this->fileOpen = true;
@@ -201,14 +201,14 @@ read( const tnlRegionOfInterest< Index > roi,
                }
                break;
             default:
-               cerr << "Unknown PNG color type." << endl;
+               std::cerr << "Unknown PNG color type." << std::endl;
                return false;
          }
       }
    }
    return true;
 #else
-   //cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
+   //cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << std::endl;
    return false;
 #endif
 }
@@ -266,7 +266,7 @@ writeHeader( const tnlGrid< 2, Real, Device, Index >& grid )
    png_write_info( png_ptr, info_ptr );
  
 #else
-   cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << endl;
+   std::cerr << "TNL was not compiled with support of PNG. You may still use PGM format." << std::endl;
    return false;
 #endif
 }
@@ -283,7 +283,7 @@ openForWrite( const tnlString& fileName,
    this->file = fopen( fileName.getString(), "w" );
    if( ! this->file )
    {
-      cerr << "Unable to open the file " << fileName << endl;
+      std::cerr << "Unable to open the file " << fileName << std::endl;
       return false;
    }
    this->fileOpen = true;

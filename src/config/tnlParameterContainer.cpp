@@ -44,7 +44,7 @@ tnlParameterContainer::
 addParameter( const tnlString& name,
               const tnlString& value )
 {
-   return parameters. Append( new tnlParameter< tnlString >( name, ::getType< tnlString >().getString(), tnlString( value ) ) );
+   return parameters. Append( new tnlParameter< tnlString >( name, TNL::getType< tnlString >().getString(), tnlString( value ) ) );
 }
 
 bool
@@ -57,16 +57,16 @@ setParameter( const tnlString& name,
    {
       if( parameters[ i ] -> name == name )
       {
-         if( parameters[ i ] -> type == ::getType< tnlString >() )
+         if( parameters[ i ] -> type == TNL::getType< tnlString >() )
          {
             ( ( tnlParameter< tnlString > * ) parameters[ i ] )->value = value;
             return true;
          }
          else
          {
-            cerr << "Parameter " << name << " already exists with different type "
+            std::cerr << "Parameter " << name << " already exists with different type "
                  << parameters[ i ] -> type << " not "
-                 << ::getType< tnlString>() << endl;
+                 << TNL::getType< tnlString>() << std::endl;
             abort();
             return false;
          }
@@ -174,7 +174,7 @@ parseCommandLine( int argc, char* argv[],
       const char* _option = argv[ i ];
       if( _option[ 0 ] != '-' )
       {
-         cerr << "Unknown option " << _option << ". Options must have prefix '--' or '-'." << endl;
+         std::cerr << "Unknown option " << _option << ". Options must have prefix '--' or '-'." << std::endl;
          parse_error = true;
          continue;
       }
@@ -187,7 +187,7 @@ parseCommandLine( int argc, char* argv[],
       const tnlConfigEntryBase* entry;
       if( ( entry = config_description.getEntry( option ) ) == NULL )
       {
-         cerr << "Unknown parameter " << _option << "." << endl;
+         std::cerr << "Unknown parameter " << _option << "." << std::endl;
          parse_error = true;
       }
       else
@@ -196,13 +196,13 @@ parseCommandLine( int argc, char* argv[],
          const char* value = argv[ ++ i ];
          if( ! value )
          {
-            cerr << "Missing value for the parameter " << option << "." << endl;
+            std::cerr << "Missing value for the parameter " << option << "." << std::endl;
             return false;
          }
          tnlList< tnlString > parsedEntryType;
          if( ! parseObjectType( entryType, parsedEntryType ) )
          {
-            cerr << "Internal error: Uknown config entry type " << entryType << "." << endl;
+            std::cerr << "Internal error: Uknown config entry type " << entryType << "." << std::endl;
             return false;
          }
          if( parsedEntryType[ 0 ] == "tnlList" )
@@ -238,7 +238,7 @@ parseCommandLine( int argc, char* argv[],
                   bool bool_val;
                   if( ! matob( value, bool_val ) )
                   {
-                     cerr << "Yes/true or no/false is required for the parameter " << option << "." << endl;
+                     std::cerr << "Yes/true or no/false is required for the parameter " << option << "." << std::endl;
                      parse_error = true;
                   }
                   else bool_list -> Append( bool_val );
@@ -299,7 +299,7 @@ parseCommandLine( int argc, char* argv[],
                bool bool_val;
                if( ! matob( value, bool_val ) )
                {
-                  cerr << "Yes/true or no/false is required for the parameter " << option << "." << endl;
+                  std::cerr << "Yes/true or no/false is required for the parameter " << option << "." << std::endl;
                   parse_error = true;
                }
                else parameters. addParameter< bool >( option, bool_val );
@@ -309,7 +309,7 @@ parseCommandLine( int argc, char* argv[],
             {
                /*if( ! isdigit( value ) )
                {
-                  cerr << "Integer constant is required for the parameter " << option << "." << endl;
+                  std::cerr << "Integer constant is required for the parameter " << option << "." << std::endl;
                   parse_error = true;
                   continue;
                }*/
@@ -321,7 +321,7 @@ parseCommandLine( int argc, char* argv[],
             {
                /*if( ! isdigit( value ) )
                {
-                  cerr << "Real constant is required for the parameter " << option << "." << endl;
+                  std::cerr << "Real constant is required for the parameter " << option << "." << std::endl;
                   parse_error = true;
                   continue;
                }*/

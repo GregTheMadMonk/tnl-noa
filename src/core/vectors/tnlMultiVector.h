@@ -348,16 +348,16 @@ class tnlMultiVector< 4, Real, Device, Index > : public tnlVector< Real, Device,
 };
 
 template< typename Real, typename device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiVector< 1, Real, device, Index >& Vector );
+std::ostream& operator << ( std::ostream& str, const tnlMultiVector< 1, Real, device, Index >& Vector );
 
 template< typename Real, typename device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiVector< 2, Real, device, Index >& Vector );
+std::ostream& operator << ( std::ostream& str, const tnlMultiVector< 2, Real, device, Index >& Vector );
 
 template< typename Real, typename device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiVector< 3, Real, device, Index >& Vector );
+std::ostream& operator << ( std::ostream& str, const tnlMultiVector< 3, Real, device, Index >& Vector );
 
 template< typename Real, typename device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiVector< 4, Real, device, Index >& Vector );
+std::ostream& operator << ( std::ostream& str, const tnlMultiVector< 4, Real, device, Index >& Vector );
 
 } // namespace TNL
 

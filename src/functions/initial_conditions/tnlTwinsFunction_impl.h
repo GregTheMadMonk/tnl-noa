@@ -33,7 +33,7 @@ template< typename Real >
 tnlString
 tnlTwinsFunction< 1, Real >::getType()
 {
-   return "tnlTwinsFunction< 1, " + ::getType< Real >() + tnlString( " >" );
+   return "tnlTwinsFunction< 1, " + TNL::getType< Real >() + tnlString( " >" );
 }
 
 template< typename Real >
@@ -77,7 +77,7 @@ template< typename Real >
 tnlString
 tnlTwinsFunction< 2, Real >::getType()
 {
-   return tnlString( "tnlTwinsFunction< 2, " ) + ::getType< Real >() + " >";
+   return tnlString( "tnlTwinsFunction< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -101,7 +101,7 @@ getPartialDerivative( const Vertex& v,
    if( ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 && YDiffOrder == 0 )
-      return -0.5 * sin( M_PI * x) * sin( M_PI * x) * ( 1 - ( y - 2 ) * ( y - 2 ) ) * ( 1 - tanh ( 10 * ( sqrt( x * x + y * y ) - 0.6 ) ) );
+      return -0.5 * ::sin( M_PI * x) * ::sin( M_PI * x) * ( 1 - ( y - 2 ) * ( y - 2 ) ) * ( 1 - ::tanh( 10 * ( ::sqrt( x * x + y * y ) - 0.6 ) ) );
    return 0.0;
 }
 
@@ -123,7 +123,7 @@ template< typename Real >
 tnlString
 tnlTwinsFunction< 3, Real >::getType()
 {
-   return tnlString( "tnlTwinsFunction< 3, " ) + ::getType< Real >() + " >";
+   return tnlString( "tnlTwinsFunction< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >

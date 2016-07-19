@@ -30,21 +30,21 @@ bool tnlFile :: read( Type* buffer,
                       const Index& elements )
 {
    tnlAssert( elements >= 0,
-              cerr << " elements = " << elements << endl; );
+              std::cerr << " elements = " << elements << std::endl; );
    if( ! elements )
       return true;
    if( ! fileOK )
    {
-      cerr << "File " << fileName << " was not properly opened. " << endl;
+      std::cerr << "File " << fileName << " was not properly opened. " << std::endl;
       return false;
    }
    if( mode != tnlReadMode )
    {
-      cerr << "File " << fileName << " was not opened for reading. " << endl;
+      std::cerr << "File " << fileName << " was not opened for reading. " << std::endl;
       return false;
    }
    this->readElements = 0;
-   const Index host_buffer_size = :: Min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
+   const Index host_buffer_size = std::min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
                                           elements );
    void* host_buffer( 0 );
    if( Device :: getDeviceType() == "tnlHost" )
@@ -54,7 +54,7 @@ bool tnlFile :: read( Type* buffer,
              elements,
              file ) != elements )
       {
-         cerr << "I am not able to read the data from the file " << fileName << "." << endl;
+         std::cerr << "I am not able to read the data from the file " << fileName << "." << std::endl;
          perror( "Fread ended with the error code" );
          return false;
       }
@@ -76,20 +76,20 @@ bool tnlFile :: read( Type* buffer,
       readElements = 0;
       if( ! host_buffer )
       {
-         cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
-              << this->getFileName() << "." << endl;
+         std::cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
+              << this->getFileName() << "." << std::endl;
          return false;
 
       }
 
       while( readElements < elements )
       {
-         int transfer = :: Min( ( Index ) ( elements - readElements ), host_buffer_size );
+         int transfer = :: min( ( Index ) ( elements - readElements ), host_buffer_size );
          size_t transfered = fread( host_buffer, sizeof( Type ), transfer, file );
          if( transfered != transfer )
          {
-            cerr << "I am not able to read the data from the file " << fileName << "." << endl;
-            cerr << transfered << " bytes were transfered. " << endl;
+            std::cerr << "I am not able to read the data from the file " << fileName << "." << std::endl;
+            std::cerr << transfered << " bytes were transfered. " << std::endl;
             perror( "Fread ended with the error code" );
             return false;
          }
@@ -100,8 +100,8 @@ bool tnlFile :: read( Type* buffer,
                      cudaMemcpyHostToDevice );
          if( ! checkCudaDevice )
          {
-            cerr << "Transfer of data from the CUDA device to the file " << this->fileName
-                 << " failed." << endl;
+            std::cerr << "Transfer of data from the CUDA device to the file " << this->fileName
+                 << " failed." << std::endl;
             free( host_buffer );
             return false;
          }
@@ -122,24 +122,24 @@ bool tnlFile ::  write( const Type* buffer,
                         const Index elements )
 {
    tnlAssert( elements >= 0,
-              cerr << " elements = " << elements << endl; );
+              std::cerr << " elements = " << elements << std::endl; );
    if( ! elements )
       return true;
    if( ! fileOK )
    {
-      cerr << "File " << fileName << " was not properly opened. " << endl;
+      std::cerr << "File " << fileName << " was not properly opened. " << std::endl;
       return false;
    }
    if( mode != tnlWriteMode )
    {
-      cerr << "File " << fileName << " was not opened for writing. " << endl;
+      std::cerr << "File " << fileName << " was not opened for writing. " << std::endl;
       return false;
    }
 
    Type* buf = const_cast< Type* >( buffer );
    void* host_buffer( 0 );
    this->writtenElements = 0;
-   const long int host_buffer_size = :: Min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
+   const long int host_buffer_size = std::min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
                                           elements );
    if( Device :: getDeviceType() == "tnlHost" )
    {
@@ -148,7 +148,7 @@ bool tnlFile ::  write( const Type* buffer,
                   elements,
                   this->file ) != elements )
       {
-         cerr << "I am not able to write the data to the file " << fileName << "." << endl;
+         std::cerr << "I am not able to write the data to the file " << fileName << "." << std::endl;
          perror( "Fwrite ended with the error code" );
          return false;
       }
@@ -169,22 +169,22 @@ bool tnlFile ::  write( const Type* buffer,
          host_buffer = malloc( sizeof( Type ) * host_buffer_size );
          if( ! host_buffer )
          {
-            cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
-                 << this->getFileName() << "." << endl;
+            std::cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
+                 << this->getFileName() << "." << std::endl;
             return false;
          }
 
          while( this->writtenElements < elements )
          {
-            Index transfer = Min( elements - this->writtenElements, host_buffer_size );
+            Index transfer = min( elements - this->writtenElements, host_buffer_size );
             cudaMemcpy( host_buffer,
                        ( void* ) & ( buffer[ this->writtenElements ] ),
                        transfer * sizeof( Type ),
                        cudaMemcpyDeviceToHost );
             if( ! checkCudaDevice )
             {
-               cerr << "Transfer of data from the file " << this->fileName
-                    << " to the CUDA device failed." << endl;
+               std::cerr << "Transfer of data from the file " << this->fileName
+                    << " to the CUDA device failed." << std::endl;
                free( host_buffer );
                return false;
             }
@@ -193,7 +193,7 @@ bool tnlFile ::  write( const Type* buffer,
                         transfer,
                         this->file ) != transfer )
             {
-               cerr << "I am not able to write the data to the file " << fileName << "." << endl;
+               std::cerr << "I am not able to write the data to the file " << fileName << "." << std::endl;
                perror( "Fwrite ended with the error code" );
                return false;
             }

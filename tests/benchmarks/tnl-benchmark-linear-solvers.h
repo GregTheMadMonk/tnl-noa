@@ -34,6 +34,7 @@
 #include <solvers/tnlIterativeSolverMonitor.h>
 
 using namespace std;
+using namespace TNL;
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-benchmark-linear-solvers.cfg.desc";
@@ -89,7 +90,7 @@ bool benchmarkSolver( const tnlParameterContainer& parameters,
    solver.setMatrix( matrix );
    solver.setConvergenceResidue( 1.0e-6 );
    solver.template solve< VectorType, tnlLinearResidueGetter< MatrixType, VectorType > >( b, y );
-   cout << endl;
+   std::cout << std::endl;
    return true;
 }
 
@@ -111,19 +112,19 @@ bool readMatrix( const tnlParameterContainer& parameters,
       {
          if( ! tnlMatrixReader< Matrix >::readMtxFile( fileName, *hostMatrix ) )
          {
-            cerr << "I am not able to read the matrix file " << fileName << "." << endl;
-            /*logFile << endl;
-            logFile << inputFileName << endl;
-            logFile << "Benchmark failed: Unable to read the matrix." << endl;*/
+            std::cerr << "I am not able to read the matrix file " << fileName << "." << std::endl;
+            /*logFile << std::endl;
+            logFile << inputFileName << std::endl;
+            logFile << "Benchmark failed: Unable to read the matrix." << std::endl;*/
             return false;
          }
       }
       catch( std::bad_alloc )
       {
-         cerr << "Not enough memory to read the matrix." << endl;
-         /*logFile << endl;
-         logFile << inputFileName << endl;
-         logFile << "Benchmark failed: Not enough memory." << endl;*/
+         std::cerr << "Not enough memory to read the matrix." << std::endl;
+         /*logFile << std::endl;
+         logFile << inputFileName << std::endl;
+         logFile << "Benchmark failed: Not enough memory." << std::endl;*/
          return false;
       }
    }
@@ -151,7 +152,7 @@ bool resolveLinearSolver( const tnlParameterContainer& parameters )
    if( solver == "tfqmr" )
       return benchmarkSolver< tnlTFQMRSolver< Matrix > >( parameters, matrix );
 
-   cerr << "Unknown solver " << solver << "." << endl;
+   std::cerr << "Unknown solver " << solver << "." << std::endl;
    return false;
 }
 
@@ -182,7 +183,7 @@ bool resolveMatrixFormat( const tnlParameterContainer& parameters )
    if( matrixFormat == "csr" )
       return resolveLinearSolver< tnlCSRMatrix< Real, Device, int > >( parameters );
 
-   cerr << "Unknown matrix format " << matrixFormat << "." << endl;
+   std::cerr << "Unknown matrix format " << matrixFormat << "." << std::endl;
    return false;
 }
 
@@ -197,7 +198,7 @@ bool resolveDevice( const tnlParameterContainer& parameters )
    if( device == "cuda" )
       return resolveMatrixFormat< Real, tnlCuda >( parameters );
 
-   cerr << "Uknown device " << device << "." << endl;
+   std::cerr << "Uknown device " << device << "." << std::endl;
    return false;
 }
 

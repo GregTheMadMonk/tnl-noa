@@ -23,7 +23,7 @@ tnlString tnlStaticContainer< Size, Element >::getType()
    return tnlString( "tnlStaticContainer< " ) +
           tnlString( Size ) +
           tnlString( ", " ) +
-          ::getType< Element >() +
+         TNL::getType< Element >() +
           tnlString( " >" );
 }
 
@@ -64,7 +64,7 @@ bool tnlStaticContainer< Size, Element >::save( tnlFile& file ) const
    if( ! tnlObject::save( file ) ||
        ! this->data.save( file ) )
    {
-      cerr << "I am no able to save " << this->getType() << "." << endl;
+      std::cerr << "I am no able to save " << this->getType() << "." << std::endl;
       return false;
    }
    return true;
@@ -76,7 +76,7 @@ bool tnlStaticContainer< Size, Element >::load( tnlFile& file )
    if( ! tnlObject::load( file ) ||
        ! this->data.load( file ) )
    {
-      cerr << "I am no able to load " << this->getType() << "." << endl;
+      std::cerr << "I am no able to load " << this->getType() << "." << std::endl;
       return false;
    }
    return true;

@@ -38,14 +38,14 @@ class tnlMeshIntegrityCheckerLayer< MeshType,
       {
          typedef typename MeshType::template EntitiesTraits< dimensions >::ContainerType ContainerType;
          typedef typename ContainerType::IndexType                                       GlobalIndexType;
-         cout << "Checking entities with " << dimensions << " dimensions ..." << endl;
+        std::cout << "Checking entities with " << dimensions << " dimensions ..." << std::endl;
          for( GlobalIndexType entityIdx = 0;
               entityIdx < mesh.template getNumberOfEntities< dimensions >();
               entityIdx++ )
          {
-            cout << "Entity no. " << entityIdx << "               \r" << flush;
+           std::cout << "Entity no. " << entityIdx << "               \r" << std::flush;
          }
-         cout << endl;
+        std::cout << std::endl;
          if( ! BaseType::checkEntities( mesh ) )
             return false;
          return true;
@@ -64,14 +64,14 @@ class tnlMeshIntegrityCheckerLayer< MeshType,
       {
          typedef typename MeshType::template EntitiesTraits< dimensions >::ContainerType ContainerType;
          typedef typename ContainerType::IndexType                                       GlobalIndexType;
-         cout << "Checking entities with " << dimensions << " dimensions ..." << endl;
+        std::cout << "Checking entities with " << dimensions << " dimensions ..." << std::endl;
          for( GlobalIndexType entityIdx = 0;
               entityIdx < mesh.template getNumberOfEntities< dimensions >();
               entityIdx++ )
          {
-            cout << "Entity no. " << entityIdx << "          \r" << flush;
+           std::cout << "Entity no. " << entityIdx << "          \r" << std::flush;
          }
-         cout << endl;
+        std::cout << std::endl;
          return true;
       }
 

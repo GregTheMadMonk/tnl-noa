@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLITERATIVESOLVERMONITOR_H_
-#define TNLITERATIVESOLVERMONITOR_H_
+#pragma once
 
 #include <solvers/tnlSolverMonitor.h>
 #include <core/tnlTimerCPU.h>
 #include <core/tnlTimerRT.h>
+
+namespace TNL {
 
 template< typename Real, typename Index>
 class tnlIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
@@ -62,6 +63,6 @@ class tnlIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
    tnlTimerRT rtTimer;
 };
 
-#include <solvers/tnlIterativeSolverMonitor_impl.h>
+} // namespace TNL
 
-#endif /* TNLITERATIVESOLVERMONITOR_H_ */
+#include <solvers/tnlIterativeSolverMonitor_impl.h>

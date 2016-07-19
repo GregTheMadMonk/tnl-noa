@@ -31,9 +31,9 @@ template< typename Real,
 tnlString tnlTridiagonalMatrix< Real, Device, Index >::getType()
 {
    return tnlString( "tnlTridiagonalMatrix< " ) +
-          tnlString( ::getType< RealType >() ) + ", " +
+          tnlString( TNL::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
-          tnlString( ::getType< IndexType >() ) + " >";
+          tnlString( TNL::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
@@ -52,7 +52,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setDimensions( const IndexType
 {
    if( ! tnlMatrix< Real, Device, Index >::setDimensions( rows, columns ) )
       return false;
-   if( ! values.setSize( 3*Min( rows, columns ) ) )
+   if( ! values.setSize( 3*min( rows, columns ) ) )
       return false;
    this->values.setValue( 0.0 );
    return true;
@@ -65,7 +65,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setCompressedRowsLengths( cons
 {
    if( rowLengths[ 0 ] > 2 )
       return false;
-   const IndexType diagonalLength = Min( this->getRows(), this->getColumns() );
+   const IndexType diagonalLength = min( this->getRows(), this->getColumns() );
    for( Index i = 1; i < diagonalLength-1; i++ )
       if( rowLengths[ i ] > 3 )
          return false;
@@ -86,7 +86,7 @@ template< typename Real,
           typename Index >
 Index tnlTridiagonalMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
-   const IndexType diagonalLength = Min( this->getRows(), this->getColumns() );
+   const IndexType diagonalLength = min( this->getRows(), this->getColumns() );
    if( row == 0 )
       return 2;
    if( row > 0 && row < diagonalLength - 1 )
@@ -120,7 +120,7 @@ template< typename Real,
           typename Index >
 Index tnlTridiagonalMatrix< Real, Device, Index >::getNumberOfMatrixElements() const
 {
-   return 3 * Min( this->getRows(), this->getColumns() );
+   return 3 * min( this->getRows(), this->getColumns() );
 }
 
 template< typename Real,
@@ -240,7 +240,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setRowFast( const IndexType ro
                                                               const IndexType elements )
 {
    tnlAssert( elements <= this->columns,
-            cerr << " elements = " << elements
+            std::cerr << " elements = " << elements
                  << " this->columns = " << this->columns );
    return this->addRowFast( row, columns, values, elements, 0.0 );
 }
@@ -254,7 +254,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setRow( const IndexType row,
                                                           const IndexType elements )
 {
    tnlAssert( elements <= this->columns,
-            cerr << " elements = " << elements
+            std::cerr << " elements = " << elements
                  << " this->columns = " << this->columns );
    return this->addRow( row, columns, values, elements, 0.0 );
 }
@@ -270,7 +270,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addRowFast( const IndexType ro
                                                               const RealType& thisRowMultiplicator )
 {
    tnlAssert( elements <= this->columns,
-            cerr << " elements = " << elements
+            std::cerr << " elements = " << elements
                  << " this->columns = " << this->columns );
    if( elements > 3 )
       return false;
@@ -294,7 +294,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addRow( const IndexType row,
                                                           const RealType& thisRowMultiplicator )
 {
    tnlAssert( elements <= this->columns,
-            cerr << " elements = " << elements
+            std::cerr << " elements = " << elements
                  << " this->columns = " << this->columns );
    if( elements > 3 )
       return false;
@@ -408,11 +408,11 @@ void tnlTridiagonalMatrix< Real, Device, Index >::vectorProduct( const InVector&
                                                                  OutVector& outVector ) const
 {
    tnlAssert( this->getColumns() == inVector.getSize(),
-            cerr << "Matrix columns: " << this->getColumns() << endl
-                 << "Vector size: " << inVector.getSize() << endl );
+            std::cerr << "Matrix columns: " << this->getColumns() << std::endl
+                 << "Vector size: " << inVector.getSize() << std::endl );
    tnlAssert( this->getRows() == outVector.getSize(),
-               cerr << "Matrix rows: " << this->getRows() << endl
-                    << "Vector size: " << outVector.getSize() << endl );
+               std::cerr << "Matrix rows: " << this->getRows() << std::endl
+                    << "Vector size: " << outVector.getSize() << std::endl );
 
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
@@ -426,8 +426,8 @@ void tnlTridiagonalMatrix< Real, Device, Index >::addMatrix( const tnlTridiagona
                                                              const RealType& thisMatrixMultiplicator )
 {
    tnlAssert( this->getRows() == matrix.getRows(),
-            cerr << "This matrix columns: " << this->getColumns() << endl
-                 << "This matrix rows: " << this->getRows() << endl );
+            std::cerr << "This matrix columns: " << this->getColumns() << std::endl
+                 << "This matrix rows: " << this->getRows() << std::endl );
 
    if( thisMatrixMultiplicator == 1.0 )
       this->values.addVector( matrix.values, matrixMultiplicator );
@@ -471,8 +471,8 @@ void tnlTridiagonalMatrix< Real, Device, Index >::getTransposition( const tnlTri
                                                                     const RealType& matrixMultiplicator )
 {
    tnlAssert( this->getRows() == matrix.getRows(),
-               cerr << "This matrix rows: " << this->getRows() << endl
-                    << "That matrix rows: " << matrix.getRows() << endl );
+               std::cerr << "This matrix rows: " << this->getRows() << std::endl
+                    << "That matrix rows: " << matrix.getRows() << std::endl );
    if( Device::getDevice() == tnlHostDevice )
    {
       const IndexType& rows = matrix.getRows();
@@ -536,7 +536,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::save( tnlFile& file ) const
    if( ! tnlMatrix< Real, Device, Index >::save( file ) ||
        ! this->values.save( file ) )
    {
-      cerr << "Unable to save a tridiagonal matrix." << endl;
+      std::cerr << "Unable to save a tridiagonal matrix." << std::endl;
       return false;
    }
    return true;
@@ -550,7 +550,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::load( tnlFile& file )
    if( ! tnlMatrix< Real, Device, Index >::load( file ) ||
        ! this->values.load( file ) )
    {
-      cerr << "Unable to save a tridiagonal matrix." << endl;
+      std::cerr << "Unable to save a tridiagonal matrix." << std::endl;
       return false;
    }
    return true;
@@ -575,7 +575,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::load( const tnlString& fileNam
 template< typename Real,
           typename Device,
           typename Index >
-void tnlTridiagonalMatrix< Real, Device, Index >::print( ostream& str ) const
+void tnlTridiagonalMatrix< Real, Device, Index >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -583,7 +583,7 @@ void tnlTridiagonalMatrix< Real, Device, Index >::print( ostream& str ) const
       for( IndexType column = row - 1; column < row + 2; column++ )
          if( column >= 0 && column < this->columns )
             str << " Col:" << column << "->" << this->getElement( row, column ) << "\t";
-      str << endl;
+      str << std::endl;
    }
 }
 
@@ -595,10 +595,10 @@ Index tnlTridiagonalMatrix< Real, Device, Index >::getElementIndex( const IndexT
                                                                     const IndexType column ) const
 {
    tnlAssert( row >= 0 && column >= 0 && row < this->rows && column < this->rows,
-              cerr << " this->rows = " << this->rows
+              std::cerr << " this->rows = " << this->rows
                    << " row = " << row << " column = " << column );
    tnlAssert( abs( row - column ) < 2,
-              cerr << "row = " << row << " column = " << column << endl );
+              std::cerr << "row = " << row << " column = " << column << std::endl );
    return tnlTridiagonalMatrixDeviceDependentCode< Device >::getElementIndex( this->rows, row, column );
 }
 

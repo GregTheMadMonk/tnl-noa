@@ -1,7 +1,9 @@
-#ifndef TNLDIAGONALPRECONDITIONER_IMPL_H_
-#define TNLDIAGONALPRECONDITIONER_IMPL_H_
+
+#pragma once
 
 #include "tnlDiagonalPreconditioner.h"
+
+namespace TNL {
 
 #ifdef HAVE_CUDA
 template< typename Real, typename Index, typename Matrix >
@@ -39,7 +41,7 @@ void
 tnlDiagonalPreconditioner< Real, Device, Index >::
 update( const Matrix& matrix )
 {
-//   cout << getType() << "->setMatrix()" << endl;
+//  std::cout << getType() << "->setMatrix()" << std::endl;
 
    tnlAssert( matrix.getRows() > 0 && matrix.getRows() == matrix.getColumns(), );
 
@@ -60,7 +62,7 @@ update( const Matrix& matrix )
       const Index& size = diagonal.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
-      cudaBlocks.x = Min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
+      cudaBlocks.x = min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
 
       matrixDiagonalToVectorKernel<<< cudaBlocks, cudaBlockSize >>>(
             kernelMatrix,
@@ -80,7 +82,7 @@ bool
 tnlDiagonalPreconditioner< Real, Device, Index >::
 solve( const Vector1& b, Vector2& x ) const
 {
-//   cout << getType() << "->solve()" << endl;
+//  std::cout << getType() << "->solve()" << std::endl;
    if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlHostDevice )
    {
       for( int i = 0; i < diagonal.getSize(); i++ ) {
@@ -93,7 +95,7 @@ solve( const Vector1& b, Vector2& x ) const
       const Index& size = diagonal.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
-      cudaBlocks.x = Min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
+      cudaBlocks.x = min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
 
       elementwiseVectorDivisionKernel<<< cudaBlocks, cudaBlockSize >>>(
             b.getData(),
@@ -107,4 +109,4 @@ solve( const Vector1& b, Vector2& x ) const
    return true;
 }
 
-#endif /* TNLDIAGONALPRECONDITIONER_IMPL_H_ */
+} // namespace TNL

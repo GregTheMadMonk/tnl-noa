@@ -97,7 +97,7 @@ void tnlString :: setString( const char* c, int prefix_cut_off, int sufix_cut_of
       return;
    }
    int c_len = ( int ) strlen( c );
-   int _length = Max( 0, c_len - prefix_cut_off - sufix_cut_off );
+   int _length = max( 0, c_len - prefix_cut_off - sufix_cut_off );
 
    if( length < _length || length == 0 )
    {
@@ -106,21 +106,21 @@ void tnlString :: setString( const char* c, int prefix_cut_off, int sufix_cut_of
       string = new char[ length ];
    }
    tnlAssert( string, );
-   memcpy( string, c + Min( c_len, prefix_cut_off ), sizeof( char ) * ( _length ) );
+   memcpy( string, c + min( c_len, prefix_cut_off ), sizeof( char ) * ( _length ) );
    string[ _length ] = 0;
 }
 
 const char& tnlString :: operator[]( int i ) const
 {
    tnlAssert( i >= 0 && i < length,
-              cerr << "Accessing char outside the string." );
+              std::cerr << "Accessing char outside the string." );
    return string[ i ];
 }
 
 char& tnlString :: operator[]( int i )
 {
    tnlAssert( i >= 0 && i < length,
-              cerr << "Accessing char outside the string." );
+              std::cerr << "Accessing char outside the string." );
    return string[ i ];
 }
 
@@ -203,7 +203,7 @@ bool tnlString :: operator != ( const tnlString& str ) const
 
 bool tnlString :: operator == ( const char* str ) const
 {
-   //cout << ( void* ) string << " " << ( void* ) str << endl;
+   //cout << ( void* ) string << " " << ( void* ) str << std::endl;
    assert( string && str );
    if( strcmp( string, str ) == 0 ) return true;
    return false;
@@ -282,7 +282,7 @@ char* tnlString :: getString()
 }
 
 
-bool tnlString :: save( ostream& file ) const
+bool tnlString :: save( std::ostream& file ) const
 {
    dbgFunctionName( "tnlString", "save" );
    assert( string );
@@ -295,7 +295,7 @@ bool tnlString :: save( ostream& file ) const
    return true;
 }
 
-bool tnlString :: load( istream& file )
+bool tnlString :: load( std::istream& file )
 {
    int _length;
    file. read( ( char* ) &_length, sizeof( int ) );
@@ -328,7 +328,7 @@ bool tnlString :: save( tnlFile& file ) const
 {
    dbgFunctionName( "tnlString", "Write" );
    tnlAssert( string,
-              cerr << "string = " << string );
+              std::cerr << "string = " << string );
    dbgExpr( string );
 
    int len = strlen( string );
@@ -356,7 +356,7 @@ bool tnlString :: load( tnlFile& file )
    if( ! file. read( &_length ) )
 #endif
    {
-      cerr << "I was not able to read tnlString length." << endl;
+      std::cerr << "I was not able to read tnlString length." << std::endl;
       return false;
    }
    if( ! _length )
@@ -383,7 +383,7 @@ bool tnlString :: load( tnlFile& file )
    if( ! file. read( string, _length ) )
 #endif
    {
-      cerr << "I was not able to read a tnlString with a length " << length << "." << endl;
+      std::cerr << "I was not able to read a tnlString with a length " << length << "." << std::endl;
       return false;
    }
    string[ _length ] = 0;
@@ -417,7 +417,7 @@ void tnlString :: MPIBcast( int root, MPI_Comm comm )
 #endif
 }
 
-bool tnlString :: getLine( istream& stream )
+bool tnlString :: getLine( std::istream& stream )
 {
    std :: string str;
    getline( stream, str );
@@ -452,7 +452,7 @@ tnlString operator + ( const char* string1, const tnlString& string2 )
    return tnlString( string1 ) + string2;
 }
 
-ostream& operator << ( ostream& stream, const tnlString& str )
+std::ostream& operator << ( std::ostream& stream, const tnlString& str )
 {
    stream << str. getString();
    return stream;

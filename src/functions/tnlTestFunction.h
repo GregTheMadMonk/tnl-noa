@@ -100,7 +100,7 @@ class tnlTestFunction : public tnlDomain< FunctionDimensions, SpaceDomain >
    }
 #endif
 
-   ostream& print( ostream& str ) const;
+   std::ostream& print( std::ostream& str ) const;
 
    ~tnlTestFunction();
 
@@ -119,7 +119,7 @@ class tnlTestFunction : public tnlDomain< FunctionDimensions, SpaceDomain >
    void copyFunction( const void* function );
 
    template< typename FunctionType >
-   ostream& printFunction( ostream& str ) const;
+   std::ostream& printFunction( std::ostream& str ) const;
 
    void* function;
 
@@ -134,7 +134,7 @@ class tnlTestFunction : public tnlDomain< FunctionDimensions, SpaceDomain >
 template< int FunctionDimensions,
           typename Real,
           typename Device >
-ostream& operator << ( ostream& str, const tnlTestFunction< FunctionDimensions, Real, Device >& f )
+std::ostream& operator << ( std::ostream& str, const tnlTestFunction< FunctionDimensions, Real, Device >& f )
 {
    str << "Test function: ";
    return f.print( str );

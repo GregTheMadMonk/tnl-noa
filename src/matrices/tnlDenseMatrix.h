@@ -189,7 +189,7 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
 
    bool load( tnlFile& file );
 
-   void print( ostream& str ) const;
+   void print( std::ostream& str ) const;
 
    protected:
 

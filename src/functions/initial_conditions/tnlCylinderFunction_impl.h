@@ -49,7 +49,7 @@ template< typename Real >
 tnlString
 tnlCylinderFunction< 1, Real >::getType()
 {
-   return "tnlCylinderFunction< 1, " + ::getType< Real >() + tnlString( " >" );
+   return "tnlCylinderFunction< 1, " + TNL::getType< Real >() + tnlString( " >" );
 }
 
 template< typename Real >
@@ -93,7 +93,7 @@ template< typename Real >
 tnlString
 tnlCylinderFunction< 2, Real >::getType()
 {
-   return tnlString( "tnlCylinderFunction< 2, " ) + ::getType< Real >() + " >";
+   return tnlString( "tnlCylinderFunction< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -140,7 +140,7 @@ template< typename Real >
 tnlString
 tnlCylinderFunction< 3, Real >::getType()
 {
-   return tnlString( "tnlCylinderFunction< 3, " ) + ::getType< Real >() + " >";
+   return tnlString( "tnlCylinderFunction< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >

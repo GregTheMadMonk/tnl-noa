@@ -22,6 +22,7 @@
 #include <cppunit/TestCase.h>
 #endif
 
+using namespace TNL;
 
 template< typename ApproximateOperator,
           typename TestFunction,

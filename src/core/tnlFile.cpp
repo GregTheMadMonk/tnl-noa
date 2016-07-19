@@ -29,11 +29,11 @@ bool tnlFile :: open( const tnlString& fileName,
    this->fileName = fileName;
    if( verbose )
    {
-      cout << "Opening file " << fileName;
+      std::cout << "Opening file " << fileName;
       if( mode == tnlReadMode )
-         cout << " for reading... " << endl;
+         std::cout << " for reading... " << std::endl;
       else
-         cout << " for writing ... " << endl;
+         std::cout << " for writing ... " << std::endl;
    }
    if( mode == tnlReadMode )
       file = fopen( fileName. getString(), "r" );
@@ -41,7 +41,7 @@ bool tnlFile :: open( const tnlString& fileName,
       file = fopen( fileName. getString(), "w" );
    if( file ==  NULL )
    {
-      cerr << "I am not able to open the file " << fileName << ". ";
+      std::cerr << "I am not able to open the file " << fileName << ". ";
       perror( "" );
       return false;
    }
@@ -53,11 +53,11 @@ bool tnlFile :: open( const tnlString& fileName,
 bool tnlFile :: close()
 {
    if( verbose )
-      cout << "Closing the file " << getFileName() << " ... " << endl;
+      std::cout << "Closing the file " << getFileName() << " ... " << std::endl;
 
    if( fclose( file ) != 0 )
    {
-      cerr << "I was not able to close the file " << fileName << " properly!" << endl;
+      std::cerr << "I was not able to close the file " << fileName << " properly!" << std::endl;
       return false;
    }
    readElements = writtenElements = 0;
@@ -66,8 +66,8 @@ bool tnlFile :: close()
 
 bool fileExists( const tnlString& fileName )
 {
-  fstream file;
-  file.open( fileName. getString(), ios::in );
+  std::fstream file;
+  file.open( fileName. getString(), std::ios::in );
   bool result( true );
   if( ! file )
      result = false;

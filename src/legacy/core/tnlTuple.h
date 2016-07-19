@@ -206,7 +206,7 @@ template< int Size, typename Real >
 tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector< Size, Real >& u );
 
 template< int Size, typename Real >
-ostream& operator << ( ostream& str, const tnlStaticVector< Size, Real >& v );
+ostream& operator << ( std::ostream& str, const tnlStaticVector< Size, Real >& v );
 
 template< int Size, typename Real >
 #ifdef HAVE_CUDA
@@ -330,7 +330,7 @@ tnlString tnlStaticVector< Size, Real > :: getType()
    return tnlString( "tnlStaticVector< " ) +
           tnlString( Size ) +
           tnlString( ", " ) +
-          ::getType< Real >() +
+         TNL::getType< Real >() +
           tnlString( " >" );
 }
 
@@ -360,7 +360,7 @@ template< int Size, typename Real >
 #endif
 Real& tnlStaticVector< Size, Real > :: x()
 {
-   tnlAssert( Size > 0, cerr << "Size = " << Size << endl; );
+   tnlAssert( Size > 0, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 1 )
    {
       printf( "The size of the tnlStaticVector is too small to get x coordinate.\n" );
@@ -375,7 +375,7 @@ template< int Size, typename Real >
 #endif
 const Real& tnlStaticVector< Size, Real > :: x() const
 {
-   tnlAssert( Size > 0, cerr << "Size = " << Size << endl; );
+   tnlAssert( Size > 0, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 1 )
    {
       printf( "The size of the tnlStaticVector is too small to get x coordinate.\n" );
@@ -390,7 +390,7 @@ template< int Size, typename Real >
 #endif
 Real& tnlStaticVector< Size, Real > :: y()
 {
-   tnlAssert( Size > 1, cerr << "Size = " << Size << endl; );
+   tnlAssert( Size > 1, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 2 )
    {
       printf( "The size of the tnlStaticVector is too small to get y coordinate.\n" );
@@ -405,7 +405,7 @@ template< int Size, typename Real >
 #endif
 const Real& tnlStaticVector< Size, Real > :: y() const
 {
-   tnlAssert( Size > 1, cerr << "Size = " << Size << endl; );
+   tnlAssert( Size > 1, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 2 )
    {
       printf( "The size of the tnlStaticVector is too small to get y coordinate.\n" );
@@ -421,7 +421,7 @@ template< int Size, typename Real >
 #endif
 Real& tnlStaticVector< Size, Real > :: z()
 {
-   tnlAssert( Size > 2, cerr << "Size = " << Size << endl; );
+   tnlAssert( Size > 2, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 3 )
    {
       printf( "The size of the tnlStaticVector is too small to get z coordinate.\n" );
@@ -436,7 +436,7 @@ template< int Size, typename Real >
 #endif
 const Real& tnlStaticVector< Size, Real > :: z() const
 {
-   tnlAssert( Size > 2, cerr << "Size = " << Size << endl; );
+   tnlAssert( Size > 2, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 3 )
    {
       printf( "The size of the tnlStaticVector is too small to get z coordinate.\n" );
@@ -731,11 +731,11 @@ bool tnlStaticVector< Size, Real > :: save( tnlFile& file ) const
 #ifdef HAVE_NOT_CXX11
    if( ! file. write< int, tnlHost >( &size ) ||
        ! file. write< Real, tnlHost, int >( data, size ) )
-      cerr << "Unable to write tnlStaticVector." << endl;
+      std::cerr << "Unable to write tnlStaticVector." << std::endl;
 #else
    if( ! file. write( &size ) ||
        ! file. write( data, size ) )
-      cerr << "Unable to write tnlStaticVector." << endl;
+      std::cerr << "Unable to write tnlStaticVector." << std::endl;
 #endif
    return true;
 };
@@ -750,13 +750,13 @@ bool tnlStaticVector< Size, Real > :: load( tnlFile& file)
    if( ! file. read( &size ) )
 #endif
    {
-      cerr << "Unable to read tnlStaticVector." << endl;
+      std::cerr << "Unable to read tnlStaticVector." << std::endl;
       return false;
    }
    if( size != Size )
    {
-      cerr << "You try to read tnlStaticVector with wrong size " << size
-           << ". It should be " << Size << endl;
+      std::cerr << "You try to read tnlStaticVector with wrong size " << size
+           << ". It should be " << Size << std::endl;
       return false;
    }
 #ifdef HAVE_NOT_CXX11
@@ -765,7 +765,7 @@ bool tnlStaticVector< Size, Real > :: load( tnlFile& file)
    if( ! file. read( data, size ) )
 #endif
    {
-      cerr << "Unable to read tnlStaticVector." << endl;
+      std::cerr << "Unable to read tnlStaticVector." << std::endl;
       return false;
    }
    return true;
@@ -780,7 +780,7 @@ tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector<
 
 
 // TODO: remove
-template< int Size, typename Real > bool Save( ostream& file, const tnlStaticVector< Size, Real >& vec )
+template< int Size, typename Real > bool Save( std::ostream& file, const tnlStaticVector< Size, Real >& vec )
 {
    for( int i = 0; i < Size; i ++ )
       file. write( ( char* ) &vec[ i ], sizeof( Real ) );
@@ -789,7 +789,7 @@ template< int Size, typename Real > bool Save( ostream& file, const tnlStaticVec
 };
 
 // TODO: remove
-template< int Size, typename Real > bool Load( istream& file, tnlStaticVector< Size, Real >& vec )
+template< int Size, typename Real > bool Load( std::istream& file, tnlStaticVector< Size, Real >& vec )
 {
    for( int i = 0; i < Size; i ++ )
       file. read( ( char* ) &vec[ i ], sizeof( Real ) );
@@ -798,7 +798,7 @@ template< int Size, typename Real > bool Load( istream& file, tnlStaticVector< S
 };
 
 template< int Size, typename Real >
-ostream& operator << ( ostream& str, const tnlStaticVector< Size, Real >& v )
+ostream& operator << ( std::ostream& str, const tnlStaticVector< Size, Real >& v )
 {
    for( int i = 0; i < Size - 1; i ++ )
       str << v[ i ] << ", ";
@@ -845,7 +845,7 @@ Real tnlTriangleArea( const tnlStaticVector< 2, Real >& a,
    u2. z() = 0;
 
    const tnlStaticVector< 3, Real > v = tnlVectorProduct( u1, u2 );
-   return 0.5 * sqrt( tnlScalarProduct( v, v ) );
+   return 0.5 * ::sqrt( tnlScalarProduct( v, v ) );
 };
 
 #endif

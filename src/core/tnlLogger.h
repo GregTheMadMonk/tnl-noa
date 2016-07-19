@@ -20,7 +20,7 @@ class tnlLogger
    public:
 
    tnlLogger( int _width,
-              ostream& _stream );
+              std::ostream& _stream );
 
    void writeHeader( const tnlString& title );
 
@@ -47,10 +47,14 @@ class tnlLogger
 
    int width;
 
-   ostream& stream;
+   std::ostream& stream;
 };
 
+} // namespace TNL
+
 #include <core/tnlLogger_impl.h>
+
+namespace TNL {
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 extern template void tnlLogger::writeParameter< char* >( const tnlString&,

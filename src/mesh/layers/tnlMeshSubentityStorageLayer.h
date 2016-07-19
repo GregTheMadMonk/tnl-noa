@@ -71,7 +71,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
 
    ~tnlMeshSubentityStorageLayer()
    {
-      //cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionsTag::value << " dimensions." << endl;
+      //cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionsTag::value << " dimensions." << std::endl;
    }
 
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
@@ -86,7 +86,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
       if( ! BaseType::save( file ) ||
           ! this->subentitiesIndices.save( file ) )
       {
-         cerr << "Saving of the entity subentities layer with " << DimensionsTag::value << " failed." << endl;
+         std::cerr << "Saving of the entity subentities layer with " << DimensionsTag::value << " failed." << std::endl;
          return false;
       }
       return true;
@@ -97,16 +97,16 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
       if( ! BaseType::load( file ) ||
           ! this->subentitiesIndices.load( file ) )
       {
-         cerr << "Loading of the entity subentities layer with " << DimensionsTag::value << " failed." << endl;
+         std::cerr << "Loading of the entity subentities layer with " << DimensionsTag::value << " failed." << std::endl;
          return false;
       }
       return true;
    }
 
-   void print( ostream& str ) const
+   void print( std::ostream& str ) const
    {
       BaseType::print( str );
-      str << endl;
+      str << std::endl;
       str << "\t Subentities with " << DimensionsTag::value << " dimensions are: " << subentitiesIndices << ".";
    }
 
@@ -193,7 +193,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
 
    ~tnlMeshSubentityStorageLayer()
    {
-      //cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionsTag::value << " dimensions." << endl;
+      //cout << "      Destroying " << this->sharedSubentitiesIndices.getSize() << " subentities with "<< DimensionsTag::value << " dimensions." << std::endl;
    }
 
    tnlMeshSubentityStorageLayer& operator = ( const tnlMeshSubentityStorageLayer& layer )
@@ -208,7 +208,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
       if( ! BaseType::save( file ) ||
           ! this->subentitiesIndices.save( file ) )
       {
-         cerr << "Saving of the entity subentities layer with " << DimensionsTag::value << " failed." << endl;
+         std::cerr << "Saving of the entity subentities layer with " << DimensionsTag::value << " failed." << std::endl;
          return false;
       }
       return true;
@@ -219,16 +219,16 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
       if( ! BaseType::load( file ) ||
           ! this->subentitiesIndices.load( file ) )
       {
-         cerr << "Loading of the entity subentities layer with " << DimensionsTag::value << " failed." << endl;
+         std::cerr << "Loading of the entity subentities layer with " << DimensionsTag::value << " failed." << std::endl;
          return false;
       }
       return true;
    }
 
-   void print( ostream& str ) const
+   void print( std::ostream& str ) const
    {
       BaseType::print( str );
-      str << endl;
+      str << std::endl;
       str << "\t Subentities with " << DimensionsTag::value << " dimensions are: " << subentitiesIndices << ".";
    }
 
@@ -310,7 +310,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
 
    ~tnlMeshSubentityStorageLayer()
    {
-      //cout << "      Destroying " << this->sharedVerticesIndices.getSize() << " subentities with "<< DimensionsTag::value << " dimensions." << endl;
+      //cout << "      Destroying " << this->sharedVerticesIndices.getSize() << " subentities with "<< DimensionsTag::value << " dimensions." << std::endl;
    }
 
 
@@ -324,7 +324,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
    {
       if( ! this->verticesIndices.save( file ) )
       {
-         cerr << "Saving of the entity subentities layer with " << DimensionsTag::value << " failed." << endl;
+         std::cerr << "Saving of the entity subentities layer with " << DimensionsTag::value << " failed." << std::endl;
          return false;
       }
       return true;
@@ -334,13 +334,13 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
    {
       if( ! this->verticesIndices.load( file ) )
       {
-         cerr << "Loading of the entity subentities layer with " << DimensionsTag::value << " failed." << endl;
+         std::cerr << "Loading of the entity subentities layer with " << DimensionsTag::value << " failed." << std::endl;
          return false;
       }
       return true;
    }
 
-   void print( ostream& str ) const
+   void print( std::ostream& str ) const
    {
       str << "\t Subentities with " << DimensionsTag::value << " dimensions are: " << this->verticesIndices << ".";
    }

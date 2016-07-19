@@ -129,19 +129,19 @@ class tnlMatrix : public tnlObject
     */
    bool sortRowsDecreasingly( tnlVector< Index, Device, Index >& permutation );
 
-   virtual bool read( istream& str,
+   virtual bool read( std::istream& str,
 		                int verbose = 0 );
 
    /****
     * If we draw sparse matrix it is much faster if we now positions of the non-zero elements.
     * They are best accessible from the CSR format. Therefore we may pass pointer to tnlCSRMatrix.
     */
-   virtual bool draw( ostream& str,
+   virtual bool draw( std::ostream& str,
 		                const tnlString& format,
 		                tnlCSRMatrix< Real, Device, Index >* csrMatrix = 0,
 		                int verbose = 0 );
 
-   virtual void printOut( ostream& stream,
+   virtual void printOut( std::ostream& stream,
                           const tnlString& format = tnlString( "" ),
                           const Index lines = 0 ) const {};
 
@@ -153,10 +153,10 @@ class tnlMatrix : public tnlObject
    bool checkMtxHeader( const tnlString& header,
 		                  bool& symmetric );
 
-   void writePostscriptHeader( ostream& str,
+   void writePostscriptHeader( std::ostream& str,
                                const int elementSize ) const;
 
-   virtual void writePostscriptBody( ostream& str,
+   virtual void writePostscriptBody( std::ostream& str,
                                      const int elementSize,
                                      bool verbose ) const;
 
@@ -164,7 +164,7 @@ class tnlMatrix : public tnlObject
 };
 
 template< typename Real, typename Device, typename Index >
-ostream& operator << ( ostream& o_str, const tnlMatrix< Real, Device, Index >& A );
+ostream& operator << ( std::ostream& o_str, const tnlMatrix< Real, Device, Index >& A );
 
 template< typename Real, typename Device, typename Index >
 tnlMatrix< Real, Device, Index > :: tnlMatrix( const tnlString& name )
@@ -181,7 +181,7 @@ Index tnlMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 template< typename Real, typename Device, typename Index >
 Index tnlMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& row ) const
 {
-   tnlAssert( false, cerr << "not implemented yet." );
+   tnlAssert( false, std::cerr << "not implemented yet." );
    /*
     * TODO: this method should be abstract
     */
@@ -214,7 +214,7 @@ bool tnlMatrix< Real, Device, Index > :: compare( const tnlMatrix< Real, Device,
       for( Index j = 0; j < size; j ++ )
       {
          if( verbose )
-            cout << "Comparing: " << i << " / " << size << "\r";
+           std::cout << "Comparing: " << i << " / " << size << "\r";
          if( this->getElement( i, j ) != m. getElement( i, j ) )
              return false;
       }
@@ -272,7 +272,7 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index > ::  operator 
    this->size = matrix. getSize();
    /*if( ! rowsReorderingPermutation. setSize( matrix. rowsReorderingPermutation. getSize() ) )
    {
-      cerr << "I am not able to allocat the row permutation vector for the new matrix." << endl;
+      std::cerr << "I am not able to allocat the row permutation vector for the new matrix." << std::endl;
       abort();
    }
    rowsReorderingPermutation = matrix. rowsReorderingPermutation;*/
@@ -291,18 +291,18 @@ bool tnlMatrix< Real, Device, Index > :: checkMtxHeader( const tnlString& header
        return false;
     if( parsed_line[ 1 ] != "matrix" )
     {
-       cerr << "Error: 'matrix' expected in the header line (" << header << ")." << endl;
+       std::cerr << "Error: 'matrix' expected in the header line (" << header << ")." << std::endl;
        return false;
     }
     if( parsed_line[ 2 ] != "coordinates" &&
         parsed_line[ 2 ] != "coordinate" )
     {
-       cerr << "Error: Only 'coordinates' format is supported now, not " << parsed_line[ 2 ] << "." << endl;
+       std::cerr << "Error: Only 'coordinates' format is supported now, not " << parsed_line[ 2 ] << "." << std::endl;
        return false;
     }
     if( parsed_line[ 3 ] != "real" )
     {
-       cerr << "Error: Only 'real' matrices are supported, not " << parsed_line[ 3 ] << "." << endl;
+       std::cerr << "Error: Only 'real' matrices are supported, not " << parsed_line[ 3 ] << "." << std::endl;
        return false;
     }
     if( parsed_line[ 4 ] != "general" )
@@ -311,7 +311,7 @@ bool tnlMatrix< Real, Device, Index > :: checkMtxHeader( const tnlString& header
     		symmetric = true;
     	else
     	{
-    		cerr << "Error: Only 'general' matrices are supported, not " << parsed_line[ 4 ] << "." << endl;
+    		cerr << "Error: Only 'general' matrices are supported, not " << parsed_line[ 4 ] << "." << std::endl;
     		return false;
     	}
     }
@@ -320,7 +320,7 @@ bool tnlMatrix< Real, Device, Index > :: checkMtxHeader( const tnlString& header
 
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: read( istream& file,
+bool tnlMatrix< Real, Device, Index > :: read( std::istream& file,
                                                int verbose )
 {
    tnlString line;
@@ -337,15 +337,15 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
          if( format_ok && verbose )
          {
         	 if( symmetric )
-        		 cout << "The matrix is SYMMETRIC." << endl;
+        		std::cout << "The matrix is SYMMETRIC." << std::endl;
          }
          continue;
       }
       if( line[ 0 ] == '%' ) continue;
       if( ! format_ok )
       {
-         cerr << "Uknown format of the file. We expect line like this:" << endl;
-         cerr << "%%MatrixMarket matrix coordinate real general" << endl;
+         std::cerr << "Uknown format of the file. We expect line like this:" << std::endl;
+         std::cerr << "%%MatrixMarket matrix coordinate real general" << std::endl;
          return false;
       }
 
@@ -355,7 +355,7 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
          line. parse( parsed_line );
          if( parsed_line. getSize() != 3 )
          {
-           cerr << "Wrong number of parameters in the matrix header." << endl;
+           std::cerr << "Wrong number of parameters in the matrix header." << std::endl;
            return false;
          }
          Index M = atoi( parsed_line[ 0 ]. getString() );
@@ -363,23 +363,23 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
          Index L = atoi( parsed_line[ 2 ]. getString() );
          if( symmetric )
         	 L = 2 * L - M;
-         cout << "Matrix size:       " << setw( 9 ) << right << M << endl;
-         cout << "Non-zero elements: " << setw( 9 ) << right << L << endl;
+        std::cout << "Matrix size:       " << std::setw( 9 ) << right << M << std::endl;
+        std::cout << "Non-zero elements: " << std::setw( 9 ) << right << L << std::endl;
 
          if( M <= 0 || N <= 0 || L <= 0 )
          {
-           cerr << "Wrong parameters in the matrix header." << endl;
+           std::cerr << "Wrong parameters in the matrix header." << std::endl;
            return false;
          }
          if( M  != N )
          {
-           cerr << "There is not square matrix in the file." << endl;
+           std::cerr << "There is not square matrix in the file." << std::endl;
            return false;
          }
          if( ! this->setSize( M ) ||
              ! this->setNonzeroElements( L ) )
          {
-            cerr << "Not enough memory to allocate the sparse or the full matrix for testing." << endl;
+            std::cerr << "Not enough memory to allocate the sparse or the full matrix for testing." << std::endl;
             return false;
          }
 
@@ -389,7 +389,7 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
       }
       if( parsed_line. getSize() != 3 )
       {
-         cerr << "Wrong number of parameters in the matrix row at line:" << line << endl;
+         std::cerr << "Wrong number of parameters in the matrix row at line:" << line << std::endl;
          return false;
       }
       parsed_line. EraseAll();
@@ -399,7 +399,7 @@ bool tnlMatrix< Real, Device, Index > :: read( istream& file,
       Real A = ( Real ) atof( parsed_line[ 2 ]. getString() );
       parsed_elements ++;
       if( verbose )
-         cout << "Parsed elements:   " << setw( 9 ) << right << parsed_elements << "\r" << flush;
+        std::cout << "Parsed elements:   " << std::setw( 9 ) << right << parsed_elements << "\r" << std::flush;
       this->setElement( I - 1, J - 1, A );
       if( symmetric && I != J )
     	  this->setElement( J - 1, I - 1, A );
@@ -425,7 +425,7 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlVector< Index,
    for( Index i = 0; i < matrixSize; i ++ )
    {
       tnlAssert( this->getNonzeroElementsInRow( i ) <= matrixSize,
-                 cerr << "getNonzeroElementsInRow( " << i << " ) = " << getNonzeroElementsInRow( i )
+                 std::cerr << "getNonzeroElementsInRow( " << i << " ) = " << getNonzeroElementsInRow( i )
                       << "; matrixSize = " << matrixSize );
       permutation[ this->getNonzeroElementsInRow( i ) ] ++;
    }
@@ -444,7 +444,7 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlVector< Index,
    for( Index i = 0; i < matrixSize; i ++ )
    {
       tnlAssert( buckets[ matrixSize - this->getNonzeroElementsInRow( i ) ] <= matrixSize,
-               cerr << "buckets[ matrixSize - this->getNonzeroElementsInRow( i ) - 1 ] = " << buckets[ matrixSize - this->getNonzeroElementsInRow( i ) - 1 ]
+               std::cerr << "buckets[ matrixSize - this->getNonzeroElementsInRow( i ) - 1 ] = " << buckets[ matrixSize - this->getNonzeroElementsInRow( i ) - 1 ]
                     << "; matrixSize = " << matrixSize );
       dbgExpr( buckets[ matrixSize - this->getNonzeroElementsInRow( i ) ] );
       permutation[ buckets[ matrixSize - this->getNonzeroElementsInRow( i ) ] ++ ] = i;
@@ -453,7 +453,7 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlVector< Index,
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: draw( ostream& str,
+bool tnlMatrix< Real, Device, Index > :: draw( std::ostream& str,
 		                                         const tnlString& format,
 		                                         tnlCSRMatrix< Real, Device, Index >* csrMatrix,
 		                                         int verbose )
@@ -466,13 +466,13 @@ bool tnlMatrix< Real, Device, Index > :: draw( ostream& str,
 			{
 				Real elementValue = getElement( row, column );
 				if(  elementValue != ( Real ) 0.0 )
-					str << column << " " << getSize() - row << " " << elementValue << endl;
+					str << column << " " << getSize() - row << " " << elementValue << std::endl;
 			}
 			if( verbose )
-				cout << "Drawing the row " << row << "      \r" << flush;
+				cout << "Drawing the row " << row << "      \r" << std::flush;
 		}
 		if( verbose )
-			cout << endl;
+			cout << std::endl;
 		return true;
 	}
 	if( format == "eps" )
@@ -484,32 +484,32 @@ bool tnlMatrix< Real, Device, Index > :: draw( ostream& str,
 	   else
 	      this->writePostscriptBody( str, elementSize, verbose );
 
-	   str << "showpage" << endl;
-      str << "%%EOF" << endl;
+	   str << "showpage" << std::endl;
+      str << "%%EOF" << std::endl;
 
       if( verbose )
-         cout << endl;
+        std::cout << std::endl;
       return true;
 	}
-	cerr << "Unknown format " << format << " for drawing the matrix." << endl;
+	cerr << "Unknown format " << format << " for drawing the matrix." << std::endl;
 	return false;
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlMatrix< Real, Device, Index > :: writePostscriptHeader( ostream& str,
+void tnlMatrix< Real, Device, Index > :: writePostscriptHeader( std::ostream& str,
                                                                 const int elementSize ) const
 {
    const int scale = elementSize * this->getSize();
-   str << "%!PS-Adobe-2.0 EPSF-2.0" << endl;
-   str << "%%BoundingBox: 0 0 " << scale << " " << scale << endl;
-   str << "%%Creator: TNL" << endl;
-   str << "%%LanguageLevel: 2" << endl;
-   str << "%%EndComments" << endl << endl;
-   str << "0 " << scale << " translate" << endl;
+   str << "%!PS-Adobe-2.0 EPSF-2.0" << std::endl;
+   str << "%%BoundingBox: 0 0 " << scale << " " << scale << std::endl;
+   str << "%%Creator: TNL" << std::endl;
+   str << "%%LanguageLevel: 2" << std::endl;
+   str << "%%EndComments" << std::endl << std::endl;
+   str << "0 " << scale << " translate" << std::endl;
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlMatrix< Real, Device, Index > :: writePostscriptBody( ostream& str,
+void tnlMatrix< Real, Device, Index > :: writePostscriptBody( std::ostream& str,
                                                               const int elementSize,
                                                               bool verbose ) const
 {
@@ -525,32 +525,32 @@ void tnlMatrix< Real, Device, Index > :: writePostscriptBody( ostream& str,
          {
             str << ( column - lastColumn ) * elementSize
                 << " " << -( row - lastRow ) * elementSize
-                << " translate newpath 0 0 " << elementSize << " " << elementSize << " rectstroke" << endl;
+                << " translate newpath 0 0 " << elementSize << " " << elementSize << " rectstroke" << std::endl;
             lastColumn = column;
             lastRow = row;
          }
       }
       if( verbose )
-         cout << "Drawing the row " << row << "      \r" << flush;
+        std::cout << "Drawing the row " << row << "      \r" << std::flush;
    }
 }
 
 //! Operator <<
 template< typename Real, typename Device, typename Index >
-ostream& operator << ( ostream& o_str,
+ostream& operator << ( std::ostream& o_str,
 		                 const tnlMatrix< Real, Device, Index >& A )
 {
    Index size = A. getSize();
-   o_str << endl;
+   o_str << std::endl;
    for( Index i = 0; i < size; i ++ )
    {
       for( Index j = 0; j < size; j ++ )
       {
          const Real& v = A. getElement( i, j );
-         if( v == 0.0 ) o_str << setw( 12 ) << ".";
-         else o_str << setprecision( 6 ) << setw( 12 ) << v;
+         if( v == 0.0 ) o_str << std::setw( 12 ) << ".";
+         else o_str << std::setprecision( 6 ) << std::setw( 12 ) << v;
       }
-      o_str << endl;
+      o_str << std::endl;
    }
    return o_str;
 };

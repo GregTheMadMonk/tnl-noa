@@ -131,7 +131,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
    const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
    if( ! this->u.boundLoad( initialConditionFile ) )
    {
-      cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
+      std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
    }
    return true;
@@ -177,10 +177,10 @@ makeSnapshot( const RealType& time,
               DofVectorType& dofs,
               MeshDependentDataType& meshDependentData )
 {
-   cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
+  std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
 
    this->bindDofs( mesh, dofs );
-   //cout << "dofs = " << dofs << endl;
+   //cout << "dofs = " << dofs << std::endl;
    tnlString fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
    if( ! this->u.save( fileName ) )
@@ -210,7 +210,7 @@ getExplicitRHS( const RealType& time,
     * You may use supporting vectors again if you need.
     */
  
-   //cout << "u = " << u << endl;
+   //cout << "u = " << u << std::endl;
    this->bindDofs( mesh, uDofs );
    MeshFunctionType fu( mesh, fuDofs );
    tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
@@ -232,8 +232,8 @@ getExplicitRHS( const RealType& time,
    //fu.write( "fu.txt", "gnuplot" );
    //this->u.write( "u.txt", "gnuplot");
    //getchar();
-   /*cout << "u = " << u << endl;
-   cout << "fu = " << fu << endl;
+   /*cout << "u = " << u << std::endl;
+  std::cout << "fu = " << fu << std::endl;
    u.save( "u.tnl" );
    fu.save( "fu.tnl" );
    getchar();*/
@@ -273,11 +273,11 @@ assemblyLinearSystem( const RealType& time,
       this->u,
       matrix,
       b );
-   /*matrix.print( cout );
-   cout << endl << b << endl;
-   cout << endl << u << endl;
+   /*matrix.print(std::cout );
+  std::cout << std::endl << b << std::endl;
+  std::cout << std::endl << u << std::endl;
    abort();*/
-   /*cout << "Matrix multiplication test ..." << endl;
+   /*cout << "Matrix multiplication test ..." << std::endl;
    tnlVector< RealType, DeviceType, IndexType > y;
    y.setLike( u );
    tnlTimerRT timer;
@@ -286,16 +286,16 @@ assemblyLinearSystem( const RealType& time,
    for( int i = 0; i < 100; i++ )
       matrix.vectorProduct( u, y );
    timer.stop();
-   cout << "The time is " << timer.getTime();
-   cout << "Scalar product test ..." << endl;
+  std::cout << "The time is " << timer.getTime();
+  std::cout << "Scalar product test ..." << std::endl;
    timer.reset();
    RealType a;
    timer.start();
    for( int i = 0; i < 100; i++ )
       a = y.scalarProduct( u );
    timer.stop();
-   cout << "The time is " << timer.getTime();
-   cout << endl;
+  std::cout << "The time is " << timer.getTime();
+  std::cout << std::endl;
    abort();*/
 }
 

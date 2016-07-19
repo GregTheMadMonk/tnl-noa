@@ -9,6 +9,8 @@
 #include "eulerRhs.h"
 #include "eulerBuildConfigTag.h"
 
+using namespace TNL;
+
 typedef eulerBuildConfigTag BuildConfig;
 
 /****
@@ -114,4 +116,3 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }
-

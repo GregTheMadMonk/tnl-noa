@@ -25,6 +25,7 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 
+using namespace TNL;
 
 template< typename Operator,
           bool EvaluateOnFly >
@@ -72,7 +73,7 @@ class tnlOperatorFunctionTest
       OperatorType operator_;
       OperatorFunctionType operatorFunction( operator_, f1 );
       operatorFunction.refresh();
-      //cerr << f1.getData() << endl;
+      //cerr << f1.getData() << std::endl;
       for( IndexType i = 0; i < mesh.template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
          auto entity = mesh.template getEntity< typename MeshType::Cell >( i );
@@ -80,7 +81,7 @@ class tnlOperatorFunctionTest
  
          if( ! entity.isBoundaryEntity() )
          {
-            //cerr << entity.getIndex() << " " << operator_( f1, entity ) << " " << operatorFunction( entity ) << endl;
+            //cerr << entity.getIndex() << " " << operator_( f1, entity ) << " " << operatorFunction( entity ) << std::endl;
             CPPUNIT_ASSERT( operator_( f1, entity ) == operatorFunction( entity ) );
          }
       }
@@ -102,7 +103,7 @@ class tnlOperatorFunctionTest
       BoundaryConditionsType boundaryConditions;
       OperatorFunctionType operatorFunction( operator_, boundaryConditions, f1 );
       operatorFunction.refresh();
-      //cerr << f1.getData() << endl;
+      //cerr << f1.getData() << std::endl;
       for( IndexType i = 0; i < mesh.template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
          auto entity = mesh.template getEntity< typename MeshType::Cell >( i );
@@ -111,7 +112,7 @@ class tnlOperatorFunctionTest
             CPPUNIT_ASSERT( boundaryConditions( f1, entity ) == operatorFunction( entity ) );
          else
          {
-            //cerr << entity.getIndex() << " " << operator_( f1, entity ) << " " << operatorFunction( entity ) << endl;
+            //cerr << entity.getIndex() << " " << operator_( f1, entity ) << " " << operatorFunction( entity ) << std::endl;
             CPPUNIT_ASSERT( operator_( f1, entity ) == operatorFunction( entity ) );
          }
       }
@@ -137,6 +138,7 @@ bool runTest()
 
 int main( int argc, char* argv[] )
 {
+   using namespace TNL;
    if( ! runTest< tnlGrid< 1, double, tnlHost, int > >() ||
        ! runTest< tnlGrid< 2, double, tnlHost, int > >() ||
        ! runTest< tnlGrid< 3, double, tnlHost, int > >() )

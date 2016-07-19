@@ -22,7 +22,7 @@
 #include <dcmtk/ofstd/ofstring.h>
 #endif
 
-namespace TNL
+namespace TNL {
 
 inline tnlDicomPatientInfo::tnlDicomPatientInfo( tnlDicomHeader &dicomHeader )
 : dicomHeader( dicomHeader )
@@ -54,7 +54,7 @@ inline bool tnlDicomPatientInfo::retrieveInfo()
    isObjectRetrieved = true;
    return true;
 #else
-   cerr << "DICOM format is not supported in this build of TNL." << endl;
+   std::cerr << "DICOM format is not supported in this build of TNL." << std::endl;
    return false;
 #endif
 }

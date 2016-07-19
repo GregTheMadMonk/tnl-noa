@@ -21,6 +21,7 @@
 #include <core/vectors/tnlVector.h>
 #include <core/tnlFile.h>
 
+using namespace TNL;
 
 class testingClass
 {

@@ -56,8 +56,8 @@ class tnlCentralFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Mes
             tnlString( XDifference ) + ", " +
             tnlString( YDifference ) + ", " +
             tnlString( ZDifference ) + ", " +
-            ::getType< RealType >() + ", " +
-            ::getType< IndexType >() + " >";
+           TNL::getType< RealType >() + ", " +
+           TNL::getType< IndexType >() + " >";
       }
 
  

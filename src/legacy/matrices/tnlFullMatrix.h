@@ -104,8 +104,8 @@ bool tnlFullMatrix< Real, Device, Index > :: setSize( Index new_size )
 {
    if( new_size > tnlMaxFullMatrixSize )
    {
-      cerr << "The matrix size " << new_size << " is too big. " << endl;
-      cerr << "If you really need to allocate such matrix increase the limit constant in the file " << __FILE__ << endl;
+      std::cerr << "The matrix size " << new_size << " is too big. " << std::endl;
+      std::cerr << "If you really need to allocate such matrix increase the limit constant in the file " << __FILE__ << std::endl;
       return false;
    }
    tnlMatrix< Real, Device, Index > :: size = 0;
@@ -178,11 +178,11 @@ Real tnlFullMatrix< Real, Device, Index > :: rowProduct( const Index row,
                                                          const tnlVector< Real, Device, Index >& vec ) const
 {
    tnlAssert( 0 <= row && row < this->getSize(),
-              cerr << "The row is outside the matrix." );
+              std::cerr << "The row is outside the matrix." );
    tnlAssert( vec. getSize() == this->getSize(),
-              cerr << "The matrix and vector for multiplication have different sizes. "
+              std::cerr << "The matrix and vector for multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << vec. getSize() << endl; );
+                   << "The vector size is " << vec. getSize() << std::endl; );
 
    const Index size = getSize();
    Index pos = row * size;
@@ -209,13 +209,13 @@ void tnlFullMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Rea
                                                             tnlVector< Real, Device, Index >& result ) const
 {
    tnlAssert( vec. getSize() == this->getSize(),
-              cerr << "The matrix and vector for a multiplication have different sizes. "
+              std::cerr << "The matrix and vector for a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << vec. getSize() << endl; );
+                   << "The vector size is " << vec. getSize() << std::endl; );
    tnlAssert( result. getSize() == this->getSize(),
-              cerr << "The matrix and result vector of a multiplication have different sizes. "
+              std::cerr << "The matrix and result vector of a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
-                   << "The vector size is " << result. getSize() << endl; );
+                   << "The vector size is " << result. getSize() << std::endl; );
 
    const Index size = getSize();
    Index pos( 0 );
@@ -309,7 +309,7 @@ void MatrixSum( const tnlFullMatrix< Real, tnlHost, Index >& m1,
 };
 
 template< typename Real, typename Device, typename Index >
-ostream& operator << ( ostream& o_str, const tnlFullMatrix< Real, Device, Index >& A )
+ostream& operator << ( std::ostream& o_str, const tnlFullMatrix< Real, Device, Index >& A )
 {
    return operator << ( o_str, ( const tnlMatrix< Real, Device, Index >& ) A );
 };

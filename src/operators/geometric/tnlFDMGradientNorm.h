@@ -53,8 +53,8 @@ class tnlFDMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, DifferenceOp
    {
       return tnlString( "tnlFDMGradientNorm< " ) +
          MeshType::getType() + ", " +
-         ::getType< Real >() + ", " +
-         ::getType< Index >() + " >";
+        TNL::getType< Real >() + ", " +
+        TNL::getType< Index >() + " >";
    }
 
    template< typename MeshFunction, typename MeshEntity >
@@ -65,7 +65,7 @@ class tnlFDMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, DifferenceOp
    {
       XDifferenceOperatorType< MeshEntity > XDifference;
       const RealType u_x = XDifference( u, entity );
-      return sqrt( this->epsSquare + u_x * u_x );
+      return ::sqrt( this->epsSquare + u_x * u_x );
    }
  
    void setEps( const Real& eps )
@@ -111,8 +111,8 @@ class tnlFDMGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, DifferenceOp
       {
          return tnlString( "tnlFDMGradientNorm< " ) +
             MeshType::getType() + ", " +
-            ::getType< Real >() + ", " +
-            ::getType< Index >() + " >";
+           TNL::getType< Real >() + ", " +
+           TNL::getType< Index >() + " >";
 
       }
 
@@ -126,7 +126,7 @@ class tnlFDMGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, DifferenceOp
          YDifferenceOperatorType< MeshEntity > YDifference;
          const RealType u_x = XDifference( u, entity );
          const RealType u_y = YDifference( u, entity );
-         return sqrt( this->epsSquare + u_x * u_x + u_y * u_y );
+         return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y );
       }
 
 
@@ -176,8 +176,8 @@ class tnlFDMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, DifferenceO
       {
          return tnlString( "tnlFDMGradientNorm< " ) +
             MeshType::getType() + ", " +
-            ::getType< Real >() + ", " +
-            ::getType< Index >() + " >";
+           TNL::getType< Real >() + ", " +
+           TNL::getType< Index >() + " >";
       }
 
       template< typename MeshFunction, typename MeshEntity >
@@ -193,7 +193,7 @@ class tnlFDMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, DifferenceO
          const RealType u_x = XDifference( u, entity );
          const RealType u_y = YDifference( u, entity );
          const RealType u_z = ZDifference( u, entity );
-         return sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );
+         return ::sqrt( this->epsSquare + u_x * u_x + u_y * u_y + u_z * u_z );
       }
 
 

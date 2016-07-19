@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlMersonSolverH
-#define tnlMersonSolverH
+#pragma once
 
 #include <math.h>
 #include <config/tnlConfigDescription.h>
 #include <solvers/ode/tnlExplicitSolver.h>
+
+namespace TNL {
 
 template< class Problem >
 class tnlMersonSolver : public tnlExplicitSolver< Problem >
@@ -68,6 +69,6 @@ class tnlMersonSolver : public tnlExplicitSolver< Problem >
    RealType adaptivity;
 };
 
-#include <solvers/ode/tnlMersonSolver_impl.h>
+} // namespace TNL
 
-#endif
+#include <solvers/ode/tnlMersonSolver_impl.h>

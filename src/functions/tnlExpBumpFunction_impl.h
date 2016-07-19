@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <cmath>
 #include <functions/tnlExpBumpFunction.h>
 
 namespace TNL {
@@ -64,7 +65,7 @@ template< typename Real >
 tnlString
 tnlExpBumpFunction< 1, Real >::getType()
 {
-   return "tnlExpBumpFunction< 1, " + ::getType< Real >() + tnlString( " >" );
+   return "tnlExpBumpFunction< 1, " + TNL::getType< Real >() + tnlString( " >" );
 }
 
 template< typename Real >
@@ -82,15 +83,16 @@ tnlExpBumpFunction< 1, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
+   using namespace std;
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 )
-      return this->amplitude * exp( -x*x / ( this->sigma*this->sigma ) );
+      return this->amplitude * ::exp( -x*x / ( this->sigma*this->sigma ) );
    if( XDiffOrder == 1 )
-      return -2.0 * x / ( this->sigma * this->sigma ) * this->amplitude * exp( -x*x / ( this->sigma * this->sigma ) );
+      return -2.0 * x / ( this->sigma * this->sigma ) * this->amplitude * ::exp( -x*x / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 2 )
-      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( -x*x / ( this->sigma * this->sigma ) ) + 4.0 * x * x / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( -x*x / ( this->sigma * this->sigma ) );
+      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * ::exp( -x*x / ( this->sigma * this->sigma ) ) + 4.0 * x * x / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * ::exp( -x*x / ( this->sigma * this->sigma ) );
    return 0.0;
 }
 
@@ -113,7 +115,7 @@ template< typename Real >
 tnlString
 tnlExpBumpFunction< 2, Real >::getType()
 {
-   return tnlString( "tnlExpBumpFunction< 2, " ) + ::getType< Real >() + " >";
+   return tnlString( "tnlExpBumpFunction< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -136,17 +138,17 @@ getPartialDerivative( const VertexType& v,
    if( ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 && YDiffOrder == 0 )
-      return this->amplitude * exp( ( -x*x - y*y ) / ( this->sigma * this->sigma ) );
+      return this->amplitude * ::exp( ( -x*x - y*y ) / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 1 && YDiffOrder == 0 )
-      return -2.0 * x / ( this->sigma * this->sigma ) * this->amplitude * exp( (-x * x - y * y)/ ( this->sigma * this->sigma ) );
+      return -2.0 * x / ( this->sigma * this->sigma ) * this->amplitude * ::exp( (-x * x - y * y)/ ( this->sigma * this->sigma ) );
    if( XDiffOrder == 2 && YDiffOrder == 0 )
-      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( (-x*x - y*y) / ( this->sigma * this->sigma ) ) + 4.0 * x * x / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( (-x*x - y*y) / ( this->sigma * this->sigma ) );
+      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * ::exp( (-x*x - y*y) / ( this->sigma * this->sigma ) ) + 4.0 * x * x / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * ::exp( (-x*x - y*y) / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 0 && YDiffOrder == 1 )
-      return -2.0 * y / ( this->sigma * this->sigma ) * this->amplitude * exp( (-x * x - y * y)/ ( this->sigma * this->sigma ) );
+      return -2.0 * y / ( this->sigma * this->sigma ) * this->amplitude * ::exp( (-x * x - y * y)/ ( this->sigma * this->sigma ) );
    if( XDiffOrder == 0 && YDiffOrder == 2 )
-      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( (-x*x - y*y) / ( this->sigma * this->sigma ) ) + 4.0 * y * y / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( (-x*x - y*y) / ( this->sigma * this->sigma ) );
+      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * ::exp( (-x*x - y*y) / ( this->sigma * this->sigma ) ) + 4.0 * y * y / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * ::exp( (-x*x - y*y) / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 1 && YDiffOrder == 1 )
-      return 4.0 * x * y / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * exp( (-x * x - y * y)/ ( this->sigma * this->sigma ) );
+      return 4.0 * x * y / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * ::exp( (-x * x - y * y)/ ( this->sigma * this->sigma ) );
    return 0.0;
 }
 
@@ -168,7 +170,7 @@ template< typename Real >
 tnlString
 tnlExpBumpFunction< 3, Real >::getType()
 {
-   return tnlString( "tnlExpBumpFunction< 3, " ) + ::getType< Real >() + " >";
+   return tnlString( "tnlExpBumpFunction< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -190,25 +192,25 @@ getPartialDerivative( const VertexType& v,
    const RealType& y = v.y();
    const RealType& z = v.z();
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
-      return this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+      return this->amplitude * ::exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 0 )
-      return -2.0 * x / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+      return -2.0 * x / ( this->sigma * this->sigma ) * this->amplitude * ::exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 2 && YDiffOrder == 0 && ZDiffOrder == 0 )
-      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) ) + 4.0 * x * x / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * ::exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) ) + 4.0 * x * x / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * ::exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 0 && YDiffOrder == 1 && ZDiffOrder == 0 )
-      return -2.0 * y / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+      return -2.0 * y / ( this->sigma * this->sigma ) * this->amplitude * ::exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 0 && YDiffOrder == 2 && ZDiffOrder == 0 )
-      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) ) + 4.0 * y * y / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * ::exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) ) + 4.0 * y * y / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * ::exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 1 )
-      return -2.0 * z / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+      return -2.0 * z / ( this->sigma * this->sigma ) * this->amplitude * ::exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 2 )
-      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) ) + 4.0 * z * z / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+      return -2.0 / ( this->sigma * this->sigma ) * this->amplitude * ::exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) ) + 4.0 * z * z / ( this->sigma * this->sigma * this->sigma * this->sigma ) * this->amplitude * ::exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 1 && YDiffOrder == 1 && ZDiffOrder == 0 )
-      return 4.0 * x * y / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+      return 4.0 * x * y / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * ::exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 1 )
-      return 4.0 * x * z / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+      return 4.0 * x * z / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * ::exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    if( XDiffOrder == 0 && YDiffOrder == 1 && ZDiffOrder == 1 )
-      return 4.0 * y * z / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
+      return 4.0 * y * z / ( ( this->sigma * this->sigma ) * ( this->sigma * this->sigma ) ) * this->amplitude * ::exp( ( -x*x - y*y -z*z ) / ( this->sigma * this->sigma ) );
    return 0.0;
 }
 

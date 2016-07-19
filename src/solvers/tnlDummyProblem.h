@@ -8,12 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLDUMMYPROBLEM_H_
-#define TNLDUMMYPROBLEM_H_
+#pragma once
 
 #include <core/tnlHost.h>
 #include <core/vectors/tnlVector.h>
 #include <mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename Real = double,
           typename Device = tnlHost,
@@ -30,6 +31,4 @@ class tnlDummyProblem
       typedef DofVectorType MeshDependentDataType;
 };
 
-
-
-#endif /* TNLDUMMYPROBLEM_H_ */
+} // namespace TNL

@@ -114,8 +114,8 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
 {
    if( restarting <= 0 )
    {
-      cerr << "I have wrong value for the restarting of the GMRES solver. It is set to " << restarting
-           << ". Please set some positive value using the SetRestarting method." << endl;
+      std::cerr << "I have wrong value for the restarting of the GMRES solver. It is set to " << restarting
+           << ". Please set some positive value using the SetRestarting method." << std::endl;
       return false;
    }
    if( ! setSize( A. getSize(), restarting ) ) return false;
@@ -288,7 +288,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, D
          _r.alphaXPlusBetaY( ( Real ) 1.0, b, -1.0 );
          beta = _r. lpNorm( ( Real ) 2.0 );
       }
-      //beta = sqrt( beta );
+      //beta = ::sqrt( beta );
       //dbgCout_ARRAY( r, size );
       //dbgExpr( beta );
       //dbgExpr( beta / normb );
@@ -355,13 +355,13 @@ void tnlGMRESSolverOld< Real, Device, Index > :: generatePlaneRotation( Real &dx
       if( fabs( dy ) > fabs( dx ) )
       {
          Real temp = dx / dy;
-         sn = 1.0 / sqrt( 1.0 + temp * temp );
+         sn = 1.0 / ::sqrt( 1.0 + temp * temp );
          cs = temp * sn;
       }
       else
       {
          Real temp = dy / dx;
-         cs = 1.0 / sqrt( 1.0 + temp * temp );
+         cs = 1.0 / ::sqrt( 1.0 + temp * temp );
          sn = temp * cs;
       }
 };
@@ -392,7 +392,7 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: setSize( Index _size, Index m )
        ! _H. setSize( ( restarting + 1 ) * restarting ) ||
        ! _M_tmp. setSize( size ) )
    {
-      cerr << "I could not allocated all supporting arrays for the CG solver." << endl;
+      std::cerr << "I could not allocated all supporting arrays for the CG solver." << std::endl;
       return false;
    }
    return true;

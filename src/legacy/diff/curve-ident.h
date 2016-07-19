@@ -248,7 +248,7 @@ bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
          {
             // this can happen near the edge or when two curves cross each other
             //curve. Append( CurveElement( Vector2D( 0.0, 0.0 ), true ) );
-            //cerr << "Warning: v1 * v2 > 0 in curve identification." << endl;
+            //cerr << "Warning: v1 * v2 > 0 in curve identification." << std::endl;
             continue;
          }
          Real r = v[ 0 ] / ( v[ 1 ] - v[ 0 ] );

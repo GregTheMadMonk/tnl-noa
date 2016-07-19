@@ -23,6 +23,8 @@
 #include "../tnlPDEOperatorEocTestResult.h"
 #include <functions/tnlExpBumpFunction.h>
 
+using namespace TNL;
+
 template< typename ApproximateOperator >
 class tnlFinitDifferenceEocTestResults
 {

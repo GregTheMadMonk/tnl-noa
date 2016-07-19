@@ -8,7 +8,7 @@
 #include <matrices/tnlSlicedEllpackMatrix.h>
 #include <matrices/tnlChunkedEllpackMatrix.h>
 
-namespace tnl
+namespace TNL
 {
 namespace benchmarks
 {
@@ -116,7 +116,7 @@ benchmarkSpMV( Benchmark & benchmark,
         ! deviceVector2.setSize( size ) )
     {
         const char* msg = "error: allocation of vectors failed";
-        cerr << msg << endl;
+        std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg, 2 );
         return false;
     }
@@ -126,13 +126,13 @@ benchmarkSpMV( Benchmark & benchmark,
 
     if( ! hostMatrix.setCompressedRowsLengths( hostRowLengths ) ) {
         const char* msg = "error: allocation of host matrix failed";
-        cerr << msg << endl;
+        std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg, 2 );
         return false;
     }
     if( ! deviceMatrix.setCompressedRowsLengths( deviceRowLengths ) ) {
         const char* msg = "error: allocation of device matrix failed";
-        cerr << msg << endl;
+        std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg, 2 );
         return false;
     }

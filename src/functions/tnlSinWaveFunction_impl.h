@@ -90,16 +90,16 @@ getPartialDerivative( const VertexType& v,
       RealType arg = 2.0 * M_PI * x  / this->waveLength;
       if( this->wavesNumber )
       {
-         if( tnlAbs( arg ) > this->wavesNumber )
-            arg = Sign( x ) * this->wavesNumber;
+         if( abs( arg ) > this->wavesNumber )
+            arg = sign( x ) * this->wavesNumber;
       }
-      //cout << "arg = " << arg << " amplitude = " << this->amplitude << " -> " << this->amplitude * sin( this->phase + arg ) << endl;
-      return this->amplitude * sin( this->phase + arg );
+      //cout << "arg = " << arg << " amplitude = " << this->amplitude << " -> " << this->amplitude * ::sin( this->phase + arg ) << std::endl;
+      return this->amplitude * ::sin( this->phase + arg );
    }
    if( XDiffOrder == 1 )
-      return 2.0 * M_PI / this->waveLength * this->amplitude * cos( this->phase + 2.0 * M_PI * x / this->waveLength );
+      return 2.0 * M_PI / this->waveLength * this->amplitude * ::cos( this->phase + 2.0 * M_PI * x / this->waveLength );
    if( XDiffOrder == 2 )
-      return -4.0 * M_PI * M_PI / ( this->waveLength * this->waveLength ) * this->amplitude * sin( this->phase + 2.0 * M_PI * x / this->waveLength );
+      return -4.0 * M_PI * M_PI / ( this->waveLength * this->waveLength ) * this->amplitude * ::sin( this->phase + 2.0 * M_PI * x / this->waveLength );
    return 0.0;
 }
 
@@ -131,19 +131,19 @@ getPartialDerivative( const VertexType& v,
       return 0.0;
    if( XDiffOrder == 0 && YDiffOrder == 0)
    {
-      return this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
+      return this->amplitude * ::sin( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y ) / this->waveLength );
    }
    if( XDiffOrder == 1 && YDiffOrder == 0 )
-      return 2.0 * M_PI * x / ( this->waveLength * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
+      return 2.0 * M_PI * x / ( this->waveLength * ::sqrt( x * x + y * y ) ) * this->amplitude * ::cos( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y ) / this->waveLength );
    if( XDiffOrder == 2 && YDiffOrder == 0 )
-      return 2.0 * M_PI * x * x / ( this->waveLength * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength ) - 4.0 * M_PI * M_PI * x * x / ( this->waveLength * this->waveLength * ( x * x + y * y ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
+      return 2.0 * M_PI * x * x / ( this->waveLength * ::sqrt( x * x + y * y ) * ::sqrt( x * x + y * y ) * ::sqrt( x * x + y * y ) ) * this->amplitude * ::cos( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y ) / this->waveLength ) - 4.0 * M_PI * M_PI * x * x / ( this->waveLength * this->waveLength * ( x * x + y * y ) ) * this->amplitude * ::sin( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y ) / this->waveLength );
    if( XDiffOrder == 0 && YDiffOrder == 1 )
-      return 2.0 * M_PI * y / ( this->waveLength * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
+      return 2.0 * M_PI * y / ( this->waveLength * ::sqrt( x * x + y * y ) ) * this->amplitude * ::cos( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y ) / this->waveLength );
    if( XDiffOrder == 0 && YDiffOrder == 2 )
-      return 2.0 * M_PI * y * y / ( this->waveLength * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) * sqrt( x * x + y * y ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength ) - 4.0 * M_PI * M_PI * y * y / ( this->waveLength * this->waveLength * ( x * x + y * y ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength );
+      return 2.0 * M_PI * y * y / ( this->waveLength * ::sqrt( x * x + y * y ) * ::sqrt( x * x + y * y ) * ::sqrt( x * x + y * y ) ) * this->amplitude * ::cos( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y ) / this->waveLength ) - 4.0 * M_PI * M_PI * y * y / ( this->waveLength * this->waveLength * ( x * x + y * y ) ) * this->amplitude * ::sin( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y ) / this->waveLength );
    if( XDiffOrder == 1 && YDiffOrder == 1 )
-      return -4.0 * M_PI * M_PI * x * y / ( this->waveLength * this->waveLength * (x * x + y * y ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength )
-             - 2.0 * M_PI * this->amplitude * x * y * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y ) / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y )  * (x * x + y * y ) * (x * x + y * y ) ) );
+      return -4.0 * M_PI * M_PI * x * y / ( this->waveLength * this->waveLength * (x * x + y * y ) )* this->amplitude * ::sin( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y ) / this->waveLength )
+             - 2.0 * M_PI * this->amplitude * x * y * ::cos( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y ) / this->waveLength ) / ( this->waveLength  * ::sqrt( (x * x + y * y )  * (x * x + y * y ) * (x * x + y * y ) ) );
    return 0.0;
 }
 
@@ -173,29 +173,29 @@ getPartialDerivative( const VertexType& v,
    const RealType& z = v.z();
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
    {
-      return this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
+      return this->amplitude * ::sin( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength );
    }
    if( XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 0 )
-      return 2.0 * M_PI * x / ( this->waveLength * sqrt( x * x + y * y + z * z ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
+      return 2.0 * M_PI * x / ( this->waveLength * ::sqrt( x * x + y * y + z * z ) ) * this->amplitude * ::cos( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength );
    if( XDiffOrder == 2 && YDiffOrder == 0 && ZDiffOrder == 0 )
-      return 2.0 * M_PI * ( y * y + z * z ) / ( this->waveLength * sqrt( x * x + y * y + z * z ) * sqrt( x * x + y * y + z * z ) * sqrt( x * x + y * y + z * z ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) - 4.0 * M_PI * M_PI * x * x / ( this->waveLength * this->waveLength * ( x * x + y * y + z * z ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
+      return 2.0 * M_PI * ( y * y + z * z ) / ( this->waveLength * ::sqrt( x * x + y * y + z * z ) * ::sqrt( x * x + y * y + z * z ) * ::sqrt( x * x + y * y + z * z ) ) * this->amplitude * ::cos( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength ) - 4.0 * M_PI * M_PI * x * x / ( this->waveLength * this->waveLength * ( x * x + y * y + z * z ) ) * this->amplitude * ::sin( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength );
    if( XDiffOrder == 0 && YDiffOrder == 1 && ZDiffOrder == 0 )
-      return 2.0 * M_PI * y / ( this->waveLength * sqrt( x * x + y * y + z * z ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
+      return 2.0 * M_PI * y / ( this->waveLength * ::sqrt( x * x + y * y + z * z ) ) * this->amplitude * ::cos( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength );
    if( XDiffOrder == 0 && YDiffOrder == 2 && ZDiffOrder == 0 )
-      return 2.0 * M_PI * ( x * x + z * z ) / ( this->waveLength * sqrt( x * x + y * y + z * z ) * sqrt( x * x + y * y + z * z ) * sqrt( x * x + y * y + z * z ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) - 4.0 * M_PI * M_PI * y * y / ( this->waveLength * this->waveLength * ( x * x + y * y + z * z ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
+      return 2.0 * M_PI * ( x * x + z * z ) / ( this->waveLength * ::sqrt( x * x + y * y + z * z ) * ::sqrt( x * x + y * y + z * z ) * ::sqrt( x * x + y * y + z * z ) ) * this->amplitude * ::cos( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength ) - 4.0 * M_PI * M_PI * y * y / ( this->waveLength * this->waveLength * ( x * x + y * y + z * z ) ) * this->amplitude * ::sin( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength );
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 1 )
-      return 2.0 * M_PI * z / ( this->waveLength * sqrt( x * x + y * y + z * z ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
+      return 2.0 * M_PI * z / ( this->waveLength * ::sqrt( x * x + y * y + z * z ) ) * this->amplitude * ::cos( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength );
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 2 )
-      return 2.0 * M_PI * ( x * x + y * y ) / ( this->waveLength * sqrt( x * x + y * y + z * z ) * sqrt( x * x + y * y + z * z ) * sqrt( x * x + y * y + z * z ) ) * this->amplitude * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) - 4.0 * M_PI * M_PI * z * z / ( this->waveLength * this->waveLength * ( x * x + y * y + z * z ) ) * this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength );
+      return 2.0 * M_PI * ( x * x + y * y ) / ( this->waveLength * ::sqrt( x * x + y * y + z * z ) * ::sqrt( x * x + y * y + z * z ) * ::sqrt( x * x + y * y + z * z ) ) * this->amplitude * ::cos( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength ) - 4.0 * M_PI * M_PI * z * z / ( this->waveLength * this->waveLength * ( x * x + y * y + z * z ) ) * this->amplitude * ::sin( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength );
    if( XDiffOrder == 1 && YDiffOrder == 1 && ZDiffOrder == 0 )
-      return -4.0 * M_PI * M_PI * x * y / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength )
-             - 2.0 * M_PI * this->amplitude * x * y * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
+      return -4.0 * M_PI * M_PI * x * y / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * ::sin( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength )
+             - 2.0 * M_PI * this->amplitude * x * y * ::cos( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength ) / ( this->waveLength  * ::sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
    if( XDiffOrder == 1 && YDiffOrder == 0 && ZDiffOrder == 1 )
-      return -4.0 * M_PI * M_PI * x * z / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength )
-             - 2.0 * M_PI * this->amplitude * x * z * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
+      return -4.0 * M_PI * M_PI * x * z / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * ::sin( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength )
+             - 2.0 * M_PI * this->amplitude * x * z * ::cos( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength ) / ( this->waveLength  * ::sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
    if( XDiffOrder == 0 && YDiffOrder == 1 && ZDiffOrder == 1 )
-      return -4.0 * M_PI * M_PI * z * y / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * sin( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength )
-             - 2.0 * M_PI * this->amplitude * z * y * cos( this->phase + 2.0 * M_PI * sqrt( x * x + y * y + z * z ) / this->waveLength ) / ( this->waveLength  * sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
+      return -4.0 * M_PI * M_PI * z * y / ( this->waveLength * this->waveLength * (x * x + y * y + z * z ) )* this->amplitude * ::sin( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength )
+             - 2.0 * M_PI * this->amplitude * z * y * ::cos( this->phase + 2.0 * M_PI * ::sqrt( x * x + y * y + z * z ) / this->waveLength ) / ( this->waveLength  * ::sqrt( (x * x + y * y + z * z )  * (x * x + y * y + z * z ) * (x * x + y * y + z * z ) ) );
    return 0.0;
 }
 

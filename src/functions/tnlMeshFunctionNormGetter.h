@@ -49,8 +49,8 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
             if( p == 1.0 )
                return function.getMesh().getCellMeasure() * function.getData().lpNorm( 1.0 );
             if( p == 2.0 )
-               return sqrt( function.getMesh().getCellMeasure() ) * function.getData().lpNorm( 2.0 );
-            return pow( function.getMesh().getCellMeasure(), 1.0 / p ) * function.getData().lpNorm( p );
+               return std::sqrt( function.getMesh().getCellMeasure() ) * function.getData().lpNorm( 2.0 );
+            return std::pow( function.getMesh().getCellMeasure(), 1.0 / p ) * function.getData().lpNorm( p );
          }
          if( EntityDimensions > 0 )
          {
@@ -62,7 +62,7 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
                     i++ )
                {
                   EntityType entity = function.getMesh().template getEntity< EntityType >( i );
-                  result += fabs( function[ i ] ) * entity.getMeasure();
+                  result += std::fabs( function[ i ] ) * entity.getMeasure();
                }
                return result;
             }
@@ -76,7 +76,7 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
                   EntityType entity = function.getMesh().template getEntity< EntityType >( i );
                   result += function[ i ] * function[ i ] * entity.getMeasure();
                }
-               return sqrt( result );
+               return std::sqrt( result );
             }
 
             RealType result( 0.0 );
@@ -85,9 +85,9 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
                  i++ )
             {
                EntityType entity = function.getMesh().template getEntity< EntityType >( i );
-               result += pow( fabs( function[ i ] ), p ) * entity.getMeasure();
+               result += std::pow( std::fabs( function[ i ] ), p ) * entity.getMeasure();
             }
-            return pow( result, 1.0 / p );
+            return std::pow( result, 1.0 / p );
          }
  
          if( p == 1.0 )
@@ -128,8 +128,8 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
             if( p == 1.0 )
                return function.getMesh().getCellMeasure() * function.getData().lpNorm( 1.0 );
             if( p == 2.0 )
-               return sqrt( function.getMesh().getCellMeasure() ) * function.getData().lpNorm( 2.0 );
-            return pow( function.getMesh().getCellMeasure(), 1.0 / p ) * function.getData().lpNorm( p );
+               return ::sqrt( function.getMesh().getCellMeasure() ) * function.getData().lpNorm( 2.0 );
+            return ::pow( function.getMesh().getCellMeasure(), 1.0 / p ) * function.getData().lpNorm( p );
          }
          if( EntityDimensions > 0 )
          {

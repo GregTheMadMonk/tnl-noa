@@ -34,12 +34,12 @@ setup( const tnlParameterContainer& parameters,
  
    if( roiBottom < roiTop )
    {
-      cerr << "Error: roi-bottom (" << roiBottom << ") is smaller than roi-top (" << roiTop << ")." << endl;
+      std::cerr << "Error: roi-bottom (" << roiBottom << ") is smaller than roi-top (" << roiTop << ")." << std::endl;
       return false;
    }
    if( roiRight < roiLeft )
    {
-      cerr << "Error: roi-right (" << roiRight << ") is smaller than roi-left (" << roiLeft << ")." << endl;
+      std::cerr << "Error: roi-right (" << roiRight << ") is smaller than roi-left (" << roiLeft << ")." << std::endl;
       return false;
    }
 
@@ -49,7 +49,7 @@ setup( const tnlParameterContainer& parameters,
    {
       if( roiLeft >= image->getWidth() )
       {
-         cerr << "ROI left column is larger than image width ( " << image->getWidth() << ")." << endl;
+         std::cerr << "ROI left column is larger than image width ( " << image->getWidth() << ")." << std::endl;
          return false;
       }
       this->left = roiLeft;
@@ -61,7 +61,7 @@ setup( const tnlParameterContainer& parameters,
    {
       if( roiRight >= image->getWidth() )
       {
-         cerr << "ROI right column is larger than image width ( " << image->getWidth() << ")." << endl;
+         std::cerr << "ROI right column is larger than image width ( " << image->getWidth() << ")." << std::endl;
          return false;
       }
       this->right = roiRight;
@@ -73,7 +73,7 @@ setup( const tnlParameterContainer& parameters,
    {
       if( roiTop >= image->getHeight() )
       {
-         cerr << "ROI top line is larger than image height ( " << image->getHeight() << ")." << endl;
+         std::cerr << "ROI top line is larger than image height ( " << image->getHeight() << ")." << std::endl;
          return false;
       }
       this->top = roiTop;
@@ -85,7 +85,7 @@ setup( const tnlParameterContainer& parameters,
    {
       if( roiBottom >= image->getHeight() )
       {
-         cerr << "ROI bottom line is larger than image height ( " << image->getHeight() << ")." << endl;
+         std::cerr << "ROI bottom line is larger than image height ( " << image->getHeight() << ")." << std::endl;
          return false;
       }
       this->bottom = roiBottom;
@@ -170,8 +170,8 @@ setGrid( Grid& grid,
     grid.setDomain( origin, proportions );
     if( verbose )
     {
-        cout << "Setting grid to dimensions " << grid.getDimensions() <<
-                " and proportions " << grid.getProportions() << endl;
+       std::cout << "Setting grid to dimensions " << grid.getDimensions() <<
+                " and proportions " << grid.getProportions() << std::endl;
     }
     return true;
 }

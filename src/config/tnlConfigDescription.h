@@ -127,7 +127,7 @@ class tnlConfigDescription
                return ( ( tnlConfigEntry< T > * ) entries[ i ] ) -> default_value;
             else return NULL;
          }
-      cerr << "Asking for the default value of uknown parameter." << endl;
+      std::cerr << "Asking for the default value of uknown parameter." << std::endl;
       return NULL;
    }
  
@@ -143,7 +143,7 @@ class tnlConfigDescription
                return ( ( tnlConfigEntry< T > * ) entries[ i ] ) -> default_value;
             else return NULL;
          }
-      cerr << "Asking for the default value of uknown parameter." << endl;
+      std::cerr << "Asking for the default value of uknown parameter." << std::endl;
       return NULL;
    }
 

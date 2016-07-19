@@ -21,6 +21,7 @@
 #include <functions/tnlMeshFunction.h>
 
 using namespace std;
+using namespace TNL;
 
 bool getOutputFileName( const tnlString& inputFileName,
                         const tnlString& outputFormat,
@@ -38,7 +39,7 @@ bool getOutputFileName( const tnlString& inputFileName,
       outputFileName += ".vtk";
       return true;
    }
-   cerr << "Unknown file format " << outputFormat << ".";
+   std::cerr << "Unknown file format " << outputFormat << ".";
    return false;
 }
 
@@ -63,7 +64,7 @@ bool writeMeshFunction( const typename MeshFunction::MeshType& mesh,
                             outputFileName ) )
       return false;
    if( verbose )
-      cout << " writing to " << outputFileName << " ... " << flush;
+     std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
    return function.write( outputFileName, outputFormat );
 }
@@ -113,7 +114,7 @@ bool setMeshEntityDimensions( const tnlGrid< 1, MeshReal, tnlHost, MeshIndex >& 
          return setMeshEntityType< Mesh, 1 >( mesh, inputFileName, parsedObjectType, parameters );
          break;
       default:
-         cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << endl;
+         std::cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << std::endl;
          return false;
    }
 }
@@ -139,7 +140,7 @@ bool setMeshEntityDimensions( const tnlGrid< 2, MeshReal, tnlHost, MeshIndex >& 
          return setMeshEntityType< Mesh, 2 >( mesh, inputFileName, parsedObjectType, parameters );
          break;
       default:
-         cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << endl;
+         std::cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << std::endl;
          return false;
    }
 }
@@ -168,7 +169,7 @@ bool setMeshEntityDimensions( const tnlGrid< 3, MeshReal, tnlHost, MeshIndex >& 
          return setMeshEntityType< Mesh, 3 >( mesh, inputFileName, parsedObjectType, parameters );
          break;
       default:
-         cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << endl;
+         std::cerr << "Unsupported mesh functions entity dimensions count " << meshEntityDimensions << "." << std::endl;
          return false;
    }
 }
@@ -181,7 +182,7 @@ bool setMeshFunction( const Mesh& mesh,
 {
    if( parsedObjectType[ 1 ] != mesh.getSerializationType() )
    {
-      cerr << "Incompatible mesh type for the mesh function " << inputFileName << "." << endl;
+      std::cerr << "Incompatible mesh type for the mesh function " << inputFileName << "." << std::endl;
       return false;
    }
    return setMeshEntityDimensions( mesh, inputFileName, parsedObjectType, parameters );
@@ -202,7 +203,7 @@ bool convertObject( const Mesh& mesh,
                             outputFileName ) )
       return false;
    if( verbose )
-      cout << " writing to " << outputFileName << " ... " << flush;
+     std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
 
    if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
@@ -256,7 +257,7 @@ bool setDimensions( const Mesh& mesh,
       case 3:
          return convertObject< Mesh, Element, Real, Index, 3 >( mesh, inputFileName, parsedObjectType, parameters );
    }
-   cerr << "Cannot convert objects with " << dimensions << " dimensions." << endl;
+   std::cerr << "Cannot convert objects with " << dimensions << " dimensions." << std::endl;
    return false;
 }
 
@@ -278,7 +279,7 @@ bool setIndexType( const Mesh& mesh,
       return setDimensions< Mesh, Element, Real, int >( mesh, inputFileName, parsedObjectType, parameters );
    if( indexType == "long-int" )
       return setDimensions< Mesh, Element, Real, long int >( mesh, inputFileName, parsedObjectType, parameters );
-   cerr << "Unknown index type " << indexType << "." << endl;
+   std::cerr << "Unknown index type " << indexType << "." << std::endl;
    return false;
 }
 
@@ -358,13 +359,13 @@ bool setElementType( const Mesh& mesh,
    tnlList< tnlString > parsedElementType;
    if( ! parseObjectType( elementType, parsedElementType ) )
    {
-      cerr << "Unable to parse object type " << elementType << "." << endl;
+      std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
       return false;
    }
    if( parsedElementType[ 0 ] == "tnlStaticVector" )
       return setTupleType< Mesh >( mesh, inputFileName, parsedObjectType, parsedElementType, parameters );
 
-   cerr << "Unknown element type " << elementType << "." << endl;
+   std::cerr << "Unknown element type " << elementType << "." << std::endl;
    return false;
 }
 
@@ -378,7 +379,7 @@ bool processFiles( const tnlParameterContainer& parameters )
    if( meshFile != "" )
       if( ! mesh. load( meshFile ) )
       {
-         cerr << "I am not able to load mesh from the file " << meshFile << "." << endl;
+         std::cerr << "I am not able to load mesh from the file " << meshFile << "." << std::endl;
          return false;
       }
    mesh. writeMesh( "mesh.asy", "asymptote" );
@@ -392,7 +393,7 @@ bool processFiles( const tnlParameterContainer& parameters )
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {
       if( verbose )
-         cout << "Processing file " << inputFiles[ i ] << " ... " << flush;
+        std::cout << "Processing file " << inputFiles[ i ] << " ... " << std::flush;
 
       tnlString outputFormat = parameters. getParameter< tnlString >( "output-format" );
       tnlString outputFileName;
@@ -406,22 +407,22 @@ bool processFiles( const tnlParameterContainer& parameters )
       if( checkOutputFile && fileExists( outputFileName ) )
       {
          if( verbose )
-            cout << " file already exists. Skipping.            \r" << flush;
+           std::cout << " file already exists. Skipping.            \r" << std::flush;
          continue;
       }
 
       tnlString objectType;
       if( ! getObjectType( inputFiles[ i ], objectType ) )
-          cerr << "unknown object ... SKIPPING!" << endl;
+          std::cerr << "unknown object ... SKIPPING!" << std::endl;
       else
       {
          if( verbose )
-            cout << objectType << " detected ... ";
+           std::cout << objectType << " detected ... ";
 
          tnlList< tnlString > parsedObjectType;
          if( ! parseObjectType( objectType, parsedObjectType ) )
          {
-            cerr << "Unable to parse object type " << objectType << "." << endl;
+            std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
             error = true;
             continue;
          }
@@ -433,12 +434,12 @@ bool processFiles( const tnlParameterContainer& parameters )
          if( parsedObjectType[ 0 ] == "tnlMeshFunction" )
             setMeshFunction< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );
          if( verbose )
-            cout << "[ OK ].  " << endl;
+           std::cout << "[ OK ].  " << std::endl;
 
       }
    }
    if( verbose )
-      cout << endl;
+     std::cout << std::endl;
    return ! error;
 }
 

@@ -18,7 +18,6 @@
    #include <cuda_runtime.h>
 #endif
 
-#include <core/mfuncs.h>
 #include <core/tnlAssert.h>
 #include <core/tnlString.h>
 #include <core/tnlHost.h>

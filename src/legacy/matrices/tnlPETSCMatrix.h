@@ -45,7 +45,7 @@ template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
       Mat matrix2;
       MatCreateSeqAIJ( MPI_COMM_SELF, size, size, row_size, PETSC_NULL, &matrix );
 #else
-      cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
+      std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
 #endif
    };
 
@@ -65,7 +65,7 @@ template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
 #ifdef HAVE_PETSC
       _matrix = matrix;
 #else
-      cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
+      std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
 #endif
    }
  
@@ -100,7 +100,7 @@ template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
       MatSetValue( matrix, row, col, v, INSERT_VALUES );
       return true;
 #else
-      cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
+      std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
       return false;
 #endif
    };
@@ -113,7 +113,7 @@ template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
       MatSetValue( matrix, row, col, v, ADD_VALUES );
       return true;
 #else
-      cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
+      std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
       return false;
 #endif
    };
@@ -137,7 +137,7 @@ template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
       VecDestroy( petsc_vec );
       VecDestroy( petsc_res );
 #else
-      cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
+      std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
 #endif
  
    };
@@ -151,7 +151,7 @@ template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
 #ifdef HAVE_PETSC
       MatDestroy( matrix );
 #else
-      cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << endl;
+      std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
 #endif
    };
 

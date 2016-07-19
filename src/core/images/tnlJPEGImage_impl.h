@@ -67,9 +67,9 @@ readHeader()
    this->width = this->decinfo.image_width;
    this->components = this->decinfo.num_components;
    //this->color_space = this->cinfo.jpeg_color_space;
-   //cout << this->height << " x " << this->width << " : " << this->components << " " << this->color_space << endl;
+   //cout << this->height << " x " << this->width << " : " << this->components << " " << this->color_space << std::endl;
 #else
-   cerr << "TNL was not compiled with support of JPEG. You may still use PGM format." << endl;
+   std::cerr << "TNL was not compiled with support of JPEG. You may still use PGM format." << std::endl;
    return false;
 #endif
 }
@@ -83,7 +83,7 @@ openForRead( const tnlString& fileName )
    this->file = fopen( fileName.getString(), "r" );
    if( ! this->file )
    {
-      cerr << "Unable to open the file " << fileName << endl;
+      std::cerr << "Unable to open the file " << fileName << std::endl;
       return false;
    }
    this->fileOpen = true;
@@ -161,7 +161,7 @@ read( const tnlRegionOfInterest< Index > roi,
                vector.setElement( cell.getIndex(), value );
                break;
             default:
-               cerr << "Unknown JPEG color type." << endl;
+               std::cerr << "Unknown JPEG color type." << std::endl;
                return false;
          }
       }
@@ -169,7 +169,7 @@ read( const tnlRegionOfInterest< Index > roi,
    }
    return true;
 #else
-   //cerr << "TNL was not compiled with support of JPEG. You may still use PGM format." << endl;
+   //cerr << "TNL was not compiled with support of JPEG. You may still use PGM format." << std::endl;
    return false;
 #endif
 }
@@ -192,7 +192,7 @@ writeHeader( const tnlGrid< 2, Real, Device, Index >& grid )
    jpeg_set_defaults( &this->cinfo );
    jpeg_start_compress( &this->cinfo, true );
 #else
-   //cerr << "TNL was not compiled with support of JPEG. You may still use PGM format." << endl;
+   //cerr << "TNL was not compiled with support of JPEG. You may still use PGM format." << std::endl;
    return false;
 #endif
 }
@@ -209,7 +209,7 @@ openForWrite( const tnlString& fileName,
    this->file = fopen( fileName.getString(), "w" );
    if( ! this->file )
    {
-      cerr << "Unable to open the file " << fileName << endl;
+      std::cerr << "Unable to open the file " << fileName << std::endl;
       return false;
    }
    this->fileOpen = true;

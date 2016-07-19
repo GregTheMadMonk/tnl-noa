@@ -30,11 +30,11 @@ template< typename Real,
 tnlString tnlEllpackMatrix< Real, Device, Index > :: getType()
 {
    return tnlString( "tnlEllpackMatrix< ") +
-          tnlString( ::getType< Real >() ) +
+          tnlString( TNL::getType< Real >() ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( ", " ) +
-          tnlString( ::getType< Index >() ) +
+          tnlString( TNL::getType< Index >() ) +
           tnlString( " >" );
 }
 
@@ -53,8 +53,8 @@ bool tnlEllpackMatrix< Real, Device, Index >::setDimensions( const IndexType row
                                                              const IndexType columns )
 {
    tnlAssert( rows > 0 && columns > 0,
-              cerr << "rows = " << rows
-                   << " columns = " << columns << endl );
+              std::cerr << "rows = " << rows
+                   << " columns = " << columns << std::endl );
    this->rows = rows;
    this->columns = columns;
    if( Device::DeviceType == ( int ) tnlCudaDevice )
@@ -83,7 +83,7 @@ template< typename Real,
 bool tnlEllpackMatrix< Real, Device, Index >::setConstantCompressedRowsLengths( const IndexType& rowLengths )
 {
    tnlAssert( rowLengths > 0,
-              cerr << " rowLengths = " << rowLengths );
+              std::cerr << " rowLengths = " << rowLengths );
    this->rowLengths = rowLengths;
    if( this->rows > 0 )
       return allocateElements();
@@ -133,7 +133,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::operator == ( const tnlEllpackMatr
 {
    tnlAssert( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
-              cerr << "this->getRows() = " << this->getRows()
+              std::cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
                    << " this->getColumns() = " << this->getColumns()
                    << " matrix.getColumns() = " << matrix.getColumns() );
@@ -193,10 +193,10 @@ bool tnlEllpackMatrix< Real, Device, Index > :: addElementFast( const IndexType 
                                                                 const RealType& value,
                                                                 const RealType& thisElementMultiplicator )
 {
-   // TODO: return this back when CUDA kernels support cerr
+   // TODO: return this back when CUDA kernels support std::cerr
    /*tnlAssert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
-              cerr << " row = " << row
+              std::cerr << " row = " << row
                    << " column = " << column
                    << " this->rows = " << this->rows
                    << " this->columns = " << this-> columns );*/
@@ -508,7 +508,7 @@ void tnlEllpackMatrix< Real, Device, Index > :: addMatrix( const tnlEllpackMatri
                                                                  const RealType& matrixMultiplicator,
                                                                  const RealType& thisMatrixMultiplicator )
 {
-   tnlAssert( false, cerr << "TODO: implement" );
+   tnlAssert( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -520,7 +520,7 @@ template< typename Real,
 void tnlEllpackMatrix< Real, Device, Index >::getTransposition( const tnlEllpackMatrix< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   tnlAssert( false, cerr << "TODO: implement" );
+   tnlAssert( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -534,8 +534,8 @@ bool tnlEllpackMatrix< Real, Device, Index > :: performSORIteration( const Vecto
                                                                            const RealType& omega ) const
 {
    tnlAssert( row >=0 && row < this->getRows(),
-              cerr << "row = " << row
-                   << " this->getRows() = " << this->getRows() << endl );
+              std::cerr << "row = " << row
+                   << " this->getRows() = " << this->getRows() << std::endl );
 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
@@ -555,7 +555,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: performSORIteration( const Vecto
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-      cerr << "There is zero on the diagonal in " << row << "-th row of a matrix. I cannot perform SOR iteration." << endl;
+      std::cerr << "There is zero on the diagonal in " << row << "-th row of a matrix. I cannot perform SOR iteration." << std::endl;
       return false;
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
@@ -610,7 +610,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::load( const tnlString& fileName )
 template< typename Real,
           typename Device,
           typename Index >
-void tnlEllpackMatrix< Real, Device, Index >::print( ostream& str ) const
+void tnlEllpackMatrix< Real, Device, Index >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -626,7 +626,7 @@ void tnlEllpackMatrix< Real, Device, Index >::print( ostream& str ) const
          str << " Col:" << column << "->" << this->values.getElement( i ) << "\t";
          i += step;
       }
-      str << endl;
+      str << std::endl;
    }
 }
 

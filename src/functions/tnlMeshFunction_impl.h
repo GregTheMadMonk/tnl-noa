@@ -61,7 +61,7 @@ getType()
    return tnlString( "tnlMeshFunction< " ) +
                      Mesh::getType() + ", " +
                      tnlString( MeshEntityDimensions ) + ", " +
-                     ::getType< Real >() +
+                    TNL::getType< Real >() +
                      " >";
 };
 
@@ -85,7 +85,7 @@ getSerializationType()
    return tnlString( "tnlMeshFunction< " ) +
                      Mesh::getSerializationType() + ", " +
                      tnlString( MeshEntityDimensions ) + ", " +
-                     ::getType< Real >() +
+                    TNL::getType< Real >() +
                      " >";
 };
 

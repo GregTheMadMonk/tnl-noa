@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLEXPLICITUPDATER_H_
-#define TNLEXPLICITUPDATER_H_
+#pragma once
 
 #include <functions/tnlFunctionAdapter.h>
 #include <core/tnlTimer.h>
+
+namespace TNL {
 
 template< typename Real,
           typename MeshFunction,
@@ -135,5 +136,7 @@ class tnlExplicitUpdater
       tnlTimer* gpuTransferTimer;
 };
 
+} // namespace TNL
+
 #include <solvers/pde/tnlExplicitUpdater_impl.h>
-#endif /* TNLEXPLICITUPDATER_H_ */
+

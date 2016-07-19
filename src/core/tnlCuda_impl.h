@@ -79,7 +79,7 @@ ObjectType* tnlCuda::passToDevice( const ObjectType& object )
    }
    return deviceObject;
 #else
-   tnlAssert( false, cerr << "CUDA support is missing." );
+   tnlAssert( false, std::cerr << "CUDA support is missing." );
    return 0;
 #endif
 }
@@ -96,7 +96,7 @@ ObjectType tnlCuda::passFromDevice( const ObjectType* object )
    checkCudaDevice;
    return aux;
 #else
-   tnlAssert( false, cerr << "CUDA support is missing." );
+   tnlAssert( false, std::cerr << "CUDA support is missing." );
    return 0;
 #endif
 }
@@ -112,12 +112,12 @@ void tnlCuda::passFromDevice( const ObjectType* deviceObject,
                cudaMemcpyDeviceToHost );
    checkCudaDevice;
 #else
-   tnlAssert( false, cerr << "CUDA support is missing." );
+   tnlAssert( false, std::cerr << "CUDA support is missing." );
 #endif
 }
 
 template< typename ObjectType >
-void tnlCuda::print( const ObjectType* deviceObject, ostream& str )
+void tnlCuda::print( const ObjectType* deviceObject, std::ostream& str )
 {
 #ifdef HAVE_CUDA
    ObjectType hostObject;
@@ -134,7 +134,7 @@ void tnlCuda::freeFromDevice( ObjectType* deviceObject )
    cudaFree( deviceObject );
    checkCudaDevice;
 #else
-   tnlAssert( false, cerr << "CUDA support is missing." );
+   tnlAssert( false, std::cerr << "CUDA support is missing." );
 #endif
 }
 

@@ -9,16 +9,14 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #pragma once
-
-namespace TNL {
    
-#ifdef HAVE_CUDA
-
 #include <iostream>
 #include <core/tnlCuda.h>
 #include <core/cuda/reduction-operations.h>
+   
+#ifdef HAVE_CUDA
 
-using namespace std;
+namespace TNL {
 
 template< typename DataType,
           typename Operation,
@@ -196,7 +194,7 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
        cudaMalloc( ( void** ) &auxArray2, auxArraySize ) != cudaSuccess  )
    {
       {
-         cerr << "Not enough memory on device to allocate auxilliary arrays." << endl;
+         std::cerr << "Not enough memory on device to allocate auxilliary arrays." << std::endl;
          return false;
       }
    }
@@ -226,7 +224,7 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
                                    auxArray1 );
    if( ! checkCudaDevice )
    {
-      cerr << "The CUDA kernel 'cudaFirstPhaseBlockPrefixSum' ended with error." << endl;
+      std::cerr << "The CUDA kernel 'cudaFirstPhaseBlockPrefixSum' ended with error." << std::endl;
       cudaFree( auxArray1 );
       cudaFree( auxArray2 );
       return false;
@@ -254,7 +252,7 @@ bool cudaRecursivePrefixSum( const enumPrefixSumType prefixSumType,
 
    if( ! checkCudaDevice )
    {
-      cerr << "The CUDA kernel 'cudaSecondPhaseBlockPrefixSum' ended with error." << endl;
+      std::cerr << "The CUDA kernel 'cudaSecondPhaseBlockPrefixSum' ended with error." << std::endl;
       cudaFree( auxArray1 );
       cudaFree( auxArray2 );
       return false;
@@ -294,7 +292,7 @@ bool cudaGridPrefixSum( enumPrefixSumType prefixSumType,
                    sizeof( DataType ),
                    cudaMemcpyDeviceToHost ) != cudaSuccess )
    {
-      cerr << "I am not able to copy data from device to host." << endl;
+      std::cerr << "I am not able to copy data from device to host." << std::endl;
       return false;
    }
    return true;
@@ -417,6 +415,6 @@ extern template bool cudaPrefixSum( const long int size,
 
 #endif
 
-#endif
-
 } // namespace TNL
+
+#endif

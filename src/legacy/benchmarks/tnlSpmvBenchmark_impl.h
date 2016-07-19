@@ -37,7 +37,7 @@ void tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::writeProgress() co
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::writeToLogTable( ostream& logFile,
+void tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::writeToLogTable( std::ostream& logFile,
                                                                                const double& csrGflops,
                                                                                const tnlString& inputMtxFile,
                                                                                const tnlCSRMatrix< RealType, tnlHost, IndexType >& csrMatrix,

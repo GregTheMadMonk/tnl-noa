@@ -16,7 +16,7 @@ template< typename MeshFunction >
 bool
 tnlMeshFunctionGnuplotWriter< MeshFunction >::
 write( const MeshFunction& function,
-       ostream& str )
+       std::ostream& str )
 {
    std::cerr << "Gnuplot writer for mesh functions defined on mesh type " << MeshFunction::MeshType::getType() << " is not (yet) implemented." << std::endl;
    return false;
@@ -32,7 +32,7 @@ template< typename MeshReal,
 bool
 tnlMeshFunctionGnuplotWriter< tnlMeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
-       ostream& str )
+       std::ostream& str )
 {
    const MeshType& mesh = function.getMesh();
    typename MeshType::Cell entity( mesh );
@@ -58,7 +58,7 @@ template< typename MeshReal,
 bool
 tnlMeshFunctionGnuplotWriter< tnlMeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
-       ostream& str )
+       std::ostream& str )
 {
    const MeshType& mesh = function.getMesh();
    typename MeshType::Vertex entity( mesh );
@@ -85,7 +85,7 @@ template< typename MeshReal,
 bool
 tnlMeshFunctionGnuplotWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
 write( const MeshFunctionType& function,
-       ostream& str )
+       std::ostream& str )
 {
    const MeshType& mesh = function.getMesh();
    typename MeshType::Cell entity( mesh );
@@ -117,7 +117,7 @@ template< typename MeshReal,
 bool
 tnlMeshFunctionGnuplotWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
-       ostream& str )
+       std::ostream& str )
 {
    const MeshType& mesh = function.getMesh();
    typedef typename MeshType::Face EntityType;
@@ -173,7 +173,7 @@ template< typename MeshReal,
 bool
 tnlMeshFunctionGnuplotWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
-       ostream& str )
+       std::ostream& str )
 {
    const MeshType& mesh = function.getMesh();
    typename MeshType::Vertex entity( mesh );

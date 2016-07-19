@@ -26,28 +26,28 @@ class tnlMeshWriterNetgen
                           MeshType& mesh,
                           bool verbose )
    {
-      fstream outputFile;
-      outputFile.open( fileName.getString(), ios::out );
+      std::fstream outputFile;
+      outputFile.open( fileName.getString(), std::ios::out );
       if( ! outputFile )
       {
-         cerr << "I am not able to open the output file " << fileName << "." << endl;
+         std::cerr << "I am not able to open the output file " << fileName << "." << std::endl;
          return false;
       }
-      outputFile << setprecision( 6 );
+      outputFile << std::setprecision( 6 );
       outputFile << fixed;
 
       const int meshDimensions = MeshType::meshDimensions;
       typedef typename MeshType::template EntitiesTraits< 0 >::GlobalIndexType VerticesIndexType;
       typedef typename MeshType::PointType                                     PointType;
       const VerticesIndexType numberOfVertices = mesh.getNumberOfVertices();
-      outputFile << numberOfVertices << endl;
+      outputFile << numberOfVertices << std::endl;
       for( VerticesIndexType i = 0; i < numberOfVertices; i++ )
       {
          const PointType& point = mesh.getVertex( i ).getPoint();
          outputFile << " ";
          for( int d = 0; d < meshDimensions; d++ )
             outputFile << " " << point[ d ];
-         outputFile << endl;
+         outputFile << std::endl;
       }
 
       typedef typename MeshType::template EntitiesTraits< meshDimensions >::GlobalIndexType CellIndexType;
@@ -55,7 +55,7 @@ class tnlMeshWriterNetgen
       typedef typename CellType::LocalIndexType                                             LocalIndexType;
 
       const CellIndexType numberOfCells = mesh.template getNumberOfEntities< meshDimensions >();
-      outputFile << numberOfCells << endl;
+      outputFile << numberOfCells << std::endl;
       for( CellIndexType cellIdx = 0; cellIdx < numberOfCells; cellIdx++ )
       {
          const CellType& cell = mesh.template getEntity< meshDimensions >( cellIdx );
@@ -64,7 +64,7 @@ class tnlMeshWriterNetgen
               cellVertexIdx < meshDimensions + 1;
               cellVertexIdx++ )
             outputFile << " " << cell.getVertexIndex( cellVertexIdx );
-         outputFile << endl;
+         outputFile << std::endl;
       }
 
       return true;

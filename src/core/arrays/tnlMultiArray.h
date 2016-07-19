@@ -350,16 +350,16 @@ class tnlMultiArray< 4, Element, Device, Index > : public tnlArray< Element, Dev
 };
 
 template< typename Element, typename device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiArray< 1, Element, device, Index >& array );
+std::ostream& operator << ( std::ostream& str, const tnlMultiArray< 1, Element, device, Index >& array );
 
 template< typename Element, typename device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiArray< 2, Element, device, Index >& array );
+std::ostream& operator << ( std::ostream& str, const tnlMultiArray< 2, Element, device, Index >& array );
 
 template< typename Element, typename device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiArray< 3, Element, device, Index >& array );
+std::ostream& operator << ( std::ostream& str, const tnlMultiArray< 3, Element, device, Index >& array );
 
 template< typename Element, typename device, typename Index >
-ostream& operator << ( ostream& str, const tnlMultiArray< 4, Element, device, Index >& array );
+std::ostream& operator << ( std::ostream& str, const tnlMultiArray< 4, Element, device, Index >& array );
 
 } // namespace TNL
 

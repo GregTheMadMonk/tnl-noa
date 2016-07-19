@@ -128,7 +128,7 @@ bool tnlSparseMatrix< Real, Device, Index >::allocateMatrixElements( const Index
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSparseMatrix< Real, Device, Index >::printStructure( ostream& str ) const
+void tnlSparseMatrix< Real, Device, Index >::printStructure( std::ostream& str ) const
 {
 }
 

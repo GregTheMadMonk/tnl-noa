@@ -42,7 +42,7 @@ bool transferBenchmark( const int size,
    double giga_byte = ( double ) ( 1 << 30 );
    host_to_host_band_width = bytes / giga_byte / time;
 
-   cout << "Transfering " << bytes / mega_byte << " MB from HOST to HOST took " << time << " seconds. Bandwidth is " << host_to_host_band_width << " GB/s." << endl;
+  std::cout << "Transfering " << bytes / mega_byte << " MB from HOST to HOST took " << time << " seconds. Bandwidth is " << host_to_host_band_width << " GB/s." << std::endl;
 
    timer. Reset();
    for( int i = 0; i < cycles; i ++ )
@@ -51,7 +51,7 @@ bool transferBenchmark( const int size,
    time = timer. getTime();
    host_to_device_band_width = bytes / giga_byte / time;
 
-   cout << "Transfering " << bytes / mega_byte << " MB from HOST to DEVICE took " << time << " seconds. Bandwidth is " << host_to_device_band_width << " GB/s." << endl;
+  std::cout << "Transfering " << bytes / mega_byte << " MB from HOST to DEVICE took " << time << " seconds. Bandwidth is " << host_to_device_band_width << " GB/s." << std::endl;
 
    timer. Reset();
    for( int i = 0; i < cycles; i ++ )
@@ -60,7 +60,7 @@ bool transferBenchmark( const int size,
    time = timer. getTime();
    device_to_host_band_width = bytes / giga_byte / time;
 
-   cout << "Transfering " << bytes / mega_byte << " MB from DEVICE to HOST took " << time << " seconds. Bandwidth is " << device_to_host_band_width << " GB/s." << endl;
+  std::cout << "Transfering " << bytes / mega_byte << " MB from DEVICE to HOST took " << time << " seconds. Bandwidth is " << device_to_host_band_width << " GB/s." << std::endl;
 
    timer. Reset();
    for( int i = 0; i < cycles; i ++ )
@@ -73,7 +73,7 @@ bool transferBenchmark( const int size,
    bytes *= 2;
    device_to_device_band_width = bytes / giga_byte / time;
 
-   cout << "Transfering " << bytes / mega_byte << " MB from DEVICE to DEVICE took " << time << " seconds. Bandwidth is " << device_to_device_band_width << " GB/s." << endl;
+  std::cout << "Transfering " << bytes / mega_byte << " MB from DEVICE to DEVICE took " << time << " seconds. Bandwidth is " << device_to_device_band_width << " GB/s." << std::endl;
 }
 
 template< class T >
@@ -96,7 +96,7 @@ void tnlCPUReductionMin( const tnlVector< T >& host_vector,
    //tnlAssert( data );
    min = data[ 0 ];
    for( int i = 1; i < size; i ++ )
-      min = :: Min( min,  data[ i ] );
+      min = :: min( min,  data[ i ] );
 };
 
 template< class T >
@@ -108,7 +108,7 @@ void tnlCPUReductionMax( const tnlVector< T >& host_vector,
    //tnlAssert( data );
    max = data[ 0 ];
    for( int i = 1; i < size; i ++ )
-      max = :: Max( max,  data[ i ] );
+      max = :: max( max,  data[ i ] );
 };
 
 template< class T >
@@ -229,11 +229,11 @@ void reductionBenchmark( const int size,
    long int bytes_reduced = size * sizeof( T ) * reducing_cycles * 3;
    const double reduction_band_width = bytes_reduced / giga_byte / time;
 
-   cout << "Reducing " << bytes_reduced / mega_byte
+  std::cout << "Reducing " << bytes_reduced / mega_byte
         << " MB on DEVICE using algorithm " << algorithm
         << " took " << time
         << " seconds. Bandwidth is " << reduction_band_width
-        << " GB/s." << endl;
+        << " GB/s." << std::endl;
 }
 
 #endif /* TNLBENCHMARKS_H_ */

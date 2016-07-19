@@ -17,7 +17,7 @@
 namespace TNL {
 
 tnlLogger :: tnlLogger( int _width,
-                        ostream& _stream )
+                        std::ostream& _stream )
 : width( _width ),
   stream( _stream )
 {
@@ -27,19 +27,19 @@ void tnlLogger :: writeHeader( const tnlString& title )
 {
    int fill = stream. fill();
    int titleLength = title. getLength();
-   stream << "+" << setfill( '-' ) << setw( width ) << "+" << endl;
-   stream << "|" << setfill( ' ' ) << setw( width ) << "|" << endl;
-   stream << "|" << setw( width / 2 + titleLength / 2 )
-    << title << setw( width / 2 - titleLength / 2  ) << "|" << endl;
-   stream << "|" << setfill( ' ' ) << setw( width ) << "|" << endl;
-   stream << "+" << setfill( '-' ) << setw( width ) << "+" << endl;
+   stream << "+" << std::setfill( '-' ) << std::setw( width ) << "+" << std::endl;
+   stream << "|" << std::setfill( ' ' ) << std::setw( width ) << "|" << std::endl;
+   stream << "|" << std::setw( width / 2 + titleLength / 2 )
+    << title << std::setw( width / 2 - titleLength / 2  ) << "|" << std::endl;
+   stream << "|" << std::setfill( ' ' ) << std::setw( width ) << "|" << std::endl;
+   stream << "+" << std::setfill( '-' ) << std::setw( width ) << "+" << std::endl;
    stream. fill( fill );
 }
 
 void tnlLogger :: writeSeparator()
 {
    int fill = stream. fill();
-   stream << "+" << setfill( '-' ) << setw( width ) << "+" << endl;
+   stream << "+" << std::setfill( '-' ) << std::setw( width ) << "+" << std::endl;
    stream. fill( fill );
 }
 

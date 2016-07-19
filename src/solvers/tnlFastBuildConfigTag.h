@@ -8,16 +8,17 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLFASTBUILDCONFIGTAG_H_
-#define TNLFASTBUILDCONFIGTAG_H_
+#pragma once
 
 #include <solvers/tnlBuildConfigTags.h>
+
+namespace TNL {
 
 class tnlFastBuildConfig
 {
    public:
 
-      static void print() { cerr << "tnlFastBuildConfig" << endl; }
+      static void print() { std::cerr << "tnlFastBuildConfig" << std::endl; }
 };
 
 /****
@@ -54,4 +55,4 @@ template<> struct tnlConfigTagTimeDiscretisation< tnlFastBuildConfig, tnlImplici
  */
 //template<> struct tnlConfigTagExplicitSolver< tnlFastBuildConfig, tnlExplicitEulerSolverTag >{ enum { enabled = false }; };
 
-#endif /* TNLFASTBUILDCONFIGTAG_H_ */
+} // namespace TNL

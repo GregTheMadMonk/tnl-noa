@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLBUILDCONFIGTAGS_H_
-#define TNLBUILDCONFIGTAGS_H_
+#pragma once
 
 #include <mesh/tnlGrid.h>
 #include <solvers/ode/tnlMersonSolver.h>
@@ -21,6 +20,8 @@
 #include <solvers/linear/krylov/tnlTFQMRSolver.h>
 #include <solvers/linear/tnlUmfpackWrapper.h>
 #include <solvers/preconditioners/tnlDummyPreconditioner.h>
+
+namespace TNL {
 
 class tnlDefaultBuildConfigTag{};
 
@@ -158,4 +159,4 @@ public:
 
 template< typename ConfigTag, typename SemiImplicitSolver > struct tnlConfigTagSemiImplicitSolver{ enum { enabled = true }; };
 
-#endif /* TNLBUILDCONFIGTAGS_H_ */
+} // namespace TNL

@@ -101,9 +101,9 @@ tnlArray< Element, Device, Index >::
 getType()
 {
    return tnlString( "tnlArray< " ) +
-                     ::getType< Element >() + ", " +
+                    TNL::getType< Element >() + ", " +
                      Device :: getDeviceType() + ", " +
-                     ::getType< Index >() +
+                    TNL::getType< Index >() +
                      " >";
 };
 
@@ -272,10 +272,10 @@ void
 tnlArray< Element, Device, Index >::
 swap( tnlArray< Element, Device, Index >& array )
 {
-   ::swap( this->size, array.size );
-   ::swap( this->data, array.data );
-   ::swap( this->allocationPointer, array.allocationPointer );
-   ::swap( this->referenceCounter, array.referenceCounter );
+   TNL::swap( this->size, array.size );
+   TNL::swap( this->data, array.data );
+   TNL::swap( this->allocationPointer, array.allocationPointer );
+   TNL::swap( this->referenceCounter, array.referenceCounter );
 };
 
 template< typename Element,
@@ -609,7 +609,7 @@ tnlArray< Element, Device, Index >::
 }
 
 template< typename Element, typename Device, typename Index >
-ostream& operator << ( ostream& str, const tnlArray< Element, Device, Index >& v )
+std::ostream& operator << ( std::ostream& str, const tnlArray< Element, Device, Index >& v )
 {
    str << "[ ";
    if( v.getSize() > 0 )

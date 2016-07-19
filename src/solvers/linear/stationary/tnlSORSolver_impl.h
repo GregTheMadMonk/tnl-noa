@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSORSOLVER_IMPL_H_
-#define TNLSORSOLVER_IMPL_H_
+#pragma once
+
+namespace TNL {
 
 template< typename Matrix, typename Preconditioner >
 tnlSORSolver< Matrix, Preconditioner > :: tnlSORSolver()
@@ -47,7 +48,7 @@ setup( const tnlParameterContainer& parameters,
    this->setOmega( parameters.getParameter< double >( prefix + "sor-omega" ) );
    if( this->omega <= 0.0 || this->omega > 2.0 )
    {
-      cerr << "Warning: The SOR method parameter omega is out of interval (0,2). The value is " << this->omega << " the method will not converge." << endl;
+      std::cerr << "Warning: The SOR method parameter omega is out of interval (0,2). The value is " << this->omega << " the method will not converge." << std::endl;
    }
    return true;
 }
@@ -112,9 +113,13 @@ tnlSORSolver< Matrix, Preconditioner > :: ~tnlSORSolver()
 {
 }
 
+} // namespace TNL
+
 #include <matrices/tnlCSRMatrix.h>
 #include <matrices/tnlEllpackMatrix.h>
 #include <matrices/tnlMultidiagonalMatrix.h>
+
+namespace TNL {
 
 extern template class tnlSORSolver< tnlCSRMatrix< float,  tnlHost, int > >;
 extern template class tnlSORSolver< tnlCSRMatrix< double, tnlHost, int > >;
@@ -157,4 +162,4 @@ extern template class tnlSORSolver< tnlMutliDiagonalMatrix< double, tnlCuda, lon
 */
 #endif
 
-#endif /* TNLSORSOLVER_IMPL_H_ */
+} // namespace TNL

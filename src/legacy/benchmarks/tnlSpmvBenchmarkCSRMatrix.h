@@ -25,7 +25,7 @@ class tnlSpmvBenchmarkCSRMatrix : public tnlSpmvBenchmark< Real, tnlHost, Index,
 
    void writeProgress() const;
 
-   void writeToLogTable( ostream& logFile,
+   void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
                          const tnlString& inputMtxFile,
                          const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
@@ -57,10 +57,10 @@ bool tnlSpmvBenchmarkCSRMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real
    for( Index j = 0; j < refB. getSize(); j ++ )
    {
       if( refB[ j ] != 0.0 && backwardRefB[ j ] != 0.0 )
-         error = ( Real ) fabs( refB[ j ] - backwardRefB[ j ] ) / Min( ( Real ) fabs( refB[ j ] ), ( Real ) fabs( backwardRefB[ j ] ) );
+         error = ( Real ) fabs( refB[ j ] - backwardRefB[ j ] ) / min( ( Real ) fabs( refB[ j ] ), ( Real ) fabs( backwardRefB[ j ] ) );
       else
-         error = Max( ( Real ) fabs( refB[ j ] ), ( Real ) fabs( backwardRefB[ j ] ) );
-      maxError = Max( error, maxError );
+         error = max( ( Real ) fabs( refB[ j ] ), ( Real ) fabs( backwardRefB[ j ] ) );
+      maxError = max( error, maxError );
    }
    forwardBackwardDifference = maxError;
    this->setupOk = true;
@@ -77,21 +77,21 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeProgress() const
 {
-   cout << left << setw( this->formatColumnWidth ) << "CSR";
-   //   cout << left << setw( 25 ) << matrixFormat << setw( 5 ) << cudaBlockSize;
-   cout << right << setw( this->timeColumnWidth ) << setprecision( 2 ) << this->getTime()
-        << right << setw( this->iterationsColumnWidth ) << this->getIterations()
-        << right << setw( this->gflopsColumnWidth ) << setprecision( 2 ) << this->getGflops();
+  std::cout << left << std::setw( this->formatColumnWidth ) << "CSR";
+   //  std::cout << left << std::setw( 25 ) << matrixFormat << std::setw( 5 ) << cudaBlockSize;
+  std::cout << right << std::setw( this->timeColumnWidth ) << std::setprecision( 2 ) << this->getTime()
+        << right << std::setw( this->iterationsColumnWidth ) << this->getIterations()
+        << right << std::setw( this->gflopsColumnWidth ) << std::setprecision( 2 ) << this->getGflops();
    if( this->getBenchmarkWasSuccesful() )
-        cout << right << setw( this->benchmarkStatusColumnWidth ) << " OK - SpMV diff. " << getForwardBackwardDifference();
+       std::cout << right << std::setw( this->benchmarkStatusColumnWidth ) << " OK - SpMV diff. " << getForwardBackwardDifference();
    else
-        cout << right << setw( this->benchmarkStatusColumnWidth ) << " FAILED ";
-   cout << endl;
+       std::cout << right << std::setw( this->benchmarkStatusColumnWidth ) << " FAILED ";
+  std::cout << std::endl;
 }
 
 template< typename Real,
           typename Index >
-void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeToLogTable( ostream& logFile,
+void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeToLogTable( std::ostream& logFile,
                                                                   const double& csrGflops,
                                                                   const tnlString& inputMtxFile,
                                                                   const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
@@ -99,13 +99,13 @@ void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeToLogTable( ostream& logFi
 {
    if( this->getBenchmarkWasSuccesful() )
    {
-      logFile << "             <td> " << this->getTime() << "</font></td>" << endl;
-      logFile << "             <td> " << this->getGflops() << "</td>" << endl;
+      logFile << "             <td> " << this->getTime() << "</font></td>" << std::endl;
+      logFile << "             <td> " << this->getGflops() << "</td>" << std::endl;
    }
    else
    {
-      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
-      logFile << "             <td bgcolor=#FF0000> N/A </td>" << endl;
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << std::endl;
+      logFile << "             <td bgcolor=#FF0000> N/A </td>" << std::endl;
    }
 }
 

@@ -25,6 +25,8 @@
 #ifdef HAVE_CUDA
 //int mainTest();
 
+using namespace TNL;
+
 template< class T >
 __global__ void setMultiBlockNumber( const T c, T* A, const int size )
 {
@@ -171,7 +173,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 
       u. setValue( ( T ) -1 );
       v. setValue( ( T ) -1 );
-      CPPUNIT_ASSERT( tnlAbs( tnlLpNorm( u, ( T ) 1 ) - tnlLpNorm( v, ( T ) 1 ) ) < 0.01 );
+      CPPUNIT_ASSERT( abs( tnlLpNorm( u, ( T ) 1 ) - tnlLpNorm( v, ( T ) 1 ) ) < 0.01 );
 
       w. setSize( u. getSize() );
       w. setValue( 2 );
@@ -195,7 +197,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 
       u. setValue( ( T ) -1 );
       v. setValue( ( T ) -1 );
-      CPPUNIT_ASSERT( tnlAbs( tnlLpNorm( u, ( T ) 1 ) - tnlLpNorm( v, ( T ) 1 ) ) < 0.01 );
+      CPPUNIT_ASSERT( abs( tnlLpNorm( u, ( T ) 1 ) - tnlLpNorm( v, ( T ) 1 ) ) < 0.01 );
 
       w. setValue( 2 );
       u. setValue( 2 );
@@ -208,7 +210,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 
    void testComparison()
    {
-	   //cerr << "testComparison" << endl;
+	   //cerr << "testComparison" << std::endl;
       tnlVector< T, tnlCuda > deviceV( "deviceV", 100 );
       tnlVector< T, tnlCuda > deviceU( "deviceU", 100 );
       deviceV. setValue( 1.0 );
@@ -243,7 +245,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 
    void testSetValue()
    {
-	   //cerr << "testSetValue" << endl;
+	   //cerr << "testSetValue" << std::endl;
       tnlVector< T, tnlCuda > deviceV( "deviceV", 100 );
       deviceV. setValue( 1 );
       tnlVector< T, tnlHost > hostV( "hostV", deviceV );
@@ -257,7 +259,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 
    void testMultiBlockKernel()
    {
-	   //cerr << "testMultiBlockKernel" << endl;
+	   //cerr << "testMultiBlockKernel" << std::endl;
 #ifdef HAVE_CUDA
 	   const T number = 1.0;
 	   for( int size = 100; size <= 10000; size += 100 )
@@ -282,14 +284,14 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 		      CPPUNIT_ASSERT( ! errors );
 		   }
 #else
-	   cout << "CUDA is not supported." << endl;
+	  std::cout << "CUDA is not supported." << std::endl;
 	   CPPUNIT_ASSERT( true );
 #endif
    };
 
    void testKernel()
    {
-	   //cerr << "testKernel" << endl;
+	   //cerr << "testKernel" << std::endl;
 #ifdef HAVE_CUDA
 	   const int size = 100;
 	   const T number = 1.0;
@@ -310,14 +312,14 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( ! errors );
       }
 #else
-      cout << "CUDA is not supported." << endl;
+     std::cout << "CUDA is not supported." << std::endl;
       CPPUNIT_ASSERT( true );
 #endif
    };
 
    void testAllocationFromNonCUDA()
    {
-	   //cerr << "testAllocationFromNonCUDA" << endl;
+	   //cerr << "testAllocationFromNonCUDA" << std::endl;
 #ifdef HAVE_CUDA
 
       tnlVector< T > hostV( "hostV", 100 );
@@ -334,7 +336,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
          if( hostV[ i ] != hostW[ i ] ) error = true;
       CPPUNIT_ASSERT( ! error );
 #else
-      cout << "CUDA is not supported." << endl;
+     std::cout << "CUDA is not supported." << std::endl;
       CPPUNIT_ASSERT( true );
 #endif
 
@@ -342,7 +344,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 
    void testCopying()
    {
-	   //cerr << "testCopying - Long Vector" << endl;
+	   //cerr << "testCopying - Long Vector" << std::endl;
 #ifdef HAVE_CUDA
       tnlVector< T, tnlHost > host_vector( "host-vector", 500 );
       tnlVector< T, tnlCuda > device_vector( "device-vector", 500 );
@@ -367,7 +369,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
    void testAllocation()
    {
 #ifdef HAVE_CUDA
-	   //cerr << "testAllocation - Long Vector" << endl;
+	   //cerr << "testAllocation - Long Vector" << std::endl;
       tnlVector< T, tnlCuda > cuda_vector_1( "tnlVectorCUDATester:cuda-vector-1" );
       CPPUNIT_ASSERT( !cuda_vector_1 );
  

@@ -22,6 +22,8 @@
 #include <mesh/tnlMeshIntegrityChecker.h>
 #include <core/mfilename.h>
 
+using namespace TNL;
+
 template< typename MeshReader,
           typename MeshType >
 bool convertMesh( const tnlParameterContainer& parameters )
@@ -39,13 +41,13 @@ bool convertMesh( const tnlParameterContainer& parameters )
       return false;
    if( ! tnlMeshIntegrityChecker< MeshType >::checkMesh( mesh ) )
       return false;*/
-   cout << mesh << endl;
-   cout << "Writing the mesh to a file " << outputFileName << "." << endl;
+  std::cout << mesh << std::endl;
+  std::cout << "Writing the mesh to a file " << outputFileName << "." << std::endl;
    if( outputFileExt == "tnl" )
    {
       if( ! mesh.save( outputFileName ) )
       {
-         cerr << "I am not able to write the mesh into the file " << outputFileName << "." << endl;
+         std::cerr << "I am not able to write the mesh into the file " << outputFileName << "." << std::endl;
          return false;
       }
    }
@@ -53,7 +55,7 @@ bool convertMesh( const tnlParameterContainer& parameters )
    {
       if( ! tnlMeshWriterVTKLegacy::write( outputFileName, mesh, true ) )
       {
-         cerr << "I am not able to write the mesh into the file " << outputFileName << "." << endl;
+         std::cerr << "I am not able to write the mesh into the file " << outputFileName << "." << std::endl;
          return false;
       }
       return true;
@@ -68,20 +70,20 @@ bool readNetgenMesh( const tnlParameterContainer& parameters )
    if( ! meshReader.detectMesh( inputFileName ) )
       return false;
 
-   cout << "Reading mesh with " << meshReader.getDimensions() << " dimensions..." << endl;
+  std::cout << "Reading mesh with " << meshReader.getDimensions() << " dimensions..." << std::endl;
  
    if( meshReader.getDimensions() == 2 )
    {
       if( meshReader.getVerticesInCell() == 3 )
       {
          typedef tnlMesh< tnlMeshConfigBase< tnlMeshTriangleTopology > > MeshType;
-         cout << "Mesh consisting of triangles was detected ... " << endl;
+        std::cout << "Mesh consisting of triangles was detected ... " << std::endl;
          return convertMesh< tnlMeshReaderNetgen, MeshType >( parameters );
       }
       if( meshReader.getVerticesInCell() == 4 )
       {
          typedef tnlMesh< tnlMeshConfigBase< tnlMeshQuadrilateralTopology > > MeshType;
-         cout << "Mesh consisting of quadrilaterals was detected ... " << endl;
+        std::cout << "Mesh consisting of quadrilaterals was detected ... " << std::endl;
          return convertMesh< tnlMeshReaderNetgen, MeshType >( parameters );
       }
    }
@@ -90,17 +92,17 @@ bool readNetgenMesh( const tnlParameterContainer& parameters )
       if( meshReader.getVerticesInCell() == 4 )
       {
          typedef tnlMesh< tnlMeshConfigBase< tnlMeshTetrahedronTopology > > MeshType;
-         cout << "Mesh consisting of tetrahedrons was detected ... " << endl;
+        std::cout << "Mesh consisting of tetrahedrons was detected ... " << std::endl;
          return convertMesh< tnlMeshReaderNetgen, MeshType >( parameters );
       }
       if( meshReader.getVerticesInCell() == 8 )
       {
          typedef tnlMesh< tnlMeshConfigBase< tnlMeshHexahedronTopology > > MeshType;
-         cout << "Mesh consisting of hexahedrons was detected ... " << endl;
+        std::cout << "Mesh consisting of hexahedrons was detected ... " << std::endl;
          return convertMesh< tnlMeshReaderNetgen, MeshType >( parameters );
       }
    }
-   cerr << "Wrong mesh dimensions were detected ( " << meshReader.getDimensions() << " )." << endl;
+   std::cerr << "Wrong mesh dimensions were detected ( " << meshReader.getDimensions() << " )." << std::endl;
    return false;
 }
 

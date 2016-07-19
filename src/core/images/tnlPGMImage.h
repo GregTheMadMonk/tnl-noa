@@ -65,7 +65,7 @@ class tnlPGMImage : public tnlImage< Index >
  
          IndexType maxColors;
  
-         fstream file;
+         std::fstream file;
  
          bool fileOpen;
 };

@@ -65,7 +65,7 @@ setElement( const Index& elementIndex,
    tnlAssert( this->step > 0,);
    //printf( "elementIndex = %d length = %d \n", elementIndex, this->length );
    tnlAssert( elementIndex >= 0 && elementIndex < this->length,
-              cerr << "elementIndex = " << elementIndex << " this->length = " << this->length );
+              std::cerr << "elementIndex = " << elementIndex << " this->length = " << this->length );
 
    this->columns[ elementIndex * step ] = column;
    this->values[ elementIndex * step ] = value;
@@ -74,7 +74,7 @@ setElement( const Index& elementIndex,
 template< typename Real, typename Index >
 void
 tnlSparseMatrixRow< Real, Index >::
-print( ostream& str ) const
+print( std::ostream& str ) const
 {
    Index pos( 0 );
    for( Index i = 0; i < length; i++ )

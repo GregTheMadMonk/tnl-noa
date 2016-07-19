@@ -1,6 +1,10 @@
 #ifndef eulerRHS_H_
 #define eulerRHS_H_
+
 #include<functions/tnlDomain.h>
+
+namespace TNL {
+
 template< typename Mesh, typename Real >class eulerRhs
   : public tnlDomain< Mesh::meshDimensions, MeshDomain > 
  {
@@ -25,5 +29,7 @@ template< typename Mesh, typename Real >class eulerRhs
          return 0.0;
       };
 };
+
+} //namespace TNL
 
 #endif /* eulerRHS_H_ */

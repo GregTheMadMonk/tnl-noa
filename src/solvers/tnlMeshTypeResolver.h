@@ -8,10 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHTYPERESOLVER_H_
-#define TNLMESHTYPERESOLVER_H_
+#pragma once
 
 #include <config/tnlParameterContainer.h>
+
+namespace TNL {
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
@@ -125,6 +126,6 @@ class tnlMeshTypeResolverDimensionsSupportChecker< Dimensions, false, MeshTypeRe
                                 const tnlList< tnlString >& parsedMeshType );
 };*/
 
-#include <solvers/tnlMeshTypeResolver_impl.h>
+} // namespace TNL
 
-#endif /* TNLMESHTYPERESOLVER_H_ */
+#include <solvers/tnlMeshTypeResolver_impl.h>

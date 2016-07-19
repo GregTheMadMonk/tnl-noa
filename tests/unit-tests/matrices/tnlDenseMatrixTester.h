@@ -33,6 +33,7 @@ __global__ void setRowFastTestKernel( tnlDenseMatrix< RealType, tnlCuda, IndexTy
                                       const IndexType numberOfElements );
 #endif
 
+using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
 class tnlDenseMatrixTester : public CppUnit :: TestCase

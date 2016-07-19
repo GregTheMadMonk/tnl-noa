@@ -1,8 +1,12 @@
+
+
 #pragma once
 
 #ifdef HAVE_UMFPACK
 
 #include "tnlUmfpackWrapper.h"
+
+namespace TNL {
 
 template< typename Preconditioner >
 tnlUmfpackWrapper< tnlCSRMatrix< double, tnlHost, int >, Preconditioner >::
@@ -76,7 +80,7 @@ solve( const Vector& b,
                                   matrix->values.getData(),
                                   &Symbolic, Control, Info );
     if( status != UMFPACK_OK ) {
-        cerr << "error: symbolic reordering failed" << endl;
+        std::cerr << "error: symbolic reordering failed" << std::endl;
         goto finished;
     }
 
@@ -86,7 +90,7 @@ solve( const Vector& b,
                                  matrix->values.getData(),
                                  Symbolic, &Numeric, Control, Info );
     if( status != UMFPACK_OK ) {
-        cerr << "error: numeric factorization failed" << endl;
+        std::cerr << "error: numeric factorization failed" << std::endl;
         goto finished;
     }
 
@@ -99,7 +103,7 @@ solve( const Vector& b,
                                b.getData(),
                                Numeric, Control, Info );
     if( status != UMFPACK_OK ) {
-        cerr << "error: umfpack_di_solve failed" << endl;
+        std::cerr << "error: umfpack_di_solve failed" << std::endl;
         goto finished;
     }
 
@@ -121,5 +125,7 @@ finished:
     this->refreshSolverMonitor( true );
     return status == UMFPACK_OK;
 };
+
+} // namespace TNL
 
 #endif

@@ -9,10 +9,11 @@
 /* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLBACKWARDTIMEDISCRETISATION_H
-#define	TNLBACKWARDTIMEDISCRETISATION_H
+#pragma once
 
 #include <core/tnlCuda.h>
+
+namespace TNL {
 
 class tnlBackwardTimeDiscretisation
 {
@@ -33,5 +34,5 @@ class tnlBackwardTimeDiscretisation
         }
 };
 
-#endif	/* TNLBACKWARDTIMEDISCRETISATION_H */
+} // namespace TNL
 

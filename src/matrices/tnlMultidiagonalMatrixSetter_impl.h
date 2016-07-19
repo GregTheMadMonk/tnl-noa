@@ -34,7 +34,7 @@ setupMatrix( const MeshType& mesh,
    diagonals.setElement( 0, mesh.getCellIndex( CoordinatesType( stencilSize - 1 ) ) - centerCellIndex );
    diagonals.setElement( 1, 0 );
    diagonals.setElement( 2, mesh.getCellIndex( CoordinatesType( stencilSize + 1 ) ) - centerCellIndex );
-   //cout << "Setting the multidiagonal matrix offsets to: " << diagonals << endl;
+   //cout << "Setting the multidiagonal matrix offsets to: " << diagonals << std::endl;
    return matrix.setDiagonals( diagonals );
 }
 
@@ -62,7 +62,7 @@ setupMatrix( const MeshType& mesh,
    diagonals.setElement( 2, 0 );
    diagonals.setElement( 3, mesh.getCellIndex( CoordinatesType( stencilSize + 1, stencilSize ) ) - centerCellIndex );
    diagonals.setElement( 4, mesh.getCellIndex( CoordinatesType( stencilSize, stencilSize + 1 ) ) - centerCellIndex );
-   //cout << "Setting the multidiagonal matrix offsets to: " << diagonals << endl;
+   //cout << "Setting the multidiagonal matrix offsets to: " << diagonals << std::endl;
    return matrix.setDiagonals( diagonals );
 }
 
@@ -92,7 +92,7 @@ setupMatrix( const MeshType& mesh,
    diagonals.setElement( 4, mesh.getCellIndex( CoordinatesType( stencilSize + 1, stencilSize, stencilSize ) ) - centerCellIndex );
    diagonals.setElement( 5, mesh.getCellIndex( CoordinatesType( stencilSize, stencilSize + 1, stencilSize ) ) - centerCellIndex );
    diagonals.setElement( 6, mesh.getCellIndex( CoordinatesType( stencilSize, stencilSize, stencilSize + 1 ) ) - centerCellIndex );
-   //cout << "Setting the multidiagonal matrix offsets to: " << diagonals << endl;
+   //cout << "Setting the multidiagonal matrix offsets to: " << diagonals << std::endl;
    return matrix.setDiagonals( diagonals );
 }
 

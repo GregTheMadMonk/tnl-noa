@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSEMIIMPLICITTIMESTEPPER_H_
-#define TNLSEMIIMPLICITTIMESTEPPER_H_
+#pragma once
 
 #include <core/tnlTimerRT.h>
 #include <core/tnlLogger.h>
+
+namespace TNL {
 
 template< typename Problem,
           typename LinearSystemSolver >
@@ -80,6 +81,7 @@ class tnlSemiImplicitTimeStepper
    long long int allIterations;
 };
 
+} // namespace TNL
+
 #include <solvers/pde/tnlSemiImplicitTimeStepper_impl.h>
 
-#endif /* TNLSEMIIMPLICITTIMESTEPPER_H_ */

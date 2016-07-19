@@ -52,7 +52,7 @@ tnlString tnlStaticVector< 3, Real >::getType()
    return tnlString( "tnlStaticVector< " ) +
           tnlString( 3 ) +
           tnlString( ", " ) +
-          ::getType< Real >() +
+         TNL::getType< Real >() +
           tnlString( " >" );
 }
 
@@ -181,9 +181,9 @@ __cuda_callable__
 tnlStaticVector< 3, Real >
 tnlStaticVector< 3, Real >::abs() const
 {
-   return tnlStaticVector< 3, Real >( tnlAbs( this->data[ 0 ] ),
-                                      tnlAbs( this->data[ 1 ] ),
-                                      tnlAbs( this->data[ 2 ] ) );
+   return tnlStaticVector< 3, Real >( ::abs( this->data[ 0 ] ),
+                                      ::abs( this->data[ 1 ] ),
+                                      ::abs( this->data[ 2 ] ) );
 }
 
 

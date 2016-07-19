@@ -8,14 +8,15 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlEulerSolverH
-#define tnlEulerSolverH
+#pragma once
 
 #include <math.h>
 #include <config/tnlConfigDescription.h>
 #include <solvers/ode/tnlExplicitSolver.h>
 #include <config/tnlParameterContainer.h>
 #include <core/tnlTimer.h>
+
+namespace TNL {
 
 template< typename Problem >
 class tnlEulerSolver : public tnlExplicitSolver< Problem >
@@ -58,6 +59,6 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem >
    //tnlTimer timer, updateTimer;
 };
 
-#include <solvers/ode/tnlEulerSolver_impl.h>
+} // namespace TNL
 
-#endif
+#include <solvers/ode/tnlEulerSolver_impl.h>

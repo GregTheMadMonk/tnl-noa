@@ -18,6 +18,8 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 
+using namespace TNL;
+
 template< typename OperatorTest >
 class tnlPDEOperatorEocUnitTest : public CppUnit :: TestCase
 {

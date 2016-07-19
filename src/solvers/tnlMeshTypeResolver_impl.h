@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMESHTYPERESOLVER_IMPL_H_
-#define TNLMESHTYPERESOLVER_IMPL_H_
+#pragma once
 
 #include <core/tnlString.h>
 #include <mesh/tnlGrid.h>
 #include <mesh/tnlDummyMesh.h>
 #include <solvers/tnlSolverStarter.h>
+
+namespace TNL {
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
@@ -53,14 +54,14 @@ bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >:
    tnlString meshType;
    if( ! getObjectType( meshFileName, meshType ) )
    {
-      cerr << "I am not able to detect the mesh type from the file " << meshFileName << "." << endl;
+      std::cerr << "I am not able to detect the mesh type from the file " << meshFileName << "." << std::endl;
       return EXIT_FAILURE;
    }
-   cout << meshType << " detected in " << meshFileName << " file." << endl;
+  std::cout << meshType << " detected in " << meshFileName << " file." << std::endl;
    tnlList< tnlString > parsedMeshType;
    if( ! parseObjectType( meshType, parsedMeshType ) )
    {
-      cerr << "Unable to parse the mesh type " << meshType << "." << endl;
+      std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
       return false;
    }
    return resolveMeshDimensions( parameters, parsedMeshType );
@@ -82,7 +83,7 @@ bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >:
       return resolveMeshRealType< 2 >( parameters, parsedMeshType );
    if( dimensions == 3 )
       return resolveMeshRealType< 3 >( parameters, parsedMeshType );
-   cerr << "Dimensions higher than 3 are not supported." << endl;
+   std::cerr << "Dimensions higher than 3 are not supported." << std::endl;
    return false;
 }
 
@@ -95,7 +96,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshRealType( const tnlParameterContainer& parameters,
                                                                                                       const tnlList< tnlString >& parsedMeshType )
 {
-   cerr << "Mesh dimension " << MeshDimensions << " is not supported." << endl;
+   std::cerr << "Mesh dimension " << MeshDimensions << " is not supported." << std::endl;
    return false;
 }
 
@@ -114,7 +115,7 @@ bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >:
       return resolveMeshIndexType< MeshDimensions, double >( parameters, parsedMeshType );
    if( parsedMeshType[ 2 ] == "long-double" )
       return resolveMeshIndexType< MeshDimensions, long double >( parameters, parsedMeshType );
-   cerr << "The type '" << parsedMeshType[ 2 ] << "' is not allowed for real type." << endl;
+   std::cerr << "The type '" << parsedMeshType[ 2 ] << "' is not allowed for real type." << std::endl;
    return false;
 }
 
@@ -129,7 +130,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshIndexType( const tnlParameterContainer& parameters,
                                                                                                         const tnlList< tnlString >& parsedMeshType )
 {
-   cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for real type." << endl;
+   std::cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for real type." << std::endl;
    return false;
 }
 
@@ -150,7 +151,7 @@ bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >:
       return resolveMeshType< MeshDimensions, MeshRealType, int >( parameters, parsedMeshType );
    if( parsedMeshType[ 4 ] == "long int" )
       return resolveMeshType< MeshDimensions, MeshRealType, long int >( parameters, parsedMeshType );
-   cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for indexing type." << endl;
+   std::cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for indexing type." << std::endl;
    return false;
 }
 
@@ -166,7 +167,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshType( const tnlParameterContainer& parameters,
                                                                                                    const tnlList< tnlString >& parsedMeshType )
 {
-   cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for indexing type." << endl;
+   std::cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for indexing type." << std::endl;
    return false;
 }
 
@@ -187,7 +188,7 @@ bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >:
       typedef tnlGrid< MeshDimensions, MeshRealType, Device, MeshIndexType > MeshType;
       return tnlMeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag >::run( parameters );
    }
-   cerr << "Unknown mesh type " << parsedMeshType[ 0 ] << "." << endl;
+   std::cerr << "Unknown mesh type " << parsedMeshType[ 0 ] << "." << std::endl;
    return false;
 }
 
@@ -202,7 +203,7 @@ class tnlMeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, C
    public:
       static bool run( const tnlParameterContainer& parameters )
       {
-         cerr << "The mesh type " << ::getType< MeshType >() << " is not supported." << endl;
+         std::cerr << "The mesh type " << TNL::getType< MeshType >() << " is not supported." << std::endl;
          return false;
       };
 };
@@ -222,4 +223,4 @@ class tnlMeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, C
       }
 };
 
-#endif /* TNLMESHTYPERESOLVER_IMPL_H_ */
+} // namespace TNL

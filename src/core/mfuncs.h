@@ -10,7 +10,7 @@
 
 #pragma once 
 
-#include <math.h>
+#include <cmath>
 #include <stdlib.h>
 #include <core/tnlCuda.h>
 
@@ -18,21 +18,21 @@ namespace TNL {
 
 template< typename Type1, typename Type2 >
 __cuda_callable__
-Type1 Min( const Type1& a, const Type2& b )
+Type1 min( const Type1& a, const Type2& b )
 {
    return a < b ? a : b;
 };
 
 template< typename Type1, typename Type2 >
 __cuda_callable__
-Type1 Max( const Type1& a, const Type2& b )
+Type1 max( const Type1& a, const Type2& b )
 {
    return a > b ? a : b;
 };
 
 template< typename Type >
 __cuda_callable__
-void Swap( Type& a, Type& b )
+void swap( Type& a, Type& b )
 {
    Type tmp( a );
    a = b;
@@ -41,7 +41,7 @@ void Swap( Type& a, Type& b )
 
 template< class T >
 __cuda_callable__
-T Sign( const T& a )
+T sign( const T& a )
 {
    if( a < ( T ) 0 ) return -1;
    if( a == ( T ) 0 ) return 0;
@@ -50,7 +50,7 @@ T Sign( const T& a )
 
 template< class T >
 __cuda_callable__
-T tnlAbs( const T& n )
+T abs( const T& n )
 {
    if( n < ( T ) 0 )
       return -n;
@@ -58,21 +58,21 @@ T tnlAbs( const T& n )
 };
 
 __cuda_callable__
-inline int tnlAbs( const int& n )
+inline int abs( const int& n )
 {
-   return abs( n );
+   return ::abs( n );
 };
 
 __cuda_callable__
-inline float tnlAbs( const float& f )
+inline float abs( const float& f )
 {
-   return fabs( f );
+   return ::fabs( f );
 };
 
 __cuda_callable__
-inline double tnlAbs( const double& d )
+inline double abs( const double& d )
 {
-   return fabs( d );
+   return ::fabs( d );
 };
 
 template< typename Real >

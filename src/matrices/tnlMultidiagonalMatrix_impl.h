@@ -32,7 +32,7 @@ template< typename Real,
 tnlString tnlMultidiagonalMatrix< Real, Device, Index > :: getType()
 {
    return tnlString( "tnlMultidiagonalMatrix< ") +
-          tnlString( ::getType< Real >() ) +
+          tnlString( TNL::getType< Real >() ) +
           tnlString( ", " ) +
           Device :: getDeviceType() +
           tnlString( " >" );
@@ -53,13 +53,13 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::setDimensions( const IndexTy
                                                                    const IndexType columns )
 {
    tnlAssert( rows > 0 && columns > 0,
-              cerr << "rows = " << rows
-                   << " columns = " << columns << endl );
+              std::cerr << "rows = " << rows
+                   << " columns = " << columns << std::endl );
    if( ! tnlMatrix< Real, Device, Index >::setDimensions( rows, columns ) )
       return false;
    if( this->diagonalsShift.getSize() != 0 )
    {
-      if( ! this->values.setSize( Min( this->rows, this->columns ) * this->diagonalsShift.getSize() ) )
+      if( ! this->values.setSize( min( this->rows, this->columns ) * this->diagonalsShift.getSize() ) )
          return false;
       this->values.setValue( 0.0 );
    }
@@ -109,12 +109,12 @@ template< typename Real,
 bool tnlMultidiagonalMatrix< Real, Device, Index > :: setDiagonals(  const Vector& diagonals )
 {
    tnlAssert( diagonals.getSize() > 0,
-              cerr << "New number of diagonals = " << diagonals.getSize() << endl );
+              std::cerr << "New number of diagonals = " << diagonals.getSize() << std::endl );
    this->diagonalsShift.setLike( diagonals );
    this->diagonalsShift = diagonals;
    if( this->rows != 0 && this->columns != 0 )
    {
-      if( ! this->values.setSize( Min( this->rows, this->columns ) * this->diagonalsShift.getSize() ) )
+      if( ! this->values.setSize( min( this->rows, this->columns ) * this->diagonalsShift.getSize() ) )
          return false;
       this->values.setValue( 0.0 );
    }
@@ -184,7 +184,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::operator == ( const tnlMulti
 {
    tnlAssert( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
-              cerr << "this->getRows() = " << this->getRows()
+              std::cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
                    << " this->getColumns() = " << this->getColumns()
                    << " matrix.getColumns() = " << matrix.getColumns() );
@@ -310,7 +310,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: addRowFast( const IndexTyp
    if( this->diagonalsShift.getSize() < numberOfElements )
       return false;
    typedef tnlMultidiagonalMatrixDeviceDependentCode< Device > DDCType;
-   const IndexType elements = Min( this->diagonalsShift.getSize(), numberOfElements );
+   const IndexType elements = min( this->diagonalsShift.getSize(), numberOfElements );
    IndexType i( 0 );
    while( i < elements )
    {
@@ -341,7 +341,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: addRow( const IndexType ro
    if( this->diagonalsShift.getSize() < numberOfElements )
       return false;
    typedef tnlMultidiagonalMatrixDeviceDependentCode< Device > DDCType;
-   const IndexType elements = Min( this->diagonalsShift.getSize(), numberOfElements );
+   const IndexType elements = min( this->diagonalsShift.getSize(), numberOfElements );
    IndexType i( 0 );
    while( i < elements )
    {
@@ -503,11 +503,11 @@ void tnlMultidiagonalMatrix< Real, Device, Index >::vectorProduct( const InVecto
                                                                    OutVector& outVector ) const
 {
    tnlAssert( this->getColumns() == inVector.getSize(),
-            cerr << "Matrix columns: " << this->getColumns() << endl
-                 << "Vector size: " << inVector.getSize() << endl );
+            std::cerr << "Matrix columns: " << this->getColumns() << std::endl
+                 << "Vector size: " << inVector.getSize() << std::endl );
    tnlAssert( this->getRows() == outVector.getSize(),
-               cerr << "Matrix rows: " << this->getRows() << endl
-                    << "Vector size: " << outVector.getSize() << endl );
+               std::cerr << "Matrix rows: " << this->getRows() << std::endl
+                    << "Vector size: " << outVector.getSize() << std::endl );
 
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
@@ -521,7 +521,7 @@ void tnlMultidiagonalMatrix< Real, Device, Index > :: addMatrix( const tnlMultid
                                                                  const RealType& matrixMultiplicator,
                                                                  const RealType& thisMatrixMultiplicator )
 {
-   tnlAssert( false, cerr << "TODO: implement" );
+   tnlAssert( false, std::cerr << "TODO: implement" );
 }
 
 template< typename Real,
@@ -559,8 +559,8 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: performSORIteration( const
                                                                            const RealType& omega ) const
 {
    tnlAssert( row >=0 && row < this->getRows(),
-              cerr << "row = " << row
-                   << " this->getRows() = " << this->getRows() << endl );
+              std::cerr << "row = " << row
+                   << " this->getRows() = " << this->getRows() << std::endl );
 
    RealType diagonalValue( 0.0 );
    RealType sum( 0.0 );
@@ -582,7 +582,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: performSORIteration( const
    }
    if( diagonalValue == ( Real ) 0.0 )
    {
-      cerr << "There is zero on the diagonal in " << row << "-th row of thge matrix. I cannot perform SOR iteration." << endl;
+      std::cerr << "There is zero on the diagonal in " << row << "-th row of thge matrix. I cannot perform SOR iteration." << std::endl;
       return false;
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
@@ -631,7 +631,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::load( const tnlString& fileN
 template< typename Real,
           typename Device,
           typename Index >
-void tnlMultidiagonalMatrix< Real, Device, Index >::print( ostream& str ) const
+void tnlMultidiagonalMatrix< Real, Device, Index >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -642,7 +642,7 @@ void tnlMultidiagonalMatrix< Real, Device, Index >::print( ostream& str ) const
          if( column >=0 && column < this->columns )
             str << " Col:" << column << "->" << this->getElement( row, column ) << "\t";
       }
-      str << endl;
+      str << std::endl;
    }
 }
 
@@ -654,11 +654,11 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::getElementIndex( const Index
                                                                      Index& index ) const
 {
    tnlAssert( row >=0 && row < this->rows,
-            cerr << "row = " << row
-                 << " this->rows = " << this->rows << endl );
+            std::cerr << "row = " << row
+                 << " this->rows = " << this->rows << std::endl );
    tnlAssert( column >=0 && column < this->columns,
-            cerr << "column = " << column
-                 << " this->columns = " << this->columns << endl );
+            std::cerr << "column = " << column
+                 << " this->columns = " << this->columns << std::endl );
 
    typedef tnlMultidiagonalMatrixDeviceDependentCode< Device > DDCType;
    IndexType i( 0 );
@@ -683,11 +683,11 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::getElementIndexFast( const I
                                                                          Index& index ) const
 {
    tnlAssert( row >=0 && row < this->rows,
-            cerr << "row = " << row
-                 << " this->rows = " << this->rows << endl );
+            std::cerr << "row = " << row
+                 << " this->rows = " << this->rows << std::endl );
    tnlAssert( column >=0 && column < this->columns,
-            cerr << "column = " << column
-                 << " this->columns = " << this->columns << endl );
+            std::cerr << "column = " << column
+                 << " this->columns = " << this->columns << std::endl );
 
    typedef tnlMultidiagonalMatrixDeviceDependentCode< Device > DDCType;
    IndexType i( 0 );

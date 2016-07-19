@@ -4,6 +4,8 @@
 #include <problems/tnlPDEProblem.h>
 #include <functions/tnlMeshFunction.h>
 
+namespace TNL {
+
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
@@ -101,6 +103,8 @@ class eulerProblem:
 
 
 };
+
+} // namepsace TNL
 
 #include "eulerProblem_impl.h"
 

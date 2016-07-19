@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlSORSolverH
-#define tnlSORSolverH
+#pragma once
 
 #include <math.h>
 #include <tnlObject.h>
@@ -17,6 +16,7 @@
 #include <solvers/tnlIterativeSolver.h>
 #include <solvers/linear/tnlLinearResidueGetter.h>
 
+namespace TNL {
 
 template< typename Matrix,
           typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
@@ -75,6 +75,7 @@ class tnlSORSolver : public tnlObject,
 
 };
 
+} // namespace TNL
+
 #include <solvers/linear/stationary/tnlSORSolver_impl.h>
 
-#endif

@@ -83,9 +83,9 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
          /*if( M ) // preconditioner
          {
             A. vectorProduct( p, M_tmp );
-            DrawVector( "MAp", M_tmp, ( m_int ) sqrt( ( m_real ) size ) );
+            DrawVector( "MAp", M_tmp, ( m_int ) ::sqrt( ( m_real ) size ) );
             M -> Solve( M_tmp, Ap );
-            DrawVector( "Ap", Ap, ( m_int ) sqrt( ( m_real ) size ) );
+            DrawVector( "Ap", Ap, ( m_int ) ::sqrt( ( m_real ) size ) );
          }
          else*/
              A. VectorProduct( p, Ap );
@@ -107,14 +107,14 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
             //dbgExpr( alpha * Ap[ i ] );
             s[ i ] = r[ i ] - alpha * Ap[ i ];
          }
-         //DrawVector( "s", s, ( m_int ) sqrt( ( m_real ) size ) );
+         //DrawVector( "s", s, ( m_int ) ::sqrt( ( m_real ) size ) );
 
          // omega_j = ( A s_j, s_j ) / ( A s_j, A s_j )
          //dbgCout( "Computing As" );
          /*if( M ) // preconditioner
          {
             A. vectorProduct( s, M_tmp );
-            DrawVector( "As", M_tmp, ( m_int ) sqrt( ( m_real ) size ) );
+            DrawVector( "As", M_tmp, ( m_int ) ::sqrt( ( m_real ) size ) );
             M -> Solve( M_tmp, As );
          }
          else*/
@@ -129,8 +129,8 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
          else omega = s1 / s2;
          //dbgExpr( omega );
  
-         //DrawVector( "p", p, ( m_int ) sqrt( ( m_real ) size ) );
-         //DrawVector( "s", s, ( m_int ) sqrt( ( m_real ) size ) );
+         //DrawVector( "p", p, ( m_int ) ::sqrt( ( m_real ) size ) );
+         //DrawVector( "s", s, ( m_int ) ::sqrt( ( m_real ) size ) );
          // x_{j+1} = x_j + alpha_j * p_j + omega_j * s_j
          // r_{j+1} = s_j - omega_j * A * s_j
          //dbgCout( "Computing new x and new r." );
@@ -139,8 +139,8 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
             x[ i ] += alpha * p[ i ] + omega * s[ i ];
             r[ i ] = s[ i ] - omega * As[ i ];
          }
-         //DrawVector( "x", x, ( m_int ) sqrt( ( m_real ) size ) );
-         //DrawVector( "r", r, ( m_int ) sqrt( ( m_real ) size ) );
+         //DrawVector( "x", x, ( m_int ) ::sqrt( ( m_real ) size ) );
+         //DrawVector( "r", r, ( m_int ) ::sqrt( ( m_real ) size ) );
  
          // beta = alpha_j / omega_j * ( r_{j+1}, r^ast_0 ) / ( r_j, r^ast_0 )
          s1 = 0.0;
@@ -159,7 +159,7 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
             //dbgExpr( r[ i ] );
             //dbgExpr( res );
          }
-         tnlMatrixSolver< T > :: residue = sqrt( tnlMatrixSolver< T > :: residue / b_norm );
+         tnlMatrixSolver< T > :: residue = ::sqrt( tnlMatrixSolver< T > :: residue / b_norm );
  
          if( tnlMatrixSolver< T > :: iteration % 10 == 0 &&
              tnlMatrixSolver< T > :: verbosity > 1 )
@@ -193,7 +193,7 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
          T v = tmp[ i ] - b[ i ];
          res += v * v;
       }
-      return sqrt( res ) / b_norm;
+      return ::sqrt( res ) / b_norm;
    };
 
    bool AllocateSupportingArrays( int size )
@@ -208,7 +208,7 @@ template< typename T > class tnlBICGStabSolverOld : public tnlMatrixSolver< T >
       M_tmp = new T[ size ];
       if( ! r || ! r_ast || ! p || ! s || ! Ap || ! Ap || ! M_tmp )
       {
-         cerr << "I could not allocated all supporting arrays for the CG solver." << endl;
+         std::cerr << "I could not allocated all supporting arrays for the CG solver." << std::endl;
          return false;
       }
       return true;

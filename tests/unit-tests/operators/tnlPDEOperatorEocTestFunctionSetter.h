@@ -13,6 +13,8 @@
 
 #include<functions/tnlExpBumpFunction.h>
 
+using namespace TNL;
+
 template< typename Function >
 class tnlPDEOperatorEocTestFunctionSetter
 {
