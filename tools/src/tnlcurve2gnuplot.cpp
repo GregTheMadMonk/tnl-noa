@@ -8,12 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <config/tnlParameterContainer.h>
-#include <core/tnlCurve.h>
-#include <core/vectors/tnlStaticVector.h>
-
-#include "tnlConfig.h"
-//const char configFile[] = TNL_CONFIG_DIRECTORY "tnlcurve2gnuplot.cfg.desc";
+#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/core/tnlCurve.h>
+#include <TNL/core/vectors/tnlStaticVector.h>
 
 using namespace TNL;
 

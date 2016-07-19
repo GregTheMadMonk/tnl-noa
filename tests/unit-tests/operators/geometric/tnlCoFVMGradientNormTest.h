@@ -11,10 +11,10 @@
 #ifndef TNLTWOSIDEDGRADIENTNORMTEST_H
 #define	TNLTWOSIDEDGRADIENTNORMTEST_H
 
-#include <operators/geometric/tnlCoFVMGradientNorm.h>
-#include <operators/geometric/tnlExactGradientNorm.h>
-#include <operators/interpolants/tnlMeshEntitiesInterpolants.h>
-#include <operators/tnlOperatorComposition.h>
+#include <TNL/operators/geometric/tnlCoFVMGradientNorm.h>
+#include <TNL/operators/geometric/tnlExactGradientNorm.h>
+#include <TNL/operators/interpolants/tnlMeshEntitiesInterpolants.h>
+#include <TNL/operators/tnlOperatorComposition.h>
 #include "../../tnlUnitTestStarter.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../tnlPDEOperatorEocUnitTest.h"

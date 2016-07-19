@@ -11,8 +11,8 @@
 #ifndef TNL_GRID_SETUP_H_
 #define TNL_GRID_SETUP_H_
 
-#include <config/tnlParameterContainer.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/mesh/tnlGrid.h>
 
 using namespace TNL;
 

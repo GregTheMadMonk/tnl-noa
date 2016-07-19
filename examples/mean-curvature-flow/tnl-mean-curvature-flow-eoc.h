@@ -18,22 +18,22 @@
 #ifndef TNL_MEAN_CURVATURE_FLOW_EOC_H_
 #define TNL_MEAN_CURVATURE_FLOW_EOC_H_
 
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfigTag.h>
-#include <solvers/tnlBuildConfigTags.h>
-#include <functions/tnlTestFunction.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
-#include <operators/tnlNeumannBoundaryConditions.h>
-#include <problems/tnlMeanCurvatureFlowEocRhs.h>
-#include <problems/tnlMeanCurvatureFlowEocProblem.h>
-#include <operators/diffusion/tnlExactNonlinearDiffusion.h>
-#include <operators/diffusion/tnlNonlinearDiffusion.h>
-#include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
-#include <operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
-#include <operators/diffusion/tnlExactNonlinearDiffusion.h>
-#include <operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
-#include <operators/diffusion/nonlinear-diffusion-operators/tnlFiniteVolumeNonlinearOperator.h>
-#include <operators/geometric/tnlExactGradientNorm.h>
+#include <TNL/solvers/tnlSolver.h>
+#include <TNL/solvers/tnlFastBuildConfigTag.h>
+#include <TNL/solvers/tnlBuildConfigTags.h>
+#include <TNL/functions/tnlTestFunction.h>
+#include <TNL/operators/tnlDirichletBoundaryConditions.h>
+#include <TNL/operators/tnlNeumannBoundaryConditions.h>
+#include <TNL/problems/tnlMeanCurvatureFlowEocRhs.h>
+#include <TNL/problems/tnlMeanCurvatureFlowEocProblem.h>
+#include <TNL/operators/diffusion/tnlExactNonlinearDiffusion.h>
+#include <TNL/operators/diffusion/tnlNonlinearDiffusion.h>
+#include <TNL/operators/operator-Q/tnlOneSideDiffOperatorQ.h>
+#include <TNL/operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
+#include <TNL/operators/diffusion/tnlExactNonlinearDiffusion.h>
+#include <TNL/operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
+#include <TNL/operators/diffusion/nonlinear-diffusion-operators/tnlFiniteVolumeNonlinearOperator.h>
+#include <TNL/operators/geometric/tnlExactGradientNorm.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;

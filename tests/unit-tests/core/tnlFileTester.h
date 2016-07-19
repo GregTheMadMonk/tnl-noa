@@ -13,7 +13,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlFile.h>
+#include <TNL/core/tnlFile.h>
 #ifdef HAVE_CUDA
 #include <cuda.h>
 #endif

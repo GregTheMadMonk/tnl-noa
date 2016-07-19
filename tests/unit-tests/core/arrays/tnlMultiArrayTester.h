@@ -18,8 +18,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/arrays/tnlMultiArray.h>
-#include <core/tnlFile.h>
+#include <TNL/core/arrays/tnlMultiArray.h>
+#include <TNL/core/tnlFile.h>
 
 using namespace TNL;
 

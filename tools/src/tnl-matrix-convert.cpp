@@ -10,10 +10,10 @@
 
 #include "tnl-matrix-convert.h"
 #include <string.h>
-#include <debug/tnlDebug.h>
-#include <tnlObject.h>
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
+#include <TNL/debug/tnlDebug.h>
+#include <TNL/tnlObject.h>
+#include <TNL/config/tnlConfigDescription.h>
+#include <TNL/config/tnlParameterContainer.h>
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-matrix-convert.cfg.desc";

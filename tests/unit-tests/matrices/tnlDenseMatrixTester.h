@@ -17,9 +17,9 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <matrices/tnlDenseMatrix.h>
-#include <core/tnlFile.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/matrices/tnlDenseMatrix.h>
+#include <TNL/core/tnlFile.h>
+#include <TNL/core/vectors/tnlVector.h>
 
 #ifdef HAVE_CUDA
 template< typename RealType, typename IndexType >

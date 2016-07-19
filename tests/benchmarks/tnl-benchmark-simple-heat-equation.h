@@ -13,11 +13,11 @@
 
 #include <iostream>
 #include <stdio.h>
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
-#include <core/tnlTimer.h>
-#include <core/tnlTimerRT.h>
-#include <core/tnlCuda.h>
+#include <TNL/config/tnlConfigDescription.h>
+#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/core/tnlTimer.h>
+#include <TNL/core/tnlTimerRT.h>
+#include <TNL/core/tnlCuda.h>
 
 using namespace std;
 using namespace TNL;

@@ -16,8 +16,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlSharedMemory.h>
-#include <core/tnlFile.h>
+#include <TNL/core/tnlSharedMemory.h>
+#include <TNL/core/tnlFile.h>
 
 template< typename Device > class tnlSharedMemoryTester : public CppUnit :: TestCase
 {

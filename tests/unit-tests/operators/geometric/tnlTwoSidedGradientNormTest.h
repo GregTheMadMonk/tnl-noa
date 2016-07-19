@@ -11,8 +11,8 @@
 #ifndef TNLTWOSIDEDGRADIENTNORMTEST_H
 #define	TNLTWOSIDEDGRADIENTNORMTEST_H
 
-#include <operators/geometric/tnlTwoSidedGradientNorm.h>
-#include <operators/geometric/tnlExactGradientNorm.h>
+#include <TNL/operators/geometric/tnlTwoSidedGradientNorm.h>
+#include <TNL/operators/geometric/tnlExactGradientNorm.h>
 #include "../../tnlUnitTestStarter.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../tnlPDEOperatorEocUnitTest.h"

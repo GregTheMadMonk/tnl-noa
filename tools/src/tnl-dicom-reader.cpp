@@ -8,11 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
-#include <core/images/tnlDicomSeries.h>
-#include <core/mfilename.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/config/tnlConfigDescription.h>
+#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/core/images/tnlDicomSeries.h>
+#include <TNL/core/mfilename.h>
 
 using namespace TNL;
 

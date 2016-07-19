@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <core/tnlAssert.h>
-#include <core/tnlCuda.h>
+#include <TNL/core/tnlAssert.h>
+#include <TNL/core/tnlCuda.h>
 #ifdef HAVE_CUDA
 #include <cusparse.h>
 #endif

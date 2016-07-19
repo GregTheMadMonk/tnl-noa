@@ -2,11 +2,11 @@
 
 #include "benchmarks.h"
 
-#include <core/tnlList.h>
-#include <matrices/tnlCSRMatrix.h>
-#include <matrices/tnlEllpackMatrix.h>
-#include <matrices/tnlSlicedEllpackMatrix.h>
-#include <matrices/tnlChunkedEllpackMatrix.h>
+#include <TNL/core/tnlList.h>
+#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/matrices/tnlEllpackMatrix.h>
+#include <TNL/matrices/tnlSlicedEllpackMatrix.h>
+#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
 
 namespace TNL
 {

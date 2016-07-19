@@ -1,8 +1,8 @@
 #ifndef BenchmarkLaplace_H
 #define BenchmarkLaplace_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/mesh/tnlGrid.h>
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,

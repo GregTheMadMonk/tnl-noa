@@ -10,7 +10,7 @@
 
 #include "tnlArrayOperationsTester.h"
 #include "../../tnlUnitTestStarter.h"
-#include <core/tnlHost.h>
+#include <TNL/core/tnlHost.h>
 
 using namespace TNL;
 

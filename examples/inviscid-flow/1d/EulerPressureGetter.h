@@ -1,9 +1,9 @@
 #ifndef EulerPressureGetter_H
 #define EulerPressureGetter_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
-#include <functions/tnlDomain.h>
+#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/functions/tnlDomain.h>
 
 namespace TNL {
 

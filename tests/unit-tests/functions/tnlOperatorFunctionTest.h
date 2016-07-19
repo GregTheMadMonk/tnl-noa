@@ -11,11 +11,11 @@
 #ifndef TNLOPERATORFUNCTIONTEST_H
 #define	TNLOPERATORFUNCTIONTEST_H
 
-#include <functions/tnlOperatorFunction.h>
-#include <mesh/tnlGrid.h>
-#include <functions/tnlExpBumpFunction.h>
-#include <operators/diffusion/tnlLinearDiffusion.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
+#include <TNL/functions/tnlOperatorFunction.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/functions/tnlExpBumpFunction.h>
+#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
+#include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include "../tnlUnitTestStarter.h"
 
 #ifdef HAVE_CPPUNIT

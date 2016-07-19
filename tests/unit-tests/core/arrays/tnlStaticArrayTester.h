@@ -18,9 +18,9 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/arrays/tnlStaticArray.h>
-#include <core/arrays/tnlSharedArray.h>
-#include <core/arrays/tnlConstSharedArray.h>
+#include <TNL/core/arrays/tnlStaticArray.h>
+#include <TNL/core/arrays/tnlSharedArray.h>
+#include <TNL/core/arrays/tnlConstSharedArray.h>
 
 using namespace TNL;
 

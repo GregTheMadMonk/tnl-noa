@@ -11,16 +11,16 @@
 #ifndef TNL_MESH_CONVERT_H_
 #define TNL_MESH_CONVERT_H_
 
-#include <config/tnlParameterContainer.h>
-#include <mesh/tnlMeshReaderNetgen.h>
-#include <mesh/tnlMeshWriterVTKLegacy.h>
-#include <mesh/config/tnlMeshConfigBase.h>
-#include <mesh/topologies/tnlMeshTriangleTopology.h>
-#include <mesh/topologies/tnlMeshTetrahedronTopology.h>
-#include <mesh/tnlMesh.h>
-#include <mesh/initializer/tnlMeshInitializer.h>
-#include <mesh/tnlMeshIntegrityChecker.h>
-#include <core/mfilename.h>
+#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/mesh/tnlMeshReaderNetgen.h>
+#include <TNL/mesh/tnlMeshWriterVTKLegacy.h>
+#include <TNL/mesh/config/tnlMeshConfigBase.h>
+#include <TNL/mesh/topologies/tnlMeshTriangleTopology.h>
+#include <TNL/mesh/topologies/tnlMeshTetrahedronTopology.h>
+#include <TNL/mesh/tnlMesh.h>
+#include <TNL/mesh/initializer/tnlMeshInitializer.h>
+#include <TNL/mesh/tnlMeshIntegrityChecker.h>
+#include <TNL/core/mfilename.h>
 
 using namespace TNL;
 

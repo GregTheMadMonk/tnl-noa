@@ -18,18 +18,18 @@
 #ifndef TNL_MEAN_CURVATIVE_FLOW_H_
 #define TNL_MEAN_CURVATIVE_FLOW_H_
 
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfigTag.h>
-#include <operators/diffusion/tnlLinearDiffusion.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
-#include <operators/tnlNeumannBoundaryConditions.h>
-#include <functions/tnlConstantFunction.h>
-#include <problems/tnlMeanCurvatureFlowProblem.h>
-#include <operators/diffusion/tnlOneSidedNonlinearDiffusion.h>
-#include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
-#include <operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
-#include <operators/diffusion/nonlinear-diffusion-operators/tnlFiniteVolumeNonlinearOperator.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/solvers/tnlSolver.h>
+#include <TNL/solvers/tnlFastBuildConfigTag.h>
+#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
+#include <TNL/operators/tnlDirichletBoundaryConditions.h>
+#include <TNL/operators/tnlNeumannBoundaryConditions.h>
+#include <TNL/functions/tnlConstantFunction.h>
+#include <TNL/problems/tnlMeanCurvatureFlowProblem.h>
+#include <TNL/operators/diffusion/tnlOneSidedNonlinearDiffusion.h>
+#include <TNL/operators/operator-Q/tnlOneSideDiffOperatorQ.h>
+#include <TNL/operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
+#include <TNL/operators/diffusion/nonlinear-diffusion-operators/tnlFiniteVolumeNonlinearOperator.h>
+#include <TNL/functions/tnlMeshFunction.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;

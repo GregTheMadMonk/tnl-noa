@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include "tnl-grid-setup.h"
-#include <config/tnlParameterContainer.h>
+#include <TNL/config/tnlParameterContainer.h>
 
 void configSetup( tnlConfigDescription& config )
 {

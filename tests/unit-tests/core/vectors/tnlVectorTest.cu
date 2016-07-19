@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <tnlConfig.h>
-#include <core/tnlHost.h>
+#include <TNL/core/tnlHost.h>
 #include <cstdlib>
 
 #include "tnlVectorTester.h"

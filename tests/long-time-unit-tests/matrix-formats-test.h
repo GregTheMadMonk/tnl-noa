@@ -11,18 +11,18 @@
 #ifndef MATRIX_FORMATS_TEST_H_
 #define MATRIX_FORMATS_TEST_H_
 
-#include <matrices/tnlMatrixReader.h>
+#include <TNL/matrices/tnlMatrixReader.h>
 
 #include <cstdlib>
-#include <core/tnlFile.h>
-#include <debug/tnlDebug.h>
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
-#include <matrices/tnlDenseMatrix.h>
-#include <matrices/tnlEllpackMatrix.h>
-#include <matrices/tnlSlicedEllpackMatrix.h>
-#include <matrices/tnlChunkedEllpackMatrix.h>
-#include <matrices/tnlCSRMatrix.h>
+#include <TNL/core/tnlFile.h>
+#include <TNL/debug/tnlDebug.h>
+#include <TNL/config/tnlConfigDescription.h>
+#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/matrices/tnlDenseMatrix.h>
+#include <TNL/matrices/tnlEllpackMatrix.h>
+#include <TNL/matrices/tnlSlicedEllpackMatrix.h>
+#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
+#include <TNL/matrices/tnlCSRMatrix.h>
 
 using namespace TNL;
 

@@ -17,9 +17,9 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <matrices/tnlChunkedEllpackMatrix.h>
-#include <core/tnlFile.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
+#include <TNL/core/tnlFile.h>
+#include <TNL/core/vectors/tnlVector.h>
 
 using namespace TNL;
 

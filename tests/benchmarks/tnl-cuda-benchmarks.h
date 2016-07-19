@@ -11,10 +11,10 @@
 #ifndef TNLCUDABENCHMARKS_H_
 #define TNLCUDBENCHMARKS_H_
 
-#include <core/tnlSystemInfo.h>
-#include <core/tnlCudaDeviceInfo.h>
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
+#include <TNL/core/tnlSystemInfo.h>
+#include <TNL/core/tnlCudaDeviceInfo.h>
+#include <TNL/config/tnlConfigDescription.h>
+#include <TNL/config/tnlParameterContainer.h>
 
 #include "array-operations.h"
 #include "vector-operations.h"

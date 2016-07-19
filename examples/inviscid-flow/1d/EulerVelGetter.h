@@ -1,8 +1,8 @@
 #ifndef EulerVelGetter_H
 #define EulerVelGetter_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/mesh/tnlGrid.h>
 
 namespace TNL {
 

@@ -8,20 +8,20 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <core/tnlHost.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/core/tnlHost.h>
 #include <cstdlib>
 
 #include "../tnlPDEOperatorEocTest.h"
 #include "../tnlPDEOperatorEocUnitTest.h"
 #include "../../tnlUnitTestStarter.h"
-#include <mesh/tnlGrid.h>
-#include <operators/fdm/tnlBackwardFiniteDifference.h>
-#include <operators/fdm/tnlForwardFiniteDifference.h>
-#include <operators/fdm/tnlCentralFiniteDifference.h>
-#include <operators/fdm/tnlExactDifference.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/operators/fdm/tnlBackwardFiniteDifference.h>
+#include <TNL/operators/fdm/tnlForwardFiniteDifference.h>
+#include <TNL/operators/fdm/tnlCentralFiniteDifference.h>
+#include <TNL/operators/fdm/tnlExactDifference.h>
 #include "../tnlPDEOperatorEocTestResult.h"
-#include <functions/tnlExpBumpFunction.h>
+#include <TNL/functions/tnlExpBumpFunction.h>
 
 using namespace TNL;
 

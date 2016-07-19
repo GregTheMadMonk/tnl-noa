@@ -11,7 +11,7 @@
 #ifndef TNLCUDATESTER_H_
 #define TNLCUDATESTER_H_
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -19,7 +19,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlCuda.h>
+#include <TNL/core/tnlCuda.h>
 
 
 #ifdef HAVE_CUDA

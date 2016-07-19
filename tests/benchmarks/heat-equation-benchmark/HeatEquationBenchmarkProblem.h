@@ -1,8 +1,8 @@
 #ifndef HeatEquationBenchmarkPROBLEM_H_
 #define HeatEquationBenchmarkPROBLEM_H_
 
-#include <problems/tnlPDEProblem.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/problems/tnlPDEProblem.h>
+#include <TNL/functions/tnlMeshFunction.h>
 
 using namespace TNL;
 

@@ -18,14 +18,14 @@
 #include <cusparse.h>
 #endif
 
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
-#include <matrices/tnlCSRMatrix.h>
-#include <matrices/tnlEllpackMatrix.h>
-#include <matrices/tnlSlicedEllpackMatrix.h>
-#include <matrices/tnlChunkedEllpackMatrix.h>
-#include <matrices/tnlMatrixReader.h>
-#include <core/tnlTimerRT.h>
+#include <TNL/config/tnlConfigDescription.h>
+#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/matrices/tnlEllpackMatrix.h>
+#include <TNL/matrices/tnlSlicedEllpackMatrix.h>
+#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
+#include <TNL/matrices/tnlMatrixReader.h>
+#include <TNL/core/tnlTimerRT.h>
 #include "tnlCusparseCSRMatrix.h"
 
 using namespace std;

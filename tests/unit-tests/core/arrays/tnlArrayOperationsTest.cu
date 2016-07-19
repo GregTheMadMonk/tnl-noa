@@ -10,7 +10,7 @@
 
 #include "tnlArrayOperationsTester.h"
 #include "../../tnlUnitTestStarter.h"
-#include <core/tnlCuda.h>
+#include <TNL/core/tnlCuda.h>
 
 using namespace TNL;
 

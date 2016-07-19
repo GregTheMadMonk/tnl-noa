@@ -1,7 +1,7 @@
 #ifndef eulerRHS_H_
 #define eulerRHS_H_
 
-#include<functions/tnlDomain.h>
+#include <TNL/functions/tnlDomain.h>
 
 namespace TNL {
 

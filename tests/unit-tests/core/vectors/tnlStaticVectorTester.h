@@ -17,7 +17,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/vectors/tnlStaticVector.h>
+#include <TNL/core/vectors/tnlStaticVector.h>
 
 using namespace TNL;
 

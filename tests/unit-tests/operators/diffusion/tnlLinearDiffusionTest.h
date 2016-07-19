@@ -11,9 +11,9 @@
 #ifndef TNLLINEARDIFFUSIONTEST_H
 #define	TNLLINEARDIFFUSIONTEST_H
 
-#include <operators/diffusion/tnlLinearDiffusion.h>
-#include <operators/diffusion/tnlExactLinearDiffusion.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
+#include <TNL/operators/diffusion/tnlExactLinearDiffusion.h>
+#include <TNL/mesh/tnlGrid.h>
 #include "../tnlPDEOperatorEocUnitTest.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../../tnlUnitTestStarter.h"

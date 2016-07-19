@@ -19,7 +19,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlReal.h>
+#include <TNL/core/tnlReal.h>
 
 template< class T > class tnlRealTester : public CppUnit :: TestCase
 {

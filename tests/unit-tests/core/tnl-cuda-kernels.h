@@ -11,10 +11,10 @@
 #ifndef TNLCUDAKERNELS_H_
 #define TNLCUDAKERNELS_H_
 
-#include <core/tnlAssert.h>
-#include <core/vectors/tnlVectorCUDA.h>
-#include <core/low-level/cuda-long-vector-kernels.h>
-#include <legacy/core/tnlCudaSupport.h>
+#include <TNL/core/tnlAssert.h>
+#include <TNL/core/vectors/tnlVectorCUDA.h>
+#include <TNL/core/low-level/cuda-long-vector-kernels.h>
+#include <TNL/legacy/core/tnlCudaSupport.h>
 
 using namespace std;
 using namespace TNL;

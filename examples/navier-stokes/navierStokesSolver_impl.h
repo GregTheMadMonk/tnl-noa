@@ -22,11 +22,11 @@
 #include "navierStokesSolver.h"
 #include <stdio.h>
 #include <iostream>
-#include <core/tnlString.h>
-#include <core/mfilename.h>
-#include <core/mfuncs.h>
-#include <core/vectors/tnlSharedVector.h>
-#include <solvers/ode/tnlMersonSolver.h>
+#include <TNL/core/tnlString.h>
+#include <TNL/core/mfilename.h>
+#include <TNL/core/mfuncs.h>
+#include <TNL/core/vectors/tnlSharedVector.h>
+#include <TNL/solvers/ode/tnlMersonSolver.h>
 
 
 #ifdef HAVE_CUDA

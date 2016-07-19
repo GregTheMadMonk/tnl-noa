@@ -1,11 +1,11 @@
 #ifndef eulerPROBLEM_IMPL_H_
 #define eulerPROBLEM_IMPL_H_
 
-#include <core/mfilename.h>
-#include <matrices/tnlMatrixSetter.h>
-#include <solvers/pde/tnlExplicitUpdater.h>
-#include <solvers/pde/tnlLinearSystemAssembler.h>
-#include <solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/core/mfilename.h>
+#include <TNL/matrices/tnlMatrixSetter.h>
+#include <TNL/solvers/pde/tnlExplicitUpdater.h>
+#include <TNL/solvers/pde/tnlLinearSystemAssembler.h>
+#include <TNL/solvers/pde/tnlBackwardTimeDiscretisation.h>
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsMomentum.h"
 #include "LaxFridrichsEnergy.h"

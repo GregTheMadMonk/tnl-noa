@@ -11,7 +11,7 @@
 #ifndef TNLARRAYOPERATIONSTESTER_H_
 #define TNLARRAYOPERATIONSTESTER_H_
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -20,8 +20,8 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 
-#include <core/arrays/tnlArrayOperations.h>
-#include <core/tnlCuda.h>
+#include <TNL/core/arrays/tnlArrayOperations.h>
+#include <TNL/core/tnlCuda.h>
 
 using namespace TNL;
 

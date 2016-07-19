@@ -12,13 +12,13 @@
 #define TNL_VIEW_H_
 
 #include <cstdlib>
-#include <core/mfilename.h>
-#include <config/tnlParameterContainer.h>
-#include <core/tnlString.h>
-#include <core/vectors/tnlVector.h>
-#include <core/vectors/tnlMultiVector.h>
-#include <mesh/tnlGrid.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/core/mfilename.h>
+#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/core/tnlString.h>
+#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/core/vectors/tnlMultiVector.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/functions/tnlMeshFunction.h>
 
 using namespace std;
 using namespace TNL;

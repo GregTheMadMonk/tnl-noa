@@ -11,7 +11,7 @@
 #ifndef TNLUNITTESTSTARTER_H_
 #define TNLUNITTESTSTARTER_H_
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/ui/text/TestRunner.h>

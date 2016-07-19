@@ -12,10 +12,10 @@
 #define TNLMATRIXCONVERT_H_
 
 #include <fstream>
-#include <core/tnlString.h>
-#include <core/tnlFile.h>
-#include <matrices/tnlMatrix.h>
-#include <matrices/tnlCSRMatrix.h>
+#include <TNL/core/tnlString.h>
+#include <TNL/core/tnlFile.h>
+#include <TNL/matrices/tnlMatrix.h>
+#include <TNL/matrices/tnlCSRMatrix.h>
 
 using namespace std;
 

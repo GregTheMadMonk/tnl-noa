@@ -2,7 +2,7 @@
 
 #include "benchmarks.h"
 
-#include <core/arrays/tnlArray.h>
+#include <TNL/core/arrays/tnlArray.h>
 
 namespace TNL
 {

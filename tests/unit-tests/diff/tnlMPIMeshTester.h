@@ -15,7 +15,7 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <legacy/diff/tnlMPIMesh.h>
+#include <TNL/legacy/diff/tnlMPIMesh.h>
 
 
 #ifdef HAVE_CUDA

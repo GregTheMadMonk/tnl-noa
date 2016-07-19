@@ -19,8 +19,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlList.h>
-#include <core/tnlFile.h>
+#include <TNL/core/tnlList.h>
+#include <TNL/core/tnlFile.h>
 
 using namespace TNL;
 

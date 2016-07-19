@@ -1,8 +1,8 @@
 #ifndef eulerPROBLEM_H_
 #define eulerPROBLEM_H_
 
-#include <problems/tnlPDEProblem.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/problems/tnlPDEProblem.h>
+#include <TNL/functions/tnlMeshFunction.h>
 
 namespace TNL {
 

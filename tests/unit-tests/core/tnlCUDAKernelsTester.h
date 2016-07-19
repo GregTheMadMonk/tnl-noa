@@ -17,12 +17,12 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <core/vectors/tnlVectorCUDA.h>
-#include <core/vectors/tnlVectorHost.h>
-#include <core/mfuncs.h>
+#include <TNL/core/vectors/tnlVectorCUDA.h>
+#include <TNL/core/vectors/tnlVectorHost.h>
+#include <TNL/core/mfuncs.h>
 
 #ifdef HAVE_CUDA
-#include <core/tnl-cuda-kernels.h>
+#include <TNL/core/tnl-cuda-kernels.h>
 #endif
 
 using namespace std;

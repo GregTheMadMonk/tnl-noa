@@ -14,8 +14,8 @@
 #include <iostream>
 #include <math.h>
 
-#include <core/tnlTimerRT.h>
-#include <core/tnlTimerCPU.h>
+#include <TNL/core/tnlTimerRT.h>
+#include <TNL/core/tnlTimerCPU.h>
 
 using namespace TNL;
 

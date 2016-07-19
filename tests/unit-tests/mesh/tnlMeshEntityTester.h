@@ -17,12 +17,12 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <mesh/tnlMeshEntity.h>
-#include <mesh/config/tnlMeshConfigBase.h>
-#include <mesh/topologies/tnlMeshVertexTopology.h>
-#include <mesh/topologies/tnlMeshEdgeTopology.h>
-#include <mesh/topologies/tnlMeshTriangleTopology.h>
-#include <mesh/topologies/tnlMeshTetrahedronTopology.h>
+#include <TNL/mesh/tnlMeshEntity.h>
+#include <TNL/mesh/config/tnlMeshConfigBase.h>
+#include <TNL/mesh/topologies/tnlMeshVertexTopology.h>
+#include <TNL/mesh/topologies/tnlMeshEdgeTopology.h>
+#include <TNL/mesh/topologies/tnlMeshTriangleTopology.h>
+#include <TNL/mesh/topologies/tnlMeshTetrahedronTopology.h>
  
 using namespace TNL;
 

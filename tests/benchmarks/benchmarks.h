@@ -5,8 +5,8 @@
 #include <map>
 #include <vector>
 
-#include <core/tnlTimerRT.h>
-#include <core/tnlString.h>
+#include <TNL/core/tnlTimerRT.h>
+#include <TNL/core/tnlString.h>
 
 namespace TNL
 {

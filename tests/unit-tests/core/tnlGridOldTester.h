@@ -15,8 +15,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <legacy/mesh/tnlGridOld.h>
-#include <core/tnlFile.h>
+#include <TNL/legacy/mesh/tnlGridOld.h>
+#include <TNL/core/tnlFile.h>
 
 template< typename Real, typename device, typename Index > class tnlGridOldTester : public CppUnit :: TestCase
 {

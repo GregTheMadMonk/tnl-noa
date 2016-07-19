@@ -11,9 +11,9 @@
 #ifndef TNLMEANCURVATURETEST_H
 #define	TNLMEANCURVATURETEST_H
 
-#include <operators/diffusion/tnlOneSidedMeanCurvature.h>
-#include <operators/diffusion/tnlExactLinearDiffusion.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/operators/diffusion/tnlOneSidedMeanCurvature.h>
+#include <TNL/operators/diffusion/tnlExactLinearDiffusion.h>
+#include <TNL/mesh/tnlGrid.h>
 #include "../tnlPDEOperatorEocUnitTest.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../../tnlUnitTestStarter.h"

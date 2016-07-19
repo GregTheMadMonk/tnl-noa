@@ -11,7 +11,7 @@
 #ifndef TNLVECTOROPERATIONSTESTER_H_
 #define TNLVECTOROPERATIONSTESTER_H_
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -20,8 +20,8 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 
-#include <core/vectors/tnlVector.h>
-#include <core/vectors/tnlVectorOperations.h>
+#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/core/vectors/tnlVectorOperations.h>
 
 using namespace TNL;
 

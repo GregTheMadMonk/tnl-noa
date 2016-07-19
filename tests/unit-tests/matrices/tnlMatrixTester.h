@@ -11,7 +11,7 @@
 #ifndef TNLMATRIXTESTER_H_
 #define TNLMATRIXTESTER_H_
 
-#include <matrices/tnlCSRMatrix.h>
+#include <TNL/matrices/tnlCSRMatrix.h>
 
 using namespace TNL;
 

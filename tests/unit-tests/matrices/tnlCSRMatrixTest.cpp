@@ -8,12 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <core/tnlHost.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/core/tnlHost.h>
 #include <cstdlib>
 
 #include "tnlSparseMatrixTester.h"
-#include "matrices/tnlCSRMatrix.h"
+#include <TNL/matrices/tnlCSRMatrix.h>
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )

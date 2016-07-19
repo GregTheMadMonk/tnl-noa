@@ -11,13 +11,13 @@
 #ifndef TNL_INIT_H_
 #define TNL_INIT_H_
 
-#include <config/tnlParameterContainer.h>
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
-#include <functions/tnlTestFunction.h>
-#include <operators/tnlFiniteDifferences.h>
-#include <core/mfilename.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/functions/tnlTestFunction.h>
+#include <TNL/operators/tnlFiniteDifferences.h>
+#include <TNL/core/mfilename.h>
+#include <TNL/functions/tnlMeshFunction.h>
 
 using namespace TNL;
 

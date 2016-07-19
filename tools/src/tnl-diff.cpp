@@ -9,8 +9,8 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include "tnl-diff.h"
-#include <mesh/tnlDummyMesh.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/mesh/tnlDummyMesh.h>
+#include <TNL/mesh/tnlGrid.h>
 
 void setupConfig( tnlConfigDescription& config )
 {

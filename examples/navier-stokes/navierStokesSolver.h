@@ -18,18 +18,18 @@
 #ifndef NAVIERSTOKESSOLVER_H_
 #define NAVIERSTOKESSOLVER_H_
 
-#include <core/tnlLogger.h>
-#include <core/tnlHost.h>
-#include <core/vectors/tnlVector.h>
-#include <config/tnlParameterContainer.h>
-#include <matrices/tnlCSRMatrix.h>
-#include <solvers/preconditioners/tnlDummyPreconditioner.h>
-#include <solvers/tnlSolverMonitor.h>
-#include <operators/euler/fvm/tnlLaxFridrichs.h>
-#include <operators/gradient/tnlCentralFDMGradient.h>
-#include <operators/diffusion/tnlLinearDiffusion.h>
-#include <mesh/tnlLinearGridGeometry.h>
-#include <solvers/cfd/navier-stokes/tnlNavierStokesSolver.h>
+#include <TNL/core/tnlLogger.h>
+#include <TNL/core/tnlHost.h>
+#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/solvers/preconditioners/tnlDummyPreconditioner.h>
+#include <TNL/solvers/tnlSolverMonitor.h>
+#include <TNL/operators/euler/fvm/tnlLaxFridrichs.h>
+#include <TNL/operators/gradient/tnlCentralFDMGradient.h>
+#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
+#include <TNL/mesh/tnlLinearGridGeometry.h>
+#include <TNL/solvers/cfd/navier-stokes/tnlNavierStokesSolver.h>
 
 #include "navierStokesSolverMonitor.h"
 #include "navierStokesBoundaryConditions.h"

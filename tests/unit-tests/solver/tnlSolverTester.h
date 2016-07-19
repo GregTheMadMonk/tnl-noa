@@ -15,10 +15,10 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlSolverMonitor.h>
-#include <mesh/tnlGrid.h>
-#include <tnlConfig.h>
+#include <TNL/solvers/tnlSolver.h>
+#include <TNL/solvers/tnlSolverMonitor.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/tnlConfig.h>
 
 using namespace TNL;
 

@@ -11,8 +11,7 @@
 #ifndef HAVE_ICPC
 #include "tnl-mesh-convert.h"
 #endif
-#include "tnlConfig.h"
-#include <config/tnlParameterContainer.h>
+#include <TNL/config/tnlParameterContainer.h>
 
 void configSetup( tnlConfigDescription& config )
 {

@@ -15,8 +15,8 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <matrices/tnlCSRMatrix.h>
-#include <legacy/matrices/tnlAdaptiveRgCSRMatrix.h>
+#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/legacy/matrices/tnlAdaptiveRgCSRMatrix.h>
 #include "tnlMatrixTester.h"
 
 using namespace TNL;

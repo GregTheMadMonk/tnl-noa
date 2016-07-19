@@ -15,29 +15,26 @@
 #include <iomanip>
 #include <unistd.h>
 
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
-#include <core/tnlTimerRT.h>
-#include <matrices/tnlDenseMatrix.h>
-#include <matrices/tnlTridiagonalMatrix.h>
-#include <matrices/tnlMultidiagonalMatrix.h>
-#include <matrices/tnlCSRMatrix.h>
-#include <matrices/tnlEllpackMatrix.h>
-#include <matrices/tnlSlicedEllpackMatrix.h>
-#include <matrices/tnlChunkedEllpackMatrix.h>
-#include <matrices/tnlMatrixReader.h>
-#include <solvers/linear/krylov/tnlGMRESSolver.h>
-#include <solvers/linear/krylov/tnlCGSolver.h>
-#include <solvers/linear/krylov/tnlBICGStabSolver.h>
-#include <solvers/linear/krylov/tnlTFQMRSolver.h>
-#include <solvers/linear/tnlLinearResidueGetter.h>
-#include <solvers/tnlIterativeSolverMonitor.h>
+#include <TNL/config/tnlConfigDescription.h>
+#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/core/tnlTimerRT.h>
+#include <TNL/matrices/tnlDenseMatrix.h>
+#include <TNL/matrices/tnlTridiagonalMatrix.h>
+#include <TNL/matrices/tnlMultidiagonalMatrix.h>
+#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/matrices/tnlEllpackMatrix.h>
+#include <TNL/matrices/tnlSlicedEllpackMatrix.h>
+#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
+#include <TNL/matrices/tnlMatrixReader.h>
+#include <TNL/solvers/linear/krylov/tnlGMRESSolver.h>
+#include <TNL/solvers/linear/krylov/tnlCGSolver.h>
+#include <TNL/solvers/linear/krylov/tnlBICGStabSolver.h>
+#include <TNL/solvers/linear/krylov/tnlTFQMRSolver.h>
+#include <TNL/solvers/linear/tnlLinearResidueGetter.h>
+#include <TNL/solvers/tnlIterativeSolverMonitor.h>
 
 using namespace std;
 using namespace TNL;
-
-#include "tnlConfig.h"
-const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-benchmark-linear-solvers.cfg.desc";
 
 void configSetup( tnlConfigDescription& config )
 {

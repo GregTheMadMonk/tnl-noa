@@ -8,11 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <core/tnlHost.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/core/tnlHost.h>
 #include <cstdlib>
 
-#include <core/multimaps/tnlEllpackIndexMultimap.h>
+#include <TNL/core/multimaps/tnlEllpackIndexMultimap.h>
 #include "tnlIndexMultimapTester.h"
 #include "../../tnlUnitTestStarter.h"
 

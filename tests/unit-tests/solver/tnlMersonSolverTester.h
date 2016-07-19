@@ -11,9 +11,9 @@
 #ifndef TNLMERSONSOLVERTESTER_H_
 #define TNLMERSONSOLVERTESTER_H_
 
-#include <legacy/mesh/tnlGridOld.h>
-#include <solvers/ode/tnlMersonSolver.h>
-#include <core/mfilename.h>
+#include <TNL/legacy/mesh/tnlGridOld.h>
+#include <TNL/solvers/ode/tnlMersonSolver.h>
+#include <TNL/core/mfilename.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>

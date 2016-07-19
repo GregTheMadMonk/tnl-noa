@@ -10,13 +10,13 @@
 
 #include "tnl-init.h"
 
-#include <core/tnlFile.h>
-#include <debug/tnlDebug.h>
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
-#include <functions/tnlTestFunction.h>
-#include <mesh/tnlDummyMesh.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/core/tnlFile.h>
+#include <TNL/debug/tnlDebug.h>
+#include <TNL/config/tnlConfigDescription.h>
+#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/functions/tnlTestFunction.h>
+#include <TNL/mesh/tnlDummyMesh.h>
+#include <TNL/mesh/tnlGrid.h>
 
 using namespace TNL;
 

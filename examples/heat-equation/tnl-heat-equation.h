@@ -11,16 +11,16 @@
 #ifndef TNL_HEAT_EQUATION_H_
 #define TNL_HEAT_EQUATION_H_
 
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfigTag.h>
-#include <solvers/tnlBuildConfigTags.h>
-#include <operators/diffusion/tnlLinearDiffusion.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
-#include <operators/tnlNeumannBoundaryConditions.h>
-#include <functions/tnlConstantFunction.h>
-#include <functions/tnlMeshFunction.h>
-#include <problems/tnlHeatEquationProblem.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/solvers/tnlSolver.h>
+#include <TNL/solvers/tnlFastBuildConfigTag.h>
+#include <TNL/solvers/tnlBuildConfigTags.h>
+#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
+#include <TNL/operators/tnlDirichletBoundaryConditions.h>
+#include <TNL/operators/tnlNeumannBoundaryConditions.h>
+#include <TNL/functions/tnlConstantFunction.h>
+#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/problems/tnlHeatEquationProblem.h>
+#include <TNL/mesh/tnlGrid.h>
 
 using namespace TNL;
 

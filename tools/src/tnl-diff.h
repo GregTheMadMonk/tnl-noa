@@ -12,11 +12,11 @@
 #define TNL_DIFF_H_
 
 #include <iomanip>
-#include <config/tnlParameterContainer.h>
-#include <core/mfilename.h>
-#include <core/vectors/tnlVector.h>
-#include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/core/mfilename.h>
+#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/core/vectors/tnlStaticVector.h>
+#include <TNL/functions/tnlMeshFunction.h>
 
 using namespace TNL;
 

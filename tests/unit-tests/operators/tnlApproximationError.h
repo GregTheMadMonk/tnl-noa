@@ -11,13 +11,13 @@
 #ifndef TNLAPPROXIMATIONERROR_H_
 #define TNLAPPROXIMATIONERROR_H_
 
-#include <mesh/tnlGrid.h>
-#include <functions/tnlConstantFunction.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
-#include <solvers/pde/tnlExplicitUpdater.h>
-#include <functions/tnlExactOperatorFunction.h>
-#include <functions/tnlMeshFunction.h>
-#include <solvers/pde/tnlBoundaryConditionsSetter.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/functions/tnlConstantFunction.h>
+#include <TNL/operators/tnlDirichletBoundaryConditions.h>
+#include <TNL/solvers/pde/tnlExplicitUpdater.h>
+#include <TNL/functions/tnlExactOperatorFunction.h>
+#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/solvers/pde/tnlBoundaryConditionsSetter.h>
 
 using namespace TNL;
 

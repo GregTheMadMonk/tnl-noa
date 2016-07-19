@@ -17,7 +17,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/mesh/tnlGrid.h>
 
 
 template< int Dimensions, typename RealType, typename Device, typename IndexType >

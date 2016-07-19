@@ -1,9 +1,9 @@
-#include <tnlConfig.h>
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlBuildConfigTags.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
-#include <operators/tnlNeumannBoundaryConditions.h>
-#include <functions/tnlConstantFunction.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/solvers/tnlSolver.h>
+#include <TNL/solvers/tnlBuildConfigTags.h>
+#include <TNL/operators/tnlDirichletBoundaryConditions.h>
+#include <TNL/operators/tnlNeumannBoundaryConditions.h>
+#include <TNL/functions/tnlConstantFunction.h>
 #include "advectionProblem.h"
 #include "LaxFridrichs.h"
 #include "advectionRhs.h"

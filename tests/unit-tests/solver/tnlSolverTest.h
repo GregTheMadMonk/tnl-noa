@@ -11,7 +11,7 @@
 #ifndef TNLSOLVERTEST_H_
 #define TNLSOLVERTEST_H_
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 #include <iostream>
 
 #ifdef HAVE_CPPUNIT

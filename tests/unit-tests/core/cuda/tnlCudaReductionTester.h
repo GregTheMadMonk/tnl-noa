@@ -12,7 +12,7 @@
 #ifndef TNLCUDAREDUCTIONTESTER_H_
 #define TNLCUDAREDUCTIONTESTER_H_
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -20,8 +20,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlCuda.h>
-#include <core/cuda/cuda-reduction.h>
+#include <TNL/core/tnlCuda.h>
+#include <TNL/core/cuda/cuda-reduction.h>
 
 using namespace TNL;
 

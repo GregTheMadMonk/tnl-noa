@@ -8,14 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
-#include <core/mfilename.h>
-#include <mesh/tnlGrid.h>
-#include <core/images/tnlPGMImage.h>
-#include <core/images/tnlPNGImage.h>
-#include <core/images/tnlJPEGImage.h>
-#include <core/images/tnlRegionOfInterest.h>
+#include <TNL/config/tnlConfigDescription.h>
+#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/core/mfilename.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/core/images/tnlPGMImage.h>
+#include <TNL/core/images/tnlPNGImage.h>
+#include <TNL/core/images/tnlJPEGImage.h>
+#include <TNL/core/images/tnlRegionOfInterest.h>
 
 using namespace TNL;
 

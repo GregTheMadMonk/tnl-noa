@@ -18,7 +18,7 @@
 #ifndef NAVIERSTOKESBOUNDARYCONDITIONS_H_
 #define NAVIERSTOKESBOUNDARYCONDITIONS_H_
 
-#include <config/tnlParameterContainer.h>
+#include <TNL/config/tnlParameterContainer.h>
 
 template< typename Mesh >
 class navierStokesBoundaryConditions

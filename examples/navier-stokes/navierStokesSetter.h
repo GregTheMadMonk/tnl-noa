@@ -18,7 +18,7 @@
 #ifndef SIMPLEPROBLEMTYPESSETTER_H_
 #define SIMPLEPROBLEMTYPESSETTER_H_
 
-#include <config/tnlParameterContainer.h>
+#include <TNL/config/tnlParameterContainer.h>
 #include "navierStokesSolver.h"
 
 template< typename MeshType,
