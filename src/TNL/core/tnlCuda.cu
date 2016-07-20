@@ -9,12 +9,12 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/core/tnlCuda.h>
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
 
-/*void tnlCuda::configSetup( tnlConfigDescription& config, const tnlString& prefix )
+/*void tnlCuda::configSetup( tnlConfigDescription& config, const String& prefix )
 {
 #ifdef HAVE_CUDA
    config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device.", 0 );
@@ -24,7 +24,7 @@ namespace TNL {
 }
  
 bool tnlCuda::setup( const tnlParameterContainer& parameters,
-                    const tnlString& prefix )
+                    const String& prefix )
 {
    int cudaDevice = parameters.getParameter< int >( prefix + "cuda-device" );
 #ifdef HAVE_CUDA

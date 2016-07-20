@@ -17,7 +17,7 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 #include <TNL/core/tnlCommunicator.h>
-#include <TNL/core/tnlFile.h>
+#include <TNL/File.h>
 
 template< typename Device > class tnlCommunicatorTester : public CppUnit :: TestCase
 {

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/matrices/tnlMatrix.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/matrices/tnlTridiagonalMatrixRow.h>
 
 namespace TNL {
@@ -38,9 +38,9 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    tnlTridiagonalMatrix();
 
-   static tnlString getType();
+   static String getType();
 
-   tnlString getTypeVirtual() const;
+   String getTypeVirtual() const;
 
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
@@ -164,13 +164,13 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
-   bool load( tnlFile& file );
+   bool load( File& file );
 
-   bool save( const tnlString& fileName ) const;
+   bool save( const String& fileName ) const;
 
-   bool load( const tnlString& fileName );
+   bool load( const String& fileName );
 
    void print( std::ostream& str ) const;
 

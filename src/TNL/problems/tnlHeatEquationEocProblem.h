@@ -30,9 +30,9 @@ class tnlHeatEquationEocProblem : public tnlHeatEquationProblem< Mesh, BoundaryC
 {
    public:
 
-      static tnlString getTypeStatic();
+      static String getTypeStatic();
 
-      bool setup( const tnlParameterContainer& parameters );
+      bool setup( const Config::ParameterContainer& parameters );
 };
 
 } //namespace TNL

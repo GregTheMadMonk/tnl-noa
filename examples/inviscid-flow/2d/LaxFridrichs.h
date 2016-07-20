@@ -1,7 +1,7 @@
 #ifndef LaxFridrichs_H
 #define LaxFridrichs_H
 
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
 
 #include "LaxFridrichsContinuity.h"

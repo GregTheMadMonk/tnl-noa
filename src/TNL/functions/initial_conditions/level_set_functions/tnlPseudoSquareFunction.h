@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/config/tnlParameterContainer.h>
-#include <TNL/core/vectors/tnlStaticVector.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Vectors/StaticVector.h>
 #include <TNL/functions/tnlDomain.h>
 #include <TNL/core/tnlCuda.h>
 
@@ -25,8 +25,8 @@ class tnlPseudoSquareFunctionBase : public tnlDomain< Dimensions, SpaceDomain >
 
       typedef Real RealType;
 
-      bool setup( const tnlParameterContainer& parameters,
-                 const tnlString& prefix = "" );
+      bool setup( const Config::ParameterContainer& parameters,
+                 const String& prefix = "" );
 
    protected:
 
@@ -46,9 +46,9 @@ class tnlPseudoSquareFunction< 1, Real > : public tnlPseudoSquareFunctionBase< R
 
       enum { Dimensions = 1 };
       typedef Real RealType;
-      typedef tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
 
-      static tnlString getType();
+      static String getType();
 
       tnlPseudoSquareFunction();
 
@@ -77,9 +77,9 @@ class tnlPseudoSquareFunction< 2, Real > : public tnlPseudoSquareFunctionBase< R
 
       enum { Dimensions = 2 };
       typedef Real RealType;
-      typedef tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
 
-      static tnlString getType();
+      static String getType();
 
       tnlPseudoSquareFunction();
 
@@ -108,9 +108,9 @@ class tnlPseudoSquareFunction< 3, Real > : public tnlPseudoSquareFunctionBase< R
 
       enum { Dimensions = 3 };
       typedef Real RealType;
-      typedef tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
 
-      static tnlString getType();
+      static String getType();
 
       tnlPseudoSquareFunction();
 

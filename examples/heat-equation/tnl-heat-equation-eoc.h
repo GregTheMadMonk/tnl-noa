@@ -30,7 +30,7 @@ template< typename MeshConfig >
 class heatEquationEocConfig
 {
    public:
-      static void configSetup( tnlConfigDescription& config )
+      static void configSetup( Config::ConfigDescription& config )
       {
          config.addDelimiter( "Heat equation EOC settings:" );
          config.addDelimiter( "Tests setting::" );
@@ -54,7 +54,7 @@ class heatEquationSetter
 
    typedef tnlStaticVector< MeshType::meshDimensions, Real > Vertex;
 
-   static bool run( const tnlParameterContainer& parameters )
+   static bool run( const Config::ParameterContainer& parameters )
    {
       enum { Dimensions = MeshType::meshDimensions };
       typedef tnlLinearDiffusion< MeshType, Real, Index > ApproximateOperator;

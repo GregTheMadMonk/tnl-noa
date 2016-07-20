@@ -28,7 +28,7 @@ class tnlSpmvBenchmarkRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index
 
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
-                         const tnlString& inputMtxFile,
+                         const String& inputMtxFile,
                          const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                          bool writeMatrixInfo ) const;
 
@@ -69,7 +69,7 @@ template< typename Real,
           typename Index>
 bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix )
 {
-   tnlAssert( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
+   Assert( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
    if( Device :: getDevice() == tnlHostDevice )
    {
       this->matrix. tuneFormat( groupSize,
@@ -185,11 +185,11 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( std::ostream& logFile,
                                                                             const double& csrGflops,
-                                                                            const tnlString& inputMtxFile,
+                                                                            const String& inputMtxFile,
                                                                             const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                                                                             bool writeMatrixInfo ) const
 {
-   tnlString bgColor;
+   String bgColor;
    switch( groupSize )
    {
       case 16: bgColor = "#5555FF"; break;
@@ -199,13 +199,13 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( std:
    }
    if( writeMatrixInfo )
    {
-      tnlString baseFileName( inputMtxFile );
-      baseFileName += tnlString( ".rgcsr-");
-      baseFileName += tnlString( groupSize );
-      tnlString matrixPdfFile( baseFileName );
-      matrixPdfFile += tnlString( ".pdf" );
-      tnlString matrixHtmlFile( baseFileName );
-      matrixHtmlFile += tnlString( ".html" );
+      String baseFileName( inputMtxFile );
+      baseFileName += String( ".rgcsr-");
+      baseFileName += String( groupSize );
+      String matrixPdfFile( baseFileName );
+      matrixPdfFile += String( ".pdf" );
+      String matrixHtmlFile( baseFileName );
+      matrixHtmlFile += String( ".html" );
       tnlRgCSRMatrix< Real > rgCsrMatrix( inputMtxFile );
       rgCsrMatrix. tuneFormat( this->groupSize,
                                this->useAdaptiveGroupSize,

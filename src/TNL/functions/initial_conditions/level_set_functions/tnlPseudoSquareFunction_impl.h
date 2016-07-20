@@ -18,8 +18,8 @@ template< typename Real,
           int Dimensions >
 bool
 tnlPseudoSquareFunctionBase< Real, Dimensions >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    this->height = parameters.getParameter< double >( prefix + "height" );
  
@@ -32,10 +32,10 @@ setup( const tnlParameterContainer& parameters,
  */
 
 template< typename Real >
-tnlString
+String
 tnlPseudoSquareFunction< 1, Real >::getType()
 {
-   return "tnlPseudoSquareFunction< 1, " + TNL::getType< Real >() + tnlString( " >" );
+   return "tnlPseudoSquareFunction< 1, " + TNL::getType< Real >() + String( " >" );
 }
 
 template< typename Real >
@@ -75,10 +75,10 @@ operator()( const VertexType& v,
  * 2D
  */
 template< typename Real >
-tnlString
+String
 tnlPseudoSquareFunction< 2, Real >::getType()
 {
-   return tnlString( "tnlPseudoSquareFunction< 2, " ) + TNL::getType< Real >() + " >";
+   return String( "tnlPseudoSquareFunction< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -119,10 +119,10 @@ operator()( const VertexType& v,
  * 3D
  */
 template< typename Real >
-tnlString
+String
 tnlPseudoSquareFunction< 3, Real >::getType()
 {
-   return tnlString( "tnlPseudoSquareFunction< 3, " ) + TNL::getType< Real >() + " >";
+   return String( "tnlPseudoSquareFunction< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >

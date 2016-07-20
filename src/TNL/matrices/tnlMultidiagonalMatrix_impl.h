@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/matrices/tnlMultidiagonalMatrix.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/core/mfuncs.h>
 
 namespace TNL {
@@ -29,19 +29,19 @@ tnlMultidiagonalMatrix< Real, Device, Index > :: tnlMultidiagonalMatrix()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlMultidiagonalMatrix< Real, Device, Index > :: getType()
+String tnlMultidiagonalMatrix< Real, Device, Index > :: getType()
 {
-   return tnlString( "tnlMultidiagonalMatrix< ") +
-          tnlString( TNL::getType< Real >() ) +
-          tnlString( ", " ) +
+   return String( "tnlMultidiagonalMatrix< ") +
+          String( TNL::getType< Real >() ) +
+          String( ", " ) +
           Device :: getDeviceType() +
-          tnlString( " >" );
+          String( " >" );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlMultidiagonalMatrix< Real, Device, Index >::getTypeVirtual() const
+String tnlMultidiagonalMatrix< Real, Device, Index >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -52,7 +52,7 @@ template< typename Real,
 bool tnlMultidiagonalMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
                                                                    const IndexType columns )
 {
-   tnlAssert( rows > 0 && columns > 0,
+   Assert( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
                    << " columns = " << columns << std::endl );
    if( ! tnlMatrix< Real, Device, Index >::setDimensions( rows, columns ) )
@@ -108,7 +108,7 @@ template< typename Real,
    template< typename Vector >
 bool tnlMultidiagonalMatrix< Real, Device, Index > :: setDiagonals(  const Vector& diagonals )
 {
-   tnlAssert( diagonals.getSize() > 0,
+   Assert( diagonals.getSize() > 0,
               std::cerr << "New number of diagonals = " << diagonals.getSize() << std::endl );
    this->diagonalsShift.setLike( diagonals );
    this->diagonalsShift = diagonals;
@@ -124,7 +124,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: setDiagonals(  const Vecto
 template< typename Real,
           typename Device,
           typename Index >
-const tnlVector< Index, Device, Index >& tnlMultidiagonalMatrix< Real, Device, Index > :: getDiagonals() const
+const Vectors::tnlVector< Index, Device, Index >& tnlMultidiagonalMatrix< Real, Device, Index > :: getDiagonals() const
 {
    return this->diagonalsShift;
 }
@@ -182,7 +182,7 @@ template< typename Real,
              typename Index2 >
 bool tnlMultidiagonalMatrix< Real, Device, Index >::operator == ( const tnlMultidiagonalMatrix< Real2, Device2, Index2 >& matrix ) const
 {
-   tnlAssert( this->getRows() == matrix.getRows() &&
+   Assert( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
               std::cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
@@ -502,10 +502,10 @@ template< typename Real,
 void tnlMultidiagonalMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
                                                                    OutVector& outVector ) const
 {
-   tnlAssert( this->getColumns() == inVector.getSize(),
+   Assert( this->getColumns() == inVector.getSize(),
             std::cerr << "Matrix columns: " << this->getColumns() << std::endl
                  << "Vector size: " << inVector.getSize() << std::endl );
-   tnlAssert( this->getRows() == outVector.getSize(),
+   Assert( this->getRows() == outVector.getSize(),
                std::cerr << "Matrix rows: " << this->getRows() << std::endl
                     << "Vector size: " << outVector.getSize() << std::endl );
 
@@ -521,7 +521,7 @@ void tnlMultidiagonalMatrix< Real, Device, Index > :: addMatrix( const tnlMultid
                                                                  const RealType& matrixMultiplicator,
                                                                  const RealType& thisMatrixMultiplicator )
 {
-   tnlAssert( false, std::cerr << "TODO: implement" );
+   Assert( false, std::cerr << "TODO: implement" );
 }
 
 template< typename Real,
@@ -532,7 +532,7 @@ template< typename Real,
 void tnlMultidiagonalMatrix< Real, Device, Index >::getTransposition( const tnlMultidiagonalMatrix< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   tnlVector< Index > auxDiagonals;
+   Vectors::tnlVector< Index > auxDiagonals;
    auxDiagonals.setLike( matrix.getDiagonals() );
    const Index numberOfDiagonals = matrix.getDiagonals().getSize();
    for( Index i = 0; i < numberOfDiagonals; i++ )
@@ -558,7 +558,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: performSORIteration( const
                                                                            Vector& x,
                                                                            const RealType& omega ) const
 {
-   tnlAssert( row >=0 && row < this->getRows(),
+   Assert( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row
                    << " this->getRows() = " << this->getRows() << std::endl );
 
@@ -593,7 +593,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: performSORIteration( const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMultidiagonalMatrix< Real, Device, Index >::save( tnlFile& file ) const
+bool tnlMultidiagonalMatrix< Real, Device, Index >::save( File& file ) const
 {
    if( ! tnlMatrix< Real, Device, Index >::save( file ) ) return false;
    if( ! this->values.save( file ) ) return false;
@@ -604,7 +604,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMultidiagonalMatrix< Real, Device, Index >::load( tnlFile& file )
+bool tnlMultidiagonalMatrix< Real, Device, Index >::load( File& file )
 {
    if( ! tnlMatrix< Real, Device, Index >::load( file ) ) return false;
    if( ! this->values.load( file ) ) return false;
@@ -615,17 +615,17 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMultidiagonalMatrix< Real, Device, Index >::save( const tnlString& fileName ) const
+bool tnlMultidiagonalMatrix< Real, Device, Index >::save( const String& fileName ) const
 {
-   return tnlObject::save( fileName );
+   return Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMultidiagonalMatrix< Real, Device, Index >::load( const tnlString& fileName )
+bool tnlMultidiagonalMatrix< Real, Device, Index >::load( const String& fileName )
 {
-   return tnlObject::load( fileName );
+   return Object::load( fileName );
 }
 
 template< typename Real,
@@ -653,10 +653,10 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::getElementIndex( const Index
                                                                      const IndexType column,
                                                                      Index& index ) const
 {
-   tnlAssert( row >=0 && row < this->rows,
+   Assert( row >=0 && row < this->rows,
             std::cerr << "row = " << row
                  << " this->rows = " << this->rows << std::endl );
-   tnlAssert( column >=0 && column < this->columns,
+   Assert( column >=0 && column < this->columns,
             std::cerr << "column = " << column
                  << " this->columns = " << this->columns << std::endl );
 
@@ -682,10 +682,10 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::getElementIndexFast( const I
                                                                          const IndexType column,
                                                                          Index& index ) const
 {
-   tnlAssert( row >=0 && row < this->rows,
+   Assert( row >=0 && row < this->rows,
             std::cerr << "row = " << row
                  << " this->rows = " << this->rows << std::endl );
-   tnlAssert( column >=0 && column < this->columns,
+   Assert( column >=0 && column < this->columns,
             std::cerr << "column = " << column
                  << " this->columns = " << this->columns << std::endl );
 

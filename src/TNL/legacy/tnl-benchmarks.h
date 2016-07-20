@@ -33,7 +33,7 @@ bool transferBenchmark( const int size,
    long int bytes = cycles * size * sizeof( int );
    long int mega_byte = 1 << 20;
 
-   tnlTimerRT timer;
+   TimerRT timer;
    timer. Reset();
    for( int i = 0; i < cycles; i ++ )
       if( ! host_vector2. copyFrom( host_vector ) )
@@ -93,7 +93,7 @@ void tnlCPUReductionMin( const tnlVector< T >& host_vector,
 {
    const T* data = host_vector. Data();
    const int size = host_vector. GetSize();
-   //tnlAssert( data );
+   //Assert( data );
    min = data[ 0 ];
    for( int i = 1; i < size; i ++ )
       min = :: min( min,  data[ i ] );
@@ -105,7 +105,7 @@ void tnlCPUReductionMax( const tnlVector< T >& host_vector,
 {
    const T* data = host_vector. Data();
    const int size = host_vector. GetSize();
-   //tnlAssert( data );
+   //Assert( data );
    max = data[ 0 ];
    for( int i = 1; i < size; i ++ )
       max = :: max( max,  data[ i ] );
@@ -127,7 +127,7 @@ void reductionBenchmark( const int size,
    T sum, min, max;
    const long int reducing_cycles( 10 );
 
-   tnlTimerRT timer;
+   TimerRT timer;
    timer. Reset();
    for( int i = 0; i < reducing_cycles; i ++ )
    {

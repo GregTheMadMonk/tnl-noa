@@ -23,7 +23,7 @@
 #pragma once
 
 #include <TNL/matrices/tnlSparseMatrix.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 
 namespace TNL {
 
@@ -44,8 +44,8 @@ struct tnlChunkedEllpackSliceInfo
    IndexType firstRow;
    IndexType pointer;
 
-   static inline tnlString getType()
-   { return tnlString( "tnlChunkedEllpackSliceInfo" ); };
+   static inline String getType()
+   { return String( "tnlChunkedEllpackSliceInfo" ); };
 };
 
 #ifdef HAVE_CUDA
@@ -76,9 +76,9 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    tnlChunkedEllpackMatrix();
 
-   static tnlString getType();
+   static String getType();
 
-   tnlString getTypeVirtual() const;
+   String getTypeVirtual() const;
 
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
@@ -213,18 +213,18 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
-   bool load( tnlFile& file );
+   bool load( File& file );
 
-   bool save( const tnlString& fileName ) const;
+   bool save( const String& fileName ) const;
 
-   bool load( const tnlString& fileName );
+   bool load( const String& fileName );
 
    void print( std::ostream& str ) const;
 
    void printStructure( std::ostream& str,
-                        const tnlString& = "" ) const;
+                        const String& = "" ) const;
 
    protected:
 
@@ -304,7 +304,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    tnlVector< Index, Device, Index > rowToChunkMapping, rowToSliceMapping, rowPointers;
 
-   tnlArray< ChunkedEllpackSliceInfo, Device, Index > slices;
+   Arrays::Array< ChunkedEllpackSliceInfo, Device, Index > slices;
 
    IndexType numberOfSlices;
 

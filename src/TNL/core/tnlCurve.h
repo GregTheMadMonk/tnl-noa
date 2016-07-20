@@ -13,10 +13,10 @@
 #include <iomanip>
 #include <fstream>
 #include <cstring>
-#include <TNL/core/tnlList.h>
-#include <TNL/tnlObject.h>
+#include <TNL/List.h>
+#include <TNL/Object.h>
 #include <TNL/core/mfuncs.h>
-#include <TNL/core/vectors/tnlStaticVector.h>
+#include <TNL/Vectors/StaticVector.h>
 #include <TNL/core/param-types.h>
 
 namespace TNL {
@@ -32,7 +32,7 @@ template< class T > class tnlCurveElement
       : position( pos ),
         separator( _speparator ) {};
  
-   bool save( tnlFile& file ) const
+   bool save( File& file ) const
    {
 #ifdef HAVE_NOT_CXX11
       if( ! file. write< const T, tnlHost >( &position ) )
@@ -49,7 +49,7 @@ template< class T > class tnlCurveElement
 #endif
    };
  
-   bool load( tnlFile& file )
+   bool load( File& file )
    {
 #ifdef HAVE_NOT_CXX11
       if( ! file. read< T, tnlHost >( &position ) )
@@ -71,14 +71,14 @@ template< class T > class tnlCurveElement
    bool separator;
 };
 
-template< class T > class tnlCurve : public tnlObject, public tnlList< tnlCurveElement< T > >
+template< class T > class tnlCurve : public Object, public List< tnlCurveElement< T > >
 {
    public:
    //! Basic contructor
    tnlCurve( const char* name )
-   : tnlObject()
-// FIXME: name property has been removed from tnlObject
-//   : tnlObject( name )
+   : Object()
+// FIXME: name property has been removed from Object
+//   : Object( name )
    {
    };
 
@@ -86,49 +86,49 @@ template< class T > class tnlCurve : public tnlObject, public tnlList< tnlCurveE
    ~tnlCurve()
    { };
 
-   tnlString getType() const
+   String getType() const
    {
-      return tnlString( "tnlCurve< " ) + tnlString( TNL::getType< T >() ) + tnlString( " >" );
+      return String( "tnlCurve< " ) + String( TNL::getType< T >() ) + String( " >" );
    };
 
    //! Append new point
    void Append( const T& vec, bool separator = false )
    {
-      tnlList< tnlCurveElement< T > > :: Append( tnlCurveElement< T >( vec, separator ) );
+      List< tnlCurveElement< T > > :: Append( tnlCurveElement< T >( vec, separator ) );
    };
 
    //! Erase the curve
    void Erase()
    {
-      tnlList< tnlCurveElement< T > >::reset();
+      List< tnlCurveElement< T > >::reset();
    };
  
    //! Method for saving the object to a file as a binary data
-   bool save( tnlFile& file ) const
+   bool save( File& file ) const
    {
-      if( ! tnlObject :: save( file ) ) return false;
-      if( ! tnlList< tnlCurveElement< T > > :: DeepSave( file ) ) return false;
+      if( ! Object :: save( file ) ) return false;
+      if( ! List< tnlCurveElement< T > > :: DeepSave( file ) ) return false;
       return true;
    };
 
    //! Method for restoring the object from a file
-   bool load( tnlFile& file )
+   bool load( File& file )
    {
-      if( ! tnlObject :: load( file ) ) return false;
-      if( ! tnlList< tnlCurveElement< T > > :: DeepLoad( file ) ) return false;
+      if( ! Object :: load( file ) ) return false;
+      if( ! List< tnlCurveElement< T > > :: DeepLoad( file ) ) return false;
       return true;
    };
 
    //! Method for saving the object to a file as a binary data
-   bool save( const tnlString& fileName ) const
+   bool save( const String& fileName ) const
    {
-      return tnlObject :: save( fileName );
+      return Object :: save( fileName );
    };
 
    //! Method for restoring the object from a file
-   bool load( const tnlString& fileName )
+   bool load( const String& fileName )
    {
-      return tnlObject :: load( fileName );
+      return Object :: load( fileName );
    };
 
 };
@@ -177,8 +177,8 @@ template< class T > bool Write( const tnlCurve< T >& curve,
 
    if( strncmp( format, "tnl",3 ) == 0 )
    {
-      tnlFile file;
-      if( ! file. open( tnlString( file_name ) + tnlString( ".tnl" ), tnlWriteMode ) )
+      File file;
+      if( ! file. open( String( file_name ) + String( ".tnl" ), tnlWriteMode ) )
       {
          std::cerr << "I am not able to open the file " << file_name << " for drawing curve." << std::endl;
          return false;
@@ -213,8 +213,8 @@ template< class T > bool Write( const tnlCurve< T >& curve,
 template< class T > bool Read( tnlCurve< T >& crv,
                                const char* input_file )
 {
-   tnlFile file;
-   if( ! file. open( tnlString( input_file ), tnlReadMode  ) )
+   File file;
+   if( ! file. open( String( input_file ), tnlReadMode  ) )
    {
      std::cout << " unable to open file " << input_file << std::endl;
       return false;

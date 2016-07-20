@@ -14,15 +14,15 @@
 #include <iostream>
 #include <math.h>
 
-#include <TNL/core/tnlTimerRT.h>
-#include <TNL/core/tnlTimerCPU.h>
+#include <TNL/TimerRT.h>
+#include <TNL/TimerCPU.h>
 
 using namespace TNL;
 
 template< typename REAL > void benchmarkAddition( long int loops )
 {
    std::cout << "Benchmarking addition on CPU ( " << loops << " loops ) ... " << std::flush;
-   tnlTimerCPU cpu_timer;
+   TimerCPU cpu_timer;
 
    REAL a1 = 1.2;
    REAL a2 = 1.2;
@@ -43,7 +43,7 @@ template< typename REAL > void benchmarkAddition( long int loops )
 template< typename REAL > void benchmarkMultiplication( const long int loops )
 {
    std::cout << "Benchmarking multiplication on CPU ( " << loops << " loops ) ... " << std::flush;
-   tnlTimerCPU cpu_timer;
+   TimerCPU cpu_timer;
 
    REAL a1 = 1.0e9;
    REAL a2 = 1.0e9;
@@ -67,7 +67,7 @@ template< typename REAL > void benchmarkMultiplication( const long int loops )
 template< typename REAL > void benchmarkDivision( long int loops )
 {
    std::cout << "Benchmarking division on CPU ( " << loops << " loops ) ... " << std::flush;
-   tnlTimerCPU cpu_timer;
+   TimerCPU cpu_timer;
 
    REAL a1( 1.0e9 );
    REAL a2( 1.0e9 );
@@ -89,7 +89,7 @@ template< typename REAL > void benchmarkDivision( long int loops )
 template< typename REAL > void benchmarkSqrt( long int loops )
 {
    std::cout << "Benchmarking sqrt on CPU ( " << loops << " loops ) ... " << std::flush;
-   tnlTimerCPU cpu_timer;
+   TimerCPU cpu_timer;
 
    REAL a1( 1.0e9 );
    REAL a2( 1.0e9 );
@@ -111,7 +111,7 @@ template< typename REAL > void benchmarkSqrt( long int loops )
 template< typename REAL > void benchmarkSin( long int loops )
 {
    std::cout << "Benchmarking sin on CPU ( " << loops << " loops ) ... " << std::flush;
-   tnlTimerCPU cpu_timer;
+   TimerCPU cpu_timer;
 
    REAL a1( 1.0e9 );
    REAL a2( 1.0e9 );
@@ -132,7 +132,7 @@ template< typename REAL > void benchmarkSin( long int loops )
 template< typename REAL > void benchmarkExp( long int loops )
 {
    std::cout << "Benchmarking exp on CPU ( " << loops << " loops ) ... " << std::flush;
-   tnlTimerCPU cpu_timer;
+   TimerCPU cpu_timer;
 
    REAL a1( 1.1 );
    REAL a2( 1.1 );
@@ -154,7 +154,7 @@ template< typename REAL > void benchmarkExp( long int loops )
 template< typename REAL > void benchmarkPow( long int loops )
 {
    std::cout << "Benchmarking pow on CPU ( " << loops << " loops ) ... " << std::flush;
-   tnlTimerCPU cpu_timer;
+   TimerCPU cpu_timer;
 
    REAL a1( 1.0e9 );
    REAL a2( 1.0e9 );

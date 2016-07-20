@@ -11,22 +11,22 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return tnlString( "advectionProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "advectionProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
-   return tnlString( "advection" );
+   return String( "advection" );
 }
 
 template< typename Mesh,
@@ -35,7 +35,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
+writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
     * Add data you want to have in the computation report (log) as follows:
@@ -49,7 +49,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const tnlParameterContainer& parameters )
+setup( const Config::ParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
@@ -89,7 +89,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setInitialCondition( const tnlParameterContainer& parameters,
+setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
@@ -99,7 +99,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
    int dimensions = parameters.getParameter< int >( "dimension" );
    int count = mesh.template getEntitiesCount< Cell >();
    const RealType& size = parameters.getParameter< double >( "realSize" ) / ::pow(count, 1.0/dimensions);
-   const tnlString& beginChoice = parameters.getParameter< tnlString >( "begin" );
+   const String& beginChoice = parameters.getParameter< String >( "begin" );
   std::cout << beginChoice << " " << dimensions << "   " << size << "   " << count << "   "<< 1/dimensions << std::endl;
    getchar();
    if (beginChoice == "sin_square")
@@ -155,7 +155,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
    //setting velocity field
   std::cout << dofs << std::endl;
    getchar();
-   /*const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
+   /*const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    if( ! dofs.load( initialConditionFile ) )
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
@@ -163,7 +163,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
    }
    return true;*/
    dofs.save( "dofs.tnl" );
-   this->velocityType = parameters.getParameter< tnlString >( "move" );
+   this->velocityType = parameters.getParameter< String >( "move" );
    const double artificalViscosity = parameters.getParameter< double >( "artifical-viscosity" );
    differentialOperator.setViscosity(artificalViscosity);
    const double advectionSpeedX = parameters.getParameter< double >( "advection-speedX" );
@@ -214,7 +214,7 @@ makeSnapshot( const RealType& time,
 {
   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
-   tnlString fileName;
+   String fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
    if( ! dofs.save( fileName ) )
       return false;

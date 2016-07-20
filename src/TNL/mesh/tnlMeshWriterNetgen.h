@@ -22,7 +22,7 @@ class tnlMeshWriterNetgen
    public:
 
    template< typename MeshType >
-   static bool writeMesh( const tnlString& fileName,
+   static bool writeMesh( const String& fileName,
                           MeshType& mesh,
                           bool verbose )
    {

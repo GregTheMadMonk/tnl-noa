@@ -45,7 +45,7 @@ assembly( const RealType& time,
       "Error: I am getting tnlVector instead of tnlMeshFunction or similar object. You might forget to bind DofVector into tnlMeshFunction in you method getExplicitRHS."  );
 
    const IndexType maxRowLength = matrix.getMaxRowLength();
-   tnlAssert( maxRowLength > 0, );
+   Assert( maxRowLength > 0, );
 
    if( std::is_same< DeviceType, tnlHost >::value )
    {

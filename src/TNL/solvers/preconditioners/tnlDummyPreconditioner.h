@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/tnlObject.h>
+#include <TNL/Object.h>
 
 namespace TNL {
 
@@ -25,9 +25,9 @@ class tnlDummyPreconditioner
    template< typename Vector1, typename Vector2 >
    bool solve( const Vector1& b, Vector2& x ) const { return true; }
 
-   tnlString getType() const
+   String getType() const
    {
-      return tnlString( "tnlDummyPreconditioner" );
+      return String( "tnlDummyPreconditioner" );
    }
 };
 

@@ -29,8 +29,8 @@ template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
 void
 tnlExplicitTimeStepper< Problem, OdeSolver >::
-configSetup( tnlConfigDescription& config,
-             const tnlString& prefix )
+configSetup( Config::ConfigDescription& config,
+             const String& prefix )
 {
 }
 
@@ -38,8 +38,8 @@ template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
 bool
 tnlExplicitTimeStepper< Problem, OdeSolver >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    return true;
 }
@@ -109,7 +109,7 @@ solve( const RealType& time,
        DofVectorType& dofVector,
        MeshDependentDataType& meshDependentData )
 {
-   tnlAssert( this->odeSolver, );
+   Assert( this->odeSolver, );
    mainTimer.start();
    this->odeSolver->setTau( this->timeStep );
    this->odeSolver->setProblem( * this );
@@ -170,7 +170,7 @@ template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
 bool
 tnlExplicitTimeStepper< Problem, OdeSolver >::
-writeEpilog( tnlLogger& logger )
+writeEpilog( Logger& logger )
 {
    logger.writeParameter< long long int >( "Iterations count:", this->allIterations );
    logger.writeParameter< const char* >( "Pre-iterate time:", "" );

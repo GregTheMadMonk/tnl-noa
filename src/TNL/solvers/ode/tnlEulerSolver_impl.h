@@ -30,24 +30,24 @@ tnlEulerSolver< Problem > :: tnlEulerSolver()
 };
 
 template< typename Problem >
-tnlString tnlEulerSolver< Problem > :: getType() const
+String tnlEulerSolver< Problem > :: getType() const
 {
-   return tnlString( "tnlEulerSolver< " ) +
+   return String( "tnlEulerSolver< " ) +
           Problem :: getTypeStatic() +
-          tnlString( " >" );
+          String( " >" );
 };
 
 template< typename Problem >
-void tnlEulerSolver< Problem > :: configSetup( tnlConfigDescription& config,
-                                               const tnlString& prefix )
+void tnlEulerSolver< Problem > :: configSetup( Config::ConfigDescription& config,
+                                               const String& prefix )
 {
    //tnlExplicitSolver< Problem >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "euler-cfl", "Coefficient C in the Courant–Friedrichs–Lewy condition.", 0.0 );
 };
 
 template< typename Problem >
-bool tnlEulerSolver< Problem > :: setup( const tnlParameterContainer& parameters,
-                                        const tnlString& prefix )
+bool tnlEulerSolver< Problem > :: setup( const Config::ParameterContainer& parameters,
+                                        const String& prefix )
 {
    tnlExplicitSolver< Problem >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "euler-cfl" ) )

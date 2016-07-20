@@ -24,8 +24,8 @@ bool
 tnlSolver< ProblemSetter, ProblemConfig, MeshConfig >::
 run( int argc, char* argv[] )
 {
-   tnlParameterContainer parameters;
-   tnlConfigDescription configDescription;
+   Config::ParameterContainer parameters;
+   Config::ConfigDescription configDescription;
    ProblemConfig< MeshConfig >::configSetup( configDescription );
    tnlSolverConfig< MeshConfig, ProblemConfig< MeshConfig> >::configSetup( configDescription );
    configDescription.addDelimiter( "Parallelization setup:" );

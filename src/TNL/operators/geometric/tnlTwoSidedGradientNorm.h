@@ -45,9 +45,9 @@ class tnlTwoSidedGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
    tnlTwoSidedGradientNorm()
    : epsSquare( 0.0 ){}
 
-   static tnlString getType()
+   static String getType()
    {
-      return tnlString( "tnlTwoSidedGradientNorm< " ) +
+      return String( "tnlTwoSidedGradientNorm< " ) +
          MeshType::getType() + ", " +
         TNL::getType< Real >() + ", " +
         TNL::getType< Index >() + " >";
@@ -99,9 +99,9 @@ class tnlTwoSidedGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
    : epsSquare( 0.0 ){}
 
 
-   static tnlString getType()
+   static String getType()
    {
-      return tnlString( "tnlTwoSidedGradientNorm< " ) +
+      return String( "tnlTwoSidedGradientNorm< " ) +
          MeshType::getType() + ", " +
         TNL::getType< Real >() + ", " +
         TNL::getType< Index >() + " >";
@@ -161,9 +161,9 @@ class tnlTwoSidedGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, 
    tnlTwoSidedGradientNorm()
    : epsSquare( 0.0 ){}
 
-   static tnlString getType()
+   static String getType()
    {
-      return tnlString( "tnlTwoSidedGradientNorm< " ) +
+      return String( "tnlTwoSidedGradientNorm< " ) +
          MeshType::getType() + ", " +
         TNL::getType< Real >() + ", " +
         TNL::getType< Index >() + " >";

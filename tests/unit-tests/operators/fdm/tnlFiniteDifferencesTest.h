@@ -70,9 +70,9 @@ class tnlFiniteDifferenceTest
       const IndexType coarseMeshSize[ 3 ] = { 1024, 256, 64 };
  
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlLinearDiffusionTest< " ) +
+         return String( "tnlLinearDiffusionTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }

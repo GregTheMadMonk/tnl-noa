@@ -13,8 +13,8 @@
 
 #include <fstream>
 #include <iomanip>
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <TNL/matrices/tnlDenseMatrix.h>
 #include <TNL/matrices/tnlEllpackMatrix.h>
 #include <TNL/matrices/tnlSlicedEllpackMatrix.h>
@@ -42,8 +42,8 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
                            const tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy,
                            const tnlSpmvBenchmarkCSRMatrix< Real, int >& csrMatrixBenchmark,
                            bool verbose,
-                           const tnlString& inputMtxFile,
-                           const tnlString& logFileName,
+                           const String& inputMtxFile,
+                           const String& logFileName,
                            std::fstream& logFile )
 {
    tnlSpmvBenchmarkRgCSRMatrix< Real, tnlHost, int > hostRgCsrMatrixBenchmark;
@@ -91,7 +91,7 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
 */
 
 template< typename RealType >
-bool benchmarkMatrix( const tnlParameterContainer& parameters )
+bool benchmarkMatrix( const Config::ParameterContainer& parameters )
 {
    /****
     * Read the CSR matrix ...
@@ -99,10 +99,10 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
    typedef tnlCSRMatrix< RealType, tnlHost, int > CsrMatrix;
    CsrMatrix csrMatrix;
 
-   const tnlString& inputFileName = parameters.getParameter< tnlString >( "input-file" );
-   const tnlString& inputMtxFileName = parameters.getParameter< tnlString >( "input-mtx-file" );
-   const tnlString& logFileName = parameters.getParameter< tnlString >( "log-file" );
-   const tnlString& pdfFileName = parameters.getParameter< tnlString >( "pdf-file" );
+   const String& inputFileName = parameters.getParameter< String >( "input-file" );
+   const String& inputMtxFileName = parameters.getParameter< String >( "input-mtx-file" );
+   const String& logFileName = parameters.getParameter< String >( "log-file" );
+   const String& pdfFileName = parameters.getParameter< String >( "pdf-file" );
    bool verbose = parameters.getParameter< bool >( "verbose" );
    const int maxIterations = parameters.getParameter< int >( "max-iterations" );
 
@@ -393,8 +393,8 @@ bool benchmarkMatrix( const tnlParameterContainer& parameters )
 
 int main( int argc, char* argv[] )
 {
-   tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
+   Config::ParameterContainer parameters;
+   Config::ConfigDescription conf_desc;
 
    if( conf_desc.parseConfigDescription( configFile ) != 0 )
       return 1;
@@ -403,7 +403,7 @@ int main( int argc, char* argv[] )
       conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
-   const tnlString& precision = parameters.getParameter< tnlString >( "precision" );
+   const String& precision = parameters.getParameter< String >( "precision" );
    if( precision == "float" )
       if( ! benchmarkMatrix< float >( parameters ) )
          return EXIT_FAILURE;

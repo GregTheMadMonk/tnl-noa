@@ -11,14 +11,14 @@
 #pragma once
 
 #include <iomanip>
-#include <TNL/core/tnlTimerCPU.h>
-#include <TNL/core/tnlTimerRT.h>
+#include <TNL/TimerCPU.h>
+#include <TNL/TimerRT.h>
 #include <TNL/core/tnlFlopsCounter.h>
-#include <TNL/tnlObject.h>
+#include <TNL/Object.h>
 #include <TNL/solvers/ode/tnlODESolverMonitor.h>
 #include <TNL/solvers/tnlIterativeSolver.h>
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
 
@@ -36,11 +36,11 @@ class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
 
    tnlExplicitSolver();
 
-   static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix = "" );
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" );
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+   bool setup( const Config::ParameterContainer& parameters,
+              const String& prefix = "" );
 
    void setProblem( Problem& problem );
 
@@ -64,9 +64,9 @@ class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
  
    void setVerbose( IndexType v );
 
-   void setTimerCPU( tnlTimerCPU* timer );
+   void setTimerCPU( TimerCPU* timer );
 
-   void setTimerRT( tnlTimerRT* timer );
+   void setTimerRT( TimerRT* timer );
  
    virtual bool solve( DofVectorType& u ) = 0;
 
@@ -101,9 +101,9 @@ protected:
 
    IndexType verbosity;
 
-   tnlTimerCPU* cpu_timer;
+   TimerCPU* cpu_timer;
  
-   tnlTimerRT* rt_timer;
+   TimerRT* rt_timer;
 
    bool testingMode;
 

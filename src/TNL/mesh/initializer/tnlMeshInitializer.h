@@ -188,7 +188,7 @@ class tnlMeshInitializerLayer< MeshConfig,
    typedef tnlMeshInitializer< MeshConfig >                                         InitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, EntityTopology >                   EntityInitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, EntityTopology >                   CellInitializerType;
-   typedef tnlArray< CellInitializerType, tnlHost, GlobalIndexType >                CellInitializerContainerType;
+   typedef Arrays::Array< CellInitializerType, tnlHost, GlobalIndexType >        CellInitializerContainerType;
    typedef typename MeshTraits::CellSeedArrayType                                   CellSeedArrayType;
    typedef typename MeshTraits::LocalIndexType                                      LocalIndexType;
    typedef typename MeshTraits::PointArrayType                                      PointArrayType;
@@ -294,13 +294,13 @@ class tnlMeshInitializerLayer< MeshConfig,
    typedef tnlMeshInitializer< MeshConfig >                                         InitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, EntityTopology >                   EntityInitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, EntityTopology >                   CellInitializerType;
-   typedef tnlArray< CellInitializerType, tnlHost, GlobalIndexType >                CellInitializerContainerType;
+   typedef Arrays::Array< CellInitializerType, tnlHost, GlobalIndexType >        CellInitializerContainerType;
    typedef typename EntityTraits::SeedArrayType                                     EntitySeedArrayType;
    typedef typename MeshTraits::CellSeedArrayType                                   CellSeedArrayType;
    typedef typename MeshTraits::LocalIndexType                                      LocalIndexType;
    typedef typename MeshTraits::PointArrayType                                      PointArrayType;
    typedef tnlMeshEntitySeed< MeshConfig, EntityTopology >                          SeedType;
-   typedef  tnlMeshSuperentityStorageInitializer< MeshConfig, EntityTopology >      SuperentityInitializerType;
+   typedef tnlMeshSuperentityStorageInitializer< MeshConfig, EntityTopology >       SuperentityInitializerType;
 
    typedef typename
       tnlMeshSubentityTraits< MeshConfig,
@@ -406,7 +406,7 @@ class tnlMeshInitializerLayer< MeshConfig,
    typedef tnlMeshInitializer< MeshConfig >                                   InitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, CellTopology >               CellInitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, EntityTopology >             EntityInitializerType;
-   typedef tnlArray< EntityInitializerType, tnlHost, GlobalIndexType >        EntityInitializerContainerType;
+   typedef Arrays::Array< EntityInitializerType, tnlHost, GlobalIndexType >        EntityInitializerContainerType;
    typedef typename MeshTraits::CellSeedArrayType                             CellSeedArrayType;
    typedef typename MeshTraits::LocalIndexType                                LocalIndexType;
    typedef typename MeshTraits::PointArrayType                                PointArrayType;
@@ -552,7 +552,7 @@ class tnlMeshInitializerLayer< MeshConfig,
    typedef tnlMeshInitializer< MeshConfig >                                   InitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, CellTopology >               CellInitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, EntityTopology >             VertexInitializerType;
-   typedef tnlArray< VertexInitializerType, tnlHost, GlobalIndexType >        VertexInitializerContainerType;
+   typedef Arrays::Array< VertexInitializerType, tnlHost, GlobalIndexType >        VertexInitializerContainerType;
    typedef typename tnlMeshTraits< MeshConfig >::CellSeedArrayType            CellSeedArrayType;
    typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType               LocalIndexType;
    typedef typename tnlMeshTraits< MeshConfig >::PointArrayType               PointArrayType;
@@ -569,13 +569,13 @@ class tnlMeshInitializerLayer< MeshConfig,
 
       MeshType& getMesh()
       {
-         tnlAssert( this->mesh, );
+         Assert( this->mesh, );
          return *( this->mesh );
       }
 
       VertexInitializerType& getEntityInitializer( DimensionsTag, GlobalIndexType index )
       {
-         tnlAssert( index >= 0 && index < vertexInitializerContainer.getSize(),
+         Assert( index >= 0 && index < vertexInitializerContainer.getSize(),
                   std::cerr << " index = " << index
                        << " vertexInitializerContainer.getSize() = " << vertexInitializerContainer.getSize() << std::endl; );
          return vertexInitializerContainer[ index ];

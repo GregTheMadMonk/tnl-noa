@@ -19,7 +19,7 @@
 #include <TNL/core/mfilename.h>
 #include <TNL/matrices/tnlMatrixSetter.h>
 #include <TNL/matrices/tnlMultidiagonalMatrixSetter.h>
-#include <TNL/core/tnlLogger.h>
+#include <TNL/Logger.h>
 #include <TNL/solvers/pde/tnlBoundaryConditionsSetter.h>
 #include <TNL/solvers/pde/tnlExplicitUpdater.h>
 #include <TNL/solvers/pde/tnlLinearSystemAssembler.h>
@@ -33,22 +33,22 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return tnlString( "tnlHeatEquationProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "tnlHeatEquationProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
-   return tnlString( "Heat equation" );
+   return String( "Heat equation" );
 }
 
 template< typename Mesh,
@@ -57,7 +57,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
+writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
 }
 
@@ -67,7 +67,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-writeEpilog( tnlLogger& logger )
+writeEpilog( Logger& logger )
 {
    logger.writeParameter< const char* >( "GPU transfer time:", "" );
    this->gpuTransferTimer.writeLog( logger, 1 );
@@ -80,7 +80,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const tnlParameterContainer& parameters )
+setup( const Config::ParameterContainer& parameters )
 {
    this->gpuTransferTimer.reset();
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
@@ -122,13 +122,13 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setInitialCondition( const tnlParameterContainer& parameters,
+setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
 {
    this->bindDofs( mesh, dofs );
-   const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
+   const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    if( ! this->u.boundLoad( initialConditionFile ) )
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
@@ -181,7 +181,7 @@ makeSnapshot( const RealType& time,
 
    this->bindDofs( mesh, dofs );
    //cout << "dofs = " << dofs << std::endl;
-   tnlString fileName;
+   String fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
    if( ! this->u.save( fileName ) )
       return false;
@@ -280,7 +280,7 @@ assemblyLinearSystem( const RealType& time,
    /*cout << "Matrix multiplication test ..." << std::endl;
    tnlVector< RealType, DeviceType, IndexType > y;
    y.setLike( u );
-   tnlTimerRT timer;
+   TimerRT timer;
    timer.reset();
    timer.start();
    for( int i = 0; i < 100; i++ )

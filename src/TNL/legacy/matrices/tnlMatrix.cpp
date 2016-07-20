@@ -10,7 +10,7 @@
 
 #include "tnlMatrix.h"
 
-const tnlString tnlMatrixClass :: main( "main" );
-const tnlString tnlMatrixClass :: petsc( "petsc" );
-const tnlString tnlMatrixClass :: cusparse( "cusparse" );
+const String tnlMatrixClass :: main( "main" );
+const String tnlMatrixClass :: petsc( "petsc" );
+const String tnlMatrixClass :: cusparse( "cusparse" );
 

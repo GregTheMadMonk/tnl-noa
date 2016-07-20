@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Assert.h>
 #include <TNL/matrices/tnlTridiagonalMatrix.h>
 
 namespace TNL {
@@ -28,18 +28,18 @@ tnlTridiagonalMatrix< Real, Device, Index >::tnlTridiagonalMatrix()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlTridiagonalMatrix< Real, Device, Index >::getType()
+String tnlTridiagonalMatrix< Real, Device, Index >::getType()
 {
-   return tnlString( "tnlTridiagonalMatrix< " ) +
-          tnlString( TNL::getType< RealType >() ) + ", " +
-          tnlString( Device :: getDeviceType() ) + ", " +
-          tnlString( TNL::getType< IndexType >() ) + " >";
+   return String( "tnlTridiagonalMatrix< " ) +
+          String( TNL::getType< RealType >() ) + ", " +
+          String( Device :: getDeviceType() ) + ", " +
+          String( TNL::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlTridiagonalMatrix< Real, Device, Index >::getTypeVirtual() const
+String tnlTridiagonalMatrix< Real, Device, Index >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -239,7 +239,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setRowFast( const IndexType ro
                                                               const RealType* values,
                                                               const IndexType elements )
 {
-   tnlAssert( elements <= this->columns,
+   Assert( elements <= this->columns,
             std::cerr << " elements = " << elements
                  << " this->columns = " << this->columns );
    return this->addRowFast( row, columns, values, elements, 0.0 );
@@ -253,7 +253,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::setRow( const IndexType row,
                                                           const RealType* values,
                                                           const IndexType elements )
 {
-   tnlAssert( elements <= this->columns,
+   Assert( elements <= this->columns,
             std::cerr << " elements = " << elements
                  << " this->columns = " << this->columns );
    return this->addRow( row, columns, values, elements, 0.0 );
@@ -269,7 +269,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addRowFast( const IndexType ro
                                                               const IndexType elements,
                                                               const RealType& thisRowMultiplicator )
 {
-   tnlAssert( elements <= this->columns,
+   Assert( elements <= this->columns,
             std::cerr << " elements = " << elements
                  << " this->columns = " << this->columns );
    if( elements > 3 )
@@ -293,7 +293,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::addRow( const IndexType row,
                                                           const IndexType elements,
                                                           const RealType& thisRowMultiplicator )
 {
-   tnlAssert( elements <= this->columns,
+   Assert( elements <= this->columns,
             std::cerr << " elements = " << elements
                  << " this->columns = " << this->columns );
    if( elements > 3 )
@@ -380,7 +380,7 @@ const typename tnlTridiagonalMatrix< Real, Device, Index >::MatrixRow
 tnlTridiagonalMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
-   tnlAssert( false, );
+   Assert( false, );
 }
 
 
@@ -407,10 +407,10 @@ template< typename Real,
 void tnlTridiagonalMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
                                                                  OutVector& outVector ) const
 {
-   tnlAssert( this->getColumns() == inVector.getSize(),
+   Assert( this->getColumns() == inVector.getSize(),
             std::cerr << "Matrix columns: " << this->getColumns() << std::endl
                  << "Vector size: " << inVector.getSize() << std::endl );
-   tnlAssert( this->getRows() == outVector.getSize(),
+   Assert( this->getRows() == outVector.getSize(),
                std::cerr << "Matrix rows: " << this->getRows() << std::endl
                     << "Vector size: " << outVector.getSize() << std::endl );
 
@@ -425,7 +425,7 @@ void tnlTridiagonalMatrix< Real, Device, Index >::addMatrix( const tnlTridiagona
                                                              const RealType& matrixMultiplicator,
                                                              const RealType& thisMatrixMultiplicator )
 {
-   tnlAssert( this->getRows() == matrix.getRows(),
+   Assert( this->getRows() == matrix.getRows(),
             std::cerr << "This matrix columns: " << this->getColumns() << std::endl
                  << "This matrix rows: " << this->getRows() << std::endl );
 
@@ -470,7 +470,7 @@ template< typename Real,
 void tnlTridiagonalMatrix< Real, Device, Index >::getTransposition( const tnlTridiagonalMatrix< Real2, Device, Index2 >& matrix,
                                                                     const RealType& matrixMultiplicator )
 {
-   tnlAssert( this->getRows() == matrix.getRows(),
+   Assert( this->getRows() == matrix.getRows(),
                std::cerr << "This matrix rows: " << this->getRows() << std::endl
                     << "That matrix rows: " << matrix.getRows() << std::endl );
    if( Device::getDevice() == tnlHostDevice )
@@ -531,7 +531,7 @@ void tnlTridiagonalMatrix< Real, Device, Index >::performSORIteration( const Vec
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlTridiagonalMatrix< Real, Device, Index >::save( tnlFile& file ) const
+bool tnlTridiagonalMatrix< Real, Device, Index >::save( File& file ) const
 {
    if( ! tnlMatrix< Real, Device, Index >::save( file ) ||
        ! this->values.save( file ) )
@@ -545,7 +545,7 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlTridiagonalMatrix< Real, Device, Index >::load( tnlFile& file )
+bool tnlTridiagonalMatrix< Real, Device, Index >::load( File& file )
 {
    if( ! tnlMatrix< Real, Device, Index >::load( file ) ||
        ! this->values.load( file ) )
@@ -559,17 +559,17 @@ bool tnlTridiagonalMatrix< Real, Device, Index >::load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlTridiagonalMatrix< Real, Device, Index >::save( const tnlString& fileName ) const
+bool tnlTridiagonalMatrix< Real, Device, Index >::save( const String& fileName ) const
 {
-   return tnlObject::save( fileName );
+   return Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlTridiagonalMatrix< Real, Device, Index >::load( const tnlString& fileName )
+bool tnlTridiagonalMatrix< Real, Device, Index >::load( const String& fileName )
 {
-   return tnlObject::load( fileName );
+   return Object::load( fileName );
 }
 
 template< typename Real,
@@ -594,10 +594,10 @@ __cuda_callable__
 Index tnlTridiagonalMatrix< Real, Device, Index >::getElementIndex( const IndexType row,
                                                                     const IndexType column ) const
 {
-   tnlAssert( row >= 0 && column >= 0 && row < this->rows && column < this->rows,
+   Assert( row >= 0 && column >= 0 && row < this->rows && column < this->rows,
               std::cerr << " this->rows = " << this->rows
                    << " row = " << row << " column = " << column );
-   tnlAssert( abs( row - column ) < 2,
+   Assert( abs( row - column ) < 2,
               std::cerr << "row = " << row << " column = " << column << std::endl );
    return tnlTridiagonalMatrixDeviceDependentCode< Device >::getElementIndex( this->rows, row, column );
 }

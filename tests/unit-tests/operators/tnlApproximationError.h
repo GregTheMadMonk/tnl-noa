@@ -58,8 +58,8 @@ class tnlApproximationError
          DirichletBoundaryConditions boundaryConditions;
          BoundaryOperatorFunction boundaryOperatorFunction( boundaryConditions, u );
 
-         tnlString meshSizeString( mesh.getDimensions().x() );
-         tnlString dimensionsString;
+         String meshSizeString( mesh.getDimensions().x() );
+         String dimensionsString;
          if( MeshType::getMeshDimensions() == 1 )
             dimensionsString = "1D-";
          if( MeshType::getMeshDimensions() == 2 )

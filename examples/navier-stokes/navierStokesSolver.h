@@ -18,10 +18,10 @@
 #ifndef NAVIERSTOKESSOLVER_H_
 #define NAVIERSTOKESSOLVER_H_
 
-#include <TNL/core/tnlLogger.h>
+#include <TNL/Logger.h>
 #include <TNL/core/tnlHost.h>
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <TNL/matrices/tnlCSRMatrix.h>
 #include <TNL/solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <TNL/solvers/tnlSolverMonitor.h>
@@ -55,12 +55,12 @@ class navierStokesSolver
 
    navierStokesSolver();
 
-   static tnlString getTypeStatic();
+   static String getTypeStatic();
 
-   tnlString getPrologHeader() const;
+   String getPrologHeader() const;
 
-   void writeProlog( tnlLogger& logger,
-                     const tnlParameterContainer& parameters ) const;
+   void writeProlog( Logger& logger,
+                     const Config::ParameterContainer& parameters ) const;
 
    template< typename Geom >
    bool setMeshGeometry( Geom& geometry ) const;
@@ -68,23 +68,23 @@ class navierStokesSolver
    bool setMeshGeometry( tnlLinearGridGeometry< 2, RealType, DeviceType, IndexType >& geometry ) const;
 
    template< typename InitMesh >
-   bool initMesh( InitMesh& mesh, const tnlParameterContainer& parameters ) const;
+   bool initMesh( InitMesh& mesh, const Config::ParameterContainer& parameters ) const;
 
    template< typename Real, typename Device, typename Index, template< int, typename, typename, typename > class Geometry >
    bool initMesh( tnlGrid< 1, Real, Device, Index, Geometry >& mesh,
-                  const tnlParameterContainer& parameters ) const;
+                  const Config::ParameterContainer& parameters ) const;
 
    template< typename Real, typename Device, typename Index, template< int, typename, typename, typename > class Geometry >
    bool initMesh( tnlGrid< 2, Real, Device, Index, Geometry >& mesh,
-                  const tnlParameterContainer& parameters ) const;
+                  const Config::ParameterContainer& parameters ) const;
 
    template< typename Real, typename Device, typename Index, template< int, typename, typename, typename > class Geometry >
    bool initMesh( tnlGrid< 3, Real, Device, Index, Geometry >& mesh,
-                  const tnlParameterContainer& parameters ) const;
+                  const Config::ParameterContainer& parameters ) const;
 
-   bool setup( const tnlParameterContainer& parameters );
+   bool setup( const Config::ParameterContainer& parameters );
 
-   bool setInitialCondition( const tnlParameterContainer& parameters );
+   bool setInitialCondition( const Config::ParameterContainer& parameters );
 
    DofVectorType& getDofVector();
 

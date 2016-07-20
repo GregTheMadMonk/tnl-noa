@@ -59,42 +59,42 @@ inline bool tnlDicomPatientInfo::retrieveInfo()
 #endif
 }
 
-inline const tnlString& tnlDicomPatientInfo::getName()
+inline const String& tnlDicomPatientInfo::getName()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return name;
 }
 
-inline const tnlString& tnlDicomPatientInfo::getSex()
+inline const String& tnlDicomPatientInfo::getSex()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return sex;
 }
 
-inline const tnlString& tnlDicomPatientInfo::getID()
+inline const String& tnlDicomPatientInfo::getID()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return ID;
 }
 
-inline const tnlString& tnlDicomPatientInfo::getWeight()
+inline const String& tnlDicomPatientInfo::getWeight()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return weight;
 }
 
-inline const tnlString& tnlDicomPatientInfo::getPosition()
+inline const String& tnlDicomPatientInfo::getPosition()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return patientPosition;
 }
 
-inline const tnlString& tnlDicomPatientInfo::getOrientation()
+inline const String& tnlDicomPatientInfo::getOrientation()
 {
     if(!isObjectRetrieved)
         retrieveInfo();

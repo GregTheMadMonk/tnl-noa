@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Assert.h>
 
 namespace TNL {
 

@@ -18,22 +18,22 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return tnlString( "eulerProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "eulerProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
-   return tnlString( "euler" );
+   return String( "euler" );
 }
 
 template< typename Mesh,
@@ -42,7 +42,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
+writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
     * Add data you want to have in the computation report (log) as follows:
@@ -56,7 +56,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const tnlParameterContainer& parameters )
+setup( const Config::ParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
@@ -96,7 +96,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setInitialCondition( const tnlParameterContainer& parameters,
+setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
@@ -146,7 +146,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
   
    
    /*
-   const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
+   const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    if( ! dofs.load( initialConditionFile ) )
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
@@ -195,7 +195,7 @@ makeSnapshot( const RealType& time,
 {
   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
-   tnlString fileName;
+   String fileName;
    typedef typename MeshType::Cell Cell;
    int count = mesh.template getEntitiesCount< Cell >();
    std::ofstream vysledek;

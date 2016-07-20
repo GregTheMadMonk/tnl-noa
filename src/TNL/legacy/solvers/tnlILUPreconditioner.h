@@ -34,10 +34,10 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
       M = new tnlCSRMatrixOld< T >( size, initial_size, segment_size, init_row_elements );
    }
 
-   tnlString getType() const
+   String getType() const
    {
       T t;
-      return tnlString( "tnlILUPreconditioner< " ) + tnlString( getType( t ) ) + tnlString( " >" );
+      return String( "tnlILUPreconditioner< " ) + String( getType( t ) ) + String( " >" );
    };
 
 

@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 #include <TNL/core/tnlCuda.h>
 #include <TNL/matrices/tnlEllpackMatrix.h>
 #include <cstdlib>

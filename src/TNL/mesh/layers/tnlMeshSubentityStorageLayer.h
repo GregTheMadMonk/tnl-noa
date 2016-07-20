@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlFile.h>
+#include <TNL/File.h>
 #include <TNL/mesh/tnlDimensionsTag.h>
 #include <TNL/mesh/traits/tnlMeshSubentityTraits.h>
 #include <TNL/mesh/tnlMeshEntityOrientation.h>
@@ -81,7 +81,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
       return *this;
    }
 
-   bool save( tnlFile& file ) const
+   bool save( File& file ) const
    {
       if( ! BaseType::save( file ) ||
           ! this->subentitiesIndices.save( file ) )
@@ -92,7 +92,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
       return true;
    }
 
-   bool load( tnlFile& file )
+   bool load( File& file )
    {
       if( ! BaseType::load( file ) ||
           ! this->subentitiesIndices.load( file ) )
@@ -144,7 +144,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
    using BaseType::subentityOrientation;
    IdPermutationArrayAccessorType subentityOrientation( DimensionsTag, LocalIndexType index) const
    {
-      tnlAssert( 0 <= index && index < SubentityTraits::count, );
+      Assert( 0 <= index && index < SubentityTraits::count, );
  
       return this->subentityOrientations[ index ].getSubvertexPermutation();
    }
@@ -203,7 +203,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
       return *this;
    }
 
-   bool save( tnlFile& file ) const
+   bool save( File& file ) const
    {
       if( ! BaseType::save( file ) ||
           ! this->subentitiesIndices.save( file ) )
@@ -214,7 +214,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
       return true;
    }
 
-   bool load( tnlFile& file )
+   bool load( File& file )
    {
       if( ! BaseType::load( file ) ||
           ! this->subentitiesIndices.load( file ) )
@@ -320,7 +320,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
       return *this;
    }
 
-   bool save( tnlFile& file ) const
+   bool save( File& file ) const
    {
       if( ! this->verticesIndices.save( file ) )
       {
@@ -330,7 +330,7 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
       return true;
    }
 
-   bool load( tnlFile& file )
+   bool load( File& file )
    {
       if( ! this->verticesIndices.load( file ) )
       {
@@ -385,12 +385,12 @@ class tnlMeshSubentityStorageLayer< MeshConfig,
 {
    public:
 
-   bool save( tnlFile& file ) const
+   bool save( File& file ) const
    {
       return true;
    }
 
-   bool load( tnlFile& file )
+   bool load( File& file )
    {
       return true;
    }

@@ -39,9 +39,9 @@ class tnlTwoSidedGradientNormTest
       const RealType eoc[ 3 ] =       { 1.0,  1.9, 1.75 };
       const RealType tolerance[ 3 ] = { 0.05, 0.1, 0.3 };
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlTwoSidedGradientNormTest< " ) +
+         return String( "tnlTwoSidedGradientNormTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }

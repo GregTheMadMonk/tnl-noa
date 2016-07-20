@@ -10,13 +10,13 @@
 
 #pragma once
 
-#include <TNL/tnlObject.h>
-#include <TNL/core/arrays/tnlStaticArray.h>
+#include <TNL/Object.h>
+#include <TNL/Arrays/StaticArray.h>
 
 namespace TNL {
 
 template< int Size, typename Element >
-class tnlStaticContainer : public tnlObject
+class tnlStaticContainer : public Object
 {
    public:
 
@@ -25,7 +25,7 @@ class tnlStaticContainer : public tnlObject
 
    tnlStaticContainer();
 
-   static tnlString getType();
+   static String getType();
 
    int getSize() const;
 
@@ -40,13 +40,13 @@ class tnlStaticContainer : public tnlObject
    void setElement( const int id,
                     const ElementType& data );
 
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
-   bool load( tnlFile& file );
+   bool load( File& file );
 
    protected:
 
-   tnlStaticArray< Size, Element > data;
+   Arrays::tnlStaticArray< Size, Element > data;
 };
 
 } // namespace TNL

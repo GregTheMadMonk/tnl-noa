@@ -32,9 +32,9 @@ tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::t
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-tnlString tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getTypeStatic()
+String tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getTypeStatic()
 {
-   return tnlString( "tnlNavierStokesSolver< " ) +
+   return String( "tnlNavierStokesSolver< " ) +
           AdvectionScheme::getTypeStatic() + ", " +
           DiffusionScheme::getTypeStatic() + " >";
 }
@@ -345,10 +345,10 @@ void tnlNavierStokesSolver< AdvectionScheme,
                                                             SolverVectorType& u,
                                                             SolverVectorType& fu )
 {
-   tnlAssert( this->advection, );
-   tnlAssert( this->u1Viscosity, );
-   tnlAssert( this->u2Viscosity, );
-   tnlAssert( this->boundaryConditions, );
+   Assert( this->advection, );
+   Assert( this->u1Viscosity, );
+   Assert( this->u2Viscosity, );
+   Assert( this->boundaryConditions, );
 
    tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e,
                                                       rho_t, rho_u1_t, rho_u2_t, e_t;
@@ -526,7 +526,7 @@ bool tnlNavierStokesSolver< AdvectionScheme,
    this->updatePhysicalQuantities( dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e );
    tnlVector< tnlStaticVector< 2, RealType >, DeviceType, IndexType > u;
    u. setLike( u1 );
-   tnlString fileName;
+   String fileName;
 
    for( IndexType i = 0; i < this->u1. getSize(); i ++ )
       u[ i ] = tnlStaticVector< 2, RealType >( this->u1[ i ], this->u2[ i ] );
@@ -561,7 +561,7 @@ bool tnlNavierStokesSolver< AdvectionScheme,
    dofs_rho_u2. bind( & dofVector.getData()[ 2 * dofs ], dofs );
    dofs_e.      bind( & dofVector.getData()[ 3 * dofs ], dofs );
 
-   tnlString fileName;
+   String fileName;
    FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
    if( ! dofs_rho. save( fileName ) )
       return false;
@@ -619,7 +619,7 @@ bool tnlNavierStokesSolver< AdvectionScheme,
    dofs_rho_u2. bind( & rhs.getData()[ 2 * dofs ], dofs );
    dofs_e.      bind( & rhs.getData()[ 3 * dofs ], dofs );
 
-   tnlString fileName;
+   String fileName;
    FileNameBaseNumberEnding( "rho-t-", step, 5, ".tnl", fileName );
    if( ! dofs_rho. save( fileName ) )
       return false;

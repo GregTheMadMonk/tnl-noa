@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlString.h>
+#include <TNL/String.h>
 #include <TNL/core/tnlCuda.h>
 #include <TNL/operators/tnlOperator.h>
 
@@ -22,10 +22,10 @@ class tnlExactIdentityOperator
 {
    public:
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlExactIdentityOperator< " ) +
-                tnlString( Dimensions) + " >";
+         return String( "tnlExactIdentityOperator< " ) +
+                String( Dimensions) + " >";
       }
  
       template< typename Function >

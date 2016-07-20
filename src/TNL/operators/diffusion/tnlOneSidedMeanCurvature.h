@@ -47,9 +47,9 @@ class tnlOneSidedMeanCurvature
         nonlinearity( nonlinearityOperator, nonlinearityBoundaryConditions, mesh ),
         nonlinearDiffusion( nonlinearity ){}
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlOneSidedMeanCurvature< " ) +
+         return String( "tnlOneSidedMeanCurvature< " ) +
             MeshType::getType() + ", " +
            TNL::getType< Real >() + ", " +
            TNL::getType< Index >() + " >";

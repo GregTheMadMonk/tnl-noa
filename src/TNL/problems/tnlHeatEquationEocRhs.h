@@ -32,8 +32,8 @@ class tnlHeatEquationEocRhs
       typedef typename TestFunction::RealType RealType;
       typedef typename TestFunction::VertexType VertexType;
 
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" )
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" )
       {
          if( ! testFunction.setup( parameters, prefix ) )
             return false;

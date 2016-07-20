@@ -10,10 +10,10 @@
 
 #pragma once
 
-#include <TNL/tnlObject.h>
+#include <TNL/Object.h>
 #include <TNL/core/tnlHost.h>
-#include <TNL/core/vectors/tnlStaticVector.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Vectors/Vector.h>
 
 namespace TNL {
 
@@ -21,7 +21,7 @@ template< int Dimensions,
           typename Real = double,
           typename Device = tnlHost,
           typename Index = int >
-class tnlGrid : public tnlObject
+class tnlGrid : public Object
 {
 };
 

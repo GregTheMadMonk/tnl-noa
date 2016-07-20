@@ -11,10 +11,10 @@
 #ifndef TNLCUDABENCHMARKS_H_
 #define TNLCUDBENCHMARKS_H_
 
-#include <TNL/core/tnlSystemInfo.h>
+#include <TNL/SystemInfo.h>
 #include <TNL/core/tnlCudaDeviceInfo.h>
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 
 #include "array-operations.h"
 #include "vector-operations.h"
@@ -37,11 +37,11 @@ runCudaBenchmarks( Benchmark & benchmark,
                    const unsigned & loops,
                    const unsigned & elementsPerRow )
 {
-    const tnlString precision = getType< Real >();
+    const String precision = getType< Real >();
     metadata["precision"] = precision;
 
     // Array operations
-    benchmark.newBenchmark( tnlString("Array operations (") + precision + ")",
+    benchmark.newBenchmark( String("Array operations (") + precision + ")",
                             metadata );
     for( unsigned size = minSize; size <= maxSize; size *= 2 ) {
         benchmark.setMetadataColumns( Benchmark::MetadataColumns({
@@ -51,7 +51,7 @@ runCudaBenchmarks( Benchmark & benchmark,
     }
 
     // Vector operations
-    benchmark.newBenchmark( tnlString("Vector operations (") + precision + ")",
+    benchmark.newBenchmark( String("Vector operations (") + precision + ")",
                             metadata );
     for( unsigned size = minSize; size <= maxSize; size *= sizeStepFactor ) {
         benchmark.setMetadataColumns( Benchmark::MetadataColumns({
@@ -61,7 +61,7 @@ runCudaBenchmarks( Benchmark & benchmark,
     }
 
     // Sparse matrix-vector multiplication
-    benchmark.newBenchmark( tnlString("Sparse matrix-vector multiplication (") + precision + ")",
+    benchmark.newBenchmark( String("Sparse matrix-vector multiplication (") + precision + ")",
                             metadata );
     for( unsigned size = minSize; size <= maxSize; size *= 2 ) {
         benchmark.setMetadataColumns( Benchmark::MetadataColumns({
@@ -74,14 +74,14 @@ runCudaBenchmarks( Benchmark & benchmark,
 }
 
 void
-setupConfig( tnlConfigDescription & config )
+setupConfig( Config::ConfigDescription & config )
 {
     config.addDelimiter( "Benchmark settings:" );
-    config.addEntry< tnlString >( "log-file", "Log file name.", "tnl-cuda-benchmarks.log");
-    config.addEntry< tnlString >( "output-mode", "Mode for opening the log file.", "overwrite" );
+    config.addEntry< String >( "log-file", "Log file name.", "tnl-cuda-benchmarks.log");
+    config.addEntry< String >( "output-mode", "Mode for opening the log file.", "overwrite" );
     config.addEntryEnum( "append" );
     config.addEntryEnum( "overwrite" );
-    config.addEntry< tnlString >( "precision", "Precision of the arithmetics.", "double" );
+    config.addEntry< String >( "precision", "Precision of the arithmetics.", "double" );
     config.addEntryEnum( "float" );
     config.addEntryEnum( "double" );
     config.addEntryEnum( "all" );
@@ -97,8 +97,8 @@ int
 main( int argc, char* argv[] )
 {
 #ifdef HAVE_CUDA
-    tnlParameterContainer parameters;
-    tnlConfigDescription conf_desc;
+    Config::ParameterContainer parameters;
+    Config::ConfigDescription conf_desc;
 
     setupConfig( conf_desc );
 
@@ -107,9 +107,9 @@ main( int argc, char* argv[] )
         return 1;
     }
 
-    const tnlString & logFileName = parameters.getParameter< tnlString >( "log-file" );
-    const tnlString & outputMode = parameters.getParameter< tnlString >( "output-mode" );
-    const tnlString & precision = parameters.getParameter< tnlString >( "precision" );
+    const String & logFileName = parameters.getParameter< String >( "log-file" );
+    const String & outputMode = parameters.getParameter< String >( "output-mode" );
+    const String & precision = parameters.getParameter< String >( "precision" );
     const unsigned minSize = parameters.getParameter< unsigned >( "min-size" );
     const unsigned maxSize = parameters.getParameter< unsigned >( "max-size" );
     const unsigned sizeStepFactor = parameters.getParameter< unsigned >( "size-step-factor" );
@@ -132,16 +132,16 @@ main( int argc, char* argv[] )
     Benchmark benchmark( loops, verbose );
 
     // prepare global metadata
-    tnlSystemInfo systemInfo;
+    SystemInfo systemInfo;
     const int cpu_id = 0;
     tnlCacheSizes cacheSizes = systemInfo.getCPUCacheSizes( cpu_id );
-    tnlString cacheInfo = tnlString( cacheSizes.L1data ) + ", "
-                        + tnlString( cacheSizes.L1instruction ) + ", "
-                        + tnlString( cacheSizes.L2 ) + ", "
-                        + tnlString( cacheSizes.L3 );
+    String cacheInfo = String( cacheSizes.L1data ) + ", "
+                        + String( cacheSizes.L1instruction ) + ", "
+                        + String( cacheSizes.L2 ) + ", "
+                        + String( cacheSizes.L3 );
     const int activeGPU = tnlCudaDeviceInfo::getActiveDevice();
-    const tnlString deviceArch = tnlString( tnlCudaDeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
-                                 tnlString( tnlCudaDeviceInfo::getArchitectureMinor( activeGPU ) );
+    const String deviceArch = String( tnlCudaDeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
+                                 String( tnlCudaDeviceInfo::getArchitectureMinor( activeGPU ) );
     Benchmark::MetadataMap metadata {
         { "host name", systemInfo.getHostname() },
         { "architecture", systemInfo.getArchitecture() },
@@ -168,7 +168,7 @@ main( int argc, char* argv[] )
         runCudaBenchmarks< double >( benchmark, metadata, minSize, maxSize, sizeStepFactor, loops, elementsPerRow );
 
     if( ! benchmark.save( logFile ) ) {
-        std::cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< tnlString >( "log-file" ) << "'." << std::endl;
+        std::cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< String >( "log-file" ) << "'." << std::endl;
         return EXIT_FAILURE;
     }
 

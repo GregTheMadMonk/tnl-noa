@@ -11,9 +11,9 @@
 #pragma once
 
 #include <math.h>
-#include <TNL/tnlObject.h>
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/vectors/tnlSharedVector.h>
+#include <TNL/Object.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Vectors/SharedVector.h>
 #include <TNL/solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <TNL/solvers/tnlIterativeSolver.h>
 #include <TNL/solvers/linear/tnlLinearResidueGetter.h>
@@ -24,7 +24,7 @@ template< typename Matrix,
           typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
                                                             typename Matrix :: DeviceType,
                                                             typename Matrix :: IndexType> >
-class tnlGMRESSolver : public tnlObject,
+class tnlGMRESSolver : public Object,
                        public tnlIterativeSolver< typename Matrix :: RealType,
                                                   typename Matrix :: IndexType >
 {
@@ -38,13 +38,13 @@ class tnlGMRESSolver : public tnlObject,
 
    tnlGMRESSolver();
 
-   tnlString getType() const;
+   String getType() const;
 
-   static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix = "" );
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" );
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+   bool setup( const Config::ParameterContainer& parameters,
+              const String& prefix = "" );
 
    void setRestarting( IndexType rest );
 
@@ -66,13 +66,13 @@ class tnlGMRESSolver : public tnlObject,
 
    protected:
 
-   template< typename Vector >
+   template< typename VectorT >
    void update( IndexType k,
                 IndexType m,
-                const tnlVector< RealType, tnlHost, IndexType >& H,
-                const tnlVector< RealType, tnlHost, IndexType >& s,
-                tnlVector< RealType, DeviceType, IndexType >& v,
-                Vector& x );
+                const Vectors::tnlVector< RealType, tnlHost, IndexType >& H,
+                const Vectors::tnlVector< RealType, tnlHost, IndexType >& s,
+                Vectors::tnlVector< RealType, DeviceType, IndexType >& v,
+                VectorT& x );
 
    void generatePlaneRotation( RealType &dx,
                                RealType &dy,
@@ -87,8 +87,8 @@ class tnlGMRESSolver : public tnlObject,
 
    bool setSize( IndexType _size, IndexType m );
 
-   tnlVector< RealType, DeviceType, IndexType > _r, w, _v, _M_tmp;
-   tnlVector< RealType, tnlHost, IndexType > _s, _cs, _sn, _H;
+   Vectors::tnlVector< RealType, DeviceType, IndexType > _r, w, _v, _M_tmp;
+   Vectors::tnlVector< RealType, tnlHost, IndexType > _s, _cs, _sn, _H;
 
    IndexType size, restarting;
 

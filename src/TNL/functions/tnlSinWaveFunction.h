@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/config/tnlParameterContainer.h>
-#include <TNL/core/vectors/tnlStaticVector.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Vectors/StaticVector.h>
 #include <TNL/functions/tnlDomain.h>
 
 namespace TNL {
@@ -24,8 +24,8 @@ class tnlSinWaveFunctionBase : public tnlDomain< dimensions, SpaceDomain >
  
    tnlSinWaveFunctionBase();
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+   bool setup( const Config::ParameterContainer& parameters,
+              const String& prefix = "" );
 
    void setWaveLength( const Real& waveLength );
 
@@ -55,7 +55,7 @@ class tnlSinWaveFunction< 1, Real > : public tnlSinWaveFunctionBase< 1, Real >
    public:
  
       typedef Real RealType;
-      typedef tnlStaticVector< 1, RealType > VertexType;
+      typedef Vectors::tnlStaticVector< 1, RealType > VertexType;
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -82,7 +82,7 @@ class tnlSinWaveFunction< 2, Real > : public tnlSinWaveFunctionBase< 2, Real >
    public:
  
       typedef Real RealType;
-      typedef tnlStaticVector< 2, RealType > VertexType;
+      typedef Vectors::tnlStaticVector< 2, RealType > VertexType;
  
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -109,7 +109,7 @@ class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< 3, Real >
    public:
  
       typedef Real RealType;
-      typedef tnlStaticVector< 3, RealType > VertexType;
+      typedef Vectors::tnlStaticVector< 3, RealType > VertexType;
 
 
  

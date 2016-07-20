@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/core/arrays/tnlStaticArray.h>
-#include <TNL/core/arrays/tnlSharedArray.h>
+#include <TNL/Arrays/StaticArray.h>
+#include <TNL/Arrays/SharedArray.h>
 #include <TNL/mesh/tnlMeshEntity.h>
 #include <TNL/mesh/config/tnlMeshConfigBase.h>
 #include <TNL/mesh/topologies/tnlMeshEntityTopology.h>
@@ -40,15 +40,15 @@ class tnlMeshSubentityTraits
 
       static const int count = Subtopology::count;
 
-      typedef tnlStaticArray< count, GlobalIndexType >              StorageArrayType;
-      typedef tnlSharedArray< GlobalIndexType,
-                              tnlHost,
-                              LocalIndexType >                      AccessArrayType;
-      typedef tnlStaticArray< count, GlobalIndexType >              IdArrayType;
-      typedef tnlStaticArray< count, SubentityType >                SubentityContainerType;
-      typedef tnlStaticArray< count, Seed >                         SeedArrayType;
-      typedef tnlStaticArray< count, Orientation >                  OrientationArrayType;
-      typedef tnlStaticArray< count, LocalIndexType >               IdPermutationArrayType;
+      typedef Arrays::tnlStaticArray< count, GlobalIndexType >              StorageArrayType;
+      typedef Arrays::tnlSharedArray< GlobalIndexType,
+                                      tnlHost,
+                                      LocalIndexType >                      AccessArrayType;
+      typedef Arrays::tnlStaticArray< count, GlobalIndexType >              IdArrayType;
+      typedef Arrays::tnlStaticArray< count, SubentityType >                SubentityContainerType;
+      typedef Arrays::tnlStaticArray< count, Seed >                         SeedArrayType;
+      typedef Arrays::tnlStaticArray< count, Orientation >                  OrientationArrayType;
+      typedef Arrays::tnlStaticArray< count, LocalIndexType >               IdPermutationArrayType;
 
       template< LocalIndexType subentityIndex,
                 LocalIndexType subentityVertexIndex >

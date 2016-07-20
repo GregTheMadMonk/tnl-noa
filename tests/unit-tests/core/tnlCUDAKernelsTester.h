@@ -17,8 +17,8 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <TNL/core/vectors/tnlVectorCUDA.h>
-#include <TNL/core/vectors/tnlVectorHost.h>
+#include <TNL/Vectors/VectorCUDA.h>
+#include <TNL/Vectors/VectorHost.h>
 #include <TNL/core/mfuncs.h>
 
 #ifdef HAVE_CUDA
@@ -43,32 +43,32 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
       CppUnit :: TestResult result;
 
       T param;
-      tnlString test_name = tnlString( "testSimpleReduction1< " ) + getType( param ) + tnlString( " >" );
+      String test_name = String( "testSimpleReduction1< " ) + getType( param ) + String( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
     		               test_name. getString(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction1 )
                              );
-      test_name = tnlString( "testSimpleReduction2< " ) + getType( param ) + tnlString( " >" );
+      test_name = String( "testSimpleReduction2< " ) + getType( param ) + String( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
                                test_name. getString(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction2 )
                               );
-      test_name = tnlString( "testSimpleReduction3< " ) + getType( param ) + tnlString( " >" );
+      test_name = String( "testSimpleReduction3< " ) + getType( param ) + String( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
                                test_name. getString(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction3 )
                               );
-      test_name = tnlString( "testSimpleReduction4< " ) + getType( param ) + tnlString( " >" );
+      test_name = String( "testSimpleReduction4< " ) + getType( param ) + String( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
                                test_name. getString(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction4 )
                               );
-      test_name = tnlString( "testSimpleReduction5< " ) + getType( param ) + tnlString( " >" );
+      test_name = String( "testSimpleReduction5< " ) + getType( param ) + String( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
                                test_name. getString(),
                                & tnlCUDAKernelsTester< T > :: testSimpleReduction5 )
                               );
-      test_name = tnlString( "testReduction< " ) + getType( param ) + tnlString( " >" );
+      test_name = String( "testReduction< " ) + getType( param ) + String( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
                                test_name. getString(),
                                & tnlCUDAKernelsTester< T > :: testReduction )

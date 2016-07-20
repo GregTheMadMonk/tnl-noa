@@ -71,17 +71,17 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
 
    tnlMersonSolverTester( ){};
 
-   tnlMersonSolverTester( const tnlString& s ){};
+   tnlMersonSolverTester( const String& s ){};
 
-   tnlString getType() const
+   String getType() const
    {
-      return tnlString( "tnlMersonSolverTester< " ) +
+      return String( "tnlMersonSolverTester< " ) +
              getType( Real( 0 ) ) +
-             tnlString( ", ") +
+             String( ", ") +
              Device :: getDeviceType() +
-             tnlString( ", ") +
+             String( ", ") +
              getType( Index( 0 ) ) +
-             tnlString( " >" );
+             String( " >" );
    };
 
    static CppUnit :: Test* suite()
@@ -90,7 +90,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       CppUnit :: TestResult result;
 
       Real param;
-      tnlString test_name = tnlString( "testUpdateU< " ) + getType( param ) + tnlString( " >" );
+      String test_name = String( "testUpdateU< " ) + getType( param ) + String( " >" );
       suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlMersonSolverTester< Real, Device, Index > >(
                test_name. getString(),
                & tnlMersonSolverTester< Real, Device, Index > :: testUpdateU )
@@ -204,7 +204,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
         std::cout << "Errors: L1 " << l1Norm << " L2 " << l2Norm << " max." << maxNorm << std::endl;
 
         std::cout << "Writing file ... ";
-         tnlString fileName;
+         String fileName;
          FileNameBaseNumberEnding(
                   "u",
                   iteration,

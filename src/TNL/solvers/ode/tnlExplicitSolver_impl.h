@@ -32,8 +32,8 @@ tnlExplicitSolver()
 template< typename Problem >
 void
 tnlExplicitSolver< Problem >::
-configSetup( tnlConfigDescription& config,
-             const tnlString& prefix )
+configSetup( Config::ConfigDescription& config,
+             const String& prefix )
 {
    //tnlIterativeSolver< typename Problem::RealType, typename Problem::IndexType >::configSetup( config, prefix );
 }
@@ -41,8 +41,8 @@ configSetup( tnlConfigDescription& config,
 template< typename Problem >
 bool
 tnlExplicitSolver< Problem >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    return tnlIterativeSolver< typename Problem::RealType, typename Problem::IndexType >::setup( parameters, prefix );
 }
@@ -141,7 +141,7 @@ setVerbose( IndexType v )
 template< class Problem >
 void
 tnlExplicitSolver< Problem >::
-setTimerCPU( tnlTimerCPU* timer )
+setTimerCPU( TimerCPU* timer )
 {
    this->cpu_timer = timer;
 };
@@ -149,7 +149,7 @@ setTimerCPU( tnlTimerCPU* timer )
 template< class Problem >
 void
 tnlExplicitSolver< Problem >::
-setTimerRT( tnlTimerRT* timer )
+setTimerRT( TimerRT* timer )
 {
    this->rt_timer = timer;
 };

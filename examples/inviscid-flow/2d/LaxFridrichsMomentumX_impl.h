@@ -11,11 +11,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 LaxFridrichsMomentumX< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "LaxFridrichsMomentumX< " ) +
+   return String( "LaxFridrichsMomentumX< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";
@@ -114,11 +114,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 LaxFridrichsMomentumX< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "LaxFridrichsMomentumX< " ) +
+   return String( "LaxFridrichsMomentumX< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";
@@ -231,11 +231,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 LaxFridrichsMomentumX< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "LaxFridrichsMomentumX< " ) +
+   return String( "LaxFridrichsMomentumX< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";

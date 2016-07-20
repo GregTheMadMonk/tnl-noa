@@ -5,8 +5,8 @@
 #include <map>
 #include <vector>
 
-#include <TNL/core/tnlTimerRT.h>
-#include <TNL/core/tnlString.h>
+#include <TNL/TimerRT.h>
+#include <TNL/String.h>
 
 namespace TNL
 {
@@ -23,7 +23,7 @@ timeFunction( ComputeFunction compute,
               const int & loops )
 {
     // the timer is constructed zero-initialized and stopped
-    tnlTimerRT timer;
+    TimerRT timer;
 
     reset();
     for(int i = 0; i < loops; ++i) {
@@ -52,11 +52,11 @@ struct InternalError {};
 class Logging
 {
 public:
-    using MetadataElement = std::pair< const char*, tnlString >;
-    using MetadataMap = std::map< const char*, tnlString >;
+    using MetadataElement = std::pair< const char*, String >;
+    using MetadataMap = std::map< const char*, String >;
     using MetadataColumns = std::vector<MetadataElement>;
 
-    using HeaderElements = std::initializer_list< tnlString >;
+    using HeaderElements = std::initializer_list< String >;
     using RowElements = std::initializer_list< double >;
 
     Logging( bool verbose = true )
@@ -64,7 +64,7 @@ public:
     { }
 
     void
-    writeTitle( const tnlString & title )
+    writeTitle( const String & title )
     {
         if( verbose )
             std::cout << std::endl << "== " << title << " ==" << std::endl << std::endl;
@@ -87,7 +87,7 @@ public:
     }
 
     void
-    writeTableHeader( const tnlString & spanningElement,
+    writeTableHeader( const String & spanningElement,
                       const HeaderElements & subElements )
     {
         using namespace std;
@@ -141,7 +141,7 @@ public:
     }
 
     void
-    writeTableRow( const tnlString & spanningElement,
+    writeTableRow( const String & spanningElement,
                    const RowElements & subElements )
     {
         using namespace std;
@@ -167,7 +167,7 @@ public:
         }
 
         // benchmark data are indented
-        const tnlString indent = "    ";
+        const String indent = "    ";
         for( auto & it : subElements ) {
             if( it != 0.0 ) log << indent << it << std::endl;
             else log << indent << "N/A" << std::endl;
@@ -235,8 +235,8 @@ public:
 
 protected:
 
-    // manual double -> tnlString conversion with fixed precision
-    static tnlString
+    // manual double -> String conversion with fixed precision
+    static String
     _to_string( const double & num, const int & precision = 0, bool fixed = false )
     {
         std::stringstream str;
@@ -245,7 +245,7 @@ protected:
         if( precision )
             str << std::setprecision( precision );
         str << num;
-        return tnlString( str.str().data() );
+        return String( str.str().data() );
     }
 
     std::stringstream log;
@@ -255,7 +255,7 @@ protected:
     bool verbose;
     MetadataColumns metadataColumns;
     bool header_changed = true;
-    std::vector< std::pair< tnlString, int > > horizontalGroups;
+    std::vector< std::pair< String, int > > horizontalGroups;
 };
 
 
@@ -282,7 +282,7 @@ public:
 
     // Marks the start of a new benchmark
     void
-    newBenchmark( const tnlString & title )
+    newBenchmark( const String & title )
     {
         closeTable();
         writeTitle( title );
@@ -290,13 +290,13 @@ public:
 
     // Marks the start of a new benchmark (with custom metadata)
     void
-    newBenchmark( const tnlString & title,
+    newBenchmark( const String & title,
                   MetadataMap metadata )
     {
         closeTable();
         writeTitle( title );
         // add loops to metadata
-        metadata["loops"] = tnlString(loops);
+        metadata["loops"] = String(loops);
         writeMetadata( metadata );
     }
 
@@ -317,11 +317,11 @@ public:
     //  - Order of operations inside a "Benchmark" does not matter, rows can be
     //    easily sorted while converting to HTML.)
     void
-    setOperation( const tnlString & operation,
+    setOperation( const String & operation,
                   const double & datasetSize = 0.0, // in GB
                   const double & baseTime = 0.0 )
     {
-        if( metadataColumns.size() > 0 && tnlString(metadataColumns[ 0 ].first) == "operation" ) {
+        if( metadataColumns.size() > 0 && String(metadataColumns[ 0 ].first) == "operation" ) {
             metadataColumns[ 0 ].second = operation;
         }
         else {
@@ -343,7 +343,7 @@ public:
     // of columns in the "Benchmark", implies column spanning.
     // (Useful e.g. for SpMV formats, different configurations etc.)
     void
-    createHorizontalGroup( const tnlString & name,
+    createHorizontalGroup( const String & name,
                            const int & subcolumns )
     {
         if( horizontalGroups.size() == 0 ) {
@@ -371,7 +371,7 @@ public:
               typename ComputeFunction >
     double
     time( ResetFunction reset,
-          const tnlString & performer,
+          const String & performer,
           ComputeFunction & compute )
     {
         const double time = timeFunction( compute, reset, loops );
@@ -393,7 +393,7 @@ public:
               typename... NextComputations >
     inline double
     time( ResetFunction reset,
-          const tnlString & performer,
+          const String & performer,
           ComputeFunction & compute,
           NextComputations & ... nextComputations )
     {

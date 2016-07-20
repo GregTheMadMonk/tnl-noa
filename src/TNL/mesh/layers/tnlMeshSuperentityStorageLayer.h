@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlFile.h>
+#include <TNL/File.h>
 #include <TNL/mesh/tnlDimensionsTag.h>
 #include <TNL/mesh/traits/tnlMeshTraits.h>
 #include <TNL/mesh/traits/tnlMeshSuperentityTraits.h>
@@ -124,7 +124,7 @@ class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionsTag,
        return this->sharedSuperentitiesIndices;
     }
 
-    bool save( tnlFile& file ) const
+    bool save( File& file ) const
     {
        if( ! BaseType::save( file ) ||
            ! this->superentitiesIndices.save( file ) )
@@ -135,7 +135,7 @@ class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, DimensionsTag,
        return true;
     }
 
-    bool load( tnlFile& file )
+    bool load( File& file )
     {
        if( ! BaseType::load( file ) ||
            ! this->superentitiesIndices.load( file ) )
@@ -237,25 +237,25 @@ class tnlMeshSuperentityStorageLayer< MeshConfig, EntityTopology, tnlDimensionsT
 
    const ContainerType& getSuperentitiesIndices() const{}
 
-   bool save( tnlFile& file ) const
+   bool save( File& file ) const
    {
       return true;
    }
 
-   bool load( tnlFile& file )
+   bool load( File& file )
    {
       return true;
    }
  
    typename tnlMeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
    {
-      tnlAssert( false, );
+      Assert( false, );
       //return this->superentitiesIndices;
    }
 
    StorageNetworkType& getStorageNetwork( DimensionsTag )
    {
-      tnlAssert( false, );
+      Assert( false, );
      //return this->storageNetwork;
    }
 
@@ -310,25 +310,25 @@ class tnlMeshSuperentityStorageLayer< MeshConfig,
 
    const StorageArrayType& getSuperentitiesIndices() const{}
 
-   bool save( tnlFile& file ) const
+   bool save( File& file ) const
    {
       return true;
    }
 
-   bool load( tnlFile& file )
+   bool load( File& file )
    {
       return true;
    }
  
    typename tnlMeshTraits< MeshConfig >::GlobalIdArrayType& superentityIdsArray( DimensionsTag )
    {
-      tnlAssert( false, );
+      Assert( false, );
       //return this->superentitiesIndices;
    }
 
    StorageNetworkType& getStorageNetwork( DimensionsTag )
    {
-      tnlAssert( false, );
+      Assert( false, );
       //return this->storageNetwork;
    }
 

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <math.h>
-#include <TNL/config/tnlConfigDescription.h>
+#include <TNL/Config/ConfigDescription.h>
 #include <TNL/solvers/ode/tnlExplicitSolver.h>
 
 namespace TNL {
@@ -29,13 +29,13 @@ class tnlMersonSolver : public tnlExplicitSolver< Problem >
 
    tnlMersonSolver();
 
-   tnlString getType() const;
+   String getType() const;
 
-   static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix = "" );
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" );
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+   bool setup( const Config::ParameterContainer& parameters,
+              const String& prefix = "" );
 
    void setAdaptivity( const RealType& a );
 

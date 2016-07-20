@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/vectors/tnlSharedVector.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Vectors/SharedVector.h>
 #include <TNL/mesh/tnlGrid.h>
 
 namespace TNL {
@@ -38,7 +38,7 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, I
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   static tnlString getType();
+   static String getType();
 
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
@@ -75,7 +75,7 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, I
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   static tnlString getType(); 
+   static String getType(); 
       
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
@@ -113,7 +113,7 @@ class tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, 
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   static tnlString getType();
+   static String getType();
 
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__

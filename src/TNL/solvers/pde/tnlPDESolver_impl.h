@@ -34,10 +34,10 @@ template< typename Problem,
           typename TimeStepper >
 void
 tnlPDESolver< Problem, TimeStepper >::
-configSetup( tnlConfigDescription& config,
-             const tnlString& prefix )
+configSetup( Config::ConfigDescription& config,
+             const String& prefix )
 {
-   config.addEntry< tnlString >( prefix + "initial-condition", "File name with the initial condition.", "init.tnl" );
+   config.addEntry< String >( prefix + "initial-condition", "File name with the initial condition.", "init.tnl" );
    config.addRequiredEntry< double >( prefix + "final-time", "Stop time of the time dependent problem." );
    config.addEntry< double >( prefix + "initial-time", "Initial time of the time dependent problem.", 0 );
    config.addRequiredEntry< double >( prefix + "snapshot-period", "Time period for writing the problem status.");
@@ -49,13 +49,13 @@ template< typename Problem,
           typename TimeStepper >
 bool
 tnlPDESolver< Problem, TimeStepper >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    /****
     * Load the mesh from the mesh file
     */
-   const tnlString& meshFile = parameters.getParameter< tnlString >( "mesh" );
+   const String& meshFile = parameters.getParameter< String >( "mesh" );
   std::cout << "Loading a mesh from the file " << meshFile << "...";
    if( ! this->mesh.load( meshFile ) )
    {
@@ -69,7 +69,7 @@ setup( const tnlParameterContainer& parameters,
    /****
     * Set DOFs (degrees of freedom)
     */
-   tnlAssert( problem->getDofs( this->mesh ) != 0, );
+   Assert( problem->getDofs( this->mesh ) != 0, );
   std::cout << "Allocating dofs ... ";
    if( ! this->dofs.setSize( problem->getDofs( this->mesh ) ) )
    {
@@ -111,21 +111,21 @@ template< typename Problem,
           typename TimeStepper >
 bool
 tnlPDESolver< Problem, TimeStepper >::
-writeProlog( tnlLogger& logger,
-             const tnlParameterContainer& parameters )
+writeProlog( Logger& logger,
+             const Config::ParameterContainer& parameters )
 {
    logger.writeHeader( problem->getPrologHeader() );
    problem->writeProlog( logger, parameters );
    logger.writeSeparator();
    mesh.writeProlog( logger );
    logger.writeSeparator();
-   logger.writeParameter< tnlString >( "Time discretisation:", "time-discretisation", parameters );
+   logger.writeParameter< String >( "Time discretisation:", "time-discretisation", parameters );
    logger.writeParameter< double >( "Initial time step:", this->timeStep * std::pow( mesh.getSmallestSpaceStep(), this->timeStepOrder ) );
    logger.writeParameter< double >( "Initial time:", "initial-time", parameters );
    logger.writeParameter< double >( "Final time:", "final-time", parameters );
    logger.writeParameter< double >( "Snapshot period:", "snapshot-period", parameters );
-   const tnlString& solverName = parameters. getParameter< tnlString >( "discrete-solver" );
-   logger.writeParameter< tnlString >( "Discrete solver:", "discrete-solver", parameters );
+   const String& solverName = parameters. getParameter< String >( "discrete-solver" );
+   logger.writeParameter< String >( "Discrete solver:", "discrete-solver", parameters );
    if( solverName == "merson" )
       logger.writeParameter< double >( "Adaptivity:", "merson-adaptivity", parameters, 1 );
    if( solverName == "sor" )
@@ -137,9 +137,9 @@ writeProlog( tnlLogger& logger,
    logger.writeParameter< int >( "Maximal number of iterations:", "max-iterations", parameters );
    logger.writeParameter< int >( "Minimal number of iterations:", "min-iterations", parameters );
    logger.writeSeparator();
-   logger.writeParameter< tnlString >( "Real type:", "real-type", parameters, 0 );
-   logger.writeParameter< tnlString >( "Index type:", "index-type", parameters, 0 );
-   logger.writeParameter< tnlString >( "Device:", "device", parameters, 0 );
+   logger.writeParameter< String >( "Real type:", "real-type", parameters, 0 );
+   logger.writeParameter< String >( "Index type:", "index-type", parameters, 0 );
+   logger.writeParameter< String >( "Device:", "device", parameters, 0 );
    logger.writeSeparator();
    logger.writeSystemInformation( parameters );
    logger.writeSeparator();
@@ -298,9 +298,9 @@ bool
 tnlPDESolver< Problem, TimeStepper >::
 solve()
 {
-   tnlAssert( timeStepper != 0,
+   Assert( timeStepper != 0,
               std::cerr << "No time stepper was set in tnlPDESolver." );
-   tnlAssert( problem != 0,
+   Assert( problem != 0,
               std::cerr << "No problem was set in tnlPDESolver." );
 
    if( snapshotPeriod == 0 )
@@ -356,7 +356,7 @@ solve()
 template< typename Problem, typename TimeStepper >
 bool
 tnlPDESolver< Problem, TimeStepper >::
-writeEpilog( tnlLogger& logger ) const
+writeEpilog( Logger& logger ) const
 {
    return ( this->timeStepper->writeEpilog( logger ) &&
       this->problem->writeEpilog( logger ) );

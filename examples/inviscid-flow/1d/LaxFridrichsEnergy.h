@@ -1,7 +1,7 @@
 #ifndef LaxFridrichsEnergy_H
 #define LaxFridrichsEnergy_H
 
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
 
 namespace TNL {
@@ -29,7 +29,7 @@ class LaxFridrichsEnergy< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocity;
       MeshFunctionType pressure;
@@ -89,7 +89,7 @@ class LaxFridrichsEnergy< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index 
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocity;
       MeshFunctionType pressure;
@@ -149,7 +149,7 @@ class LaxFridrichsEnergy< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index 
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocity;
       MeshFunctionType pressure;

@@ -12,15 +12,15 @@
 #include <TNL/mesh/tnlDummyMesh.h>
 #include <TNL/mesh/tnlGrid.h>
 
-void setupConfig( tnlConfigDescription& config )
+void setupConfig( Config::ConfigDescription& config )
 {
-   config.addEntry< tnlString >( "mesh", "Input mesh file.", "mesh.tnl" );
-   config.addRequiredEntry< tnlList< tnlString > >( "input-files", "The first set of the input files." );
-   config.addEntry< tnlString >( "output-file", "File for the output data.", "tnl-diff.log" );
-   config.addEntry< tnlString >( "mode", "Mode 'couples' compares two subsequent files. Mode 'sequence' compares the input files against the first one. 'halves' compares the files from the and the second half of the intput files.", "couples" );
-      config.addEntryEnum< tnlString >( "couples" );
-      config.addEntryEnum< tnlString >( "sequence" );
-      config.addEntryEnum< tnlString >( "halves" );
+   config.addEntry< String >( "mesh", "Input mesh file.", "mesh.tnl" );
+   config.addRequiredEntry< List< String > >( "input-files", "The first set of the input files." );
+   config.addEntry< String >( "output-file", "File for the output data.", "tnl-diff.log" );
+   config.addEntry< String >( "mode", "Mode 'couples' compares two subsequent files. Mode 'sequence' compares the input files against the first one. 'halves' compares the files from the and the second half of the intput files.", "couples" );
+      config.addEntryEnum< String >( "couples" );
+      config.addEntryEnum< String >( "sequence" );
+      config.addEntryEnum< String >( "halves" );
    config.addEntry< bool >( "write-difference", "Write difference grid function.", false );
    config.addEntry< bool >( "write-exact-curve", "Write exact curve with given radius.", false );
    config.addEntry< int >( "edges-skip", "Width of the edges that will be skipped - not included into the error norms.", 0 );
@@ -32,8 +32,8 @@ void setupConfig( tnlConfigDescription& config )
 
 int main( int argc, char* argv[] )
 {
-   tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
+   Config::ParameterContainer parameters;
+   Config::ConfigDescription conf_desc;
    setupConfig( conf_desc );
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
    {
@@ -42,21 +42,21 @@ int main( int argc, char* argv[] )
    }
 
    int verbose = parameters. getParameter< int >( "verbose" );
-   tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
+   String meshFile = parameters. getParameter< String >( "mesh" );
    /*if( meshFile == "" )
    {
       if( ! processFiles< tnlDummyMesh< double, tnlHost, int > >( parameters ) )
          return EXIT_FAILURE;
       return EXIT_SUCCESS;
    }*/
-   tnlString meshType;
+   String meshType;
    if( ! getObjectType( meshFile, meshType ) )
    {
       std::cerr << "I am not able to detect the mesh type from the file " << meshFile << "." << std::endl;
       return EXIT_FAILURE;
    }
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
-   tnlList< tnlString > parsedMeshType;
+   List< String > parsedMeshType;
    if( ! parseObjectType( meshType, parsedMeshType ) )
    {
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;

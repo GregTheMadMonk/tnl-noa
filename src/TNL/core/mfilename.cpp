@@ -11,7 +11,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <TNL/core/mfilename.h>
-#include <TNL/core/tnlString.h>
+#include <TNL/String.h>
 #include <TNL/core/mfuncs.h>
 
 namespace TNL {
@@ -20,7 +20,7 @@ void FileNameBaseNumberEnding( const char* base_name,
                                int number,
                                int index_size,
                                const char* ending,
-                               tnlString& file_name )
+                               String& file_name )
 {
    file_name. setString( base_name );
    char snumber[ 1024 ], zeros[ 1024 ];;
@@ -37,17 +37,17 @@ void FileNameBaseNumberEnding( const char* base_name,
    file_name += ending;
 }
 
-tnlString getFileExtension( const tnlString fileName )
+String getFileExtension( const String fileName )
 {
    int size = fileName. getLength();
    int i = 1;
    while( fileName. getString()[ size - i ] != '.' && size > i  ) i ++ ;
-   tnlString result;
+   String result;
    result.setString( fileName. getString(), size - i + 1 );
    return result;
 }
 
-void RemoveFileExtension( tnlString& fileName )
+void RemoveFileExtension( String& fileName )
 {
    int size = fileName. getLength();
    int i = 1;

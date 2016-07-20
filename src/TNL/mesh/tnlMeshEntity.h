@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlFile.h>
+#include <TNL/File.h>
 #include <TNL/core/tnlDynamicTypeTag.h>
 #include <TNL/mesh/tnlMeshEntityId.h>
 #include <TNL/mesh/traits/tnlMeshTraits.h>
@@ -55,13 +55,13 @@ class tnlMeshEntity
  
       ~tnlMeshEntity();
 
-      static tnlString getType();
+      static String getType();
 
-      tnlString getTypeVirtual() const;
+      String getTypeVirtual() const;
 
-      bool save( tnlFile& file ) const;
+      bool save( File& file ) const;
 
-      bool load( tnlFile& file );
+      bool load( File& file );
 
       void print( std::ostream& str ) const;
 
@@ -164,15 +164,15 @@ class tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >
       template< int SuperDimensions > using SuperentityTraits =
       typename MeshTraits::template SuperentityTraits< EntityTopology, SuperDimensions >;
 
-      static tnlString getType();
+      static String getType();
 
-      tnlString getTypeVirtual() const;
+      String getTypeVirtual() const;
 
       ~tnlMeshEntity();
 
-      bool save( tnlFile& file ) const;
+      bool save( File& file ) const;
 
-      bool load( tnlFile& file );
+      bool load( File& file );
 
       void print( std::ostream& str ) const;
 

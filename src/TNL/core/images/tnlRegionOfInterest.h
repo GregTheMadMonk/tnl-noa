@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/core/images/tnlImage.h>
 
@@ -23,7 +23,7 @@ class tnlRegionOfInterest
  
       tnlRegionOfInterest();
  
-      bool setup( const tnlParameterContainer& parameters,
+      bool setup( const Config::ParameterContainer& parameters,
                   const tnlImage< Index >* image );
  
       bool check( const tnlImage< Index >* image ) const;

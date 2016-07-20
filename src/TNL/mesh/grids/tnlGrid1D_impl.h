@@ -12,8 +12,8 @@
 
 #include <fstream>
 #include <iomanip>
-#include <TNL/core/tnlString.h>
-#include <TNL/core/tnlAssert.h>
+#include <TNL/String.h>
+#include <TNL/Assert.h>
 #include <TNL/mesh/tnlGnuplotWriter.h>
 #include <TNL/mesh/grids/tnlGridEntityGetter_impl.h>
 #include <TNL/mesh/grids/tnlNeighbourGridEntityGetter1D_impl.h>
@@ -34,19 +34,19 @@ tnlGrid< 1, Real, Device, Index >::tnlGrid()
 template< typename Real,
           typename Device,
           typename Index  >
-tnlString tnlGrid< 1, Real, Device, Index >::getType()
+String tnlGrid< 1, Real, Device, Index >::getType()
 {
-   return tnlString( "tnlGrid< " ) +
-          tnlString( getMeshDimensions() ) + ", " +
-          tnlString( TNL::getType< RealType >() ) + ", " +
-          tnlString( Device::getDeviceType() ) + ", " +
-          tnlString( TNL::getType< IndexType >() ) + " >";
+   return String( "tnlGrid< " ) +
+          String( getMeshDimensions() ) + ", " +
+          String( TNL::getType< RealType >() ) + ", " +
+          String( Device::getDeviceType() ) + ", " +
+          String( TNL::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlGrid< 1, Real, Device, Index >::getTypeVirtual() const
+String tnlGrid< 1, Real, Device, Index >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -54,7 +54,7 @@ tnlString tnlGrid< 1, Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlGrid< 1, Real, Device, Index >::getSerializationType()
+String tnlGrid< 1, Real, Device, Index >::getSerializationType()
 {
    return HostType::getType();
 };
@@ -62,7 +62,7 @@ tnlString tnlGrid< 1, Real, Device, Index >::getSerializationType()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlGrid< 1, Real, Device, Index >::getSerializationTypeVirtual() const
+String tnlGrid< 1, Real, Device, Index >::getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 };
@@ -89,7 +89,7 @@ template< typename Real,
           typename Index  >
 void tnlGrid< 1, Real, Device, Index >::setDimensions( const Index xSize )
 {
-   tnlAssert( xSize > 0, std::cerr << "xSize = " << xSize );
+   Assert( xSize > 0, std::cerr << "xSize = " << xSize );
    this->dimensions.x() = xSize;
    this->numberOfCells = xSize;
    this->numberOfVertices = xSize + 1;
@@ -240,7 +240,7 @@ const Real&
 tnlGrid< 1, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
-   tnlAssert( xPow >= -2 && xPow <= 2,
+   Assert( xPow >= -2 && xPow <= 2,
               std::cerr << " xPow = " << xPow );
    return this->spaceStepsProducts[ xPow + 2 ];
 }
@@ -303,9 +303,9 @@ tnlGrid< 1, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 1, Real, Device, Index >::save( tnlFile& file ) const
+bool tnlGrid< 1, Real, Device, Index >::save( File& file ) const
 {
-   if( ! tnlObject::save( file ) )
+   if( ! Object::save( file ) )
       return false;
    if( ! this->origin.save( file ) ||
        ! this->proportions.save( file ) ||
@@ -320,9 +320,9 @@ bool tnlGrid< 1, Real, Device, Index >::save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 1, Real, Device, Index >::load( tnlFile& file )
+bool tnlGrid< 1, Real, Device, Index >::load( File& file )
 {
-   if( ! tnlObject::load( file ) )
+   if( ! Object::load( file ) )
       return false;
    CoordinatesType dimensions;
    if( ! this->origin.load( file ) ||
@@ -339,24 +339,24 @@ bool tnlGrid< 1, Real, Device, Index >::load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 1, Real, Device, Index >::save( const tnlString& fileName ) const
+bool tnlGrid< 1, Real, Device, Index >::save( const String& fileName ) const
 {
-   return tnlObject::save( fileName );
+   return Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 1, Real, Device, Index >::load( const tnlString& fileName )
+bool tnlGrid< 1, Real, Device, Index >::load( const String& fileName )
 {
-   return tnlObject::load( fileName );
+   return Object::load( fileName );
 }
 
 template< typename Real,
            typename Device,
            typename Index >
-bool tnlGrid< 1, Real, Device, Index >::writeMesh( const tnlString& fileName,
-                                                   const tnlString& format ) const
+bool tnlGrid< 1, Real, Device, Index >::writeMesh( const String& fileName,
+                                                   const String& format ) const
 {
    /*****
     * TODO: implement this
@@ -369,8 +369,8 @@ template< typename Real,
            typename Index >
    template< typename MeshFunction >
 bool tnlGrid< 1, Real, Device, Index >::write( const MeshFunction& function,
-                                                 const tnlString& fileName,
-                                                 const tnlString& format ) const
+                                                 const String& fileName,
+                                                 const String& format ) const
 {
    if( this->template getEntitiesCount< Cell >() != function. getSize() )
    {
@@ -410,7 +410,7 @@ template< typename Real,
            typename Index >
 void
 tnlGrid< 1, Real, Device, Index >::
-writeProlog( tnlLogger& logger )
+writeProlog( Logger& logger )
 {
    logger.writeParameter( "Dimensions:", getMeshDimensions() );
    logger.writeParameter( "Domain origin:", this->origin );

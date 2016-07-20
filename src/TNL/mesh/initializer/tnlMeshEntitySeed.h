@@ -27,7 +27,7 @@ class tnlMeshEntitySeed
       typedef typename tnlMeshTraits< MeshConfig >::IdArrayAccessorType                                  IdArrayAccessorType;
       typedef typename SubvertexTraits::IdArrayType                                                      IdArrayType;
 
-      static tnlString getType() { return tnlString( "tnlMeshEntitySeed<>" ); }
+      static String getType() { return String( "tnlMeshEntitySeed<>" ); }
  
       static constexpr LocalIndexType getCornersCount()
       {
@@ -36,8 +36,8 @@ class tnlMeshEntitySeed
 
       void setCornerId( LocalIndexType cornerIndex, GlobalIndexType pointIndex )
       {
-         tnlAssert( 0 <= cornerIndex && cornerIndex < getCornersCount(), std::cerr << "cornerIndex = " << cornerIndex );
-         tnlAssert( 0 <= pointIndex, std::cerr << "pointIndex = " << pointIndex );
+         Assert( 0 <= cornerIndex && cornerIndex < getCornersCount(), std::cerr << "cornerIndex = " << cornerIndex );
+         Assert( 0 <= pointIndex, std::cerr << "pointIndex = " << pointIndex );
 
          this->cornerIds[ cornerIndex ] = pointIndex;
       }

@@ -12,16 +12,16 @@
 
 namespace TNL {
 
-class tnlString;
+class String;
 
 void FileNameBaseNumberEnding( const char* base_name,
                                int number,
                                int index_size,
                                const char* ending,
-                               tnlString& file_name );
+                               String& file_name );
 
-tnlString getFileExtension( const tnlString fileName );
+String getFileExtension( const String fileName );
 
-void RemoveFileExtension( tnlString& file_name );
+void RemoveFileExtension( String& file_name );
 
 } // namespace TNL

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/matrices/tnlEllpackMatrix.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/core/mfuncs.h>
 
 namespace TNL {
@@ -27,21 +27,21 @@ tnlEllpackMatrix< Real, Device, Index > :: tnlEllpackMatrix()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlEllpackMatrix< Real, Device, Index > :: getType()
+String tnlEllpackMatrix< Real, Device, Index > :: getType()
 {
-   return tnlString( "tnlEllpackMatrix< ") +
-          tnlString( TNL::getType< Real >() ) +
-          tnlString( ", " ) +
+   return String( "tnlEllpackMatrix< ") +
+          String( TNL::getType< Real >() ) +
+          String( ", " ) +
           Device :: getDeviceType() +
-          tnlString( ", " ) +
-          tnlString( TNL::getType< Index >() ) +
-          tnlString( " >" );
+          String( ", " ) +
+          String( TNL::getType< Index >() ) +
+          String( " >" );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlEllpackMatrix< Real, Device, Index >::getTypeVirtual() const
+String tnlEllpackMatrix< Real, Device, Index >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -52,7 +52,7 @@ template< typename Real,
 bool tnlEllpackMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
                                                              const IndexType columns )
 {
-   tnlAssert( rows > 0 && columns > 0,
+   Assert( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
                    << " columns = " << columns << std::endl );
    this->rows = rows;
@@ -70,9 +70,9 @@ template< typename Real,
           typename Index >
 bool tnlEllpackMatrix< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
-   tnlAssert( this->getRows() > 0, );
-   tnlAssert( this->getColumns() > 0, );
-   tnlAssert( rowLengths.getSize() > 0, );
+   Assert( this->getRows() > 0, );
+   Assert( this->getColumns() > 0, );
+   Assert( rowLengths.getSize() > 0, );
    this->rowLengths = this->maxRowLength = rowLengths.max();
    return allocateElements();
 }
@@ -82,7 +82,7 @@ template< typename Real,
           typename Index >
 bool tnlEllpackMatrix< Real, Device, Index >::setConstantCompressedRowsLengths( const IndexType& rowLengths )
 {
-   tnlAssert( rowLengths > 0,
+   Assert( rowLengths > 0,
               std::cerr << " rowLengths = " << rowLengths );
    this->rowLengths = rowLengths;
    if( this->rows > 0 )
@@ -131,7 +131,7 @@ template< typename Real,
              typename Index2 >
 bool tnlEllpackMatrix< Real, Device, Index >::operator == ( const tnlEllpackMatrix< Real2, Device2, Index2 >& matrix ) const
 {
-   tnlAssert( this->getRows() == matrix.getRows() &&
+   Assert( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
               std::cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
@@ -194,7 +194,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: addElementFast( const IndexType 
                                                                 const RealType& thisElementMultiplicator )
 {
    // TODO: return this back when CUDA kernels support std::cerr
-   /*tnlAssert( row >= 0 && row < this->rows &&
+   /*Assert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
               std::cerr << " row = " << row
                    << " column = " << column
@@ -508,7 +508,7 @@ void tnlEllpackMatrix< Real, Device, Index > :: addMatrix( const tnlEllpackMatri
                                                                  const RealType& matrixMultiplicator,
                                                                  const RealType& thisMatrixMultiplicator )
 {
-   tnlAssert( false, std::cerr << "TODO: implement" );
+   Assert( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -520,7 +520,7 @@ template< typename Real,
 void tnlEllpackMatrix< Real, Device, Index >::getTransposition( const tnlEllpackMatrix< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   tnlAssert( false, std::cerr << "TODO: implement" );
+   Assert( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -533,7 +533,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: performSORIteration( const Vecto
                                                                            Vector& x,
                                                                            const RealType& omega ) const
 {
-   tnlAssert( row >=0 && row < this->getRows(),
+   Assert( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row
                    << " this->getRows() = " << this->getRows() << std::endl );
 
@@ -566,7 +566,7 @@ bool tnlEllpackMatrix< Real, Device, Index > :: performSORIteration( const Vecto
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackMatrix< Real, Device, Index >::save( tnlFile& file ) const
+bool tnlEllpackMatrix< Real, Device, Index >::save( File& file ) const
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::save( file) ) return false;
 #ifdef HAVE_NOT_CXX11
@@ -580,7 +580,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackMatrix< Real, Device, Index >::load( tnlFile& file )
+bool tnlEllpackMatrix< Real, Device, Index >::load( File& file )
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::load( file) ) return false;
 #ifdef HAVE_NOT_CXX11
@@ -594,17 +594,17 @@ bool tnlEllpackMatrix< Real, Device, Index >::load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackMatrix< Real, Device, Index >::save( const tnlString& fileName ) const
+bool tnlEllpackMatrix< Real, Device, Index >::save( const String& fileName ) const
 {
-   return tnlObject::save( fileName );
+   return Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlEllpackMatrix< Real, Device, Index >::load( const tnlString& fileName )
+bool tnlEllpackMatrix< Real, Device, Index >::load( const String& fileName )
 {
-   return tnlObject::load( fileName );
+   return Object::load( fileName );
 }
 
 template< typename Real,

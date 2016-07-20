@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/tnlObject.h>
+#include <TNL/Object.h>
 #include <TNL/functions/tnlDomain.h>
 #include <TNL/functions/tnlMeshFunctionGnuplotWriter.h>
 #include <TNL/functions/tnlMeshFunctionVTKWriter.h>
@@ -21,7 +21,7 @@ template< typename Mesh,
           int MeshEntityDimensions = Mesh::meshDimensions,
           typename Real = typename Mesh::RealType >
 class tnlMeshFunction :
-   public tnlObject,
+   public Object,
    public tnlDomain< Mesh::meshDimensions, MeshDomain >
 {
    //static_assert( Mesh::DeviceType::DeviceType == Vector::DeviceType::DeviceType,
@@ -46,19 +46,19 @@ class tnlMeshFunction :
                        Vector& data,
                        const IndexType& offset = 0 );
  
-      static tnlString getType();
+      static String getType();
  
-      tnlString getTypeVirtual() const;
+      String getTypeVirtual() const;
  
-      static tnlString getSerializationType();
+      static String getSerializationType();
 
-      virtual tnlString getSerializationTypeVirtual() const;
+      virtual String getSerializationTypeVirtual() const;
  
-      static void configSetup( tnlConfigDescription& config,
-                               const tnlString& prefix = "" );
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" );
 
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" );
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" );
  
       void bind( ThisType& meshFunction );
  
@@ -115,20 +115,20 @@ class tnlMeshFunction :
  
       RealType getMaxNorm() const;
  
-      bool save( tnlFile& file ) const;
+      bool save( File& file ) const;
 
-      bool load( tnlFile& file );
+      bool load( File& file );
  
-      bool boundLoad( tnlFile& file );
+      bool boundLoad( File& file );
  
-      bool write( const tnlString& fileName,
-                  const tnlString& format = "vtk" ) const;
+      bool write( const String& fileName,
+                  const String& format = "vtk" ) const;
  
-      using tnlObject::save;
+      using Object::save;
  
-      using tnlObject::load;
+      using Object::load;
  
-      using tnlObject::boundLoad;
+      using Object::boundLoad;
  
    protected:
  

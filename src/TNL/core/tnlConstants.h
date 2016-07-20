@@ -13,12 +13,12 @@
 #include <limits.h>
 #include <float.h>
 #include <cstdio>
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Assert.h>
 #include <TNL/core/tnlCuda.h>
 
 namespace TNL {
 
-template< typename T > __cuda_callable__ T tnlMinValue(){ tnlAssert( false,)};
+template< typename T > __cuda_callable__ T tnlMinValue(){ Assert( false,)};
 template<> inline __cuda_callable__ char               tnlMinValue< char >() { return CHAR_MIN; }
 template<> inline __cuda_callable__ unsigned char      tnlMinValue< unsigned char >() { return 0; }
 template<> inline __cuda_callable__ short int          tnlMinValue< short int >() { return SHRT_MIN; }
@@ -31,7 +31,7 @@ template<> inline __cuda_callable__ float              tnlMinValue< float >() { 
 template<> inline __cuda_callable__ double             tnlMinValue< double >() { return -DBL_MAX; }
 template<> inline __cuda_callable__ long double        tnlMinValue< long double >() { return -LDBL_MAX; }
 
-template< typename T > __cuda_callable__ T tnlMaxValue(){ tnlAssert( false,)};
+template< typename T > __cuda_callable__ T tnlMaxValue(){ Assert( false,)};
 template<> inline __cuda_callable__ char               tnlMaxValue< char >() { return CHAR_MAX; }
 template<> inline __cuda_callable__ unsigned char      tnlMaxValue< unsigned char >() { return UCHAR_MAX; }
 template<> inline __cuda_callable__ short int          tnlMaxValue< short int >() { return SHRT_MAX; }

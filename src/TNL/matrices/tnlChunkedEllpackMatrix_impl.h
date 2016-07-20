@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/matrices/tnlChunkedEllpackMatrix.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/core/mfuncs.h>
 
 #ifdef HAVE_CUDA
@@ -41,19 +41,19 @@ tnlChunkedEllpackMatrix< Real, Device, Index >::tnlChunkedEllpackMatrix()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlChunkedEllpackMatrix< Real, Device, Index >::getType()
+String tnlChunkedEllpackMatrix< Real, Device, Index >::getType()
 {
-   return tnlString( "tnlChunkedEllpackMatrix< ") +
-          tnlString( TNL::getType< Real >() ) +
-          tnlString( ", " ) +
+   return String( "tnlChunkedEllpackMatrix< ") +
+          String( TNL::getType< Real >() ) +
+          String( ", " ) +
           Device :: getDeviceType() +
-          tnlString( " >" );
+          String( " >" );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlChunkedEllpackMatrix< Real, Device, Index >::getTypeVirtual() const
+String tnlChunkedEllpackMatrix< Real, Device, Index >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -64,7 +64,7 @@ template< typename Real,
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
                                                                     const IndexType columns )
 {
-   tnlAssert( rows > 0 && columns > 0,
+   Assert( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
                    << " columns = " << columns << std::endl );
    if( ! tnlSparseMatrix< Real, Device, Index >::setDimensions( rows, columns ) )
@@ -109,7 +109,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::resolveSliceSizes( const tn
       row++;
       if( allocatedElementsInSlice < desiredElementsInSlice  )
           if( row < this->rows && sliceSize < chunksInSlice ) continue;
-      tnlAssert( sliceSize >0, );
+      Assert( sliceSize >0, );
       this->slices[ numberOfSlices ].size = sliceSize;
       this->slices[ numberOfSlices ].firstRow = row - sliceSize;
       this->slices[ numberOfSlices ].pointer = allocatedElementsInSlice; // this is only temporary
@@ -172,7 +172,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setSlice( const CompressedR
       maxChunkInSlice = max( maxChunkInSlice,
                           ceil( ( RealType ) rowLengths[ i ] /
                                 ( RealType ) this->rowToChunkMapping[ i ] ) );
-   tnlAssert( maxChunkInSlice > 0,
+   Assert( maxChunkInSlice > 0,
               std::cerr << " maxChunkInSlice = " << maxChunkInSlice << std::endl );
 
    /****
@@ -188,9 +188,9 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setSlice( const CompressedR
    for( IndexType i = sliceBegin; i < sliceEnd; i++ )
    {
       this->rowPointers[ i + 1 ] = maxChunkInSlice*rowToChunkMapping[ i ];
-      tnlAssert( this->rowPointers[ i ] >= 0,
+      Assert( this->rowPointers[ i ] >= 0,
                  std::cerr << "this->rowPointers[ i ] = " << this->rowPointers[ i ] );
-      tnlAssert( this->rowPointers[ i + 1 ] >= 0,
+      Assert( this->rowPointers[ i + 1 ] >= 0,
                  std::cerr << "this->rowPointers[ i + 1 ] = " << this->rowPointers[ i + 1 ] );
    }
 
@@ -207,8 +207,8 @@ template< typename Real,
           typename Index >
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
-   tnlAssert( this->getRows() > 0, );
-   tnlAssert( this->getColumns() > 0, );
+   Assert( this->getRows() > 0, );
+   Assert( this->getColumns() > 0, );
 
    IndexType elementsToAllocation( 0 );
 
@@ -252,7 +252,7 @@ template< typename Real,
 Index tnlChunkedEllpackMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
    const IndexType& sliceIndex = rowToSliceMapping[ row ];
-   tnlAssert( sliceIndex < this->rows, );
+   Assert( sliceIndex < this->rows, );
    const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
    return rowPointers[ row + 1 ] - rowPointers[ row ];
 }
@@ -336,7 +336,7 @@ template< typename Real,
              typename Index2 >
 bool tnlChunkedEllpackMatrix< Real, Device, Index >::operator == ( const tnlChunkedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const
 {
-   tnlAssert( this->getRows() == matrix.getRows() &&
+   Assert( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
               std::cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
@@ -388,7 +388,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementFast( const Index
                                                                      const RealType& _thisElementMultiplicator )
 {
    // TODO: return this back when CUDA kernels support std::cerr
-   /*tnlAssert( row >= 0 && row < this->rows &&
+   /*Assert( row >= 0 && row < this->rows &&
               _column >= 0 && _column <= this->columns,
               std::cerr << " row = " << row
                    << " column = " << _column
@@ -396,7 +396,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElementFast( const Index
                    << " this->columns = " << this-> columns );*/
 
    const IndexType& sliceIndex = rowToSliceMapping[ row ];
-   tnlAssert( sliceIndex < this->rows, );
+   Assert( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices[ sliceIndex ].firstRow )
       chunkIndex = rowToChunkMapping[ row - 1 ];
@@ -487,7 +487,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElement( const IndexType
                                                                  const RealType& _value,
                                                                  const RealType& _thisElementMultiplicator )
 {
-   tnlAssert( row >= 0 && row < this->rows &&
+   Assert( row >= 0 && row < this->rows &&
               _column >= 0 && _column <= this->columns,
               std::cerr << " row = " << row
                    << " column = " << _column
@@ -495,7 +495,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::addElement( const IndexType
                    << " this->columns = " << this-> columns );
 
    const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
-   tnlAssert( sliceIndex < this->rows, );
+   Assert( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices.getElement( sliceIndex ).firstRow )
       chunkIndex = rowToChunkMapping.getElement( row - 1 );
@@ -584,11 +584,11 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRowFast( const IndexType
                                                                  const IndexType elements )
 {
    // TODO: return this back when CUDA kernels support std::cerr
-   /*tnlAssert( row >= 0 && row < this->rows,
+   /*Assert( row >= 0 && row < this->rows,
               std::cerr << " row = " << row
                    << " this->rows = " << this->rows );*/
    const IndexType sliceIndex = rowToSliceMapping[ row ];
-   //tnlAssert( sliceIndex < this->rows, );
+   //Assert( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices[ sliceIndex ].firstRow )
       chunkIndex = rowToChunkMapping[ row - 1 ];
@@ -659,12 +659,12 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setRow( const IndexType row
                                                              const RealType* values,
                                                              const IndexType elements )
 {
-   tnlAssert( row >= 0 && row < this->rows,
+   Assert( row >= 0 && row < this->rows,
               std::cerr << " row = " << row
                    << " this->rows = " << this->rows );
 
    const IndexType sliceIndex = rowToSliceMapping.getElement( row );
-   tnlAssert( sliceIndex < this->rows, );
+   Assert( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices.getElement( sliceIndex ).firstRow )
       chunkIndex = rowToChunkMapping.getElement( row - 1 );
@@ -760,7 +760,7 @@ Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElementFast( const Index
                                                                      const IndexType column ) const
 {
    const IndexType sliceIndex = rowToSliceMapping[ row ];
-   tnlAssert( sliceIndex < this->rows, );
+   Assert( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices[ sliceIndex ].firstRow )
       chunkIndex = rowToChunkMapping[ row - 1 ];
@@ -806,7 +806,7 @@ Real tnlChunkedEllpackMatrix< Real, Device, Index >::getElement( const IndexType
                                                                  const IndexType column ) const
 {
    const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
-   tnlAssert( sliceIndex < this->rows,
+   Assert( sliceIndex < this->rows,
               std::cerr << " sliceIndex = " << sliceIndex
                    << " this->rows = " << this->rows << std::endl; );
    IndexType chunkIndex( 0 );
@@ -861,7 +861,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::getRowFast( const IndexType
                                                                  RealType* values ) const
 {
    const IndexType& sliceIndex = rowToSliceMapping[ row ];
-   tnlAssert( sliceIndex < this->rows, );
+   Assert( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices[ sliceIndex ].firstRow )
       chunkIndex = rowToChunkMapping[ row - 1 ];
@@ -945,7 +945,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::getRow( const IndexType row
                                                              RealType* values ) const
 {
    const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
-   tnlAssert( sliceIndex < this->rows, );
+   Assert( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices.getElement( sliceIndex ).firstRow )
       chunkIndex = rowToChunkMapping.getElement( row - 1 );
@@ -1001,11 +1001,11 @@ __cuda_callable__
 typename Vector::RealType tnlChunkedEllpackMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                             const Vector& vector ) const
 {
-   /*tnlAssert( row >=0 && row < this->rows,
+   /*Assert( row >=0 && row < this->rows,
             std::cerr << " row = " << row << " this->rows = " << this->rows );*/
 
    const IndexType sliceIndex = rowToSliceMapping[ row ];
-   //tnlAssert( sliceIndex < this->rows, );
+   //Assert( sliceIndex < this->rows, );
    IndexType chunkIndex( 0 );
    if( row != slices[ sliceIndex ].firstRow )
       chunkIndex = rowToChunkMapping[ row - 1 ];
@@ -1113,7 +1113,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::addMatrix( const tnlChunked
                                                                           const RealType& matrixMultiplicator,
                                                                           const RealType& thisMatrixMultiplicator )
 {
-   tnlAssert( false, std::cerr << "TODO: implement" );
+   Assert( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -1125,7 +1125,7 @@ template< typename Real,
 void tnlChunkedEllpackMatrix< Real, Device, Index >::getTransposition( const tnlChunkedEllpackMatrix< Real2, Device, Index2 >& matrix,
                                                                        const RealType& matrixMultiplicator )
 {
-   tnlAssert( false, std::cerr << "TODO: implement" );
+   Assert( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -1138,7 +1138,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::performSORIteration( const 
                                                                                     Vector& x,
                                                                                     const RealType& omega ) const
 {
-   tnlAssert( row >=0 && row < this->getRows(),
+   Assert( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row
                    << " this->getRows() = " << this->getRows() << std::endl );
 
@@ -1146,7 +1146,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::performSORIteration( const 
    RealType sum( 0.0 );
 
    const IndexType& sliceIndex = rowToSliceMapping[ row ];
-   tnlAssert( sliceIndex < this->rows, );
+   Assert( sliceIndex < this->rows, );
    const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
    IndexType elementPtr = rowPointers[ row ];
    const IndexType rowEnd = rowPointers[ row + 1 ];
@@ -1172,7 +1172,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::performSORIteration( const 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlChunkedEllpackMatrix< Real, Device, Index >::save( tnlFile& file ) const
+bool tnlChunkedEllpackMatrix< Real, Device, Index >::save( File& file ) const
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::save( file ) ||
        ! this->rowToChunkMapping.save( file ) ||
@@ -1186,7 +1186,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlChunkedEllpackMatrix< Real, Device, Index >::load( tnlFile& file )
+bool tnlChunkedEllpackMatrix< Real, Device, Index >::load( File& file )
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::load( file ) ||
        ! this->rowToChunkMapping.load( file ) ||
@@ -1200,17 +1200,17 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlChunkedEllpackMatrix< Real, Device, Index >::save( const tnlString& fileName ) const
+bool tnlChunkedEllpackMatrix< Real, Device, Index >::save( const String& fileName ) const
 {
-   return tnlObject::save( fileName );
+   return Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlChunkedEllpackMatrix< Real, Device, Index >::load( const tnlString& fileName )
+bool tnlChunkedEllpackMatrix< Real, Device, Index >::load( const String& fileName )
 {
-   return tnlObject::load( fileName );
+   return Object::load( fileName );
 }
 
 template< typename Real,
@@ -1223,7 +1223,7 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::print( std::ostream& str ) 
       str <<"Row: " << row << " -> ";
 
       const IndexType& sliceIndex = rowToSliceMapping.getElement( row );
-      //tnlAssert( sliceIndex < this->rows, );
+      //Assert( sliceIndex < this->rows, );
       const IndexType& chunkSize = slices.getElement( sliceIndex ).chunkSize;
       IndexType elementPtr = rowPointers.getElement( row );
       const IndexType rowEnd = rowPointers.getElement( row + 1 );
@@ -1244,7 +1244,7 @@ template< typename Real,
           typename Device,
           typename Index >
 void tnlChunkedEllpackMatrix< Real, Device, Index >::printStructure( std::ostream& str,
-                                                                     const tnlString& name ) const
+                                                                     const String& name ) const
 {
    const IndexType numberOfSlices = this->getNumberOfSlices();
    str << "Matrix type: " << getType() << std::endl

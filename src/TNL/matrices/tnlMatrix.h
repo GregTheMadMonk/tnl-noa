@@ -10,24 +10,24 @@
 
 #pragma once
 
-#include <TNL/tnlObject.h>
+#include <TNL/Object.h>
 #include <TNL/core/tnlHost.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 
 namespace TNL {
 
 template< typename Real = double,
           typename Device = tnlHost,
           typename Index = int >
-class tnlMatrix : public virtual tnlObject
+class tnlMatrix : public virtual Object
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlVector< IndexType, DeviceType, IndexType > CompressedRowsLengthsVector;
-   typedef tnlVector< RealType, DeviceType, IndexType > ValuesVector;
+   typedef Vectors::tnlVector< IndexType, DeviceType, IndexType > CompressedRowsLengthsVector;
+   typedef Vectors::tnlVector< RealType, DeviceType, IndexType > ValuesVector;
 
    tnlMatrix();
 
@@ -38,7 +38,7 @@ class tnlMatrix : public virtual tnlObject
 
    virtual IndexType getRowLength( const IndexType row ) const = 0;
 
-   virtual void getCompressedRowsLengths( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const;
+   virtual void getCompressedRowsLengths( Vectors::tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlMatrix< Real2, Device2, Index2 >& matrix );
@@ -96,9 +96,9 @@ class tnlMatrix : public virtual tnlObject
    bool copyFrom( const Matrix& matrix,
                   const CompressedRowsLengthsVector& rowLengths );
 
-   virtual bool save( tnlFile& file ) const;
+   virtual bool save( File& file ) const;
 
-   virtual bool load( tnlFile& file );
+   virtual bool load( File& file );
 
    virtual void print( std::ostream& str ) const;
 

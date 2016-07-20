@@ -11,10 +11,10 @@
 #ifndef tnlStaticVectorH
 #define tnlStaticVectorH
 
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Assert.h>
 #include <string.h>
-#include <TNL/core/tnlFile.h>
-#include <TNL/core/tnlString.h>
+#include <TNL/File.h>
+#include <TNL/String.h>
 #include "param-types.h"
 
 //! Aliases for the coordinates
@@ -63,7 +63,7 @@ class tnlStaticVector
              const Real& v2,
              const Real& v3 );
 
-   static tnlString getType();
+   static String getType();
 
 #ifdef HAVE_CUDA
    __host__ __device__
@@ -193,9 +193,9 @@ class tnlStaticVector
 #endif
    bool operator >= ( const tnlStaticVector& v ) const;
 
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
-   bool load( tnlFile& file);
+   bool load( File& file);
 
    protected:
    Real data[ Size ];
@@ -300,7 +300,7 @@ template< int Size, typename Real >
 tnlStaticVector< Size, Real > :: tnlStaticVector( const Real& v1,
                                     const Real& v2 )
 {
-   tnlAssert( Size == 2,
+   Assert( Size == 2,
               printf( "Using this constructor does not makes sense for Size different then 2.\n") );
    data[ 0 ] = v1;
    data[ 1 ] = v2;
@@ -314,7 +314,7 @@ tnlStaticVector< Size, Real > :: tnlStaticVector( const Real& v1,
                                       const Real& v2,
                                       const Real& v3 )
 {
-   tnlAssert( Size == 3,
+   Assert( Size == 3,
               printf( "Using this constructor does not makes sense for Size different then 3.\n") );
    data[ 0 ] = v1;
    data[ 1 ] = v2;
@@ -325,13 +325,13 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlString tnlStaticVector< Size, Real > :: getType()
+String tnlStaticVector< Size, Real > :: getType()
 {
-   return tnlString( "tnlStaticVector< " ) +
-          tnlString( Size ) +
-          tnlString( ", " ) +
+   return String( "tnlStaticVector< " ) +
+          String( Size ) +
+          String( ", " ) +
          TNL::getType< Real >() +
-          tnlString( " >" );
+          String( " >" );
 }
 
 template< int Size, typename Real >
@@ -360,7 +360,7 @@ template< int Size, typename Real >
 #endif
 Real& tnlStaticVector< Size, Real > :: x()
 {
-   tnlAssert( Size > 0, std::cerr << "Size = " << Size << std::endl; );
+   Assert( Size > 0, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 1 )
    {
       printf( "The size of the tnlStaticVector is too small to get x coordinate.\n" );
@@ -375,7 +375,7 @@ template< int Size, typename Real >
 #endif
 const Real& tnlStaticVector< Size, Real > :: x() const
 {
-   tnlAssert( Size > 0, std::cerr << "Size = " << Size << std::endl; );
+   Assert( Size > 0, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 1 )
    {
       printf( "The size of the tnlStaticVector is too small to get x coordinate.\n" );
@@ -390,7 +390,7 @@ template< int Size, typename Real >
 #endif
 Real& tnlStaticVector< Size, Real > :: y()
 {
-   tnlAssert( Size > 1, std::cerr << "Size = " << Size << std::endl; );
+   Assert( Size > 1, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 2 )
    {
       printf( "The size of the tnlStaticVector is too small to get y coordinate.\n" );
@@ -405,7 +405,7 @@ template< int Size, typename Real >
 #endif
 const Real& tnlStaticVector< Size, Real > :: y() const
 {
-   tnlAssert( Size > 1, std::cerr << "Size = " << Size << std::endl; );
+   Assert( Size > 1, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 2 )
    {
       printf( "The size of the tnlStaticVector is too small to get y coordinate.\n" );
@@ -421,7 +421,7 @@ template< int Size, typename Real >
 #endif
 Real& tnlStaticVector< Size, Real > :: z()
 {
-   tnlAssert( Size > 2, std::cerr << "Size = " << Size << std::endl; );
+   Assert( Size > 2, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 3 )
    {
       printf( "The size of the tnlStaticVector is too small to get z coordinate.\n" );
@@ -436,7 +436,7 @@ template< int Size, typename Real >
 #endif
 const Real& tnlStaticVector< Size, Real > :: z() const
 {
-   tnlAssert( Size > 2, std::cerr << "Size = " << Size << std::endl; );
+   Assert( Size > 2, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 3 )
    {
       printf( "The size of the tnlStaticVector is too small to get z coordinate.\n" );
@@ -725,7 +725,7 @@ bool tnlStaticVector< Size, Real > :: operator >= ( const tnlStaticVector& u ) c
 }
 
 template< int Size, typename Real >
-bool tnlStaticVector< Size, Real > :: save( tnlFile& file ) const
+bool tnlStaticVector< Size, Real > :: save( File& file ) const
 {
    int size = Size;
 #ifdef HAVE_NOT_CXX11
@@ -741,7 +741,7 @@ bool tnlStaticVector< Size, Real > :: save( tnlFile& file ) const
 };
 
 template< int Size, typename Real >
-bool tnlStaticVector< Size, Real > :: load( tnlFile& file)
+bool tnlStaticVector< Size, Real > :: load( File& file)
 {
    int size;
 #ifdef HAVE_NOT_CXX11

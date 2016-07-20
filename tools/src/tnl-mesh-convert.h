@@ -11,7 +11,7 @@
 #ifndef TNL_MESH_CONVERT_H_
 #define TNL_MESH_CONVERT_H_
 
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <TNL/mesh/tnlMeshReaderNetgen.h>
 #include <TNL/mesh/tnlMeshWriterVTKLegacy.h>
 #include <TNL/mesh/config/tnlMeshConfigBase.h>
@@ -26,11 +26,11 @@ using namespace TNL;
 
 template< typename MeshReader,
           typename MeshType >
-bool convertMesh( const tnlParameterContainer& parameters )
+bool convertMesh( const Config::ParameterContainer& parameters )
 {
-   const tnlString& inputFileName = parameters.getParameter< tnlString >( "input-file" );
-   const tnlString& outputFileName = parameters.getParameter< tnlString >( "output-file" );
-   const tnlString outputFileExt = getFileExtension( outputFileName );
+   const String& inputFileName = parameters.getParameter< String >( "input-file" );
+   const String& outputFileName = parameters.getParameter< String >( "output-file" );
+   const String outputFileExt = getFileExtension( outputFileName );
 
    MeshType mesh;
    if( ! MeshReader::readMesh( inputFileName, mesh, true ) )
@@ -62,9 +62,9 @@ bool convertMesh( const tnlParameterContainer& parameters )
    }
 }
 
-bool readNetgenMesh( const tnlParameterContainer& parameters )
+bool readNetgenMesh( const Config::ParameterContainer& parameters )
 {
-   const tnlString& inputFileName = parameters.getParameter< tnlString >( "input-file" );
+   const String& inputFileName = parameters.getParameter< String >( "input-file" );
  
    tnlMeshReaderNetgen meshReader;
    if( ! meshReader.detectMesh( inputFileName ) )
@@ -106,11 +106,11 @@ bool readNetgenMesh( const tnlParameterContainer& parameters )
    return false;
 }
 
-bool convertMesh( const tnlParameterContainer& parameters )
+bool convertMesh( const Config::ParameterContainer& parameters )
 {
-   tnlString inputFileName = parameters.getParameter< tnlString >( "input-file" );
+   String inputFileName = parameters.getParameter< String >( "input-file" );
 
-   const tnlString fileExt = getFileExtension( inputFileName );
+   const String fileExt = getFileExtension( inputFileName );
    if( fileExt == "ng" )
       return readNetgenMesh( parameters );
 }

@@ -12,11 +12,11 @@ template< typename MeshReal,
           typename Real,
           typename Index,
           typename NonlinearDiffusionOperator >
-tnlString
+String
 tnlNonlinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 getType()
 {
-   return tnlString( "tnlNonlinearDiffusion< " ) +
+   return String( "tnlNonlinearDiffusion< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + "," +
@@ -89,11 +89,11 @@ template< typename MeshReal,
           typename Real,
           typename Index,
           typename NonlinearDiffusionOperator >
-tnlString
+String
 tnlNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 getType()
 {
-   return tnlString( "tnlNonlinearDiffusion< " ) +
+   return String( "tnlNonlinearDiffusion< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + "," +
@@ -166,11 +166,11 @@ template< typename MeshReal,
           typename Real,
           typename Index,
           typename NonlinearDiffusionOperator >
-tnlString
+String
 tnlNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 getType()
 {
-   return tnlString( "tnlNonlinearDiffusion< " ) +
+   return String( "tnlNonlinearDiffusion< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + "," +

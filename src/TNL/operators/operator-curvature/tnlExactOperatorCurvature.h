@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/vectors/tnlSharedVector.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Vectors/SharedVector.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/functions/tnlFunction.h>
 
@@ -28,7 +28,7 @@ class tnlExactOperatorCurvature< OperatorQ, 1 >
 
       enum { Dimensions = 1 };
 
-      static tnlString getType();
+      static String getType();
 
 #ifdef HAVE_NOT_CXX11      
       template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Vertex, typename Real >
@@ -51,7 +51,7 @@ class tnlExactOperatorCurvature< ExactOperatorQ, 2 >
 
       enum { Dimensions = 2 };
 
-      static tnlString getType();
+      static String getType();
          
 #ifdef HAVE_NOT_CXX11      
       template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Vertex, typename Real >
@@ -73,7 +73,7 @@ class tnlExactOperatorCurvature< ExactOperatorQ, 3 >
 
       enum { Dimensions = 3 };
 
-      static tnlString getType();
+      static String getType();
    
 #ifdef HAVE_NOT_CXX11      
       template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Vertex, typename Real >

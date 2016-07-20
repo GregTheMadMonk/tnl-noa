@@ -18,8 +18,8 @@ template< typename Real,
           int Dimensions >
 bool
 tnlBlobFunctionBase< Real, Dimensions >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    this->height = parameters.getParameter< double >( prefix + "height" );
  
@@ -31,10 +31,10 @@ setup( const tnlParameterContainer& parameters,
  */
 
 template< typename Real >
-tnlString
+String
 tnlBlobFunction< 1, Real >::getType()
 {
-   return "tnlBlobFunction< 1, " + TNL::getType< Real >() + tnlString( " >" );
+   return "tnlBlobFunction< 1, " + TNL::getType< Real >() + String( " >" );
 }
 
 template< typename Real >
@@ -74,10 +74,10 @@ operator()( const VertexType& v,
  * 2D
  */
 template< typename Real >
-tnlString
+String
 tnlBlobFunction< 2, Real >::getType()
 {
-   return tnlString( "tnlBlobFunction< 2, " ) + TNL::getType< Real >() + " >";
+   return String( "tnlBlobFunction< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -118,10 +118,10 @@ operator()( const VertexType& v,
  * 3D
  */
 template< typename Real >
-tnlString
+String
 tnlBlobFunction< 3, Real >::getType()
 {
-   return tnlString( "tnlBlobFunction< 3, " ) + TNL::getType< Real >() + " >";
+   return String( "tnlBlobFunction< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >

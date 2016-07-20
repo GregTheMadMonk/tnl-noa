@@ -19,7 +19,7 @@
 
 namespace TNL {
 
-int findLastIndexOf(tnlString &str, const char* c)
+int findLastIndexOf(String &str, const char* c)
 {
     for (int i = str.getLength(); i > -1; i--)
     {
@@ -39,7 +39,7 @@ int filter(const struct dirent *dire)
     return 1;
 }
 
-inline tnlDicomSeries::tnlDicomSeries( const tnlString& filePath)
+inline tnlDicomSeries::tnlDicomSeries( const String& filePath)
 {
 #ifdef HAVE_DCMTK_H
     dicomImage = 0;
@@ -118,10 +118,10 @@ getImage( const int imageIdx,
 #endif
 }
 
-inline bool tnlDicomSeries::retrieveFileList( const tnlString& filePath)
+inline bool tnlDicomSeries::retrieveFileList( const String& filePath)
 {
-    tnlString filePathString(filePath);
-    tnlString suffix(filePath.getString(), filePathString.getLength() - 3);
+    String filePathString(filePath);
+    String suffix(filePath.getString(), filePathString.getLength() - 3);
 
     /***
      * Check DICOM files
@@ -137,8 +137,8 @@ inline bool tnlDicomSeries::retrieveFileList( const tnlString& filePath)
    /***
     * Parse file path
     */
-   tnlString fileName(filePath.getString(), fileNamePosition);
-   tnlString directoryPath(filePath.getString(), 0, filePathString.getLength() - fileNamePosition);
+   String fileName(filePath.getString(), fileNamePosition);
+   String directoryPath(filePath.getString(), 0, filePathString.getLength() - fileNamePosition);
 
    int separatorPosition = findLastIndexOf(fileName, "_");
    if (separatorPosition == -1)
@@ -151,16 +151,16 @@ inline bool tnlDicomSeries::retrieveFileList( const tnlString& filePath)
    else
    {
       //numbered files
-      tnlString fileNamePrefix(fileName.getString(), 0, fileName.getLength() - separatorPosition);
+      String fileNamePrefix(fileName.getString(), 0, fileName.getLength() - separatorPosition);
 
       struct dirent **dirp;
-      tnlList<tnlString > files;
+      List<String > files;
 
       //scan and sort directory
       int ndirs = scandir(directoryPath.getString(), &dirp, filter, alphasort);
       for(int i = 0 ; i < ndirs; ++i)
       {
-         files.Append( tnlString((char *)dirp[i]->d_name));
+         files.Append( String((char *)dirp[i]->d_name));
          delete dirp[i];
       }
 
@@ -176,7 +176,7 @@ inline bool tnlDicomSeries::retrieveFileList( const tnlString& filePath)
    return true;
 }
 
-inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
+inline bool tnlDicomSeries::loadImage( const String& filePath, int number)
 {
 #ifdef HAVE_DCMTK_H
    //load header
@@ -187,7 +187,7 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
       return false;
 
    //check series UID
-   const tnlString& seriesUID = dicomSeriesHeaders[ 0 ]->getSeriesInfo().getSeriesInstanceUID();
+   const String& seriesUID = dicomSeriesHeaders[ 0 ]->getSeriesInfo().getSeriesInstanceUID();
    if( seriesUID != header->getSeriesInfo().getSeriesInstanceUID() )
       return false;
 
@@ -315,7 +315,7 @@ inline bool tnlDicomSeries::loadImage( const tnlString& filePath, int number)
 }
 
 
-inline bool tnlDicomSeries::loadDicomSeries( const tnlString& filePath )
+inline bool tnlDicomSeries::loadDicomSeries( const String& filePath )
 {
    /***
     * Load list of files

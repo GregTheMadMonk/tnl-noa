@@ -16,8 +16,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/core/arrays/tnlSharedArray.h>
-#include <TNL/core/tnlFile.h>
+#include <TNL/Arrays/SharedArray.h>
+#include <TNL/File.h>
 
 using namespace TNL;
 
@@ -100,7 +100,7 @@ class tnlSharedArrayTester : public CppUnit :: TestCase
       v. setSize( 100 );
       for( int i = 0; i < 100; i ++ )
          v. setElement( i, 3.14147 );
-      tnlFile file;
+      File file;
       file. open( "test-file.tnl", tnlWriteMode );
       v. save( file );
       file. close();

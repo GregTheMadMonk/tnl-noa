@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlString.h>
+#include <TNL/String.h>
 #include <TNL/core/tnlCuda.h>
 #include <TNL/operators/tnlOperator.h>
 #include <TNL/operators/tnlExactIdentityOperator.h>
@@ -24,10 +24,10 @@ class tnlExactFunctionInverseOperator
 {
    public:
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlExactFunctionInverseOperator< " ) +
-                tnlString( Dimensions) + " >";
+         return String( "tnlExactFunctionInverseOperator< " ) +
+                String( Dimensions) + " >";
       }
  
       InnerOperator& getInnerOperator()

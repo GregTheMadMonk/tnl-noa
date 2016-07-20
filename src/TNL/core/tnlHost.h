@@ -12,12 +12,14 @@
 
 #include <unistd.h>
 #include <TNL/core/tnlDevice.h>
-#include <TNL/core/tnlString.h>
+#include <TNL/String.h>
 
 namespace TNL {
 
-class tnlConfigDescription;
-class tnlParameterContainer;
+namespace Config { 
+   class ConfigDescription;
+   class ParameterContainer;
+}
 
 class tnlHost
 {
@@ -25,7 +27,7 @@ class tnlHost
 
       enum { DeviceType = tnlHostDevice };
 
-      static tnlString getDeviceType();
+      static String getDeviceType();
 
    #ifdef HAVE_CUDA
       __host__ __device__
@@ -46,10 +48,10 @@ class tnlHost
  
       static int getThreadIdx();
  
-      static void configSetup( tnlConfigDescription& config, const tnlString& prefix = "" );
+      static void configSetup( Config::ConfigDescription& config, const String& prefix = "" );
  
-      static bool setup( const tnlParameterContainer& parameters,
-                         const tnlString& prefix = "" );
+      static bool setup( const Config::ParameterContainer& parameters,
+                         const String& prefix = "" );
 
    protected:
  

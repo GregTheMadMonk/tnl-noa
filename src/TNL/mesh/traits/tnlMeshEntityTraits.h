@@ -10,10 +10,10 @@
 
 #pragma once
 
-#include <TNL/core/vectors/tnlStaticVector.h>
-#include <TNL/core/arrays/tnlArray.h>
-#include <TNL/core/arrays/tnlSharedArray.h>
-#include <TNL/core/arrays/tnlConstSharedArray.h>
+#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Arrays/Array.h>
+#include <TNL/Arrays/SharedArray.h>
+#include <TNL/Arrays/ConstSharedArray.h>
 #include <TNL/core/tnlIndexedSet.h>
 #include <TNL/mesh/topologies/tnlMeshEntityTopology.h>
 #include <TNL/mesh/config/tnlMeshConfigBase.h>
@@ -72,14 +72,14 @@ class tnlMeshEntityTraits
       typedef tnlMeshEntitySeedKey< MeshConfig, EntityTopology >                   Key;
 
 
-      typedef tnlArray< EntityType, tnlHost, GlobalIndexType >                     StorageArrayType;
-      typedef tnlSharedArray< EntityType, tnlHost, GlobalIndexType >               AccessArrayType;
-      typedef tnlIndexedSet< EntityType, GlobalIndexType, Key >                    UniqueContainerType;
-      typedef tnlIndexedSet< SeedType, GlobalIndexType, Key >                      SeedIndexedSetType;
-      typedef tnlArray< SeedType, tnlHost, GlobalIndexType >                       SeedArrayType;
-      typedef tnlArray< ReferenceOrientationType, tnlHost, GlobalIndexType >       ReferenceOrientationArrayType;
+      typedef Arrays::Array< EntityType, tnlHost, GlobalIndexType >               StorageArrayType;
+      typedef Arrays::tnlSharedArray< EntityType, tnlHost, GlobalIndexType >         AccessArrayType;
+      typedef tnlIndexedSet< EntityType, GlobalIndexType, Key >                      UniqueContainerType;
+      typedef tnlIndexedSet< SeedType, GlobalIndexType, Key >                        SeedIndexedSetType;
+      typedef Arrays::Array< SeedType, tnlHost, GlobalIndexType >                 SeedArrayType;
+      typedef Arrays::Array< ReferenceOrientationType, tnlHost, GlobalIndexType > ReferenceOrientationArrayType;
 
-      typedef tnlConstSharedArray< EntityType, tnlHost, GlobalIndexType >          SharedArrayType;
+      typedef Arrays::tnlConstSharedArray< EntityType, tnlHost, GlobalIndexType >    SharedArrayType;
 };
 
 } // namespace TNL

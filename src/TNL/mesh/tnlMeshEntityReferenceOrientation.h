@@ -29,12 +29,12 @@ class tnlMeshEntityReferenceOrientation
          auto referenceCornerIds = referenceSeed.getCornerIds();
          for( LocalIndexType i = 0; i < referenceCornerIds.getSize(); i++ )
          {
-            tnlAssert( this->cornerIdsMap.find( referenceCornerIds[i]) == this->cornerIdsMap.end(), );
+            Assert( this->cornerIdsMap.find( referenceCornerIds[i]) == this->cornerIdsMap.end(), );
             this->cornerIdsMap.insert( std::make_pair( referenceCornerIds[i], i ) );
          }
       }
  
-      static tnlString getType(){};
+      static String getType(){};
 
       EntityOrientation createOrientation( const SeedType& seed ) const
       {
@@ -42,7 +42,7 @@ class tnlMeshEntityReferenceOrientation
          auto cornerIds = seed.getCornerIds();
          for( LocalIndexType i = 0; i < cornerIds.getSize(); i++ )
          {
-            tnlAssert( this->cornerIdsMap.find( cornerIds[ i ] ) != this->cornerIdsMap.end(), );
+            Assert( this->cornerIdsMap.find( cornerIds[ i ] ) != this->cornerIdsMap.end(), );
             result.setPermutationValue( i, this->cornerIdsMap.find( cornerIds[ i ])->second );
          }
          return result;

@@ -15,7 +15,7 @@
 namespace TNL {
 
 template< typename ExactOperatorQ >
-tnlString
+String
 tnlExactOperatorCurvature< ExactOperatorQ, 1 >::
 getType()
 {
@@ -43,7 +43,7 @@ getValue( const Function& function,
 }
 
 template< typename ExactOperatorQ >
-tnlString
+String
 tnlExactOperatorCurvature< ExactOperatorQ, 2 >::
 getType()
 {
@@ -72,7 +72,7 @@ getValue( const Function& function,
 }
 
 template< typename ExactOperatorQ >
-tnlString
+String
 tnlExactOperatorCurvature< ExactOperatorQ, 3 >::
 getType()
 {

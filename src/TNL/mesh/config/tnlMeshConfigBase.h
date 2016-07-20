@@ -35,9 +35,9 @@ struct tnlMeshConfigBase
    static const int worldDimensions = WorldDimensions;
    static const int meshDimensions = Cell::dimensions;
 
-   static tnlString getType()
+   static String getType()
    {
-      return tnlString( "tnlMeshConfigBase< >");
+      return String( "tnlMeshConfigBase< >");
    };
  
    /****

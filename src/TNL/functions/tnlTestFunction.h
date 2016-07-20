@@ -11,9 +11,9 @@
 #pragma once
 
 #include <TNL/core/tnlHost.h>
-#include <TNL/core/vectors/tnlStaticVector.h>
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <TNL/functions/tnlDomain.h>
 
 namespace TNL {
@@ -44,15 +44,15 @@ class tnlTestFunction : public tnlDomain< FunctionDimensions, SpaceDomain >
 
    enum{ Dimensions = FunctionDimensions };
    typedef Real RealType;
-   typedef tnlStaticVector< Dimensions, Real > VertexType;
+   typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
 
    tnlTestFunction();
 
-   static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix = "" );
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" );
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+   bool setup( const Config::ParameterContainer& parameters,
+              const String& prefix = "" );
 
    const tnlTestFunction& operator = ( const tnlTestFunction& function );
 
@@ -107,8 +107,8 @@ class tnlTestFunction : public tnlDomain< FunctionDimensions, SpaceDomain >
    protected:
 
    template< typename FunctionType >
-   bool setupFunction( const tnlParameterContainer& parameters,
-                      const tnlString& prefix = "" );
+   bool setupFunction( const Config::ParameterContainer& parameters,
+                      const String& prefix = "" );
 
    template< typename FunctionType >
    void deleteFunction();

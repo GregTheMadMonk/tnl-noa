@@ -17,8 +17,8 @@ namespace TNL {
 template< typename Function >
 void
 tnlNeumannBoundaryConditionsBase< Function >::
-configSetup( tnlConfigDescription& config,
-             const tnlString& prefix )
+configSetup( Config::ConfigDescription& config,
+             const String& prefix )
 {
    Function::configSetup( config, prefix );
 }
@@ -26,8 +26,8 @@ configSetup( tnlConfigDescription& config,
 template< typename Function >
 bool
 tnlNeumannBoundaryConditionsBase< Function >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    return this->function.setup( parameters, prefix );
 }

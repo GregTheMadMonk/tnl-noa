@@ -18,42 +18,42 @@
 #include <cusparse.h>
 #endif
 
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <TNL/matrices/tnlCSRMatrix.h>
 #include <TNL/matrices/tnlEllpackMatrix.h>
 #include <TNL/matrices/tnlSlicedEllpackMatrix.h>
 #include <TNL/matrices/tnlChunkedEllpackMatrix.h>
 #include <TNL/matrices/tnlMatrixReader.h>
-#include <TNL/core/tnlTimerRT.h>
+#include <TNL/TimerRT.h>
 #include "tnlCusparseCSRMatrix.h"
 
 using namespace std;
 using namespace TNL;
 
-void setupConfig( tnlConfigDescription& config )
+void setupConfig( Config::ConfigDescription& config )
 {
    config.addDelimiter                            ( "General settings:" );
-   config.addRequiredEntry< tnlString >( "test" , "Test to be performed." );
-      config.addEntryEnum< tnlString >( "mtx" );
-      config.addEntryEnum< tnlString >( "tnl" );
-   config.addRequiredEntry< tnlString >( "input-file" , "Input file name." );
-   config.addEntry< tnlString >( "log-file", "Log file name.", "tnl-benchmark-spmv.log");
-   config.addEntry< tnlString >( "precision", "Precision of the arithmetics.", "double" );
+   config.addRequiredEntry< String >( "test" , "Test to be performed." );
+      config.addEntryEnum< String >( "mtx" );
+      config.addEntryEnum< String >( "tnl" );
+   config.addRequiredEntry< String >( "input-file" , "Input file name." );
+   config.addEntry< String >( "log-file", "Log file name.", "tnl-benchmark-spmv.log");
+   config.addEntry< String >( "precision", "Precision of the arithmetics.", "double" );
    config.addEntry< double >( "stop-time", "Seconds to iterate the SpMV operation.", 1.0 );
    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
 }
 
-bool initLogFile( std::fstream& logFile, const tnlString& fileName )
+bool initLogFile( std::fstream& logFile, const String& fileName )
 {
    if( access( fileName.getString(), F_OK ) == -1 )
    {
       logFile.open( fileName.getString(), std::ios::out );
       if( ! logFile )
          return false;
-      const tnlString fillingColoring = " : COLORING 0 #FFF8DC 20 #FFFF00 40 #FFD700 60 #FF8C0 80 #FF0000 100";
-      const tnlString speedupColoring = " : COLORING #0099FF 1 #FFFFFF 2 #00FF99 4 #33FF99 8 #33FF22 16 #FF9900";
-      const tnlString paddingColoring = " : COLORING #FFFFFF 1 #FFFFCC 10 #FFFF99 100 #FFFF66 1000 #FFFF33 10000 #FFFF00";
+      const String fillingColoring = " : COLORING 0 #FFF8DC 20 #FFFF00 40 #FFD700 60 #FF8C0 80 #FF0000 100";
+      const String speedupColoring = " : COLORING #0099FF 1 #FFFFFF 2 #00FF99 4 #33FF99 8 #33FF22 16 #FF9900";
+      const String paddingColoring = " : COLORING #FFFFFF 1 #FFFFCC 10 #FFFF99 100 #FFFF66 1000 #FFFF33 10000 #FFFF00";
       logFile << "#Matrix file " << std::endl;
       logFile << "#Rows" << std::endl;
       logFile << "#Columns" << std::endl;
@@ -171,7 +171,7 @@ bool initLogFile( std::fstream& logFile, const tnlString& fileName )
 }
 
 template< typename Matrix >
-void printMatrixInfo( const tnlString& inputFileName,
+void printMatrixInfo( const String& inputFileName,
                       const Matrix& matrix,
                       std::ostream& str )
 {
@@ -189,7 +189,7 @@ void printMatrixInfo( const tnlString& inputFileName,
 }
 
 template< typename Matrix >
-bool writeMatrixInfo( const tnlString& inputFileName,
+bool writeMatrixInfo( const String& inputFileName,
                       const Matrix& matrix,
                       std::ostream& logFile )
 {
@@ -234,7 +234,7 @@ double benchmarkMatrix( const Matrix& matrix,
                         int verbose,
                         std::fstream& logFile )
 {
-   tnlTimerRT timer;
+   TimerRT timer;
    timer.reset();
    double time( 0.0 );
    int iterations( 0 );
@@ -281,11 +281,11 @@ void writeTestFailed( std::fstream& logFile,
 }
 
 template< typename Real >
-bool setupBenchmark( const tnlParameterContainer& parameters )
+bool setupBenchmark( const Config::ParameterContainer& parameters )
 {
-   const tnlString& test = parameters.getParameter< tnlString >( "test" );
-   const tnlString& inputFileName = parameters.getParameter< tnlString >( "input-file" );
-   const tnlString& logFileName = parameters.getParameter< tnlString >( "log-file" );
+   const String& test = parameters.getParameter< String >( "test" );
+   const String& inputFileName = parameters.getParameter< String >( "input-file" );
+   const String& logFileName = parameters.getParameter< String >( "log-file" );
    const int verbose = parameters.getParameter< int >( "verbose" );
    const double stopTime = parameters.getParameter< double >( "stop-time" );
    std::fstream logFile;
@@ -661,8 +661,8 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
 
 int main( int argc, char* argv[] )
 {
-   tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
+   Config::ParameterContainer parameters;
+   Config::ConfigDescription conf_desc;
 
    setupConfig( conf_desc );
  
@@ -671,7 +671,7 @@ int main( int argc, char* argv[] )
       conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
-   const tnlString& precision = parameters.getParameter< tnlString >( "precision" );
+   const String& precision = parameters.getParameter< String >( "precision" );
    if( precision == "float" )
       if( ! setupBenchmark< float >( parameters ) )
          return EXIT_FAILURE;

@@ -18,13 +18,13 @@ tnlStaticContainer< Size, Element >::tnlStaticContainer()
 }
 
 template< int Size, typename Element >
-tnlString tnlStaticContainer< Size, Element >::getType()
+String tnlStaticContainer< Size, Element >::getType()
 {
-   return tnlString( "tnlStaticContainer< " ) +
-          tnlString( Size ) +
-          tnlString( ", " ) +
+   return String( "tnlStaticContainer< " ) +
+          String( Size ) +
+          String( ", " ) +
          TNL::getType< Element >() +
-          tnlString( " >" );
+          String( " >" );
 }
 
 template< int Size, typename Element >
@@ -59,9 +59,9 @@ void tnlStaticContainer< Size, Element >::setElement( const int id,
 }
 
 template< int Size, typename Element >
-bool tnlStaticContainer< Size, Element >::save( tnlFile& file ) const
+bool tnlStaticContainer< Size, Element >::save( File& file ) const
 {
-   if( ! tnlObject::save( file ) ||
+   if( ! Object::save( file ) ||
        ! this->data.save( file ) )
    {
       std::cerr << "I am no able to save " << this->getType() << "." << std::endl;
@@ -71,9 +71,9 @@ bool tnlStaticContainer< Size, Element >::save( tnlFile& file ) const
 }
 
 template< int Size, typename Element >
-bool tnlStaticContainer< Size, Element >::load( tnlFile& file )
+bool tnlStaticContainer< Size, Element >::load( File& file )
 {
-   if( ! tnlObject::load( file ) ||
+   if( ! Object::load( file ) ||
        ! this->data.load( file ) )
    {
       std::cerr << "I am no able to load " << this->getType() << "." << std::endl;

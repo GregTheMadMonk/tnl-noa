@@ -10,13 +10,13 @@
 
 #pragma once
 
-#include <TNL/tnlObject.h>
-#include <TNL/core/arrays/tnlArray.h>
+#include <TNL/Object.h>
+#include <TNL/Arrays/Array.h>
 
 namespace TNL {
 
 template< typename Element, typename Device = tnlHost, typename Index = int >
-class tnlContainer : public tnlObject
+class tnlContainer : public Object
 {
    public:
 
@@ -27,7 +27,7 @@ class tnlContainer : public tnlObject
 
    tnlContainer( const IndexType size );
 
-   static tnlString getType();
+   static String getType();
 
    bool setSize( const IndexType size );
 
@@ -44,13 +44,13 @@ class tnlContainer : public tnlObject
    void setElement( const IndexType id,
                     const ElementType& data );
 
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
-   bool load( tnlFile& file );
+   bool load( File& file );
 
    protected:
 
-   tnlArray< Element, Device, Index > data;
+   Arrays::Array< Element, Device, Index > data;
 };
 
 } // namespace TNL

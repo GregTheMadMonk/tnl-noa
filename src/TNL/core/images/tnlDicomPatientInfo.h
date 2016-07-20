@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlString.h>
+#include <TNL/String.h>
 #include <TNL/tnlConfig.h>
 
 #ifdef HAVE_DCMTK_H
@@ -40,17 +40,17 @@ class tnlDicomPatientInfo
  
       inline virtual ~tnlDicomPatientInfo();
 
-      inline const tnlString& getName();
+      inline const String& getName();
  
-      inline const tnlString& getSex();
+      inline const String& getSex();
  
-      inline const tnlString& getID();
+      inline const String& getID();
  
-      inline const tnlString& getWeight();
+      inline const String& getWeight();
  
-      inline const tnlString& getPosition();
+      inline const String& getPosition();
  
-      inline const tnlString& getOrientation();
+      inline const String& getOrientation();
 
    private:
 
@@ -58,17 +58,17 @@ class tnlDicomPatientInfo
        bool retrieveInfo();
        bool isObjectRetrieved;
 
-       tnlString name;
+       String name;
 
-       tnlString sex;
+       String sex;
 
-       tnlString ID;
+       String ID;
 
-       tnlString weight;
+       String weight;
 
-       tnlString patientPosition;
+       String patientPosition;
 
-       tnlString patientOrientation;
+       String patientOrientation;
 };
 
 } // namespace TNL

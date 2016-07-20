@@ -11,15 +11,15 @@
 #pragma once
 
 #include <iomanip>
-#include <TNL/core/tnlList.h>
-#include <TNL/core/tnlString.h>
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/tnlTimerRT.h>
+#include <TNL/List.h>
+#include <TNL/String.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/TimerRT.h>
 
 namespace TNL {
 
 template< typename Matrix >
-bool tnlMatrixReader< Matrix >::readMtxFile( const tnlString& fileName,
+bool tnlMatrixReader< Matrix >::readMtxFile( const String& fileName,
                                              Matrix& matrix,
                                              bool verbose )
 {
@@ -83,10 +83,10 @@ bool tnlMatrixReader< Matrix >::verifyMtxFile( std::istream& file,
       return false;
    file.clear();
    file.seekg( 0, std::ios::beg );
-   tnlString line;
+   String line;
    bool dimensionsLine( false );
    IndexType processedElements( 0 );
-   tnlTimerRT timer;
+   TimerRT timer;
    while( line.getLine( file ) )
    {
       if( line[ 0 ] == '%' ) continue;
@@ -127,7 +127,7 @@ template< typename Matrix >
 bool tnlMatrixReader< Matrix >::findLineByElement( std::istream& file,
                                                    const IndexType& row,
                                                    const IndexType& column,
-                                                   tnlString& line,
+                                                   String& line,
                                                    IndexType& lineNumber )
 {
    file.clear();
@@ -135,7 +135,7 @@ bool tnlMatrixReader< Matrix >::findLineByElement( std::istream& file,
    bool symmetricMatrix( false );
    bool dimensionsLine( false );
    lineNumber = 0;
-   tnlTimerRT timer;
+   TimerRT timer;
    while( line.getLine( file ) )
    {
       lineNumber++;
@@ -157,10 +157,10 @@ bool tnlMatrixReader< Matrix >::findLineByElement( std::istream& file,
 }
 
 template< typename Matrix >
-bool tnlMatrixReader< Matrix >::checkMtxHeader( const tnlString& header,
+bool tnlMatrixReader< Matrix >::checkMtxHeader( const String& header,
                                                 bool& symmetric )
 {
-   tnlList< tnlString > parsedLine;
+   List< String > parsedLine;
    header.parse( parsedLine );
    if( parsedLine.getSize() < 5 )
       return false;
@@ -204,9 +204,9 @@ bool tnlMatrixReader< Matrix >::readMtxHeader( std::istream& file,
 {
    file.clear();
    file.seekg( 0, std::ios::beg );
-   tnlString line;
+   String line;
    bool headerParsed( false );
-   tnlList< tnlString > parsedLine;
+   List< String > parsedLine;
    while( true )
    {
       line.getLine( file );
@@ -260,10 +260,10 @@ bool tnlMatrixReader< Matrix >::computeCompressedRowsLengthsFromMtxFile( std::is
    file.clear();
    file.seekg( 0,  std::ios::beg );
    rowLengths.setValue( 0 );
-   tnlString line;
+   String line;
    bool dimensionsLine( false );
    IndexType numberOfElements( 0 );
-   tnlTimerRT timer;
+   TimerRT timer;
    while( line.getLine( file ) )
    {
       if( line[ 0 ] == '%' ) continue;
@@ -317,10 +317,10 @@ bool tnlMatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& fil
 {
    file.clear();
    file.seekg( 0,  std::ios::beg );
-   tnlString line;
+   String line;
    bool dimensionsLine( false );
    IndexType processedElements( 0 );
-   tnlTimerRT timer;
+   TimerRT timer;
    while( line.getLine( file ) )
    {
       if( line[ 0 ] == '%' ) continue;
@@ -353,12 +353,12 @@ bool tnlMatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& fil
 }
 
 template< typename Matrix >
-bool tnlMatrixReader< Matrix >::parseMtxLineWithElement( const tnlString& line,
+bool tnlMatrixReader< Matrix >::parseMtxLineWithElement( const String& line,
                                                          IndexType& row,
                                                          IndexType& column,
                                                          RealType& value )
 {
-   tnlList< tnlString > parsedLine;
+   List< String > parsedLine;
    line.parse( parsedLine );
    if( parsedLine.getSize() != 3 )
    {

@@ -16,11 +16,11 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 tnlMeanCurvatureFlowEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return tnlString( "tnlHeatEquationEocProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "tnlHeatEquationEocProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
@@ -29,7 +29,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 tnlMeanCurvatureFlowEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator  >::
-setup( const tnlParameterContainer& parameters )
+setup( const Config::ParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters ) ||
        ! this->rightHandSide.setup( parameters ) ||

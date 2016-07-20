@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/vectors/tnlSharedVector.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Vectors/SharedVector.h>
 #include <TNL/mesh/tnlGrid.h>
 
 namespace TNL {
@@ -41,7 +41,7 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, 
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   static tnlString getType();
+   static String getType();
 
    template< typename Vector >
    IndexType bind( Vector& u) 
@@ -95,7 +95,7 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, 
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   static tnlString getType(); 
+   static String getType(); 
 
    template< typename Vector >
    IndexType bind( Vector& u)
@@ -148,7 +148,7 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, 
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   static tnlString getType();
+   static String getType();
 
    template< typename Vector >
    IndexType bind( Vector& u)
@@ -201,7 +201,7 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, 
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   static tnlString getType();
+   static String getType();
 
    template< typename Vector >
    Index bind( Vector& u);
@@ -255,7 +255,7 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, 
    typedef Index IndexType;
    typedef tnlSharedVector< RealType, DeviceType, IndexType > DofVectorType;
    
-   static tnlString getType(); 
+   static String getType(); 
 
    template< typename Vector >
    Index bind( Vector& u);
@@ -309,7 +309,7 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, 
    typedef Device DeviceType;
    typedef Index IndexType;
    
-   static tnlString getType();
+   static String getType();
 
    template< typename Vector >
    Index bind( Vector& u);

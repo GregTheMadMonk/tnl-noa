@@ -42,14 +42,14 @@ class tnlDirichletBoundaryConditions
 
       static constexpr int getMeshDimensions() { return MeshType::meshDimensions; }
 
-      static void configSetup( tnlConfigDescription& config,
-                               const tnlString& prefix = "" )
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" )
       {
          Function::configSetup( config, prefix );
       }
  
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" )
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" )
       {
          return this->function.setup( parameters, prefix );
       }

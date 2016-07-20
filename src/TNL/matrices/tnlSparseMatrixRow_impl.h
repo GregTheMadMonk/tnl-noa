@@ -60,11 +60,11 @@ setElement( const Index& elementIndex,
             const Index& column,
             const Real& value )
 {
-   tnlAssert( this->columns, );
-   tnlAssert( this->values, );
-   tnlAssert( this->step > 0,);
+   Assert( this->columns, );
+   Assert( this->values, );
+   Assert( this->step > 0,);
    //printf( "elementIndex = %d length = %d \n", elementIndex, this->length );
-   tnlAssert( elementIndex >= 0 && elementIndex < this->length,
+   Assert( elementIndex >= 0 && elementIndex < this->length,
               std::cerr << "elementIndex = " << elementIndex << " this->length = " << this->length );
 
    this->columns[ elementIndex * step ] = column;

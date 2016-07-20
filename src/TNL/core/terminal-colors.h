@@ -12,13 +12,13 @@
 
 namespace TNL {
 
-const tnlString red( "\033[0;31m" );
-const tnlString green( "\033[1;32m" );
-const tnlString yellow( "\033[1;33m" );
-const tnlString cyan( "\033[0;36m" );
-const tnlString magenta( "\033[0;35m" );
-const tnlString bold();
-const tnlString reset( "\033[0m" );
+const String red( "\033[0;31m" );
+const String green( "\033[1;32m" );
+const String yellow( "\033[1;33m" );
+const String cyan( "\033[0;36m" );
+const String magenta( "\033[0;35m" );
+const String bold();
+const String reset( "\033[0m" );
 
 } // namespace TNL
 

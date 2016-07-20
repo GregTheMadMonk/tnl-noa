@@ -70,16 +70,16 @@ setElement( const Index& elementIndex,
             const Index& column,
             const Real& value )
 {
-   tnlAssert( this->values, );
-   tnlAssert( this->step > 0,);
-   tnlAssert( column >= 0 && column < this->columns,
+   Assert( this->values, );
+   Assert( this->step > 0,);
+   Assert( column >= 0 && column < this->columns,
               std::cerr << "column = " << columns << " this->columns = " << this->columns );
-   tnlAssert( elementIndex >= 0 && elementIndex < this->maxRowLength,
+   Assert( elementIndex >= 0 && elementIndex < this->maxRowLength,
               std::cerr << "elementIndex = " << elementIndex << " this->maxRowLength =  " << this->maxRowLength );
 
    Index aux = elementIndex;
    while( row + this->diagonals[ aux ] < column ) aux++;
-   tnlAssert( row + this->diagonals[ aux ] == column,
+   Assert( row + this->diagonals[ aux ] == column,
               std::cerr << "row = " << row
                    << " aux = " << aux
                    << " this->diagonals[ aux ] = " << this->diagonals[ aux]

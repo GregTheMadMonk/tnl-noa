@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/config/tnlParameterContainer.h>
-#include <TNL/core/tnlTimer.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Timer.h>
 #include <ostream>
 
 namespace TNL {
@@ -24,14 +24,14 @@ class tnlSolverStarter
    tnlSolverStarter();
 
    template< typename Problem >
-   static bool run( const tnlParameterContainer& parameters );
+   static bool run( const Config::ParameterContainer& parameters );
 
    template< typename Solver >
    bool writeEpilog( std::ostream& str, const Solver& solver );
 
    template< typename Problem, typename TimeStepper >
    bool runPDESolver( Problem& problem,
-                      const tnlParameterContainer& parameters,
+                      const Config::ParameterContainer& parameters,
                       TimeStepper& timeStepper );
 
    protected:

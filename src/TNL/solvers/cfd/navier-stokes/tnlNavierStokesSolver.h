@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/core/tnlString.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/String.h>
+#include <TNL/Vectors/Vector.h>
 
 namespace TNL {
 
@@ -34,7 +34,7 @@ class tnlNavierStokesSolver
 
    tnlNavierStokesSolver();
 
-   static tnlString getTypeStatic();
+   static String getTypeStatic();
 
    void setAdvectionScheme( AdvectionSchemeType& advection );
 

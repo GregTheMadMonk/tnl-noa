@@ -60,8 +60,8 @@ tnlSinBumpsFunction< 1, Real >::tnlSinBumpsFunction()
 }
 
 template< typename Real >
-bool tnlSinBumpsFunction< 1, Real >::setup( const tnlParameterContainer& parameters,
-                                           const tnlString& prefix )
+bool tnlSinBumpsFunction< 1, Real >::setup( const Config::ParameterContainer& parameters,
+                                           const String& prefix )
 {
    this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
    this->waveLength.x() = parameters.getParameter< double >( prefix + "wave-length-x" );
@@ -113,8 +113,8 @@ tnlSinBumpsFunction< 2, Real >::tnlSinBumpsFunction()
 }
 
 template< typename Real >
-bool tnlSinBumpsFunction< 2, Real >::setup( const tnlParameterContainer& parameters,
-                                            const tnlString& prefix )
+bool tnlSinBumpsFunction< 2, Real >::setup( const Config::ParameterContainer& parameters,
+                                            const String& prefix )
 {
    this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
    this->waveLength.x() = parameters.getParameter< double >( prefix + "wave-length-x" );
@@ -176,8 +176,8 @@ tnlSinBumpsFunction< 3, Real >::tnlSinBumpsFunction()
 }
 
 template< typename Real >
-bool tnlSinBumpsFunction< 3, Real >::setup( const tnlParameterContainer& parameters,
-                                           const tnlString& prefix )
+bool tnlSinBumpsFunction< 3, Real >::setup( const Config::ParameterContainer& parameters,
+                                           const String& prefix )
 {
    this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
    this->waveLength.x() = parameters.getParameter< double >( prefix + "wave-length-x" );

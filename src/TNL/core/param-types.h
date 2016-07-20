@@ -11,23 +11,23 @@
 #pragma once 
 
 #include <TNL/core/tnlReal.h>
-#include <TNL/core/tnlString.h>
+#include <TNL/String.h>
 
 namespace TNL {
 
 template< typename T >
-tnlString getType() { return T :: getType(); };
+String getType() { return T :: getType(); };
 
-template<> inline tnlString getType< bool >() { return tnlString( "bool" ); };
-template<> inline tnlString getType< short int >() { return tnlString( "short int" ); };
-template<> inline tnlString getType< int >() { return tnlString( "int" ); };
-template<> inline tnlString getType< long int >() { return tnlString( "long int" ); };
-template<> inline tnlString getType< unsigned int >() { return tnlString( "unsigned int" ); };
-template<> inline tnlString getType< char >() { return tnlString( "char" ); };
-template<> inline tnlString getType< float >() { return tnlString( "float" ); };
-template<> inline tnlString getType< double >() { return tnlString( "double" ); };
-template<> inline tnlString getType< long double >() { return tnlString( "long double" ); };
-template<> inline tnlString getType< tnlFloat >() { return tnlString( "tnlFloat" ); };
-template<> inline tnlString getType< tnlDouble> () { return tnlString( "tnlDouble" ); };
+template<> inline String getType< bool >() { return String( "bool" ); };
+template<> inline String getType< short int >() { return String( "short int" ); };
+template<> inline String getType< int >() { return String( "int" ); };
+template<> inline String getType< long int >() { return String( "long int" ); };
+template<> inline String getType< unsigned int >() { return String( "unsigned int" ); };
+template<> inline String getType< char >() { return String( "char" ); };
+template<> inline String getType< float >() { return String( "float" ); };
+template<> inline String getType< double >() { return String( "double" ); };
+template<> inline String getType< long double >() { return String( "long double" ); };
+template<> inline String getType< tnlFloat >() { return String( "tnlFloat" ); };
+template<> inline String getType< tnlDouble> () { return String( "tnlDouble" ); };
 
 } // namespace TNL

@@ -20,11 +20,11 @@ template< typename MeshReal,
           typename Real,
           typename Index,
           typename OperatorQ >
-tnlString
+String
 tnlFiniteVolumeNonlinearOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 getType()
 {
-   return tnlString( "tnlFiniteVolumeNonlinearOperator< " ) +
+   return String( "tnlFiniteVolumeNonlinearOperator< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + ", " +
@@ -97,11 +97,11 @@ template< typename MeshReal,
           typename Real,
           typename Index,
 	  typename OperatorQ >
-tnlString
+String
 tnlFiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 getType()
 {
-   return tnlString( "tnlFiniteVolumeNonlinearOperator< " ) +
+   return String( "tnlFiniteVolumeNonlinearOperator< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + ", " +
@@ -200,11 +200,11 @@ template< typename MeshReal,
           typename Real,
           typename Index,
  	  typename OperatorQ >
-tnlString
+String
 tnlFiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 getType()
 {
-   return tnlString( "tnlFiniteVolumeNonlinearOperator< " ) +
+   return String( "tnlFiniteVolumeNonlinearOperator< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + ", " +

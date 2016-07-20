@@ -10,16 +10,16 @@
 
 #pragma once
 
-#include <TNL/tnlObject.h>
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
-#include <TNL/core/tnlLogger.h>
+#include <TNL/Object.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Logger.h>
 
 namespace TNL {
 
 template< typename Problem,
           typename TimeStepper >
-class tnlPDESolver : public tnlObject
+class tnlPDESolver : public Object
 {
    public:
 
@@ -33,14 +33,14 @@ class tnlPDESolver : public tnlObject
 
       tnlPDESolver();
 
-      static void configSetup( tnlConfigDescription& config,
-                               const tnlString& prefix = "" );
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" );
 
-      bool setup( const tnlParameterContainer& parameters,
-                 const tnlString& prefix = "" );
+      bool setup( const Config::ParameterContainer& parameters,
+                 const String& prefix = "" );
 
-      bool writeProlog( tnlLogger& logger,
-                        const tnlParameterContainer& parameters );
+      bool writeProlog( Logger& logger,
+                        const Config::ParameterContainer& parameters );
 
       void setTimeStepper( TimeStepper& timeStepper );
 
@@ -72,7 +72,7 @@ class tnlPDESolver : public tnlObject
 
       bool solve();
 
-      bool writeEpilog( tnlLogger& logger ) const;
+      bool writeEpilog( Logger& logger ) const;
 
    protected:
 

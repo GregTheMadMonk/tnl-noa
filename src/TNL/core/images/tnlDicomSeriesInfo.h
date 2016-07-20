@@ -13,7 +13,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlString.h>
+#include <TNL/String.h>
 #include <TNL/tnlConfig.h>
 
 #ifdef HAVE_DCMTK_H
@@ -40,29 +40,29 @@ class tnlDicomSeriesInfo
  
        inline virtual ~tnlDicomSeriesInfo();
 
-       inline const tnlString& getModality();
+       inline const String& getModality();
  
-       inline const tnlString& getStudyInstanceUID();
+       inline const String& getStudyInstanceUID();
  
-       inline const tnlString& getSeriesInstanceUID();
+       inline const String& getSeriesInstanceUID();
  
-       inline const tnlString& getSeriesDescription();
+       inline const String& getSeriesDescription();
  
-       inline const tnlString& getSeriesNumber();
+       inline const String& getSeriesNumber();
  
-       inline const tnlString& getSeriesDate();
+       inline const String& getSeriesDate();
  
-       inline const tnlString& getSeriesTime();
+       inline const String& getSeriesTime();
  
-       inline const tnlString& getPerformingPhysiciansName();
+       inline const String& getPerformingPhysiciansName();
  
-       inline const tnlString& getPerformingPhysicianIdentificationSequence();
+       inline const String& getPerformingPhysicianIdentificationSequence();
  
-       inline const tnlString& getOperatorsName();
+       inline const String& getOperatorsName();
  
-       inline const tnlString& getOperatorIdentificationSequence();
+       inline const String& getOperatorIdentificationSequence();
  
-       inline const tnlString& getAcquisitionTime();
+       inline const String& getAcquisitionTime();
  
    private:
  
@@ -72,37 +72,37 @@ class tnlDicomSeriesInfo
  
        bool isObjectRetrieved;
 
-       tnlString modality;
+       String modality;
 
-       tnlString studyInstanceUID;
+       String studyInstanceUID;
 
-       tnlString seriesInstanceUID;
+       String seriesInstanceUID;
 
-       tnlString seriesNumber;
+       String seriesNumber;
 
-       tnlString seriesDescription;
+       String seriesDescription;
 
-       tnlString seriesDate;
+       String seriesDate;
 
-       tnlString seriesTime;
+       String seriesTime;
 
-       tnlString performingPhysiciansName;
+       String performingPhysiciansName;
 
-       tnlString performingPhysicianIdentificationSequence;
+       String performingPhysicianIdentificationSequence;
 
-       tnlString operatorsName;
+       String operatorsName;
 
-       tnlString operatorIdentificationSequence;
+       String operatorIdentificationSequence;
 
-       tnlString frameTime;
+       String frameTime;
 
-       tnlString faDateTime;
+       String faDateTime;
 
-       tnlString faRefTime;
+       String faRefTime;
 
-       tnlString AFD;
+       String AFD;
 
-       tnlString acquisitionTime;
+       String acquisitionTime;
 };
 
 } // namespace TNL

@@ -13,7 +13,7 @@
 #include <TNL/core/mfilename.h>
 #include <TNL/matrices/tnlMatrixSetter.h>
 #include <TNL/matrices/tnlMultidiagonalMatrixSetter.h>
-#include <TNL/core/tnlLogger.h>
+#include <TNL/Logger.h>
 #include <TNL/solvers/pde/tnlExplicitUpdater.h>
 #include <TNL/solvers/pde/tnlBoundaryConditionsSetter.h>
 #include <TNL/solvers/pde/tnlLinearSystemAssembler.h>
@@ -27,22 +27,22 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return tnlString( "tnlMeanCurvativeFlowProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "tnlMeanCurvativeFlowProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
-   return tnlString( "Mean Curvative Flow" );
+   return String( "Mean Curvative Flow" );
 }
 
 template< typename Mesh,
@@ -51,7 +51,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
+writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
 }
 
@@ -61,7 +61,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const tnlParameterContainer& parameters )
+setup( const Config::ParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
@@ -105,13 +105,13 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setInitialCondition( const tnlParameterContainer& parameters,
+setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
 {
    this->bindDofs( mesh, dofs );
-   const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
+   const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    if( ! this->solution.load( initialConditionFile ) )
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
@@ -164,7 +164,7 @@ makeSnapshot( const RealType& time,
 
    this->bindDofs( mesh, dofs );
    //cout << "dofs = " << dofs << std::endl;
-   tnlString fileName;
+   String fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
    if( ! this->solution.save( fileName ) )
       return false;

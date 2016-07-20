@@ -11,7 +11,7 @@
 #pragma once 
 
 #include <iostream>
-#include <TNL/core/vectors/tnlStaticVector.h>
+#include <TNL/Vectors/StaticVector.h>
 #include <TNL/functions/tnlDomain.h>
 
 namespace TNL {
@@ -23,15 +23,15 @@ class tnlConstantFunction : public tnlDomain< dimensions, NonspaceDomain >
    public:
  
       typedef Real RealType;
-      typedef tnlStaticVector< dimensions, RealType > VertexType;
+      typedef Vectors::tnlStaticVector< dimensions, RealType > VertexType;
  
       tnlConstantFunction();
 
-      static void configSetup( tnlConfigDescription& config,
-                               const tnlString& prefix = "" );
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" );
 
-      bool setup( const tnlParameterContainer& parameters,
-                 const tnlString& prefix = "" );
+      bool setup( const Config::ParameterContainer& parameters,
+                 const String& prefix = "" );
 
       void setConstant( const RealType& constant );
 

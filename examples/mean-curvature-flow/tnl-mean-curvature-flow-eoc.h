@@ -42,12 +42,12 @@ template< typename ConfigTag >
 class meanCurvatureFlowEocConfig
 {
    public:
-      static void configSetup( tnlConfigDescription& config )
+      static void configSetup( Config::ConfigDescription& config )
       {
          config.addDelimiter( "Mean Curvature Flow EOC settings:" );         
-         config.addEntry< tnlString >( "numerical-scheme", "Numerical scheme for the solution approximation.", "fvm" );
-            config.addEntryEnum< tnlString >( "fdm" );
-            config.addEntryEnum< tnlString >( "fvm" );
+         config.addEntry< String >( "numerical-scheme", "Numerical scheme for the solution approximation.", "fvm" );
+            config.addEntryEnum< String >( "fdm" );
+            config.addEntryEnum< String >( "fvm" );
 
          config.addEntry< double >( "eps", "This sets a eps in operator Q.", 1.0 );
          config.addDelimiter( "Tests setting::" );         
@@ -72,7 +72,7 @@ class meanCurvatureFlowEocSetter
    typedef typename MeshType::VertexType Vertex;
    enum { Dimensions = MeshType::meshDimensions };
 
-   static bool run( const tnlParameterContainer& parameters )
+   static bool run( const Config::ParameterContainer& parameters )
    {
 
       typedef tnlFiniteVolumeOperatorQ<MeshType, Real, Index, 0> OperatorQ;

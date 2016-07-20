@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/config/tnlConfigDescription.h>
+#include <TNL/Config/ConfigDescription.h>
 
 namespace TNL {
 
@@ -19,7 +19,7 @@ template< typename MeshConfig,
 class tnlSolverConfig
 {
    public:
-      static bool configSetup( tnlConfigDescription& configDescription );
+      static bool configSetup( Config::ConfigDescription& configDescription );
 };
 
 } // namespace TNL

@@ -13,7 +13,7 @@
 #include <TNL/core/tnlHost.h>
 #include <TNL/matrices/tnlMatrix.h>
 #include <TNL/matrices/tnlDenseMatrixRow.h>
-#include <TNL/core/arrays/tnlArray.h>
+#include <TNL/Arrays/Array.h>
 
 namespace TNL {
 
@@ -40,9 +40,9 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
 
    tnlDenseMatrix();
 
-   static tnlString getType();
+   static String getType();
 
-   tnlString getTypeVirtual() const;
+   String getTypeVirtual() const;
 
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
@@ -181,13 +181,13 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
-   bool save( const tnlString& fileName ) const;
+   bool save( const String& fileName ) const;
 
-   bool load( const tnlString& fileName );
+   bool load( const String& fileName );
 
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
-   bool load( tnlFile& file );
+   bool load( File& file );
 
    void print( std::ostream& str ) const;
 

@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Assert.h>
 #include <TNL/functions/tnlMeshFunction.h>
 #include <TNL/functions/tnlFunctionEvaluator.h>
 #include <TNL/functions/tnlMeshFunctionEvaluator.h>
@@ -54,13 +54,13 @@ tnlMeshFunction( const MeshType& mesh,
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-tnlString
+String
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getType()
 {
-   return tnlString( "tnlMeshFunction< " ) +
+   return String( "tnlMeshFunction< " ) +
                      Mesh::getType() + ", " +
-                     tnlString( MeshEntityDimensions ) + ", " +
+                     String( MeshEntityDimensions ) + ", " +
                     TNL::getType< Real >() +
                      " >";
 };
@@ -68,7 +68,7 @@ getType()
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-tnlString
+String
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getTypeVirtual() const
 {
@@ -78,13 +78,13 @@ getTypeVirtual() const
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-tnlString
+String
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getSerializationType()
 {
-   return tnlString( "tnlMeshFunction< " ) +
+   return String( "tnlMeshFunction< " ) +
                      Mesh::getSerializationType() + ", " +
-                     tnlString( MeshEntityDimensions ) + ", " +
+                     String( MeshEntityDimensions ) + ", " +
                     TNL::getType< Real >() +
                      " >";
 };
@@ -92,7 +92,7 @@ getSerializationType()
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-tnlString
+String
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getSerializationTypeVirtual() const
 {
@@ -104,10 +104,10 @@ template< typename Mesh,
           typename Real >
 void
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
-configSetup( tnlConfigDescription& config,
-             const tnlString& prefix )
+configSetup( Config::ConfigDescription& config,
+             const String& prefix )
 {
-   config.addEntry< tnlString >( prefix + "file", "Dataset for the mesh function." );
+   config.addEntry< String >( prefix + "file", "Dataset for the mesh function." );
 }
 
 template< typename Mesh,
@@ -115,12 +115,12 @@ template< typename Mesh,
           typename Real >
 bool
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    if( parameters.checkParameter( prefix + "file" ) )
    {
-      tnlString fileName = parameters.getParameter< tnlString >( prefix + "file" );
+      String fileName = parameters.getParameter< String >( prefix + "file" );
       if( ! this->data.load( fileName ) )
          return false;
    }
@@ -348,9 +348,9 @@ template< typename Mesh,
           typename Real >
 bool
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
-save( tnlFile& file ) const
+save( File& file ) const
 {
-   if( ! tnlObject::save( file ) )
+   if( ! Object::save( file ) )
       return false;
    return this->data.save( file );
 }
@@ -360,9 +360,9 @@ template< typename Mesh,
           typename Real >
 bool
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
-load( tnlFile& file )
+load( File& file )
 {
-   if( ! tnlObject::load( file ) )
+   if( ! Object::load( file ) )
       return false;
    return this->data.load( file );
 }
@@ -372,9 +372,9 @@ template< typename Mesh,
           typename Real >
 bool
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
-boundLoad( tnlFile& file )
+boundLoad( File& file )
 {
-   if( ! tnlObject::load( file ) )
+   if( ! Object::load( file ) )
       return false;
    return this->data.boundLoad( file );
 }
@@ -384,8 +384,8 @@ template< typename Mesh,
           typename Real >
 bool
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
-write( const tnlString& fileName,
-       const tnlString& format ) const
+write( const String& fileName,
+       const String& format ) const
 {
    std::fstream file;
    file.open( fileName.getString(), std::ios::out );

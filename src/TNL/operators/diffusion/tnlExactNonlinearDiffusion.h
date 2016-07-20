@@ -30,7 +30,7 @@ class tnlExactNonlinearDiffusion< 1, Nonlinearity, InnerOperator >
 {
    public:
 
-      static tnlString getType()
+      static String getType()
       {
          return "tnlExactNonlinearDiffusion< 1, " + Nonlinearity::getType() + " >";
       };
@@ -84,7 +84,7 @@ class tnlExactNonlinearDiffusion< 2, Nonlinearity, InnerOperator >
 {
    public:
  
-      static tnlString getType()
+      static String getType()
       {
          return "tnlExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 2 >";
       };
@@ -143,7 +143,7 @@ class tnlExactNonlinearDiffusion< 3, Nonlinearity, InnerOperator >
 {
    public:
  
-      static tnlString getType()
+      static String getType()
       {
          return "tnlExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 3 >";
       }

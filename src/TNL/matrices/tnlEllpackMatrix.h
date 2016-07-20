@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/matrices/tnlSparseMatrix.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 
 namespace TNL {
 
@@ -37,9 +37,9 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    tnlEllpackMatrix();
 
-   static tnlString getType();
+   static String getType();
 
-   tnlString getTypeVirtual() const;
+   String getTypeVirtual() const;
 
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
@@ -154,13 +154,13 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
-   bool load( tnlFile& file );
+   bool load( File& file );
 
-   bool save( const tnlString& fileName ) const;
+   bool save( const String& fileName ) const;
 
-   bool load( const tnlString& fileName );
+   bool load( const String& fileName );
 
    void print( std::ostream& str ) const;
 

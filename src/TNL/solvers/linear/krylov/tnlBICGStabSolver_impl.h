@@ -30,9 +30,9 @@ tnlBICGStabSolver< Matrix, Preconditioner > :: tnlBICGStabSolver()
 
 template< typename Matrix,
           typename Preconditioner >
-tnlString tnlBICGStabSolver< Matrix, Preconditioner > :: getType() const
+String tnlBICGStabSolver< Matrix, Preconditioner > :: getType() const
 {
-   return tnlString( "tnlBICGStabSolver< " ) +
+   return String( "tnlBICGStabSolver< " ) +
           this->matrix -> getType() + ", " +
           this->preconditioner -> getType() + " >";
 }
@@ -41,8 +41,8 @@ template< typename Matrix,
           typename Preconditioner >
 void
 tnlBICGStabSolver< Matrix, Preconditioner >::
-configSetup( tnlConfigDescription& config,
-             const tnlString& prefix )
+configSetup( Config::ConfigDescription& config,
+             const String& prefix )
 {
    //tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
 }
@@ -51,8 +51,8 @@ template< typename Matrix,
           typename Preconditioner >
 bool
 tnlBICGStabSolver< Matrix, Preconditioner >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    return tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }

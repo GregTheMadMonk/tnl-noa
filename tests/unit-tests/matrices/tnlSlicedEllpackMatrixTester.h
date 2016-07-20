@@ -18,8 +18,8 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 #include <TNL/matrices/tnlSlicedEllpackMatrix.h>
-#include <TNL/core/tnlFile.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/File.h>
+#include <TNL/Vectors/Vector.h>
 
 using namespace TNL;
 

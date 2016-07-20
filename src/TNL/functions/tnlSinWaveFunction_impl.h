@@ -24,8 +24,8 @@ tnlSinWaveFunctionBase< dimensions, Real >::tnlSinWaveFunctionBase()
 }
 
 template< int dimensions, typename Real >
-bool tnlSinWaveFunctionBase< dimensions, Real >::setup( const tnlParameterContainer& parameters,
-                                           const tnlString& prefix )
+bool tnlSinWaveFunctionBase< dimensions, Real >::setup( const Config::ParameterContainer& parameters,
+                                           const String& prefix )
 {
    this->waveLength = parameters.getParameter< double >( prefix + "wave-length" );
    this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );

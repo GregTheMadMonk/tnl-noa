@@ -60,7 +60,7 @@ readHeader()
 template< typename Index >
 bool
 tnlPGMImage< Index >::
-openForRead( const tnlString& fileName )
+openForRead( const String& fileName )
 {
    this->close();
    if ( this->binary )
@@ -138,7 +138,7 @@ template< typename Index >
              typename Device >
 bool
 tnlPGMImage< Index >::
-openForWrite( const tnlString& fileName,
+openForWrite( const String& fileName,
               tnlGrid< 2, Real, Device, Index >& grid,
               bool binary )
 {

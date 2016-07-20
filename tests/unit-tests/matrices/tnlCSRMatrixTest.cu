@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 #include <TNL/core/tnlHost.h>
 #include <TNL/matrices/tnlCSRMatrix.h>
 #include <cstdlib>

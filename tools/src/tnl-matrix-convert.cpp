@@ -11,9 +11,9 @@
 #include "tnl-matrix-convert.h"
 #include <string.h>
 #include <TNL/debug/tnlDebug.h>
-#include <TNL/tnlObject.h>
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Object.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-matrix-convert.cfg.desc";
@@ -23,8 +23,8 @@ int main( int argc, char* argv[] )
    dbgFunctionName( "", "main" );
    dbgInit( "" );
 
-   tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
+   Config::ParameterContainer parameters;
+   Config::ConfigDescription conf_desc;
 
    if( conf_desc.parseConfigDescription( configFile ) != 0 )
       return 1;
@@ -33,10 +33,10 @@ int main( int argc, char* argv[] )
       conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
-   tnlString input_file = parameters. getParameter< tnlString >( "input-file" );
-   tnlString output_file = parameters. getParameter< tnlString >( "output-file" );
-   tnlString output_matrix_format = parameters. getParameter< tnlString >( "output-matrix-format" );
-   tnlString precision = parameters. getParameter< tnlString >( "precision" );
+   String input_file = parameters. getParameter< String >( "input-file" );
+   String output_file = parameters. getParameter< String >( "output-file" );
+   String output_matrix_format = parameters. getParameter< String >( "output-matrix-format" );
+   String precision = parameters. getParameter< String >( "precision" );
    int verbose = parameters. getParameter< int >( "verbose");
    bool verify = parameters. getParameter< bool >( "verify");
 

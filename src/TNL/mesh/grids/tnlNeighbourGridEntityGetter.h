@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Assert.h>
 
 namespace TNL {
 
@@ -42,14 +42,14 @@ class tnlNeighbourGridEntityGetter
       __cuda_callable__
       tnlNeighbourGridEntityGetter( const GridEntity& entity )
       {
-         //tnlAssert( false, );
+         //Assert( false, );
       };
  
       __cuda_callable__
       void refresh( const typename GridEntity::GridType& grid,
                     const typename GridEntity::IndexType& entityIndex )
       {
-         //tnlAssert( false, );
+         //Assert( false, );
       };
 
 };

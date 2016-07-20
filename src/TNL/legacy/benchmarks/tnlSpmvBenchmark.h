@@ -37,7 +37,7 @@ class tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > > : public tnlSpmvBe
 
    void writeToLogTable( std::ostream& logFile,
                                     const double& csrGflops,
-                                    const tnlString& inputMtxFile,
+                                    const String& inputMtxFile,
                                     const tnlCSRMatrix< RealType, tnlHost, IndexType >& csrMatrix,
                                     bool writeMatrixInfo  ) const;
 };

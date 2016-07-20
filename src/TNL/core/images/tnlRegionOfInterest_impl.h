@@ -24,7 +24,7 @@ tnlRegionOfInterest()
 template< typename Index >
 bool
 tnlRegionOfInterest< Index >::
-setup( const tnlParameterContainer& parameters,
+setup( const Config::ParameterContainer& parameters,
        const tnlImage< Index >* image )
 {
    const int roiTop    = parameters.getParameter< int >( "roi-top" );

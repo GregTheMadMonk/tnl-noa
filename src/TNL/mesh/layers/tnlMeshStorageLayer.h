@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlFile.h>
+#include <TNL/File.h>
 #include <TNL/mesh/traits/tnlMeshTraits.h>
 #include <TNL/mesh/traits/tnlMeshEntityTraits.h>
 #include <TNL/mesh/traits/tnlMeshTraits.h>
@@ -90,7 +90,7 @@ class tnlMeshStorageLayer< MeshConfig,
          return this->sharedEntities;
       }
 
-      bool save( tnlFile& file ) const
+      bool save( File& file ) const
       {
          if( ! BaseType::save( file ) ||
              ! this->entities.save( file ) )
@@ -101,7 +101,7 @@ class tnlMeshStorageLayer< MeshConfig,
          return true;
       }
 
-      bool load( tnlFile& file )
+      bool load( File& file )
       {
          //cout << "Loading mesh layer with dimensions " << DimensionsTag::value << std::endl;
          if( ! BaseType::load( file ) ||
@@ -259,7 +259,7 @@ class tnlMeshStorageLayer< MeshConfig, tnlDimensionsTag< 0 >, true > :
       return this->sharedVertices;
    }
 
-   bool save( tnlFile& file ) const
+   bool save( File& file ) const
    {
       if( ! this->vertices.save( file ) )
       {
@@ -269,7 +269,7 @@ class tnlMeshStorageLayer< MeshConfig, tnlDimensionsTag< 0 >, true > :
       return true;
    }
 
-   bool load( tnlFile& file )
+   bool load( File& file )
    {
       if( ! this->vertices.load( file ) )
       {

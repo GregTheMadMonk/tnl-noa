@@ -11,22 +11,22 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return tnlString( "HeatEquationBenchmarkProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "HeatEquationBenchmarkProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
-   return tnlString( "Heat Equation Benchmark" );
+   return String( "Heat Equation Benchmark" );
 }
 
 template< typename Mesh,
@@ -35,7 +35,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
+writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
     * Add data you want to have in the computation report (log) as follows:
@@ -49,7 +49,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const tnlParameterContainer& parameters )
+setup( const Config::ParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
@@ -89,12 +89,12 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setInitialCondition( const tnlParameterContainer& parameters,
+setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
 {
-   const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
+   const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    tnlMeshFunction< Mesh > u( mesh, dofs );
    if( ! u.boundLoad( initialConditionFile ) )
    {
@@ -144,7 +144,7 @@ makeSnapshot( const RealType& time,
 {
   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
-   tnlString fileName;
+   String fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
    if( ! dofs.save( fileName ) )
       return false;

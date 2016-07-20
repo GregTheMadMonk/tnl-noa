@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <TNL/core/mfilename.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/core/images/tnlPGMImage.h>
@@ -19,13 +19,13 @@
 
 using namespace TNL;
 
-void configSetup( tnlConfigDescription& config )
+void configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter( "General parameters" );
-   config.addList < tnlString >( "input-images",  "Input images for conversion to .tnl files." );
-   config.addList < tnlString >( "input-files",   "Input .tnl files for conversion to images." );
-   config.addEntry        < tnlString >( "image-format",  "Output images file format.", "pgm" );
-   config.addEntry        < tnlString >( "mesh-file",     "Mesh file.", "mesh.tnl" );
+   config.addList < String >( "input-images",  "Input images for conversion to .tnl files." );
+   config.addList < String >( "input-files",   "Input .tnl files for conversion to images." );
+   config.addEntry        < String >( "image-format",  "Output images file format.", "pgm" );
+   config.addEntry        < String >( "mesh-file",     "Mesh file.", "mesh.tnl" );
    config.addEntry        < bool >     ( "one-mesh-file", "Generate only one mesh file. All the images dimensions must be the same.", true );
    config.addEntry        < int >      ( "roi-top",       "Top (smaller number) line of the region of interest.", -1 );
    config.addEntry        < int >      ( "roi-bottom",    "Bottom (larger number) line of the region of interest.", -1 );
@@ -35,10 +35,10 @@ void configSetup( tnlConfigDescription& config )
 }
 
 
-bool processImages( const tnlParameterContainer& parameters )
+bool processImages( const Config::ParameterContainer& parameters )
 {
-    const tnlList< tnlString >& inputImages = parameters.getParameter< tnlList< tnlString > >( "input-images" );
-    tnlString meshFile = parameters.getParameter< tnlString >( "mesh-file" );
+    const List< String >& inputImages = parameters.getParameter< List< String > >( "input-images" );
+    String meshFile = parameters.getParameter< String >( "mesh-file" );
     bool verbose = parameters.getParameter< bool >( "verbose" );
  
     typedef tnlGrid< 2, double, tnlHost, int > GridType;
@@ -47,7 +47,7 @@ bool processImages( const tnlParameterContainer& parameters )
     tnlRegionOfInterest< int > roi;
     for( int i = 0; i < inputImages.getSize(); i++ )
     {
-      const tnlString& fileName = inputImages[ i ];
+      const String& fileName = inputImages[ i ];
       std::cout << "Processing image file " << fileName << "... ";
       tnlPGMImage< int > pgmImage;
       if( pgmImage.openForRead( fileName ) )
@@ -67,7 +67,7 @@ bool processImages( const tnlParameterContainer& parameters )
                return false;
          if( ! pgmImage.read( roi, grid, vector ) )
             return false;
-         tnlString outputFileName( fileName );
+         String outputFileName( fileName );
          RemoveFileExtension( outputFileName );
          outputFileName += ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
@@ -93,7 +93,7 @@ bool processImages( const tnlParameterContainer& parameters )
                return false;
          if( ! pngImage.read( roi, grid, vector ) )
             return false;
-         tnlString outputFileName( fileName );
+         String outputFileName( fileName );
          RemoveFileExtension( outputFileName );
          outputFileName += ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
@@ -119,7 +119,7 @@ bool processImages( const tnlParameterContainer& parameters )
                return false;
          if( ! jpegImage.read( roi, grid, vector ) )
             return false;
-         tnlString outputFileName( fileName );
+         String outputFileName( fileName );
          RemoveFileExtension( outputFileName );
          outputFileName += ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
@@ -130,11 +130,11 @@ bool processImages( const tnlParameterContainer& parameters )
    }
 }
 
-bool processTNLFiles( const tnlParameterContainer& parameters )
+bool processTNLFiles( const Config::ParameterContainer& parameters )
 {
-   const tnlList< tnlString >& inputFiles = parameters.getParameter< tnlList< tnlString > >( "input-files" );
-   const tnlString& imageFormat = parameters.getParameter< tnlString >( "image-format" );
-   tnlString meshFile = parameters.getParameter< tnlString >( "mesh-file" );
+   const List< String >& inputFiles = parameters.getParameter< List< String > >( "input-files" );
+   const String& imageFormat = parameters.getParameter< String >( "image-format" );
+   String meshFile = parameters.getParameter< String >( "mesh-file" );
    bool verbose = parameters.getParameter< bool >( "verbose" );
  
    tnlGrid< 2, double, tnlHost, int > grid;
@@ -146,7 +146,7 @@ bool processTNLFiles( const tnlParameterContainer& parameters )
    tnlVector< double, tnlHost, int > vector;
    for( int i = 0; i < inputFiles.getSize(); i++ )
    {
-      const tnlString& fileName = inputFiles[ i ];
+      const String& fileName = inputFiles[ i ];
       std::cout << "Processing file " << fileName << "... ";
       if( ! vector.load( fileName ) )
       {
@@ -156,7 +156,7 @@ bool processTNLFiles( const tnlParameterContainer& parameters )
       if( imageFormat == "pgm" || imageFormat == "pgm-binary" || imageFormat == "pgm-ascii" )
       {
          tnlPGMImage< int > image;
-         tnlString outputFileName( fileName );
+         String outputFileName( fileName );
          RemoveFileExtension( outputFileName );
          outputFileName += ".pgm";
 	 if ( imageFormat == "pgm" || imageFormat == "pgm-binary")
@@ -170,7 +170,7 @@ bool processTNLFiles( const tnlParameterContainer& parameters )
       if( imageFormat == "png" )
       {
          tnlPNGImage< int > image;
-         tnlString outputFileName( fileName );
+         String outputFileName( fileName );
          RemoveFileExtension( outputFileName );
          outputFileName += ".png";
          image.openForWrite( outputFileName, grid );
@@ -180,7 +180,7 @@ bool processTNLFiles( const tnlParameterContainer& parameters )
       if( imageFormat == "jpg" )
       {
          tnlJPEGImage< int > image;
-         tnlString outputFileName( fileName );
+         String outputFileName( fileName );
          RemoveFileExtension( outputFileName );
          outputFileName += ".jpg";
          image.openForWrite( outputFileName, grid );
@@ -193,8 +193,8 @@ bool processTNLFiles( const tnlParameterContainer& parameters )
 
 int main( int argc, char* argv[] )
 {
-   tnlParameterContainer parameters;
-   tnlConfigDescription configDescription;
+   Config::ParameterContainer parameters;
+   Config::ConfigDescription configDescription;
    configSetup( configDescription );
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
    {

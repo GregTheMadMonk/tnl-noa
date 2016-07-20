@@ -14,8 +14,8 @@
 
 #include <iostream>
 #include <iomanip>
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/matrices/tnlCSRMatrix.h>
 #include <TNL/debug/tnlDebug.h>
@@ -30,17 +30,17 @@ struct tnlARGCSRGroupProperties
    int firstRow;
    int offset;
 
-   static tnlString getType()
+   static String getType()
    {
-      return tnlString( "tnlARGCSRGroupProperties" );
+      return String( "tnlARGCSRGroupProperties" );
    };
 };
 
 ostream& operator << ( std::ostream& str, const tnlARGCSRGroupProperties& p ){};
 
-inline tnlString getType( const tnlARGCSRGroupProperties& a )
+inline String getType( const tnlARGCSRGroupProperties& a )
 {
-   return tnlString( "tnlARGCSRGroupProperties" );
+   return String( "tnlARGCSRGroupProperties" );
 }
 
 //! Matrix storing the non-zero elements in the Row-grouped CSR (Compressed Sparse Row) format
@@ -51,11 +51,11 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
    //! Basic constructor
-   tnlAdaptiveRgCSRMatrix( const tnlString& name );
+   tnlAdaptiveRgCSRMatrix( const String& name );
 
-   const tnlString& getMatrixClass() const;
+   const String& getMatrixClass() const;
 
-   tnlString getType() const;
+   String getType() const;
 
    Index getMaxGroupSize() const;
 
@@ -113,11 +113,11 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    //! Prints out the matrix structure
    void printOut( std::ostream& str,
-                  const tnlString& format,
+                  const String& format,
 		            const Index lines = 0 ) const;
 
    bool draw( std::ostream& str,
-              const tnlString& format,
+              const String& format,
               tnlCSRMatrix< Real, Device, Index >* csrMatrix,
               int verbose = 0 );
 
@@ -191,7 +191,7 @@ __global__ void AdaptiveRgCSRMatrixVectorProductKernel( Real* target,
 
 
 template< typename Real, typename Device, typename Index >
-tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlAdaptiveRgCSRMatrix( const tnlString& name )
+tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlAdaptiveRgCSRMatrix( const String& name )
 : tnlMatrix< Real, Device, Index >( name ),
   nonzeroElements( name + " : nonzeroElements" ),
   columns( name + " : columns" ),
@@ -206,25 +206,25 @@ tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlAdaptiveRgCSRMatrix( const t
   artificialZeros( 0 ),
   lastNonzeroElement( 0 )
 {
-	tnlAssert( maxGroupSize > 0, );
+	Assert( maxGroupSize > 0, );
 };
 
 template< typename Real, typename Device, typename Index >
-const tnlString& tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getMatrixClass() const
+const String& tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getMatrixClass() const
 {
    return tnlMatrixClass :: main;
 };
 
 template< typename Real, typename Device, typename Index >
-tnlString tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getType() const
+String tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getType() const
 {
-   return tnlString( "tnlAdaptiveRgCSRMatrix< ") +
-          tnlString( getType( Real( 0.0 ) ) ) +
-          tnlString( ", " ) +
+   return String( "tnlAdaptiveRgCSRMatrix< ") +
+          String( getType( Real( 0.0 ) ) ) +
+          String( ", " ) +
           Device :: getDeviceType() +
-          tnlString( ", " ) +
+          String( ", " ) +
           getType( Index( 0 ) ) +
-          tnlString( " >" );
+          String( " >" );
 };
 
 template< typename Real, typename Device, typename Index >
@@ -242,7 +242,7 @@ Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getCUDABlockSize() const
 template< typename Real, typename Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setSize( Index newSize )
 {
-   tnlAssert( newSize > 0, std::cerr << "newSize = " << newSize );
+   Assert( newSize > 0, std::cerr << "newSize = " << newSize );
    this->size = newSize;
    if( ! groupInfo. setSize( this->getSize() ) ||
        ! threads. setSize( this->getSize() ) ||
@@ -257,7 +257,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setSize( Index newSize )
 template< typename Real, typename Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: setNonzeroElements( Index elements )
 {
-   tnlAssert( elements != 0, );
+   Assert( elements != 0, );
    if( ! nonzeroElements. setSize( elements ) ||
        ! columns. setSize( elements ) )
       return false;
@@ -287,7 +287,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: reset()
 template< typename Real, typename Device, typename Index >
 Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getNonzeroElements() const
 {
-   tnlAssert( nonzeroElements. getSize() > artificialZeros, );
+   Assert( nonzeroElements. getSize() > artificialZeros, );
 	return nonzeroElements. getSize() - artificialZeros;
 }
 
@@ -309,7 +309,7 @@ template< typename Real, typename Device, typename Index >
 Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getFirstThreadInRow( const Index row, const Index groupId ) const
 {
    dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "getFirstThreadInRow" );
-   tnlAssert( row >= 0 && row < this->getSize(), std::cerr << " row = " << row << " size = " << this->getSize() );
+   Assert( row >= 0 && row < this->getSize(), std::cerr << " row = " << row << " size = " << this->getSize() );
    //dbgExpr( row );
    //dbgExpr( groupInfo[ groupId ]. firstRow );
    if( row == groupInfo[ groupId ]. firstRow )
@@ -320,7 +320,7 @@ Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getFirstThreadInRow( cons
 template< typename Real, typename Device, typename Index >
 Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getLastThreadInRow( const Index row, const Index groupId ) const
 {
-   tnlAssert( row >= 0 && row < this->getSize(), std::cerr << " row = " << row << " size = " << this->getSize() );
+   Assert( row >= 0 && row < this->getSize(), std::cerr << " row = " << row << " size = " << this->getSize() );
    return threads. getElement( row );
 }
 
@@ -510,7 +510,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
                Index insertPosition = groupInfo[ groupId ]. offset + thread;
                for( Index k = 0; k < groupInfo[ groupId ]. chunkSize; k ++ )
                {
-                  tnlAssert( index < numberOfStoredValues, std::cerr << "Index = " << index << " numberOfStoredValues = " << numberOfStoredValues );
+                  Assert( index < numberOfStoredValues, std::cerr << "Index = " << index << " numberOfStoredValues = " << numberOfStoredValues );
                   if( rowCounter < csrMatrix. getNonzeroElementsInRow( matrixRow ) )
                   {
                      dbgCout( "Inserting data from CSR format at position " << pos << " to AdaptiveRgCSR at " << insertPosition );
@@ -546,7 +546,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
                     thread < this->getLastThreadInRow( matrixRow, groupId );
                     thread ++ )
                {
-                  tnlAssert( index < numberOfStoredValues, std::cerr << "Index = " << index << " numberOfStoredValues = " << numberOfStoredValues );
+                  Assert( index < numberOfStoredValues, std::cerr << "Index = " << index << " numberOfStoredValues = " << numberOfStoredValues );
                   if( counters[ row ] < csrMatrix. getNonzeroElementsInRow( matrixRow ) )
                   {
                      Index pos = csrMatrix. row_offsets[ matrixRow ] + counters[ row ];
@@ -569,7 +569,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
 	}
 	if( Device :: getDevice() == tnlCudaDevice )
 	{
-		tnlAssert( false,
+		Assert( false,
 			cerr << "Conversion from tnlCSRMatrix on the host to the tnlAdaptiveRgCSRMatrix on the CUDA device is not implemented yet."; );
 		//TODO: implement this
 	}
@@ -617,7 +617,7 @@ Real tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getElement( Index row,
                                                                   Index column ) const
 {
    dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "getElement" );
-   tnlAssert( 0 <= row && row < this->getSize(),
+   Assert( 0 <= row && row < this->getSize(),
               std::cerr << "The row is outside the matrix." );
    if( Device :: getDevice() == tnlHostDevice )
    {
@@ -645,7 +645,7 @@ Real tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getElement( Index row,
    }
    if( Device :: getDevice() == tnlCudaDevice )
    {
-      tnlAssert( false,
+      Assert( false,
                 std::cerr << "tnlRgCSRMatrix< Real, tnlCuda, Index > ::getElement is not implemented yet." );
       //TODO: implement this
 
@@ -658,11 +658,11 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVe
                                                                      tnlVector< Real, Device, Index >& result ) const
 {
    dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "vectorProduct" )
-   tnlAssert( vec. getSize() == this->getSize(),
+   Assert( vec. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << std::endl; );
-   tnlAssert( result. getSize() == this->getSize(),
+   Assert( result. getSize() == this->getSize(),
               std::cerr << "The matrix and result vector of a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << std::endl; );
@@ -919,8 +919,8 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOutGroup( std::ostrea
 
 template< typename Real, typename Device, typename Index >
 void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut( std::ostream& str,
-                                                                const tnlString& name,
-                                                                const tnlString& format,
+                                                                const String& name,
+                                                                const String& format,
 		                                                          const Index lines ) const
 {
    if( format == "" || format == "text" )
@@ -984,7 +984,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut( std::ostream& st
 
 template< typename Real, typename Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: draw( std::ostream& str,
-                                                            const tnlString& format,
+                                                            const String& format,
                                                             tnlCSRMatrix< Real, Device, Index >* csrMatrix,
                                                             int verbose )
 {

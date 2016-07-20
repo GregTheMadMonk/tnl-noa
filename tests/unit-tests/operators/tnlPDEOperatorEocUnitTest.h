@@ -34,7 +34,7 @@ class tnlPDEOperatorEocUnitTest : public CppUnit :: TestCase
 
    static CppUnit :: Test* suite()
    {
-      tnlString testName = OperatorTest::getType();
+      String testName = OperatorTest::getType();
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( testName.getString() );
       CppUnit :: TestResult result;
 

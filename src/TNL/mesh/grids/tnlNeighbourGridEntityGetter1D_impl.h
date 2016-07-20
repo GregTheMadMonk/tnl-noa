@@ -14,7 +14,7 @@
 #include <TNL/mesh/grids/tnlGrid1D.h>
 #include <TNL/mesh/grids/tnlGrid2D.h>
 #include <TNL/mesh/grids/tnlGrid3D.h>
-#include <TNL/core/tnlStaticFor.h>
+#include <TNL/StaticFor.h>
 
 namespace TNL {
 
@@ -55,12 +55,12 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       NeighbourGridEntityType getEntity() const
       {
-         tnlAssert( this->entity.getCoordinates() >= CoordinatesType( 0 ) &&
+         Assert( this->entity.getCoordinates() >= CoordinatesType( 0 ) &&
                     this->entity.getCoordinates() < this->entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << this->entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + CoordinatesType( step ) >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates() + CoordinatesType( step ) >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() + CoordinatesType( step ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -72,12 +72,12 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + CoordinatesType( step ) >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates() + CoordinatesType( step ) >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() + CoordinatesType( step ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -135,12 +135,12 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       NeighbourGridEntityType getEntity() const
       {
-         tnlAssert( this->entity.getCoordinates() >= CoordinatesType( 0 ) &&
+         Assert( this->entity.getCoordinates() >= CoordinatesType( 0 ) &&
                     this->entity.getCoordinates() < this->entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << this->entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + CoordinatesType( step ) >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates() + CoordinatesType( step ) >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() + CoordinatesType( step ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -152,12 +152,12 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates() + CoordinatesType( step ) >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates() + CoordinatesType( step ) >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() + CoordinatesType( step ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -188,7 +188,7 @@ class tnlNeighbourGridEntityGetter<
       void refresh( const GridType& grid, const IndexType& entityIndex )
       {
 #ifndef HAVE_CUDA  // TODO: fix it -- does not work with nvcc
-         tnlStaticFor< IndexType, -stencilSize, stencilSize + 1, StencilRefresher >::exec( *this, entityIndex );
+         StaticFor< IndexType, -stencilSize, stencilSize + 1, StencilRefresher >::exec( *this, entityIndex );
 #endif
       };
  
@@ -236,12 +236,12 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       NeighbourGridEntityType getEntity() const
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
                     entity.getCoordinates().x() + step <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -253,12 +253,12 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ).x() &&
+         Assert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ).x() &&
                     entity.getCoordinates().x() + step <= entity.getMesh().getDimensions().x(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -317,12 +317,12 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       NeighbourGridEntityType getEntity() const
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
                     entity.getCoordinates().x() + step < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -334,12 +334,12 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates().x() + step - ( step > 0 ) >= 0 &&
+         Assert( entity.getCoordinates().x() + step - ( step > 0 ) >= 0 &&
                     entity.getCoordinates().x() + step - ( step > 0 ) < entity.getMesh().getDimensions().x(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -393,12 +393,12 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       NeighbourGridEntityType getEntity() const
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
                     entity.getCoordinates().x() + step < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -410,12 +410,12 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
                     entity.getCoordinates().x() + step < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -469,12 +469,12 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       NeighbourGridEntityType getEntity() const
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
                     entity.getCoordinates().x() + step <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -486,12 +486,12 @@ class tnlNeighbourGridEntityGetter<
       __cuda_callable__ inline
       IndexType getEntityIndex() const
       {
-         tnlAssert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates() >= CoordinatesType( 0 ) &&
                     entity.getCoordinates() <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         tnlAssert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
+         Assert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
                     entity.getCoordinates().x() + step <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()

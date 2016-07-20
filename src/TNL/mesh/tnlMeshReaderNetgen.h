@@ -25,7 +25,7 @@ class tnlMeshReaderNetgen
       tnlMeshReaderNetgen()
       : dimensions( 0 ){}
  
-   bool detectMesh( const tnlString& fileName )
+   bool detectMesh( const String& fileName )
    {
       std::fstream inputFile( fileName.getString() );
       if( ! inputFile )
@@ -118,7 +118,7 @@ class tnlMeshReaderNetgen
    }
 
    template< typename MeshType >
-   static bool readMesh( const tnlString& fileName,
+   static bool readMesh( const String& fileName,
                          MeshType& mesh,
                          bool verbose )
    {

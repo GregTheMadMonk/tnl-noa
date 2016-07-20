@@ -2,7 +2,7 @@
 
 #include "benchmarks.h"
 
-#include <TNL/core/arrays/tnlArray.h>
+#include <TNL/Arrays/Array.h>
 
 namespace TNL
 {
@@ -16,8 +16,8 @@ benchmarkArrayOperations( Benchmark & benchmark,
                           const int & loops,
                           const int & size )
 {
-    typedef tnlArray< Real, tnlHost, Index > HostArray;
-    typedef tnlArray< Real, tnlCuda, Index > CudaArray;
+    typedef Arrays::Array< Real, tnlHost, Index > HostArray;
+    typedef Arrays::Array< Real, tnlCuda, Index > CudaArray;
     using namespace std;
 
     double datasetSize = ( double ) ( loops * size ) * sizeof( Real ) / oneGB;

@@ -45,10 +45,10 @@ template< int FunctionDimensions,
           typename Device >
 void
 tnlTestFunction< FunctionDimensions, Real, Device >::
-configSetup( tnlConfigDescription& config,
-             const tnlString& prefix )
+configSetup( Config::ConfigDescription& config,
+             const String& prefix )
 {
-   config.addRequiredEntry< tnlString >( prefix + "test-function", "Testing function." );
+   config.addRequiredEntry< String >( prefix + "test-function", "Testing function." );
       config.addEntryEnum( "constant" );
       config.addEntryEnum( "exp-bump" );
       config.addEntryEnum( "sin-wave" );
@@ -75,7 +75,7 @@ configSetup( tnlConfigDescription& config,
    config.addEntry     < double >( prefix + "sigma", "Sigma for the exp based test functions.", 1.0 );
    config.addEntry     < double >( prefix + "diameter", "Diameter for the cylinder, flowerpot test functions.", 1.0 );
   config.addEntry     < double >( prefix + "height", "Height of zero-level-set function for the blob, pseudosquare test functions.", 1.0 );
-   config.addEntry     < tnlString >( prefix + "time-dependence", "Time dependence of the test function.", "none" );
+   config.addEntry     < String >( prefix + "time-dependence", "Time dependence of the test function.", "none" );
       config.addEntryEnum( "none" );
       config.addEntryEnum( "linear" );
       config.addEntryEnum( "quadratic" );
@@ -90,8 +90,8 @@ template< int FunctionDimensions,
    template< typename FunctionType >
 bool
 tnlTestFunction< FunctionDimensions, Real, Device >::
-setupFunction( const tnlParameterContainer& parameters,
-               const tnlString& prefix )
+setupFunction( const Config::ParameterContainer& parameters,
+               const String& prefix )
 {
    FunctionType* auxFunction = new FunctionType;
    if( ! auxFunction->setup( parameters, prefix ) )
@@ -119,12 +119,12 @@ template< int FunctionDimensions,
           typename Device >
 bool
 tnlTestFunction< FunctionDimensions, Real, Device >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
   std::cout << "Test function setup ... " << std::endl;
-   const tnlString& timeDependence =
-            parameters.getParameter< tnlString >(
+   const String& timeDependence =
+            parameters.getParameter< String >(
                      prefix +
                      "time-dependence" );
   std::cout << "Time dependence ... " << timeDependence << std::endl;
@@ -139,7 +139,7 @@ setup( const tnlParameterContainer& parameters,
 
    this->timeScale = parameters.getParameter< double >( prefix + "time-scale" );
 
-   const tnlString& testFunction = parameters.getParameter< tnlString >( prefix + "test-function" );
+   const String& testFunction = parameters.getParameter< String >( prefix + "test-function" );
   std::cout << "Test function ... " << testFunction << std::endl;
    if( testFunction == "constant" )
    {
@@ -246,7 +246,7 @@ operator = ( const tnlTestFunction& function )
          this->copyFunction< tnlBlobFunction< FunctionDimensions, Real > >( function.function );
          break;
       default:
-         tnlAssert( false, );
+         Assert( false, );
          break;
    }
 
@@ -456,7 +456,7 @@ copyFunction( const void* function )
    }
    if( Device::DeviceType == ( int ) tnlCudaDevice )
    {
-      tnlAssert( false, );
+      Assert( false, );
       abort();
    }
 }

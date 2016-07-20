@@ -49,9 +49,9 @@ class tnlFDMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, DifferenceOp
    tnlFDMGradientNorm()
    : epsSquare( 0.0 ){}
 
-   static tnlString getType()
+   static String getType()
    {
-      return tnlString( "tnlFDMGradientNorm< " ) +
+      return String( "tnlFDMGradientNorm< " ) +
          MeshType::getType() + ", " +
         TNL::getType< Real >() + ", " +
         TNL::getType< Index >() + " >";
@@ -107,9 +107,9 @@ class tnlFDMGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, DifferenceOp
       : epsSquare( 0.0 ){}
 
 
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlFDMGradientNorm< " ) +
+         return String( "tnlFDMGradientNorm< " ) +
             MeshType::getType() + ", " +
            TNL::getType< Real >() + ", " +
            TNL::getType< Index >() + " >";
@@ -172,9 +172,9 @@ class tnlFDMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, DifferenceO
       tnlFDMGradientNorm()
       : epsSquare( 0.0 ){}
 
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlFDMGradientNorm< " ) +
+         return String( "tnlFDMGradientNorm< " ) +
             MeshType::getType() + ", " +
            TNL::getType< Real >() + ", " +
            TNL::getType< Index >() + " >";

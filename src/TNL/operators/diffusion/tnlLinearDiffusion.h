@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/functions/tnlMeshFunction.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/operators/tnlOperator.h>
@@ -49,7 +49,7 @@ class tnlLinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
  
       static constexpr int getMeshDimensions() { return Dimensions; }
  
-      static tnlString getType();
+      static String getType();
 
       template< typename PreimageFunction,
                 typename MeshEntity >
@@ -100,7 +100,7 @@ class tnlLinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index
  
       static constexpr int getMeshDimensions() { return Dimensions; }
 
-      static tnlString getType();
+      static String getType();
 
       template< typename PreimageFunction, typename EntityType >
       __cuda_callable__
@@ -150,7 +150,7 @@ class tnlLinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index
  
       static constexpr int getMeshDimensions() { return Dimensions; }
 
-      static tnlString getType();
+      static String getType();
 
       template< typename PreimageFunction,
                 typename EntityType >

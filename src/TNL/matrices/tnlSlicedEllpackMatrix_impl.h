@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/matrices/tnlSlicedEllpackMatrix.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/core/mfuncs.h>
 
 namespace TNL {
@@ -28,20 +28,20 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-tnlString tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getType()
+String tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getType()
 {
-   return tnlString( "tnlSlicedEllpackMatrix< ") +
-          tnlString( TNL::getType< Real >() ) +
-          tnlString( ", " ) +
+   return String( "tnlSlicedEllpackMatrix< ") +
+          String( TNL::getType< Real >() ) +
+          String( ", " ) +
           Device :: getDeviceType() +
-          tnlString( " >" );
+          String( " >" );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-tnlString tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getTypeVirtual() const
+String tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -53,7 +53,7 @@ template< typename Real,
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setDimensions( const IndexType rows,
                                                                               const IndexType columns )
 {
-   tnlAssert( rows > 0 && columns > 0,
+   Assert( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
                    << " columns = " << columns << std::endl );
    return tnlSparseMatrix< Real, Device, Index >::setDimensions( rows, columns );
@@ -65,8 +65,8 @@ template< typename Real,
           int SliceSize >
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
-   tnlAssert( this->getRows() > 0, );
-   tnlAssert( this->getColumns() > 0, );
+   Assert( this->getRows() > 0, );
+   Assert( this->getColumns() > 0, );
    const IndexType slices = roundUpDivision( this->rows, SliceSize );
    if( ! this->sliceCompressedRowsLengths.setSize( slices ) ||
        ! this->slicePointers.setSize( slices + 1 ) )
@@ -126,7 +126,7 @@ template< typename Real,
              typename Index2 >
 bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::operator == ( const tnlSlicedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const
 {
-   tnlAssert( this->getRows() == matrix.getRows() &&
+   Assert( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
               std::cerr << "this->getRows() = " << this->getRows()
                    << " matrix.getRows() = " << matrix.getRows()
@@ -182,7 +182,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElementFast( c
                                                                                const RealType& value,
                                                                                const RealType& thisElementMultiplicator )
 {
-   tnlAssert( row >= 0 && row < this->rows &&
+   Assert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
               std::cerr << " row = " << row
                    << " column = " << column
@@ -230,7 +230,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElement( const
                                                                            const RealType& value,
                                                                            const RealType& thisElementMultiplicator )
 {
-   tnlAssert( row >= 0 && row < this->rows &&
+   Assert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
               std::cerr << " row = " << row
                    << " column = " << column
@@ -512,7 +512,7 @@ void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::addMatrix( const 
                                                                           const RealType& matrixMultiplicator,
                                                                           const RealType& thisMatrixMultiplicator )
 {
-   tnlAssert( false, std::cerr << "TODO: implement" );
+   Assert( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -525,7 +525,7 @@ template< typename Real,
 void tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::getTransposition( const tnlSlicedEllpackMatrix< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   tnlAssert( false, std::cerr << "TODO: implement" );
+   Assert( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -539,7 +539,7 @@ bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::performSORIterati
                                                                                     Vector& x,
                                                                                     const RealType& omega ) const
 {
-   tnlAssert( row >=0 && row < this->getRows(),
+   Assert( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row
                    << " this->getRows() = " << this->getRows() << std::endl );
 
@@ -576,7 +576,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::save( tnlFile& file ) const
+bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::save( File& file ) const
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::save( file ) ||
        ! this->slicePointers.save( file ) ||
@@ -589,7 +589,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::load( tnlFile& file )
+bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::load( File& file )
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::load( file ) ||
        ! this->slicePointers.load( file ) ||
@@ -602,18 +602,18 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::save( const tnlString& fileName ) const
+bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::save( const String& fileName ) const
 {
-   return tnlObject::save( fileName );
+   return Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::load( const tnlString& fileName )
+bool tnlSlicedEllpackMatrix< Real, Device, Index, SliceSize >::load( const String& fileName )
 {
-   return tnlObject::load( fileName );
+   return Object::load( fileName );
 }
 
 template< typename Real,

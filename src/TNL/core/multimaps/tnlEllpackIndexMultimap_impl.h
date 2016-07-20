@@ -25,18 +25,18 @@ tnlEllpackIndexMultimap()
 
 template< typename Index,
           typename Device >
-tnlString tnlEllpackIndexMultimap< Index, Device > :: getType()
+String tnlEllpackIndexMultimap< Index, Device > :: getType()
 {
-   return tnlString( "tnlEllpackIndexMultimap< ") +
+   return String( "tnlEllpackIndexMultimap< ") +
           Device :: getDeviceType() +
-          tnlString( ", " ) +
-          tnlString( TNL::getType< Index >() ) +
-          tnlString( " >" );
+          String( ", " ) +
+          String( TNL::getType< Index >() ) +
+          String( " >" );
 }
 
 template< typename Index,
           typename Device >
-tnlString tnlEllpackIndexMultimap< Index, Device >::getTypeVirtual() const
+String tnlEllpackIndexMultimap< Index, Device >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -76,12 +76,12 @@ void
 tnlEllpackIndexMultimap< Index, Device >::
 allocate( const ValuesAllocationVectorType& portsCount )
 {
-   tnlAssert( portsCount.getSize() == this->keysRange,
+   Assert( portsCount.getSize() == this->keysRange,
               std::cerr << "portsCount.getSize() =  " << portsCount.getSize()
                    << "this->inputs = " << this->keysRange );
    this->valuesMaxCount = portsCount.max();
  
-   tnlAssert( this->valuesMaxCount >= 0 && this->valuesMaxCount <= this->valuesRange,
+   Assert( this->valuesMaxCount >= 0 && this->valuesMaxCount <= this->valuesRange,
               std::cerr << "this->portsMaxCount = " << this->valuesMaxCount
                    << " this->outputs = " << this->valuesRange );
    this->values.setSize( this->keysRange * this->valuesMaxCount );

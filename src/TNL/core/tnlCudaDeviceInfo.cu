@@ -33,13 +33,13 @@ getActiveDevice()
     return device;
 }
 
-tnlString
+String
 tnlCudaDeviceInfo::
 getDeviceName( int deviceNum )
 {
     cudaDeviceProp properties;
     cudaGetDeviceProperties( &properties, deviceNum );
-    return tnlString( properties.name );
+    return String( properties.name );
 }
 
 int

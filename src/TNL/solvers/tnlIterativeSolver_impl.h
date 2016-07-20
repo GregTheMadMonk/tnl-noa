@@ -29,8 +29,8 @@ tnlIterativeSolver< Real, Index> :: tnlIterativeSolver()
 };
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: configSetup( tnlConfigDescription& config,
-                                                      const tnlString& prefix )
+void tnlIterativeSolver< Real, Index> :: configSetup( Config::ConfigDescription& config,
+                                                      const String& prefix )
 {
    config.addEntry< int >   ( prefix + "max-iterations", "Maximal number of iterations the solver may perform.", 100000000000 );
    config.addEntry< int >   ( prefix + "min-iterations", "Minimal number of iterations the solver must perform.", 0 );
@@ -40,8 +40,8 @@ void tnlIterativeSolver< Real, Index> :: configSetup( tnlConfigDescription& conf
 }
 
 template< typename Real, typename Index >
-bool tnlIterativeSolver< Real, Index> :: setup( const tnlParameterContainer& parameters,
-                                               const tnlString& prefix )
+bool tnlIterativeSolver< Real, Index> :: setup( const Config::ParameterContainer& parameters,
+                                               const String& prefix )
 {
    this->setMaxIterations( parameters.getParameter< int >( "max-iterations" ) );
    this->setMinIterations( parameters.getParameter< int >( "min-iterations" ) );
@@ -94,7 +94,7 @@ template< typename Real, typename Index >
 bool tnlIterativeSolver< Real, Index> :: checkNextIteration()
 {
    // TODO: fix
-   //tnlAssert( solverMonitor, );
+   //Assert( solverMonitor, );
    if( this->solverMonitor )
    {
       solverMonitor->setIterations( this->currentIteration );

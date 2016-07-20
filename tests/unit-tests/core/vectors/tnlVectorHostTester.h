@@ -18,8 +18,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/tnlFile.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/File.h>
 
 using namespace TNL;
 
@@ -28,9 +28,9 @@ class testingClass
 
 };
 
-tnlString getType( const testingClass& c )
+String getType( const testingClass& c )
 {
-   return tnlString( "testingClass" );
+   return String( "testingClass" );
 };
 
 template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
@@ -205,7 +205,7 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
       tnlVector< T, tnlHost > v( "test-long-vector-u" );
       v. setSize( 100 );
       v. setValue( 3.14147 );
-      tnlFile file;
+      File file;
       file. open( "test-file.tnl", tnlWriteMode );
       v. save( file );
       file. close();

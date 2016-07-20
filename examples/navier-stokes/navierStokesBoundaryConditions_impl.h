@@ -29,7 +29,7 @@ navierStokesBoundaryConditions< Mesh >::navierStokesBoundaryConditions()
 }
 
 template< typename Mesh >
-bool navierStokesBoundaryConditions< Mesh >::setup( const tnlParameterContainer& parameters )
+bool navierStokesBoundaryConditions< Mesh >::setup( const Config::ParameterContainer& parameters )
 {
    this->maxInflowVelocity = parameters. getParameter< double >( "max-inflow-velocity" );
    //this->maxOutflowVelocity = parameters. getParameter< double >( "max-outflow-velocity" );

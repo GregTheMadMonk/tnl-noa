@@ -13,8 +13,8 @@
 
 #include <iostream>
 #include <iomanip>
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/matrices/tnlCSRMatrix.h>
 #include <TNL/debug/tnlDebug.h>
@@ -36,11 +36,11 @@ class tnlEllpackMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHost
    typedef Index IndexType;
 
    //! Basic constructor
-   tnlEllpackMatrix( const tnlString& name, Index _row );
+   tnlEllpackMatrix( const String& name, Index _row );
 
-   const tnlString& getMatrixClass() const;
+   const String& getMatrixClass() const;
 
-   tnlString getType() const;
+   String getType() const;
 
    //! Sets the number of row and columns.
    bool setSize( Index new_size );
@@ -99,26 +99,26 @@ class tnlEllpackMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHost
 };
 
 template< typename Real, typename Index >
-tnlEllpackMatrix< Real, tnlHost, Index > :: tnlEllpackMatrix( const tnlString& name, Index _row_length )
+tnlEllpackMatrix< Real, tnlHost, Index > :: tnlEllpackMatrix( const String& name, Index _row_length )
 : tnlMatrix< Real >( name ),
   ellpack_nonzero_elements( "ellpack-nonzero-elements" ),
   ellpack_columns( "ellpack-columns" ),
   row_length( _row_length ),
   artificial_zeros( 0 )
 {
-   tnlAssert( row_length > 0, );
+   Assert( row_length > 0, );
 };
 
 template< typename Real, typename Index >
-const tnlString& tnlEllpackMatrix< Real, tnlHost, Index > :: getMatrixClass() const
+const String& tnlEllpackMatrix< Real, tnlHost, Index > :: getMatrixClass() const
 {
    return tnlMatrixClass :: main;
 };
 
 template< typename Real, typename Index >
-tnlString tnlEllpackMatrix< Real, tnlHost, Index > :: getType() const
+String tnlEllpackMatrix< Real, tnlHost, Index > :: getType() const
 {
-   return tnlString( "tnlEllpackMatrix< ") + tnlString( getType( Real( 0.0 ) ) ) + tnlString( ", tnlHost >" );
+   return String( "tnlEllpackMatrix< ") + String( getType( Real( 0.0 ) ) ) + String( ", tnlHost >" );
 };
 
 template< typename Real, typename Index >
@@ -255,9 +255,9 @@ template< typename Real, typename Index >
 Real tnlEllpackMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
                                                              const tnlVector< Real, tnlHost, Index >& vector ) const
 {
-   tnlAssert( 0 <= row && row < this->getSize(),
+   Assert( 0 <= row && row < this->getSize(),
               std::cerr << "The row is outside the matrix." );
-   tnlAssert( vector. getSize() == this->getSize(),
+   Assert( vector. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vector. getSize() << std::endl; );
@@ -286,11 +286,11 @@ template< typename Real, typename Index >
 void tnlEllpackMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVector< Real, tnlHost, Index >& x,
                                                                 tnlVector< Real, tnlHost, Index >& b ) const
 {
-   tnlAssert( x. getSize() == this->getSize(),
+   Assert( x. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << x. getSize() << std::endl; );
-   tnlAssert( b. getSize() == this->getSize(),
+   Assert( b. getSize() == this->getSize(),
               std::cerr << "The matrix and result vector of a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << b. getSize() << std::endl; );
@@ -301,7 +301,7 @@ void tnlEllpackMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVector<
 
 template< typename Real, typename Index >
 void tnlEllpackMatrix< Real, tnlHost, Index > :: printOut( std::ostream& str,
-                                                           const tnlString& name ) const
+                                                           const String& name ) const
 {
    str << "Structure of tnlEllpackMatrix" << std::endl;
    str << "Matrix name:" << name << std::endl;

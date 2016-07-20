@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlStaticFor.h>
+#include <TNL/StaticFor.h>
 
 namespace TNL {
 
@@ -37,8 +37,8 @@ class tnlMeshSubentitySeedsCreator
       static SubentitySeedArray create( const EntitySeed &entitySeed  )
       {
          SubentitySeedArray subentitySeeds;
-         tnlStaticFor< LocalIndexType, 0, SUBENTITIES_COUNT, CreateSubentitySeeds >::exec( subentitySeeds, entitySeed.getCornerIds() );
-         //tnlStaticFor< LocalIndexType, 0, SUBENTITIES_COUNT, CreateSubentitySeeds >::exec( indexedSet, entitySeed.getCornerIds() );
+         StaticFor< LocalIndexType, 0, SUBENTITIES_COUNT, CreateSubentitySeeds >::exec( subentitySeeds, entitySeed.getCornerIds() );
+         //StaticFor< LocalIndexType, 0, SUBENTITIES_COUNT, CreateSubentitySeeds >::exec( indexedSet, entitySeed.getCornerIds() );
  
          return subentitySeeds;
       }
@@ -54,7 +54,7 @@ class tnlMeshSubentitySeedsCreator
             //static void exec( SeedIndexedSet& indexedSet, IdArrayAccessorType vertexIds )
             {
                //EntitySeed seed;
-               tnlStaticFor< LocalIndexType, 0, SUBENTITY_VERTICES_COUNT, SetSubentitySeedVertex >::exec( subentitySeeds[ subentityIndex ], vertexIds );
+               StaticFor< LocalIndexType, 0, SUBENTITY_VERTICES_COUNT, SetSubentitySeedVertex >::exec( subentitySeeds[ subentityIndex ], vertexIds );
                //indexedSet.insert( seed );
             }
 

@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/vectors/tnlSharedVector.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Vectors/SharedVector.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/functions/tnlDomain.h>
 
@@ -31,7 +31,7 @@ class tnlExactGradientNorm< 1, Real >
 {
    public:
 
-      static tnlString getType()
+      static String getType()
       {
          return "tnlExactGradientNorm< 1 >";
       }
@@ -99,7 +99,7 @@ class tnlExactGradientNorm< 2, Real >
 {
    public:
 
-      static tnlString getType()
+      static String getType()
       {
          return "tnlExactGradientNorm< 2 >";
       }
@@ -173,7 +173,7 @@ class tnlExactGradientNorm< 3, Real >
 {
    public:
 
-      static tnlString getType()
+      static String getType()
       {
          return "tnlExactGradientNorm< 3 >";
       }

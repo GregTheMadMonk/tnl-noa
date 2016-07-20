@@ -97,7 +97,7 @@ void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const tnlVector< RealType, De
 
    iterations = 0;
 
-   tnlTimerRT rt_timer;
+   TimerRT rt_timer;
    rt_timer. Reset();
    //maxIterations = 1;
 
@@ -166,28 +166,28 @@ void tnlSpmvBenchmarkBase< Matrix >::writeProgressTableHeader()
 }
 
 template< typename Matrix >
-tnlString tnlSpmvBenchmarkBase< Matrix > :: getBgColorBySpeedUp( const double& speedUp ) const
+String tnlSpmvBenchmarkBase< Matrix > :: getBgColorBySpeedUp( const double& speedUp ) const
 {
    if( speedUp >= 30.0 )
-      return tnlString( "#FF9900" );
+      return String( "#FF9900" );
    if( speedUp >= 25.0 )
-      return tnlString( "#FFAA00" );
+      return String( "#FFAA00" );
    if( speedUp >= 20.0 )
-      return tnlString( "#FFBB00" );
+      return String( "#FFBB00" );
    if( speedUp >= 15.0 )
-      return tnlString( "#FFCC00" );
+      return String( "#FFCC00" );
    if( speedUp >= 10.0 )
-      return tnlString( "#FFDD00" );
+      return String( "#FFDD00" );
    if( speedUp >= 5.0 )
-      return tnlString( "#FFEE00" );
+      return String( "#FFEE00" );
    if( speedUp >= 1.0 )
-      return tnlString( "#FFFF00" );
-   return tnlString( "#FFFFFF" );
+      return String( "#FFFF00" );
+   return String( "#FFFFFF" );
 }
 
 
 template< typename Matrix >
-bool tnlSpmvBenchmarkBase< Matrix > :: printMatrixInHtml( const tnlString& fileName,
+bool tnlSpmvBenchmarkBase< Matrix > :: printMatrixInHtml( const String& fileName,
                                                           tnlMatrix< RealType, tnlHost, IndexType >& matrix ) const
 {
    //cout << "Writing to file " << fileName << std::endl;

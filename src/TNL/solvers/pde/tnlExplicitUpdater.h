@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/functions/tnlFunctionAdapter.h>
-#include <TNL/core/tnlTimer.h>
+#include <TNL/Timer.h>
 
 namespace TNL {
 

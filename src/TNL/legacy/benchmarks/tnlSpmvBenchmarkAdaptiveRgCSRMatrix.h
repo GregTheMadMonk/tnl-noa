@@ -12,7 +12,7 @@
 #define TNLSPMVBENCHMARKADAPTIVERGCSRMATRIX_H_
 
 #include "tnlSpmvBenchmark.h"
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Assert.h>
 
 template< typename Real, typename Device, typename Index>
 class tnlSpmvBenchmarkAdaptiveRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index, tnlAdaptiveRgCSRMatrix >
@@ -29,7 +29,7 @@ class tnlSpmvBenchmarkAdaptiveRgCSRMatrix : public tnlSpmvBenchmark< Real, Devic
 
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
-                         const tnlString& inputMtxFile,
+                         const String& inputMtxFile,
                          const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                          bool writeMatrixInfo  ) const;
 
@@ -46,7 +46,7 @@ class tnlSpmvBenchmarkAdaptiveRgCSRMatrix : public tnlSpmvBenchmark< Real, Devic
    /****
     * This is helper method for generating HTML table with benchmark results
     */
-    tnlString getBgColorByRgCSRSpeedUp( const double& speedUp ) const;
+    String getBgColorByRgCSRSpeedUp( const double& speedUp ) const;
 
    Index desiredChunkSize;
 
@@ -77,7 +77,7 @@ template< typename Real,
           typename Index>
 bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
 {
-   //tnlAssert( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
+   //Assert( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
    if( Device :: getDevice() == tnlHostDevice )
    {
       this->matrix. tuneFormat( desiredChunkSize, cudaBlockSize );
@@ -141,13 +141,13 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTable( std::ostream& logFile,
                                                                                     const double& csrGflops,
-                                                                                    const tnlString& inputMtxFile,
+                                                                                    const String& inputMtxFile,
                                                                                     const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                                                                                     bool writeMatrixInfo  ) const
 {
    if( this->getBenchmarkWasSuccesful() )
    {
-      tnlString bgColor="#FFFFFF";
+      String bgColor="#FFFFFF";
       double speedUp = this->getGflops() / csrGflops;
       double rgCsrSpeedUp( 0.0 );
       if( this->bestRgCSRGflops )
@@ -164,13 +164,13 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTab
       }
       if( writeMatrixInfo )
       {
-         tnlString baseFileName( inputMtxFile );
-         baseFileName += tnlString( ".argcsr-");
-         baseFileName += tnlString( desiredChunkSize );
-         baseFileName += tnlString( "-" );
-         baseFileName += tnlString( cudaBlockSize );
-         tnlString matrixPdfFile = baseFileName + tnlString( ".pdf" );
-         tnlString matrixHtmlFile = baseFileName + tnlString( ".html" );
+         String baseFileName( inputMtxFile );
+         baseFileName += String( ".argcsr-");
+         baseFileName += String( desiredChunkSize );
+         baseFileName += String( "-" );
+         baseFileName += String( cudaBlockSize );
+         String matrixPdfFile = baseFileName + String( ".pdf" );
+         String matrixHtmlFile = baseFileName + String( ".html" );
          tnlAdaptiveRgCSRMatrix< Real > argCsrMatrix( inputMtxFile );
          argCsrMatrix. tuneFormat( this->desiredChunkSize,
                                  this->cudaBlockSize );
@@ -183,7 +183,7 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTab
       }
 
       bgColor = this->getBgColorBySpeedUp( speedUp );
-      tnlString textColor = "#000000"; //getBgColorByRgCSRSpeedUp( rgCsrSpeedUp );
+      String textColor = "#000000"; //getBgColorByRgCSRSpeedUp( rgCsrSpeedUp );
       logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << this->getTime() << "</font></td>" << std::endl;
       logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << this->getGflops() << "</font></td>" << std::endl;
       logFile << "             <td bgcolor=" << bgColor << "><font size=3 color=\"" << textColor << "\"> " << speedUp << "</font></td>" << std::endl;
@@ -237,23 +237,23 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setBestRgCSRG
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: getBgColorByRgCSRSpeedUp( const double& speedUp ) const
+String tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: getBgColorByRgCSRSpeedUp( const double& speedUp ) const
 {
    if( speedUp >= 30.0 )
-      return tnlString( "#009900" );
+      return String( "#009900" );
    if( speedUp >= 25.0 )
-      return tnlString( "#00AA00" );
+      return String( "#00AA00" );
    if( speedUp >= 20.0 )
-      return tnlString( "#00BB00" );
+      return String( "#00BB00" );
    if( speedUp >= 15.0 )
-      return tnlString( "#00CC00" );
+      return String( "#00CC00" );
    if( speedUp >= 10.0 )
-      return tnlString( "#00DD00" );
+      return String( "#00DD00" );
    if( speedUp >= 5.0 )
-      return tnlString( "#00EE00" );
+      return String( "#00EE00" );
    if( speedUp >= 1.0 )
-      return tnlString( "#00FF00" );
-   return tnlString( "#FFFFFF" );
+      return String( "#00FF00" );
+   return String( "#FFFFFF" );
 }
 
 #endif /* TNLSPMVBENCHMARKADAPTIVERGCSRMATRIX_H_ */

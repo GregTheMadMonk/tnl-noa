@@ -95,84 +95,84 @@ inline bool tnlDicomSeriesInfo::retrieveInfo()
 #endif
 }
 
-inline const tnlString& tnlDicomSeriesInfo::getModality()
+inline const String& tnlDicomSeriesInfo::getModality()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->modality;
 }
 
-inline const tnlString& tnlDicomSeriesInfo::getStudyInstanceUID()
+inline const String& tnlDicomSeriesInfo::getStudyInstanceUID()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->studyInstanceUID;
 }
 
-inline const tnlString& tnlDicomSeriesInfo::getSeriesInstanceUID()
+inline const String& tnlDicomSeriesInfo::getSeriesInstanceUID()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesInstanceUID;
 }
 
-inline const tnlString& tnlDicomSeriesInfo::getSeriesNumber()
+inline const String& tnlDicomSeriesInfo::getSeriesNumber()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesNumber;
 }
 
-inline const tnlString& tnlDicomSeriesInfo::getSeriesDescription()
+inline const String& tnlDicomSeriesInfo::getSeriesDescription()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesDescription;
 }
 
-inline const tnlString& tnlDicomSeriesInfo::getSeriesDate()
+inline const String& tnlDicomSeriesInfo::getSeriesDate()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesDate;
 }
 
-inline const tnlString& tnlDicomSeriesInfo::getSeriesTime()
+inline const String& tnlDicomSeriesInfo::getSeriesTime()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesTime;
 }
 
-inline const tnlString& tnlDicomSeriesInfo::getPerformingPhysiciansName()
+inline const String& tnlDicomSeriesInfo::getPerformingPhysiciansName()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->performingPhysiciansName;
 }
 
-inline const tnlString& tnlDicomSeriesInfo::getPerformingPhysicianIdentificationSequence()
+inline const String& tnlDicomSeriesInfo::getPerformingPhysicianIdentificationSequence()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->performingPhysicianIdentificationSequence;
 }
 
-inline const tnlString& tnlDicomSeriesInfo::getOperatorsName()
+inline const String& tnlDicomSeriesInfo::getOperatorsName()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->operatorsName;
 }
 
-inline const tnlString& tnlDicomSeriesInfo::getOperatorIdentificationSequence()
+inline const String& tnlDicomSeriesInfo::getOperatorIdentificationSequence()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->operatorIdentificationSequence;
 }
 
-inline const tnlString& tnlDicomSeriesInfo::getAcquisitionTime()
+inline const String& tnlDicomSeriesInfo::getAcquisitionTime()
 {
     if(!isObjectRetrieved)
         retrieveInfo();

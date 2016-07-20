@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/operators/diffusion/tnlExactNonlinearDiffusion.h>
 
@@ -47,9 +47,9 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, N
       tnlOneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlOneSidedNonlinearDiffusion< " ) +
+         return String( "tnlOneSidedNonlinearDiffusion< " ) +
             MeshType::getType() + ", " +
             Nonlinearity::getType() + "," +
            TNL::getType< Real >() + ", " +
@@ -141,9 +141,9 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, 
       tnlOneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlOneSidedNonlinearDiffusion< " ) +
+         return String( "tnlOneSidedNonlinearDiffusion< " ) +
             MeshType::getType() + ", " +
             Nonlinearity::getType() + "," +
            TNL::getType< Real >() + ", " +
@@ -250,9 +250,9 @@ class tnlOneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, 
       tnlOneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlOneSidedNonlinearDiffusion< " ) +
+         return String( "tnlOneSidedNonlinearDiffusion< " ) +
             MeshType::getType() + ", " +
             Nonlinearity::getType() + "," +
            TNL::getType< Real >() + ", " +

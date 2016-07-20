@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <TNL/solvers/tnlIterativeSolverMonitor.h>
 
 namespace TNL {
@@ -23,11 +23,11 @@ class tnlIterativeSolver
 
    tnlIterativeSolver();
 
-   static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix = "" );
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" );
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+   bool setup( const Config::ParameterContainer& parameters,
+              const String& prefix = "" );
 
    void setMaxIterations( const Index& maxIterations );
 

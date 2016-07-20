@@ -15,9 +15,9 @@
 #include <iomanip>
 #include <unistd.h>
 
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
-#include <TNL/core/tnlTimerRT.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/TimerRT.h>
 #include <TNL/matrices/tnlDenseMatrix.h>
 #include <TNL/matrices/tnlTridiagonalMatrix.h>
 #include <TNL/matrices/tnlMultidiagonalMatrix.h>
@@ -36,35 +36,35 @@
 using namespace std;
 using namespace TNL;
 
-void configSetup( tnlConfigDescription& config )
+void configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter                            ( "General settings:" );
-   config.addRequiredEntry< tnlString >( "test" , "Test to be performed." );
-      config.addEntryEnum< tnlString >( "mtx" );
-      config.addEntryEnum< tnlString >( "tnl" );
-   config.addRequiredEntry< tnlString >( "input-file" , "Input binary file name." );
-   config.addEntry< tnlString >( "log-file", "Log file name.", "tnl-benchmark-linear-solvers.log");
-   config.addEntry< tnlString >( "precision", "Precision of the arithmetics.", "double" );
-   config.addEntry< tnlString >( "matrix-format", "Matrix format.", "csr" );
-      config.addEntryEnum< tnlString >( "dense" );
-      config.addEntryEnum< tnlString >( "tridiagonal" );
-      config.addEntryEnum< tnlString >( "multidiagonal" );
-      config.addEntryEnum< tnlString >( "ellpack" );
-      config.addEntryEnum< tnlString >( "sliced-ellpack" );
-      config.addEntryEnum< tnlString >( "chunked-ellpack" );
-      config.addEntryEnum< tnlString >( "csr" );
-   config.addEntry< tnlString >( "solver", "Linear solver.", "gmres" );
-      config.addEntryEnum< tnlString >( "sor" );
-      config.addEntryEnum< tnlString >( "cg" );
-      config.addEntryEnum< tnlString >( "gmres" );
-   config.addEntry< tnlString >( "device", "Device.", "host" );
-      config.addEntryEnum< tnlString >( "host" );
-      config.addEntryEnum< tnlString >( "cuda" );
+   config.addRequiredEntry< String >( "test" , "Test to be performed." );
+      config.addEntryEnum< String >( "mtx" );
+      config.addEntryEnum< String >( "tnl" );
+   config.addRequiredEntry< String >( "input-file" , "Input binary file name." );
+   config.addEntry< String >( "log-file", "Log file name.", "tnl-benchmark-linear-solvers.log");
+   config.addEntry< String >( "precision", "Precision of the arithmetics.", "double" );
+   config.addEntry< String >( "matrix-format", "Matrix format.", "csr" );
+      config.addEntryEnum< String >( "dense" );
+      config.addEntryEnum< String >( "tridiagonal" );
+      config.addEntryEnum< String >( "multidiagonal" );
+      config.addEntryEnum< String >( "ellpack" );
+      config.addEntryEnum< String >( "sliced-ellpack" );
+      config.addEntryEnum< String >( "chunked-ellpack" );
+      config.addEntryEnum< String >( "csr" );
+   config.addEntry< String >( "solver", "Linear solver.", "gmres" );
+      config.addEntryEnum< String >( "sor" );
+      config.addEntryEnum< String >( "cg" );
+      config.addEntryEnum< String >( "gmres" );
+   config.addEntry< String >( "device", "Device.", "host" );
+      config.addEntryEnum< String >( "host" );
+      config.addEntryEnum< String >( "cuda" );
    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
 }
 
 template< typename Solver >
-bool benchmarkSolver( const tnlParameterContainer& parameters,
+bool benchmarkSolver( const Config::ParameterContainer& parameters,
                       const typename Solver::MatrixType& matrix)
 {
    typedef typename Solver::MatrixType MatrixType;
@@ -92,10 +92,10 @@ bool benchmarkSolver( const tnlParameterContainer& parameters,
 }
 
 template< typename Matrix >
-bool readMatrix( const tnlParameterContainer& parameters,
+bool readMatrix( const Config::ParameterContainer& parameters,
                  Matrix& matrix )
 {
-   const tnlString fileName = parameters.getParameter< tnlString >( "input-file" );
+   const String fileName = parameters.getParameter< String >( "input-file" );
 
    Matrix* hostMatrix;
    if( Matrix::DeviceType::DeviceType == ( int ) tnlCudaDevice )
@@ -129,9 +129,9 @@ bool readMatrix( const tnlParameterContainer& parameters,
 }
 
 template< typename Matrix >
-bool resolveLinearSolver( const tnlParameterContainer& parameters )
+bool resolveLinearSolver( const Config::ParameterContainer& parameters )
 {
-   const tnlString& solver = parameters.getParameter< tnlString >( "solver" );
+   const String& solver = parameters.getParameter< String >( "solver" );
 
    Matrix matrix;
    if( ! readMatrix( parameters, matrix ) )
@@ -155,9 +155,9 @@ bool resolveLinearSolver( const tnlParameterContainer& parameters )
 
 template< typename Real,
           typename Device >
-bool resolveMatrixFormat( const tnlParameterContainer& parameters )
+bool resolveMatrixFormat( const Config::ParameterContainer& parameters )
 {
-   const tnlString& matrixFormat = parameters.getParameter< tnlString >( "matrix-format" );
+   const String& matrixFormat = parameters.getParameter< String >( "matrix-format" );
 
    if( matrixFormat == "dense" )
       return resolveLinearSolver< tnlDenseMatrix< Real, Device, int > >( parameters );
@@ -185,9 +185,9 @@ bool resolveMatrixFormat( const tnlParameterContainer& parameters )
 }
 
 template< typename Real >
-bool resolveDevice( const tnlParameterContainer& parameters )
+bool resolveDevice( const Config::ParameterContainer& parameters )
 {
-   const tnlString& device = parameters.getParameter< tnlString >( "device" );
+   const String& device = parameters.getParameter< String >( "device" );
 
    if( device == "host" )
       return resolveMatrixFormat< Real, tnlHost >( parameters );
@@ -201,8 +201,8 @@ bool resolveDevice( const tnlParameterContainer& parameters )
 
 int main( int argc, char* argv[] )
 {
-   tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
+   Config::ParameterContainer parameters;
+   Config::ConfigDescription conf_desc;
 
    configSetup( conf_desc );
  
@@ -211,7 +211,7 @@ int main( int argc, char* argv[] )
       conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
-   const tnlString& precision = parameters.getParameter< tnlString >( "precision" );
+   const String& precision = parameters.getParameter< String >( "precision" );
    if( precision == "float" )
       if( ! resolveDevice< float >( parameters ) )
          return EXIT_FAILURE;

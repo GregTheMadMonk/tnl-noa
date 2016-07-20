@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Assert.h>
 #include <TNL/core/tnlCuda.h>
 #ifdef HAVE_CUDA
 #include <cusparse.h>
@@ -60,7 +60,7 @@ class tnlCusparseCSRMatrixBase
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const
       {
-         tnlAssert( matrix, );
+         Assert( matrix, );
 #ifdef HAVE_CUDA
          cusparseDcsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
@@ -103,7 +103,7 @@ class tnlCusparseCSRMatrix< double > : public tnlCusparseCSRMatrixBase< double >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const
       {
-         tnlAssert( matrix, );
+         Assert( matrix, );
 #ifdef HAVE_CUDA
          /*cusparseDcsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
@@ -131,7 +131,7 @@ class tnlCusparseCSRMatrix< float > : public tnlCusparseCSRMatrixBase< float >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const
       {
-         tnlAssert( matrix, );
+         Assert( matrix, );
 #ifdef HAVE_CUDA
          /*cusparseScsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,

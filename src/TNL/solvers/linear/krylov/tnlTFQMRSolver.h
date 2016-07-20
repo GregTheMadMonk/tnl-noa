@@ -11,9 +11,9 @@
 #pragma once
 
 #include <math.h>
-#include <TNL/tnlObject.h>
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/vectors/tnlSharedVector.h>
+#include <TNL/Object.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Vectors/SharedVector.h>
 #include <TNL/solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <TNL/solvers/tnlIterativeSolver.h>
 #include <TNL/solvers/linear/tnlLinearResidueGetter.h>
@@ -25,7 +25,7 @@ template< typename Matrix,
                                                             typename Matrix :: DeviceType,
                                                             typename Matrix :: IndexType> >
 
-class tnlTFQMRSolver : public tnlObject,
+class tnlTFQMRSolver : public Object,
                        public tnlIterativeSolver< typename Matrix :: RealType,
                                                   typename Matrix :: IndexType >
 {
@@ -41,13 +41,13 @@ class tnlTFQMRSolver : public tnlObject,
 
    tnlTFQMRSolver();
 
-   tnlString getType() const;
+   String getType() const;
 
-   static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix = "" );
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" );
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+   bool setup( const Config::ParameterContainer& parameters,
+              const String& prefix = "" );
 
    void setMatrix( const MatrixType& matrix );
 

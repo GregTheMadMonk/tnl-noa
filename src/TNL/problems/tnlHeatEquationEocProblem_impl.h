@@ -25,11 +25,11 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 tnlHeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return tnlString( "heatEquationEocSolver< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "heatEquationEocSolver< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
@@ -38,7 +38,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 tnlHeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator  >::
-setup( const tnlParameterContainer& parameters )
+setup( const Config::ParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters ) ||
        ! this->rightHandSide.setup( parameters ) )

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlArrayTester.h -  description
+                          ArrayTester.h -  description
                              -------------------
     begin                : Jul 4, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -17,48 +17,49 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/core/arrays/tnlArray.h>
-#include <TNL/core/tnlFile.h>
+#include <TNL/Arrays/Array.h>
+#include <TNL/File.h>
 
 using namespace TNL;
+using namespace TNL::Arrays;
 
 #ifdef HAVE_CUDA
 template< typename ElementType, typename IndexType >
-__global__ void testSetGetElementKernel( tnlArray< ElementType, tnlCuda, IndexType >* u );
+__global__ void testSetGetElementKernel( Array< ElementType, tnlCuda, IndexType >* u );
 #endif
 
 class testingClassForArrayTester
 {
    public:
 
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "testingClassForArrayTester" );
+         return String( "testingClassForArrayTester" );
       };
 };
 
-tnlString getType( const testingClassForArrayTester& c )
+String getType( const testingClassForArrayTester& c )
 {
-   return tnlString( "testingClassForArrayTester" );
+   return String( "testingClassForArrayTester" );
 };
 
 template< typename ElementType, typename Device, typename IndexType >
-class tnlArrayTester : public CppUnit :: TestCase
+class ArrayTester : public CppUnit :: TestCase
 {
    public:
 
-   typedef tnlArrayTester< ElementType, Device, IndexType > ArrayTester;
-   typedef CppUnit :: TestCaller< ArrayTester > TestCaller;
-   typedef tnlArray< ElementType, Device, IndexType > Array;
+   typedef ArrayTester< ElementType, Device, IndexType > ArrayTesterType;
+   typedef CppUnit :: TestCaller< ArrayTesterType > TestCaller;
+   typedef Array< ElementType, Device, IndexType > ArrayType;
 
-   tnlArrayTester(){};
+   ArrayTester(){};
 
    virtual
-   ~tnlArrayTester(){};
+   ~ArrayTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlArrayTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "ArrayTester" );
       CppUnit :: TestResult result;
       suiteOfTests -> addTest( new TestCaller( "testConstructorDestructor", &ArrayTester::testConstructorDestructor ) );
       suiteOfTests -> addTest( new TestCaller( "testSetSize", &ArrayTester::testSetSize ) );
@@ -76,14 +77,14 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testConstructorDestructor()
    {
-      Array u;
-      Array v( 10 );
+      ArrayType u;
+      ArrayType v( 10 );
       CPPUNIT_ASSERT( v.getSize() == 10 );
    }
 
    void testSetSize()
    {
-      Array u, v;
+      ArrayType u, v;
       u.setSize( 10 );
       v.setSize( 10 );
       CPPUNIT_ASSERT( u.getSize() == 10 );
@@ -92,7 +93,7 @@ class tnlArrayTester : public CppUnit :: TestCase
  
    void testBind()
    {
-      Array u( 10 ), v;
+      ArrayType u( 10 ), v;
       u.setValue( 27 );
       v.bind( u );
       CPPUNIT_ASSERT( v.getSize() == u.getSize() );
@@ -116,7 +117,8 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testSetGetElement()
    {
-      tnlArray< ElementType, Device, IndexType > u;
+      using namespace TNL::Arrays;
+      Array< ElementType, Device, IndexType > u;
       u. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          u. setElement( i, i );
@@ -132,7 +134,7 @@ class tnlArrayTester : public CppUnit :: TestCase
       if( Device::getDevice() == tnlCudaDevice )
       {
 #ifdef HAVE_CUDA
-         tnlArray< ElementType, Device, IndexType >* kernel_u =
+         Array< ElementType, Device, IndexType >* kernel_u =
                   tnlCuda::passToDevice( u );
          testSetGetElementKernel<<< 1, 16 >>>( kernel_u );
          tnlCuda::freeFromDevice( kernel_u );
@@ -145,9 +147,10 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testComparisonOperator()
    {
-      tnlArray< ElementType, Device, IndexType > u;
-      tnlArray< ElementType, Device, IndexType > v;
-      tnlArray< ElementType, Device, IndexType > w;
+       using namespace TNL::Arrays;
+      Array< ElementType, Device, IndexType > u;
+      Array< ElementType, Device, IndexType > v;
+      Array< ElementType, Device, IndexType > w;
       u. setSize( 10 );
       v. setSize( 10 );
       w. setSize( 10 );
@@ -165,8 +168,9 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testAssignmentOperator()
    {
-      tnlArray< ElementType, Device, IndexType > u;
-      tnlArray< ElementType, Device, IndexType > v;
+      using namespace TNL::Arrays;
+      Array< ElementType, Device, IndexType > u;
+      Array< ElementType, Device, IndexType > v;
       u. setSize( 10 );
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -178,7 +182,7 @@ class tnlArrayTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( ! ( v != u ) );
 
       v.setValue( 0 );
-      tnlArray< ElementType, tnlHost, IndexType > w;
+      Array< ElementType, tnlHost, IndexType > w;
       w.setSize( 10 );
       w = u;
 
@@ -193,7 +197,8 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testGetSize()
    {
-      tnlArray< ElementType, Device, IndexType > u;
+      using namespace TNL::Arrays;
+      Array< ElementType, Device, IndexType > u;
       const int maxSize = 10;
       for( int i = 0; i < maxSize; i ++ )
          u. setSize( i );
@@ -203,7 +208,8 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testReset()
    {
-      tnlArray< ElementType, Device, IndexType > u;
+      using namespace TNL::Arrays;
+      Array< ElementType, Device, IndexType > u;
       u. setSize( 100 );
       CPPUNIT_ASSERT( u. getSize() == 100 );
       u. reset();
@@ -217,24 +223,26 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testSetSizeAndDestructor()
    {
+      using namespace TNL::Arrays;
       for( int i = 0; i < 100; i ++ )
       {
-         tnlArray< ElementType, Device, IndexType > u;
+         Array< ElementType, Device, IndexType > u;
          u. setSize( i );
       }
    }
 
    void testSaveAndLoad()
    {
-      tnlArray< ElementType, Device, IndexType > v;
+      using namespace TNL::Arrays;
+      Array< ElementType, Device, IndexType > v;
       v. setSize( 100 );
       for( int i = 0; i < 100; i ++ )
          v. setElement( i, 3.14147 );
-      tnlFile file;
+      File file;
       file. open( "test-file.tnl", tnlWriteMode );
       v. save( file );
       file. close();
-      tnlArray< ElementType, Device, IndexType > u;
+      Array< ElementType, Device, IndexType > u;
       file. open( "test-file.tnl", tnlReadMode );
       u. load( file );
       file. close();
@@ -243,14 +251,15 @@ class tnlArrayTester : public CppUnit :: TestCase
 
    void testUnusualStructures()
    {
-      tnlArray< testingClassForArrayTester >u;
+      using namespace TNL::Arrays;
+      Array< testingClassForArrayTester >u;
    };
 
 };
 
 #ifdef HAVE_CUDA
 template< typename ElementType, typename IndexType >
-__global__ void testSetGetElementKernel( tnlArray< ElementType, tnlCuda, IndexType >* u )
+__global__ void testSetGetElementKernel( Array< ElementType, tnlCuda, IndexType >* u )
 {
    if( threadIdx.x < ( *u ).getSize() )
       ( *u )[ threadIdx.x ] = threadIdx.x;

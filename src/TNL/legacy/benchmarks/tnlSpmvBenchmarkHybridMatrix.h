@@ -26,7 +26,7 @@ class tnlSpmvBenchmarkHybridMatrix : public tnlSpmvBenchmark< Real, tnlHost, Ind
 {
    public:
 
-   void setFileName( const tnlString& fileName );
+   void setFileName( const String& fileName );
 
    bool setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix );
 
@@ -40,7 +40,7 @@ class tnlSpmvBenchmarkHybridMatrix : public tnlSpmvBenchmark< Real, tnlHost, Ind
 
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
-                         const tnlString& inputMtxFile,
+                         const String& inputMtxFile,
                          const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                          bool writeMatrixInfo  ) const;
 
@@ -48,13 +48,13 @@ class tnlSpmvBenchmarkHybridMatrix : public tnlSpmvBenchmark< Real, tnlHost, Ind
 
    protected:
 
-   tnlString fileName;
+   String fileName;
 
    Index nonzeroElements;
 };
 
 template< typename Real, typename Index>
-void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: setFileName( const tnlString& fileName )
+void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: setFileName( const String& fileName )
 {
    this->fileName = fileName;
 }
@@ -98,7 +98,7 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const tnlVecto
 
       x = host_x;
 
-      tnlTimerRT rt_timer;
+      TimerRT rt_timer;
       rt_timer. Reset();
 
       this->iterations = 0;
@@ -168,14 +168,14 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: writeToLogTable( std::ostream& logFile,
                                                                      const double& csrGflops,
-                                                                     const tnlString& inputMtxFile,
+                                                                     const String& inputMtxFile,
                                                                      const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                                                                      bool writeMatrixInfo  ) const
 {
    if( this->getBenchmarkWasSuccesful() )
    {
       double speedUp = this->getGflops() / csrGflops;
-      tnlString bgColor = this->getBgColorBySpeedUp( speedUp );
+      String bgColor = this->getBgColorBySpeedUp( speedUp );
       logFile << "             <td bgcolor=" << bgColor << ">" << this->getTime() << "</td>" << std::endl;
       logFile << "             <td bgcolor=" << bgColor << ">" << this->getGflops() << "</td>" << std::endl;
 

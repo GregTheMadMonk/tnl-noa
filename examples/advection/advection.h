@@ -24,22 +24,22 @@ typedef advectionBuildConfigTag BuildConfig;
 template< typename ConfigTag >class advectionConfig
 {
    public:
-      static void configSetup( tnlConfigDescription & config )
+      static void configSetup( Config::ConfigDescription & config )
       {
          config.addDelimiter( "advection settings:" );
-         config.addEntry< tnlString >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
-            config.addEntryEnum< tnlString >( "dirichlet" );
-            config.addEntryEnum< tnlString >( "neumann" );
+         config.addEntry< String >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
+            config.addEntryEnum< String >( "dirichlet" );
+            config.addEntryEnum< String >( "neumann" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
 	 config.addEntry< double >( "artifical-viscosity", "This sets value of artifical viscosity (default 1)", 1.0);
-	 config.addEntry< tnlString >( "begin", "choose begin type", "sin");
-	    config.addEntryEnum< tnlString >( "sin");
-	    config.addEntryEnum< tnlString >( "sin_square");
+	 config.addEntry< String >( "begin", "choose begin type", "sin");
+	    config.addEntryEnum< String >( "sin");
+	    config.addEntryEnum< String >( "sin_square");
 	 config.addEntry< double >( "advection-speedX", "This sets value of advection speed in X direction (default 1)" , 1.0);
 	 config.addEntry< double >( "advection-speedY", "This sets value of advection speed in Y direction (default 1)" , 1.0);
-	 config.addEntry< tnlString >( "move", "choose movement type", "advection");
-	    config.addEntryEnum< tnlString >( "advection");
-	    config.addEntryEnum< tnlString >( "rotation");
+	 config.addEntry< String >( "move", "choose movement type", "advection");
+	    config.addEntryEnum< String >( "advection");
+	    config.addEntryEnum< String >( "rotation");
 	 config.addEntry< int >( "dimension", "choose movement typeproblem dimension", 1);
 	    config.addEntryEnum< int >( 1 );
 	    config.addEntryEnum< int >( 2 );
@@ -66,7 +66,7 @@ class advectionSetter
       typedef Device DeviceType;
       typedef Index IndexType;
 
-      static bool run( const tnlParameterContainer & parameters )
+      static bool run( const Config::ParameterContainer & parameters )
       {
           enum { Dimensions = MeshType::getMeshDimensions() };
           typedef LaxFridrichs< MeshType, Real, Index > ApproximateOperator;
@@ -78,7 +78,7 @@ class advectionSetter
           * The following code is for the Dirichlet and the Neumann boundary conditions.
           * Both can be constant or defined as descrete values of tnlVector.
           */
-          tnlString boundaryConditionsType = parameters.getParameter< tnlString >( "boundary-conditions-type" );
+          String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
           if( parameters.checkParameter( "boundary-conditions-constant" ) )
           {
              typedef tnlConstantFunction< Dimensions, Real > ConstantFunction;

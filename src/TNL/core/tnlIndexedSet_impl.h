@@ -56,7 +56,7 @@ template< typename Element,
    template<typename ArrayType>
 void tnlIndexedSet< Element, Index, Key >::toArray( ArrayType& array ) const
 {
-   tnlAssert( array.getSize() == getSize(),
+   Assert( array.getSize() == getSize(),
               std::cerr << "array.getSize() = " << array.getSize()
                    << " getSize() = " << getSize() );
 

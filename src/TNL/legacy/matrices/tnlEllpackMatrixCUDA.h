@@ -23,11 +23,11 @@ class tnlEllpackMatrix< Real, tnlCuda, Index > : public tnlMatrix< Real, tnlCuda
    typedef Index IndexType;
 
    //! Basic constructor
-   tnlEllpackMatrix( const tnlString& name, Index _row );
+   tnlEllpackMatrix( const String& name, Index _row );
 
-   const tnlString& getMatrixClass() const;
+   const String& getMatrixClass() const;
 
-   tnlString getType() const;
+   String getType() const;
 
    //! Sets the number of row and columns.
    bool setSize( Index new_size );
@@ -130,7 +130,7 @@ __global__ void sparseEllpackMatrixVectorProductKernel( Index size,
 
 
 template< typename Real, typename Index >
-tnlEllpackMatrix< Real, tnlCuda, Index > :: tnlEllpackMatrix( const tnlString& name, Index _row_length )
+tnlEllpackMatrix< Real, tnlCuda, Index > :: tnlEllpackMatrix( const String& name, Index _row_length )
 : tnlMatrix< Real >( name ),
   ellpack_nonzero_elements( "ellpack-nonzero-elements" ),
   ellpack_columns( "ellpack-columns" ),
@@ -141,19 +141,19 @@ tnlEllpackMatrix< Real, tnlCuda, Index > :: tnlEllpackMatrix( const tnlString& n
   artificial_zeros( 0 ),
   last_coo_nonzero_element( 0 )
 {
-   tnlAssert( row_length > 0, );
+   Assert( row_length > 0, );
 };
 
 template< typename Real, typename Index >
-const tnlString& tnlEllpackMatrix< Real, tnlCuda, Index > :: getMatrixClass() const
+const String& tnlEllpackMatrix< Real, tnlCuda, Index > :: getMatrixClass() const
 {
    return tnlMatrixClass :: main;
 };
 
 template< typename Real, typename Index >
-tnlString tnlEllpackMatrix< Real, tnlCuda, Index > :: getType() const
+String tnlEllpackMatrix< Real, tnlCuda, Index > :: getType() const
 {
-   return tnlString( "tnlEllpackMatrix< ") + tnlString( getType( Real( 0.0 ) ) ) + tnlString( ", tnlCuda >" );
+   return String( "tnlEllpackMatrix< ") + String( getType( Real( 0.0 ) ) ) + String( ", tnlCuda >" );
 };
 
 template< typename Real, typename Index >
@@ -244,18 +244,18 @@ template< typename Real, typename Index >
 Real tnlEllpackMatrix< Real, tnlCuda, Index > :: getElement( Index row,
                                                              Index column ) const
 {
-	tnlAssert( false, );
+	Assert( false, );
 };
 
 template< typename Real, typename Index >
 void tnlEllpackMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlVector< Real, tnlCuda, Index >& x,
                                                                 tnlVector< Real, tnlCuda, Index >& b ) const
 {
-   tnlAssert( x. getSize() == this->getSize(),
+   Assert( x. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << x. getSize() << std::endl; );
-   tnlAssert( b. getSize() == this->getSize(),
+   Assert( b. getSize() == this->getSize(),
               std::cerr << "The matrix and result vector of a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << b. getSize() << std::endl; );
@@ -275,18 +275,18 @@ template< typename Real, typename Index >
 Real tnlEllpackMatrix< Real, tnlCuda, Index > :: rowProduct( Index row,
                                                              const tnlVector< Real, tnlCuda, Index >& vector ) const
 {
-   tnlAssert( vector. getSize() == this->getSize(),
+   Assert( vector. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vector. getSize() << std::endl; );
 
-	tnlAssert( false, );
+	Assert( false, );
 };
 
 template< typename Real, typename Index >
 void tnlEllpackMatrix< Real, tnlCuda, Index > :: printOut( std::ostream& str ) const
 {
-	tnlAssert( false, );
+	Assert( false, );
 };
 
 #endif /* TNLELLPACKMATRIXCUDA_H_ */

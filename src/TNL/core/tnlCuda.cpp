@@ -11,14 +11,14 @@
 #include <TNL/core/tnlCuda.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/tnlConfig.h>
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
  
-tnlString tnlCuda :: getDeviceType()
+String tnlCuda :: getDeviceType()
 {
-   return tnlString( "tnlCuda" );
+   return String( "tnlCuda" );
 }
 
 int tnlCuda::getGPUTransferBufferSize()
@@ -43,7 +43,7 @@ int tnlCuda::getNumberOfGrids( const int blocks,
 
 }*/
 
-void tnlCuda::configSetup( tnlConfigDescription& config, const tnlString& prefix )
+void tnlCuda::configSetup( Config::ConfigDescription& config, const String& prefix )
 {
 #ifdef HAVE_CUDA
    config.addEntry<  int >( prefix + "cuda-device", "Choose CUDA device to run the computationon.", 0 );
@@ -52,8 +52,8 @@ void tnlCuda::configSetup( tnlConfigDescription& config, const tnlString& prefix
 #endif
 }
  
-bool tnlCuda::setup( const tnlParameterContainer& parameters,
-                      const tnlString& prefix )
+bool tnlCuda::setup( const Config::ParameterContainer& parameters,
+                      const String& prefix )
 {
 #ifdef HAVE_CUDA
    int cudaDevice = parameters.getParameter< int >( "cuda-device" );

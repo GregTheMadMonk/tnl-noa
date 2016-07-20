@@ -20,7 +20,7 @@ namespace TNL {
 template< typename Real,
           typename Device,
           typename Index >
-class tnlGrid< 2, Real, Device, Index > : public tnlObject
+class tnlGrid< 2, Real, Device, Index > : public Object
 {
    public:
 
@@ -47,13 +47,13 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
 
    tnlGrid();
 
-   static tnlString getType();
+   static String getType();
 
-   tnlString getTypeVirtual() const;
+   String getTypeVirtual() const;
 
-   static tnlString getSerializationType();
+   static String getSerializationType();
 
-   virtual tnlString getSerializationTypeVirtual() const;
+   virtual String getSerializationTypeVirtual() const;
 
    void setDimensions( const Index xSize, const Index ySize );
 
@@ -117,24 +117,24 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
                                                         const typename GridFunction::RealType& p ) const;
 
    //! Method for saving the object to a file as a binary data
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
    //! Method for restoring the object from a file
-   bool load( tnlFile& file );
+   bool load( File& file );
 
-   bool save( const tnlString& fileName ) const;
+   bool save( const String& fileName ) const;
 
-   bool load( const tnlString& fileName );
+   bool load( const String& fileName );
 
-   bool writeMesh( const tnlString& fileName,
-                   const tnlString& format ) const;
+   bool writeMesh( const String& fileName,
+                   const String& format ) const;
 
    template< typename MeshFunction >
    bool write( const MeshFunction& function,
-               const tnlString& fileName,
-               const tnlString& format ) const;
+               const String& fileName,
+               const String& format ) const;
 
-   void writeProlog( tnlLogger& logger );
+   void writeProlog( Logger& logger );
 
    protected:
 

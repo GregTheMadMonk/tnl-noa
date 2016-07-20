@@ -17,8 +17,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/core/tnlFile.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/File.h>
+#include <TNL/Vectors/Vector.h>
 #endif 
 
 using namespace TNL;
@@ -105,7 +105,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
 
    static CppUnit :: Test* suite()
    {
-      tnlString testSuiteName( "tnlSparseMatrixTester< " );
+      String testSuiteName( "tnlSparseMatrixTester< " );
       testSuiteName += MatrixType::getType() + " >";
 
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( testSuiteName.getString() );

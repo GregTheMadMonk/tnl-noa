@@ -17,8 +17,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/tnlFile.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/File.h>
 #include <TNL/core/mfuncs.h>
 
 using namespace TNL;

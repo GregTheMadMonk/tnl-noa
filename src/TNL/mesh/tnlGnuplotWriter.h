@@ -11,7 +11,7 @@
 #pragma once
 
 #include <ostream>
-#include <TNL/core/vectors/tnlStaticVector.h>
+#include <TNL/Vectors/StaticVector.h>
 
 namespace TNL {
 

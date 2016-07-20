@@ -12,7 +12,7 @@
 #define TNLSPMVBENCHMARKBASE_H_
 
 #include <TNL/matrices/tnlCSRMatrix.h>
-#include <TNL/core/tnlTimerRT.h>
+#include <TNL/TimerRT.h>
 #include <TNL/core/mfuncs.h>
 
 
@@ -63,7 +63,7 @@ class tnlSpmvBenchmarkBase
 
    virtual void writeToLogTable( std::ostream& logFile,
                                  const double& csrGflops,
-                                 const tnlString& inputMtxFile,
+                                 const String& inputMtxFile,
                                  const tnlCSRMatrix< RealType, tnlHost, IndexType >& csrMatrix,
                                  bool writeMatrixInfo  ) const = 0;
 
@@ -72,12 +72,12 @@ class tnlSpmvBenchmarkBase
    /****
     * This is helper method for generating HTML table with benchmark results
     */
-   tnlString getBgColorBySpeedUp( const double& speedUp ) const;
+   String getBgColorBySpeedUp( const double& speedUp ) const;
 
    /****
     * Helper method for writing matrix statistics and information to HTML
     */
-   bool printMatrixInHtml( const tnlString& fileName,
+   bool printMatrixInHtml( const String& fileName,
                            tnlMatrix< RealType, tnlHost, IndexType >& matrix ) const;
 
 

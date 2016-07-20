@@ -27,7 +27,7 @@ class tnlSpmvBenchmarkCSRMatrix : public tnlSpmvBenchmark< Real, tnlHost, Index,
 
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
-                         const tnlString& inputMtxFile,
+                         const String& inputMtxFile,
                          const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                          bool writeMatrixInfo  ) const;
    Real getForwardBackwardDifference() const;
@@ -93,7 +93,7 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeToLogTable( std::ostream& logFile,
                                                                   const double& csrGflops,
-                                                                  const tnlString& inputMtxFile,
+                                                                  const String& inputMtxFile,
                                                                   const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                                                                   bool writeMatrixInfo  ) const
 {

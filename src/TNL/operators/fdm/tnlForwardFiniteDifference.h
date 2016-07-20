@@ -50,13 +50,13 @@ class tnlForwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, Mes
  
       static constexpr int getMeshDimensions() { return Dimensions; }
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlForwardFiniteDifference< " ) +
+         return String( "tnlForwardFiniteDifference< " ) +
             MeshType::getType() + ", " +
-            tnlString( XDifference ) + ", " +
-            tnlString( YDifference ) + ", " +
-            tnlString( ZDifference ) + ", " +
+            String( XDifference ) + ", " +
+            String( YDifference ) + ", " +
+            String( ZDifference ) + ", " +
            TNL::getType< RealType >() + ", " +
            TNL::getType< IndexType >() + " >";
       }

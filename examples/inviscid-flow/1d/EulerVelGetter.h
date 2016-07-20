@@ -1,7 +1,7 @@
 #ifndef EulerVelGetter_H
 #define EulerVelGetter_H
 
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
 
 namespace TNL {
@@ -20,7 +20,7 @@ class EulerVelGetter
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       
       EulerVelGetter( const MeshFunctionType& rho,
                       const MeshFunctionType& rhoVel)

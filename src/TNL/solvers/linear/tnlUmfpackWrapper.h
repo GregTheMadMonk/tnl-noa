@@ -6,8 +6,8 @@
 
 #include <umfpack.h>
 
-#include <TNL/tnlObject.h>
-#include <TNL/config/tnlConfigDescription.h>
+#include <TNL/Object.h>
+#include <TNL/Config/ConfigDescription.h>
 #include <TNL/matrices/tnlCSRMatrix.h>
 #include <TNL/solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <TNL/solvers/tnlIterativeSolver.h>
@@ -34,7 +34,7 @@ template< typename Matrix,
                                                             typename Matrix :: DeviceType,
                                                             typename Matrix :: IndexType> >
 class tnlUmfpackWrapper
-    : public tnlObject,
+    : public Object,
       // just to ensure the same interface as other linear solvers
       public tnlIterativeSolver< typename Matrix::RealType,
                                  typename Matrix::IndexType >
@@ -58,12 +58,12 @@ public:
             std::cerr << "The tnlUmfpackWrapper solver is available only for 'int' index type." << std::endl;
     }
 
-    static void configSetup( tnlConfigDescription& config,
-                             const tnlString& prefix = "" )
+    static void configSetup( Config::ConfigDescription& config,
+                             const String& prefix = "" )
     {};
 
-    bool setup( const tnlParameterContainer& parameters,
-               const tnlString& prefix = "" )
+    bool setup( const Config::ParameterContainer& parameters,
+               const String& prefix = "" )
     {
         return false;
     };
@@ -86,7 +86,7 @@ public:
 
 template< typename Preconditioner >
 class tnlUmfpackWrapper< tnlCSRMatrix< double, tnlHost, int >, Preconditioner >
-    : public tnlObject,
+    : public Object,
       // just to ensure the same interface as other linear solvers
       public tnlIterativeSolver< double, int >
 {
@@ -99,13 +99,13 @@ public:
 
     tnlUmfpackWrapper();
 
-    tnlString getType() const;
+    String getType() const;
 
-    static void configSetup( tnlConfigDescription& config,
-                             const tnlString& prefix = "" );
+    static void configSetup( Config::ConfigDescription& config,
+                             const String& prefix = "" );
 
-    bool setup( const tnlParameterContainer& parameters,
-               const tnlString& prefix = "" );
+    bool setup( const Config::ParameterContainer& parameters,
+               const String& prefix = "" );
 
     void setMatrix( const MatrixType& matrix );
 

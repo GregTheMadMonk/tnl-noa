@@ -16,7 +16,7 @@
 #include <jpeglib.h>
 #endif
 
-#include <TNL/core/tnlString.h>
+#include <TNL/String.h>
 #include <TNL/core/images/tnlImage.h>
 #include <TNL/core/images/tnlRegionOfInterest.h>
 
@@ -39,7 +39,7 @@ class tnlJPEGImage : public tnlImage< Index >
  
       tnlJPEGImage();
  
-      bool openForRead( const tnlString& fileName );
+      bool openForRead( const String& fileName );
  
       template< typename Real,
                 typename Device,
@@ -50,7 +50,7 @@ class tnlJPEGImage : public tnlImage< Index >
  
       template< typename Real,
                 typename Device >
-      bool openForWrite( const tnlString& fileName,
+      bool openForWrite( const String& fileName,
                          tnlGrid< 2, Real, Device, Index >& grid );
  
       template< typename Real,

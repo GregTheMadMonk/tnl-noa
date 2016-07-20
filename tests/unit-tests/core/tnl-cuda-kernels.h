@@ -11,8 +11,8 @@
 #ifndef TNLCUDAKERNELS_H_
 #define TNLCUDAKERNELS_H_
 
-#include <TNL/core/tnlAssert.h>
-#include <TNL/core/vectors/tnlVectorCUDA.h>
+#include <TNL/Assert.h>
+#include <TNL/Vectors/VectorCUDA.h>
 #include <TNL/core/low-level/cuda-long-vector-kernels.h>
 #include <TNL/legacy/core/tnlCudaSupport.h>
 

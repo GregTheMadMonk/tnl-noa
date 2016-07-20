@@ -34,11 +34,11 @@ class tnlNeumannBoundaryConditionsBase
       
       typedef Function FunctionType;
 
-      static void configSetup( tnlConfigDescription& config,
-                               const tnlString& prefix = "" );
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" );
 
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" );
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" );
 
       void setFunction( const FunctionType& function );
       

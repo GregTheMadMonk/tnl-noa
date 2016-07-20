@@ -11,8 +11,8 @@
 #pragma once
 
 #include <TNL/matrices/tnlCSRMatrix.h>
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/vectors/tnlSharedVector.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Vectors/SharedVector.h>
 #include <TNL/core/mfuncs.h>
 
 #ifdef HAVE_CUSPARSE
@@ -40,19 +40,19 @@ tnlCSRMatrix< Real, Device, Index >::tnlCSRMatrix()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlCSRMatrix< Real, Device, Index >::getType()
+String tnlCSRMatrix< Real, Device, Index >::getType()
 {
-   return tnlString( "tnlCSRMatrix< ") +
-          tnlString( TNL::getType< Real>() ) +
-          tnlString( ", " ) +
+   return String( "tnlCSRMatrix< ") +
+          String( TNL::getType< Real>() ) +
+          String( ", " ) +
           Device :: getDeviceType() +
-          tnlString( " >" );
+          String( " >" );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlCSRMatrix< Real, Device, Index >::getTypeVirtual() const
+String tnlCSRMatrix< Real, Device, Index >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -81,9 +81,9 @@ bool tnlCSRMatrix< Real, Device, Index >::setCompressedRowsLengths( const Compre
     * necessary length of the vectors this->values
     * and this->columnIndexes.
     */
-   tnlAssert( this->getRows() > 0, );
-   tnlAssert( this->getColumns() > 0, );
-   tnlSharedVector< IndexType, DeviceType, IndexType > rowPtrs;
+   Assert( this->getRows() > 0, );
+   Assert( this->getColumns() > 0, );
+   Vectors::tnlSharedVector< IndexType, DeviceType, IndexType > rowPtrs;
    rowPtrs.bind( this->rowPointers.getData(), this->getRows() );
    rowPtrs = rowLengths;
    this->rowPointers.setElement( this->rows, 0 );
@@ -162,7 +162,7 @@ bool tnlCSRMatrix< Real, Device, Index >::addElementFast( const IndexType row,
                                                           const RealType& value,
                                                           const RealType& thisElementMultiplicator )
 {
-   /*tnlAssert( row >= 0 && row < this->rows &&
+   /*Assert( row >= 0 && row < this->rows &&
               column >= 0 && column <= this->rows,
               std::cerr << " row = " << row
                    << " column = " << column
@@ -212,7 +212,7 @@ bool tnlCSRMatrix< Real, Device, Index >::addElement( const IndexType row,
                                                       const RealType& value,
                                                       const RealType& thisElementMultiplicator )
 {
-   tnlAssert( row >= 0 && row < this->rows &&
+   Assert( row >= 0 && row < this->rows &&
                column >= 0 && column < this->columns,
                std::cerr << " row = " << row
                     << " column = " << column
@@ -454,7 +454,7 @@ void tnlCSRMatrix< Real, Device, Index >::addMatrix( const tnlCSRMatrix< Real2, 
                                                                           const RealType& matrixMultiplicator,
                                                                           const RealType& thisMatrixMultiplicator )
 {
-   tnlAssert( false, std::cerr << "TODO: implement" );
+   Assert( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -466,7 +466,7 @@ template< typename Real,
 void tnlCSRMatrix< Real, Device, Index >::getTransposition( const tnlCSRMatrix< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   tnlAssert( false, std::cerr << "TODO: implement" );
+   Assert( false, std::cerr << "TODO: implement" );
    // TODO: implement
 }
 
@@ -479,7 +479,7 @@ bool tnlCSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
                                                                Vector& x,
                                                                const RealType& omega ) const
 {
-   tnlAssert( row >=0 && row < this->getRows(),
+   Assert( row >=0 && row < this->getRows(),
               std::cerr << "row = " << row
                    << " this->getRows() = " << this->getRows() << std::endl );
 
@@ -510,7 +510,7 @@ bool tnlCSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlCSRMatrix< Real, Device, Index >::save( tnlFile& file ) const
+bool tnlCSRMatrix< Real, Device, Index >::save( File& file ) const
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::save( file ) ||
        ! this->rowPointers.save( file ) )
@@ -521,7 +521,7 @@ bool tnlCSRMatrix< Real, Device, Index >::save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlCSRMatrix< Real, Device, Index >::load( tnlFile& file )
+bool tnlCSRMatrix< Real, Device, Index >::load( File& file )
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::load( file ) ||
        ! this->rowPointers.load( file ) )
@@ -532,17 +532,17 @@ bool tnlCSRMatrix< Real, Device, Index >::load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlCSRMatrix< Real, Device, Index >::save( const tnlString& fileName ) const
+bool tnlCSRMatrix< Real, Device, Index >::save( const String& fileName ) const
 {
-   return tnlObject::save( fileName );
+   return Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlCSRMatrix< Real, Device, Index >::load( const tnlString& fileName )
+bool tnlCSRMatrix< Real, Device, Index >::load( const String& fileName )
 {
-   return tnlObject::load( fileName );
+   return Object::load( fileName );
 }
 
 template< typename Real,

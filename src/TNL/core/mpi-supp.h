@@ -26,7 +26,7 @@
 
 namespace TNL {
    
-class tnlString;
+class String;
 
 #ifdef HAVE_MPI
 inline MPI_Datatype MPIDataType( const signed char ) { return MPI_CHAR; };
@@ -98,7 +98,7 @@ template< class T > void MPIBcast( T& data,
    MPI_Bcast( &data, count, MPIDataType( data ), root, comm );
 };
 
-inline void MPIBcast( tnlString& data, intstd::cout, int root, MPI_Comm comm = MPI_COMM_WORLD )
+inline void MPIBcast( String& data, intstd::cout, int root, MPI_Comm comm = MPI_COMM_WORLD )
 {
    std::cerr << "Call method MPIBcast of mString instead of function MPIBcast( mString&, ... ) " << std::endl;
    abort();

@@ -11,10 +11,10 @@
 #pragma once
 
 #include <math.h>
-#include <TNL/config/tnlConfigDescription.h>
+#include <TNL/Config/ConfigDescription.h>
 #include <TNL/solvers/ode/tnlExplicitSolver.h>
-#include <TNL/config/tnlParameterContainer.h>
-#include <TNL/core/tnlTimer.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Timer.h>
 
 namespace TNL {
 
@@ -32,13 +32,13 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem >
 
    tnlEulerSolver();
 
-   tnlString getType() const;
+   String getType() const;
 
-   static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix = "" );
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" );
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+   bool setup( const Config::ParameterContainer& parameters,
+              const String& prefix = "" );
 
    void setCFLCondition( const RealType& cfl );
 

@@ -1,7 +1,7 @@
 #ifndef EulerVelYGetter_H
 #define EulerVelYGetter_H
 
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
 
 namespace TNL {
@@ -29,7 +29,7 @@ class EulerVelYGetter< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       MeshFunctionType rhoVelY;
       MeshFunctionType rho;
 
@@ -83,7 +83,7 @@ class EulerVelYGetter< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       MeshFunctionType rhoVelY;
       MeshFunctionType rho;
 
@@ -137,7 +137,7 @@ class EulerVelYGetter< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       MeshFunctionType rhoVelY;
       MeshFunctionType rho;
 

@@ -10,9 +10,9 @@
 
 #pragma once
 
-#include <TNL/core/arrays/tnlArray.h>
-#include <TNL/core/arrays/tnlConstSharedArray.h>
-#include <TNL/core/tnlList.h>
+#include <TNL/Arrays/Array.h>
+#include <TNL/Arrays/ConstSharedArray.h>
+#include <TNL/List.h>
 #include <TNL/mesh/tnlMeshEntity.h>
 #include <TNL/mesh/config/tnlMeshConfigBase.h>
 #include <TNL/mesh/topologies/tnlMeshEntityTopology.h>
@@ -44,7 +44,7 @@ class tnlMeshSuperentityTraits
    /****
     * Type of container for storing of the superentities indecis.
     */
-   typedef tnlArray< GlobalIndexType, tnlHost, LocalIndexType >             StorageArrayType;
+   typedef Arrays::Array< GlobalIndexType, tnlHost, LocalIndexType >             StorageArrayType;
  
    typedef tnlEllpackIndexMultimap< GlobalIndexType, tnlHost >                        StorageNetworkType;
    typedef tnlMeshSuperentityAccessor< typename StorageNetworkType::ValuesAccessorType > SuperentityAccessorType;
@@ -54,12 +54,12 @@ class tnlMeshSuperentityTraits
     * method. We introduce it because of the compatibility with the subentities
     * which are usually stored in static array.
     */
-   typedef tnlSharedArray< GlobalIndexType, tnlHost, LocalIndexType >       AccessArrayType;
+   typedef Arrays::tnlSharedArray< GlobalIndexType, tnlHost, LocalIndexType >       AccessArrayType;
 
    /****
     * This is used by the mesh initializer.
     */
-   typedef tnlList< GlobalIndexType >                                       GrowableContainerType;
+   typedef List< GlobalIndexType >                                       GrowableContainerType;
 
 };
 

@@ -11,7 +11,7 @@
 #ifndef TNLDISTRIBUTEDGRID_H_
 #define TNLDISTRIBUTEDGRID_H_
 
-#include <TNL/tnlObject.h>
+#include <TNL/Object.h>
 #include <TNL/core/tnlCommunicator.h>
 
 template< int Dimensions,
@@ -19,7 +19,7 @@ template< int Dimensions,
           typename Device = tnlHost,
           typename Real = double,
           typename Index = int >
-class tnlDistributedGrid : public tnlObject
+class tnlDistributedGrid : public Object
 {
    //! We do not allow constructor without parameters.
    tnlDistributedGrid();
@@ -29,7 +29,7 @@ class tnlDistributedGrid : public tnlObject
 
    public:
 
-   tnlDistributedGrid( const tnlString& name );
+   tnlDistributedGrid( const String& name );
 
    bool init( tnlCommunicator* communicator,
               const GridType& grid,
@@ -119,8 +119,8 @@ class tnlDistributedGrid : public tnlObject
 };
 
 template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
-tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: tnlDistributedGrid( const tnlString& name )
- : tnlObject( name )
+tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: tnlDistributedGrid( const String& name )
+ : Object( name )
 {
 
 }

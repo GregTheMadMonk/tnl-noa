@@ -13,8 +13,8 @@ template< typename Mesh, typename Real >class eulerRhs
       typedef Mesh MeshType;
       typedef Real RealType;
 
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" )
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" )
       {
          return true;
       }

@@ -13,13 +13,16 @@
 #include <iostream>
 #include <unistd.h>
 #include <TNL/core/tnlDevice.h>
-#include <TNL/core/tnlString.h>
-#include <TNL/core/tnlAssert.h>
+#include <TNL/String.h>
+#include <TNL/Assert.h>
 
 namespace TNL {
 
-class tnlConfigDescription;
-class tnlParameterContainer;
+namespace Config { 
+   class ConfigDescription;
+   class ParameterContainer;
+}
+   
 
 #ifdef HAVE_CUDA
 #define __cuda_callable__ __device__ __host__
@@ -34,7 +37,7 @@ class tnlCuda
 
    enum { DeviceType = tnlCudaDevice };
 
-   static tnlString getDeviceType();
+   static String getDeviceType();
 
    __cuda_callable__ static inline tnlDeviceEnum getDevice();
 
@@ -88,10 +91,10 @@ class tnlCuda
    static bool checkDevice( const char* file_name, int line ) { return false;};
 #endif
  
-   static void configSetup( tnlConfigDescription& config, const tnlString& prefix = "" );
+   static void configSetup( Config::ConfigDescription& config, const String& prefix = "" );
  
-   static bool setup( const tnlParameterContainer& parameters,
-                      const tnlString& prefix = "" );
+   static bool setup( const Config::ParameterContainer& parameters,
+                      const String& prefix = "" );
 
 
 };

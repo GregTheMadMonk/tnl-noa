@@ -13,8 +13,8 @@
 
 #include <iostream>
 #include <iomanip>
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/matrices/tnlMatrix.h>
 #include <TNL/debug/tnlDebug.h>
@@ -32,11 +32,11 @@ class tnlFastRgCSRMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHo
 {
    public:
    //! Basic constructor
-   tnlFastRgCSRMatrix( const tnlString& name, Index _block_size );
+   tnlFastRgCSRMatrix( const String& name, Index _block_size );
 
-   const tnlString& getMatrixClass() const;
+   const String& getMatrixClass() const;
 
-   tnlString getType() const;
+   String getType() const;
 
    //! Sets the number of row and columns.
    bool setSize( Index new_size );
@@ -146,7 +146,7 @@ class tnlFastRgCSRMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHo
 };
 
 template< typename Real, typename Index >
-tnlFastRgCSRMatrix< Real, tnlHost, Index > :: tnlFastRgCSRMatrix( const tnlString& name, Index _block_size )
+tnlFastRgCSRMatrix< Real, tnlHost, Index > :: tnlFastRgCSRMatrix( const String& name, Index _block_size )
    : tnlMatrix< Real, tnlHost, Index >( name ),
      nonzero_elements( "tnlFastRgCSRMatrix< Real, tnlHost, Index > :: nonzero-elements" ),
      block_offsets( "tnlFastRgCSRMatrix< Real, tnlHost, Index > :: block-offsets" ),
@@ -162,15 +162,15 @@ tnlFastRgCSRMatrix< Real, tnlHost, Index > :: tnlFastRgCSRMatrix( const tnlStrin
 };
 
 template< typename Real, typename Index >
-const tnlString& tnlFastRgCSRMatrix< Real, tnlHost, Index > :: getMatrixClass() const
+const String& tnlFastRgCSRMatrix< Real, tnlHost, Index > :: getMatrixClass() const
 {
    return tnlMatrixClass :: main;
 };
 
 template< typename Real, typename Index >
-tnlString tnlFastRgCSRMatrix< Real, tnlHost, Index > :: getType() const
+String tnlFastRgCSRMatrix< Real, tnlHost, Index > :: getType() const
 {
-   return tnlString( "tnlFastRgCSRMatrix< ") + tnlString( getType( Real( 0.0 ) ) ) + tnlString( ", tnlHost >" );
+   return String( "tnlFastRgCSRMatrix< ") + String( getType( Real( 0.0 ) ) ) + String( ", tnlHost >" );
 };
 
 template< typename Real, typename Index >
@@ -221,7 +221,7 @@ void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: reset()
 template< typename Real, typename Index >
 Index tnlFastRgCSRMatrix< Real, tnlHost, Index > :: getNonzeroElements() const
 {
-   tnlAssert( nonzero_elements. getSize() > artificial_zeros, );
+   Assert( nonzero_elements. getSize() > artificial_zeros, );
    return nonzero_elements. getSize() - artificial_zeros;
 };
 
@@ -373,13 +373,13 @@ bool tnlFastRgCSRMatrix< Real, tnlHost, Index > :: copyFrom( const tnlFastCSRMat
 			Index fast_csr_column_sequence_offset = fast_csr_matrix. columns_sequences_offsets[ i ];
 			dbgCout( "Copying " << inserted_column_sequences << ". column sequence with the length "
 			         << column_sequences_lengths[ i ] << " from the fast CSR matrix column offset " << fast_csr_matrix. columns_sequences_offsets[ i ] );
-         tnlAssert( inserted_column_sequences < column_sequences_in_block[ block_id ],
+         Assert( inserted_column_sequences < column_sequences_in_block[ block_id ],
                     std::cerr << "inserted_column_sequences = " << inserted_column_sequences << std::endl
                          << "column_sequences_in_block[ block_id ] = " << column_sequences_in_block[ block_id ] << std::endl
                          << "block_id = " << block_id );
 			for( Index j = 0; j < column_sequences_lengths[ i ]; j ++ )
 			{
-			   tnlAssert( columns_sequences_offsets[ i ] + j * column_sequences_in_block[ block_id ] < columns_sequences_blocks_offsets[ block_id + 1],
+			   Assert( columns_sequences_offsets[ i ] + j * column_sequences_in_block[ block_id ] < columns_sequences_blocks_offsets[ block_id + 1],
 			              std::cerr << "j = " << j << std::endl
 			                   << "columns_sequences_offsets[ i ] = " << columns_sequences_offsets[ i ] << std::endl
 			                   << "column_sequences_in_block[ block_id ] = " << column_sequences_in_block[ block_id ] << std::endl
@@ -493,9 +493,9 @@ template< typename Real, typename Index >
 Real tnlFastRgCSRMatrix< Real, tnlHost, Index > :: getElement( Index row,
                                                                Index column ) const
 {
-   tnlAssert( 0 <= row && row < this->getSize(),
+   Assert( 0 <= row && row < this->getSize(),
 			  std::cerr << "The row is outside the matrix." );
-   tnlAssert( 0 <= column && column < this->getSize(),
+   Assert( 0 <= column && column < this->getSize(),
 			  std::cerr << "The column is outside the matrix." );
 
 	Index block_id = row / block_size;
@@ -528,9 +528,9 @@ template< typename Real, typename Index >
 Real tnlFastRgCSRMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
                                                                const tnlVector< Real, tnlHost, Index >& vec ) const
 {
-   tnlAssert( 0 <= row && row < this->getSize(),
+   Assert( 0 <= row && row < this->getSize(),
            std::cerr << "The row is outside the matrix." );
-   tnlAssert( vec. getSize() == this->getSize(),
+   Assert( vec. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << std::endl; );
@@ -551,7 +551,7 @@ Real tnlFastRgCSRMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
    const Index col_sequences_in_block = column_sequences_in_block[ block_id ];
    for( Index i = 0; i < column_sequences_lengths[ row ]; i ++ )
    {
-	   tnlAssert( val_pos < nonzero_elements. getSize(), );
+	   Assert( val_pos < nonzero_elements. getSize(), );
 	   product += nonzero_elements[ val_pos ] * vec[ column_sequences[ column_pos ] + row ];
 	   val_pos += current_block_size;
 	   column_pos += col_sequences_in_block;
@@ -563,11 +563,11 @@ template< typename Real, typename Index >
 void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVector< Real, tnlHost, Index >& vec,
                                                                   tnlVector< Real, tnlHost, Index >& result ) const
 {
-   tnlAssert( vec. getSize() == this->getSize(),
+   Assert( vec. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << std::endl; );
-   tnlAssert( result. getSize() == this->getSize(),
+   Assert( result. getSize() == this->getSize(),
               std::cerr << "The matrix and result vector of a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << result. getSize() << std::endl; );
@@ -590,7 +590,7 @@ void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVecto
 	   const Index col_sequences_in_block = column_sequences_in_block[ block_id ];
 	   for( Index i = 0; i < column_sequences_lengths[ row ]; i ++ )
 	   {
-		   tnlAssert( val_pos < nonzero_elements. getSize(), );
+		   Assert( val_pos < nonzero_elements. getSize(), );
 		   product += nonzero_elements[ val_pos ] * vec[ column_sequences[ column_pos ] + row ];
 		   val_pos += current_block_size;
 		   column_pos += col_sequences_in_block;
@@ -603,7 +603,7 @@ void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVecto
 
 template< typename Real, typename Index >
 void tnlFastRgCSRMatrix< Real, tnlHost, Index > :: printOut( std::ostream& str,
-                                                             const tnlString& name,
+                                                             const String& name,
 		                                                       const Index lines ) const
 {
    str << "Structure of tnlFastRgCSRMatrix" << std::endl;

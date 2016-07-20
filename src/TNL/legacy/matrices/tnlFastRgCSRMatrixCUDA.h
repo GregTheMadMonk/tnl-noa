@@ -13,8 +13,8 @@
 
 #include <iostream>
 #include <iomanip>
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/matrices/tnlMatrix.h>
 #include <TNL/legacy/matrices/tnlFastRgCSRMatrix.h>
@@ -54,9 +54,9 @@ class tnlFastRgCSRMatrix< Real, tnlCuda, Index > : public tnlMatrix< Real, tnlCu
    //! Basic constructor
    tnlFastRgCSRMatrix( const char* name );
 
-   const tnlString& getMatrixClass() const;
+   const String& getMatrixClass() const;
 
-   tnlString getType() const;
+   String getType() const;
 
    //! Sets the number of row and columns.
    bool setSize( int new_size );
@@ -180,15 +180,15 @@ tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: tnlFastRgCSRMatrix( const char* na
 };
 
 template< typename Real, typename Index >
-const tnlString& tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: getMatrixClass() const
+const String& tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: getMatrixClass() const
 {
    return tnlMatrixClass :: main;
 };
 
 template< typename Real, typename Index >
-tnlString tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: getType() const
+String tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: getType() const
 {
-   return tnlString( "tnlFastRgCSRMatrix< ") + tnlString( getType( Real( 0.0 ) ) ) + tnlString( ", tnlCuda >" );
+   return String( "tnlFastRgCSRMatrix< ") + String( getType( Real( 0.0 ) ) ) + String( ", tnlCuda >" );
 };
 
 template< typename Real, typename Index >
@@ -239,7 +239,7 @@ void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: reset()
 template< typename Real, typename Index >
 int tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: getNonzeroElements() const
 {
-   tnlAssert( nonzero_elements. getSize() > artificial_zeros, );
+   Assert( nonzero_elements. getSize() > artificial_zeros, );
    return nonzero_elements. getSize() - artificial_zeros;
 };
 
@@ -297,11 +297,11 @@ template< typename Real, typename Index >
 Real tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: getElement( int row,
                                                         int column ) const
 {
-    tnlAssert( 0 <= row && row < this->getSize(),
+    Assert( 0 <= row && row < this->getSize(),
 	 		   std::cerr << "The row is outside the matrix." );
-    tnlAssert( 0 <= column && column < this->getSize(),
+    Assert( 0 <= column && column < this->getSize(),
 	    	   std::cerr << "The column is outside the matrix." );
-	 tnlAssert( false, std::cerr << "Not Implemeted Yet!" );
+	 Assert( false, std::cerr << "Not Implemeted Yet!" );
 	 return 0;
 }
 
@@ -309,10 +309,10 @@ template< typename Real, typename Index >
 Real tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: rowProduct( int row,
                                                                const tnlVector< Real, tnlCuda, Index >& vec ) const
 {
-   tnlAssert( 0 <= row && row < this->getSize(),
+   Assert( 0 <= row && row < this->getSize(),
 			  std::cerr << "The row is outside the matrix." );
-   tnlAssert( vec != NULL, );
-   tnlAssert( false, std::cerr << "Not Implemented Yet!" );
+   Assert( vec != NULL, );
+   Assert( false, std::cerr << "Not Implemented Yet!" );
    return 0;
 }
 
@@ -320,7 +320,7 @@ template< typename Real, typename Index >
 void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlVector< Real, tnlCuda, Index >& vec,
                                                                   tnlVector< Real, tnlCuda, Index >& result ) const
 {
-   tnlAssert( vec != NULL && result != NULL,);
+   Assert( vec != NULL && result != NULL,);
 
 #ifdef HAVE_CUDA
 	/*sparseFastCSRMatrixVectorProductKernel( this->getSize(),
@@ -343,7 +343,7 @@ void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlVecto
 
 template< typename Real, typename Index >
 void tnlFastRgCSRMatrix< Real, tnlCuda, Index > :: printOut( std::ostream& str,
-                                                             const tnlString& name,
+                                                             const String& name,
 		                                                       const int lines ) const
 {
    str << "Structure of tnlFastRgCSRMatrix" << std::endl;

@@ -38,14 +38,14 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
        */
       typedef void TimeStepper;
 
-      static tnlString getTypeStatic();
+      static String getTypeStatic();
 
-      tnlString getPrologHeader() const;
+      String getPrologHeader() const;
 
-      void writeProlog( tnlLogger& logger,
-                        const tnlParameterContainer& parameters ) const;
+      void writeProlog( Logger& logger,
+                        const Config::ParameterContainer& parameters ) const;
  
-      bool writeEpilog( tnlLogger& logger ) const;
+      bool writeEpilog( Logger& logger ) const;
 
 
       bool setMeshDependentData( const MeshType& mesh,

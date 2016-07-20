@@ -11,8 +11,8 @@
 #pragma once
 
 #include <TNL/solvers/tnlSolverMonitor.h>
-#include <TNL/core/tnlTimerCPU.h>
-#include <TNL/core/tnlTimerRT.h>
+#include <TNL/TimerCPU.h>
+#include <TNL/TimerRT.h>
 
 namespace TNL {
 
@@ -58,9 +58,9 @@ class tnlIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
 
    IndexType verbose;
 
-   tnlTimerCPU cpuTimer;
+   TimerCPU cpuTimer;
 
-   tnlTimerRT rtTimer;
+   TimerRT rtTimer;
 };
 
 } // namespace TNL

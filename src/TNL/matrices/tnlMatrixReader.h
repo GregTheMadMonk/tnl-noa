@@ -11,8 +11,8 @@
 #pragma once
 
 #include <istream>
-#include <TNL/core/tnlString.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/String.h>
+#include <TNL/Vectors/Vector.h>
 
 namespace TNL {
 
@@ -28,7 +28,7 @@ class tnlMatrixReader
    typedef typename Matrix::IndexType IndexType;
    typedef typename Matrix::RealType RealType;
 
-   static bool readMtxFile( const tnlString& fileName,
+   static bool readMtxFile( const String& fileName,
                             Matrix& matrix,
                             bool verbose = false );
 
@@ -49,11 +49,11 @@ class tnlMatrixReader
    static bool findLineByElement( std::istream& file,
                                   const IndexType& row,
                                   const IndexType& column,
-                                  tnlString& line,
+                                  String& line,
                                   IndexType& lineNumber );
    protected:
 
-   static bool checkMtxHeader( const tnlString& header,
+   static bool checkMtxHeader( const String& header,
                                bool& symmetric );
 
    static bool readMtxHeader( std::istream& file,
@@ -74,7 +74,7 @@ class tnlMatrixReader
                                               bool symmetricMatrix,
                                               bool verbose );
 
-   static bool parseMtxLineWithElement( const tnlString& line,
+   static bool parseMtxLineWithElement( const String& line,
                                         IndexType& row,
                                         IndexType& column,
                                         RealType& value );

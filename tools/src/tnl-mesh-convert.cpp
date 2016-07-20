@@ -11,22 +11,22 @@
 #ifndef HAVE_ICPC
 #include "tnl-mesh-convert.h"
 #endif
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ParameterContainer.h>
 
-void configSetup( tnlConfigDescription& config )
+void configSetup( Config::ConfigDescription& config )
 {
    config.addDelimiter                            ( "General settings:" );
-   config.addRequiredEntry< tnlString >( "input-file", "Input file with the mesh." );
-   config.addEntry< tnlString >( "output-file", "Output mesh file in TNL or VTK format.", "mesh.tnl" );
-   //config.addEntry< tnlString >( "output-format", "Output mesh file format.", "vtk" );
+   config.addRequiredEntry< String >( "input-file", "Input file with the mesh." );
+   config.addEntry< String >( "output-file", "Output mesh file in TNL or VTK format.", "mesh.tnl" );
+   //config.addEntry< String >( "output-format", "Output mesh file format.", "vtk" );
    config.addEntry< int >( "verbose", "Set the verbosity of the program.", 1 );
-   config.addEntry< tnlString >( "mesh-name", "The mesh name.", "tnl-mesh" );
+   config.addEntry< String >( "mesh-name", "The mesh name.", "tnl-mesh" );
 }
 
 int main( int argc, char* argv[] )
 {
-   tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
+   Config::ParameterContainer parameters;
+   Config::ConfigDescription conf_desc;
  
    configSetup( conf_desc );
 

@@ -44,16 +44,16 @@ class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
 
-      static tnlString getTypeStatic();
+      static String getTypeStatic();
 
-      tnlString getPrologHeader() const;
+      String getPrologHeader() const;
 
-      void writeProlog( tnlLogger& logger,
-                        const tnlParameterContainer& parameters ) const;
+      void writeProlog( Logger& logger,
+                        const Config::ParameterContainer& parameters ) const;
 
-      bool setup( const tnlParameterContainer& parameters );
+      bool setup( const Config::ParameterContainer& parameters );
 
-      bool setInitialCondition( const tnlParameterContainer& parameters,
+      bool setInitialCondition( const Config::ParameterContainer& parameters,
                                 const MeshType& mesh,
                                 DofVectorType& dofs,
                                 MeshDependentDataType& meshDependentData );

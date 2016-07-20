@@ -42,16 +42,16 @@ tnlMeshEntity< MeshConfig, EntityTopology >::
 
 template< typename MeshConfig,
           typename EntityTopology >
-tnlString
+String
 tnlMeshEntity< MeshConfig, EntityTopology >::
 getType()
 {
-   return tnlString( "tnlMesh< ... >" );
+   return String( "tnlMesh< ... >" );
 }
 
 template< typename MeshConfig,
           typename EntityTopology >
-tnlString
+String
 tnlMeshEntity< MeshConfig, EntityTopology >::
 getTypeVirtual() const
 {
@@ -62,7 +62,7 @@ template< typename MeshConfig,
           typename EntityTopology >
 bool
 tnlMeshEntity< MeshConfig, EntityTopology >::
-save( tnlFile& file ) const
+save( File& file ) const
 {
    if( ! tnlMeshSubentityStorageLayers< MeshConfig, EntityTopology >::save( file ) /*||
        ! tnlMeshSuperentityStorageLayers< MeshConfig, EntityTopology >::save( file )*/ )
@@ -74,7 +74,7 @@ template< typename MeshConfig,
           typename EntityTopology >
 bool
 tnlMeshEntity< MeshConfig, EntityTopology >::
-load( tnlFile& file )
+load( File& file )
 {
    if( ! tnlMeshSubentityStorageLayers< MeshConfig, EntityTopology >::load( file ) /*||
        ! tnlMeshSuperentityStorageLayers< MeshConfig, EntityTopology >::load( file ) */ )
@@ -145,7 +145,7 @@ tnlMeshEntity< MeshConfig, EntityTopology >::
 getSubentityIndex( const LocalIndexType localIndex) const
 {
    static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to get subentity which is not configured for storage." );
-   tnlAssert( 0 <= localIndex &&
+   Assert( 0 <= localIndex &&
               localIndex < SubentityTraits< Subdimensions >::count,
               std::cerr << "localIndex = " << localIndex
                    << " subentitiesCount = "
@@ -199,7 +199,7 @@ tnlMeshEntity< MeshConfig, EntityTopology >::
 getSuperentityIndex( const LocalIndexType localIndex ) const
 {
    static_assert( SuperentityTraits< SuperDimensions >::storageEnabled, "You try to get superentity which is not configured for storage." );
-   tnlAssert( localIndex < this->getNumberOfSuperentities< SuperDimensions >(),
+   Assert( localIndex < this->getNumberOfSuperentities< SuperDimensions >(),
               std::cerr << " localIndex = " << localIndex
                    << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< SuperDimensions >() << std::endl; );
    typedef tnlMeshSuperentityAccess< MeshConfig, EntityTopology >  SuperentityBaseType;
@@ -275,7 +275,7 @@ tnlMeshEntity< MeshConfig, EntityTopology >::
 subentityOrientation( LocalIndexType index ) const
 {
    static const LocalIndexType subentitiesCount = SubentityTraits< Dimensions >::count;
-   tnlAssert( 0 <= index && index < subentitiesCount, );
+   Assert( 0 <= index && index < subentitiesCount, );
 
    return SubentityStorageLayers::subentityOrientation( tnlDimensionsTag< Dimensions >(), index );
 }
@@ -293,7 +293,7 @@ setSubentityIndex( const LocalIndexType localIndex,
                    const GlobalIndexType globalIndex )
 {
    static_assert( SubentityTraits< Subdimensions >::storageEnabled, "You try to set subentity which is not configured for storage." );
-   tnlAssert( 0 <= localIndex &&
+   Assert( 0 <= localIndex &&
               localIndex < SubentityTraits< Subdimensions >::count,
               std::cerr << "localIndex = " << localIndex
                    << " subentitiesCount = "
@@ -338,15 +338,15 @@ subentityOrientationsArray()
  * Vertex entity specialization
  */
 template< typename MeshConfig >
-tnlString
+String
 tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::
 getType()
 {
-   return tnlString( "tnlMesh< ... >" );
+   return String( "tnlMesh< ... >" );
 }
 
 template< typename MeshConfig >
-tnlString
+String
 tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::
 getTypeVirtual() const
 {
@@ -363,7 +363,7 @@ tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::
 template< typename MeshConfig >
 bool
 tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::
-save( tnlFile& file ) const
+save( File& file ) const
 {
    if( //! tnlMeshSuperentityStorageLayers< MeshConfig, tnlMeshVertexTopology >::save( file ) ||
        ! point.save( file ) )
@@ -374,7 +374,7 @@ save( tnlFile& file ) const
 template< typename MeshConfig >
 bool
 tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::
-load( tnlFile& file )
+load( File& file )
 {
    if( //! tnlMeshSuperentityStorageLayers< MeshConfig, tnlMeshVertexTopology >::load( file ) ||
        ! point.load( file ) )
@@ -447,7 +447,7 @@ typename tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::GlobalIndexType
 tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >::
 getSuperentityIndex( const LocalIndexType localIndex ) const
 {
-   tnlAssert( localIndex < this->getNumberOfSuperentities< Dimensions >(),
+   Assert( localIndex < this->getNumberOfSuperentities< Dimensions >(),
               std::cerr << " localIndex = " << localIndex
                    << " this->getNumberOfSuperentities< Dimensions >() = " << this->getNumberOfSuperentities< Dimensions >() << std::endl; );
    typedef tnlMeshSuperentityAccess< MeshConfig, tnlMeshVertexTopology >  SuperentityBaseType;

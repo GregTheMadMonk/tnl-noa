@@ -42,8 +42,8 @@ template< int FunctionDimensions,
           typename Real >
 void
 tnlConstantFunction< FunctionDimensions, Real >::
-configSetup( tnlConfigDescription& config,
-             const tnlString& prefix )
+configSetup( Config::ConfigDescription& config,
+             const String& prefix )
 {
    config.addEntry     < double >( prefix + "constant", "Value of the constant function.", 0.0 );
 }
@@ -52,8 +52,8 @@ template< int Dimensions,
           typename Real >
 bool
 tnlConstantFunction< Dimensions, Real >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    this->setConstant( parameters.getParameter< double >( prefix + "constant") );
    return true;

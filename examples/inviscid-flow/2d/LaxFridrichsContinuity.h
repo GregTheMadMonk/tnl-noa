@@ -1,7 +1,7 @@
 #ifndef LaxFridrichsContinuity_H
 #define LaxFridrichsContinuity_H
 
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
 
 namespace TNL {
@@ -29,7 +29,7 @@ class LaxFridrichsContinuity< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, In
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocityX;
       MeshFunctionType velocityY;
@@ -90,7 +90,7 @@ class LaxFridrichsContinuity< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, In
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocityX;
       MeshFunctionType velocityY;
@@ -151,7 +151,7 @@ class LaxFridrichsContinuity< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, In
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocityX;
       MeshFunctionType velocityY;

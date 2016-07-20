@@ -13,7 +13,7 @@
 
 
 #include <math.h>
-#include <TNL/core/vectors/tnlSharedVector.h>
+#include <TNL/Vectors/SharedVector.h>
 #include <TNL/legacy/solvers/tnlMatrixSolver.h>
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
@@ -21,9 +21,9 @@ class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >
 {
    public:
 
-   tnlGMRESSolverOld( const tnlString& name );
+   tnlGMRESSolverOld( const String& name );
 
-   tnlString getType() const;
+   String getType() const;
 
    void setRestarting( Index rest );
 
@@ -69,7 +69,7 @@ class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >
 };
 
 template< typename Real, typename Device, typename Index >
-tnlGMRESSolverOld< Real, Device, Index > :: tnlGMRESSolverOld( const tnlString& name )
+tnlGMRESSolverOld< Real, Device, Index > :: tnlGMRESSolverOld( const String& name )
 : tnlMatrixSolver< Real, Device, Index >( name ),
   _r( "tnlGMRESSolverOld::_r" ),
   _w( "tnlGMRESSolverOld::_w" ),
@@ -85,15 +85,15 @@ tnlGMRESSolverOld< Real, Device, Index > :: tnlGMRESSolverOld( const tnlString& 
 };
  
 template< typename Real, typename Device, typename Index >
-tnlString tnlGMRESSolverOld< Real, Device, Index > :: getType() const
+String tnlGMRESSolverOld< Real, Device, Index > :: getType() const
 {
-   return tnlString( "tnlGMRESSolverOld< " ) +
-          tnlString( getType( ( Real ) 0.0 ) ) +
-          tnlString( ", " ) +
+   return String( "tnlGMRESSolverOld< " ) +
+          String( getType( ( Real ) 0.0 ) ) +
+          String( ", " ) +
           Device :: getDeviceType() +
-          tnlString( ", " ) +
-          tnlString( getType( ( Index ) 0 ) ) +
-          tnlString( " >" );
+          String( ", " ) +
+          String( getType( ( Index ) 0 ) ) +
+          String( " >" );
 }
 
 template< typename Real, typename Device, typename Index >

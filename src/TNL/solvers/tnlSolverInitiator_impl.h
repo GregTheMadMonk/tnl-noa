@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <TNL/solvers/tnlMeshTypeResolver.h>
 #include <TNL/solvers/tnlBuildConfigTags.h>
 #include <TNL/solvers/linear/stationary/tnlSORSolver.h>
@@ -43,9 +43,9 @@ class tnlSolverInitiatorIndexResolver{};
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename ConfigTag  >
-bool tnlSolverInitiator< ProblemSetter, ConfigTag > :: run( const tnlParameterContainer& parameters )
+bool tnlSolverInitiator< ProblemSetter, ConfigTag > :: run( const Config::ParameterContainer& parameters )
 {
-   const tnlString& realType = parameters. getParameter< tnlString >( "real-type" );
+   const String& realType = parameters. getParameter< String >( "real-type" );
    if( parameters. getParameter< int >( "verbose" ) )
      std::cout << "Setting RealType to   ... " << realType << std::endl;
    if( realType == "float" )
@@ -64,9 +64,9 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 class tnlSolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
 {
    public:
-      static bool run( const tnlParameterContainer& parameters )
+      static bool run( const Config::ParameterContainer& parameters )
       {
-         const tnlString& device = parameters. getParameter< tnlString >( "device" );
+         const String& device = parameters. getParameter< String >( "device" );
          if( parameters. getParameter< int >( "verbose" ) )
            std::cout << "Setting DeviceType to ... " << device << std::endl;
 
@@ -85,9 +85,9 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 class tnlSolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, false >
 {
    public:
-      static bool run( const tnlParameterContainer& parameters )
+      static bool run( const Config::ParameterContainer& parameters )
       {
-         std::cerr << "The real type " << parameters.getParameter< tnlString >( "real-type" ) << " is not supported." << std::endl;
+         std::cerr << "The real type " << parameters.getParameter< String >( "real-type" ) << " is not supported." << std::endl;
          return false;
       }
 };
@@ -99,9 +99,9 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 class tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, true >
 {
    public:
-      static bool run( const tnlParameterContainer& parameters )
+      static bool run( const Config::ParameterContainer& parameters )
       {
-         const tnlString& indexType = parameters. getParameter< tnlString >( "index-type" );
+         const String& indexType = parameters. getParameter< String >( "index-type" );
          if( parameters. getParameter< int >( "verbose" ) )
            std::cout << "Setting IndexType to  ... " << indexType << std::endl;
          if( indexType == "short-int" )
@@ -122,9 +122,9 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 class tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, false >
 {
    public:
-      static bool run( const tnlParameterContainer& parameters )
+      static bool run( const Config::ParameterContainer& parameters )
       {
-         std::cerr << "The device " << parameters.getParameter< tnlString >( "device" ) << " is not supported." << std::endl;
+         std::cerr << "The device " << parameters.getParameter< String >( "device" ) << " is not supported." << std::endl;
          return false;
       }
 };
@@ -137,9 +137,9 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 class tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >
 {
    public:
-      static bool run( const tnlParameterContainer& parameters )
+      static bool run( const Config::ParameterContainer& parameters )
       {
-         std::cerr << "The index " << parameters.getParameter< tnlString >( "index-type" ) << " is not supported." << std::endl;
+         std::cerr << "The index " << parameters.getParameter< String >( "index-type" ) << " is not supported." << std::endl;
          return false;
       }
 };
@@ -152,7 +152,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 class tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
 {
    public:
-      static bool run( const tnlParameterContainer& parameters )
+      static bool run( const Config::ParameterContainer& parameters )
       {
          return tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::run( parameters );
       }

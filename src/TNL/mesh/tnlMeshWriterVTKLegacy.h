@@ -51,7 +51,7 @@ class tnlMeshWriterVTKLegacy
    public:
 
    template< typename MeshType >
-   static bool write( const tnlString& fileName,
+   static bool write( const String& fileName,
                       MeshType& mesh,
                       bool verbose )
    {

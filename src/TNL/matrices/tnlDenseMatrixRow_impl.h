@@ -55,9 +55,9 @@ setElement( const Index& elementIndex,
             const Index& column,
             const Real& value )
 {
-   tnlAssert( this->values, );
-   tnlAssert( this->step > 0,);
-   tnlAssert( column >= 0 && column < this->columns,
+   Assert( this->values, );
+   Assert( this->step > 0,);
+   Assert( column >= 0 && column < this->columns,
               std::cerr << "column = " << column << " this->columns = " << this->columns );
 
    this->values[ column * this->step ] = value;

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/core/tnlHost.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
 
 namespace TNL {

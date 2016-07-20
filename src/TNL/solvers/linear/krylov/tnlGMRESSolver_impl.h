@@ -24,11 +24,11 @@ tnlGMRESSolver< Matrix, Preconditioner > :: tnlGMRESSolver()
 
 template< typename Matrix,
           typename Preconditioner >
-tnlString
+String
 tnlGMRESSolver< Matrix, Preconditioner >::
 getType() const
 {
-   return tnlString( "tnlGMRESSolver< " ) +
+   return String( "tnlGMRESSolver< " ) +
           this->matrix -> getType() + ", " +
           this->preconditioner -> getType() + " >";
 }
@@ -37,8 +37,8 @@ template< typename Matrix,
           typename Preconditioner >
 void
 tnlGMRESSolver< Matrix, Preconditioner >::
-configSetup( tnlConfigDescription& config,
-             const tnlString& prefix )
+configSetup( Config::ConfigDescription& config,
+             const String& prefix )
 {
    //tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
    config.addEntry< int >( prefix + "gmres-restarting", "Number of iterations after which the GMRES restarts.", 10 );
@@ -48,8 +48,8 @@ template< typename Matrix,
           typename Preconditioner >
 bool
 tnlGMRESSolver< Matrix, Preconditioner >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
    this->setRestarting( parameters.getParameter< int >( "gmres-restarting" ) );
@@ -84,7 +84,7 @@ template< typename Matrix,
  template< typename Vector, typename ResidueGetter >
 bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
 {
-   tnlAssert( matrix, std::cerr << "No matrix was set in tnlGMRESSolver. Call setMatrix() before solve()." << std::endl );
+   Assert( matrix, std::cerr << "No matrix was set in tnlGMRESSolver. Call setMatrix() before solve()." << std::endl );
    if( restarting <= 0 )
    {
       std::cerr << "I have wrong value for the restarting of the GMRES solver. It is set to " << restarting
@@ -143,7 +143,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    this->resetIterations();
    this->setResidue( beta / normb );
 
-   tnlSharedVector< RealType, DeviceType, IndexType > vi, vk;
+   Vectors::tnlSharedVector< RealType, DeviceType, IndexType > vi, vk;
    while( this->checkNextIteration() )
    {
       const IndexType m = restarting;
@@ -294,15 +294,15 @@ tnlGMRESSolver< Matrix, Preconditioner > :: ~tnlGMRESSolver()
 
 template< typename Matrix,
           typename Preconditioner >
-   template< typename Vector >
+   template< typename VectorT >
 void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
                                                          IndexType m,
-                                                         const tnlVector< RealType, tnlHost, IndexType >& H,
-                                                         const tnlVector< RealType, tnlHost, IndexType >& s,
-                                                         tnlVector< RealType, DeviceType, IndexType >& v,
-                                                         Vector& x )
+                                                         const Vectors::tnlVector< RealType, tnlHost, IndexType >& H,
+                                                         const Vectors::tnlVector< RealType, tnlHost, IndexType >& s,
+                                                         Vectors::tnlVector< RealType, DeviceType, IndexType >& v,
+                                                         VectorT& x )
 {
-   tnlVector< RealType, tnlHost, IndexType > y;
+   Vectors::tnlVector< RealType, tnlHost, IndexType > y;
    y. setSize( m + 1 );
 
    IndexType i, j;
@@ -318,7 +318,7 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
          y[ j ] -= H[ j + i * ( m + 1 ) ] * y[ i ];
    }
 
-   tnlSharedVector< RealType, DeviceType, IndexType > vi;
+   Vectors::tnlSharedVector< RealType, DeviceType, IndexType > vi;
    for( i = 0; i <= k; i++)
    {
       vi. bind( &( v. getData()[ i * this->size ] ), x. getSize() );

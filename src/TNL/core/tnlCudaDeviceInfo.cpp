@@ -28,11 +28,11 @@ getActiveDevice()
    return -1;
 }
 
-tnlString
+String
 tnlCudaDeviceInfo::
 getDeviceName( int deviceNum )
 {
-   return tnlString( "" );
+   return String( "" );
 }
 
 int

@@ -20,9 +20,9 @@ tnlCGSolver< Matrix, Preconditioner > :: tnlCGSolver()
 
 template< typename Matrix,
            typename Preconditioner >
-tnlString tnlCGSolver< Matrix, Preconditioner > :: getType() const
+String tnlCGSolver< Matrix, Preconditioner > :: getType() const
 {
-   return tnlString( "tnlCGSolver< " ) +
+   return String( "tnlCGSolver< " ) +
           this->matrix -> getType() + ", " +
           this->preconditioner -> getType() + " >";
 }
@@ -31,8 +31,8 @@ template< typename Matrix,
           typename Preconditioner >
 void
 tnlCGSolver< Matrix, Preconditioner >::
-configSetup( tnlConfigDescription& config,
-             const tnlString& prefix )
+configSetup( Config::ConfigDescription& config,
+             const String& prefix )
 {
    //tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
 }
@@ -41,8 +41,8 @@ template< typename Matrix,
           typename Preconditioner >
 bool
 tnlCGSolver< Matrix, Preconditioner >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    return tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }

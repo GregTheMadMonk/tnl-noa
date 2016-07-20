@@ -14,11 +14,11 @@
 #include <ostream>
 #include <iomanip>
 #include <string.h>
-#include <TNL/tnlObject.h>
-#include <TNL/core/tnlString.h>
-#include <TNL/core/tnlList.h>
-#include <TNL/core/tnlFile.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Object.h>
+#include <TNL/String.h>
+#include <TNL/List.h>
+#include <TNL/File.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/debug/tnlDebug.h>
 
 using namespace std;
@@ -30,15 +30,15 @@ class tnlMatrixClass
    tnlMatrixClass() {};
 
    public:
-   static const tnlString main;
-   static const tnlString petsc;
-   static const tnlString cusparse;
+   static const String main;
+   static const String petsc;
+   static const String cusparse;
 };
 
 template< typename Real, typename device, typename Index > class tnlCSRMatrix;
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
-class tnlMatrix : public tnlObject
+class tnlMatrix : public Object
 {
    public:
 
@@ -47,12 +47,12 @@ class tnlMatrix : public tnlObject
    typedef Index IndexType;
 
 
-   tnlMatrix( const tnlString& name );
+   tnlMatrix( const String& name );
 
    //! Matrix class tells what implementation of matrix we want.
    /*! Matrix class can be main, PETSC, CUDA etc.
     */
-   virtual const tnlString& getMatrixClass() const = 0;
+   virtual const String& getMatrixClass() const = 0;
 
    //! Returns the number of rows resp. columns.
    virtual Index getSize() const { return size; };
@@ -111,14 +111,14 @@ class tnlMatrix : public tnlObject
    bool compare( const tnlMatrix< Real, Device, Index >& m, bool verbose = true ) const;
 
    //! Method for saving the matrix to a file as a binary data
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
    //! Method for restoring the matrix from a file
-   bool load( tnlFile& file );
+   bool load( File& file );
 
-   bool save( const tnlString& fileName ) const;
+   bool save( const String& fileName ) const;
 
-   bool load( const tnlString& fileName );
+   bool load( const String& fileName );
 
    template< typename Real2 >
    tnlMatrix< Real, Device, Index >& operator = ( const tnlMatrix< Real2, Device, Index >& matrix );
@@ -137,12 +137,12 @@ class tnlMatrix : public tnlObject
     * They are best accessible from the CSR format. Therefore we may pass pointer to tnlCSRMatrix.
     */
    virtual bool draw( std::ostream& str,
-		                const tnlString& format,
+		                const String& format,
 		                tnlCSRMatrix< Real, Device, Index >* csrMatrix = 0,
 		                int verbose = 0 );
 
    virtual void printOut( std::ostream& stream,
-                          const tnlString& format = tnlString( "" ),
+                          const String& format = String( "" ),
                           const Index lines = 0 ) const {};
 
    virtual ~tnlMatrix()
@@ -150,7 +150,7 @@ class tnlMatrix : public tnlObject
 
    protected:
 
-   bool checkMtxHeader( const tnlString& header,
+   bool checkMtxHeader( const String& header,
 		                  bool& symmetric );
 
    void writePostscriptHeader( std::ostream& str,
@@ -167,8 +167,8 @@ template< typename Real, typename Device, typename Index >
 ostream& operator << ( std::ostream& o_str, const tnlMatrix< Real, Device, Index >& A );
 
 template< typename Real, typename Device, typename Index >
-tnlMatrix< Real, Device, Index > :: tnlMatrix( const tnlString& name )
-: tnlObject( name )
+tnlMatrix< Real, Device, Index > :: tnlMatrix( const String& name )
+: Object( name )
 {
 };
 
@@ -181,7 +181,7 @@ Index tnlMatrix< Real, Device, Index > :: getArtificialZeroElements() const
 template< typename Real, typename Device, typename Index >
 Index tnlMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& row ) const
 {
-   tnlAssert( false, std::cerr << "not implemented yet." );
+   Assert( false, std::cerr << "not implemented yet." );
    /*
     * TODO: this method should be abstract
     */
@@ -228,9 +228,9 @@ bool tnlMatrix< Real, Device, Index > :: operator != ( const tnlMatrix< Real, De
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: save( tnlFile& file ) const
+bool tnlMatrix< Real, Device, Index > :: save( File& file ) const
 {
-   if( ! tnlObject :: save( file ) ) return false;
+   if( ! Object :: save( file ) ) return false;
 #ifdef HAVE_NOT_CXX11
    if( ! file. write< const Index, tnlHost >( &size ) )
 #else
@@ -241,9 +241,9 @@ bool tnlMatrix< Real, Device, Index > :: save( tnlFile& file ) const
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: load( tnlFile& file )
+bool tnlMatrix< Real, Device, Index > :: load( File& file )
 {
-   if( ! tnlObject :: load( file ) ) return false;
+   if( ! Object :: load( file ) ) return false;
 #ifdef HAVE_NOT_CXX11
    if( ! file. read< Index, tnlHost >( &size ) )
 #else
@@ -254,15 +254,15 @@ bool tnlMatrix< Real, Device, Index > :: load( tnlFile& file )
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: save( const tnlString& fileName ) const
+bool tnlMatrix< Real, Device, Index > :: save( const String& fileName ) const
 {
-   return tnlObject :: save( fileName );
+   return Object :: save( fileName );
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: load( const tnlString& fileName )
+bool tnlMatrix< Real, Device, Index > :: load( const String& fileName )
 {
-   return tnlObject :: load( fileName );
+   return Object :: load( fileName );
 }
 
 template< typename Real, typename Device, typename Index >
@@ -280,10 +280,10 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index > ::  operator 
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: checkMtxHeader( const tnlString& header,
+bool tnlMatrix< Real, Device, Index > :: checkMtxHeader( const String& header,
 		                                                   bool& symmetric )
 {
-	tnlList< tnlString > parsed_line;
+	List< String > parsed_line;
     header. parse( parsed_line );
     if( parsed_line. getSize() < 5 )
        return false;
@@ -323,9 +323,9 @@ template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: read( std::istream& file,
                                                int verbose )
 {
-   tnlString line;
+   String line;
    bool dimensions_line( false ), format_ok( false );
-   tnlList< tnlString > parsed_line;
+   List< String > parsed_line;
    Index parsed_elements( 0 );
    Index size( 0 );
    bool symmetric( false );
@@ -424,7 +424,7 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlVector< Index,
     */
    for( Index i = 0; i < matrixSize; i ++ )
    {
-      tnlAssert( this->getNonzeroElementsInRow( i ) <= matrixSize,
+      Assert( this->getNonzeroElementsInRow( i ) <= matrixSize,
                  std::cerr << "getNonzeroElementsInRow( " << i << " ) = " << getNonzeroElementsInRow( i )
                       << "; matrixSize = " << matrixSize );
       permutation[ this->getNonzeroElementsInRow( i ) ] ++;
@@ -437,13 +437,13 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlVector< Index,
    buckets[ 0 ] = 0;
    for( Index i = 1; i <= matrixSize; i ++ )
    {
-      tnlAssert( matrixSize - i >= 0 && matrixSize - i <= matrixSize, );
+      Assert( matrixSize - i >= 0 && matrixSize - i <= matrixSize, );
       buckets[ i ] = buckets[ i - 1 ] + permutation[ matrixSize - i + 1 ];
    }
 
    for( Index i = 0; i < matrixSize; i ++ )
    {
-      tnlAssert( buckets[ matrixSize - this->getNonzeroElementsInRow( i ) ] <= matrixSize,
+      Assert( buckets[ matrixSize - this->getNonzeroElementsInRow( i ) ] <= matrixSize,
                std::cerr << "buckets[ matrixSize - this->getNonzeroElementsInRow( i ) - 1 ] = " << buckets[ matrixSize - this->getNonzeroElementsInRow( i ) - 1 ]
                     << "; matrixSize = " << matrixSize );
       dbgExpr( buckets[ matrixSize - this->getNonzeroElementsInRow( i ) ] );
@@ -454,7 +454,7 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlVector< Index,
 
 template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: draw( std::ostream& str,
-		                                         const tnlString& format,
+		                                         const String& format,
 		                                         tnlCSRMatrix< Real, Device, Index >* csrMatrix,
 		                                         int verbose )
 {

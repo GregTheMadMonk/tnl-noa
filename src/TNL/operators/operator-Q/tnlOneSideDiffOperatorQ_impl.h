@@ -20,11 +20,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "tnlOneSideDiffOperatorQ< " ) +
+   return String( "tnlOneSideDiffOperatorQ< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";
@@ -96,11 +96,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "tnlOneSideDiffOperatorQ< " ) +
+   return String( "tnlOneSideDiffOperatorQ< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";
@@ -181,11 +181,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "tnlOneSideDiffOperatorQ< " ) +
+   return String( "tnlOneSideDiffOperatorQ< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";

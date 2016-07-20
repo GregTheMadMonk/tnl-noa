@@ -13,8 +13,8 @@
 
 #include <iostream>
 #include <iomanip>
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/matrices/tnlMatrix.h>
 #include <TNL/debug/tnlDebug.h>
@@ -43,9 +43,9 @@ class tnlFastCSRMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHost
    //! Basic constructor
    tnlFastCSRMatrix( const char* name );
 
-   const tnlString& getMatrixClass() const;
+   const String& getMatrixClass() const;
 
-   tnlString getType() const;
+   String getType() const;
 
    //! Sets the number of row and columns.
    bool setSize( Index new_size );
@@ -181,15 +181,15 @@ tnlFastCSRMatrix< Real, tnlHost, Index > :: tnlFastCSRMatrix( const char* name )
 };
 
 template< typename Real, typename Index >
-const tnlString& tnlFastCSRMatrix< Real, tnlHost, Index > :: getMatrixClass() const
+const String& tnlFastCSRMatrix< Real, tnlHost, Index > :: getMatrixClass() const
 {
    return tnlMatrixClass :: main;
 };
 
 template< typename Real, typename Index >
-tnlString tnlFastCSRMatrix< Real, tnlHost, Index > :: getType() const
+String tnlFastCSRMatrix< Real, tnlHost, Index > :: getType() const
 {
-   return tnlString( "tnlFastCSRMatrix< ") + tnlString( getType( Real( 0.0 ) ) ) + tnlString( ", tnlHost >" );
+   return String( "tnlFastCSRMatrix< ") + String( getType( Real( 0.0 ) ) ) + String( ", tnlHost >" );
 };
 
 template< typename Real, typename Index >
@@ -248,7 +248,7 @@ Index tnlFastCSRMatrix< Real, tnlHost, Index > :: getColumnSequencesLength() con
 template< typename Real, typename Index >
 Index tnlFastCSRMatrix< Real, tnlHost, Index > :: getRowLength( Index row ) const
 {
-	tnlAssert( row >= 0 && row < this->getSize(), );
+	Assert( row >= 0 && row < this->getSize(), );
 	return row_offsets[ row + 1 ] - row_offsets[ row ];
 }
 
@@ -264,7 +264,7 @@ bool tnlFastCSRMatrix< Real, tnlHost, Index > :: setElement( Index row,
                                                              Index column,
                                                              const Real& value )
 {
-	tnlAssert( false, );
+	Assert( false, );
 	return true;
 }
 
@@ -273,7 +273,7 @@ bool tnlFastCSRMatrix< Real, tnlHost, Index > :: addToElement( Index row,
                                                                Index column,
                                                                const Real& value )
 {
-	tnlAssert( false, );
+	Assert( false, );
 	return true;
 }
 
@@ -349,9 +349,9 @@ template< typename Real, typename Index >
 Real tnlFastCSRMatrix< Real, tnlHost, Index > :: getElement( Index row,
                                                       Index column ) const
 {
-   tnlAssert( 0 <= row && row < this->getSize(),
+   Assert( 0 <= row && row < this->getSize(),
 			  std::cerr << "The row is outside the matrix." );
-   tnlAssert( 0 <= column && column < this->getSize(),
+   Assert( 0 <= column && column < this->getSize(),
 			  std::cerr << "The column is outside the matrix." );
    Index column_offset = columns_sequences_offsets[ row ];
    Index data_offset = row_offsets[ row ];
@@ -371,9 +371,9 @@ template< typename Real, typename Index >
 Real tnlFastCSRMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
                                                              const tnlVector< Real, tnlHost, Index >& vec ) const
 {
-   tnlAssert( 0 <= row && row < this->getSize(),
+   Assert( 0 <= row && row < this->getSize(),
 			  std::cerr << "The row is outside the matrix." );
-   tnlAssert( vec. getSize() == this->getSize(),
+   Assert( vec. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << std::endl; );
@@ -404,11 +404,11 @@ template< typename Real, typename Index >
 void tnlFastCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVector< Real, tnlHost, Index >& vec,
                                                                 tnlVector< Real, tnlHost, Index >& result ) const
 {
-   tnlAssert( vec. getSize() == this->getSize(),
+   Assert( vec. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << std::endl; );
-   tnlAssert( result. getSize() == this->getSize(),
+   Assert( result. getSize() == this->getSize(),
               std::cerr << "The matrix and result vector of a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << result. getSize() << std::endl; );
@@ -438,13 +438,13 @@ void tnlFastCSRMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVector<
 template< typename Real, typename Index >
 Real tnlFastCSRMatrix< Real, tnlHost, Index > :: getRowL1Norm( Index row ) const
 {
-	tnlAssert( false, );
+	Assert( false, );
 };
 
 template< typename Real, typename Index >
 void tnlFastCSRMatrix< Real, tnlHost, Index > :: multiplyRow( Index row, const Real& value )
 {
-	tnlAssert( false, );
+	Assert( false, );
 };
 
 
@@ -452,7 +452,7 @@ void tnlFastCSRMatrix< Real, tnlHost, Index > :: multiplyRow( Index row, const R
 template< typename Real, typename Index >
 bool tnlFastCSRMatrix< Real, tnlHost, Index > :: Save( std::ostream& file ) const
 {
-	tnlAssert( false, );
+	Assert( false, );
 	return true;
 };
 
@@ -460,13 +460,13 @@ bool tnlFastCSRMatrix< Real, tnlHost, Index > :: Save( std::ostream& file ) cons
 template< typename Real, typename Index >
 bool tnlFastCSRMatrix< Real, tnlHost, Index > :: Load( std::istream& file )
 {
-	tnlAssert( false, );
+	Assert( false, );
 	return true;
 };
 
 template< typename Real, typename Index >
 void tnlFastCSRMatrix< Real, tnlHost, Index > :: printOut( std::ostream& str,
-                                                           const tnlString& name,
+                                                           const String& name,
 		                                                     const Index lines ) const
 {
    str << "Structure of tnlFastCSRMatrix" << std::endl;

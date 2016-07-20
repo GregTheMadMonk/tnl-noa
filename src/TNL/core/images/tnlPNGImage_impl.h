@@ -101,7 +101,7 @@ readHeader()
 template< typename Index >
 bool
 tnlPNGImage< Index >::
-openForRead( const tnlString& fileName )
+openForRead( const String& fileName )
 {
    this->close();
    this->file = fopen( fileName.getString(), "r" );
@@ -276,7 +276,7 @@ template< typename Index >
              typename Device >
 bool
 tnlPNGImage< Index >::
-openForWrite( const tnlString& fileName,
+openForWrite( const String& fileName,
               tnlGrid< 2, Real, Device, Index >& grid )
 {
    this->close();

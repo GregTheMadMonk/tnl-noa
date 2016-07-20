@@ -12,7 +12,7 @@
 
 #include <TNL/core/tnlHost.h>
 #include <TNL/core/tnlCuda.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
 
@@ -86,24 +86,24 @@ tnlMersonSolver< Problem > :: tnlMersonSolver()
 };
 
 template< typename Problem >
-tnlString tnlMersonSolver< Problem > :: getType() const
+String tnlMersonSolver< Problem > :: getType() const
 {
-   return tnlString( "tnlMersonSolver< " ) +
+   return String( "tnlMersonSolver< " ) +
           Problem :: getTypeStatic() +
-          tnlString( " >" );
+          String( " >" );
 };
 
 template< typename Problem >
-void tnlMersonSolver< Problem > :: configSetup( tnlConfigDescription& config,
-                                                const tnlString& prefix )
+void tnlMersonSolver< Problem > :: configSetup( Config::ConfigDescription& config,
+                                                const String& prefix )
 {
    //tnlExplicitSolver< Problem >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "merson-adaptivity", "Time step adaptivity controlling coefficient (the smaller the more precise the computation is, zero means no adaptivity).", 1.0e-4 );
 };
 
 template< typename Problem >
-bool tnlMersonSolver< Problem > :: setup( const tnlParameterContainer& parameters,
-                                         const tnlString& prefix )
+bool tnlMersonSolver< Problem > :: setup( const Config::ParameterContainer& parameters,
+                                         const String& prefix )
 {
    tnlExplicitSolver< Problem >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "merson-adaptivity" ) )

@@ -21,13 +21,13 @@ class tnlExactDifference
 {
    public:
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlExactDifference< " ) +
-            tnlString( Dimensions ) + ", " +
-            tnlString( XDerivative ) + ", " +
-            tnlString( YDerivative ) + ", " +
-            tnlString( ZDerivative ) + " >";
+         return String( "tnlExactDifference< " ) +
+            String( Dimensions ) + ", " +
+            String( XDerivative ) + ", " +
+            String( YDerivative ) + ", " +
+            String( ZDerivative ) + " >";
       }
  
       template< typename Function >

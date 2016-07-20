@@ -41,7 +41,7 @@ inline tnlDicomHeader::~tnlDicomHeader()
 #endif
 }
 
-inline bool tnlDicomHeader::loadFromFile( const tnlString& fileName )
+inline bool tnlDicomHeader::loadFromFile( const String& fileName )
 {
 #ifdef HAVE_DCMTK_H
     OFCondition status = fileFormat->loadFile( fileName.getString() );

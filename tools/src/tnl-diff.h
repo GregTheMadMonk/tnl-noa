@@ -12,21 +12,21 @@
 #define TNL_DIFF_H_
 
 #include <iomanip>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <TNL/core/mfilename.h>
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/vectors/tnlStaticVector.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Vectors/StaticVector.h>
 #include <TNL/functions/tnlMeshFunction.h>
 
 using namespace TNL;
 
 template< typename Mesh, typename Element, typename Real, typename Index >
-bool computeDifferenceOfMeshFunctions( const Mesh& mesh, const tnlParameterContainer& parameters )
+bool computeDifferenceOfMeshFunctions( const Mesh& mesh, const Config::ParameterContainer& parameters )
 {
    bool verbose = parameters. getParameter< bool >( "verbose" );
-   tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
-   tnlString mode = parameters. getParameter< tnlString >( "mode" );
-   tnlString outputFileName = parameters. getParameter< tnlString >( "output-file" );
+   List< String > inputFiles = parameters. getParameter< List< String > >( "input-files" );
+   String mode = parameters. getParameter< String >( "mode" );
+   String outputFileName = parameters. getParameter< String >( "output-file" );
    double snapshotPeriod = parameters. getParameter< double >( "snapshot-period" );
    bool writeDifference = parameters. getParameter< bool >( "write-difference" );
 
@@ -138,7 +138,7 @@ bool computeDifferenceOfMeshFunctions( const Mesh& mesh, const tnlParameterConta
 
       if( writeDifference )
       {
-         tnlString differenceFileName;
+         String differenceFileName;
          differenceFileName = inputFiles[ i ];
          RemoveFileExtension( differenceFileName );
          differenceFileName += ".diff.tnl";
@@ -157,12 +157,12 @@ bool computeDifferenceOfMeshFunctions( const Mesh& mesh, const tnlParameterConta
 
 
 template< typename Mesh, typename Element, typename Real, typename Index >
-bool computeDifferenceOfVectors( const Mesh& mesh, const tnlParameterContainer& parameters )
+bool computeDifferenceOfVectors( const Mesh& mesh, const Config::ParameterContainer& parameters )
 {
    bool verbose = parameters. getParameter< bool >( "verbose" );
-   tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
-   tnlString mode = parameters. getParameter< tnlString >( "mode" );
-   tnlString outputFileName = parameters. getParameter< tnlString >( "output-file" );
+   List< String > inputFiles = parameters. getParameter< List< String > >( "input-files" );
+   String mode = parameters. getParameter< String >( "mode" );
+   String outputFileName = parameters. getParameter< String >( "output-file" );
    double snapshotPeriod = parameters. getParameter< double >( "snapshot-period" );
    bool writeDifference = parameters. getParameter< bool >( "write-difference" );
 
@@ -272,7 +272,7 @@ bool computeDifferenceOfVectors( const Mesh& mesh, const tnlParameterContainer& 
 
       if( writeDifference )
       {
-         tnlString differenceFileName;
+         String differenceFileName;
          differenceFileName = inputFiles[ i ];
          RemoveFileExtension( differenceFileName );
          differenceFileName += ".diff.tnl";
@@ -291,7 +291,7 @@ bool computeDifferenceOfVectors( const Mesh& mesh, const tnlParameterContainer& 
 }
 
 template< typename Mesh, typename Element, typename Real, typename Index >
-bool computeDifference( const Mesh& mesh, const tnlString& objectType, const tnlParameterContainer& parameters )
+bool computeDifference( const Mesh& mesh, const String& objectType, const Config::ParameterContainer& parameters )
 {
    if( objectType == "tnlMeshFunction" )
       return computeDifferenceOfMeshFunctions< Mesh, Element, Real, Index >( mesh, parameters );
@@ -302,11 +302,11 @@ bool computeDifference( const Mesh& mesh, const tnlString& objectType, const tnl
 
 template< typename Mesh, typename Element, typename Real >
 bool setIndexType( const Mesh& mesh,
-                   const tnlString& inputFileName,
-                   const tnlList< tnlString >& parsedObjectType,
-                   const tnlParameterContainer& parameters )
+                   const String& inputFileName,
+                   const List< String >& parsedObjectType,
+                   const Config::ParameterContainer& parameters )
 {
-   tnlString indexType;
+   String indexType;
    if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector"   )
       indexType = parsedObjectType[ 4 ];
@@ -327,13 +327,13 @@ bool setIndexType( const Mesh& mesh,
 
 template< typename Mesh >
 bool setTupleType( const Mesh& mesh,
-                   const tnlString& inputFileName,
-                   const tnlList< tnlString >& parsedObjectType,
-                   const tnlList< tnlString >& parsedElementType,
-                   const tnlParameterContainer& parameters )
+                   const String& inputFileName,
+                   const List< String >& parsedObjectType,
+                   const List< String >& parsedElementType,
+                   const Config::ParameterContainer& parameters )
 {
    int dimensions = atoi( parsedElementType[ 1 ].getString() );
-   tnlString dataType = parsedElementType[ 2 ];
+   String dataType = parsedElementType[ 2 ];
    if( dataType == "float" )
       switch( dimensions )
       {
@@ -377,11 +377,11 @@ bool setTupleType( const Mesh& mesh,
 
 template< typename Mesh >
 bool setElementType( const Mesh& mesh,
-                     const tnlString& inputFileName,
-                     const tnlList< tnlString >& parsedObjectType,
-                     const tnlParameterContainer& parameters )
+                     const String& inputFileName,
+                     const List< String >& parsedObjectType,
+                     const Config::ParameterContainer& parameters )
 {
-   tnlString elementType;
+   String elementType;
 
    if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
@@ -399,7 +399,7 @@ bool setElementType( const Mesh& mesh,
       return setIndexType< Mesh, double, double >( mesh, inputFileName, parsedObjectType, parameters );
    if( elementType == "long double" )
       return setIndexType< Mesh, long double, long double >( mesh, inputFileName, parsedObjectType, parameters );
-   tnlList< tnlString > parsedElementType;
+   List< String > parsedElementType;
    if( ! parseObjectType( elementType, parsedElementType ) )
    {
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
@@ -413,16 +413,16 @@ bool setElementType( const Mesh& mesh,
 }
 
 template< typename Mesh >
-bool processFiles( const tnlParameterContainer& parameters )
+bool processFiles( const Config::ParameterContainer& parameters )
 {
    int verbose = parameters. getParameter< int >( "verbose");
-   tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
-   tnlString& inputFile = inputFiles[ 0 ];
+   List< String > inputFiles = parameters. getParameter< List< String > >( "input-files" );
+   String& inputFile = inputFiles[ 0 ];
 
    /****
     * Reading the mesh
     */
-   tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
+   String meshFile = parameters. getParameter< String >( "mesh" );
 
    Mesh mesh;
    if( meshFile != "" )
@@ -432,7 +432,7 @@ bool processFiles( const tnlParameterContainer& parameters )
          return false;
       }
 
-   tnlString objectType;
+   String objectType;
    if( ! getObjectType( inputFiles[ 0 ], objectType ) )
        std::cerr << "unknown object ... SKIPPING!" << std::endl;
    else
@@ -440,7 +440,7 @@ bool processFiles( const tnlParameterContainer& parameters )
       if( verbose )
         std::cout << objectType << " detected ... ";
 
-      tnlList< tnlString > parsedObjectType;
+      List< String > parsedObjectType;
       if( ! parseObjectType( objectType, parsedObjectType ) )
       {
          std::cerr << "Unable to parse object type " << objectType << "." << std::endl;

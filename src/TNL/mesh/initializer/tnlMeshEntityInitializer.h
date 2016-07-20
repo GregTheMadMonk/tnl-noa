@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlStaticFor.h>
+#include <TNL/StaticFor.h>
 #include <TNL/mesh/initializer/tnlMeshSuperentityStorageInitializer.h>
 #include <TNL/mesh/initializer/tnlMeshSubentitySeedCreator.h>
 
@@ -74,7 +74,7 @@ class tnlMeshEntityInitializer
 
    //using SuperentityBaseType::setNumberOfSuperentities;
 
-   static tnlString getType() {};
+   static String getType() {};
 
    tnlMeshEntityInitializer() : entity(0), entityIndex( -1 ) {}
 
@@ -111,7 +111,7 @@ class tnlMeshEntityInitializer< MeshConfig, tnlMeshVertexTopology >
       typedef typename tnlMeshTraits< MeshConfig >::PointType  PointType;
       typedef tnlMeshInitializer< MeshConfig >                 InitializerType;
 
-      static tnlString getType() {};
+      static String getType() {};
  
       static void setVertexPoint( VertexType& vertex,
                                   const PointType& point,

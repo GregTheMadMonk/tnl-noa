@@ -43,7 +43,7 @@ update( const Matrix& matrix )
 {
 //  std::cout << getType() << "->setMatrix()" << std::endl;
 
-   tnlAssert( matrix.getRows() > 0 && matrix.getRows() == matrix.getColumns(), );
+   Assert( matrix.getRows() > 0 && matrix.getRows() == matrix.getColumns(), );
 
    if( diagonal.getSize() != matrix.getRows() )
       diagonal.setSize( matrix.getRows() );

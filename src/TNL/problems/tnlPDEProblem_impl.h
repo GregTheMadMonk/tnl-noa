@@ -16,11 +16,11 @@ template< typename Mesh,
           typename Real,
           typename Device,
           typename Index >
-tnlString
+String
 tnlPDEProblem< Mesh, Real, Device, Index >::
 getTypeStatic()
 {
-   return tnlString( "tnlPDEProblem< " ) +
+   return String( "tnlPDEProblem< " ) +
           Mesh :: getTypeStatic() + ", " +
           getType< Real >() + ", " +
           getType< Device >() + ", " +
@@ -31,11 +31,11 @@ template< typename Mesh,
           typename Real,
           typename Device,
           typename Index >
-tnlString
+String
 tnlPDEProblem< Mesh, Real, Device, Index >::
 getPrologHeader() const
 {
-   return tnlString( "General PDE Problem" );
+   return String( "General PDE Problem" );
 }
 
 template< typename Mesh,
@@ -44,7 +44,7 @@ template< typename Mesh,
           typename Index >
 void
 tnlPDEProblem< Mesh, Real, Device, Index >::
-writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
+writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
 }
 
@@ -54,7 +54,7 @@ template< typename Mesh,
           typename Index >
 bool
 tnlPDEProblem< Mesh, Real, Device, Index >::
-writeEpilog( tnlLogger& logger ) const
+writeEpilog( Logger& logger ) const
 {
    return true;
 }

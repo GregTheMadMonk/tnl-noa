@@ -18,8 +18,8 @@ template< typename Real,
           int Dimensions >
 bool
 tnlFlowerpotFunctionBase< Real, Dimensions >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    this->diameter = parameters.getParameter< double >( prefix + "diameter" );
    return true;
@@ -44,10 +44,10 @@ const Real& tnlFlowerpotFunctionBase< Real, Dimensions >::getDiameter() const
  */
 
 template< typename Real >
-tnlString
+String
 tnlFlowerpotFunction< 1, Real >::getType()
 {
-   return "tnlFlowerpotFunction< 1, " + TNL::getType< Real >() + tnlString( " >" );
+   return "tnlFlowerpotFunction< 1, " + TNL::getType< Real >() + String( " >" );
 }
 
 template< typename Real >
@@ -88,10 +88,10 @@ operator()( const VertexType& v,
  * 2D
  */
 template< typename Real >
-tnlString
+String
 tnlFlowerpotFunction< 2, Real >::getType()
 {
-   return tnlString( "tnlFlowerpotFunction< 2, " ) + TNL::getType< Real >() + " >";
+   return String( "tnlFlowerpotFunction< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -135,10 +135,10 @@ operator()( const VertexType& v,
  */
 
 template< typename Real >
-tnlString
+String
 tnlFlowerpotFunction< 3, Real >::getType()
 {
-   return tnlString( "tnlFlowerpotFunction< 3, " ) + TNL::getType< Real >() + " >";
+   return String( "tnlFlowerpotFunction< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >

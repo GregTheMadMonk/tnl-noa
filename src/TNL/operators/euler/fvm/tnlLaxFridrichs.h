@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/vectors/tnlSharedVector.h>
+#include <TNL/Vectors/SharedVector.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/mesh/tnlIdenticalGridGeometry.h>
 #include <TNL/operators/gradient/tnlCentralFDMGradient.h>
@@ -41,7 +41,7 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, Pressure
 
    tnlLaxFridrichs();
 
-   static tnlString getTypeStatic();
+   static String getTypeStatic();
 
    void getExplicitRhs( const IndexType centralVolume,
                         RealType& rho_t,

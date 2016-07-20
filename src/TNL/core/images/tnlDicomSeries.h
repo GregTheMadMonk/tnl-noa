@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include <TNL/core/arrays/tnlArray.h>
-#include <TNL/core/tnlList.h>
-#include <TNL/core/tnlString.h>
+#include <TNL/Arrays/Array.h>
+#include <TNL/List.h>
+#include <TNL/String.h>
 #include <TNL/core/param-types.h>
 #include <TNL/core/images/tnlImage.h>
 #include <TNL/core/images/tnlDicomHeader.h>
@@ -35,7 +35,7 @@
 
 namespace TNL {
 
-template<> inline tnlString getType< tnlDicomHeader * > () { return tnlString( "tnlDicomHeader *" ); }
+template<> inline String getType< tnlDicomHeader * > () { return String( "tnlDicomHeader *" ); }
 
 struct WindowCenterWidth
 {
@@ -59,7 +59,7 @@ class tnlDicomSeries : public tnlImage< int >
 {
    public:
  
-      inline tnlDicomSeries( const tnlString& filePath );
+      inline tnlDicomSeries( const String& filePath );
  
       inline virtual ~tnlDicomSeries();
 
@@ -96,15 +96,15 @@ class tnlDicomSeries : public tnlImage< int >
 
    private:
  
-      bool loadDicomSeries( const tnlString& filePath );
+      bool loadDicomSeries( const String& filePath );
  
-      bool retrieveFileList( const tnlString& filePath );
+      bool retrieveFileList( const String& filePath );
  
-      bool loadImage( const tnlString& filePath, int number );
+      bool loadImage( const String& filePath, int number );
 
-      tnlList< tnlString > fileList;
+      List< String > fileList;
  
-      tnlArray<tnlDicomHeader *,tnlHost,int> dicomSeriesHeaders;
+      Arrays::Array<tnlDicomHeader *,tnlHost,int> dicomSeriesHeaders;
 
       bool isLoaded;
  

@@ -26,8 +26,8 @@ class tnlMeanCurvatureFlowEocRhs : public tnlDomain< Dimensions, SpaceDomain >
       typedef typename TestFunctionType::RealType RealType;
       typedef tnlStaticVector< Dimensions, RealType > VertexType;
 
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" )
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" )
       {
          if( ! testFunction.setup( parameters, prefix ) )
             return false;

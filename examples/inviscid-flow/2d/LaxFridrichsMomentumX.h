@@ -1,7 +1,7 @@
 #ifndef LaxFridrichsMomentumX_H
 #define LaxFridrichsMomentumX_H
 
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
 
 namespace TNL {
@@ -29,7 +29,7 @@ class LaxFridrichsMomentumX< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Ind
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocityX;
       MeshFunctionType velocityY;
@@ -96,7 +96,7 @@ class LaxFridrichsMomentumX< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Ind
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocityX;
       MeshFunctionType velocityY;
@@ -162,7 +162,7 @@ class LaxFridrichsMomentumX< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Ind
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocityX;
       MeshFunctionType velocityY;

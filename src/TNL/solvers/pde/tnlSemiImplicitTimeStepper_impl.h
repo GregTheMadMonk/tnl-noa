@@ -30,8 +30,8 @@ template< typename Problem,
           typename LinearSystemSolver >
 void
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
-configSetup( tnlConfigDescription& config,
-             const tnlString& prefix )
+configSetup( Config::ConfigDescription& config,
+             const String& prefix )
 {
    config.addEntry< bool >( "verbose", "Verbose mode.", true );
 }
@@ -40,8 +40,8 @@ template< typename Problem,
           typename LinearSystemSolver >
 bool
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
-setup( const tnlParameterContainer& parameters,
-      const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+      const String& prefix )
 {
    this->verbose = parameters.getParameter< bool >( "verbose" );
    return true;
@@ -140,7 +140,7 @@ solve( const RealType& time,
        DofVectorType& dofVector,
        MeshDependentDataType& meshDependentData )
 {
-   tnlAssert( this->problem != 0, );
+   Assert( this->problem != 0, );
    RealType t = time;
    this->linearSystemSolver->setMatrix( this->matrix );
    PreconditionerType preconditioner;
@@ -216,7 +216,7 @@ template< typename Problem,
           typename LinearSystemSolver >
 bool
 tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver >::
-writeEpilog( tnlLogger& logger )
+writeEpilog( Logger& logger )
 {
    logger.writeParameter< long long int >( "Iterations count:", this->allIterations );
    logger.writeParameter< const char* >( "Pre-iterate time:", "" );

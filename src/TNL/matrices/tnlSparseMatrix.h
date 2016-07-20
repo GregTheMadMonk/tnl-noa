@@ -27,7 +27,7 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
    typedef Index IndexType;
    typedef typename tnlMatrix< RealType, DeviceType, IndexType >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef typename tnlMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
-   typedef tnlVector< IndexType, DeviceType, IndexType > ColumnIndexesVector;
+   typedef Vectors::tnlVector< IndexType, DeviceType, IndexType > ColumnIndexesVector;
    typedef tnlMatrix< Real, Device, Index > BaseType;
    typedef tnlSparseMatrixRow< RealType, IndexType > MatrixRow;
 
@@ -49,9 +49,9 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
 
    void reset();
 
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
-   bool load( tnlFile& file );
+   bool load( File& file );
 
    void printStructure( std::ostream& str ) const;
 
@@ -59,7 +59,7 @@ class tnlSparseMatrix : public tnlMatrix< Real, Device, Index >
 
    bool allocateMatrixElements( const IndexType& numberOfMatrixElements );
 
-   tnlVector< Index, Device, Index > columnIndexes;
+   Vectors::tnlVector< Index, Device, Index > columnIndexes;
 
    Index maxRowLength;
 };

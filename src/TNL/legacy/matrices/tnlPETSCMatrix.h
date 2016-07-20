@@ -49,13 +49,13 @@ template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
 #endif
    };
 
-   tnlString getType() const
+   String getType() const
    {
       T t;
-      return tnlString( "tnlPETSCMatrix< " ) + tnlString( getType( t ) ) + tnlString( " >" );
+      return String( "tnlPETSCMatrix< " ) + String( getType( t ) ) + String( " >" );
    };
 
-   const tnlString& getMatrixClass() const
+   const String& getMatrixClass() const
    {
       return tnlMatrixClass :: petsc;
    };

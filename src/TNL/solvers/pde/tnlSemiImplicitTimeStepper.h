@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/core/tnlTimerRT.h>
-#include <TNL/core/tnlLogger.h>
+#include <TNL/TimerRT.h>
+#include <TNL/Logger.h>
 
 namespace TNL {
 
@@ -34,11 +34,11 @@ class tnlSemiImplicitTimeStepper
 
    tnlSemiImplicitTimeStepper();
 
-   static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix = "" );
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" );
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+   bool setup( const Config::ParameterContainer& parameters,
+              const String& prefix = "" );
 
    bool init( const MeshType& mesh );
 
@@ -60,7 +60,7 @@ class tnlSemiImplicitTimeStepper
                DofVectorType& dofVector,
                MeshDependentDataType& meshDependentData );
  
-   bool writeEpilog( tnlLogger& logger );
+   bool writeEpilog( Logger& logger );
 
    protected:
 

@@ -12,7 +12,7 @@
 
 namespace TNL {
 
-tnlString
+String
 tnlExactLinearDiffusion< 1 >::
 getType()
 {
@@ -30,7 +30,7 @@ operator()( const Function& function,
    return function.template getPartialDerivative< 2, 0, 0 >( v, time );
 }
 
-tnlString
+String
 tnlExactLinearDiffusion< 2 >::
 getType()
 {
@@ -49,7 +49,7 @@ operator()( const Function& function,
           function.template getPartialDerivative< 0, 2, 0 >( v, time );
 }
 
-tnlString
+String
 tnlExactLinearDiffusion< 3 >::
 getType()
 {

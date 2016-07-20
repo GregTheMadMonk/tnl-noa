@@ -40,9 +40,9 @@ class tnlLinearDiffusionTest
       const RealType  eoc[ 3 ] =       { 2.0,  2.0,  2.0 };
       const RealType  tolerance[ 3 ] = { 0.05, 0.05, 0.05 };
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlLinearDiffusionTest< " ) +
+         return String( "tnlLinearDiffusionTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }

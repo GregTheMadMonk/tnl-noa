@@ -11,7 +11,7 @@
 #pragma once
 
 #include <ostream>
-#include <TNL/tnlObject.h>
+#include <TNL/Object.h>
 #include <TNL/mesh/tnlMeshEntity.h>
 #include <TNL/mesh/traits/tnlMeshTraits.h>
 #include <TNL/mesh/layers/tnlMeshStorageLayer.h>
@@ -22,7 +22,7 @@ namespace TNL {
 
 template< typename MeshConfig > //,
           //typename Device = tnlHost >
-class tnlMesh : public tnlObject/*,
+class tnlMesh : public Object/*,
                 public tnlMeshStorageLayers< MeshConfig >*/
 {
    public:
@@ -39,9 +39,9 @@ class tnlMesh : public tnlObject/*,
       template< int Dimensions > using EntityTraits = typename MeshTraits::template EntityTraits< Dimensions >;
       template< int Dimensions > using EntityType = typename EntityTraits< Dimensions >::EntityType;
 
-      static tnlString getType();
+      static String getType();
  
-      virtual tnlString getTypeVirtual() const;
+      virtual String getTypeVirtual() const;
  
       static constexpr int getDimensions();
 
@@ -64,12 +64,12 @@ class tnlMesh : public tnlObject/*,
       template< int Dimensions >
       const EntityType< Dimensions >& getEntity( const GlobalIndexType entityIndex ) const;
 
-      bool save( tnlFile& file ) const;
+      bool save( File& file ) const;
 
-      bool load( tnlFile& file );
+      bool load( File& file );
  
-      using tnlObject::load;
-      using tnlObject::save;
+      using Object::load;
+      using Object::save;
  
       void print( std::ostream& str ) const;
 

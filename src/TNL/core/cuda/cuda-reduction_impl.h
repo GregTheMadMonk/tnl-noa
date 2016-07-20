@@ -16,15 +16,15 @@
 #include <cuda.h>
 #endif
 #include <iostream>
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Assert.h>
 #include <TNL/core/cuda/reduction-operations.h>
-#include <TNL/core/arrays/tnlArrayOperations.h>
+#include <TNL/Arrays/ArrayOperations.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/core/cuda/tnlCudaReductionBuffer.h>
 #include <TNL/core/cuda/tnlCudaReduction.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
-#include <TNL/core/tnlTimerRT.h>
+#include <TNL/TimerRT.h>
 #endif
 
 namespace TNL {
@@ -118,9 +118,9 @@ typename Operation::IndexType reduceOnCudaDevice( Operation& operation,
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case   1:
-         tnlAssert( false, std::cerr << "blockSize should not be 1." << std::endl );
+         Assert( false, std::cerr << "blockSize should not be 1." << std::endl );
       default:
-         tnlAssert( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
+         Assert( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
    }
    //checkCudaDevice;
    return gridSize. x;
@@ -149,10 +149,10 @@ bool reductionOnCudaDevice( Operation& operation,
    RealType hostArray2[ minGPUReductionDataSize ];
    if( size <= minGPUReductionDataSize )
    {
-      if( ! tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< RealType, RealType, IndexType >( hostArray1, deviceInput1, size ) )
+      if( ! Arrays::ArrayOperations< tnlHost, tnlCuda >::copyMemory< RealType, RealType, IndexType >( hostArray1, deviceInput1, size ) )
          return false;
       if( deviceInput2 && !
-          tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, size ) )
+          Arrays::ArrayOperations< tnlHost, tnlCuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, size ) )
          return false;
       result = operation.initialValue();
       for( IndexType i = 0; i < size; i ++ )
@@ -161,7 +161,7 @@ bool reductionOnCudaDevice( Operation& operation,
    }
 
    #ifdef CUDA_REDUCTION_PROFILING
-      tnlTimerRT timer;
+      TimerRT timer;
       timer.reset();
       timer.start();
    #endif
@@ -186,7 +186,7 @@ bool reductionOnCudaDevice( Operation& operation,
     * Transfer the reduced data from device to host.
     */
    ResultType resultArray[ minGPUReductionDataSize ];
-   if( ! tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
+   if( ! Arrays::ArrayOperations< tnlHost, tnlCuda >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
       return false;
  
    #ifdef CUDA_REDUCTION_PROFILING

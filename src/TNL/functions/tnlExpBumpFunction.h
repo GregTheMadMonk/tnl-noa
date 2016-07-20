@@ -10,8 +10,8 @@
 
 #pragma once 
 
-#include <TNL/config/tnlParameterContainer.h>
-#include <TNL/core/vectors/tnlStaticVector.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Vectors/StaticVector.h>
 #include <TNL/functions/tnlDomain.h>
 
 namespace TNL {
@@ -26,8 +26,8 @@ class tnlExpBumpFunctionBase : public tnlDomain< dimensions, SpaceDomain >
  
       tnlExpBumpFunctionBase();
  
-      bool setup( const tnlParameterContainer& parameters,
-                 const tnlString& prefix = "" );
+      bool setup( const Config::ParameterContainer& parameters,
+                 const String& prefix = "" );
 
       void setAmplitude( const RealType& amplitude );
 
@@ -54,9 +54,9 @@ class tnlExpBumpFunction< 1, Real > : public tnlExpBumpFunctionBase< 1, Real >
    public:
  
       typedef Real RealType;
-      typedef tnlStaticVector< 1, RealType > VertexType;
+      typedef Vectors::tnlStaticVector< 1, RealType > VertexType;
 
-      static tnlString getType();
+      static String getType();
 
       tnlExpBumpFunction();
 
@@ -84,9 +84,9 @@ class tnlExpBumpFunction< 2, Real > : public tnlExpBumpFunctionBase< 2, Real >
    public:
  
       typedef Real RealType;
-      typedef tnlStaticVector< 2, RealType > VertexType;
+      typedef Vectors::tnlStaticVector< 2, RealType > VertexType;
 
-      static tnlString getType();
+      static String getType();
 
       tnlExpBumpFunction();
 
@@ -114,10 +114,10 @@ class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< 3, Real >
    public:
  
       typedef Real RealType;
-      typedef tnlStaticVector< 3, RealType > VertexType;
+      typedef Vectors::tnlStaticVector< 3, RealType > VertexType;
 
  
-      static tnlString getType();
+      static String getType();
 
       tnlExpBumpFunction();
 

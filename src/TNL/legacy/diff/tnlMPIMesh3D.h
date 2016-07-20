@@ -40,7 +40,7 @@ class tnlMPIMesh< 3, Real, Device, Index >
               MPI_Comm comm = MPI_COMM_WORLD );
 
    bool Init( const tnlGridOld< 3, Real, Device, Index >& u,
-              const tnlParameterContainer& parameters,
+              const Config::ParameterContainer& parameters,
               Index _overlap_width,
               int root = 0,
               MPI_Comm comm = MPI_COMM_WORLD );
@@ -531,7 +531,7 @@ bool tnlMPIMesh< 3, Real, Device, Index > :: Init( const tnlGridOld< 3, Real, De
 
 template< typename Real, typename Device, typename Index >
 bool tnlMPIMesh< 3, Real, Device, Index > :: Init( const tnlGridOld< 3, Real, Device, Index >& u,
-                                                   const tnlParameterContainer& parameters,
+                                                   const Config::ParameterContainer& parameters,
                                                    Index _overlap_width,
                                                    int root,
                                                    MPI_Comm comm )
@@ -560,7 +560,7 @@ bool tnlMPIMesh< 3, Real, Device, Index > :: CreateMesh( const tnlGridOld< 3, Re
    dbgMPIBarrier;
    dbgCout( "Creating subdomains ... " );
    double ax, ay, az, hx, hy, hz;
-   tnlString name;
+   String name;
    int rank;
    if( MPIGetRank( original_comm ) == root )
    {
@@ -1386,7 +1386,7 @@ void DrawSubdomains( const tnlMPIMesh< 3, Real, Device, Index >& mpi_mesh,
                      const char* format )
 {
    int num = mpi_mesh. GetXPos() * 100 + mpi_mesh. GetYPos() * 10 + mpi_mesh. GetZPos();
-   tnlString file_name;
+   String file_name;
    FileNameBaseNumberEnding( file_name_base,
                              num,
                              3,

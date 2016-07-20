@@ -25,8 +25,8 @@ tnlExpBumpFunctionBase()
 template< int dimensions, typename Real >
 bool
 tnlExpBumpFunctionBase< dimensions, Real >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
    this->sigma = parameters.getParameter< double >( prefix + "sigma" );
@@ -62,10 +62,10 @@ const Real& tnlExpBumpFunctionBase< dimensions, Real >::getSigma() const
  */
 
 template< typename Real >
-tnlString
+String
 tnlExpBumpFunction< 1, Real >::getType()
 {
-   return "tnlExpBumpFunction< 1, " + TNL::getType< Real >() + tnlString( " >" );
+   return "tnlExpBumpFunction< 1, " + TNL::getType< Real >() + String( " >" );
 }
 
 template< typename Real >
@@ -112,10 +112,10 @@ operator()( const VertexType& v,
  */
 
 template< typename Real >
-tnlString
+String
 tnlExpBumpFunction< 2, Real >::getType()
 {
-   return tnlString( "tnlExpBumpFunction< 2, " ) + TNL::getType< Real >() + " >";
+   return String( "tnlExpBumpFunction< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -167,10 +167,10 @@ operator()( const VertexType& v,
  */
 
 template< typename Real >
-tnlString
+String
 tnlExpBumpFunction< 3, Real >::getType()
 {
-   return tnlString( "tnlExpBumpFunction< 3, " ) + TNL::getType< Real >() + " >";
+   return String( "tnlExpBumpFunction< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >

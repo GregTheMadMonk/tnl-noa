@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/config/tnlParameterContainer.h>
-#include <TNL/core/vectors/tnlStaticVector.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Vectors/StaticVector.h>
 #include <TNL/functions/tnlDomain.h>
 
 namespace TNL {
@@ -50,18 +50,18 @@ class tnlSinBumpsFunction
 };
 
 template< typename Real >
-class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStaticVector< 1, Real > >
+class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< Vectors::tnlStaticVector< 1, Real > >
 {
    public:
  
       typedef Real RealType;
-      typedef tnlStaticVector< 1, RealType > VertexType;
+      typedef Vectors::tnlStaticVector< 1, RealType > VertexType;
 
 
       tnlSinBumpsFunction();
 
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" );
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -83,18 +83,18 @@ class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< tnlStati
 };
 
 template< typename Real >
-class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStaticVector< 2, Real > >
+class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< Vectors::tnlStaticVector< 2, Real > >
 {
    public:
 
       typedef Real RealType;
-      typedef tnlStaticVector< 2, RealType > VertexType;
+      typedef Vectors::tnlStaticVector< 2, RealType > VertexType;
  
 
       tnlSinBumpsFunction();
 
-      bool setup( const tnlParameterContainer& parameters,
-                 const tnlString& prefix = "" );
+      bool setup( const Config::ParameterContainer& parameters,
+                 const String& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -116,17 +116,17 @@ class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< tnlStatic
 };
 
 template< typename Real >
-class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< tnlStaticVector< 3, Real > >
+class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< Vectors::tnlStaticVector< 3, Real > >
 {
    public:
 
       typedef Real RealType;
-      typedef tnlStaticVector< 3, RealType > VertexType;
+      typedef Vectors::tnlStaticVector< 3, RealType > VertexType;
 
       tnlSinBumpsFunction();
 
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" );
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,

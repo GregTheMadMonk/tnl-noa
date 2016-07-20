@@ -31,7 +31,7 @@ class tnlSpmvBenchmarkCusparseCSRMatrix : public tnlSpmvBenchmark< Real, tnlCuda
 
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
-                         const tnlString& inputMtxFile,
+                         const String& inputMtxFile,
                          const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                          bool writeMatrixInfo  ) const;
 
@@ -91,14 +91,14 @@ template< typename Real,
           typename Index >
 void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: writeToLogTable( std::ostream& logFile,
                                                                        const double& csrGflops,
-                                                                       const tnlString& inputMtxFile,
+                                                                       const String& inputMtxFile,
                                                                        const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
                                                                        bool writeMatrixInfo  ) const
 {
    if( this->getBenchmarkWasSuccesful() )
    {
       double speedUp = this->getGflops() / csrGflops;
-      tnlString bgColor = this->getBgColorBySpeedUp( speedUp );
+      String bgColor = this->getBgColorBySpeedUp( speedUp );
       logFile << "             <td bgcolor=" << bgColor << ">" << this->getTime() << "</td>" << std::endl;
       logFile << "             <td bgcolor=" << bgColor << ">" << this->getGflops() << "</td>" << std::endl;
 

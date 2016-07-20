@@ -24,9 +24,9 @@ tnlContainer< Element, Device, Index >::tnlContainer( const IndexType size )
 }
 
 template< typename Element, typename Device, typename Index >
-tnlString tnlContainer< Element, Device, Index >::getType()
+String tnlContainer< Element, Device, Index >::getType()
 {
-   return tnlString( "tnlContainer< " ) +
+   return String( "tnlContainer< " ) +
                     TNL::getType< Element >() +
                      Device :: getDeviceType() +
                     TNL::getType< Index >() +
@@ -77,9 +77,9 @@ void tnlContainer< Element, Device, Index >::setElement( const IndexType id,
 }
 
 template< typename Element, typename Device, typename Index >
-bool tnlContainer< Element, Device, Index >::save( tnlFile& file ) const
+bool tnlContainer< Element, Device, Index >::save( File& file ) const
 {
-   if( ! tnlObject::save( file ) ||
+   if( ! Object::save( file ) ||
        ! this->data.save( file ) )
    {
       std::cerr << "I am no able to save " << this->getType() << "." << std::endl;
@@ -89,9 +89,9 @@ bool tnlContainer< Element, Device, Index >::save( tnlFile& file ) const
 }
 
 template< typename Element, typename Device, typename Index >
-bool tnlContainer< Element, Device, Index >::load( tnlFile& file )
+bool tnlContainer< Element, Device, Index >::load( File& file )
 {
-   if( ! tnlObject::load( file ) ||
+   if( ! Object::load( file ) ||
        ! this->data.load( file ) )
    {
       std::cerr << "I am no able to load " << this->getType() << "." << std::endl;

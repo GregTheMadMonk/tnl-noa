@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlArrayTest.cu  -  description
+                          ArrayTest.cu  -  description
                              -------------------
     begin                : Mar 30, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 #include <TNL/core/tnlHost.h>
 #include <cstdlib>
 
@@ -18,16 +18,16 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( //! tnlUnitTestStarter :: run< tnlArrayTester< char, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< int, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< long int, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< float, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< double, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< char, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< int, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< long int, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< float, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< double, tnlCuda, long int > >()
+   if( //! tnlUnitTestStarter :: run< ArrayTester< char, tnlCuda, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< int, tnlCuda, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< long int, tnlCuda, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< float, tnlCuda, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< double, tnlCuda, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< char, tnlCuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< int, tnlCuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< long int, tnlCuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< float, tnlCuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< double, tnlCuda, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

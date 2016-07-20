@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlString.h>
+#include <TNL/String.h>
 #include <TNL/core/tnlCuda.h>
 #include <TNL/operators/tnlOperator.h>
 
@@ -37,9 +37,9 @@ class tnlFunctionInverseOperator
       tnlFunctionInverseOperator( const OperatorType& operator_ )
       : operator_( operator_ ) {};
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlFunctionInverseOperator< " ) + Operator::getType() + " >";
+         return String( "tnlFunctionInverseOperator< " ) + Operator::getType() + " >";
       }
  
       const OperatorType& getOperator() const { return this->operator_; }

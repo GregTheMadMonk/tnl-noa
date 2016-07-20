@@ -11,7 +11,7 @@
 #ifndef tnlFullMatrixH
 #define tnlFullMatrixH
 
-#include <TNL/core/arrays/tnlMultiArray.h>
+#include <TNL/Arrays/MultiArray.h>
 #include <TNL/matrices/tnlMatrix.h>
 
 const int tnlMaxFullMatrixSize = 65536;
@@ -26,14 +26,14 @@ class tnlFullMatrix : public tnlMatrix< Real, Device, Index >,
    public:
 
    //! Basic constructor
-   tnlFullMatrix( const tnlString& name );
+   tnlFullMatrix( const String& name );
 
    //! Constructor with matrix dimension
    tnlFullMatrix( const Index size );
 
-   tnlString getType() const;
+   String getType() const;
 
-   const tnlString& getMatrixClass() const;
+   const String& getMatrixClass() const;
 
    bool setSize( Index new_size );
 
@@ -73,7 +73,7 @@ class tnlFullMatrix : public tnlMatrix< Real, Device, Index >,
 };
 
 template< typename Real, typename Device, typename Index >
-tnlFullMatrix< Real, Device, Index > :: tnlFullMatrix( const tnlString& name )
+tnlFullMatrix< Real, Device, Index > :: tnlFullMatrix( const String& name )
 : tnlMultiArray< 2, Real, Device, Index >( name ),
   tnlMatrix< Real, Device, Index >( name ),
   nonzero_elements( 0 )
@@ -87,14 +87,14 @@ tnlFullMatrix< Real, Device, Index > :: tnlFullMatrix( const Index size )
 };
 
 template< typename Real, typename Device, typename Index >
-tnlString tnlFullMatrix< Real, Device, Index > :: getType() const
+String tnlFullMatrix< Real, Device, Index > :: getType() const
 {
    Real t;
-   return tnlString( "tnlFullMatrix< " ) + tnlString( getType( t ) ) + tnlString( " >" );
+   return String( "tnlFullMatrix< " ) + String( getType( t ) ) + String( " >" );
 };
 
 template< typename Real, typename Device, typename Index >
-const tnlString& tnlFullMatrix< Real, Device, Index > :: getMatrixClass() const
+const String& tnlFullMatrix< Real, Device, Index > :: getMatrixClass() const
 {
    return tnlMatrixClass :: main;
 };
@@ -177,9 +177,9 @@ template< typename Real, typename Device, typename Index >
 Real tnlFullMatrix< Real, Device, Index > :: rowProduct( const Index row,
                                                          const tnlVector< Real, Device, Index >& vec ) const
 {
-   tnlAssert( 0 <= row && row < this->getSize(),
+   Assert( 0 <= row && row < this->getSize(),
               std::cerr << "The row is outside the matrix." );
-   tnlAssert( vec. getSize() == this->getSize(),
+   Assert( vec. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << std::endl; );
@@ -198,7 +198,7 @@ Real tnlFullMatrix< Real, Device, Index > :: rowProduct( const Index row,
    }
    if( Device :: getDevice() == tnlCudaDevice )
    {
-      tnlAssert( false, );
+      Assert( false, );
       //TODO: implement this
    }
    return res;
@@ -208,11 +208,11 @@ template< typename Real, typename Device, typename Index >
 void tnlFullMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real, Device, Index >& vec,
                                                             tnlVector< Real, Device, Index >& result ) const
 {
-   tnlAssert( vec. getSize() == this->getSize(),
+   Assert( vec. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << vec. getSize() << std::endl; );
-   tnlAssert( result. getSize() == this->getSize(),
+   Assert( result. getSize() == this->getSize(),
               std::cerr << "The matrix and result vector of a multiplication have different sizes. "
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << result. getSize() << std::endl; );

@@ -11,16 +11,16 @@
 #ifndef TNL_GRID_SETUP_H_
 #define TNL_GRID_SETUP_H_
 
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <TNL/mesh/tnlGrid.h>
 
 using namespace TNL;
 
 template< typename RealType, typename IndexType >
-bool setupGrid( const tnlParameterContainer& parameters )
+bool setupGrid( const Config::ParameterContainer& parameters )
 {
-   tnlString gridName = parameters. getParameter< tnlString >( "grid-name" );
-   tnlString outputFile = parameters. getParameter< tnlString >( "output-file" );
+   String gridName = parameters. getParameter< String >( "grid-name" );
+   String outputFile = parameters. getParameter< String >( "output-file" );
    int dimensions = parameters. getParameter< int >( "dimensions" );
    if( dimensions == 1 )
    {
@@ -96,9 +96,9 @@ bool setupGrid( const tnlParameterContainer& parameters )
 }
 
 template< typename RealType >
-bool resolveIndexType( const tnlParameterContainer& parameters )
+bool resolveIndexType( const Config::ParameterContainer& parameters )
 {
-   const tnlString& indexType = parameters. getParameter< tnlString >( "index-type" );
+   const String& indexType = parameters. getParameter< String >( "index-type" );
   std::cout << "Setting index type to  ... " << indexType << std::endl;
    if( indexType == "int" )
       return setupGrid< RealType, int >( parameters );
@@ -108,9 +108,9 @@ bool resolveIndexType( const tnlParameterContainer& parameters )
    return false;
 }
 
-bool resolveRealType( const tnlParameterContainer& parameters )
+bool resolveRealType( const Config::ParameterContainer& parameters )
 {
-   tnlString realType = parameters. getParameter< tnlString >( "real-type" );
+   String realType = parameters. getParameter< String >( "real-type" );
   std::cout << "Setting real type to   ... " << realType << std::endl;
    if( realType == "float" )
       return resolveIndexType< float >( parameters );

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/matrices/tnlMatrix.h>
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/matrices/tnlMultidiagonalMatrixRow.h>
 
 namespace TNL {
@@ -37,9 +37,9 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
 
    tnlMultidiagonalMatrix();
 
-   static tnlString getType();
+   static String getType();
 
-   tnlString getTypeVirtual() const;
+   String getTypeVirtual() const;
 
    bool setDimensions( const IndexType rows,
                        const IndexType columns );
@@ -53,7 +53,7 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
    template< typename Vector >
    bool setDiagonals( const Vector& diagonals );
 
-   const tnlVector< Index, Device, Index >& getDiagonals() const;
+   const Vectors::tnlVector< Index, Device, Index >& getDiagonals() const;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlMultidiagonalMatrix< Real2, Device2, Index2 >& matrix );
@@ -167,13 +167,13 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
-   bool load( tnlFile& file );
+   bool load( File& file );
 
-   bool save( const tnlString& fileName ) const;
+   bool save( const String& fileName ) const;
 
-   bool load( const tnlString& fileName );
+   bool load( const String& fileName );
 
    void print( std::ostream& str ) const;
 
@@ -188,9 +188,9 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
                              const IndexType column,
                              IndexType& index ) const;
 
-   tnlVector< Real, Device, Index > values;
+   Vectors::tnlVector< Real, Device, Index > values;
 
-   tnlVector< Index, Device, Index > diagonalsShift;
+   Vectors::tnlVector< Index, Device, Index > diagonalsShift;
 
    typedef tnlMultidiagonalMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlMultidiagonalMatrixDeviceDependentCode< DeviceType >;

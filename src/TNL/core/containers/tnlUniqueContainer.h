@@ -11,7 +11,7 @@
 #pragma once
 
 #include <map>
-#include <TNL/tnlObject.h>
+#include <TNL/Object.h>
 
 namespace TNL {
 
@@ -20,7 +20,7 @@ namespace TNL {
  * It uses operator < to compare objects by their keys.
  */
 template< typename Element, typename Key >
-class tnlUniqueContainer : public tnlObject
+class tnlUniqueContainer : public Object
 {
    typedef std::map< Key, Element >              MapType;
    typedef typename MapType::value_type          MapValueType;
@@ -62,9 +62,9 @@ class tnlUniqueContainer : public tnlObject
 
    void reset();
 
-   bool save( tnlFile& file ) const;
+   bool save( File& file ) const;
 
-   bool load( tnlFile& file );
+   bool load( File& file );
 
    protected:
 

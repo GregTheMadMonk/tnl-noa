@@ -23,7 +23,7 @@ class tnlCudaDeviceInfo
 
       static int getActiveDevice();
 
-      static tnlString getDeviceName( int deviceNum );
+      static String getDeviceName( int deviceNum );
 
       static int getArchitectureMajor( int deviceNum );
 

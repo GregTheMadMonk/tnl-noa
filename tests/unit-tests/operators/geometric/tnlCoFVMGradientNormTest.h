@@ -41,9 +41,9 @@ class tnlCoFVMGradientNormTest
       const RealType eoc[ 3 ] =       { 2.0,  2.0, 2.0 };
       const RealType tolerance[ 3 ] = { 1.05, 1.1, 1.3 };
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlCoFVMGradientNormTest< " ) +
+         return String( "tnlCoFVMGradientNormTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }

@@ -2,7 +2,7 @@
 
 #include "benchmarks.h"
 
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 
 #ifdef HAVE_CUBLAS
 #include "cublasWrappers.h"

@@ -42,9 +42,9 @@ class tnlOneSidedMeanCurvatureTest
  
       tnlOneSidedMeanCurvatureTest(){};
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlOneSidedMeanCurvatureTest< " ) +
+         return String( "tnlOneSidedMeanCurvatureTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }

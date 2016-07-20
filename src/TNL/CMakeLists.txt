@@ -1,6 +1,8 @@
-INCLUDE_DIRECTORIES( config )
+ADD_SUBDIRECTORY( Arrays )
+ADD_SUBDIRECTORY( Config )
+ADD_SUBDIRECTORY( Vectors )
+
 ADD_SUBDIRECTORY( functions )
-ADD_SUBDIRECTORY( config )
 ADD_SUBDIRECTORY( core )
 ADD_SUBDIRECTORY( debug )
 ADD_SUBDIRECTORY( matrices )
@@ -10,10 +12,37 @@ ADD_SUBDIRECTORY( problems )
 ADD_SUBDIRECTORY( solvers )
 ADD_SUBDIRECTORY( legacy )
 
-set (headers tnlObject.h )
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL )
 
-set( tnl_SOURCES ${tnl_functions_SOURCES}
+set( headers 
+     Assert.h
+     File.h
+     File_impl.h
+     Object.h
+     List.h
+     List_impl.h
+     Logger.h
+     Logger_impl.h
+     StaticFor.h
+     String.h
+     SystemInfo.h
+     Timer.h
+     TimerCPU.h
+     TimerRT.h )
+
+set( common_SOURCES 
+     File.cpp
+     Object.cpp
+     Logger.cpp
+     String.cpp
+     SystemInfo.cpp
+     Timer.cpp
+     TimerCPU.cpp
+     TimerRT.cpp )
+     
+set( tnl_SOURCES ${tnl_arrays_SOURCES}
                  ${tnl_config_SOURCES}
+                 ${tnl_functions_SOURCES}
                  ${tnl_core_SOURCES}
                  ${tnl_legacy_SOURCES}
                  ${tnl_debug_SOURCES}
@@ -21,10 +50,12 @@ set( tnl_SOURCES ${tnl_functions_SOURCES}
                  ${tnl_operators_SOURCES}
                  ${tnl_solvers_SOURCES}
                  ${tnl_problems_SOURCES}
-                 tnlObject.cpp
+                 ${tnl_vectors_SOURCES}
+                 ${common_SOURCES}
                   )
 
-set( tnl_CUDA__SOURCES ${tnl_functions_CUDA__SOURCES}
+set( tnl_CUDA__SOURCES ${tnl_arrays_CUDA__SOURCES}
+                       ${tnl_functions_CUDA__SOURCES}
                        ${tnl_config_CUDA__SOURCES}
                        ${tnl_core_CUDA__SOURCES}
                        ${tnl_legacy_CUDA__SOURCES}
@@ -33,7 +64,8 @@ set( tnl_CUDA__SOURCES ${tnl_functions_CUDA__SOURCES}
                        ${tnl_problems_CUDA__SOURCES}
                        ${tnl_operators_CUDA__SOURCES}
                        ${tnl_solvers_CUDA__SOURCES}
-                       tnlObject.cpp )
+                       ${tnl_vectors_CUDA__SOURCES}
+                       ${common_SOURCES} )
                  
                  
 if( BUILD_CUDA )
@@ -82,6 +114,6 @@ IF( BUILD_MPI )
                                                                 
 ENDIF()
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion} )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL )
 
 

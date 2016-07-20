@@ -56,11 +56,11 @@ class tnlCoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex
       : BaseType( outerOperator, innerOperator, mesh )
       {}
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlCoFVMGradientNorm< " ) +
+         return String( "tnlCoFVMGradientNorm< " ) +
             MeshType::getType() + ", " +
-            tnlString( MeshDimensions ) + ", " +
+            String( MeshDimensions ) + ", " +
            TNL::getType< Real >() + ", " +
            TNL::getType< Index >() + " >";
       }
@@ -98,9 +98,9 @@ class tnlCoFVMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, 0, Real, I
    tnlCoFVMGradientNorm()
    : epsSquare( 0.0 ){}
 
-   static tnlString getType()
+   static String getType()
    {
-      return tnlString( "tnlCoFVMGradientNorm< " ) +
+      return String( "tnlCoFVMGradientNorm< " ) +
          MeshType::getType() + ", 0, " +
         TNL::getType< Real >() + ", " +
         TNL::getType< Index >() + " >";
@@ -159,9 +159,9 @@ class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, 
    : epsSquare( 0.0 ){}
 
 
-   static tnlString getType()
+   static String getType()
    {
-      return tnlString( "tnlCoFVMGradientNorm< " ) +
+      return String( "tnlCoFVMGradientNorm< " ) +
          MeshType::getType() + ", 1, " +
         TNL::getType< Real >() + ", " +
         TNL::getType< Index >() + " >";
@@ -276,9 +276,9 @@ class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, 
    tnlCoFVMGradientNorm()
    : epsSquare( 0.0 ){}
 
-   static tnlString getType()
+   static String getType()
    {
-      return tnlString( "tnlCoFVMGradientNorm< " ) +
+      return String( "tnlCoFVMGradientNorm< " ) +
          MeshType::getType() + ", 2, " +
         TNL::getType< Real >() + ", " +
         TNL::getType< Index >() + " >";

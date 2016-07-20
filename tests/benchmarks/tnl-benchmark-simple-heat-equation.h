@@ -13,10 +13,10 @@
 
 #include <iostream>
 #include <stdio.h>
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
-#include <TNL/core/tnlTimer.h>
-#include <TNL/core/tnlTimerRT.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Timer.h>
+#include <TNL/TimerRT.h>
 #include <TNL/core/tnlCuda.h>
 
 using namespace std;
@@ -265,7 +265,7 @@ bool writeFunction(
 }
 
 template< typename Real, typename Index >
-bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
+bool solveHeatEquationCuda( const Config::ParameterContainer& parameters )
 {
    const Real domainXSize = parameters.getParameter< double >( "domain-x-size" );
    const Real domainYSize = parameters.getParameter< double >( "domain-y-size" );
@@ -343,7 +343,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
 
    if( verbose )
      std::cout << "Starting the solver main loop..." << std::endl;
-   tnlTimerRT timer;
+   TimerRT timer;
    timer.reset();
    timer.start();
    Real time( 0.0 );
@@ -428,7 +428,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters )
 #endif
 
 template< typename Real, typename Index >
-bool solveHeatEquationHost( const tnlParameterContainer& parameters )
+bool solveHeatEquationHost( const Config::ParameterContainer& parameters )
 {
    const Real domainXSize = parameters.getParameter< double >( "domain-x-size" );
    const Real domainYSize = parameters.getParameter< double >( "domain-y-size" );
@@ -544,7 +544,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
    timer.stop();
    if( verbose )
      std::cout << std::endl << "Finished..." << std::endl;
-   tnlLogger logger( 72, std::cout );
+   Logger logger( 72, std::cout );
    logger.writeSeparator();
    logger.writeParameter< const char* >( "Compute time:", "" );
    timer.writeLog( logger, 1 );
@@ -566,11 +566,11 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters )
 
 int main( int argc, char* argv[] )
 {
-   tnlConfigDescription config;
-   config.addEntry< tnlString >( "device", "Device the computation will run on.", "host" );
-      config.addEntryEnum< tnlString >( "host" );
+   Config::ConfigDescription config;
+   config.addEntry< String >( "device", "Device the computation will run on.", "host" );
+      config.addEntryEnum< String >( "host" );
 #ifdef HAVE_CUDA
-      config.addEntryEnum< tnlString >( "cuda" );
+      config.addEntryEnum< String >( "cuda" );
 #endif
    config.addEntry< int >( "grid-x-size", "Grid size along x-axis.", 100 );
    config.addEntry< int >( "grid-y-size", "Grid size along y-axis.", 100 );
@@ -581,11 +581,11 @@ int main( int argc, char* argv[] )
    config.addEntry< double >( "final-time", "Final time of the simulation.", 1.0 );
    config.addEntry< bool >( "verbose", "Verbose mode.", true );
  
-   tnlParameterContainer parameters;
+   Config::ParameterContainer parameters;
    if( ! parseCommandLine( argc, argv, config, parameters ) )
       return EXIT_FAILURE;
  
-   tnlString device = parameters.getParameter< tnlString >( "device" );
+   String device = parameters.getParameter< String >( "device" );
    if( device == "host" &&
        ! solveHeatEquationHost< double, int >( parameters  ) )
       return EXIT_FAILURE;

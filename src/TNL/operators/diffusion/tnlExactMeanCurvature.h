@@ -27,10 +27,10 @@ class tnlExactMeanCurvature
       typedef tnlExactFunctionInverseOperator< Dimensions, ExactGradientNorm > FunctionInverse;
       typedef tnlExactNonlinearDiffusion< Dimensions, FunctionInverse > NonlinearDiffusion;
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlExactMeanCurvature< " ) +
-                tnlString( Dimensions) + ", " +
+         return String( "tnlExactMeanCurvature< " ) +
+                String( Dimensions) + ", " +
                 InnerOperator::getType() + " >";
       }
  

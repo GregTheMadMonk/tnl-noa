@@ -11,19 +11,19 @@
 #ifndef tnlMatrixSolverH
 #define tnlMatrixSolverH
 
-#include <TNL/core/tnlTimerCPU.h>
-#include <TNL/core/tnlTimerRT.h>
+#include <TNL/TimerCPU.h>
+#include <TNL/TimerRT.h>
 #include <TNL/core/mpi-supp.h>
-#include <TNL/tnlObject.h>
+#include <TNL/Object.h>
 #include <TNL/matrices/tnlMatrix.h>
 #include <TNL/legacy/solvers/tnlPreconditioner.h>
 
 template< typename Real, typename Device = tnlHost, typename Index = int >
-class tnlMatrixSolver : public tnlObject
+class tnlMatrixSolver : public Object
 {
    public:
 
-   tnlMatrixSolver( const tnlString& name );
+   tnlMatrixSolver( const String& name );
 
    Index getIterationNumber() const;
 
@@ -31,9 +31,9 @@ class tnlMatrixSolver : public tnlObject
 
    void setVerbosity( int verbose );
 
-   void setTimerCPU( tnlTimerCPU* timer );
+   void setTimerCPU( TimerCPU* timer );
 
-   void setTimerRT( tnlTimerRT* timer );
+   void setTimerRT( TimerRT* timer );
  
    virtual void printOut();
 
@@ -61,15 +61,15 @@ class tnlMatrixSolver : public tnlObject
  
    int verbosity;
 
-   tnlTimerCPU* cpu_timer;
+   TimerCPU* cpu_timer;
  
-   tnlTimerRT* rt_timer;
+   TimerRT* rt_timer;
 
 };
 
 template< typename Real, typename Device, typename Index >
-tnlMatrixSolver< Real, Device, Index > :: tnlMatrixSolver( const tnlString& name )
-: tnlObject( name ),
+tnlMatrixSolver< Real, Device, Index > :: tnlMatrixSolver( const String& name )
+: Object( name ),
   iteration( 0 ),
   residue( 0.0 ),
   solver_comm( MPI_COMM_WORLD ),
@@ -98,13 +98,13 @@ void tnlMatrixSolver< Real, Device, Index > :: setVerbosity( int verbose )
 };
 
 template< typename Real, typename Device, typename Index >
-void tnlMatrixSolver< Real, Device, Index > :: setTimerCPU( tnlTimerCPU* timer )
+void tnlMatrixSolver< Real, Device, Index > :: setTimerCPU( TimerCPU* timer )
 {
    this->cpu_timer = timer;
 };
 
 template< typename Real, typename Device, typename Index >
-void tnlMatrixSolver< Real, Device, Index > :: setTimerRT( tnlTimerRT* timer )
+void tnlMatrixSolver< Real, Device, Index > :: setTimerRT( TimerRT* timer )
 {
    this->rt_timer = timer;
 };

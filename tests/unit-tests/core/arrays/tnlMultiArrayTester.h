@@ -18,8 +18,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/core/arrays/tnlMultiArray.h>
-#include <TNL/core/tnlFile.h>
+#include <TNL/Arrays/MultiArray.h>
+#include <TNL/File.h>
 
 using namespace TNL;
 
@@ -81,50 +81,52 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testConstructorDestructor()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
    }
 
    void testSetSize()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u, v;
       u. setDimensions( 10 );
       v. setDimensions( 10 );
    }
 
-   void setDiagonalElement( tnlMultiArray< 1, ElementType, Device, IndexType >& u,
+   void setDiagonalElement( Arrays::tnlMultiArray< 1, ElementType, Device, IndexType >& u,
                             const IndexType& i,
                             const ElementType& v )
    {
       u.setElement( i, v );
    }
 
-   void setDiagonalElement( tnlMultiArray< 2, ElementType, Device, IndexType >& u,
+   void setDiagonalElement( Arrays::tnlMultiArray< 2, ElementType, Device, IndexType >& u,
                             const IndexType& i,
                             const ElementType& v )
    {
       u.setElement( i, i, v );
    }
 
-   void setDiagonalElement( tnlMultiArray< 3, ElementType, Device, IndexType >& u,
+   void setDiagonalElement( Arrays::tnlMultiArray< 3, ElementType, Device, IndexType >& u,
                             const IndexType& i,
                             const ElementType& v )
    {
       u.setElement( i, i, i, v );
    }
  
-   IndexType getDiagonalElement( tnlMultiArray< 1, ElementType, Device, IndexType >& u,
+   IndexType getDiagonalElement( Arrays::tnlMultiArray< 1, ElementType, Device, IndexType >& u,
                                  const IndexType& i )
    {
       return u.getElement( i );
    }
  
-   IndexType getDiagonalElement( tnlMultiArray< 2, ElementType, Device, IndexType >& u,
+   IndexType getDiagonalElement( Arrays::tnlMultiArray< 2, ElementType, Device, IndexType >& u,
                                  const IndexType& i )
    {
       return u.getElement( i, i );
    }
  
-   IndexType getDiagonalElement( tnlMultiArray< 3, ElementType, Device, IndexType >& u,
+   IndexType getDiagonalElement( Arrays::tnlMultiArray< 3, ElementType, Device, IndexType >& u,
                                  const IndexType& i )
    {
       return u.getElement( i, i, i );
@@ -133,6 +135,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testSetGetElement()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
       u. setDimensions( 10 );
       if( Device::getDevice() == tnlHostDevice )
@@ -156,6 +159,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testComparisonOperator()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u, v, w;
       u.setDimensions( 10 );
       v.setDimensions( 10 );
@@ -177,6 +181,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testEquivalenceOperator()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > v;
       u. setDimensions( 10 );
@@ -190,6 +195,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testGetSize()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
       const int maxSize = 10;
       for( int i = 1; i < maxSize; i ++ )
@@ -200,6 +206,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testReset()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
       u.setDimensions( 100 );
       CPPUNIT_ASSERT( u. getDimensions().x() == 100 );
@@ -214,6 +221,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testSetSizeAndDestructor()
    {
+      using namespace TNL::Arrays;
       for( int i = 1; i < 100; i ++ )
       {
          tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
@@ -223,12 +231,13 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testSaveAndLoad()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > v;
       const int size( 10 );
       CPPUNIT_ASSERT( v. setDimensions( size ) );
       for( int i = 0; i < size; i ++ )
          setDiagonalElement( v, i, 3.14147 );
-      tnlFile file;
+      File file;
       file. open( "test-file.tnl", tnlWriteMode );
       CPPUNIT_ASSERT( v. save( file ) );
       file. close();

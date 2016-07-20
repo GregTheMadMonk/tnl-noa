@@ -19,9 +19,9 @@ class tnlSORSolverOld : public tnlMatrixSolver< Real, Device, Index >
 {
    public:
  
-   tnlSORSolverOld( const tnlString& name );
+   tnlSORSolverOld( const String& name );
 
-   tnlString getType() const;
+   String getType() const;
 
    void setSOROmega( const Real& omega );
 
@@ -40,7 +40,7 @@ class tnlSORSolverOld : public tnlMatrixSolver< Real, Device, Index >
 };
 
 template< typename Real, typename Device, typename Index >
-tnlSORSolverOld< Real, Device, Index > :: tnlSORSolverOld( const tnlString& name )
+tnlSORSolverOld< Real, Device, Index > :: tnlSORSolverOld( const String& name )
 : tnlMatrixSolver< Real, Device, Index >( name ),
   sorOmega( 1.0 )
   {
@@ -48,15 +48,15 @@ tnlSORSolverOld< Real, Device, Index > :: tnlSORSolverOld( const tnlString& name
 
 
 template< typename Real, typename Device, typename Index >
-tnlString tnlSORSolverOld< Real, Device, Index > :: getType() const
+String tnlSORSolverOld< Real, Device, Index > :: getType() const
 {
-   return tnlString( "tnlSORSolverOld< " ) +
-          tnlString( getType( ( Real ) 0.0 ) ) +
-          tnlString( ", " ) +
+   return String( "tnlSORSolverOld< " ) +
+          String( getType( ( Real ) 0.0 ) ) +
+          String( ", " ) +
           Device :: getDeviceType() +
-          tnlString( ", " ) +
-          tnlString( getType( ( Index ) 0 ) ) +
-          tnlString( " >" );
+          String( ", " ) +
+          String( getType( ( Index ) 0 ) ) +
+          String( " >" );
 }
 
 template< typename Real, typename Device, typename Index >

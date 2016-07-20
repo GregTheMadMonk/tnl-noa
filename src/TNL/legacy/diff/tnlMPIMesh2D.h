@@ -12,7 +12,7 @@
 #define tnlMPIMesh2DH
 
 #include <TNL/legacy/mesh/tnlGridOld.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <TNL/core/mpi-supp.h>
 #include <TNL/debug/tnlDebug.h>
 #include <TNL/core/mfilename.h>
@@ -42,7 +42,7 @@ class tnlMPIMesh< 2, Real, Device, Index >
  
    //! Initiation by parametr container
    bool Init( const tnlGridOld< 2, Real, Device, Index >& u,
-              const tnlParameterContainer& parameters,
+              const Config::ParameterContainer& parameters,
               Index _overlap_width,
               int root = 0,
               MPI_Comm comm = MPI_COMM_WORLD );
@@ -416,7 +416,7 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: Init( const tnlGridOld< 2, Real, De
  
 template< typename Real, typename Device, typename Index  >
 bool tnlMPIMesh< 2, Real, Device, Index > :: Init( const tnlGridOld< 2, Real, Device, Index >& u,
-                                                   const tnlParameterContainer& parameters,
+                                                   const Config::ParameterContainer& parameters,
                                                    Index _overlap_width,
                                                    int root,
                                                    MPI_Comm comm )
@@ -445,7 +445,7 @@ bool tnlMPIMesh< 2, Real, Device, Index > :: CreateMesh( const tnlGridOld< 2, Re
 {
 #ifdef HAVE_MPI
    double ax, ay, hx, hy;
-   tnlString name;
+   String name;
    int rank;
    if( MPIGetRank( original_comm ) == root )
    {
@@ -1081,7 +1081,7 @@ void DrawSubdomains( const tnlMPIMesh< 2, Real, Device, Index >& mpi_mesh,
                      const char* format )
 {
    int num = mpi_mesh. GetXPos() * 10 + mpi_mesh. GetYPos();
-   tnlString file_name;
+   String file_name;
    FileNameBaseNumberEnding( file_name_base,
                              num,
                              2,

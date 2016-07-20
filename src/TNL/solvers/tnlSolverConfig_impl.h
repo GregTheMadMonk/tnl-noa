@@ -20,7 +20,7 @@ namespace TNL {
 
 template< typename ConfigTag,
           typename ProblemConfig >
-bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescription& config )
+bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescription& config )
 {
    typedef tnlDummyProblem< double, tnlHost, int > DummyProblem;
 
@@ -28,7 +28,7 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
    /****
     * Setup real type
     */
-   config.addEntry< tnlString >( "real-type",
+   config.addEntry< String >( "real-type",
                                  "Precision of the floating point arithmetics.",
                                  "double" );
    if( tnlConfigTagReal< ConfigTag, float >::enabled )
@@ -41,7 +41,7 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
    /****
     * Setup device.
     */
-   config.addEntry< tnlString >( "device",
+   config.addEntry< String >( "device",
                                  "Device to use for the computations.",
                                  "host" );
    if( tnlConfigTagDevice< ConfigTag, tnlHost >::enabled )
@@ -54,7 +54,7 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
    /****
     * Setup index type.
     */
-   config.addEntry< tnlString >( "index-type",
+   config.addEntry< String >( "index-type",
                                  "Indexing type for arrays, vectors, matrices etc.",
                                  "int" );
    if( tnlConfigTagIndex< ConfigTag, short int >::enabled )
@@ -70,7 +70,7 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
     * Mesh file parameter
     */
    config.addDelimiter( " === Space discretisation parameters ==== " );
-   config.addEntry< tnlString >( "mesh", "A file which contains the numerical mesh. You may create it with tools like tnl-grid-setup or tnl-mesh-convert.", "mesh.tnl" );
+   config.addEntry< String >( "mesh", "A file which contains the numerical mesh. You may create it with tools like tnl-grid-setup or tnl-mesh-convert.", "mesh.tnl" );
 
 
    /****
@@ -84,7 +84,7 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
        tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled ||
        tnlConfigTagTimeDiscretisation< ConfigTag, tnlImplicitTimeDiscretisationTag >::enabled )
    {
-      config.addRequiredEntry< tnlString >( "time-discretisation", "Discratisation in time.");
+      config.addRequiredEntry< String >( "time-discretisation", "Discratisation in time.");
       if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled )
          config.addEntryEnum( "explicit" );
       if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled )
@@ -92,7 +92,7 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
       if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlImplicitTimeDiscretisationTag >::enabled )
          config.addEntryEnum( "implicit" );
    }
-   config.addRequiredEntry< tnlString >( "discrete-solver", "The solver of the discretised problem:" );
+   config.addRequiredEntry< String >( "discrete-solver", "The solver of the discretised problem:" );
    if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled )
    {
       if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitEulerSolverTag >::enabled )
@@ -117,7 +117,7 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
          config.addEntryEnum( "umfpack" );
 #endif
    }
-   config.addEntry< tnlString >( "preconditioner", "The preconditioner for the discrete solver:", "none" );
+   config.addEntry< String >( "preconditioner", "The preconditioner for the discrete solver:", "none" );
    config.addEntryEnum( "none" );
    config.addEntryEnum( "diagonal" );
    if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled ||
@@ -154,7 +154,7 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( tnlConfigDescript
 
    config.addDelimiter( " === Logs and messages ===" );
    config.addEntry< int >( "verbose", "Set the verbose mode. The higher number the more messages are generated.", 1 );
-   config.addEntry< tnlString >( "log-file", "Log file for the computation.", "log.txt" );
+   config.addEntry< String >( "log-file", "Log file for the computation.", "log.txt" );
    config.addEntry< int >( "log-width", "Number of columns of the log table.", 80 );
    return true;
 

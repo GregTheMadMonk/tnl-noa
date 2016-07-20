@@ -1,7 +1,7 @@
 #ifndef EulerPressureGetter_H
 #define EulerPressureGetter_H
 
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
 
 namespace TNL {
@@ -29,7 +29,7 @@ class EulerPressureGetter< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real gamma;
       MeshFunctionType velocity;
       MeshFunctionType rho;
@@ -96,7 +96,7 @@ class EulerPressureGetter< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real gamma;
       MeshFunctionType velocity;
       MeshFunctionType rho;
@@ -163,7 +163,7 @@ class EulerPressureGetter< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real gamma;
       MeshFunctionType velocity;
       MeshFunctionType rho;

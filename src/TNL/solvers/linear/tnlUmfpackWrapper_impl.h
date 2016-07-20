@@ -16,16 +16,16 @@ tnlUmfpackWrapper()
 template< typename Preconditioner >
 void
 tnlUmfpackWrapper< tnlCSRMatrix< double, tnlHost, int >, Preconditioner >::
-configSetup( tnlConfigDescription& config,
-             const tnlString& prefix )
+configSetup( Config::ConfigDescription& config,
+             const String& prefix )
 {
 }
 
 template< typename Preconditioner >
 bool
 tnlUmfpackWrapper< tnlCSRMatrix< double, tnlHost, int >, Preconditioner >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
     return true;    
 }
@@ -51,8 +51,8 @@ bool tnlUmfpackWrapper< tnlCSRMatrix< double, tnlHost, int >, Preconditioner >::
 solve( const Vector& b,
        Vector& x )
 {
-    tnlAssert( matrix->getRows() == matrix->getColumns(), );
-    tnlAssert( matrix->getColumns() == x.getSize() && matrix->getColumns() == b.getSize(), );
+    Assert( matrix->getRows() == matrix->getColumns(), );
+    Assert( matrix->getColumns() == x.getSize() && matrix->getColumns() == b.getSize(), );
 
     const IndexType size = matrix -> getRows();
 

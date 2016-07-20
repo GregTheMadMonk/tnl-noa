@@ -15,8 +15,8 @@
 #include <iostream>
 #include <iomanip>
 #include <TNL/tnlConfig.h>
-#include <TNL/core/vectors/tnlVector.h>
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/matrices/tnlCSRMatrix.h>
 #include <TNL/debug/tnlDebug.h>
@@ -33,16 +33,16 @@ class tnlCusparseCSRMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
    //! Basic constructor
-   tnlCusparseCSRMatrix( const tnlString& name );
+   tnlCusparseCSRMatrix( const String& name );
 
    /*!***
      * Destructor
      */
    ~tnlCusparseCSRMatrix();
 
-   const tnlString& getMatrixClass() const;
+   const String& getMatrixClass() const;
 
-   tnlString getType() const;
+   String getType() const;
 
    Index getCUDABlockSize() const;
 
@@ -91,11 +91,11 @@ class tnlCusparseCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    //! Prints out the matrix structure
    void printOut( std::ostream& str,
-                  const tnlString& format = tnlString( "" ),
+                  const String& format = String( "" ),
                   const Index lines = 0 ) const;
 
    bool draw( std::ostream& str,
-              const tnlString& format,
+              const String& format,
               tnlCSRMatrix< Real, Device, Index >* csrMatrix = 0,
               int verbose = 0 );
 
@@ -166,7 +166,7 @@ inline void cusparseSpmv( cusparseHandle_t cusparseHandle,
 
 
 template< typename Real, typename Device, typename Index >
-tnlCusparseCSRMatrix< Real, Device, Index > :: tnlCusparseCSRMatrix( const tnlString& name )
+tnlCusparseCSRMatrix< Real, Device, Index > :: tnlCusparseCSRMatrix( const String& name )
    : tnlMatrix< Real, Device, Index >( name ),
      nonzero_elements( name + " : nonzero-elements" ),
      columns( name + " : columns" ),
@@ -181,19 +181,19 @@ tnlCusparseCSRMatrix< Real, Device, Index > :: tnlCusparseCSRMatrix( const tnlSt
 };
 
 template< typename Real, typename Device, typename Index >
-const tnlString& tnlCusparseCSRMatrix< Real, Device, Index > :: getMatrixClass() const
+const String& tnlCusparseCSRMatrix< Real, Device, Index > :: getMatrixClass() const
 {
    return tnlMatrixClass :: cusparse;
 };
 
 template< typename Real, typename Device, typename Index >
-tnlString tnlCusparseCSRMatrix< Real, Device, Index > :: getType() const
+String tnlCusparseCSRMatrix< Real, Device, Index > :: getType() const
 {
-   return tnlString( "tnlCusparseCSRMatrix< ") +
-          tnlString( getType( Real( 0.0 ) ) ) +
-          tnlString( ", " ) +
+   return String( "tnlCusparseCSRMatrix< ") +
+          String( getType( Real( 0.0 ) ) ) +
+          String( ", " ) +
           Device :: getDeviceType() +
-          tnlString( " >" );
+          String( " >" );
 };
 
 template< typename Real, typename Device, typename Index >
@@ -256,19 +256,19 @@ Index tnlCusparseCSRMatrix< Real, Device, Index > :: getArtificialZeroElements()
 template< typename Real, typename Device, typename Index >
 Real tnlCusparseCSRMatrix< Real, Device, Index > :: getElement( Index row, Index column ) const
 {
-   tnlAssert( false, );
+   Assert( false, );
 }
 
 template< typename Real, typename Device, typename Index >
 bool tnlCusparseCSRMatrix< Real, Device, Index > :: setElement( Index row, Index column, const Real& v )
 {
-   tnlAssert( false, );
+   Assert( false, );
 }
 
 template< typename Real, typename Device, typename Index >
 bool tnlCusparseCSRMatrix< Real, Device, Index > :: addToElement( Index row, Index column, const Real& v )
 {
-   tnlAssert( false, );
+   Assert( false, );
 }
 
 template< typename Real, typename Device, typename Index >
@@ -312,29 +312,29 @@ void tnlCusparseCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVect
 template< typename Real, typename Device, typename Index >
 Real tnlCusparseCSRMatrix< Real, Device, Index > :: getRowL1Norm( Index row ) const
 {
-   tnlAssert( false, );
+   Assert( false, );
    return 0.0;
 }
 
 template< typename Real, typename Device, typename Index >
 void tnlCusparseCSRMatrix< Real, Device, Index > :: multiplyRow( Index row, const Real& value )
 {
-   tnlAssert( false, );
+   Assert( false, );
 }
 
 template< typename Real, typename Device, typename Index >
 bool tnlCusparseCSRMatrix< Real, Device, Index > :: draw( std::ostream& str,
-                                                          const tnlString& format,
+                                                          const String& format,
                                                           tnlCSRMatrix< Real, Device, Index >* csrMatrix,
                                                           int verbose )
 {
-   tnlAssert( false, );
+   Assert( false, );
    return false;
 }
 
 template< typename Real, typename Device, typename Index >
 void tnlCusparseCSRMatrix< Real, Device, Index > :: printOut( std::ostream& stream,
-                                                              const tnlString& format,
+                                                              const String& format,
                                                               const Index lines ) const
 {
 

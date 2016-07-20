@@ -133,7 +133,7 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
          }
          if( EntityDimensions > 0 )
          {
-            tnlAssert( false, std::cerr << "Not implemented yet." << std::endl );
+            Assert( false, std::cerr << "Not implemented yet." << std::endl );
          }
  
          if( p == 1.0 )

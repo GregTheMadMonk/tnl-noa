@@ -30,7 +30,7 @@ class tnlMeshBuilder
 
    bool setPointsCount( const GlobalIndexType& points )
    {
-      tnlAssert( 0 <= points, std::cerr << "pointsCount = " << points );
+      Assert( 0 <= points, std::cerr << "pointsCount = " << points );
       this->points.setSize( points );
       this->pointsSet.setSize( points );
       pointsSet.setValue( false );
@@ -39,7 +39,7 @@ class tnlMeshBuilder
  
    bool setCellsCount( const GlobalIndexType& cellsCount )
    {
-      tnlAssert( 0 <= cellsCount, std::cerr << "cellsCount = " << cellsCount );
+      Assert( 0 <= cellsCount, std::cerr << "cellsCount = " << cellsCount );
       this->cellSeeds.setSize( cellsCount );
       return true;
    }
@@ -51,7 +51,7 @@ class tnlMeshBuilder
    void setPoint( GlobalIndexType index,
                  const PointType& point )
    {
-	tnlAssert( 0 <= index && index < getPointsCount(), std::cerr << "Index = " << index );
+	Assert( 0 <= index && index < getPointsCount(), std::cerr << "Index = " << index );
 
         this->points[ index ] = point;
         this->pointsSet[ index ] = true;
@@ -59,7 +59,7 @@ class tnlMeshBuilder
 
    CellSeedType& getCellSeed( GlobalIndexType index )
    {
-      tnlAssert( 0 <= index && index < getCellsCount(), std::cerr << "Index = " << index );
+      Assert( 0 <= index && index < getCellsCount(), std::cerr << "Index = " << index );
  
       return this->cellSeeds[ index ];
    }
@@ -109,7 +109,7 @@ class tnlMeshBuilder
 
       PointArrayType points;
       CellSeedArrayType cellSeeds;
-      tnlArray< bool, tnlHost, GlobalIndexType > pointsSet;
+      Arrays::Array< bool, tnlHost, GlobalIndexType > pointsSet;
 };
 
 } // namespace TNL

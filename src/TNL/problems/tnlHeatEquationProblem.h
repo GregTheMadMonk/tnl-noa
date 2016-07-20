@@ -20,7 +20,7 @@
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/matrices/tnlEllpackMatrix.h>
 #include <TNL/functions/tnlMeshFunction.h>
-#include <TNL/core/tnlTimer.h>
+#include <TNL/Timer.h>
 
 namespace TNL {
 
@@ -47,19 +47,19 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
 
-      static tnlString getTypeStatic();
+      static String getTypeStatic();
 
-      tnlString getPrologHeader() const;
+      String getPrologHeader() const;
 
-      void writeProlog( tnlLogger& logger,
-                        const tnlParameterContainer& parameters ) const;
+      void writeProlog( Logger& logger,
+                        const Config::ParameterContainer& parameters ) const;
  
-      bool writeEpilog( tnlLogger& logger );
+      bool writeEpilog( Logger& logger );
 
 
-      bool setup( const tnlParameterContainer& parameters );
+      bool setup( const Config::ParameterContainer& parameters );
 
-      bool setInitialCondition( const tnlParameterContainer& parameters,
+      bool setInitialCondition( const Config::ParameterContainer& parameters,
                                 const MeshType& mesh,
                                 DofVectorType& dofs,
                                 MeshDependentDataType& meshDependentData );

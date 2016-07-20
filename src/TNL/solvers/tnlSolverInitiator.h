@@ -10,19 +10,19 @@
 
 #pragma once
 
-#include <TNL/tnlObject.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Object.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <TNL/solvers/tnlBuildConfigTags.h>
 
 namespace TNL {
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
           typename MeshConfig >
-class tnlSolverInitiator : public tnlObject
+class tnlSolverInitiator : public Object
 {
    public:
 
-   static bool run( const tnlParameterContainer& parameters );
+   static bool run( const Config::ParameterContainer& parameters );
 
 };
 

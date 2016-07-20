@@ -18,8 +18,8 @@ template< typename Real,
           int Dimensions >
 bool
 tnlTwinsFunctionBase< Real, Dimensions >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    return true;
 }
@@ -30,10 +30,10 @@ setup( const tnlParameterContainer& parameters,
  */
 
 template< typename Real >
-tnlString
+String
 tnlTwinsFunction< 1, Real >::getType()
 {
-   return "tnlTwinsFunction< 1, " + TNL::getType< Real >() + tnlString( " >" );
+   return "tnlTwinsFunction< 1, " + TNL::getType< Real >() + String( " >" );
 }
 
 template< typename Real >
@@ -74,10 +74,10 @@ operator()( const VertexType& v,
  * 2D
  */
 template< typename Real >
-tnlString
+String
 tnlTwinsFunction< 2, Real >::getType()
 {
-   return tnlString( "tnlTwinsFunction< 2, " ) + TNL::getType< Real >() + " >";
+   return String( "tnlTwinsFunction< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -120,10 +120,10 @@ operator()( const VertexType& v,
  * 3D
  */
 template< typename Real >
-tnlString
+String
 tnlTwinsFunction< 3, Real >::getType()
 {
-   return tnlString( "tnlTwinsFunction< 3, " ) + TNL::getType< Real >() + " >";
+   return String( "tnlTwinsFunction< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >

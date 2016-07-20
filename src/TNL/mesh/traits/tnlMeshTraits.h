@@ -10,10 +10,10 @@
 
 #pragma once
 
-#include <TNL/core/vectors/tnlStaticVector.h>
-#include <TNL/core/arrays/tnlArray.h>
-#include <TNL/core/arrays/tnlSharedArray.h>
-#include <TNL/core/arrays/tnlConstSharedArray.h>
+#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Arrays/Array.h>
+#include <TNL/Arrays/SharedArray.h>
+#include <TNL/Arrays/ConstSharedArray.h>
 #include <TNL/mesh/tnlDimensionsTag.h>
 
 namespace TNL {
@@ -44,11 +44,11 @@ class tnlMeshTraits
       typedef tnlStaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
       typedef tnlMeshEntitySeed< MeshConfig, CellTopology >                        CellSeedType;
  
-      typedef tnlArray< PointType, tnlHost, GlobalIndexType >                      PointArrayType;
-      typedef tnlArray< CellSeedType, tnlHost, GlobalIndexType >                   CellSeedArrayType;
-      typedef tnlArray< GlobalIndexType, tnlHost, GlobalIndexType >                GlobalIdArrayType;
-      typedef tnlConstSharedArray< GlobalIndexType, tnlHost, LocalIndexType >      IdArrayAccessorType;
-      typedef tnlConstSharedArray< LocalIndexType, tnlHost, LocalIndexType >       IdPermutationArrayAccessorType;
+      typedef Arrays::Array< PointType, tnlHost, GlobalIndexType >                  PointArrayType;
+      typedef Arrays::Array< CellSeedType, tnlHost, GlobalIndexType >               CellSeedArrayType;
+      typedef Arrays::Array< GlobalIndexType, tnlHost, GlobalIndexType >            GlobalIdArrayType;
+      typedef Arrays::tnlConstSharedArray< GlobalIndexType, tnlHost, LocalIndexType >  IdArrayAccessorType;
+      typedef Arrays::tnlConstSharedArray< LocalIndexType, tnlHost, LocalIndexType >   IdPermutationArrayAccessorType;
  
       template< int Dimensions > using EntityTraits =
          tnlMeshEntityTraits< MeshConfig, Dimensions >;

@@ -19,9 +19,9 @@ tnlSORSolver< Matrix, Preconditioner > :: tnlSORSolver()
 }
 
 template< typename Matrix, typename Preconditioner >
-tnlString tnlSORSolver< Matrix, Preconditioner > :: getType() const
+String tnlSORSolver< Matrix, Preconditioner > :: getType() const
 {
-   return tnlString( "tnlSORSolver< " ) +
+   return String( "tnlSORSolver< " ) +
           this->matrix -> getType() + ", " +
           this->preconditioner -> getType() + " >";
 }
@@ -30,8 +30,8 @@ template< typename Matrix,
           typename Preconditioner >
 void
 tnlSORSolver< Matrix, Preconditioner >::
-configSetup( tnlConfigDescription& config,
-             const tnlString& prefix )
+configSetup( Config::ConfigDescription& config,
+             const String& prefix )
 {
    //tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "sor-omega", "Relaxation parameter of the SOR method.", 1.0 );
@@ -41,8 +41,8 @@ template< typename Matrix,
           typename Preconditioner >
 bool
 tnlSORSolver< Matrix, Preconditioner >::
-setup( const tnlParameterContainer& parameters,
-       const tnlString& prefix )
+setup( const Config::ParameterContainer& parameters,
+       const String& prefix )
 {
    tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
    this->setOmega( parameters.getParameter< double >( prefix + "sor-omega" ) );

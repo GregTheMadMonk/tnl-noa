@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/matrices/tnlMatrix.h>
-#include <TNL/core/tnlAssert.h>
+#include <TNL/Assert.h>
 
 namespace TNL {
 
@@ -30,7 +30,7 @@ template< typename Real,
  bool tnlMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
                                                        const IndexType columns )
 {
-   tnlAssert( rows > 0 && columns > 0,
+   Assert( rows > 0 && columns > 0,
             std::cerr << " rows = " << rows << " columns = " << columns );
    this->rows = rows;
    this->columns = columns;
@@ -40,7 +40,7 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
-void tnlMatrix< Real, Device, Index >::getCompressedRowsLengths( tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const
+void tnlMatrix< Real, Device, Index >::getCompressedRowsLengths( Vectors::tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
    for( IndexType row = 0; row < this->getRows(); row++ )
@@ -98,14 +98,14 @@ bool tnlMatrix< Real, Device, Index >::copyFrom( const Matrix& matrix,
    this->setLike( matrix );
    if( ! this->setCompressedRowsLengths( rowLengths ) )
       return false;
-   tnlVector< RealType, tnlHost, IndexType > values;
-   tnlVector< IndexType, tnlHost, IndexType > columns;
+   Vectors::tnlVector< RealType, tnlHost, IndexType > values;
+   Vectors::tnlVector< IndexType, tnlHost, IndexType > columns;
    if( ! values.setSize( this->getColumns() ) ||
        ! columns.setSize( this->getColumns() ) )
       return false;
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
-      tnlAssert( false, );
+      Assert( false, );
       // TODO: fix this
       //matrix.getRow( row, columns.getData(), values.getData() );
       this->setRow( row, columns.getData(), values.getData(), rowLengths.getElement( row ) );
@@ -120,12 +120,12 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index >::operator = (
 {
    this->setLike( m );
 
-   tnlVector< IndexType, DeviceType, IndexType > rowLengths;
+   Vectors::tnlVector< IndexType, DeviceType, IndexType > rowLengths;
    m.getCompressedRowsLengths( rowLengths );
    this->setCompressedRowsLengths( rowLengths );
 
-   tnlVector< RealType, DeviceType, IndexType > rowValues;
-   tnlVector< IndexType, DeviceType, IndexType > rowColumns;
+   Vectors::tnlVector< RealType, DeviceType, IndexType > rowValues;
+   Vectors::tnlVector< IndexType, DeviceType, IndexType > rowColumns;
    const IndexType maxRowLength = rowLengths.max();
    rowValues.setSize( maxRowLength );
    rowColumns.setSize( maxRowLength );
@@ -170,16 +170,16 @@ bool tnlMatrix< Real, Device, Index >::operator != ( const Matrix& matrix ) cons
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMatrix< Real, Device, Index >::save( tnlFile& file ) const
+bool tnlMatrix< Real, Device, Index >::save( File& file ) const
 {
 #ifdef HAVE_NOT_CXX11
-   if( ! tnlObject::save( file ) ||
+   if( ! Object::save( file ) ||
        ! file.write< IndexType, tnlHost, Index >( &this->rows, 1 ) ||
        ! file.write< IndexType, tnlHost, Index >( &this->columns, 1 ) ||
        ! this->values.save( file ) )
       return false;
 #else
-   if( ! tnlObject::save( file ) ||
+   if( ! Object::save( file ) ||
        ! file.write( &this->rows ) ||
        ! file.write( &this->columns ) ||
        ! this->values.save( file ) )
@@ -191,16 +191,16 @@ bool tnlMatrix< Real, Device, Index >::save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlMatrix< Real, Device, Index >::load( tnlFile& file )
+bool tnlMatrix< Real, Device, Index >::load( File& file )
 {
 #ifdef HAVE_NOT_CXX11
-   if( ! tnlObject::load( file ) ||
+   if( ! Object::load( file ) ||
        ! file.read< IndexType, tnlHost, Index >( &this->rows, 1 ) ||
        ! file.read< IndexType, tnlHost, Index >( &this->columns, 1 ) ||
        ! this->values.load( file ) )
       return false;
 #else
-   if( ! tnlObject::load( file ) ||
+   if( ! Object::load( file ) ||
        ! file.read( &this->rows ) ||
        ! file.read( &this->columns ) ||
        ! this->values.load( file ) )

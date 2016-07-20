@@ -12,11 +12,11 @@
 #define MATRIXSOLVERSBENCHMARK_H_
 
 #include <fstream>
-#include <TNL/core/tnlFile.h>
-#include <TNL/tnlObject.h>
+#include <TNL/File.h>
+#include <TNL/Object.h>
 #include <TNL/core/tnlCuda.h>
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 #include <TNL/matrices/tnlCSRMatrix.h>
 #include <TNL/legacy/matrices/tnlRgCSRMatrix.h>
 #include <TNL/solvers/tnlIterativeSolverMonitor.h>
@@ -32,9 +32,9 @@
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-matrix-solvers-benchmark.cfg.desc";
 
-void writeTestFailToLog( const tnlParameterContainer& parameters )
+void writeTestFailToLog( const Config::ParameterContainer& parameters )
 {
-   const tnlString& logFileName = parameters. getParameter< tnlString >( "log-file" );
+   const String& logFileName = parameters. getParameter< String >( "log-file" );
    std::fstream logFile;
    if( logFileName != "" )
    {
@@ -43,7 +43,7 @@ void writeTestFailToLog( const tnlParameterContainer& parameters )
          std::cerr << "Unable to open the log file " << logFileName << std::endl;
       else
       {
-         tnlString bgColor( "#FF0000" );
+         String bgColor( "#FF0000" );
          logFile << "             <td bgcolor=" << bgColor << "> N/A </td> " << std::endl
                  << "             <td bgcolor=" << bgColor << "> N/A </td> " << std::endl
                  << "             <td bgcolor=" << bgColor << "> N/A </td> " << std::endl;
@@ -53,7 +53,7 @@ void writeTestFailToLog( const tnlParameterContainer& parameters )
 }
 
 template< typename Solver, typename Matrix, typename Vector >
-bool benchmarkSolver( const tnlParameterContainer&  parameters,
+bool benchmarkSolver( const Config::ParameterContainer&  parameters,
                       Solver& solver,
                       const Matrix& matrix,
                       const Vector& b,
@@ -85,7 +85,7 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
 #endif
 
    bool solverConverged( solver. getResidue() < maxResidue );
-   const tnlString& logFileName = parameters. getParameter< tnlString >( "log-file" );
+   const String& logFileName = parameters. getParameter< String >( "log-file" );
    std::fstream logFile;
    if( logFileName != "" )
    {
@@ -94,7 +94,7 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
          std::cerr << "Unable to open the log file " << logFileName << std::endl;
       else
       {
-         tnlString bgColor( "#FF0000" );
+         String bgColor( "#FF0000" );
          if( solver. getResidue() < 1 )
             bgColor="#FF8888";
          if( solver. getResidue() < maxResidue )
@@ -114,7 +114,7 @@ bool benchmarkSolver( const tnlParameterContainer&  parameters,
 }
 
 template< typename Matrix, typename Vector >
-bool benchmarkMatrixOnDevice( const tnlParameterContainer&  parameters,
+bool benchmarkMatrixOnDevice( const Config::ParameterContainer&  parameters,
                               const Matrix& matrix,
                               const Vector& b,
                               Vector& x )
@@ -123,10 +123,10 @@ bool benchmarkMatrixOnDevice( const tnlParameterContainer&  parameters,
    typedef typename Matrix :: DeviceType DeviceType;
    typedef typename Matrix :: IndexType IndexType;
 
-   const tnlString& solverClass = parameters. getParameter< tnlString >( "solver-class" );
+   const String& solverClass = parameters. getParameter< String >( "solver-class" );
    if( solverClass == "tnl" )
    {
-      const tnlString& solverName = parameters. getParameter< tnlString >( "solver-name" );
+      const String& solverName = parameters. getParameter< String >( "solver-name" );
       IndexType iterations( 0 );
       RealType residue( 0.0 );
       bool converged( false );
@@ -188,8 +188,8 @@ bool benchmarkMatrixOnDevice( const tnlParameterContainer&  parameters,
       /****
        * Inserting data
        */
-      tnlArray< PetscScalar > petscVals;
-      tnlArray< PetscInt > petscCols;
+      Array< PetscScalar > petscVals;
+      Array< PetscInt > petscCols;
       petscVals. setSize( n );
       petscCols. setSize( n );
       for( IndexType i = 0; i < n; i ++ )
@@ -241,13 +241,13 @@ bool benchmarkMatrixOnDevice( const tnlParameterContainer&  parameters,
 
 
 template< typename Real, typename Index >
-bool benchmarkMatrix( const tnlParameterContainer&  parameters )
+bool benchmarkMatrix( const Config::ParameterContainer&  parameters )
 {
    /****
     * Loading the matrix from the input file
     */
    typedef tnlCSRMatrix< Real, tnlHost, Index > csrMatrixType;
-   tnlString inputFile = parameters. getParameter< tnlString >( "input-file" );
+   String inputFile = parameters. getParameter< String >( "input-file" );
    csrMatrixType csrMatrix;
    if( ! csrMatrix. load( inputFile ) )
    {
@@ -258,7 +258,7 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
    /****
     * Writing matrix statistics
     */
-   tnlString matrixStatsFileName = parameters. getParameter< tnlString >( "matrix-stats-file" );
+   String matrixStatsFileName = parameters. getParameter< String >( "matrix-stats-file" );
    if( matrixStatsFileName )
    {
       std::fstream matrixStatsFile;
@@ -292,7 +292,7 @@ bool benchmarkMatrix( const tnlParameterContainer&  parameters )
    x. setValue( ( Real ) 0.0 );
    csrMatrix. vectorProduct( x1, b );
 
-   const tnlString device = parameters. getParameter< tnlString >( "device" );
+   const String device = parameters. getParameter< String >( "device" );
    if( device == "host" )
       if( ! benchmarkMatrixOnDevice( parameters, csrMatrix, b, x ) )
          return false;
@@ -332,8 +332,8 @@ int main( int argc, char* argv[] )
    /****
     * Parsing command line arguments ...
     */
-   tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
+   Config::ParameterContainer parameters;
+   Config::ConfigDescription conf_desc;
 
    if( conf_desc.parseConfigDescription( configFile ) != 0 )
       return 1;
@@ -342,33 +342,33 @@ int main( int argc, char* argv[] )
       conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
-   tnlString inputFile = parameters. getParameter< tnlString >( "input-file" );
-   tnlString str_input_mtx_file = parameters. getParameter< tnlString >( "input-mtx-file" );
-   tnlString log_file_name = parameters. getParameter< tnlString >( "log-file" );
+   String inputFile = parameters. getParameter< String >( "input-file" );
+   String str_input_mtx_file = parameters. getParameter< String >( "input-mtx-file" );
+   String log_file_name = parameters. getParameter< String >( "log-file" );
    double stop_time = parameters. getParameter< double >( "stop-time" );
    int verbose = parameters. getParameter< int >( "verbose");
 
    /****
     * Checking a type of the input data
     */
-   tnlString objectType;
+   String objectType;
    if( ! getObjectType( inputFile, objectType ) )
    {
       std::cerr << "Unable to detect object type in " << inputFile << std::endl;
       return EXIT_FAILURE;
    }
-   tnlList< tnlString > parsedObjectType;
+   List< String > parsedObjectType;
    parseObjectType( objectType,
                     parsedObjectType );
-   tnlString objectClass = parsedObjectType[ 0 ];
+   String objectClass = parsedObjectType[ 0 ];
    if( objectClass != "tnlCSRMatrix" )
    {
       std::cerr << "I am sorry, I am expecting tnlCSRMatrix in the input file but I found " << objectClass << "." << std::endl;
       return EXIT_FAILURE;
    }
 
-   tnlString precision = parsedObjectType[ 1 ];
-   //tnlString indexing = parsedObjectType[ 3 ];
+   String precision = parsedObjectType[ 1 ];
+   //String indexing = parsedObjectType[ 3 ];
    if( precision == "float" )
       if( ! benchmarkMatrix< float, int >( parameters ) )
       {

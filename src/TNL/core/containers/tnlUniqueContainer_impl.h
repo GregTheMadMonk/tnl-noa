@@ -13,7 +13,7 @@
 namespace TNL {
 
 template< typename Element, typename Key >
-class tnlUniqueContainer : public tnlObject
+class tnlUniqueContainer : public Object
    class ConstIterator
    {
 
@@ -70,10 +70,10 @@ template< typename Element, typename Key >
 void tnlUniqueContainer< Element, Key >::reset();
 
 template< typename Element, typename Key >
-bool tnlUniqueContainer< Element, Key >::save( tnlFile& file ) const;
+bool tnlUniqueContainer< Element, Key >::save( File& file ) const;
 
 template< typename Element, typename Key >
-bool tnlUniqueContainer< Element, Key >::load( tnlFile& file );
+bool tnlUniqueContainer< Element, Key >::load( File& file );
 
 
 } // namespace TNL

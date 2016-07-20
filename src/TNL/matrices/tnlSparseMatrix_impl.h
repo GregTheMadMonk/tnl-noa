@@ -87,7 +87,7 @@ void tnlSparseMatrix< Real, Device, Index >::reset()
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlSparseMatrix< Real, Device, Index >::save( tnlFile& file ) const
+bool tnlSparseMatrix< Real, Device, Index >::save( File& file ) const
 {
    if( ! tnlMatrix< Real, Device, Index >::save( file ) ||
        ! this->values.save( file ) ||
@@ -99,7 +99,7 @@ bool tnlSparseMatrix< Real, Device, Index >::save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlSparseMatrix< Real, Device, Index >::load( tnlFile& file )
+bool tnlSparseMatrix< Real, Device, Index >::load( File& file )
 {
    if( ! tnlMatrix< Real, Device, Index >::load( file ) ||
        ! this->values.load( file ) ||

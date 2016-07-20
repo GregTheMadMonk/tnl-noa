@@ -11,10 +11,10 @@
 #pragma once
 
 #include <TNL/solvers/ode/tnlODESolverMonitor.h>
-#include <TNL/config/tnlConfigDescription.h>
-#include <TNL/config/tnlParameterContainer.h>
-#include <TNL/core/tnlTimer.h>
-#include <TNL/core/tnlLogger.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Timer.h>
+#include <TNL/Logger.h>
 
 namespace TNL {
 
@@ -35,11 +35,11 @@ class tnlExplicitTimeStepper
 
    tnlExplicitTimeStepper();
 
-   static void configSetup( tnlConfigDescription& config,
-                            const tnlString& prefix = "" );
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" );
 
-   bool setup( const tnlParameterContainer& parameters,
-              const tnlString& prefix = "" );
+   bool setup( const Config::ParameterContainer& parameters,
+              const String& prefix = "" );
 
    bool init( const MeshType& mesh );
 
@@ -64,7 +64,7 @@ class tnlExplicitTimeStepper
                         DofVectorType& _u,
                         DofVectorType& _fu );
  
-   bool writeEpilog( tnlLogger& logger );
+   bool writeEpilog( Logger& logger );
 
    protected:
 

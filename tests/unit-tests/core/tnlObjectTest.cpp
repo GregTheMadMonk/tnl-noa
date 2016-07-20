@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlObjectTest.cpp  -  description
+                          ObjectTest.cpp  -  description
                              -------------------
     begin                : Jul 22, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -18,7 +18,7 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlObjectTester >() )
+   if( ! tnlUnitTestStarter :: run< ObjectTester >() )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;
 #else

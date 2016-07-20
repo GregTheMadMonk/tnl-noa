@@ -31,7 +31,7 @@ class tnlDummyMesh
  
    const Real& getParametricStep(){ return 0.0; }
  
-   tnlString getSerializationType() const { return tnlString( "tnlDummyMesh" ); }
+   String getSerializationType() const { return String( "tnlDummyMesh" ); }
 
    template< typename GridFunction >
    typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
@@ -42,23 +42,23 @@ class tnlDummyMesh
                                                         const GridFunction& f2,
                                                         const typename GridFunction::RealType& p ) const { return 0.0; }
 
-   bool save( tnlFile& file ) const { return true; }
+   bool save( File& file ) const { return true; }
 
    //! Method for restoring the object from a file
-   bool load( tnlFile& file ) { return true; }
+   bool load( File& file ) { return true; }
 
-   bool save( const tnlString& fileName ) const { return true; }
+   bool save( const String& fileName ) const { return true; }
 
-   bool load( const tnlString& fileName ) { return true; }
+   bool load( const String& fileName ) { return true; }
 
-   bool writeMesh( const tnlString& fileName,
-                   const tnlString& format ) const { return true; }
+   bool writeMesh( const String& fileName,
+                   const String& format ) const { return true; }
 
 
    template< typename MeshFunction >
    bool write( const MeshFunction& function,
-                const tnlString& fileName,
-                const tnlString& format ) const { return true; }
+                const String& fileName,
+                const String& format ) const { return true; }
 };
 
 } // namespace TNL

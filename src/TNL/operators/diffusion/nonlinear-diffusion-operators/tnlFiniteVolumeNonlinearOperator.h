@@ -11,7 +11,7 @@
 
 namespace TNL {
 
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
 
 template< typename Mesh,
@@ -42,7 +42,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >
    typedef Index IndexType;
    typedef OperatorQ OperatorQType;
 
-   static tnlString getType();
+   static String getType();
    
    template< typename MeshEntity,
              typename Vector >
@@ -95,7 +95,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex 
    typedef OperatorQ OperatorQType;
    
 
-   static tnlString getType();
+   static String getType();
    
    template< typename MeshEntity,
              typename Vector >
@@ -148,7 +148,7 @@ class tnlFiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex 
    typedef Index IndexType;
    typedef OperatorQ OperatorQType;
 
-   static tnlString getType();
+   static String getType();
    
    template< typename MeshEntity, 
              typename Vector >

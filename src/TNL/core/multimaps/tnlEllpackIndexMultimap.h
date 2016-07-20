@@ -10,7 +10,7 @@
 
 #pragma once 
 
-#include <TNL/core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 
 namespace TNL {
 
@@ -36,9 +36,9 @@ class tnlEllpackIndexMultimap
  
       tnlEllpackIndexMultimap();
  
-      static tnlString getType();
+      static String getType();
 
-      tnlString getTypeVirtual() const;
+      String getTypeVirtual() const;
  
       void setRanges( const IndexType keysRange,
                       const IndexType valuesRange );

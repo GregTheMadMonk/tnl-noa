@@ -12,17 +12,17 @@
 #define TNLMATRIXCONVERT_H_
 
 #include <fstream>
-#include <TNL/core/tnlString.h>
-#include <TNL/core/tnlFile.h>
+#include <TNL/String.h>
+#include <TNL/File.h>
 #include <TNL/matrices/tnlMatrix.h>
 #include <TNL/matrices/tnlCSRMatrix.h>
 
 using namespace std;
 
 template< class REAL >
-bool convertMatrix( const tnlString& input_file,
-                    const tnlString& output_file,
-                    const tnlString& output_matrix_format,
+bool convertMatrix( const String& input_file,
+                    const String& output_file,
+                    const String& output_matrix_format,
                     int verbose,
                     bool verify )
 {
@@ -63,7 +63,7 @@ bool convertMatrix( const tnlString& input_file,
 
    if( verbose )
      std::cout << std::endl << "Writing to a file " << output_file << " ... " << std::flush;
-   tnlFile binaryFile;
+   File binaryFile;
    if( ! binaryFile. open( output_file. getString(), tnlWriteMode ) )
    {
       std::cerr << std::endl << "I was not able to open the output file " << output_file << "." << std::endl;

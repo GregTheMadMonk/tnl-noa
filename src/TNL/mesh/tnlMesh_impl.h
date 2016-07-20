@@ -15,15 +15,15 @@
 namespace TNL {
 
 template< typename MeshConfig >
-tnlString
+String
 tnlMesh< MeshConfig >::
 getType()
 {
-   return tnlString( "tnlMesh< ") + MeshConfig::getType() + " >";
+   return String( "tnlMesh< ") + MeshConfig::getType() + " >";
 }
 
 template< typename MeshConfig >
-tnlString
+String
 tnlMesh< MeshConfig >::
 getTypeVirtual() const
 {
@@ -101,9 +101,9 @@ getEntity( const GlobalIndexType entityIndex ) const
 template< typename MeshConfig >
 bool
 tnlMesh< MeshConfig >::
-save( tnlFile& file ) const
+save( File& file ) const
 {
-   if( ! tnlObject::save( file ) ||
+   if( ! Object::save( file ) ||
        ! entitiesStorage.save( file ) )
    {
       std::cerr << "Mesh saving failed." << std::endl;
@@ -115,9 +115,9 @@ save( tnlFile& file ) const
 template< typename MeshConfig >
 bool
 tnlMesh< MeshConfig >::
-load( tnlFile& file )
+load( File& file )
 {
-   if( ! tnlObject::load( file ) ||
+   if( ! Object::load( file ) ||
        ! entitiesStorage.load( file ) )
    {
       std::cerr << "Mesh loading failed." << std::endl;

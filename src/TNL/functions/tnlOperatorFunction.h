@@ -82,7 +82,7 @@ class tnlOperatorFunction< Operator, MeshFunction, void, true >
  
       const MeshType& getMesh() const
       {
-         tnlAssert( this->preimageFunction, std::cerr << "The preimage function was not set." << std::endl );
+         Assert( this->preimageFunction, std::cerr << "The preimage function was not set." << std::endl );
          return this->preimageFunction->getMesh();
       };
  
@@ -102,7 +102,7 @@ class tnlOperatorFunction< Operator, MeshFunction, void, true >
          const MeshEntity& meshEntity,
          const RealType& time = 0.0 ) const
       {
-         tnlAssert( this->preimageFunction, std::cerr << "The preimage function was not set." << std::endl );
+         Assert( this->preimageFunction, std::cerr << "The preimage function was not set." << std::endl );
          return operator_( *preimageFunction, meshEntity, time );
       }
  
@@ -276,13 +276,13 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
  
       const PreimageFunctionType& getPreimageFunction() const
       {
-         tnlAssert( this->preimageFunction, );
+         Assert( this->preimageFunction, );
          return *this->preimageFunction;
       };
  
       PreimageFunctionType& getPreimageFunction()
       {
-         tnlAssert( this->preimageFunction, );
+         Assert( this->preimageFunction, );
          return *this->preimageFunction;
       };
  

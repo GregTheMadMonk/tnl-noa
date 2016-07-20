@@ -11,11 +11,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 EulerVelYGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "EulerVelYGetter< " ) +
+   return String( "EulerVelYGetter< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";
@@ -114,11 +114,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 EulerVelYGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "EulerVelYGetter< " ) +
+   return String( "EulerVelYGetter< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";
@@ -212,11 +212,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 EulerVelYGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "EulerVelYGetter< " ) +
+   return String( "EulerVelYGetter< " ) +
           MeshType::getType() + ", " +
          TNL::getType< Real >() + ", " +
          TNL::getType< Index >() + " >";
