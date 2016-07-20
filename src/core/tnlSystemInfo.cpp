@@ -130,7 +130,6 @@ tnlSystemInfo::getNumberOfThreads( int cpu_id ) const
 tnlString
 tnlSystemInfo::getCPUModelName( int cpu_id ) const
 {
-   cout << "model name = " << CPUModelName << endl;
    return CPUModelName;
 }
 
