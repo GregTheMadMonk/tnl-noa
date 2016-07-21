@@ -15,10 +15,12 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlSolverMonitor.h>
-#include <mesh/tnlGrid.h>
-#include <tnlConfig.h>
+#include <TNL/solvers/tnlSolver.h>
+#include <TNL/solvers/tnlSolverMonitor.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/tnlConfig.h>
+
+using namespace TNL;
 
 template< typename Mesh >
 class tnlSolverTesterProblem
@@ -33,16 +35,16 @@ class tnlSolverTesterProblem
    typedef tnlCSRMatrix< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
    typedef tnlDummyPreconditioner< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
 
-   static tnlString getTypeStatic() { return tnlString( "simpleProblemSolver< " ) + Mesh :: getTypeStatic() + " >"; };
+   static String getTypeStatic() { return String( "simpleProblemSolver< " ) + Mesh :: getTypeStatic() + " >"; };
 
-   tnlString getPrologHeader() const { return tnlString( "Simple Problem" ); };
+   String getPrologHeader() const { return String( "Simple Problem" ); };
 
-   void writeProlog( tnlLogger& logger,
-                     const tnlParameterContainer& parameters ) const { };
+   void writeProlog( Logger& logger,
+                     const Config::ParameterContainer& parameters ) const { };
 
-   bool setup( const tnlParameterContainer& parameters ) { this->dofVector. setSize( 100 ); return true; };
+   bool setup( const Config::ParameterContainer& parameters ) { this->dofVector. setSize( 100 ); return true; };
 
-   bool setInitialCondition( const tnlParameterContainer& parameters ) { return true; };
+   bool setInitialCondition( const Config::ParameterContainer& parameters ) { return true; };
 
    bool makeSnapshot( const RealType& time, const IndexType& step ) { return true; };
 
@@ -67,12 +69,12 @@ class tnlSolverTesterSetter
    template< typename RealType,
              typename DeviceType,
              typename IndexType >
-   bool run( const tnlParameterContainer& parameters ) const
+   bool run( const Config::ParameterContainer& parameters ) const
    {
       int dimensions = parameters. getParameter< int >( "dimensions" );
       if( dimensions <= 0 || dimensions > 3 )
       {
-         cerr << "The problem is not defined for " << dimensions << "dimensions." << endl;
+         std::cerr << "The problem is not defined for " << dimensions << "dimensions." << std::endl;
          return false;
       }
       SolverStarter solverStarter;

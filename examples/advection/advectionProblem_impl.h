@@ -1,32 +1,32 @@
 #ifndef advectionPROBLEM_IMPL_H_
 #define advectionPROBLEM_IMPL_H_
 
-#include <core/mfilename.h>
-#include <matrices/tnlMatrixSetter.h>
-#include <solvers/pde/tnlExplicitUpdater.h>
-#include <solvers/pde/tnlLinearSystemAssembler.h>
-#include <solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/core/mfilename.h>
+#include <TNL/matrices/tnlMatrixSetter.h>
+#include <TNL/solvers/pde/tnlExplicitUpdater.h>
+#include <TNL/solvers/pde/tnlLinearSystemAssembler.h>
+#include <TNL/solvers/pde/tnlBackwardTimeDiscretisation.h>
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return tnlString( "advectionProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "advectionProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
-   return tnlString( "advection" );
+   return String( "advection" );
 }
 
 template< typename Mesh,
@@ -35,7 +35,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
+writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
     * Add data you want to have in the computation report (log) as follows:
@@ -49,7 +49,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const tnlParameterContainer& parameters )
+setup( const Config::ParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
@@ -89,25 +89,25 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 advectionProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setInitialCondition( const tnlParameterContainer& parameters,
+setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
 {
-   cout << "vaules adding";
+  std::cout << "vaules adding";
    typedef typename MeshType::Cell Cell;
    int dimensions = parameters.getParameter< int >( "dimension" );
    int count = mesh.template getEntitiesCount< Cell >();
-   const RealType& size = parameters.getParameter< double >( "realSize" ) / pow(count, 1.0/dimensions);
-   const tnlString& beginChoice = parameters.getParameter< tnlString >( "begin" );
-   cout << beginChoice << " " << dimensions << "   " << size << "   " << count << "   "<< 1/dimensions << endl;
+   const RealType& size = parameters.getParameter< double >( "realSize" ) / ::pow(count, 1.0/dimensions);
+   const String& beginChoice = parameters.getParameter< String >( "begin" );
+  std::cout << beginChoice << " " << dimensions << "   " << size << "   " << count << "   "<< 1/dimensions << std::endl;
    getchar();
    if (beginChoice == "sin_square")
       {
 	   double constantFunction;
 	   if (dimensions == 1)
 	       {
-                   cout << "adding DOFS" << endl;
+                  std::cout << "adding DOFS" << std::endl;
 		   dofs[0] = 0;
 		   double expValue;
 		   for (IndexType i = 1; i < count-2; i++)
@@ -120,7 +120,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
 		}
 	    else if (dimensions == 2)
 	       {
-                   count = sqrt(count);
+                   count = ::sqrt(count);
 		   double expValue;
 		   for (IndexType i = 0; i < count-1; i++)
                       for (IndexType j = 0; j < count-1; j++)
@@ -144,7 +144,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
 		}
 	    else if (dimensions == 2)
 	       {
-                   count = sqrt(count);
+                   count = ::sqrt(count);
 		   for (IndexType i = 1; i < count-1; i++)
 		      for (IndexType j = 1; j < count-1; j++)
 		      {
@@ -153,24 +153,24 @@ setInitialCondition( const tnlParameterContainer& parameters,
 		};
      };
    //setting velocity field
-   cout << dofs << endl;
+  std::cout << dofs << std::endl;
    getchar();
-   /*const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
+   /*const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    if( ! dofs.load( initialConditionFile ) )
    {
-      cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
+      std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
    }
    return true;*/
    dofs.save( "dofs.tnl" );
-   this->velocityType = parameters.getParameter< tnlString >( "move" );
+   this->velocityType = parameters.getParameter< String >( "move" );
    const double artificalViscosity = parameters.getParameter< double >( "artifical-viscosity" );
    differentialOperator.setViscosity(artificalViscosity);
    const double advectionSpeedX = parameters.getParameter< double >( "advection-speedX" );
    differentialOperator.setAdvectionSpeedX(advectionSpeedX);
    const double advectionSpeedY = parameters.getParameter< double >( "advection-speedY" );
    differentialOperator.setAdvectionSpeedY(advectionSpeedY);
-   cout << "vaules added";
+  std::cout << "vaules added";
    return true;
 }
 
@@ -212,9 +212,9 @@ makeSnapshot( const RealType& time,
               DofVectorType& dofs,
               MeshDependentDataType& meshDependentData )
 {
-   cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
+  std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
-   tnlString fileName;
+   String fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
    if( ! dofs.save( fileName ) )
       return false;
@@ -243,15 +243,15 @@ getExplicitRHS( const RealType& time,
     * You may use supporting mesh dependent data if you need.
     */
    typedef typename MeshType::Cell Cell;
-   int count = sqrt(mesh.template getEntitiesCount< Cell >());
-//   const RealType& size = parameters.getParameter< double >( "realSize" ) / pow(count, 0.5);
+   int count = ::sqrt(mesh.template getEntitiesCount< Cell >());
+//   const RealType& size = parameters.getParameter< double >( "realSize" ) / ::pow(count, 0.5);
 /*   if (this->velocityType == "rotation")
    {
       double radius;
       for (int i =1; i < count; i++)
          for (int j =1; j < count; j++)
             {
-               radius = sqrt(pow(i-1-(count/2.0),2) + pow(j-1-(count/2.0),2));
+               radius = ::sqrt(pow(i-1-(count/2.0),2) + ::pow(j-1-(count/2.0),2));
             if (radius != 0.0)
                _fu[(i-1)*count+j-1] =(0.25*tau)*differentialOperator.artificalViscosity*			//smoothening part
                (_u[(i-1)*count-2+j]+_u[(i-1)*count+j]+

@@ -11,7 +11,9 @@
 #ifndef TNLPDEOPERATOREOCTESTMESHSETTER_H
 #define	TNLPDEOPERATOREOCTESTMESHSETTER_H
 
-#include <mesh/tnlGrid.h>
+#include <TNL/mesh/tnlGrid.h>
+
+using namespace TNL;
 
 template< typename Mesh >
 class tnlPDEOperatorEocTestMeshSetter

@@ -9,14 +9,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 BenchmarkLaplace< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "BenchmarkLaplace< " ) +
+   return String( "BenchmarkLaplace< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -113,14 +113,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 BenchmarkLaplace< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "BenchmarkLaplace< " ) +
+   return String( "BenchmarkLaplace< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -226,14 +226,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 BenchmarkLaplace< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "BenchmarkLaplace< " ) +
+   return String( "BenchmarkLaplace< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,

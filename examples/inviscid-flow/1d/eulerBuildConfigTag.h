@@ -1,7 +1,9 @@
 #ifndef eulerBUILDCONFIGTAG_H_
 #define eulerBUILDCONFIGTAG_H_
 
-#include <solvers/tnlBuildConfigTags.h>
+#include <TNL/solvers/tnlBuildConfigTags.h>
+
+namespace TNL {
 
 class eulerBuildConfigTag{};
 
@@ -40,5 +42,7 @@ template<> struct tnlConfigTagTimeDiscretisation< eulerBuildConfigTag, tnlImplic
  * Only the Runge-Kutta-Merson solver is enabled by default.
  */
 template<> struct tnlConfigTagExplicitSolver< eulerBuildConfigTag, tnlExplicitEulerSolverTag >{ enum { enabled = true }; };
+
+} // namespace TNL
 
 #endif /* eulerBUILDCONFIGTAG_H_ */

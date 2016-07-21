@@ -11,16 +11,18 @@
 #ifndef TNL_HEAT_EQUATION_H_
 #define TNL_HEAT_EQUATION_H_
 
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfigTag.h>
-#include <solvers/tnlBuildConfigTags.h>
-#include <operators/diffusion/tnlLinearDiffusion.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
-#include <operators/tnlNeumannBoundaryConditions.h>
-#include <functions/tnlConstantFunction.h>
-#include <functions/tnlMeshFunction.h>
-#include <problems/tnlHeatEquationProblem.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/solvers/tnlSolver.h>
+#include <TNL/solvers/tnlFastBuildConfigTag.h>
+#include <TNL/solvers/tnlBuildConfigTags.h>
+#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
+#include <TNL/operators/tnlDirichletBoundaryConditions.h>
+#include <TNL/operators/tnlNeumannBoundaryConditions.h>
+#include <TNL/functions/tnlConstantFunction.h>
+#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/problems/tnlHeatEquationProblem.h>
+#include <TNL/mesh/tnlGrid.h>
+
+using namespace TNL;
 
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
@@ -29,21 +31,21 @@ template< typename MeshConfig >
 class heatEquationConfig
 {
    public:
-      static void configSetup( tnlConfigDescription& config )
+      static void configSetup( Config::ConfigDescription& config )
       {
          config.addDelimiter( "Heat equation settings:" );
-         config.addEntry< tnlString >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
-            config.addEntryEnum< tnlString >( "dirichlet" );
-            config.addEntryEnum< tnlString >( "neumann" );
+         config.addEntry< String >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
+            config.addEntryEnum< String >( "dirichlet" );
+            config.addEntryEnum< String >( "neumann" );
 
          typedef tnlGrid< 1, double, tnlHost, int > Mesh;
          typedef tnlMeshFunction< Mesh > MeshFunction;
          tnlDirichletBoundaryConditions< Mesh, MeshFunction >::configSetup( config );
          tnlDirichletBoundaryConditions< Mesh, tnlConstantFunction< 1 > >::configSetup( config );
-         config.addEntry< tnlString >( "boundary-conditions-file", "File with the values of the boundary conditions.", "boundary.tnl" );
+         config.addEntry< String >( "boundary-conditions-file", "File with the values of the boundary conditions.", "boundary.tnl" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< double >( "right-hand-side-constant", "This sets a constant value for the right-hand side.", 0.0 );
-         //config.addEntry< tnlString >( "initial-condition", "File with the initial condition.", "initial.tnl");
+         //config.addEntry< String >( "initial-condition", "File with the initial condition.", "initial.tnl");
       };
 };
 
@@ -63,14 +65,14 @@ class heatEquationSetter
 
    typedef tnlStaticVector< MeshType::meshDimensions, Real > Vertex;
 
-   static bool run( const tnlParameterContainer& parameters )
+   static bool run( const Config::ParameterContainer& parameters )
    {
       enum { Dimensions = MeshType::meshDimensions };
       typedef tnlLinearDiffusion< MeshType, Real, Index > ApproximateOperator;
       typedef tnlConstantFunction< Dimensions, Real > RightHandSide;
       typedef tnlStaticVector < MeshType::meshDimensions, Real > Vertex;
 
-      tnlString boundaryConditionsType = parameters.getParameter< tnlString >( "boundary-conditions-type" );
+      String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
       if( parameters.checkParameter( "boundary-conditions-constant" ) )
       {
          typedef tnlConstantFunction< Dimensions, Real > ConstantFunction;

@@ -8,18 +8,20 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
-#include <core/images/tnlDicomSeries.h>
-#include <core/mfilename.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/core/images/tnlDicomSeries.h>
+#include <TNL/core/mfilename.h>
 
-void setupConfig( tnlConfigDescription& config )
+using namespace TNL;
+
+void setupConfig( Config::ConfigDescription& config )
 {
    config.addDelimiter( "General parameters" );
-   config.addList         < tnlString >( "dicom-files",   "Input DICOM files." );
-   config.addList         < tnlString >( "dicom-series",   "Input DICOM series." );
-   config.addEntry        < tnlString >( "mesh-file",     "Mesh file.", "mesh.tnl" );
+   config.addList         < String >( "dicom-files",   "Input DICOM files." );
+   config.addList         < String >( "dicom-series",   "Input DICOM series." );
+   config.addEntry        < String >( "mesh-file",     "Mesh file.", "mesh.tnl" );
    config.addEntry        < bool >     ( "one-mesh-file", "Generate only one mesh file. All the images dimensions must be the same.", true );
    config.addEntry        < int >      ( "roi-top",       "Top (smaller number) line of the region of interest.", -1 );
    config.addEntry        < int >      ( "roi-bottom",    "Bottom (larger number) line of the region of interest.", -1 );
@@ -29,15 +31,15 @@ void setupConfig( tnlConfigDescription& config )
 }
 
 #ifdef HAVE_DCMTK_H
-bool processDicomFiles( const tnlParameterContainer& parameters )
+bool processDicomFiles( const Config::ParameterContainer& parameters )
 {
  
 }
 
-bool processDicomSeries( const tnlParameterContainer& parameters )
+bool processDicomSeries( const Config::ParameterContainer& parameters )
 {
-   const tnlList< tnlString >& dicomSeriesNames = parameters.getParameter< tnlList< tnlString > >( "dicom-series" );
-   tnlString meshFile = parameters.getParameter< tnlString >( "mesh-file" );
+   const List< String >& dicomSeriesNames = parameters.getParameter< List< String > >( "dicom-series" );
+   String meshFile = parameters.getParameter< String >( "mesh-file" );
    bool verbose = parameters.getParameter< bool >( "verbose" );
 
    typedef tnlGrid< 2, double, tnlHost, int > GridType;
@@ -46,12 +48,12 @@ bool processDicomSeries( const tnlParameterContainer& parameters )
    tnlRegionOfInterest< int > roi;
    for( int i = 0; i < dicomSeriesNames.getSize(); i++ )
    {
-      const tnlString& seriesName = dicomSeriesNames[ i ];
-      cout << "Reading a file " << seriesName << endl;
+      const String& seriesName = dicomSeriesNames[ i ];
+      std::cout << "Reading a file " << seriesName << std::endl;
       tnlDicomSeries dicomSeries( seriesName.getString() );
       if( !dicomSeries.isDicomSeriesLoaded() )
       {
-         cerr << "Loading of the DICOM series " << seriesName << " failed." << endl;
+         std::cerr << "Loading of the DICOM series " << seriesName << " failed." << std::endl;
       }
       if( i == 0 )
       {
@@ -59,16 +61,16 @@ bool processDicomSeries( const tnlParameterContainer& parameters )
             return false;
          roi.setGrid( grid, verbose );
          vector.setSize( grid.template getEntitiesCount< typename GridType::Cell >() );
-         cout << "Writing grid to file " << meshFile << endl;
+         std::cout << "Writing grid to file " << meshFile << std::endl;
          grid.save( meshFile );
       }
-      cout << "The series consists of " << dicomSeries.getImagesCount() << " images." << endl;
+      std::cout << "The series consists of " << dicomSeries.getImagesCount() << " images." << std::endl;
       for( int imageIdx = 0; imageIdx < dicomSeries.getImagesCount(); imageIdx++ )
       {
          dicomSeries.getImage( imageIdx, grid, roi, vector );
-         tnlString fileName;
+         String fileName;
          FileNameBaseNumberEnding( seriesName.getString(), imageIdx, 2, ".tnl", fileName );
-         cout << "Writing file " << fileName << " ... " << endl;
+         std::cout << "Writing file " << fileName << " ... " << std::endl;
          vector.save( fileName );
       }
    }
@@ -77,8 +79,8 @@ bool processDicomSeries( const tnlParameterContainer& parameters )
 
 int main( int argc, char* argv[] )
 {
-   tnlParameterContainer parameters;
-   tnlConfigDescription configDescription;
+   Config::ParameterContainer parameters;
+   Config::ConfigDescription configDescription;
    setupConfig( configDescription );
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
    {
@@ -88,7 +90,7 @@ int main( int argc, char* argv[] )
    if( ! parameters.checkParameter( "dicom-files" ) &&
        ! parameters.checkParameter( "dicom-series") )
    {
-       cerr << "Neither DICOM series nor DICOM files are given." << endl;
+       std::cerr << "Neither DICOM series nor DICOM files are given." << std::endl;
        configDescription.printUsage( argv[ 0 ] );
        return EXIT_FAILURE;
    }
@@ -99,6 +101,6 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 #else
-   cerr << "TNL was not compiled with DCMTK support." << endl;
+   std::cerr << "TNL was not compiled with DCMTK support." << std::endl;
 #endif
 }

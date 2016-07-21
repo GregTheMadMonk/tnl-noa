@@ -11,15 +11,16 @@
 #ifndef TNLFDMGRADIENTNORMTEST_H
 #define	TNLFDMGRADIENTNORMTEST_H
 
-#include <operators/geometric/tnlFDMGradientNorm.h>
-#include <operators/geometric/tnlExactGradientNorm.h>
-#include <operators/fdm/tnlBackwardFiniteDifference.h>
-#include <operators/fdm/tnlForwardFiniteDifference.h>
-#include <operators/fdm/tnlCentralFiniteDifference.h>
+#include <TNL/operators/geometric/tnlFDMGradientNorm.h>
+#include <TNL/operators/geometric/tnlExactGradientNorm.h>
+#include <TNL/operators/fdm/tnlBackwardFiniteDifference.h>
+#include <TNL/operators/fdm/tnlForwardFiniteDifference.h>
+#include <TNL/operators/fdm/tnlCentralFiniteDifference.h>
 #include "../../tnlUnitTestStarter.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../tnlPDEOperatorEocUnitTest.h"
 
+using namespace TNL;
 
 template< typename ApproximateOperator >
 class tnlFDMGradientNormEocTestResults
@@ -61,9 +62,9 @@ class tnlFDMGradientNormTest
  
       const IndexType coarseMeshSize[ 3 ] = { 1024, 256, 64 };
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlFDMGradientNormTest< " ) +
+         return String( "tnlFDMGradientNormTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }

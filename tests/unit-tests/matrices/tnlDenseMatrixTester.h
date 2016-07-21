@@ -17,9 +17,9 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <matrices/tnlDenseMatrix.h>
-#include <core/tnlFile.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/matrices/tnlDenseMatrix.h>
+#include <TNL/File.h>
+#include <TNL/Vectors/Vector.h>
 
 #ifdef HAVE_CUDA
 template< typename RealType, typename IndexType >
@@ -33,6 +33,7 @@ __global__ void setRowFastTestKernel( tnlDenseMatrix< RealType, tnlCuda, IndexTy
                                       const IndexType numberOfElements );
 #endif
 
+using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
 class tnlDenseMatrixTester : public CppUnit :: TestCase

@@ -11,11 +11,13 @@
 #ifndef TNLTWOSIDEDGRADIENTNORMTEST_H
 #define	TNLTWOSIDEDGRADIENTNORMTEST_H
 
-#include <operators/geometric/tnlTwoSidedGradientNorm.h>
-#include <operators/geometric/tnlExactGradientNorm.h>
+#include <TNL/operators/geometric/tnlTwoSidedGradientNorm.h>
+#include <TNL/operators/geometric/tnlExactGradientNorm.h>
 #include "../../tnlUnitTestStarter.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../tnlPDEOperatorEocUnitTest.h"
+
+using namespace TNL;
 
 template< typename ApproximateOperator,
           typename TestFunction,
@@ -37,9 +39,9 @@ class tnlTwoSidedGradientNormTest
       const RealType eoc[ 3 ] =       { 1.0,  1.9, 1.75 };
       const RealType tolerance[ 3 ] = { 0.05, 0.1, 0.3 };
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlTwoSidedGradientNormTest< " ) +
+         return String( "tnlTwoSidedGradientNormTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }

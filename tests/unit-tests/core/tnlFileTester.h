@@ -13,10 +13,12 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlFile.h>
+#include <TNL/File.h>
 #ifdef HAVE_CUDA
 #include <cuda.h>
 #endif
+
+using namespace TNL;
 
 class tnlFileTester : public CppUnit :: TestCase
 {
@@ -42,10 +44,10 @@ class tnlFileTester : public CppUnit :: TestCase
 
    void testWriteAndRead()
    {
-      tnlFile file;
-      if( ! file. open( tnlString( "test-file.tnl" ), tnlWriteMode ) )
+      File file;
+      if( ! file. open( String( "test-file.tnl" ), tnlWriteMode ) )
       {
-         cerr << "Unable to create file test-file.tnl for the testing." << endl;
+         std::cerr << "Unable to create file test-file.tnl for the testing." << std::endl;
          return;
       }
       int intData( 5 );
@@ -62,13 +64,13 @@ class tnlFileTester : public CppUnit :: TestCase
 #endif
       if( ! file. close() )
       {
-         cerr << "Unable to close the file test-file.tnl" << endl;
+         std::cerr << "Unable to close the file test-file.tnl" << std::endl;
          return;
       }
 
-      if( ! file. open( tnlString( "test-file.tnl" ), tnlReadMode ) )
+      if( ! file. open( String( "test-file.tnl" ), tnlReadMode ) )
       {
-         cerr << "Unable to open the file test-file.tnl for the testing." << endl;
+         std::cerr << "Unable to open the file test-file.tnl for the testing." << std::endl;
          return;
       }
       int newIntData;
@@ -104,10 +106,10 @@ class tnlFileTester : public CppUnit :: TestCase
                   floatData,
                   3 * sizeof( float ),
                   cudaMemcpyHostToDevice );
-      tnlFile file;
-      if( ! file. open( tnlString( "test-file.tnl" ), tnlWriteMode ) )
+      File file;
+      if( ! file. open( String( "test-file.tnl" ), tnlWriteMode ) )
       {
-         cerr << "Unable to create file test-file.tnl for the testing." << endl;
+         std::cerr << "Unable to create file test-file.tnl for the testing." << std::endl;
          return;
       }
 
@@ -115,13 +117,13 @@ class tnlFileTester : public CppUnit :: TestCase
       file. write< float, tnlCuda, int >( cudaFloatData, 3 );
       if( ! file. close() )
       {
-         cerr << "Unable to close the file test-file.tnl" << endl;
+         std::cerr << "Unable to close the file test-file.tnl" << std::endl;
          return;
       }
 
-      if( ! file. open( tnlString( "test-file.tnl" ), tnlReadMode ) )
+      if( ! file. open( String( "test-file.tnl" ), tnlReadMode ) )
       {
-         cerr << "Unable to open the file test-file.tnl for the testing." << endl;
+         std::cerr << "Unable to open the file test-file.tnl for the testing." << std::endl;
          return;
       }
       int newIntData;

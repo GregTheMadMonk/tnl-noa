@@ -1,37 +1,39 @@
 #ifndef eulerPROBLEM_IMPL_H_
 #define eulerPROBLEM_IMPL_H_
 
-#include <core/mfilename.h>
-#include <matrices/tnlMatrixSetter.h>
-#include <solvers/pde/tnlExplicitUpdater.h>
-#include <solvers/pde/tnlLinearSystemAssembler.h>
-#include <solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/core/mfilename.h>
+#include <TNL/matrices/tnlMatrixSetter.h>
+#include <TNL/solvers/pde/tnlExplicitUpdater.h>
+#include <TNL/solvers/pde/tnlLinearSystemAssembler.h>
+#include <TNL/solvers/pde/tnlBackwardTimeDiscretisation.h>
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsMomentum.h"
 #include "LaxFridrichsEnergy.h"
 #include "EulerVelGetter.h"
 #include "EulerPressureGetter.h"
 
+namespace TNL {
+
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return tnlString( "eulerProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "eulerProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
-   return tnlString( "euler" );
+   return String( "euler" );
 }
 
 template< typename Mesh,
@@ -40,7 +42,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
+writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
     * Add data you want to have in the computation report (log) as follows:
@@ -54,7 +56,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const tnlParameterContainer& parameters )
+setup( const Config::ParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
@@ -94,12 +96,12 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setInitialCondition( const tnlParameterContainer& parameters,
+setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
 {
-   cout << endl << "get conditions from CML";
+  std::cout << std::endl << "get conditions from CML";
    typedef typename MeshType::Cell Cell;
    this->gamma = parameters.getParameter< RealType >( "gamma" );
    RealType rhoL = parameters.getParameter< RealType >( "left-density" );
@@ -111,9 +113,9 @@ setInitialCondition( const tnlParameterContainer& parameters,
    RealType preR = parameters.getParameter< RealType >( "right-pressure" );
    RealType eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * velR * velR;
    RealType x0 = parameters.getParameter< RealType >( "riemann-border" );
-   cout <<endl << gamma << " " << rhoL << " " << velL << " " << preL << " " << eL << " " << rhoR << " " << velR << " " << preR << " " << eR << " " << x0 << " " << gamma << endl;
+   std::cout << std::endl << gamma << " " << rhoL << " " << velL << " " << preL << " " << eL << " " << rhoR << " " << velR << " " << preR << " " << eR << " " << x0 << " " << gamma << std::endl;
    int count = mesh.template getEntitiesCount< Cell >();
-cout << count << endl;
+   std::cout << count << std::endl;
    uRho.bind(mesh, dofs, 0);
    uRhoVelocity.bind(mesh, dofs, count);
    uEnergy.bind(mesh, dofs, 2 * count);
@@ -121,7 +123,7 @@ cout << count << endl;
    data.setSize(2*count);
    velocity.bind( mesh, data, 0);
    pressure.bind( mesh, data, count );
-   cout << endl << "set conditions from CML"<< endl;   
+  std::cout << std::endl << "set conditions from CML"<< std::endl;   
    for(IndexType i = 0; i < count; i++)
       if (i < x0 * count )
          {
@@ -139,15 +141,15 @@ cout << count << endl;
             velocity[i] = velR;
             pressure[i] = preR;
          };
-   cout << "dofs = " << dofs << endl;
+  std::cout << "dofs = " << dofs << std::endl;
    getchar();
   
    
    /*
-   const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
+   const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    if( ! dofs.load( initialConditionFile ) )
    {
-      cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
+      std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
    }
    */
@@ -191,37 +193,37 @@ makeSnapshot( const RealType& time,
               DofVectorType& dofs,
               MeshDependentDataType& meshDependentData )
 {
-   cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
+  std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
-   tnlString fileName;
+   String fileName;
    typedef typename MeshType::Cell Cell;
    int count = mesh.template getEntitiesCount< Cell >();
-   ofstream vysledek;
-/*   cout << "pressure:" << endl;
-   for (IndexType i = 0; i<count; i++) cout << this->pressure[i] << " " << i ;
+   std::ofstream vysledek;
+/*  std::cout << "pressure:" << std::endl;
+   for (IndexType i = 0; i<count; i++)std::cout << this->pressure[i] << " " << i ;
       vysledek.open("pressure" + to_string(step) + ".txt");
    for (IndexType i = 0; i<count; i++)
-      vysledek << 0.01*i << " " << pressure[i] << endl;
+      vysledek << 0.01*i << " " << pressure[i] << std::endl;
    vysledek.close();
-   cout << " " << endl;
-   cout << "velocity:" << endl;
-   for (IndexType i = 0; i<count; i++) cout << this->velocity[i] << " " ;
+  std::cout << " " << std::endl;
+  std::cout << "velocity:" << std::endl;
+   for (IndexType i = 0; i<count; i++)std::cout << this->velocity[i] << " " ;
       vysledek.open("velocity" + to_string(step) + ".txt");
    for (IndexType i = 0; i<count; i++)
-      vysledek << 0.01*i << " " << pressure[i] << endl;
+      vysledek << 0.01*i << " " << pressure[i] << std::endl;
    vysledek.close();
-   cout << "energy:" << endl;
-   for (IndexType i = 0; i<count; i++) cout << this->uEnergy[i] << " " ;
+  std::cout << "energy:" << std::endl;
+   for (IndexType i = 0; i<count; i++)std::cout << this->uEnergy[i] << " " ;
       vysledek.open("energy" + to_string(step) + ".txt");
    for (IndexType i = 0; i<count; i++)
-      vysledek << 0.01*i << " " << uEnergy[i] << endl;
+      vysledek << 0.01*i << " " << uEnergy[i] << std::endl;
    vysledek.close();
-   cout << " " << endl;
-   cout << "density:" << endl;
-   for (IndexType i = 0; i<count; i++) cout << this->uRho[i] << " " ;
+  std::cout << " " << std::endl;
+  std::cout << "density:" << std::endl;
+   for (IndexType i = 0; i<count; i++)std::cout << this->uRho[i] << " " ;
       vysledek.open("density" + to_string(step) + ".txt");
    for (IndexType i = 0; i<count; i++)
-      vysledek << 0.01*i << " " << uRho[i] << endl;
+      vysledek << 0.01*i << " " << uRho[i] << std::endl;
    vysledek.close();
 */   getchar();
 
@@ -250,7 +252,7 @@ getExplicitRHS( const RealType& time,
                 DofVectorType& _fu,
                 MeshDependentDataType& meshDependentData )
 {
-    cout << "explicitRHS" << endl;
+   std::cout << "explicitRHS" << std::endl;
     typedef typename MeshType::Cell Cell;
     int count = mesh.template getEntitiesCount< Cell >();
 	//bind _u
@@ -270,7 +272,7 @@ getExplicitRHS( const RealType& time,
 
    
    
-   cout << "explicitRHSrho" << endl;   
+  std::cout << "explicitRHSrho" << std::endl;   
    //rho
    this->bindDofs( mesh, _u );
    lF1DContinuity.setTau(tau);
@@ -284,7 +286,7 @@ getExplicitRHS( const RealType& time,
                                                            uRho,
                                                            fuRho );*/
 
-   cout << "explicitRHSrhovel" << endl;
+  std::cout << "explicitRHSrhovel" << std::endl;
    //rhoVelocity
    lF1DMomentum.setTau(tau);
    lF1DMomentum.setVelocity(velocity);
@@ -298,7 +300,7 @@ getExplicitRHS( const RealType& time,
                                                            uRhoVelocity,
                                                            fuRhoVelocity );
    
-   cout << "explicitRHSenergy" << endl;
+  std::cout << "explicitRHSenergy" << std::endl;
    //energy
    lF1DEnergy.setTau(tau);
    lF1DEnergy.setPressure(pressure);
@@ -370,5 +372,7 @@ postIterate( const RealType& time,
    Pressure pressureGetter( uRho, uRhoVelocity, uEnergy, gamma );
    this->pressure = pressureGetter;
 }
+
+} // namespace TNL
 
 #endif /* eulerPROBLEM_IMPL_H_ */

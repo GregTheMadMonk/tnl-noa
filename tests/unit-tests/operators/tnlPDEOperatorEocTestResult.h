@@ -11,6 +11,8 @@
 #ifndef TNLPDEOPERATOREOCTESTRESULT_H_
 #define TNLPDEOPERATOREOCTESTRESULT_H_
 
+using namespace TNL;
+
 template< typename ApproximateOperator,
           typename TestFunction >
 class tnlPDEOperatorEocTestResult

@@ -10,7 +10,9 @@
 
 #include "tnlVectorOperationsTester.h"
 #include "../../tnlUnitTestStarter.h"
-#include <core/tnlHost.h>
+#include <TNL/core/tnlHost.h>
+
+using namespace TNL;
 
 int main( int argc, char* argv[] )
 {

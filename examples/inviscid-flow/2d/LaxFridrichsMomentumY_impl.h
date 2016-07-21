@@ -1,6 +1,8 @@
 #ifndef LaxFridrichsMomentumY_IMPL_H
 #define LaxFridrichsMomentumY_IMPL_H
 
+namespace TNL {
+
 /****
  * 1D problem
  */
@@ -9,14 +11,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 LaxFridrichsMomentumY< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "LaxFridrichsMomentumY< " ) +
+   return String( "LaxFridrichsMomentumY< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -112,14 +114,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 LaxFridrichsMomentumY< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "LaxFridrichsMomentumY< " ) +
+   return String( "LaxFridrichsMomentumY< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -229,14 +231,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 LaxFridrichsMomentumY< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "LaxFridrichsMomentumY< " ) +
+   return String( "LaxFridrichsMomentumY< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -342,6 +344,8 @@ updateLinearSystem( const RealType& time,
    matrixRow.setElement( 5, north,  -lambdaY );
    matrixRow.setElement( 6, up,     -lambdaZ );
 }
+
+} //namespace TNL
 
 #endif	/* LaxFridrichsMomentumYIMPL_H */
 

@@ -11,10 +11,8 @@
 #ifndef TNLSOLVERTEST_H_
 #define TNLSOLVERTEST_H_
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 #include <iostream>
-
-using namespace std;
 
 #ifdef HAVE_CPPUNIT
 
@@ -23,6 +21,7 @@ using namespace std;
 #include "tnlSolverTester.h"
 
 using namespace std;
+using namespace TNL;
 
 int main( int argc, char* argv[] )
 {
@@ -33,7 +32,7 @@ int main( int argc, char* argv[] )
 #else
 int main( int argc, char* argv[] )
 {
-   cerr << "UNIT TESTS ARE DISABLED." << endl;
+   std::cerr << "UNIT TESTS ARE DISABLED." << std::endl;
    return 0;
 }
 #endif

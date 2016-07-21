@@ -1,6 +1,8 @@
 #ifndef EulerVelGetter_IMPL_H
 #define EulerVelGetter_IMPL_H
 
+namespace TNL {
+
 /****
  * 1D problem
  */
@@ -9,14 +11,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 EulerVelGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "EulerVelGetter< " ) +
+   return String( "EulerVelGetter< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -112,14 +114,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 EulerVelGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "EulerVelGetter< " ) +
+   return String( "EulerVelGetter< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -145,7 +147,7 @@ operator()( const MeshFunction& u,
     const typename MeshEntity::template NeighbourEntities< 2 >& neighbourEntities = entity.getNeighbourEntities(); 
    //vel
    const IndexType& center = entity.getIndex(); 
-   return sqrt(pow( velX[ center ],2)+pow( velY[ center ],2));
+   return ::sqrt(pow( velX[ center ],2)+pow( velY[ center ],2));
 }
 
 template< typename MeshReal,
@@ -218,14 +220,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 EulerVelGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "EulerVelGetter< " ) +
+   return String( "EulerVelGetter< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -331,6 +333,8 @@ updateLinearSystem( const RealType& time,
    matrixRow.setElement( 5, north,  -lambdaY );
    matrixRow.setElement( 6, up,     -lambdaZ );
 }
+
+} //namespace TNL
 
 #endif	/* EulerVelGetterIMPL_H */
 

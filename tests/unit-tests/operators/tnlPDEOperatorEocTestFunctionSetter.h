@@ -11,7 +11,9 @@
 #ifndef TNLPDEOPERATOREOCTESTFUNCTIONSETTER_H
 #define	TNLPDEOPERATOREOCTESTFUNCTIONSETTER_H
 
-#include<functions/tnlExpBumpFunction.h>
+#include <TNL/functions/tnlExpBumpFunction.h>
+
+using namespace TNL;
 
 template< typename Function >
 class tnlPDEOperatorEocTestFunctionSetter

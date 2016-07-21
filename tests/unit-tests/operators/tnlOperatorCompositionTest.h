@@ -11,12 +11,12 @@
 #ifndef TNLOPERATORFUNCTIONTEST_H
 #define	TNLOPERATORFUNCTIONTEST_H
 
-#include <operators/tnlOperatorComposition.h>
-#include <mesh/tnlGrid.h>
-#include <functions/tnlExpBumpFunction.h>
-#include <functions/tnlConstantFunction.h>
-#include <operators/diffusion/tnlLinearDiffusion.h>
-#include <operators/tnlNeumannBoundaryConditions.h>
+#include <TNL/operators/tnlOperatorComposition.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/functions/tnlExpBumpFunction.h>
+#include <TNL/functions/tnlConstantFunction.h>
+#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
+#include <TNL/operators/tnlNeumannBoundaryConditions.h>
 #include "../tnlUnitTestStarter.h"
 
 #ifdef HAVE_CPPUNIT
@@ -26,6 +26,7 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 
+using namespace TNL;
 
 template< typename Operator >
 class tnlOperatorCompositionTest
@@ -100,7 +101,7 @@ class tnlOperatorCompositionTest
       {
          auto entity = mesh.template getEntity< typename MeshType::Cell >( i );
          entity.refresh();
-         //cerr << entity.getIndex() << " " << operatorFunction2( entity ) << " " << operatorFunction3( entity ) << endl;
+         //cerr << entity.getIndex() << " " << operatorFunction2( entity ) << " " << operatorFunction3( entity ) << std::endl;
          CPPUNIT_ASSERT( operatorFunction2( entity ) == operatorFunction3( entity ) );
          /*if( entity.isBoundaryEntity() )
             CPPUNIT_ASSERT( boundaryConditions( f1, entity ) == operatorFunction( entity ) );
@@ -126,6 +127,8 @@ bool runTest()
    return false;
 #endif
 }
+
+using namespace TNL;
 
 template< typename MeshType >
 bool setOperator()

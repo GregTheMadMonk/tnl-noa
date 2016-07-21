@@ -11,12 +11,14 @@
 #ifndef TNLMEANCURVATURETEST_H
 #define	TNLMEANCURVATURETEST_H
 
-#include <operators/diffusion/tnlOneSidedMeanCurvature.h>
-#include <operators/diffusion/tnlExactLinearDiffusion.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/operators/diffusion/tnlOneSidedMeanCurvature.h>
+#include <TNL/operators/diffusion/tnlExactLinearDiffusion.h>
+#include <TNL/mesh/tnlGrid.h>
 #include "../tnlPDEOperatorEocUnitTest.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../../tnlUnitTestStarter.h"
+
+using namespace TNL;
 
 template< typename ApproximateOperator,
           typename TestFunction,
@@ -40,9 +42,9 @@ class tnlOneSidedMeanCurvatureTest
  
       tnlOneSidedMeanCurvatureTest(){};
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlOneSidedMeanCurvatureTest< " ) +
+         return String( "tnlOneSidedMeanCurvatureTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }

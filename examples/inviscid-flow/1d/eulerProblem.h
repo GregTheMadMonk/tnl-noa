@@ -1,8 +1,10 @@
 #ifndef eulerPROBLEM_H_
 #define eulerPROBLEM_H_
 
-#include <problems/tnlPDEProblem.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/problems/tnlPDEProblem.h>
+#include <TNL/functions/tnlMeshFunction.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -35,16 +37,16 @@ class eulerProblem:
       
 
 
-      static tnlString getTypeStatic();
+      static String getTypeStatic();
 
-      tnlString getPrologHeader() const;
+      String getPrologHeader() const;
 
-      void writeProlog( tnlLogger& logger,
-                        const tnlParameterContainer& parameters ) const;
+      void writeProlog( Logger& logger,
+                        const Config::ParameterContainer& parameters ) const;
 
-      bool setup( const tnlParameterContainer& parameters );
+      bool setup( const Config::ParameterContainer& parameters );
 
-      bool setInitialCondition( const tnlParameterContainer& parameters,
+      bool setInitialCondition( const Config::ParameterContainer& parameters,
                                 const MeshType& mesh,
                                 DofVectorType& dofs,
                                 MeshDependentDataType& meshDependentData );
@@ -101,6 +103,8 @@ class eulerProblem:
 
 
 };
+
+} // namepsace TNL
 
 #include "eulerProblem_impl.h"
 

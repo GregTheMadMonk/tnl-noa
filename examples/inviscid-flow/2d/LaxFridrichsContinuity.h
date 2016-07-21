@@ -1,8 +1,10 @@
 #ifndef LaxFridrichsContinuity_H
 #define LaxFridrichsContinuity_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -27,7 +29,7 @@ class LaxFridrichsContinuity< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, In
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocityX;
       MeshFunctionType velocityY;
@@ -88,7 +90,7 @@ class LaxFridrichsContinuity< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, In
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocityX;
       MeshFunctionType velocityY;
@@ -149,7 +151,7 @@ class LaxFridrichsContinuity< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, In
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocityX;
       MeshFunctionType velocityY;
@@ -194,6 +196,8 @@ class LaxFridrichsContinuity< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, In
                                MatrixRow& matrixRow ) const;
 };
 
+
+} //namespace TNL
 
 #include "LaxFridrichsContinuity_impl .h"
 

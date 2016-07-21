@@ -18,24 +18,26 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/arrays/tnlStaticArray.h>
-#include <core/arrays/tnlSharedArray.h>
-#include <core/arrays/tnlConstSharedArray.h>
+#include <TNL/Arrays/StaticArray.h>
+#include <TNL/Arrays/SharedArray.h>
+#include <TNL/Arrays/ConstSharedArray.h>
 
+using namespace TNL;
+using namespace TNL::Arrays;
 
 class testingClassForStaticArrayTester
 {
    public:
 
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "testingClassForStaticArrayTester" );
+         return String( "testingClassForStaticArrayTester" );
       };
 };
 
-tnlString getType( const testingClassForStaticArrayTester& c )
+String getType( const testingClassForStaticArrayTester& c )
 {
-   return tnlString( "testingClassForStaticArrayTester" );
+   return String( "testingClassForStaticArrayTester" );
 };
 
 template< int Size, typename ElementType >
@@ -53,7 +55,7 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlArrayTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "ArrayTester" );
       CppUnit :: TestResult result;
       suiteOfTests -> addTest( new TestCaller( "testConstructors", &StaticArrayTester::testConstructors ) );
       suiteOfTests -> addTest( new TestCaller( "testCoordinatesGetter", &StaticArrayTester::testCoordinatesGetter ) );
@@ -158,7 +160,7 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
    void testLoadAndSave()
    {
       tnlStaticArray< Size, ElementType > u1( 7 ), u2( 0 );
-      tnlFile file;
+      File file;
       file.open( "tnl-static-array-test.tnl", tnlWriteMode );
       u1.save( file );
       file.close();
@@ -183,7 +185,7 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
    void testStreamOperator()
    {
       tnlStaticArray< Size, ElementType > u;
-      stringstream testStream;
+      std::stringstream testStream;
       testStream << u;
    }
 

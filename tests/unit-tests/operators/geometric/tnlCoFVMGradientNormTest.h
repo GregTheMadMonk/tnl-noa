@@ -11,13 +11,15 @@
 #ifndef TNLTWOSIDEDGRADIENTNORMTEST_H
 #define	TNLTWOSIDEDGRADIENTNORMTEST_H
 
-#include <operators/geometric/tnlCoFVMGradientNorm.h>
-#include <operators/geometric/tnlExactGradientNorm.h>
-#include <operators/interpolants/tnlMeshEntitiesInterpolants.h>
-#include <operators/tnlOperatorComposition.h>
+#include <TNL/operators/geometric/tnlCoFVMGradientNorm.h>
+#include <TNL/operators/geometric/tnlExactGradientNorm.h>
+#include <TNL/operators/interpolants/tnlMeshEntitiesInterpolants.h>
+#include <TNL/operators/tnlOperatorComposition.h>
 #include "../../tnlUnitTestStarter.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../tnlPDEOperatorEocUnitTest.h"
+
+using namespace TNL;
 
 template< typename ApproximateOperator,
           typename TestFunction,
@@ -39,9 +41,9 @@ class tnlCoFVMGradientNormTest
       const RealType eoc[ 3 ] =       { 2.0,  2.0, 2.0 };
       const RealType tolerance[ 3 ] = { 1.05, 1.1, 1.3 };
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlCoFVMGradientNormTest< " ) +
+         return String( "tnlCoFVMGradientNormTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }

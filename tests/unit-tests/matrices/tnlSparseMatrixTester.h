@@ -11,6 +11,18 @@
 #ifndef TNLSPARSEMATRIXTESTER_H_
 #define TNLSPARSEMATRIXTESTER_H_
 
+#ifdef HAVE_CPPUNIT
+#include <cppunit/TestSuite.h>
+#include <cppunit/TestResult.h>
+#include <cppunit/TestCaller.h>
+#include <cppunit/TestCase.h>
+#include <cppunit/Message.h>
+#include <TNL/File.h>
+#include <TNL/Vectors/Vector.h>
+#endif 
+
+using namespace TNL;
+
 template< typename Matrix,
           typename TestSetup >
 class tnlSparseMatrixTesterMatrixSetter
@@ -23,14 +35,6 @@ class tnlSparseMatrixTesterMatrixSetter
    }
 };
 
-#ifdef HAVE_CPPUNIT
-#include <cppunit/TestSuite.h>
-#include <cppunit/TestResult.h>
-#include <cppunit/TestCaller.h>
-#include <cppunit/TestCase.h>
-#include <cppunit/Message.h>
-#include <core/tnlFile.h>
-#include <core/vectors/tnlVector.h>
 
 #ifdef HAVE_CUDA
 template< typename MatrixType >
@@ -74,6 +78,8 @@ __global__ void tnlSparseMatrixTester__setRowFast_LowerTriangularMatrixTestCudaK
 
 #endif
 
+#ifdef HAVE_CPPUNIT
+
 class tnlSparseMatrixTestDefaultSetup
 {};
 
@@ -99,7 +105,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
 
    static CppUnit :: Test* suite()
    {
-      tnlString testSuiteName( "tnlSparseMatrixTester< " );
+      String testSuiteName( "tnlSparseMatrixTester< " );
       testSuiteName += MatrixType::getType() + " >";
 
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( testSuiteName.getString() );
@@ -531,7 +537,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
-            if( abs( i - j ) <= 1 )
+            if( std::abs( i - j ) <= 1 )
                m.addElement( i, j, 1 );
 
       for( int i = 0; i < 10; i++ )
@@ -539,7 +545,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
             if( i == j )
                CPPUNIT_ASSERT( m.getElement( i, i ) == i + 1 );
             else
-               if( abs( i - j ) == 1 )
+               if( std::abs( i - j ) == 1 )
                   CPPUNIT_ASSERT( m.getElement( i, j ) == 1 );
                else
                   CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );

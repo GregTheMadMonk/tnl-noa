@@ -22,11 +22,11 @@
 #include "navierStokesSolver.h"
 #include <stdio.h>
 #include <iostream>
-#include <core/tnlString.h>
-#include <core/mfilename.h>
-#include <core/mfuncs.h>
-#include <core/vectors/tnlSharedVector.h>
-#include <solvers/ode/tnlMersonSolver.h>
+#include <TNL/String.h>
+#include <TNL/core/mfilename.h>
+#include <TNL/core/mfuncs.h>
+#include <TNL/Vectors/SharedVector.h>
+#include <TNL/solvers/ode/tnlMersonSolver.h>
 
 
 #ifdef HAVE_CUDA
@@ -74,7 +74,7 @@ template< typename Mesh, typename EulerScheme >
    template< typename Real, typename Device, typename Index,
              template< int, typename, typename, typename > class Geometry >
 bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 1, Real, Device, Index, Geometry >& mesh,
-                                                        const tnlParameterContainer& parameters ) const
+                                                        const Config::ParameterContainer& parameters ) const
 {
 
 }
@@ -83,19 +83,19 @@ template< typename Mesh, typename EulerScheme >
    template< typename Real, typename Device, typename Index,
              template< int, typename, typename, typename > class Geometry >
 bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 2, Real, Device, Index, Geometry >& mesh,
-                                                        const tnlParameterContainer& parameters ) const
+                                                        const Config::ParameterContainer& parameters ) const
 {
    tnlStaticVector< 2, IndexType > meshes;
    meshes.x() = parameters.getParameter< int >( "x-size" );
    meshes.y() = parameters.getParameter< int >( "y-size" );
    if( meshes.x() <= 0 )
    {
-      cerr << "Error: x-size must be positive integer number! It is " << meshes. x() << " now." << endl;
+      std::cerr << "Error: x-size must be positive integer number! It is " << meshes. x() << " now." << std::endl;
       return false;
    }
    if( meshes.y() <= 0 )
    {
-      cerr << "Error: y-size must be positive integer number! It is " << meshes. y() << " now." << endl;
+      std::cerr << "Error: y-size must be positive integer number! It is " << meshes. y() << " now." << std::endl;
       return false;
    }
    mesh.setDimensions( meshes. x(), meshes. y() );
@@ -106,20 +106,20 @@ template< typename Mesh, typename EulerScheme >
    template< typename Real, typename Device, typename Index,
              template< int, typename, typename, typename > class Geometry >
 bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 3, Real, Device, Index, Geometry >& mesh,
-                                                        const tnlParameterContainer& parameters ) const
+                                                        const Config::ParameterContainer& parameters ) const
 {
 
 }
 
 template< typename Mesh, typename EulerScheme >
-bool navierStokesSolver< Mesh, EulerScheme >::setup( const tnlParameterContainer& parameters )
+bool navierStokesSolver< Mesh, EulerScheme >::setup( const Config::ParameterContainer& parameters )
 {
-   cout << "Initiating solver ... " << endl;
+  std::cout << "Initiating solver ... " << std::endl;
 
    /****
     * Set-up problem type
     */
-   const tnlString& problemName = parameters. getParameter< tnlString >( "problem-name" );
+   const String& problemName = parameters. getParameter< String >( "problem-name" );
    if( problemName == "riser" )
       problem = riser;
    if( problemName == "cavity" )
@@ -128,10 +128,10 @@ bool navierStokesSolver< Mesh, EulerScheme >::setup( const tnlParameterContainer
    /****
     * Set-up the geometry
     */
-   const tnlString& meshFile = parameters.getParameter< tnlString >( "mesh" );
+   const String& meshFile = parameters.getParameter< String >( "mesh" );
    if( ! this->mesh.load( meshFile ) )
    {
-      cerr << "I am not able to load the mesh from the file " << meshFile << "." << endl;
+      std::cerr << "I am not able to load the mesh from the file " << meshFile << "." << std::endl;
       return false;
    }
    /*tnlStaticVector< 2, RealType > proportions;
@@ -139,12 +139,12 @@ bool navierStokesSolver< Mesh, EulerScheme >::setup( const tnlParameterContainer
    proportions. y() = parameters. getParameter< double >( "height" );
    if( proportions. x() <= 0 )
    {
-      cerr << "Error: width must be positive real number! It is " << proportions. x() << " now." << endl;
+      std::cerr << "Error: width must be positive real number! It is " << proportions. x() << " now." << std::endl;
       return false;
    }
    if( proportions. y() <= 0 )
    {
-      cerr << "Error: height must be positive real number! It is " << proportions. y() << " now." << endl;
+      std::cerr << "Error: height must be positive real number! It is " << proportions. y() << " now." << std::endl;
       return false;
    }
    this->mesh. setOrigin( tnlStaticVector< 2, RealType >( 0, 0 ) );
@@ -153,7 +153,7 @@ bool navierStokesSolver< Mesh, EulerScheme >::setup( const tnlParameterContainer
    if( ! this->initMesh( this->mesh, parameters ) )
       return false;
    mesh.refresh();
-   mesh.save( tnlString( "mesh.tnl" ) );*/
+   mesh.save( String( "mesh.tnl" ) );*/
 
    nsSolver.setMesh( this->mesh );
 
@@ -204,7 +204,7 @@ bool navierStokesSolver< Mesh, EulerScheme >::setup( const tnlParameterContainer
 }
 
 template< typename Mesh, typename EulerScheme >
-bool navierStokesSolver< Mesh, EulerScheme > :: setInitialCondition( const tnlParameterContainer& parameters )
+bool navierStokesSolver< Mesh, EulerScheme > :: setInitialCondition( const Config::ParameterContainer& parameters )
 {
    tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
    const IndexType& dofs = mesh. getDofs();
@@ -251,7 +251,7 @@ template< typename Mesh, typename EulerScheme >
 bool navierStokesSolver< Mesh, EulerScheme > :: makeSnapshot( const RealType& t,
                                                               const IndexType step )
 {
-   cout << endl << "Writing output at time " << t << " step " << step << "." << endl;
+  std::cout << std::endl << "Writing output at time " << t << " step " << step << "." << std::endl;
    if( !nsSolver.writePhysicalVariables( t, step ) )
       return false;
    if( !nsSolver.writeConservativeVariables( t, step ) )
@@ -287,24 +287,24 @@ tnlSolverMonitor< typename navierStokesSolver< Mesh, EulerScheme > :: RealType,
 }
 
 template< typename Mesh, typename EulerScheme >
-tnlString navierStokesSolver< Mesh, EulerScheme > :: getTypeStatic()
+String navierStokesSolver< Mesh, EulerScheme > :: getTypeStatic()
 {
-   return tnlString( "navierStokesSolver< " ) +
+   return String( "navierStokesSolver< " ) +
           Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh, typename EulerScheme >
-tnlString navierStokesSolver< Mesh, EulerScheme > :: getPrologHeader() const
+String navierStokesSolver< Mesh, EulerScheme > :: getPrologHeader() const
 {
-   return tnlString( "Navier-Stokes Problem Solver" );
+   return String( "Navier-Stokes Problem Solver" );
 }
 
 template< typename Mesh, typename EulerScheme >
-void navierStokesSolver< Mesh, EulerScheme > :: writeProlog( tnlLogger& logger,
-                                                             const tnlParameterContainer& parameters ) const
+void navierStokesSolver< Mesh, EulerScheme > :: writeProlog( Logger& logger,
+                                                             const Config::ParameterContainer& parameters ) const
 {
-   logger. WriteParameter< tnlString >( "Problem name:", "problem-name", parameters );
-   const tnlString& problemName = parameters. getParameter< tnlString >( "problem-name" );
+   logger. WriteParameter< String >( "Problem name:", "problem-name", parameters );
+   const String& problemName = parameters. getParameter< String >( "problem-name" );
    if( problemName == "cavity" )
    {
       logger. WriteParameter< double >( "Max. inflow velocity:", "max-inflow-velocity", parameters, 1 );
@@ -318,7 +318,7 @@ void navierStokesSolver< Mesh, EulerScheme > :: writeProlog( tnlLogger& logger,
    logger. WriteParameter< double >( "Domain width:", mesh. getProportions(). x() - mesh. getOrigin(). x() );
    logger. WriteParameter< double >( "Domain height:", mesh. getProportions(). y() - mesh. getOrigin(). y() );
    logger. WriteSeparator();
-   logger. WriteParameter< tnlString >( "Space discretisation:", "scheme", parameters );
+   logger. WriteParameter< String >( "Space discretisation:", "scheme", parameters );
    logger. WriteParameter< int >( "Meshes along x:", mesh. getDimensions(). x() );
    logger. WriteParameter< int >( "Meshes along y:", mesh. getDimensions(). y() );
    logger. WriteParameter< double >( "Space step along x:", mesh. getParametricStep(). x() );

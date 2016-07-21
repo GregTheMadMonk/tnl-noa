@@ -11,15 +11,17 @@
 #ifndef TNL_HEAT_EQUATION_EOC_H_
 #define TNL_HEAT_EQUATION_EOC_H_
 
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfigTag.h>
-#include <solvers/tnlBuildConfigTags.h>
-#include <functions/tnlTestFunction.h>
-#include <operators/diffusion/tnlLinearDiffusion.h>
-#include <operators/diffusion/tnlExactLinearDiffusion.h>
-#include <problems/tnlHeatEquationEocRhs.h>
-#include <problems/tnlHeatEquationEocProblem.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
+#include <TNL/solvers/tnlSolver.h>
+#include <TNL/solvers/tnlFastBuildConfigTag.h>
+#include <TNL/solvers/tnlBuildConfigTags.h>
+#include <TNL/functions/tnlTestFunction.h>
+#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
+#include <TNL/operators/diffusion/tnlExactLinearDiffusion.h>
+#include <TNL/problems/tnlHeatEquationEocRhs.h>
+#include <TNL/problems/tnlHeatEquationEocProblem.h>
+#include <TNL/operators/tnlDirichletBoundaryConditions.h>
+
+using namespace TNL;
 
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
@@ -28,7 +30,7 @@ template< typename MeshConfig >
 class heatEquationEocConfig
 {
    public:
-      static void configSetup( tnlConfigDescription& config )
+      static void configSetup( Config::ConfigDescription& config )
       {
          config.addDelimiter( "Heat equation EOC settings:" );
          config.addDelimiter( "Tests setting::" );
@@ -52,7 +54,7 @@ class heatEquationSetter
 
    typedef tnlStaticVector< MeshType::meshDimensions, Real > Vertex;
 
-   static bool run( const tnlParameterContainer& parameters )
+   static bool run( const Config::ParameterContainer& parameters )
    {
       enum { Dimensions = MeshType::meshDimensions };
       typedef tnlLinearDiffusion< MeshType, Real, Index > ApproximateOperator;

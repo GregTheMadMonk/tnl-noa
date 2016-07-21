@@ -11,7 +11,7 @@
 #ifndef TNLVECTOROPERATIONSTESTER_H_
 #define TNLVECTOROPERATIONSTESTER_H_
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -20,8 +20,11 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 
-#include <core/vectors/tnlVector.h>
-#include <core/vectors/tnlVectorOperations.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Vectors/VectorOperations.h>
+
+using namespace TNL;
+using namespace TNL::Arrays;
 
 template< typename Real, typename Device >
 class tnlVectorOperationsTester : public CppUnit :: TestCase
@@ -71,7 +74,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = i;
 
-      tnlArrayOperations< typename Vector::DeviceType,
+      ArrayOperations< typename Vector::DeviceType,
                           tnlHost >::
       template copyMemory< typename Vector::RealType,
                            typename Vector::RealType,
@@ -90,7 +93,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = 1;
 
-      tnlArrayOperations< typename Vector::DeviceType,
+      ArrayOperations< typename Vector::DeviceType,
                           tnlHost >::
       template copyMemory< typename Vector::RealType,
                            typename Vector::RealType,
@@ -109,7 +112,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = -i;
 
-      tnlArrayOperations< typename Vector::DeviceType,
+      ArrayOperations< typename Vector::DeviceType,
                           tnlHost >::
       template copyMemory< typename Vector::RealType,
                            typename Vector::RealType,
@@ -129,7 +132,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       for( int i = 1; i < a. getSize(); i ++ )
          a.getData()[ i ] = a.getData()[ i-1 ] * -1;
 
-      tnlArrayOperations< typename Vector::DeviceType,
+      ArrayOperations< typename Vector::DeviceType,
                           tnlHost >::
       template copyMemory< typename Vector::RealType,
                            typename Vector::RealType,
@@ -187,7 +190,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       v. setSize( size );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorLpNorm( v, 2.0 ) == sqrt( size ) );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorLpNorm( v, 2.0 ) == ::sqrt( size ) );
    }
 
    void getVectorSumTest()
@@ -264,7 +267,7 @@ class tnlVectorOperationsTester : public CppUnit :: TestCase
       v. setValue( 1.0 );
 
       CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 1.0 ) == 2.0 * size );
-      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 2.0 ) == sqrt( 4.0 * size ) );
+      CPPUNIT_ASSERT( tnlVectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 2.0 ) == ::sqrt( 4.0 * size ) );
    }
 
    void getVectorDifferenceSumTest()

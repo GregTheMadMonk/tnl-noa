@@ -15,8 +15,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <legacy/mesh/tnlGridOld.h>
-#include <core/tnlFile.h>
+#include <TNL/legacy/mesh/tnlGridOld.h>
+#include <TNL/File.h>
 
 template< typename Real, typename device, typename Index > class tnlGridOldTester : public CppUnit :: TestCase
 {
@@ -65,7 +65,7 @@ template< typename Real, typename device, typename Index > class tnlGridOldTeste
 
    void testSaveAndLoad()
    {
-      /*tnlFile file;
+      /*File file;
       tnlGridOld< 1, Real, device, Index > u1( "tnlGridOldTester:u1" );
       tnlGridOld< 1, Real, device, Index > v1( "tnlGridOldTester:v1" );
       u1. setDimensions( tnlStaticVector< 1, Index >( 10 ) );

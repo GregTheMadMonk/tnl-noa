@@ -1,14 +1,16 @@
-#include <tnlConfig.h>
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlBuildConfigTags.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
-#include <operators/tnlNeumannBoundaryConditions.h>
-#include <functions/tnlConstantFunction.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/solvers/tnlSolver.h>
+#include <TNL/solvers/tnlBuildConfigTags.h>
+#include <TNL/operators/tnlDirichletBoundaryConditions.h>
+#include <TNL/operators/tnlNeumannBoundaryConditions.h>
+#include <TNL/functions/tnlConstantFunction.h>
 #include "eulerProblem.h"
 #include "LaxFridrichs.h"
 
 #include "eulerRhs.h"
 #include "eulerBuildConfigTag.h"
+
+using namespace TNL;
 
 typedef eulerBuildConfigTag BuildConfig;
 
@@ -25,12 +27,12 @@ typedef eulerBuildConfigTag BuildConfig;
 template< typename ConfigTag >class eulerConfig
 {
    public:
-      static void configSetup( tnlConfigDescription & config )
+      static void configSetup( Config::ConfigDescription & config )
       {
          config.addDelimiter( "euler settings:" );
-         config.addEntry< tnlString >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
-            config.addEntryEnum< tnlString >( "dirichlet" );
-            config.addEntryEnum< tnlString >( "neumann" );
+         config.addEntry< String >( "boundary-conditions-type", "Choose the boundary conditions type.", "dirichlet");
+            config.addEntryEnum< String >( "dirichlet" );
+            config.addEntryEnum< String >( "neumann" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< double >( "left-density", "This sets a value of left density." );
          config.addEntry< double >( "left-velocity", "This sets a value of left velocity." );
@@ -62,7 +64,7 @@ class eulerSetter
       typedef Device DeviceType;
       typedef Index IndexType;
 
-      static bool run( const tnlParameterContainer & parameters )
+      static bool run( const Config::ParameterContainer & parameters )
       {
           enum { Dimensions = MeshType::getMeshDimensions() };
           typedef LaxFridrichs< MeshType, Real, Index > ApproximateOperator;
@@ -74,7 +76,7 @@ class eulerSetter
           * The following code is for the Dirichlet and the Neumann boundary conditions.
           * Both can be constant or defined as descrete values of tnlVector.
           */
-          tnlString boundaryConditionsType = parameters.getParameter< tnlString >( "boundary-conditions-type" );
+          String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
           if( parameters.checkParameter( "boundary-conditions-constant" ) )
           {
              typedef tnlConstantFunction< Dimensions, Real > ConstantFunction;
@@ -113,4 +115,5 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }
+
 

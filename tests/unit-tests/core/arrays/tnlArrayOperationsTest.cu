@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlArrayOperationsTest.cu  -  description
+                          ArrayOperationsTest.cu  -  description
                              -------------------
     begin                : Jul 16, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -10,11 +10,13 @@
 
 #include "tnlArrayOperationsTester.h"
 #include "../../tnlUnitTestStarter.h"
-#include <core/tnlCuda.h>
+#include <TNL/core/tnlCuda.h>
+
+using namespace TNL;
 
 int main( int argc, char* argv[] )
 {
-   if( ! tnlUnitTestStarter :: run< tnlArrayOperationsTester< int, tnlCuda > >() )
+   if( ! tnlUnitTestStarter :: run< ArrayOperationsTester< int, tnlCuda > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

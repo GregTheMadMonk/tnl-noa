@@ -17,10 +17,12 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <matrices/tnlMultidiagonalMatrix.h>
-#include <core/tnlFile.h>
-#include <core/vectors/tnlVector.h>
-#include <core/vectors/tnlSharedVector.h>
+#include <TNL/matrices/tnlMultidiagonalMatrix.h>
+#include <TNL/File.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Vectors/SharedVector.h>
+
+using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
 class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
@@ -83,7 +85,7 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
       m.setValue( 1.0 );
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
-            if( abs( i - j ) <= 2 || abs( i - j ) == 5 )
+            if( std::abs( i - j ) <= 2 || std::abs( i - j ) == 5 )
                CPPUNIT_ASSERT( m.getElement( i, j ) == 1.0 );
             else
                CPPUNIT_ASSERT( m.getElement( i, j ) == 0.0 );
@@ -116,7 +118,7 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
-            if( abs( i - j ) <= 1 )
+            if( std::abs( i - j ) <= 1 )
                m.addElement( i, j, 1 );
 
       for( int i = 0; i < 10; i++ )
@@ -124,7 +126,7 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
             if( i == j )
                CPPUNIT_ASSERT( m.getElement( i, i ) == i + 1 );
             else
-               if( abs( i - j ) == 1 )
+               if( std::abs( i - j ) == 1 )
                   CPPUNIT_ASSERT( m.getElement( i, j ) == 1 );
                else
                   CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
@@ -148,7 +150,7 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
             if( i == j )
                CPPUNIT_ASSERT( m.getElement( i, i ) == i );
             else
-               if( abs( i - j ) == 4 || abs( i - j ) < 3 )
+               if( std::abs( i - j ) == 4 || std::abs( i - j ) < 3 )
                   CPPUNIT_ASSERT( m.getElement( i, j ) == 1 );
                else
                   CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
@@ -175,7 +177,7 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
                if( i == j )
                   CPPUNIT_ASSERT( m.getElement( i, i ) == i );
                else
-                  if( abs( i - j ) == 4 || abs( i - j ) < 3 )
+                  if( std::abs( i - j ) == 4 || std::abs( i - j ) < 3 )
                      CPPUNIT_ASSERT( m.getElement( i, j ) == 1 );
                   else
                      CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );

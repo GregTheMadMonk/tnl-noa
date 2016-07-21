@@ -11,6 +11,8 @@
 #ifndef TESTS_UNIT_TESTS_MESH_TNLGRID1DTESTER_H_
 #define TESTS_UNIT_TESTS_MESH_TNLGRID1DTESTER_H_
 
+using namespace TNL;
+
 template< typename RealType, typename Device, typename IndexType >
 class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCase
 {

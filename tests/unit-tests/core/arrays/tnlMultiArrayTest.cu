@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <core/tnlCuda.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/core/tnlCuda.h>
 #include <cstdlib>
 
 #include "tnlMultiArrayTester.h"

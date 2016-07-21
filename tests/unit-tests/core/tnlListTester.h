@@ -19,8 +19,10 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlList.h>
-#include <core/tnlFile.h>
+#include <TNL/List.h>
+#include <TNL/File.h>
+
+using namespace TNL;
 
 class tnlListTester : public CppUnit :: TestCase
 {

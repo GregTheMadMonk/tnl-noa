@@ -1,8 +1,10 @@
 #ifndef LaxFridrichsMomentumY_H
 #define LaxFridrichsMomentumY_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -27,7 +29,7 @@ class LaxFridrichsMomentumY< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Ind
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocityX;
       MeshFunctionType velocityY;
@@ -93,7 +95,7 @@ class LaxFridrichsMomentumY< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Ind
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocityX;
       MeshFunctionType velocityY;
@@ -159,7 +161,7 @@ class LaxFridrichsMomentumY< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Ind
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocityX;
       MeshFunctionType velocityY;
@@ -209,6 +211,7 @@ class LaxFridrichsMomentumY< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Ind
                                MatrixRow& matrixRow ) const;
 };
 
+} // namespace TNL
 
 #include "LaxFridrichsMomentumY_impl.h"
 

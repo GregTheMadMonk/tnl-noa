@@ -2,13 +2,13 @@
 
 #include "benchmarks.h"
 
-#include <core/vectors/tnlVector.h>
+#include <TNL/Vectors/Vector.h>
 
 #ifdef HAVE_CUBLAS
 #include "cublasWrappers.h"
 #endif
 
-namespace tnl
+namespace TNL
 {
 namespace benchmarks
 {
@@ -34,7 +34,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
         ! deviceVector2.setSize( size ) )
     {
         const char* msg = "error: allocation of vectors failed";
-        cerr << msg << endl;
+        std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg );
         return false;
     }
@@ -279,14 +279,14 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
 
     /*
-    cout << "Benchmarking prefix-sum:" << endl;
+   std::cout << "Benchmarking prefix-sum:" << std::endl;
     timer.reset();
     timer.start();
     hostVector.computePrefixSum();
     timer.stop();
     timeHost = timer.getTime();
     bandwidth = 2 * datasetSize / loops / timer.getTime();
-    cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
+   std::cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << std::endl;
 
     timer.reset();
     timer.start();
@@ -294,8 +294,8 @@ benchmarkVectorOperations( Benchmark & benchmark,
     timer.stop();
     timeDevice = timer.getTime();
     bandwidth = 2 * datasetSize / loops / timer.getTime();
-    cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << endl;
-    cout << "  CPU/GPU speedup: " << timeHost / timeDevice << endl;
+   std::cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << std::endl;
+   std::cout << "  CPU/GPU speedup: " << timeHost / timeDevice << std::endl;
 
     HostVector auxHostVector;
     auxHostVector.setLike( deviceVector );
@@ -303,7 +303,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
     for( int i = 0; i < size; i++ )
        if( hostVector.getElement( i ) != auxHostVector.getElement( i ) )
        {
-          cerr << "Error in prefix sum at position " << i << ":  " << hostVector.getElement( i ) << " != " << auxHostVector.getElement( i ) << endl;
+          std::cerr << "Error in prefix sum at position " << i << ":  " << hostVector.getElement( i ) << " != " << auxHostVector.getElement( i ) << std::endl;
        }
     */
 

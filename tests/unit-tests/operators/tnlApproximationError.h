@@ -11,13 +11,15 @@
 #ifndef TNLAPPROXIMATIONERROR_H_
 #define TNLAPPROXIMATIONERROR_H_
 
-#include <mesh/tnlGrid.h>
-#include <functions/tnlConstantFunction.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
-#include <solvers/pde/tnlExplicitUpdater.h>
-#include <functions/tnlExactOperatorFunction.h>
-#include <functions/tnlMeshFunction.h>
-#include <solvers/pde/tnlBoundaryConditionsSetter.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/functions/tnlConstantFunction.h>
+#include <TNL/operators/tnlDirichletBoundaryConditions.h>
+#include <TNL/solvers/pde/tnlExplicitUpdater.h>
+#include <TNL/functions/tnlExactOperatorFunction.h>
+#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/solvers/pde/tnlBoundaryConditionsSetter.h>
+
+using namespace TNL;
 
 template< typename ExactOperator,
           typename ApproximateOperator,
@@ -56,8 +58,8 @@ class tnlApproximationError
          DirichletBoundaryConditions boundaryConditions;
          BoundaryOperatorFunction boundaryOperatorFunction( boundaryConditions, u );
 
-         tnlString meshSizeString( mesh.getDimensions().x() );
-         tnlString dimensionsString;
+         String meshSizeString( mesh.getDimensions().x() );
+         String dimensionsString;
          if( MeshType::getMeshDimensions() == 1 )
             dimensionsString = "1D-";
          if( MeshType::getMeshDimensions() == 2 )
@@ -68,21 +70,21 @@ class tnlApproximationError
          //if( writeFunctions )
          //   mesh.save( "mesh-" + dimensionsString + meshSizeString + ".tnl" );
 
-         //cerr << "Evaluating exact u... " << endl;
+         //cerr << "Evaluating exact u... " << std::endl;
          exactU = exactOperatorFunction;
          if( writeFunctions )
             exactU.write( "exact-result-" + dimensionsString + meshSizeString, "gnuplot" );
 
-         //cerr << "Projecting test function ..." << endl;
+         //cerr << "Projecting test function ..." << std::endl;
          v = function;
          if( writeFunctions )
             v.write( "test-function-" + dimensionsString + meshSizeString, "gnuplot" ) ;
 
-         //cerr << "Evaluating approximate u ... " << endl;
+         //cerr << "Evaluating approximate u ... " << std::endl;
          operatorFunction.setPreimageFunction( v );
          if( ! operatorFunction.deepRefresh() )
          {
-            cerr << "Error in operator refreshing." << endl;
+            std::cerr << "Error in operator refreshing." << std::endl;
             return;
          }
          u = operatorFunction;
@@ -90,7 +92,7 @@ class tnlApproximationError
          if( writeFunctions )
             u.write( "approximate-result-" + dimensionsString + meshSizeString, "gnuplot" ) ;
 
-         //cerr << "Evaluate difference ... " << endl;
+         //cerr << "Evaluate difference ... " << std::endl;
          u -= exactU;
          tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
          if( writeFunctions )

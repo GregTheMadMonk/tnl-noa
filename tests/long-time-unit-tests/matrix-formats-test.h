@@ -11,29 +11,31 @@
 #ifndef MATRIX_FORMATS_TEST_H_
 #define MATRIX_FORMATS_TEST_H_
 
-#include <matrices/tnlMatrixReader.h>
+#include <TNL/matrices/tnlMatrixReader.h>
 
 #include <cstdlib>
-#include <core/tnlFile.h>
-#include <debug/tnlDebug.h>
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
-#include <matrices/tnlDenseMatrix.h>
-#include <matrices/tnlEllpackMatrix.h>
-#include <matrices/tnlSlicedEllpackMatrix.h>
-#include <matrices/tnlChunkedEllpackMatrix.h>
-#include <matrices/tnlCSRMatrix.h>
+#include <TNL/File.h>
+#include <TNL/debug/tnlDebug.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/matrices/tnlDenseMatrix.h>
+#include <TNL/matrices/tnlEllpackMatrix.h>
+#include <TNL/matrices/tnlSlicedEllpackMatrix.h>
+#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
+#include <TNL/matrices/tnlCSRMatrix.h>
 
-void setupConfig( tnlConfigDescription& config )
+using namespace TNL;
+
+void setupConfig( Config::ConfigDescription& config )
 {
     config.addDelimiter                            ( "General settings:" );
-    config.addEntry< tnlString >( "input-file", "Input file name." );
-    config.addEntry< tnlString >( "matrix-format", "Matrix format." );
-       config.addEntryEnum< tnlString >( "dense" );
-       config.addEntryEnum< tnlString >( "ellpack" );
-       config.addEntryEnum< tnlString >( "sliced-ellpack" );
-       config.addEntryEnum< tnlString >( "chunked-ellpack" );
-       config.addEntryEnum< tnlString >( "csr" );
+    config.addEntry< String >( "input-file", "Input file name." );
+    config.addEntry< String >( "matrix-format", "Matrix format." );
+       config.addEntryEnum< String >( "dense" );
+       config.addEntryEnum< String >( "ellpack" );
+       config.addEntryEnum< String >( "sliced-ellpack" );
+       config.addEntryEnum< String >( "chunked-ellpack" );
+       config.addEntryEnum< String >( "csr" );
    config.addEntry< bool >( "hard-test", "Comparison against the dense matrix.", false );
    config.addEntry< bool >( "multiplication-test", "Matrix-vector multiplication test.", false );
    config.addEntry< bool >( "verbose", "Verbose mode." );
@@ -41,20 +43,20 @@ void setupConfig( tnlConfigDescription& config )
 
 
 template< typename Matrix >
-bool testMatrix( const tnlParameterContainer& parameters )
+bool testMatrix( const Config::ParameterContainer& parameters )
 {
    Matrix matrix;
    typedef typename Matrix::RealType RealType;
    typedef typename Matrix::DeviceType DeviceType;
    typedef typename Matrix::IndexType IndexType;
 
-   const tnlString& fileName = parameters.getParameter< tnlString >( "input-file" );
+   const String& fileName = parameters.getParameter< String >( "input-file" );
    bool verbose = parameters.getParameter< bool >( "verbose" );
-   fstream file;
-   file.open( fileName.getString(), ios::in );
+   std::fstream file;
+   file.open( fileName.getString(), std::ios::in );
    if( ! file )
    {
-      cerr << "Cannot open the file " << fileName << endl;
+      std::cerr << "Cannot open the file " << fileName << std::endl;
       return false;
    }
    if( ! tnlMatrixReader< Matrix >::readMtxFile( file, matrix, verbose ) )
@@ -69,29 +71,29 @@ bool testMatrix( const tnlParameterContainer& parameters )
          return false;
       if( ! tnlMatrixReader< DenseMatrix >::verifyMtxFile( file, denseMatrix, verbose ) )
          return false;
-      //matrix.print( cout );
-      //denseMatrix.print( cout );
+      //matrix.print(std::cout );
+      //denseMatrix.print(std::cout );
       for( IndexType i = 0; i < matrix.getRows(); i++ )
       {
          for( IndexType j = 0; j < matrix.getColumns(); j++ )
             if( matrix.getElement( i, j ) != denseMatrix.getElement( i, j ) )
             {
-               cerr << "The matrices differ at position " << i << ", " << j << "." << endl
+               std::cerr << "The matrices differ at position " << i << ", " << j << "." << std::endl
                     << " The values are " << matrix.getElement( i, j ) << " (sparse) and "
-                    << denseMatrix.getElement( i, j ) << " (dense)." << endl;
-               tnlString line;
+                    << denseMatrix.getElement( i, j ) << " (dense)." << std::endl;
+               String line;
                IndexType lineNumber;
                if( tnlMatrixReader< Matrix >::findLineByElement( file, i, j, line, lineNumber ) )
-                  cerr << "The mtx file says ( line " << lineNumber << " ): " << line << endl;
+                  std::cerr << "The mtx file says ( line " << lineNumber << " ): " << line << std::endl;
                else
-                  cerr << "The element is missing in the file. Should be zero therefore." << endl;
+                  std::cerr << "The element is missing in the file. Should be zero therefore." << std::endl;
                return false;
             }
          if( verbose )
-            cout << " Comparing the sparse matrix with the dense matrix ... " << i << " / " << matrix.getRows() << "             \r" << flush;
+           std::cout << " Comparing the sparse matrix with the dense matrix ... " << i << " / " << matrix.getRows() << "             \r" << std::flush;
       }
       if( verbose )
-         cout << " Comparing the sparse matrix with the dense matrix ... OK.           " << endl;
+        std::cout << " Comparing the sparse matrix with the dense matrix ... OK.           " << std::endl;
    }
    if( parameters.getParameter< bool >( "multiplication-test" ) )
    {
@@ -106,24 +108,24 @@ bool testMatrix( const tnlParameterContainer& parameters )
          for( IndexType j = 0; j < b.getSize(); j++ )
             if( b.getElement( j ) != matrix.getElement( j, i ) )
             {
-               cerr << "The matrix-vector multiplication gives wrong result at positions "
+               std::cerr << "The matrix-vector multiplication gives wrong result at positions "
                     << j << ", " << i << ". The result is " << b.getElement( j ) << " and it should be "
-                    << matrix.getElement( j, i ) << "." << endl;
+                    << matrix.getElement( j, i ) << "." << std::endl;
                return false;
             }
          if( verbose )
-            cerr << " Testing the matrix-vector multiplication ... " << i << " / " << matrix.getRows() << "            \r" << flush;
+            std::cerr << " Testing the matrix-vector multiplication ... " << i << " / " << matrix.getRows() << "            \r" << std::flush;
       }
       if( verbose )
-         cerr << " Testing the matrix-vector multiplication ...  OK.                                       " << endl;
+         std::cerr << " Testing the matrix-vector multiplication ...  OK.                                       " << std::endl;
    }
    return true;
 }
 
 int main( int argc, char* argv[] )
 {
-   tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
+   Config::ParameterContainer parameters;
+   Config::ConfigDescription conf_desc;
 
    setupConfig( conf_desc );
  
@@ -133,7 +135,7 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
    }
 
-   const tnlString& matrixFormat = parameters.getParameter< tnlString >( "matrix-format" );
+   const String& matrixFormat = parameters.getParameter< String >( "matrix-format" );
    if( matrixFormat == "dense" )
    {
        if( !testMatrix< tnlDenseMatrix< double, tnlHost, int > >( parameters ) )
@@ -164,7 +166,7 @@ int main( int argc, char* argv[] )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
-   cerr << "Uknown matrix format " << matrixFormat << "." << endl;
+   std::cerr << "Uknown matrix format " << matrixFormat << "." << std::endl;
    return EXIT_FAILURE;
 }
 

@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 #include <cstdlib>
 
 #include "tnlListTester.h"

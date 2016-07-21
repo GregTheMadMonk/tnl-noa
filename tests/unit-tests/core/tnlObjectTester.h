@@ -17,32 +17,34 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlObject.h>
-#include <core/tnlFile.h>
+#include <TNL/Object.h>
+#include <TNL/File.h>
 
-class tnlObjectTester : public CppUnit :: TestCase
+using namespace TNL;
+
+class ObjectTester : public CppUnit :: TestCase
 {
    public:
-   tnlObjectTester(){};
+   ObjectTester(){};
 
    virtual
-   ~tnlObjectTester(){};
+   ~ObjectTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlObjectTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "ObjectTester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlObjectTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< ObjectTester >(
                                "testObjectSave",
-                               & tnlObjectTester :: testObjectSave )
+                               & ObjectTester :: testObjectSave )
                               );
        return suiteOfTests;
    }
 
    void testObjectSave()
    {
-      tnlObject obj;
-      tnlFile file;
+      Object obj;
+      File file;
       file. open( "test-file.tnl", tnlWriteMode );
       obj.save( file );
    };
@@ -50,7 +52,7 @@ class tnlObjectTester : public CppUnit :: TestCase
 };
 
 #else /* HAVE_CPPUNIT */
-class tnlObjectTester{};
+class ObjectTester{};
 #endif  /* HAVE_CPPUNIT */
 
 #endif /* TNLOBJECTTESTER_H_ */

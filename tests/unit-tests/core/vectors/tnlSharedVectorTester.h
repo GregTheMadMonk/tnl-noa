@@ -16,8 +16,10 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/vectors/tnlSharedVector.h>
-#include <core/tnlFile.h>
+#include <TNL/Vectors/SharedVector.h>
+#include <TNL/File.h>
+
+using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
 class tnlSharedVectorTester : public CppUnit :: TestCase
@@ -147,8 +149,8 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i ++ )
          data[ i ] = -2;
       CPPUNIT_ASSERT( v. lpNorm( 1 ) == 20.0 );
-      CPPUNIT_ASSERT( v. lpNorm( 2 ) == sqrt( 40.0 ) );
-      CPPUNIT_ASSERT( v. lpNorm( 3 ) == pow( 80.0, 1.0/3.0 ) );
+      CPPUNIT_ASSERT( v. lpNorm( 2 ) == ::sqrt( 40.0 ) );
+      CPPUNIT_ASSERT( v. lpNorm( 3 ) == ::pow( 80.0, 1.0/3.0 ) );
    };
 
    void testSum()
@@ -233,8 +235,8 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
          data2[ i ] = 1;
       }
       CPPUNIT_ASSERT( v1. differenceLpNorm( v2, 1.0 ) == 20.0 );
-      CPPUNIT_ASSERT( v1. differenceLpNorm( v2, 2.0 ) == sqrt( 40.0 ) );
-      CPPUNIT_ASSERT( v1. differenceLpNorm( v2, 3.0 ) == pow( 80.0, 1.0/3.0 ) );
+      CPPUNIT_ASSERT( v1. differenceLpNorm( v2, 2.0 ) == ::sqrt( 40.0 ) );
+      CPPUNIT_ASSERT( v1. differenceLpNorm( v2, 3.0 ) == ::pow( 80.0, 1.0/3.0 ) );
    };
 
    void testDifferenceSum()

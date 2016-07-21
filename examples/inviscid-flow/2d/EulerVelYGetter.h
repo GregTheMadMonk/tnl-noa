@@ -1,8 +1,10 @@
 #ifndef EulerVelYGetter_H
 #define EulerVelYGetter_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -27,7 +29,7 @@ class EulerVelYGetter< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       MeshFunctionType rhoVelY;
       MeshFunctionType rho;
 
@@ -81,7 +83,7 @@ class EulerVelYGetter< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       MeshFunctionType rhoVelY;
       MeshFunctionType rho;
 
@@ -135,7 +137,7 @@ class EulerVelYGetter< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       MeshFunctionType rhoVelY;
       MeshFunctionType rho;
 
@@ -172,6 +174,8 @@ class EulerVelYGetter< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
                                Vector& b,
                                MatrixRow& matrixRow ) const;
 };
+
+} //namespace TNL
 
 
 #include "EulerVelYGetter_impl.h"

@@ -17,8 +17,9 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/vectors/tnlStaticVector.h>
+#include <TNL/Vectors/StaticVector.h>
 
+using namespace TNL;
 
 template< int Size, typename RealType >
 class tnlStaticVectorTester : public CppUnit :: TestCase

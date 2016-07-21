@@ -18,7 +18,7 @@
 #ifndef NAVIERSTOKESSOLVERMONITOR_H_
 #define NAVIERSTOKESSOLVERMONITOR_H_
 
-#include <solvers/ode/tnlODESolverMonitor.h>
+#include <TNL/solvers/ode/tnlODESolverMonitor.h>
 
 template< typename Real, typename Index >
 class navierStokesSolverMonitor : public tnlODESolverMonitor< Real, Index >

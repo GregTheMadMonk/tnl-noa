@@ -1,11 +1,10 @@
-#ifndef eulerPROBLEM_IMPL_H_
-#define eulerPROBLEM_IMPL_H_
+#pragma once
 
-#include <core/mfilename.h>
-#include <matrices/tnlMatrixSetter.h>
-#include <solvers/pde/tnlExplicitUpdater.h>
-#include <solvers/pde/tnlLinearSystemAssembler.h>
-#include <solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/core/mfilename.h>
+#include <TNL/matrices/tnlMatrixSetter.h>
+#include <TNL/solvers/pde/tnlExplicitUpdater.h>
+#include <TNL/solvers/pde/tnlLinearSystemAssembler.h>
+#include <TNL/solvers/pde/tnlBackwardTimeDiscretisation.h>
 
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsEnergy.h"
@@ -16,26 +15,28 @@
 #include "EulerVelYGetter.h"
 #include "EulerVelGetter.h"
 
+namespace TNL {
+
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return tnlString( "eulerProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "eulerProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
-   return tnlString( "euler2D" );
+   return String( "euler2D" );
 }
 
 template< typename Mesh,
@@ -44,7 +45,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
+writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
     * Add data you want to have in the computation report (log) as follows:
@@ -58,7 +59,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const tnlParameterContainer& parameters )
+setup( const Config::ParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide.setup( parameters, "right-hand-side-" ) )
@@ -98,7 +99,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setInitialCondition( const tnlParameterContainer& parameters,
+setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData )
@@ -109,15 +110,15 @@ setInitialCondition( const tnlParameterContainer& parameters,
    double velLX = parameters.getParameter< double >( "left-velocityX" );
    double velLY = parameters.getParameter< double >( "left-velocityY" );
    double preL = parameters.getParameter< double >( "left-pressure" );
-   double eL = ( preL / (gamma - 1) ) + 0.5 * rhoL * pow(velLX,2)+pow(velLY,2);
+   double eL = ( preL / (gamma - 1) ) + 0.5 * rhoL * ::pow(velLX,2) + ::pow(velLY,2);
    double rhoR = parameters.getParameter< double >( "right-density" );
    double velRX = parameters.getParameter< double >( "right-velocityX" );
    double velRY = parameters.getParameter< double >( "right-velocityY" );
    double preR = parameters.getParameter< double >( "right-pressure" );
-   double eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * pow(velRX,2)+pow(velRY,2);
+   double eR = ( preR / (gamma - 1) ) + 0.5 * rhoR * ::pow(velRX,2) + ::pow(velRY,2);
    double x0 = parameters.getParameter< double >( "riemann-border" );
    int size = mesh.template getEntitiesCount< Cell >();
-   int size2 = pow(size,2);
+   int size2 = ::pow(size,2);
    this->rho.bind(dofs,0,size2);
    this->rhoVelX.bind(dofs,size2,size2);
    this->rhoVelY.bind(dofs,2*size2,size2);
@@ -135,7 +136,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
                this->rhoVelX[j*size+i] = rhoL * velLX;
                this->rhoVelY[j*size+i] = rhoL * velLY;
                this->energy[j*size+i] = eL;
-               this->velocity[j*size+i] = sqrt(pow(velLX,2)+pow(velLY,2));
+               this->velocity[j*size+i] = ::sqrt( ::pow(velLX,2) + ::pow(velLY,2) );
                this->velocityX[j*size+i] = velLX;
                this->velocityY[j*size+i] = velLY;
                this->pressure[j*size+i] = preL;
@@ -146,7 +147,7 @@ setInitialCondition( const tnlParameterContainer& parameters,
                this->rhoVelX[j*size+i] = rhoR * velRX;
                this->rhoVelY[j*size+i] = rhoR * velRY;
                this->energy[j*size+i] = eR;
-               this->velocity[j*size+i] = sqrt(pow(velRX,2)+pow(velRY,2));
+               this->velocity[j*size+i] = ::sqrt( ::pow(velRX,2) + :: pow(velRY,2) );
                this->velocityX[j*size+i] = velRX;
                this->velocityY[j*size+i] = velRY;
                this->pressure[j*size+i] = preR;
@@ -193,9 +194,9 @@ makeSnapshot( const RealType& time,
               DofVectorType& dofs,
               MeshDependentDataType& meshDependentData )
 {
-   cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
+  std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( mesh, dofs );
-   tnlString fileName;
+   String fileName;
    FileNameBaseNumberEnding( "rho-", step, 5, ".tnl", fileName );
    if( ! this->rho.save( fileName ) )
       return false;
@@ -431,4 +432,5 @@ postIterate( const RealType& time,
 
 }
 
-#endif /* eulerPROBLEM_IMPL_H_ */
+} // namespace TNL
+

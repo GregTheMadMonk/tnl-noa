@@ -1,9 +1,11 @@
 #ifndef EulerPressureGetter_H
 #define EulerPressureGetter_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
-#include <functions/tnlDomain.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/functions/tnlDomain.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -19,7 +21,7 @@ class EulerPressureGetter
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       
       EulerPressureGetter( const MeshFunctionType& velocity,
                            const MeshFunctionType& rhoVel,
@@ -54,5 +56,7 @@ class EulerPressureGetter
       const MeshFunctionType& energy;
 
 };
+
+} //namespace TNL
 
 #endif	/* EulerPressureGetter_H */

@@ -11,7 +11,7 @@
 #ifndef TNLUNITTESTSTARTER_H_
 #define TNLUNITTESTSTARTER_H_
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/ui/text/TestRunner.h>
@@ -35,7 +35,7 @@ class tnlUnitTestStarter
          return false;
       return true;
 #else
-      std :: cerr << "Error: CPPUNIT is missing." << std :: endl;
+      std::cerr << "Error: CPPUNIT is missing." << std::endl;
       return false;
 #endif
    }

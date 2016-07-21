@@ -1,8 +1,8 @@
 #ifndef BenchmarkLaplace_H
 #define BenchmarkLaplace_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/mesh/tnlGrid.h>
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -27,7 +27,7 @@ class BenchmarkLaplace< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -69,7 +69,7 @@ class BenchmarkLaplace< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -111,7 +111,7 @@ class BenchmarkLaplace< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__

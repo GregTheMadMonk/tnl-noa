@@ -11,8 +11,10 @@
 #ifndef TNLPDEOPERATOREOCTESTSETTER_H_
 #define TNLPDEOPERATOREOCTESTSETTER_H_
 
-#include <mesh/tnlGrid.h>
-#include <functions/tnlExpBumpFunction.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/functions/tnlExpBumpFunction.h>
+
+using namespace TNL;
 
 template< typename ApproximateOperator,
           typename ExactOperator,

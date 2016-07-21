@@ -1,6 +1,6 @@
 #ifndef HeatEquationBenchmarkRHS_H_
 #define HeatEquationBenchmarkRHS_H_
-#include<functions/tnlDomain.h>
+#include <TNL/functions/tnlDomain.h>
 template< typename Mesh, typename Real >class HeatEquationBenchmarkRhs
   : public tnlDomain< Mesh::meshDimensions, MeshDomain > 
  {
@@ -9,8 +9,8 @@ template< typename Mesh, typename Real >class HeatEquationBenchmarkRhs
       typedef Mesh MeshType;
       typedef Real RealType;
 
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" )
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" )
       {
          return true;
       }

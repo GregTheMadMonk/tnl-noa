@@ -1,14 +1,16 @@
 #ifndef LaxFridrichs_H
 #define LaxFridrichs_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/mesh/tnlGrid.h>
 
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsMomentum.h"
 #include "LaxFridrichsEnergy.h"
 #include "EulerVelGetter.h"
 #include "EulerPressureGetter.h"
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -27,5 +29,7 @@ class LaxFridrichs
       typedef EulerPressureGetter< Mesh, Real, Index > Pressure;
    
 };
+
+} // namespace TNL
 
 #endif	/* LaxFridrichs_H */

@@ -1,6 +1,8 @@
 #ifndef EulerPressureGetter_IMPL_H
 #define EulerPressureGetter_IMPL_H
 
+namespace TNL {
+
 /****
  * 1D problem
  */
@@ -9,14 +11,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 EulerPressureGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "EulerPressureGetter< " ) +
+   return String( "EulerPressureGetter< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -112,14 +114,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 EulerPressureGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "EulerPressureGetter< " ) +
+   return String( "EulerPressureGetter< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -143,7 +145,7 @@ operator()( const MeshFunction& u,
    //pressure
    const IndexType& center = entity.getIndex(); 
 
-   return ( this->gamma - 1 ) * ( energy[ center ] - 0.5 * rho[ center ] * pow( velocity[ center ],2 ));
+   return ( this->gamma - 1 ) * ( energy[ center ] - 0.5 * rho[ center ] * ::pow( velocity[ center ],2 ));
 }
 
 template< typename MeshReal,
@@ -216,14 +218,14 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-tnlString
+String
 EulerPressureGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
-   return tnlString( "EulerPressureGetter< " ) +
+   return String( "EulerPressureGetter< " ) +
           MeshType::getType() + ", " +
-          ::getType< Real >() + ", " +
-          ::getType< Index >() + " >";
+         TNL::getType< Real >() + ", " +
+         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -329,6 +331,8 @@ updateLinearSystem( const RealType& time,
    matrixRow.setElement( 5, north,  -lambdaY );
    matrixRow.setElement( 6, up,     -lambdaZ );
 }
+
+} // namespace TNL
 
 #endif	/* EulerPressureGetterIMPL_H */
 

@@ -1,8 +1,8 @@
 #ifndef LaxFridrichs_H
 #define LaxFridrichs_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/mesh/tnlGrid.h>
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -52,7 +52,7 @@ class LaxFridrichs< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
           this->tau = tau;
       };
 
-      static tnlString getType();
+      static String getType();
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -119,7 +119,7 @@ class LaxFridrichs< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
           this->tau = tau;
       };
 
-      static tnlString getType();
+      static String getType();
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -186,7 +186,7 @@ class LaxFridrichs< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
           this->tau = tau;
       };
 
-      static tnlString getType();
+      static String getType();
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__

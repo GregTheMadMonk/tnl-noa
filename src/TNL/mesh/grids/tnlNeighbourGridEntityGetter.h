@@ -1,0 +1,58 @@
+/***************************************************************************
+                          tnlNeighbourGridEntityGetter.h  -  description
+                             -------------------
+    begin                : Nov 23, 2015
+    copyright            : (C) 2015 by Tomas Oberhuber
+    email                : tomas.oberhuber@fjfi.cvut.cz
+ ***************************************************************************/
+
+/* See Copyright Notice in tnl/Copyright */
+
+#pragma once
+
+#include <TNL/Assert.h>
+
+namespace TNL {
+
+enum tnlGridEntityStencilStorage
+{
+   tnlGridEntityNoStencil = 0,
+   tnlGridEntityCrossStencil,
+   tnlGridEntityFullStencil
+};
+
+template< int storage >
+class tnlGridEntityStencilStorageTag
+{
+   public:
+ 
+      static const int stencilStorage = storage;
+};
+
+template< typename GridEntity,
+          int NeighbourEntityDimensions,
+          typename EntityStencilTag =
+            tnlGridEntityStencilStorageTag< GridEntity::ConfigType::template neighbourEntityStorage< GridEntity >( NeighbourEntityDimensions ) > >
+class tnlNeighbourGridEntityGetter
+{
+   public:
+
+      // TODO: not all specializations are implemented yet
+ 
+      __cuda_callable__
+      tnlNeighbourGridEntityGetter( const GridEntity& entity )
+      {
+         //Assert( false, );
+      };
+ 
+      __cuda_callable__
+      void refresh( const typename GridEntity::GridType& grid,
+                    const typename GridEntity::IndexType& entityIndex )
+      {
+         //Assert( false, );
+      };
+
+};
+
+} // namespace TNL
+

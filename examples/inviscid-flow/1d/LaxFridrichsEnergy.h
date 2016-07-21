@@ -1,8 +1,10 @@
 #ifndef LaxFridrichsEnergy_H
 #define LaxFridrichsEnergy_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/mesh/tnlGrid.h>
+
+namespace TNL {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -27,7 +29,7 @@ class LaxFridrichsEnergy< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index 
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocity;
       MeshFunctionType pressure;
@@ -87,7 +89,7 @@ class LaxFridrichsEnergy< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index 
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocity;
       MeshFunctionType pressure;
@@ -147,7 +149,7 @@ class LaxFridrichsEnergy< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index 
       typedef tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
       Real tau;
       MeshFunctionType velocity;
       MeshFunctionType pressure;
@@ -191,6 +193,7 @@ class LaxFridrichsEnergy< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index 
                                MatrixRow& matrixRow ) const;
 };
 
+} // namespace TNL
 
 #include "LaxFridrichsEnergy_impl.h"
 

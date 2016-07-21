@@ -1,8 +1,10 @@
 #ifndef HeatEquationBenchmarkPROBLEM_H_
 #define HeatEquationBenchmarkPROBLEM_H_
 
-#include <problems/tnlPDEProblem.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/problems/tnlPDEProblem.h>
+#include <TNL/functions/tnlMeshFunction.h>
+
+using namespace TNL;
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -26,16 +28,16 @@ class HeatEquationBenchmarkProblem:
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
 
-      static tnlString getTypeStatic();
+      static String getTypeStatic();
 
-      tnlString getPrologHeader() const;
+      String getPrologHeader() const;
 
-      void writeProlog( tnlLogger& logger,
-                        const tnlParameterContainer& parameters ) const;
+      void writeProlog( Logger& logger,
+                        const Config::ParameterContainer& parameters ) const;
 
-      bool setup( const tnlParameterContainer& parameters );
+      bool setup( const Config::ParameterContainer& parameters );
 
-      bool setInitialCondition( const tnlParameterContainer& parameters,
+      bool setInitialCondition( const Config::ParameterContainer& parameters,
                                 const MeshType& mesh,
                                 DofVectorType& dofs,
                                 MeshDependentDataType& meshDependentData );

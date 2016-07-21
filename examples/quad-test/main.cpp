@@ -16,15 +16,15 @@
  ***************************************************************************/
 
 #include "quad-test-conf.h"
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
-#include <matrices/tnlCSRMatrix.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/matrices/tnlCSRMatrix.h>
 //#include "../../src/matrix/tnlCSRMatrix.h"
 #include "Quadcpp.h"
 
 int main(int argc, char* argv[]) {
-	tnlParameterContainer parameters;
-	tnlConfigDescription conf_desc;
+	Config::ParameterContainer parameters;
+	Config::ConfigDescription conf_desc;
 	if(conf_desc.ParseConfigDescription(CONFIG_FILE) != 0)
 		return EXIT_FAILURE;
 	if(!parseCommandLine(argc, argv, conf_desc, parameters)) {
@@ -32,15 +32,15 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	tnlString inputFile = parameters.getParameter <tnlString> ("input-file");
-	tnlFile binaryFile;
+	String inputFile = parameters.getParameter <String> ("input-file");
+	File binaryFile;
 	if(! binaryFile.open(inputFile, tnlReadMode)) {
-		cerr << "I am not able to open the file " << inputFile << "." << endl;
+		cerr << "I am not able to open the file " << inputFile << "." << std::endl;
 		return 1;
 	}
 	tnlCSRMatrix <double> doubleMatrix("double");
 	if(! doubleMatrix.load(binaryFile)) {
-		cerr << "Unable to restore the CSR matrix." << endl;
+		cerr << "Unable to restore the CSR matrix." << std::endl;
 		return 1;
 	}
 	binaryFile.close();

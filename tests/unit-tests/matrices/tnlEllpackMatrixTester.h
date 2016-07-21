@@ -17,9 +17,11 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <matrices/tnlEllpackMatrix.h>
-#include <core/tnlFile.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/matrices/tnlEllpackMatrix.h>
+#include <TNL/File.h>
+#include <TNL/Vectors/Vector.h>
+
+using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
 class tnlEllpackMatrixTester : public CppUnit :: TestCase

@@ -2,13 +2,13 @@
 
 #include "benchmarks.h"
 
-#include <core/tnlList.h>
-#include <matrices/tnlCSRMatrix.h>
-#include <matrices/tnlEllpackMatrix.h>
-#include <matrices/tnlSlicedEllpackMatrix.h>
-#include <matrices/tnlChunkedEllpackMatrix.h>
+#include <TNL/List.h>
+#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/matrices/tnlEllpackMatrix.h>
+#include <TNL/matrices/tnlSlicedEllpackMatrix.h>
+#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
 
-namespace tnl
+namespace TNL
 {
 namespace benchmarks
 {
@@ -102,7 +102,7 @@ benchmarkSpMV( Benchmark & benchmark,
     CudaVector deviceVector, deviceVector2;
 
     // create benchmark group
-    tnlList< tnlString > parsedType;
+    List< String > parsedType;
     parseObjectType( HostMatrix::getType(), parsedType );
     benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
 
@@ -116,7 +116,7 @@ benchmarkSpMV( Benchmark & benchmark,
         ! deviceVector2.setSize( size ) )
     {
         const char* msg = "error: allocation of vectors failed";
-        cerr << msg << endl;
+        std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg, 2 );
         return false;
     }
@@ -126,13 +126,13 @@ benchmarkSpMV( Benchmark & benchmark,
 
     if( ! hostMatrix.setCompressedRowsLengths( hostRowLengths ) ) {
         const char* msg = "error: allocation of host matrix failed";
-        cerr << msg << endl;
+        std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg, 2 );
         return false;
     }
     if( ! deviceMatrix.setCompressedRowsLengths( deviceRowLengths ) ) {
         const char* msg = "error: allocation of device matrix failed";
-        cerr << msg << endl;
+        std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg, 2 );
         return false;
     }

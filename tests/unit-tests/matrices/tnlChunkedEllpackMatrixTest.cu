@@ -8,9 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <core/tnlCuda.h>
-#include <matrices/tnlChunkedEllpackMatrix.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/core/tnlCuda.h>
+#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
 #include <cstdlib>
 
 #include "tnlSparseMatrixTester.h"
