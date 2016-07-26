@@ -234,7 +234,7 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, 
              const IndexType& dz = 0 ) const;    
 
       tnlSharedVector< RealType, DeviceType, IndexType > u;
-      tnlVector< RealType, DeviceType, IndexType> q;
+      Vector< RealType, DeviceType, IndexType> q;
       RealType eps;
 };
 
@@ -289,7 +289,7 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, 
           const IndexType& dz = 0 ) const;
        
    tnlSharedVector< RealType, DeviceType, IndexType > u;
-   tnlVector< RealType, DeviceType, IndexType> q;
+   Vector< RealType, DeviceType, IndexType> q;
    RealType eps;
 };
 
@@ -344,7 +344,7 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, 
              const IndexType& dz = 0 ) const;
 
       tnlSharedVector< RealType, DeviceType, IndexType > u;
-      tnlVector< RealType, DeviceType, IndexType> q;
+      Vector< RealType, DeviceType, IndexType> q;
       RealType eps;
 };
 

@@ -51,7 +51,7 @@ int main( int argc, char* argv[] )
       return 1;
    }*/
    int i;
-   tnlCurve< tnlStaticVector< 2, double > > crv( "tnlcurve2gnuplot:curve" );
+   tnlCurve< Vectors::StaticVector< 2, double > > crv( "tnlcurve2gnuplot:curve" );
    for( i = 0; i < size; i ++ )
    {
       const char* input_file = input_files[ i ]. getString();
@@ -70,13 +70,13 @@ int main( int argc, char* argv[] )
       }
       file. close();
 
-      tnlCurve< tnlStaticVector< 2, double > > out_crv( "tnlcurve2gnuplot:outcurve" );
+      tnlCurve< Vectors::StaticVector< 2, double > > out_crv( "tnlcurve2gnuplot:outcurve" );
       const int size = crv. getSize();
       int i;
       for( i = 0; i < size; i += output_step )
       {
          out_crv. Append( crv[ i ]. position, crv[ i ]. separator );
-         //tnlStaticVector< 2, double > v = crv[ i ]. position;
+         //StaticVector< 2, double > v = crv[ i ]. position;
          //v[ 0 ] = u( i );
          //v[ 1 ] = u( i + 1 );
          //out_crv. Append( v );

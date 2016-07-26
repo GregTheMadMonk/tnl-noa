@@ -188,7 +188,7 @@ class tnlSlicedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    protected:
 
-   tnlVector< Index, Device, Index > slicePointers, sliceCompressedRowsLengths;
+   Vectors::Vector< Index, Device, Index > slicePointers, sliceCompressedRowsLengths;
 
    typedef tnlSlicedEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlSlicedEllpackMatrixDeviceDependentCode< DeviceType >;

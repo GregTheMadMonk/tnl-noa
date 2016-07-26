@@ -32,8 +32,8 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
 {
    public:
    typedef tnlChunkedEllpackMatrix< RealType, Device, IndexType > MatrixType;
-   typedef tnlVector< RealType, Device, IndexType > VectorType;
-   typedef tnlVector< IndexType, Device, IndexType > IndexVector;
+   typedef Vector< RealType, Device, IndexType > VectorType;
+   typedef Vector< IndexType, Device, IndexType > IndexVector;
    typedef tnlChunkedEllpackMatrixTester< RealType, Device, IndexType, SliceSize, ChunkSize > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 

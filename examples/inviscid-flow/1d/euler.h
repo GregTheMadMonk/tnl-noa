@@ -69,12 +69,12 @@ class eulerSetter
           enum { Dimensions = MeshType::getMeshDimensions() };
           typedef LaxFridrichs< MeshType, Real, Index > ApproximateOperator;
           typedef eulerRhs< MeshType, Real > RightHandSide;
-          typedef tnlStaticVector < MeshType::getMeshDimensions(), Real > Vertex;
+          typedef Vectors::StaticVector < MeshType::getMeshDimensions(), Real > Vertex;
 
          /****
           * Resolve the template arguments of your solver here.
           * The following code is for the Dirichlet and the Neumann boundary conditions.
-          * Both can be constant or defined as descrete values of tnlVector.
+          * Both can be constant or defined as descrete values of Vector.
           */
           String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
           if( parameters.checkParameter( "boundary-conditions-constant" ) )

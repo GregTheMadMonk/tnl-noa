@@ -139,9 +139,9 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       const Index size = 128;
 
       tnlGridOld< 2, Real, tnlHost, int > hostU( "hostU");
-      hostU. setDimensions( tnlStaticVector< 2, Index >( size, size ) );
-      hostU. setDomain( tnlStaticVector< 2, Real >( 0.0, 0.0 ),
-                        tnlStaticVector< 2, Real >( 1.0, 1.0 ) );
+      hostU. setDimensions( StaticVector< 2, Index >( size, size ) );
+      hostU. setDomain( StaticVector< 2, Real >( 0.0, 0.0 ),
+                        StaticVector< 2, Real >( 1.0, 1.0 ) );
       const Real hx = hostU. getSpaceSteps(). x();
       const Real hy = hostU. getSpaceSteps(). y();
       for( Index i = 0; i < size; i ++ )

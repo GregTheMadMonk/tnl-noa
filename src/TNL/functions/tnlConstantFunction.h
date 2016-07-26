@@ -23,7 +23,7 @@ class tnlConstantFunction : public tnlDomain< dimensions, NonspaceDomain >
    public:
  
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< dimensions, RealType > VertexType;
+      typedef Vectors::StaticVector< dimensions, RealType > VertexType;
  
       tnlConstantFunction();
 

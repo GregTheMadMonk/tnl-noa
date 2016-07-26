@@ -297,12 +297,12 @@ template< typename Matrix,
    template< typename VectorT >
 void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
                                                          IndexType m,
-                                                         const Vectors::tnlVector< RealType, tnlHost, IndexType >& H,
-                                                         const Vectors::tnlVector< RealType, tnlHost, IndexType >& s,
-                                                         Vectors::tnlVector< RealType, DeviceType, IndexType >& v,
+                                                         const Vectors::Vector< RealType, tnlHost, IndexType >& H,
+                                                         const Vectors::Vector< RealType, tnlHost, IndexType >& s,
+                                                         Vectors::Vector< RealType, DeviceType, IndexType >& v,
                                                          VectorT& x )
 {
-   Vectors::tnlVector< RealType, tnlHost, IndexType > y;
+   Vectors::Vector< RealType, tnlHost, IndexType > y;
    y. setSize( m + 1 );
 
    IndexType i, j;

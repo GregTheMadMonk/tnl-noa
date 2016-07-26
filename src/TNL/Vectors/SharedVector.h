@@ -15,9 +15,12 @@
 #include <TNL/functions/tnlDomain.h>
 
 namespace TNL {
+
+   class tnlHost;
+
 namespace Vectors {   
 
-class tnlHost;
+
 
 template< typename Real = double,
            typename Device= tnlHost,
@@ -41,7 +44,7 @@ class tnlSharedVector : public Arrays::tnlSharedArray< Real, Device, Index >
                     const Index size );
 
    __cuda_callable__
-   tnlSharedVector( tnlVector< Real, Device, Index >& vector );
+   tnlSharedVector( Vector< Real, Device, Index >& vector );
 
    __cuda_callable__
    tnlSharedVector( tnlSharedVector< Real, Device, Index >& vector );

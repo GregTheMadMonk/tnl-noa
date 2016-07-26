@@ -85,7 +85,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setDimensions( const IndexT
 template< typename Real,
           typename Device,
           typename Index >
-void tnlChunkedEllpackMatrix< Real, Device, Index >::resolveSliceSizes( const tnlVector< Index, tnlHost, Index >& rowLengths )
+void tnlChunkedEllpackMatrix< Real, Device, Index >::resolveSliceSizes( const Vectors::Vector< Index, tnlHost, Index >& rowLengths )
 {
    /****
     * Iterate over rows and allocate slices so that each slice has
@@ -224,7 +224,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setCompressedRowsLengths( c
    {
       tnlChunkedEllpackMatrix< RealType, tnlHost, IndexType > hostMatrix;
       hostMatrix.setDimensions( this->getRows(), this->getColumns() );
-      tnlVector< IndexType, tnlHost, IndexType > hostCompressedRowsLengths;
+      Vectors::Vector< IndexType, tnlHost, IndexType > hostCompressedRowsLengths;
       hostCompressedRowsLengths.setLike( rowLengths);
       hostCompressedRowsLengths = rowLengths;
       hostMatrix.setNumberOfChunksInSlice( this->chunksInSlice );

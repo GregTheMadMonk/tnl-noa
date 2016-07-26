@@ -114,7 +114,7 @@ protected:
    /****
     * Auxiliary array for the computation of the solver residue on CUDA device.
     */
-   tnlVector< RealType, DeviceType, IndexType > cudaBlockResidue;
+   Vectors::Vector< RealType, DeviceType, IndexType > cudaBlockResidue;
 };
 
 } // namespace TNL

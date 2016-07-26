@@ -71,10 +71,10 @@ class tnlEllpackMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHost
                     Index column ) const;
 
    Real rowProduct( Index row,
-                    const tnlVector< Real, tnlHost, Index >& vector ) const;
+                    const Vector< Real, tnlHost, Index >& vector ) const;
 
-   void vectorProduct( const tnlVector< Real, tnlHost, Index >& x,
-                       tnlVector< Real, tnlHost, Index >& b ) const;
+   void vectorProduct( const Vector< Real, tnlHost, Index >& x,
+                       Vector< Real, tnlHost, Index >& b ) const;
 
    Real getRowL1Norm( Index row ) const
    { abort(); };
@@ -87,9 +87,9 @@ class tnlEllpackMatrix< Real, tnlHost, Index > : public tnlMatrix< Real, tnlHost
 
    protected:
 
-   tnlVector< Real > ellpack_nonzero_elements;
+   Vector< Real > ellpack_nonzero_elements;
 
-   tnlVector< Index > ellpack_columns;
+   Vector< Index > ellpack_columns;
 
    Index row_length;
 
@@ -253,7 +253,7 @@ Real tnlEllpackMatrix< Real, tnlHost, Index > :: getElement( Index row,
 
 template< typename Real, typename Index >
 Real tnlEllpackMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
-                                                             const tnlVector< Real, tnlHost, Index >& vector ) const
+                                                             const Vector< Real, tnlHost, Index >& vector ) const
 {
    Assert( 0 <= row && row < this->getSize(),
               std::cerr << "The row is outside the matrix." );
@@ -283,8 +283,8 @@ Real tnlEllpackMatrix< Real, tnlHost, Index > :: rowProduct( Index row,
 };
 
 template< typename Real, typename Index >
-void tnlEllpackMatrix< Real, tnlHost, Index > :: vectorProduct( const tnlVector< Real, tnlHost, Index >& x,
-                                                                tnlVector< Real, tnlHost, Index >& b ) const
+void tnlEllpackMatrix< Real, tnlHost, Index > :: vectorProduct( const Vector< Real, tnlHost, Index >& x,
+                                                                Vector< Real, tnlHost, Index >& b ) const
 {
    Assert( x. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for a multiplication have different sizes. "

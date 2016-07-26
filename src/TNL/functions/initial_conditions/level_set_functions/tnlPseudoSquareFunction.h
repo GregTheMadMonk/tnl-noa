@@ -46,7 +46,7 @@ class tnlPseudoSquareFunction< 1, Real > : public tnlPseudoSquareFunctionBase< R
 
       enum { Dimensions = 1 };
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 
@@ -77,7 +77,7 @@ class tnlPseudoSquareFunction< 2, Real > : public tnlPseudoSquareFunctionBase< R
 
       enum { Dimensions = 2 };
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 
@@ -108,7 +108,7 @@ class tnlPseudoSquareFunction< 3, Real > : public tnlPseudoSquareFunctionBase< R
 
       enum { Dimensions = 3 };
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 

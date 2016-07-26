@@ -28,7 +28,7 @@ class tnlEllpackMatrixTester : public CppUnit :: TestCase
 {
    public:
    typedef tnlEllpackMatrix< RealType, Device, IndexType > MatrixType;
-   typedef tnlVector< RealType, Device, IndexType > VectorType;
+   typedef Vector< RealType, Device, IndexType > VectorType;
    typedef tnlEllpackMatrixTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 

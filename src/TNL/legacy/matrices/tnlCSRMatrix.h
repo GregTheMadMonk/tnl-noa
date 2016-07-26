@@ -106,7 +106,7 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
    const Real* getRowValues( const Index row ) const;
 
    Real rowProduct( Index row,
-                    const tnlVector< Real, Device, Index >& vector ) const;
+                    const Vector< Real, Device, Index >& vector ) const;
 
    template< typename Vector1, typename Vector2 >
    void vectorProduct( const Vector1& x,
@@ -115,14 +115,14 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
    void setBackwardSpMV( bool backwardSpMV );
 
    bool performSORIteration( const Real& omega,
-                             const tnlVector< Real, Device, Index >& b,
-                             tnlVector< Real, Device, Index >& x,
+                             const Vector< Real, Device, Index >& b,
+                             Vector< Real, Device, Index >& x,
                              Index firstRow,
                              Index lastRow ) const;
 
    Real getRowL1Norm( Index row ) const;
 
-   bool reorderRows( const tnlVector< Index, Device, Index >& rowPermutation,
+   bool reorderRows( const Vector< Index, Device, Index >& rowPermutation,
                      const tnlCSRMatrix< Real, Device, Index >& csrMatrix );
 
    void multiplyRow( Index row, const Real& value );
@@ -203,11 +203,11 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
                              bool verbose ) const;
 
 
-   tnlVector< Real, Device, Index > nonzero_elements;
+   Vector< Real, Device, Index > nonzero_elements;
 
-   tnlVector< Index, Device, Index > columns;
+   Vector< Index, Device, Index > columns;
 
-   tnlVector< Index, Device, Index > row_offsets;
+   Vector< Index, Device, Index > row_offsets;
 
    //! The last non-zero element is at the position last_non_zero_element - 1
    Index last_nonzero_element;
@@ -545,7 +545,7 @@ const Real* tnlCSRMatrix< Real, Device, Index > :: getRowValues( const Index row
 
 template< typename Real, typename Device, typename Index >
 Real tnlCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
-                                                         const tnlVector< Real, Device, Index >& vec ) const
+                                                         const Vector< Real, Device, Index >& vec ) const
 {
    Assert( 0 <= row && row < this->getSize(),
               std::cerr << "The row is outside the matrix." );
@@ -626,8 +626,8 @@ void tnlCSRMatrix< Real, Device, Index > :: vectorProduct( const Vector1& vec,
 
 template< typename Real, typename Device, typename Index >
 bool tnlCSRMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
-                                                                 const tnlVector< Real, Device, Index >& b,
-                                                                 tnlVector< Real, Device, Index >& x,
+                                                                 const Vector< Real, Device, Index >& b,
+                                                                 Vector< Real, Device, Index >& x,
                                                                  Index firstRow,
                                                                  Index lastRow ) const
 {
@@ -696,7 +696,7 @@ void tnlCSRMatrix< Real, Device, Index > :: multiplyRow( Index row, const Real& 
 };
 
 template< typename Real, typename Device, typename Index >
-bool tnlCSRMatrix< Real, Device, Index > :: reorderRows( const tnlVector< Index, Device, Index >& rowPermutation,
+bool tnlCSRMatrix< Real, Device, Index > :: reorderRows( const Vector< Index, Device, Index >& rowPermutation,
                                                          const tnlCSRMatrix< Real, Device, Index >& inputCsrMatrix )
 {
    dbgFunctionName( "tnlCSRMatrix< Real, Device, Index >", "reorderRows" );
@@ -919,7 +919,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( std::istream& file,
    Index non_zero_elements( 0 );
    Index parsed_elements( 0 );
    Index size( 0 );
-   tnlVector< Index > rows_length( "rows-length" );
+   Vector< Index > rows_length( "rows-length" );
    Index header_end( 0 );
    bool symmetric = false;
 
@@ -1046,7 +1046,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( std::istream& file,
    dbgExpr( header_end );
    file. clear();
    file. seekg( header_end, std::ios::beg );
-   tnlVector< Index, tnlHost > insertedElementsInRows( "tnlCSRMatrix::insertedElementsInRows" );
+   Vector< Index, tnlHost > insertedElementsInRows( "tnlCSRMatrix::insertedElementsInRows" );
    insertedElementsInRows. setSize( size );
    insertedElementsInRows. setValue( 0 );
    while( line. getLine( file ) )

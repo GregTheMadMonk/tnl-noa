@@ -28,8 +28,8 @@ class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >
    void setRestarting( Index rest );
 
    bool solve( const tnlMatrix< Real, Device, Index >& A,
-               const tnlVector< Real, Device, Index >& b,
-               tnlVector< Real, Device, Index >& x,
+               const Vector< Real, Device, Index >& b,
+               Vector< Real, Device, Index >& x,
                const Real& max_residue,
                const Index max_iterations,
                tnlPreconditioner< Real >* precond = 0 );
@@ -44,10 +44,10 @@ class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >
     */
    void update( Index k,
                 Index m,
-                const tnlVector< Real, tnlHost, Index >& H,
-                const tnlVector< Real, tnlHost, Index >& s,
-                tnlVector< Real, Device, Index >& v,
-                tnlVector< Real, Device, Index >& x );
+                const Vector< Real, tnlHost, Index >& H,
+                const Vector< Real, tnlHost, Index >& s,
+                Vector< Real, Device, Index >& v,
+                Vector< Real, Device, Index >& x );
 
    void generatePlaneRotation( Real &dx,
                                Real &dy,
@@ -62,8 +62,8 @@ class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >
 
    bool setSize( Index _size, Index m );
 
-   tnlVector< Real, Device, Index > _r, _w, _v, _M_tmp;
-   tnlVector< Real, tnlHost, Index > _s, _cs, _sn, _H;
+   Vector< Real, Device, Index > _r, _w, _v, _M_tmp;
+   Vector< Real, tnlHost, Index > _s, _cs, _sn, _H;
 
    Index size, restarting;
 };
@@ -106,8 +106,8 @@ void tnlGMRESSolverOld< Real, Device, Index > :: setRestarting( Index rest )
 
 template< typename Real, typename Device, typename Index >
 bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, Device, Index >& A,
-                                                     const tnlVector< Real, Device, Index >& b,
-                                                     tnlVector< Real, Device, Index >& x,
+                                                     const Vector< Real, Device, Index >& b,
+                                                     Vector< Real, Device, Index >& x,
                                                      const Real& max_residue,
                                                      const Index max_iterations,
                                                      tnlPreconditioner< Real >* precond )
@@ -309,13 +309,13 @@ tnlGMRESSolverOld< Real, Device, Index > :: ~tnlGMRESSolverOld()
 template< typename Real, typename Device, typename Index >
 void tnlGMRESSolverOld< Real, Device, Index > :: update( Index k,
                                                       Index m,
-                                                      const tnlVector< Real, tnlHost, Index >& H,
-                                                      const tnlVector< Real, tnlHost, Index >& s,
-                                                      tnlVector< Real, Device, Index >& v,
-                                                      tnlVector< Real, Device, Index >& x )
+                                                      const Vector< Real, tnlHost, Index >& H,
+                                                      const Vector< Real, tnlHost, Index >& s,
+                                                      Vector< Real, Device, Index >& v,
+                                                      Vector< Real, Device, Index >& x )
 {
    //dbgFunctionName( "tnlGMRESSolverOld", "Update" );
-   tnlVector< Real, tnlHost, Index > y( "tnlGMRESSolverOld::update:y" );
+   Vector< Real, tnlHost, Index > y( "tnlGMRESSolverOld::update:y" );
    y. setSize( m + 1 );
 
    Index i, j;

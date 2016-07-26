@@ -92,8 +92,8 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    typedef typename Matrix::RealType RealType;
    typedef typename Matrix::DeviceType DeviceType;
    typedef typename Matrix::IndexType IndexType;
-   typedef tnlVector< RealType, DeviceType, IndexType > VectorType;
-   typedef tnlVector< IndexType, DeviceType, IndexType > IndexVector;
+   typedef Vectors::Vector< RealType, DeviceType, IndexType > VectorType;
+   typedef Vectors::Vector< IndexType, DeviceType, IndexType > IndexVector;
    typedef tnlSparseMatrixTester< MatrixType, MatrixSetup > TesterType;
    typedef tnlSparseMatrixTesterMatrixSetter< MatrixType, MatrixSetup > MatrixSetter;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;

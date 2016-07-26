@@ -124,7 +124,7 @@ bool tnlMultidiagonalMatrix< Real, Device, Index > :: setDiagonals(  const Vecto
 template< typename Real,
           typename Device,
           typename Index >
-const Vectors::tnlVector< Index, Device, Index >& tnlMultidiagonalMatrix< Real, Device, Index > :: getDiagonals() const
+const Vectors::Vector< Index, Device, Index >& tnlMultidiagonalMatrix< Real, Device, Index > :: getDiagonals() const
 {
    return this->diagonalsShift;
 }
@@ -532,7 +532,7 @@ template< typename Real,
 void tnlMultidiagonalMatrix< Real, Device, Index >::getTransposition( const tnlMultidiagonalMatrix< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   Vectors::tnlVector< Index > auxDiagonals;
+   Vectors::Vector< Index > auxDiagonals;
    auxDiagonals.setLike( matrix.getDiagonals() );
    const Index numberOfDiagonals = matrix.getDiagonals().getSize();
    for( Index i = 0; i < numberOfDiagonals; i++ )

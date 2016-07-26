@@ -82,7 +82,7 @@ void setCudaTestMatrix( Matrix& matrix,
 // TODO: rename as benchmark_SpMV_synthetic and move to spmv-synthetic.h
 template< typename Real,
           template< typename, typename, typename > class Matrix,
-          template< typename, typename, typename > class Vector = tnlVector >
+          template< typename, typename, typename > class Vector = Vectors::Vector >
 bool
 benchmarkSpMV( Benchmark & benchmark,
                const int & loops,
@@ -91,13 +91,13 @@ benchmarkSpMV( Benchmark & benchmark,
 {
     typedef Matrix< Real, tnlHost, int > HostMatrix;
     typedef Matrix< Real, tnlCuda, int > DeviceMatrix;
-    typedef tnlVector< Real, tnlHost, int > HostVector;
-    typedef tnlVector< Real, tnlCuda, int > CudaVector;
+    typedef Vectors::Vector< Real, tnlHost, int > HostVector;
+    typedef Vectors::Vector< Real, tnlCuda, int > CudaVector;
 
     HostMatrix hostMatrix;
     DeviceMatrix deviceMatrix;
-    tnlVector< int, tnlHost, int > hostRowLengths;
-    tnlVector< int, tnlCuda, int > deviceRowLengths;
+    Vectors::Vector< int, tnlHost, int > hostRowLengths;
+    Vectors::Vector< int, tnlCuda, int > deviceRowLengths;
     HostVector hostVector, hostVector2;
     CudaVector deviceVector, deviceVector2;
 

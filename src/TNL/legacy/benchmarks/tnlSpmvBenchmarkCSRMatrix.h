@@ -47,7 +47,7 @@ bool tnlSpmvBenchmarkCSRMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real
    this->matrix = matrix;
 
    const Index size = matrix. getSize();
-   tnlVector< Real, tnlHost > refX( "ref-x", size ), refB( "ref-b", size), backwardRefB( "backwardRef-b", size);
+   Vector< Real, tnlHost > refX( "ref-x", size ), refB( "ref-b", size), backwardRefB( "backwardRef-b", size);
    refX. setValue( 1.0 );
    this->matrix. vectorProduct( refX, refB );
    this->matrix. setBackwardSpMV( true );

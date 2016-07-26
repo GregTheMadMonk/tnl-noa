@@ -63,14 +63,14 @@ class heatEquationSetter
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   typedef tnlStaticVector< MeshType::meshDimensions, Real > Vertex;
+   typedef Vectors::StaticVector< MeshType::meshDimensions, Real > Vertex;
 
    static bool run( const Config::ParameterContainer& parameters )
    {
       enum { Dimensions = MeshType::meshDimensions };
       typedef tnlLinearDiffusion< MeshType, Real, Index > ApproximateOperator;
       typedef tnlConstantFunction< Dimensions, Real > RightHandSide;
-      typedef tnlStaticVector < MeshType::meshDimensions, Real > Vertex;
+      typedef Vectors::StaticVector < MeshType::meshDimensions, Real > Vertex;
 
       String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
       if( parameters.checkParameter( "boundary-conditions-constant" ) )

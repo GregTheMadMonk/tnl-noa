@@ -251,7 +251,7 @@ bool tnlMatrixReader< Matrix >::readMtxHeader( std::istream& file,
 
 template< typename Matrix >
 bool tnlMatrixReader< Matrix >::computeCompressedRowsLengthsFromMtxFile( std::istream& file,
-                                                              tnlVector< int, tnlHost, int >& rowLengths,
+                                                              Vectors::Vector< int, tnlHost, int >& rowLengths,
                                                               const int columns,
                                                               const int rows,
                                                               bool symmetricMatrix,

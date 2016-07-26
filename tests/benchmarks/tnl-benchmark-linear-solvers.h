@@ -71,7 +71,7 @@ bool benchmarkSolver( const Config::ParameterContainer& parameters,
    typedef typename MatrixType::RealType RealType;
    typedef typename MatrixType::DeviceType DeviceType;
    typedef typename MatrixType::IndexType IndexType;
-   typedef tnlVector< RealType, DeviceType, IndexType > VectorType;
+   typedef Vectors::Vector< RealType, DeviceType, IndexType > VectorType;
 
    VectorType x, y, b;
    x.setSize( matrix.getColumns() );

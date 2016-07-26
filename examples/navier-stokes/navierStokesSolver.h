@@ -44,7 +44,7 @@ class navierStokesSolver
    typedef typename Mesh :: DeviceType DeviceType;
    typedef typename Mesh :: IndexType IndexType;
    typedef Mesh MeshType;
-   typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+   typedef Vector< RealType, DeviceType, IndexType> DofVectorType;
 
    typedef tnlCSRMatrix< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
    typedef tnlDummyPreconditioner< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;

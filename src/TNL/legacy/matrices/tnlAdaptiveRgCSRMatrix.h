@@ -86,11 +86,11 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
    { abort(); };
 
    Real rowProduct( const Index row,
-                    const tnlVector< Real, Device, Index >& vec ) const
+                    const Vector< Real, Device, Index >& vec ) const
    { abort(); };
 
-   void vectorProduct( const tnlVector< Real, Device, Index >& vec,
-                       tnlVector< Real, Device, Index >& result ) const;
+   void vectorProduct( const Vector< Real, Device, Index >& vec,
+                       Vector< Real, Device, Index >& result ) const;
 
    /****
     * This method sets parameters of the format.
@@ -149,15 +149,15 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
    void printOutGroup( std::ostream& str,
                        const Index groupId ) const;
 
-   tnlVector< Real, Device, Index > nonzeroElements;
+   Vector< Real, Device, Index > nonzeroElements;
 
-   tnlVector< Index, Device, Index > columns;
+   Vector< Index, Device, Index > columns;
 
-   tnlVector< Index, Device, Index > threads;
+   Vector< Index, Device, Index > threads;
 
-   tnlVector< tnlARGCSRGroupProperties, Device, Index > groupInfo;
+   Vector< tnlARGCSRGroupProperties, Device, Index > groupInfo;
 
-   tnlVector< Index, Device, Index > rowToGroupMapping;
+   Vector< Index, Device, Index > rowToGroupMapping;
 
    Index maxGroupSize, groupSizeStep;
 
@@ -340,7 +340,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
       Index groupId( 0 );
 
       Index numberOfStoredValues( 0 );
-      tnlVector< Index, tnlHost, Index > threadsPerRow( "tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom : threadsPerRow" );
+      Vector< Index, tnlHost, Index > threadsPerRow( "tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom : threadsPerRow" );
       threadsPerRow. setSize( cudaBlockSize );
       threadsPerRow. setValue( 0 );
 
@@ -531,7 +531,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
          }
 
          /*
-         tnlVector< Index, tnlHost, Index > counters( "tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom : counters" );
+         Vector< Index, tnlHost, Index > counters( "tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom : counters" );
          counters. setSize( cudaBlockSize );
          counters. setValue( 0 );
          for( Index k = 0; k < groupInfo[ groupId ]. chunkSize; k ++ )
@@ -654,8 +654,8 @@ Real tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getElement( Index row,
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real, Device, Index >& vec,
-                                                                     tnlVector< Real, Device, Index >& result ) const
+void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: vectorProduct( const Vector< Real, Device, Index >& vec,
+                                                                     Vector< Real, Device, Index >& result ) const
 {
    dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, tnlHost >", "vectorProduct" )
    Assert( vec. getSize() == this->getSize(),

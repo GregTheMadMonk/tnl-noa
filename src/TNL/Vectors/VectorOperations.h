@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlVectorOperations.h  -  description
+                          VectorOperations.h  -  description
                              -------------------
     begin                : Nov 8, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -19,10 +19,10 @@ namespace TNL {
 namespace Vectors {   
 
 template< typename Device >
-class tnlVectorOperations{};
+class VectorOperations{};
 
 template<>
-class tnlVectorOperations< tnlHost >
+class VectorOperations< tnlHost >
 {
    public:
 
@@ -131,7 +131,7 @@ class tnlVectorOperations< tnlHost >
 };
 
 template<>
-class tnlVectorOperations< tnlCuda >
+class VectorOperations< tnlCuda >
 {
    public:
 

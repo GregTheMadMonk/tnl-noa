@@ -229,7 +229,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    protected:
 
 
-   void resolveSliceSizes( const tnlVector< Index, tnlHost, Index >& rowLengths );
+   void resolveSliceSizes( const Vectors::Vector< Index, tnlHost, Index >& rowLengths );
 
    bool setSlice( const CompressedRowsLengthsVector& rowLengths,
                   const IndexType sliceIdx,
@@ -302,7 +302,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    IndexType chunksInSlice, desiredChunkSize;
 
-   tnlVector< Index, Device, Index > rowToChunkMapping, rowToSliceMapping, rowPointers;
+   Vectors::Vector< Index, Device, Index > rowToChunkMapping, rowToSliceMapping, rowPointers;
 
    Arrays::Array< ChunkedEllpackSliceInfo, Device, Index > slices;
 

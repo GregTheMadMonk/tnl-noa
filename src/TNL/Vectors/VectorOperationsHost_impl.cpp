@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlVectorOperationsHost_impl.cpp  -  description
+                          VectorOperationsHost_impl.cpp  -  description
                              -------------------
     begin                : Jul 20, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -18,150 +18,150 @@ namespace Vectors {
 /****
  * Max
  */
-template int         tnlVectorOperations< tnlHost >::getVectorMax( const tnlVector< int, tnlHost, int >& v );
-template long int    tnlVectorOperations< tnlHost >::getVectorMax( const tnlVector< long int, tnlHost, int >& v );
+template int         VectorOperations< tnlHost >::getVectorMax( const Vector< int, tnlHost, int >& v );
+template long int    VectorOperations< tnlHost >::getVectorMax( const Vector< long int, tnlHost, int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorMax( const tnlVector< float, tnlHost, int >& v );
+template float       VectorOperations< tnlHost >::getVectorMax( const Vector< float, tnlHost, int >& v );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorMax( const tnlVector< double, tnlHost, int >& v );
+template double      VectorOperations< tnlHost >::getVectorMax( const Vector< double, tnlHost, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorMax( const tnlVector< long double, tnlHost, int >& v );
+template long double VectorOperations< tnlHost >::getVectorMax( const Vector< long double, tnlHost, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         tnlVectorOperations< tnlHost >::getVectorMax( const tnlVector< int, tnlHost, long int >& v );
-template long int    tnlVectorOperations< tnlHost >::getVectorMax( const tnlVector< long int, tnlHost, long int >& v );
+template int         VectorOperations< tnlHost >::getVectorMax( const Vector< int, tnlHost, long int >& v );
+template long int    VectorOperations< tnlHost >::getVectorMax( const Vector< long int, tnlHost, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorMax( const tnlVector< float, tnlHost, long int >& v );
+template float       VectorOperations< tnlHost >::getVectorMax( const Vector< float, tnlHost, long int >& v );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorMax( const tnlVector< double, tnlHost, long int >& v );
+template double      VectorOperations< tnlHost >::getVectorMax( const Vector< double, tnlHost, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorMax( const tnlVector< long double, tnlHost, long int >& v );
+template long double VectorOperations< tnlHost >::getVectorMax( const Vector< long double, tnlHost, long int >& v );
 #endif
 #endif
 
 /****
  * Min
  */
-template int         tnlVectorOperations< tnlHost >::getVectorMin( const tnlVector< int, tnlHost, int >& v );
-template long int    tnlVectorOperations< tnlHost >::getVectorMin( const tnlVector< long int, tnlHost, int >& v );
+template int         VectorOperations< tnlHost >::getVectorMin( const Vector< int, tnlHost, int >& v );
+template long int    VectorOperations< tnlHost >::getVectorMin( const Vector< long int, tnlHost, int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorMin( const tnlVector< float, tnlHost, int >& v );
+template float       VectorOperations< tnlHost >::getVectorMin( const Vector< float, tnlHost, int >& v );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorMin( const tnlVector< double, tnlHost, int >& v );
+template double      VectorOperations< tnlHost >::getVectorMin( const Vector< double, tnlHost, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorMin( const tnlVector< long double, tnlHost, int >& v );
+template long double VectorOperations< tnlHost >::getVectorMin( const Vector< long double, tnlHost, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         tnlVectorOperations< tnlHost >::getVectorMin( const tnlVector< int, tnlHost, long int >& v );
-template long int    tnlVectorOperations< tnlHost >::getVectorMin( const tnlVector< long int, tnlHost, long int >& v );
+template int         VectorOperations< tnlHost >::getVectorMin( const Vector< int, tnlHost, long int >& v );
+template long int    VectorOperations< tnlHost >::getVectorMin( const Vector< long int, tnlHost, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorMin( const tnlVector< float, tnlHost, long int >& v );
+template float       VectorOperations< tnlHost >::getVectorMin( const Vector< float, tnlHost, long int >& v );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorMin( const tnlVector< double, tnlHost, long int >& v );
+template double      VectorOperations< tnlHost >::getVectorMin( const Vector< double, tnlHost, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorMin( const tnlVector< long double, tnlHost, long int >& v );
+template long double VectorOperations< tnlHost >::getVectorMin( const Vector< long double, tnlHost, long int >& v );
 #endif
 #endif
 
 /****
  * Abs max
  */
-template int         tnlVectorOperations< tnlHost >::getVectorAbsMax( const tnlVector< int, tnlHost, int >& v );
-template long int    tnlVectorOperations< tnlHost >::getVectorAbsMax( const tnlVector< long int, tnlHost, int >& v );
+template int         VectorOperations< tnlHost >::getVectorAbsMax( const Vector< int, tnlHost, int >& v );
+template long int    VectorOperations< tnlHost >::getVectorAbsMax( const Vector< long int, tnlHost, int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorAbsMax( const tnlVector< float, tnlHost, int >& v );
+template float       VectorOperations< tnlHost >::getVectorAbsMax( const Vector< float, tnlHost, int >& v );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorAbsMax( const tnlVector< double, tnlHost, int >& v );
+template double      VectorOperations< tnlHost >::getVectorAbsMax( const Vector< double, tnlHost, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorAbsMax( const tnlVector< long double, tnlHost, int >& v );
+template long double VectorOperations< tnlHost >::getVectorAbsMax( const Vector< long double, tnlHost, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         tnlVectorOperations< tnlHost >::getVectorAbsMax( const tnlVector< int, tnlHost, long int >& v );
-template long int    tnlVectorOperations< tnlHost >::getVectorAbsMax( const tnlVector< long int, tnlHost, long int >& v );
+template int         VectorOperations< tnlHost >::getVectorAbsMax( const Vector< int, tnlHost, long int >& v );
+template long int    VectorOperations< tnlHost >::getVectorAbsMax( const Vector< long int, tnlHost, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorAbsMax( const tnlVector< float, tnlHost, long int >& v );
+template float       VectorOperations< tnlHost >::getVectorAbsMax( const Vector< float, tnlHost, long int >& v );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorAbsMax( const tnlVector< double, tnlHost, long int >& v );
+template double      VectorOperations< tnlHost >::getVectorAbsMax( const Vector< double, tnlHost, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorAbsMax( const tnlVector< long double, tnlHost, long int >& v );
+template long double VectorOperations< tnlHost >::getVectorAbsMax( const Vector< long double, tnlHost, long int >& v );
 #endif
 #endif
 
 /****
  * Abs min
  */
-template int         tnlVectorOperations< tnlHost >::getVectorAbsMin( const tnlVector< int, tnlHost, int >& v );
-template long int    tnlVectorOperations< tnlHost >::getVectorAbsMin( const tnlVector< long int, tnlHost, int >& v );
+template int         VectorOperations< tnlHost >::getVectorAbsMin( const Vector< int, tnlHost, int >& v );
+template long int    VectorOperations< tnlHost >::getVectorAbsMin( const Vector< long int, tnlHost, int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorAbsMin( const tnlVector< float, tnlHost, int >& v );
+template float       VectorOperations< tnlHost >::getVectorAbsMin( const Vector< float, tnlHost, int >& v );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorAbsMin( const tnlVector< double, tnlHost, int >& v );
+template double      VectorOperations< tnlHost >::getVectorAbsMin( const Vector< double, tnlHost, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorAbsMin( const tnlVector< long double, tnlHost, int >& v );
+template long double VectorOperations< tnlHost >::getVectorAbsMin( const Vector< long double, tnlHost, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         tnlVectorOperations< tnlHost >::getVectorAbsMin( const tnlVector< int, tnlHost, long int >& v );
-template long int    tnlVectorOperations< tnlHost >::getVectorAbsMin( const tnlVector< long int, tnlHost, long int >& v );
+template int         VectorOperations< tnlHost >::getVectorAbsMin( const Vector< int, tnlHost, long int >& v );
+template long int    VectorOperations< tnlHost >::getVectorAbsMin( const Vector< long int, tnlHost, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorAbsMin( const tnlVector< float, tnlHost, long int >& v );
+template float       VectorOperations< tnlHost >::getVectorAbsMin( const Vector< float, tnlHost, long int >& v );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorAbsMin( const tnlVector< double, tnlHost, long int >& v );
+template double      VectorOperations< tnlHost >::getVectorAbsMin( const Vector< double, tnlHost, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorAbsMin( const tnlVector< long double, tnlHost, long int >& v );
+template long double VectorOperations< tnlHost >::getVectorAbsMin( const Vector< long double, tnlHost, long int >& v );
 #endif
 #endif
 
 /****
  * L1 norm
  */
-template int         tnlVectorOperations< tnlHost >::getVectorL1Norm( const tnlVector< int, tnlHost, int >& v );
-template long int    tnlVectorOperations< tnlHost >::getVectorL1Norm( const tnlVector< long int, tnlHost, int >& v );
+template int         VectorOperations< tnlHost >::getVectorL1Norm( const Vector< int, tnlHost, int >& v );
+template long int    VectorOperations< tnlHost >::getVectorL1Norm( const Vector< long int, tnlHost, int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorL1Norm( const tnlVector< float, tnlHost, int >& v );
+template float       VectorOperations< tnlHost >::getVectorL1Norm( const Vector< float, tnlHost, int >& v );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorL1Norm( const tnlVector< double, tnlHost, int >& v );
+template double      VectorOperations< tnlHost >::getVectorL1Norm( const Vector< double, tnlHost, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorL1Norm( const tnlVector< long double, tnlHost, int >& v );
+template long double VectorOperations< tnlHost >::getVectorL1Norm( const Vector< long double, tnlHost, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         tnlVectorOperations< tnlHost >::getVectorL1Norm( const tnlVector< int, tnlHost, long int >& v );
-template long int    tnlVectorOperations< tnlHost >::getVectorL1Norm( const tnlVector< long int, tnlHost, long int >& v );
+template int         VectorOperations< tnlHost >::getVectorL1Norm( const Vector< int, tnlHost, long int >& v );
+template long int    VectorOperations< tnlHost >::getVectorL1Norm( const Vector< long int, tnlHost, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorL1Norm( const tnlVector< float, tnlHost, long int >& v );
+template float       VectorOperations< tnlHost >::getVectorL1Norm( const Vector< float, tnlHost, long int >& v );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorL1Norm( const tnlVector< double, tnlHost, long int >& v );
+template double      VectorOperations< tnlHost >::getVectorL1Norm( const Vector< double, tnlHost, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorL1Norm( const tnlVector< long double, tnlHost, long int >& v );
+template long double VectorOperations< tnlHost >::getVectorL1Norm( const Vector< long double, tnlHost, long int >& v );
 #endif
 #endif
 
 /****
  * L2 norm
  */
-template int         tnlVectorOperations< tnlHost >::getVectorL2Norm( const tnlVector< int, tnlHost, int >& v );
-template long int    tnlVectorOperations< tnlHost >::getVectorL2Norm( const tnlVector< long int, tnlHost, int >& v );
+template int         VectorOperations< tnlHost >::getVectorL2Norm( const Vector< int, tnlHost, int >& v );
+template long int    VectorOperations< tnlHost >::getVectorL2Norm( const Vector< long int, tnlHost, int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorL2Norm( const tnlVector< float, tnlHost, int >& v );
+template float       VectorOperations< tnlHost >::getVectorL2Norm( const Vector< float, tnlHost, int >& v );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorL2Norm( const tnlVector< double, tnlHost, int >& v );
+template double      VectorOperations< tnlHost >::getVectorL2Norm( const Vector< double, tnlHost, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorL2Norm( const tnlVector< long double, tnlHost, int >& v );
+template long double VectorOperations< tnlHost >::getVectorL2Norm( const Vector< long double, tnlHost, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         tnlVectorOperations< tnlHost >::getVectorL2Norm( const tnlVector< int, tnlHost, long int >& v );
-template long int    tnlVectorOperations< tnlHost >::getVectorL2Norm( const tnlVector< long int, tnlHost, long int >& v );
+template int         VectorOperations< tnlHost >::getVectorL2Norm( const Vector< int, tnlHost, long int >& v );
+template long int    VectorOperations< tnlHost >::getVectorL2Norm( const Vector< long int, tnlHost, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorL2Norm( const tnlVector< float, tnlHost, long int >& v );
+template float       VectorOperations< tnlHost >::getVectorL2Norm( const Vector< float, tnlHost, long int >& v );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorL2Norm( const tnlVector< double, tnlHost, long int >& v );
+template double      VectorOperations< tnlHost >::getVectorL2Norm( const Vector< double, tnlHost, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorL2Norm( const tnlVector< long double, tnlHost, long int >& v );
+template long double VectorOperations< tnlHost >::getVectorL2Norm( const Vector< long double, tnlHost, long int >& v );
 #endif
 #endif
 
@@ -169,25 +169,25 @@ template long double tnlVectorOperations< tnlHost >::getVectorL2Norm( const tnlV
 /****
  * Lp norm
  */
-template int         tnlVectorOperations< tnlHost >::getVectorLpNorm( const tnlVector< int, tnlHost, int >& v, const int& p );
-template long int    tnlVectorOperations< tnlHost >::getVectorLpNorm( const tnlVector< long int, tnlHost, int >& v, const long int& p );
+template int         VectorOperations< tnlHost >::getVectorLpNorm( const Vector< int, tnlHost, int >& v, const int& p );
+template long int    VectorOperations< tnlHost >::getVectorLpNorm( const Vector< long int, tnlHost, int >& v, const long int& p );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorLpNorm( const tnlVector< float, tnlHost, int >& v, const float& p );
+template float       VectorOperations< tnlHost >::getVectorLpNorm( const Vector< float, tnlHost, int >& v, const float& p );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorLpNorm( const tnlVector< double, tnlHost, int >& v, const double& p );
+template double      VectorOperations< tnlHost >::getVectorLpNorm( const Vector< double, tnlHost, int >& v, const double& p );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorLpNorm( const tnlVector< long double, tnlHost, int >& v, const long double& p );
+template long double VectorOperations< tnlHost >::getVectorLpNorm( const Vector< long double, tnlHost, int >& v, const long double& p );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         tnlVectorOperations< tnlHost >::getVectorLpNorm( const tnlVector< int, tnlHost, long int >& v, const int& p );
-template long int    tnlVectorOperations< tnlHost >::getVectorLpNorm( const tnlVector< long int, tnlHost, long int >& v, const long int& p );
+template int         VectorOperations< tnlHost >::getVectorLpNorm( const Vector< int, tnlHost, long int >& v, const int& p );
+template long int    VectorOperations< tnlHost >::getVectorLpNorm( const Vector< long int, tnlHost, long int >& v, const long int& p );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorLpNorm( const tnlVector< float, tnlHost, long int >& v, const float& p );
+template float       VectorOperations< tnlHost >::getVectorLpNorm( const Vector< float, tnlHost, long int >& v, const float& p );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorLpNorm( const tnlVector< double, tnlHost, long int >& v, const double& p );
+template double      VectorOperations< tnlHost >::getVectorLpNorm( const Vector< double, tnlHost, long int >& v, const double& p );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorLpNorm( const tnlVector< long double, tnlHost, long int >& v, const long double& p );
+template long double VectorOperations< tnlHost >::getVectorLpNorm( const Vector< long double, tnlHost, long int >& v, const long double& p );
 #endif
 #endif
 
@@ -196,125 +196,125 @@ template long double tnlVectorOperations< tnlHost >::getVectorLpNorm( const tnlV
 /****
  * Sum
  */
-template int         tnlVectorOperations< tnlHost >::getVectorSum( const tnlVector< int, tnlHost, int >& v );
-template long int    tnlVectorOperations< tnlHost >::getVectorSum( const tnlVector< long int, tnlHost, int >& v );
+template int         VectorOperations< tnlHost >::getVectorSum( const Vector< int, tnlHost, int >& v );
+template long int    VectorOperations< tnlHost >::getVectorSum( const Vector< long int, tnlHost, int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorSum( const tnlVector< float, tnlHost, int >& v );
+template float       VectorOperations< tnlHost >::getVectorSum( const Vector< float, tnlHost, int >& v );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorSum( const tnlVector< double, tnlHost, int >& v );
+template double      VectorOperations< tnlHost >::getVectorSum( const Vector< double, tnlHost, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorSum( const tnlVector< long double, tnlHost, int >& v );
+template long double VectorOperations< tnlHost >::getVectorSum( const Vector< long double, tnlHost, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         tnlVectorOperations< tnlHost >::getVectorSum( const tnlVector< int, tnlHost, long int >& v );
-template long int    tnlVectorOperations< tnlHost >::getVectorSum( const tnlVector< long int, tnlHost, long int >& v );
+template int         VectorOperations< tnlHost >::getVectorSum( const Vector< int, tnlHost, long int >& v );
+template long int    VectorOperations< tnlHost >::getVectorSum( const Vector< long int, tnlHost, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorSum( const tnlVector< float, tnlHost, long int >& v );
+template float       VectorOperations< tnlHost >::getVectorSum( const Vector< float, tnlHost, long int >& v );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorSum( const tnlVector< double, tnlHost, long int >& v );
+template double      VectorOperations< tnlHost >::getVectorSum( const Vector< double, tnlHost, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorSum( const tnlVector< long double, tnlHost, long int >& v );
+template long double VectorOperations< tnlHost >::getVectorSum( const Vector< long double, tnlHost, long int >& v );
 #endif
 #endif
 
 /****
  * Difference max
  */
-template int         tnlVectorOperations< tnlHost >::getVectorDifferenceMax( const tnlVector< int, tnlHost, int >& v1, const tnlVector< int, tnlHost, int >& v2 );
-template long int    tnlVectorOperations< tnlHost >::getVectorDifferenceMax( const tnlVector< long int, tnlHost, int >& v1, const tnlVector< long int, tnlHost, int >& v2 );
+template int         VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< int, tnlHost, int >& v1, const Vector< int, tnlHost, int >& v2 );
+template long int    VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< long int, tnlHost, int >& v1, const Vector< long int, tnlHost, int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorDifferenceMax( const tnlVector< float, tnlHost, int >& v1,  const tnlVector< float, tnlHost, int >& v2);
+template float       VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< float, tnlHost, int >& v1,  const Vector< float, tnlHost, int >& v2);
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorDifferenceMax( const tnlVector< double, tnlHost, int >& v1, const tnlVector< double, tnlHost, int >& v2 );
+template double      VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< double, tnlHost, int >& v1, const Vector< double, tnlHost, int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorDifferenceMax( const tnlVector< long double, tnlHost, int >& v1, const tnlVector< long double, tnlHost, int >& v2 );
+template long double VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< long double, tnlHost, int >& v1, const Vector< long double, tnlHost, int >& v2 );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         tnlVectorOperations< tnlHost >::getVectorDifferenceMax( const tnlVector< int, tnlHost, long int >& v1, const tnlVector< int, tnlHost, long int >& v2 );
-template long int    tnlVectorOperations< tnlHost >::getVectorDifferenceMax( const tnlVector< long int, tnlHost, long int >& v1, const tnlVector< long int, tnlHost, long int >& v2 );
+template int         VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< int, tnlHost, long int >& v1, const Vector< int, tnlHost, long int >& v2 );
+template long int    VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< long int, tnlHost, long int >& v1, const Vector< long int, tnlHost, long int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorDifferenceMax( const tnlVector< float, tnlHost, long int >& v1, const tnlVector< float, tnlHost, long int >& v2 );
+template float       VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< float, tnlHost, long int >& v1, const Vector< float, tnlHost, long int >& v2 );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorDifferenceMax( const tnlVector< double, tnlHost, long int >& v1, const tnlVector< double, tnlHost, long int >& v2 );
+template double      VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< double, tnlHost, long int >& v1, const Vector< double, tnlHost, long int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorDifferenceMax( const tnlVector< long double, tnlHost, long int >& v1, const tnlVector< long double, tnlHost, long int >& v2 );
+template long double VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< long double, tnlHost, long int >& v1, const Vector< long double, tnlHost, long int >& v2 );
 #endif
 #endif
 
 /****
  * Difference min
  */
-template int         tnlVectorOperations< tnlHost >::getVectorDifferenceMin( const tnlVector< int, tnlHost, int >& v1, const tnlVector< int, tnlHost, int >& v2 );
-template long int    tnlVectorOperations< tnlHost >::getVectorDifferenceMin( const tnlVector< long int, tnlHost, int >& v1, const tnlVector< long int, tnlHost, int >& v2 );
+template int         VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< int, tnlHost, int >& v1, const Vector< int, tnlHost, int >& v2 );
+template long int    VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< long int, tnlHost, int >& v1, const Vector< long int, tnlHost, int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorDifferenceMin( const tnlVector< float, tnlHost, int >& v1,  const tnlVector< float, tnlHost, int >& v2);
+template float       VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< float, tnlHost, int >& v1,  const Vector< float, tnlHost, int >& v2);
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorDifferenceMin( const tnlVector< double, tnlHost, int >& v1, const tnlVector< double, tnlHost, int >& v2 );
+template double      VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< double, tnlHost, int >& v1, const Vector< double, tnlHost, int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorDifferenceMin( const tnlVector< long double, tnlHost, int >& v1, const tnlVector< long double, tnlHost, int >& v2 );
+template long double VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< long double, tnlHost, int >& v1, const Vector< long double, tnlHost, int >& v2 );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         tnlVectorOperations< tnlHost >::getVectorDifferenceMin( const tnlVector< int, tnlHost, long int >& v1, const tnlVector< int, tnlHost, long int >& v2 );
-template long int    tnlVectorOperations< tnlHost >::getVectorDifferenceMin( const tnlVector< long int, tnlHost, long int >& v1, const tnlVector< long int, tnlHost, long int >& v2 );
+template int         VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< int, tnlHost, long int >& v1, const Vector< int, tnlHost, long int >& v2 );
+template long int    VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< long int, tnlHost, long int >& v1, const Vector< long int, tnlHost, long int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorDifferenceMin( const tnlVector< float, tnlHost, long int >& v1, const tnlVector< float, tnlHost, long int >& v2 );
+template float       VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< float, tnlHost, long int >& v1, const Vector< float, tnlHost, long int >& v2 );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorDifferenceMin( const tnlVector< double, tnlHost, long int >& v1, const tnlVector< double, tnlHost, long int >& v2 );
+template double      VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< double, tnlHost, long int >& v1, const Vector< double, tnlHost, long int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorDifferenceMin( const tnlVector< long double, tnlHost, long int >& v1, const tnlVector< long double, tnlHost, long int >& v2 );
+template long double VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< long double, tnlHost, long int >& v1, const Vector< long double, tnlHost, long int >& v2 );
 #endif
 #endif
 
 /****
  * Difference abs max
  */
-template int         tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMax( const tnlVector< int, tnlHost, int >& v1, const tnlVector< int, tnlHost, int >& v2 );
-template long int    tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMax( const tnlVector< long int, tnlHost, int >& v1, const tnlVector< long int, tnlHost, int >& v2 );
+template int         VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< int, tnlHost, int >& v1, const Vector< int, tnlHost, int >& v2 );
+template long int    VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< long int, tnlHost, int >& v1, const Vector< long int, tnlHost, int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMax( const tnlVector< float, tnlHost, int >& v1,  const tnlVector< float, tnlHost, int >& v2);
+template float       VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< float, tnlHost, int >& v1,  const Vector< float, tnlHost, int >& v2);
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMax( const tnlVector< double, tnlHost, int >& v1, const tnlVector< double, tnlHost, int >& v2 );
+template double      VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< double, tnlHost, int >& v1, const Vector< double, tnlHost, int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMax( const tnlVector< long double, tnlHost, int >& v1, const tnlVector< long double, tnlHost, int >& v2 );
+template long double VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< long double, tnlHost, int >& v1, const Vector< long double, tnlHost, int >& v2 );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMax( const tnlVector< int, tnlHost, long int >& v1, const tnlVector< int, tnlHost, long int >& v2 );
-template long int    tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMax( const tnlVector< long int, tnlHost, long int >& v1, const tnlVector< long int, tnlHost, long int >& v2 );
+template int         VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< int, tnlHost, long int >& v1, const Vector< int, tnlHost, long int >& v2 );
+template long int    VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< long int, tnlHost, long int >& v1, const Vector< long int, tnlHost, long int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMax( const tnlVector< float, tnlHost, long int >& v1, const tnlVector< float, tnlHost, long int >& v2 );
+template float       VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< float, tnlHost, long int >& v1, const Vector< float, tnlHost, long int >& v2 );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMax( const tnlVector< double, tnlHost, long int >& v1, const tnlVector< double, tnlHost, long int >& v2 );
+template double      VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< double, tnlHost, long int >& v1, const Vector< double, tnlHost, long int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMax( const tnlVector< long double, tnlHost, long int >& v1, const tnlVector< long double, tnlHost, long int >& v2 );
+template long double VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< long double, tnlHost, long int >& v1, const Vector< long double, tnlHost, long int >& v2 );
 #endif
 #endif
 
 /****
  * Difference abs min
  */
-template int         tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMin( const tnlVector< int, tnlHost, int >& v1, const tnlVector< int, tnlHost, int >& v2 );
-template long int    tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMin( const tnlVector< long int, tnlHost, int >& v1, const tnlVector< long int, tnlHost, int >& v2 );
+template int         VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< int, tnlHost, int >& v1, const Vector< int, tnlHost, int >& v2 );
+template long int    VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< long int, tnlHost, int >& v1, const Vector< long int, tnlHost, int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMin( const tnlVector< float, tnlHost, int >& v1,  const tnlVector< float, tnlHost, int >& v2);
+template float       VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< float, tnlHost, int >& v1,  const Vector< float, tnlHost, int >& v2);
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMin( const tnlVector< double, tnlHost, int >& v1, const tnlVector< double, tnlHost, int >& v2 );
+template double      VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< double, tnlHost, int >& v1, const Vector< double, tnlHost, int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMin( const tnlVector< long double, tnlHost, int >& v1, const tnlVector< long double, tnlHost, int >& v2 );
+template long double VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< long double, tnlHost, int >& v1, const Vector< long double, tnlHost, int >& v2 );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMin( const tnlVector< int, tnlHost, long int >& v1, const tnlVector< int, tnlHost, long int >& v2 );
-template long int    tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMin( const tnlVector< long int, tnlHost, long int >& v1, const tnlVector< long int, tnlHost, long int >& v2 );
+template int         VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< int, tnlHost, long int >& v1, const Vector< int, tnlHost, long int >& v2 );
+template long int    VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< long int, tnlHost, long int >& v1, const Vector< long int, tnlHost, long int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMin( const tnlVector< float, tnlHost, long int >& v1, const tnlVector< float, tnlHost, long int >& v2 );
+template float       VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< float, tnlHost, long int >& v1, const Vector< float, tnlHost, long int >& v2 );
 #endif
-template double      tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMin( const tnlVector< double, tnlHost, long int >& v1, const tnlVector< double, tnlHost, long int >& v2 );
+template double      VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< double, tnlHost, long int >& v1, const Vector< double, tnlHost, long int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double tnlVectorOperations< tnlHost >::getVectorDifferenceAbsMin( const tnlVector< long double, tnlHost, long int >& v1, const tnlVector< long double, tnlHost, long int >& v2 );
+template long double VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< long double, tnlHost, long int >& v1, const Vector< long double, tnlHost, long int >& v2 );
 #endif
 #endif
 

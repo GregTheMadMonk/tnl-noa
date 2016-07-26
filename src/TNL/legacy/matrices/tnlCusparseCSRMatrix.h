@@ -80,10 +80,10 @@ class tnlCusparseCSRMatrix : public tnlMatrix< Real, Device, Index >
    bool copyFrom( const tnlRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix );
 
    Real rowProduct( Index row,
-                    const tnlVector< Real, Device, Index >& vector ) const;
+                    const Vector< Real, Device, Index >& vector ) const;
 
-   void vectorProduct( const tnlVector< Real, Device, Index >& x,
-                       tnlVector< Real, Device, Index >& b ) const;
+   void vectorProduct( const Vector< Real, Device, Index >& x,
+                       Vector< Real, Device, Index >& b ) const;
 
    Real getRowL1Norm( Index row ) const;
 
@@ -106,11 +106,11 @@ class tnlCusparseCSRMatrix : public tnlMatrix< Real, Device, Index >
    cusparseMatDescr_t cusparseMatDescr;
 #endif
 
-   tnlVector< Real, Device, Index > nonzero_elements;
+   Vector< Real, Device, Index > nonzero_elements;
 
-   tnlVector< Index, Device, Index > columns;
+   Vector< Index, Device, Index > columns;
 
-   tnlVector< Index, Device, Index > row_offsets;
+   Vector< Index, Device, Index > row_offsets;
 
 };
 
@@ -286,7 +286,7 @@ bool tnlCusparseCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix
 
 template< typename Real, typename Device, typename Index >
 Real tnlCusparseCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
-                                                                const tnlVector< Real, Device, Index >& vector ) const
+                                                                const Vector< Real, Device, Index >& vector ) const
 {
    abort();
    return 0.0;
@@ -294,8 +294,8 @@ Real tnlCusparseCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
 
 
 template< typename Real, typename Device, typename Index >
-void tnlCusparseCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real, Device, Index >& x,
-                                                                   tnlVector< Real, Device, Index >& b ) const
+void tnlCusparseCSRMatrix< Real, Device, Index > :: vectorProduct( const Vector< Real, Device, Index >& x,
+                                                                   Vector< Real, Device, Index >& b ) const
 {
 #ifdef HAVE_CUSPARSE
   cusparseSpmv( cusparseHandle,

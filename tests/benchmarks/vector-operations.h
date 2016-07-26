@@ -20,8 +20,8 @@ benchmarkVectorOperations( Benchmark & benchmark,
                            const int & loops,
                            const int & size )
 {
-    typedef tnlVector< Real, tnlHost, Index > HostVector;
-    typedef tnlVector< Real, tnlCuda, Index > CudaVector;
+    typedef Vectors::Vector< Real, tnlHost, Index > HostVector;
+    typedef Vectors::Vector< Real, tnlCuda, Index > CudaVector;
     using namespace std;
 
     double datasetSize = ( double ) ( loops * size ) * sizeof( Real ) / oneGB;

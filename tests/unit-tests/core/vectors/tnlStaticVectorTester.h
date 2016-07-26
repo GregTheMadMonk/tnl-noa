@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlStaticVectorTester.h  -  description
+                          StaticVectorTester.h  -  description
                              -------------------
     begin                : Feb 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICVECTORTESTER_H_
-#define TNLSTATICVECTORTESTER_H_
+#ifndef StaticVectorTESTER_H_
+#define StaticVectorTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -22,21 +22,21 @@
 using namespace TNL;
 
 template< int Size, typename RealType >
-class tnlStaticVectorTester : public CppUnit :: TestCase
+class StaticVectorTester : public CppUnit :: TestCase
 {
    public:
 
-   typedef tnlStaticVectorTester< Size, RealType > StaticVectorTester;
+   typedef StaticVectorTester< Size, RealType > tnlStaticVectorTester;
    typedef CppUnit :: TestCaller< StaticVectorTester > TestCaller;
 
-   tnlStaticVectorTester(){};
+   StaticVectorTester(){};
 
    virtual
-   ~tnlStaticVectorTester(){};
+   ~StaticVectorTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlVectorTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "VectorTester" );
       CppUnit :: TestResult result;
       suiteOfTests -> addTest( new TestCaller( "testOperators", &StaticVectorTester::testOperators ) );
       return suiteOfTests;
@@ -44,7 +44,7 @@ class tnlStaticVectorTester : public CppUnit :: TestCase
 
    void testOperators()
    {
-      tnlStaticVector< Size, RealType > u1( 1.0 ), u2( 2.0 ), u3( 3.0 );
+      Vectors::StaticVector< Size, RealType > u1( 1.0 ), u2( 2.0 ), u3( 3.0 );
 
       u1 += u2;
       CPPUNIT_ASSERT( u1[ 0 ] == 3.0 );
@@ -86,10 +86,10 @@ class tnlStaticVectorTester : public CppUnit :: TestCase
 
 #else /* HAVE_CPPUNIT */
 template< int Size, typename RealType >
-class tnlStaticVectorTester{};
+class StaticVectorTester{};
 #endif /* HAVE_CPPUNIT */
 
 
 
 
-#endif /* TNLSTATICVECTORTESTER_H_ */
+#endif /* StaticVectorTESTER_H_ */

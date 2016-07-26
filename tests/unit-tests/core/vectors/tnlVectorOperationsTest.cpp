@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlVectorOperationsTest.cpp  -  description
+                          VectorOperationsTest.cpp  -  description
                              -------------------
     begin                : Jul 15, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -16,7 +16,7 @@ using namespace TNL;
 
 int main( int argc, char* argv[] )
 {
-   if( ! tnlUnitTestStarter :: run< tnlVectorOperationsTester< double, tnlHost > >() )
+   if( ! tnlUnitTestStarter :: run< VectorOperationsTester< double, tnlHost > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

@@ -54,7 +54,7 @@ class tnlExpBumpFunction< 1, Real > : public tnlExpBumpFunctionBase< 1, Real >
    public:
  
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< 1, RealType > VertexType;
+      typedef Vectors::StaticVector< 1, RealType > VertexType;
 
       static String getType();
 
@@ -84,7 +84,7 @@ class tnlExpBumpFunction< 2, Real > : public tnlExpBumpFunctionBase< 2, Real >
    public:
  
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< 2, RealType > VertexType;
+      typedef Vectors::StaticVector< 2, RealType > VertexType;
 
       static String getType();
 
@@ -114,7 +114,7 @@ class tnlExpBumpFunction< 3, Real > : public tnlExpBumpFunctionBase< 3, Real >
    public:
  
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< 3, RealType > VertexType;
+      typedef Vectors::StaticVector< 3, RealType > VertexType;
 
  
       static String getType();

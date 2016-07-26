@@ -229,7 +229,7 @@ template< class T > bool Read( tnlCurve< T >& crv,
 }
 
 // Explicit instatiation
-template class tnlCurve< tnlStaticVector< 2, double > >;
+template class tnlCurve< Vectors::StaticVector< 2, double > >;
 
 } // namespace TNL
 

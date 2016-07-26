@@ -278,9 +278,9 @@ bool benchmarkMatrix( const Config::ParameterContainer&  parameters )
     */
    const Index size = csrMatrix. getRows();
   std::cout << "Matrix size is " << size << std::endl;
-   tnlVector< Real, tnlHost, Index > x1( "matrix-solvers-benchmark:x1" );
-   tnlVector< Real, tnlHost, Index > x( "matrix-solvers-benchmark:x" );
-   tnlVector< Real, tnlHost, Index > b( "matrix-solvers-benchmark:b" );
+   Vector< Real, tnlHost, Index > x1( "matrix-solvers-benchmark:x1" );
+   Vector< Real, tnlHost, Index > x( "matrix-solvers-benchmark:x" );
+   Vector< Real, tnlHost, Index > b( "matrix-solvers-benchmark:b" );
    if( ! x1. setSize( size ) ||
        ! x. setSize( size ) ||
        ! b. setSize( size ) )
@@ -303,8 +303,8 @@ bool benchmarkMatrix( const Config::ParameterContainer&  parameters )
       tnlRgCSRMatrix< Real, tnlCuda, Index > rgCSRMatrix( "matrix-solvers-benchmark:rgCSRMatrix" );
       // FIX THIS
       //rgCSRMatrix = csrMatrix;
-      /*tnlVector< Real, tnlCuda, Index > cudaX( "matrix-solvers-benchmark:cudaX" );
-      tnlVector< Real, tnlCuda, Index > cudaB( "matrix-solvers-benchmark:cudaB" );
+      /*Vector< Real, tnlCuda, Index > cudaX( "matrix-solvers-benchmark:cudaX" );
+      Vector< Real, tnlCuda, Index > cudaB( "matrix-solvers-benchmark:cudaB" );
       cudaX. setLike( x );
       cudaX = x;
       cudaB. setLike( b );

@@ -102,7 +102,7 @@ class meanCurvatureFlowSetter
    {
       typedef tnlOneSidedNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
       typedef tnlConstantFunction< Dimensions, Real > RightHandSide;
-      typedef tnlStaticVector< MeshType::meshDimensions, Real > Vertex;
+      typedef StaticVector< MeshType::meshDimensions, Real > Vertex;
 
       String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
       if( parameters.checkParameter( "boundary-conditions-constant" ) )
@@ -120,7 +120,7 @@ class meanCurvatureFlowSetter
          SolverStarter solverStarter;
          return solverStarter.template run< Solver >( parameters );
       }
-      //typedef tnlVector< Real, Device, Index > VectorType;
+      //typedef Vector< Real, Device, Index > VectorType;
       typedef tnlMeshFunction< MeshType > MeshFunction;
       if( boundaryConditionsType == "dirichlet" )
       {

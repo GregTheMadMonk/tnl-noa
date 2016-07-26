@@ -47,11 +47,11 @@ class tnlMultiArray< 1, Element, Device, Index > : public Array< Element, Device
 
    bool setDimensions( const Index iSize );
 
-   bool setDimensions( const Vectors::tnlStaticVector< 1, Index >& dimensions );
+   bool setDimensions( const Vectors::StaticVector< 1, Index >& dimensions );
 
    __cuda_callable__ void getDimensions( Index& iSize ) const;
 
-   __cuda_callable__ const Vectors::tnlStaticVector< 1, Index >& getDimensions() const;
+   __cuda_callable__ const Vectors::StaticVector< 1, Index >& getDimensions() const;
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
@@ -99,7 +99,7 @@ class tnlMultiArray< 1, Element, Device, Index > : public Array< Element, Device
 
    protected:
 
-   Vectors::tnlStaticVector< 1, Index > dimensions;
+   Vectors::StaticVector< 1, Index > dimensions;
 };
 
 template< typename Element, typename Device, typename Index >
@@ -126,11 +126,11 @@ class tnlMultiArray< 2, Element, Device, Index > : public Array< Element, Device
 
    bool setDimensions( const Index jSize, const Index iSize );
 
-   bool setDimensions( const Vectors::tnlStaticVector< 2, Index >& dimensions );
+   bool setDimensions( const Vectors::StaticVector< 2, Index >& dimensions );
 
    __cuda_callable__ void getDimensions( Index& jSize, Index& iSize ) const;
 
-   __cuda_callable__ const Vectors::tnlStaticVector< 2, Index >& getDimensions() const;
+   __cuda_callable__ const Vectors::StaticVector< 2, Index >& getDimensions() const;
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
@@ -181,7 +181,7 @@ class tnlMultiArray< 2, Element, Device, Index > : public Array< Element, Device
 
    protected:
 
-   Vectors::tnlStaticVector< 2, Index > dimensions;
+   Vectors::StaticVector< 2, Index > dimensions;
 };
 
 template< typename Element, typename Device, typename Index >
@@ -209,11 +209,11 @@ class tnlMultiArray< 3, Element, Device, Index > : public Array< Element, Device
 
    bool setDimensions( const Index k, const Index j, const Index iSize );
 
-   bool setDimensions( const Vectors::tnlStaticVector< 3, Index >& dimensions );
+   bool setDimensions( const Vectors::StaticVector< 3, Index >& dimensions );
 
    __cuda_callable__ void getDimensions( Index& k, Index& j, Index& iSize ) const;
 
-   __cuda_callable__ const Vectors::tnlStaticVector< 3, Index >& getDimensions() const;
+   __cuda_callable__ const Vectors::StaticVector< 3, Index >& getDimensions() const;
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
@@ -264,7 +264,7 @@ class tnlMultiArray< 3, Element, Device, Index > : public Array< Element, Device
 
    protected:
 
-   Vectors::tnlStaticVector< 3, Index > dimensions;
+   Vectors::StaticVector< 3, Index > dimensions;
 };
 
 template< typename Element, typename Device, typename Index >
@@ -292,11 +292,11 @@ class tnlMultiArray< 4, Element, Device, Index > : public Array< Element, Device
 
    bool setDimensions( const Index l, const Index k, const Index j, const Index iSize );
 
-   bool setDimensions( const Vectors::tnlStaticVector< 4, Index >& dimensions );
+   bool setDimensions( const Vectors::StaticVector< 4, Index >& dimensions );
 
    __cuda_callable__ void getDimensions( Index& l, Index& k, Index& j, Index& iSize ) const;
 
-   __cuda_callable__ const Vectors::tnlStaticVector< 4, Index >& getDimensions() const;
+   __cuda_callable__ const Vectors::StaticVector< 4, Index >& getDimensions() const;
 
    //! Set dimensions of the array using another array as a template
    template< typename MultiArray >
@@ -347,7 +347,7 @@ class tnlMultiArray< 4, Element, Device, Index > : public Array< Element, Device
 
    protected:
 
-   Vectors::tnlStaticVector< 4, Index > dimensions;
+   Vectors::StaticVector< 4, Index > dimensions;
 };
 
 template< typename Element, typename device, typename Index >

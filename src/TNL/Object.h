@@ -40,7 +40,7 @@ class Object
 
    /****
     * Type getter. This returns the type in C++ style - for example the returned value
-    * may look as follows: "tnlVector< double, tnlCuda >".
+    * may look as follows: "Vector< double, tnlCuda >".
     */
    static String getType();
 
@@ -48,8 +48,8 @@ class Object
 
    /****
     * This is used for load and save methods.
-    * Each object is saved as if it was stored on tnlHost. So even tnlVector< double, tnlCuda >
-    * is saved as tnlVector< double, tnlHost >.
+    * Each object is saved as if it was stored on tnlHost. So even Vector< double, tnlCuda >
+    * is saved as Vector< double, tnlHost >.
     */
    static String getSerializationType();
 

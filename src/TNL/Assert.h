@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlVectorOperationsTester.h  -  description
+                          VectorOperationsTester.h  -  description
                              -------------------
     begin                : Jan 12, 2010
     copyright            : (C) 2013 by Tomas Oberhuber

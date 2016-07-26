@@ -46,7 +46,7 @@ class tnlBlobFunction< 1, Real > : public tnlBlobFunctionBase< Real, 1 >
 
       enum { Dimensions = 1 };
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 
@@ -77,7 +77,7 @@ class tnlBlobFunction< 2, Real > : public tnlBlobFunctionBase< Real, 2 >
 
       enum { Dimensions = 2 };
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 
@@ -109,7 +109,7 @@ class tnlBlobFunction< 3, Real > : public tnlBlobFunctionBase< Real, 3 >
 
       enum { Dimensions = 3 };
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 

@@ -32,8 +32,8 @@ class tnlSpmvBenchmarkHybridMatrix : public tnlSpmvBenchmark< Real, tnlHost, Ind
 
    void tearDown();
 
-   void runBenchmark( const tnlVector< Real, tnlHost, Index >& x,
-                      const tnlVector< Real, tnlHost, Index >& refB,
+   void runBenchmark( const Vector< Real, tnlHost, Index >& x,
+                      const Vector< Real, tnlHost, Index >& refB,
                       bool verbose );
 
    void writeProgress() const;
@@ -74,8 +74,8 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: tearDown()
 
 template< typename Real,
           typename Index>
-void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const tnlVector< Real, tnlHost, Index >& _x,
-                                                                  const tnlVector< Real, tnlHost, Index >& refB,
+void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const Vector< Real, tnlHost, Index >& _x,
+                                                                  const Vector< Real, tnlHost, Index >& refB,
                                                                   bool verbose )
 {
    this->benchmarkWasSuccesful = false;

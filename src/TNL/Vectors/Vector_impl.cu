@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlVector_impl.cu  -  description
+                          Vector_impl.cu  -  description
                              -------------------
     begin                : Jan 20, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -17,20 +17,20 @@ namespace Vectors {
 
 #ifdef HAVE_CUDA
 #ifdef INSTANTIATE_FLOAT
-template class tnlVector< float, tnlCuda, int >;
+template class Vector< float, tnlCuda, int >;
 #endif
-template class tnlVector< double, tnlCuda, int >;
+template class Vector< double, tnlCuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class tnlVector< long double, tnlCuda, int >;
+template class Vector< long double, tnlCuda, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class tnlVector< float, tnlCuda, long int >;
+template class Vector< float, tnlCuda, long int >;
 #endif
-template class tnlVector< double, tnlCuda, long int >;
+template class Vector< double, tnlCuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class tnlVector< long double, tnlCuda, long int >;
+template class Vector< long double, tnlCuda, long int >;
 #endif
 #endif
 #endif

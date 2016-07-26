@@ -44,7 +44,7 @@ class tnlTestFunction : public tnlDomain< FunctionDimensions, SpaceDomain >
 
    enum{ Dimensions = FunctionDimensions };
    typedef Real RealType;
-   typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
+   typedef Vectors::StaticVector< Dimensions, Real > VertexType;
 
    tnlTestFunction();
 

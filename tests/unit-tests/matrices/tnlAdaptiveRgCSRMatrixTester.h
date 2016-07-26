@@ -213,8 +213,8 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
          argcsrMatrix. copyFrom( hostArgcsrMatrix );
       }
 
-      tnlVector< Real, tnlHost > x1( "x1" ), b1( "b1" );
-      tnlVector< Real, Device > x2( "x2" ), b2( "b2" );
+      Vector< Real, tnlHost > x1( "x1" ), b1( "b1" );
+      Vector< Real, Device > x2( "x2" ), b2( "b2" );
       x1. setSize( size );
       x2. setSize( size );
       b1. setSize( size );
@@ -243,8 +243,8 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
          argcsrMatrix. copyFrom( hostArgcsrMatrix );
       }
 
-      tnlVector< Real, tnlHost > x1( "x1" ), b1( "b1" );
-      tnlVector< Real, Device > x2( "x2" ), b2( "b2" );
+      Vector< Real, tnlHost > x1( "x1" ), b1( "b1" );
+      Vector< Real, Device > x2( "x2" ), b2( "b2" );
       x1. setSize( size );
       x2. setSize( size );
       b1. setSize( size );
@@ -272,8 +272,8 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
          argcsrMatrix. copyFrom( hostArgcsrMatrix );
       }
 
-      tnlVector< Real, tnlHost > x1( "x1" ), b1( "b1" );
-      tnlVector< Real, Device > x2( "x2" ), b2( "b2" );
+      Vector< Real, tnlHost > x1( "x1" ), b1( "b1" );
+      Vector< Real, Device > x2( "x2" ), b2( "b2" );
       x1. setSize( size );
       x2. setSize( size );
       b1. setSize( size );
@@ -300,8 +300,8 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
          argcsrMatrix. copyFrom( hostArgcsrMatrix );
       }
 
-      tnlVector< Real, tnlHost > x1( "x1" ), b1( "b1" );
-      tnlVector< Real, Device > x2( "x2" ), b2( "b2" );
+      Vector< Real, tnlHost > x1( "x1" ), b1( "b1" );
+      Vector< Real, Device > x2( "x2" ), b2( "b2" );
       x1. setSize( size );
       x2. setSize( size );
       b1. setSize( size );
@@ -329,8 +329,8 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
          argcsrMatrix. copyFrom( hostArgcsrMatrix );
       }
 
-      tnlVector< Real, tnlHost > x1( "x1" ), b1( "b1" );
-      tnlVector< Real, Device > x2( "x2" ), b2( "b2" );
+      Vector< Real, tnlHost > x1( "x1" ), b1( "b1" );
+      Vector< Real, Device > x2( "x2" ), b2( "b2" );
       x1. setSize( size );
       x2. setSize( size );
       b1. setSize( size );
@@ -358,8 +358,8 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
       }
 
       const int size = csrMatrix. getRows();
-      tnlVector< Real, tnlHost > x1( "x1" ), b1( "b1" );
-      tnlVector< Real, Device > x2( "x2" ), b2( "b2" );
+      Vector< Real, tnlHost > x1( "x1" ), b1( "b1" );
+      Vector< Real, Device > x2( "x2" ), b2( "b2" );
       x1. setSize( size );
       x2. setSize( size );
       b1. setSize( size );

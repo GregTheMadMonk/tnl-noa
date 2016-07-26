@@ -29,9 +29,9 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
       using typename BaseType::IndexType;
 
       typedef Mesh MeshType;
-      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef Vectors::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
-      typedef tnlVector< RealType, DeviceType, IndexType > MeshDependentDataType;
+      typedef Vectors::Vector< RealType, DeviceType, IndexType > MeshDependentDataType;
 
       /****
        * This means that the time stepper will be set from the command line arguments.

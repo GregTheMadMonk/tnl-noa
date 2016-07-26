@@ -37,7 +37,7 @@ class tnlDirichletBoundaryConditions
       typedef typename MeshType::DeviceType DeviceType;
       typedef Index IndexType;
 
-      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef Vectors::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::VertexType VertexType;
 
       static constexpr int getMeshDimensions() { return MeshType::meshDimensions; }

@@ -199,7 +199,7 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    protected:
 
-   Vectors::tnlVector< Index, Device, Index > rowPointers;
+   Vectors::Vector< Index, Device, Index > rowPointers;
 
    SPMVCudaKernel spmvCudaKernel;
 

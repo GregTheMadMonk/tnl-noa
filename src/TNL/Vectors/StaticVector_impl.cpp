@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlStaticVector_impl.cpp  -  description
+                          StaticVector_impl.cpp  -  description
                              -------------------
     begin                : Feb 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -17,35 +17,35 @@ namespace Vectors {
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-template class tnlStaticVector< 1, float >;
+template class StaticVector< 1, float >;
 #endif
-template class tnlStaticVector< 1, double >;
+template class StaticVector< 1, double >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class tnlStaticVector< 1, long double >;
+template class StaticVector< 1, long double >;
 #endif
 
 #ifdef INSTANTIATE_FLOAT
-template class tnlStaticVector< 2, float >;
+template class StaticVector< 2, float >;
 #endif
-template class tnlStaticVector< 2, double >;
+template class StaticVector< 2, double >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class tnlStaticVector< 2, long double >;
+template class StaticVector< 2, long double >;
 #endif
 
 #ifdef INSTANTIATE_FLOAT
-template class tnlStaticVector< 3, float >;
+template class StaticVector< 3, float >;
 #endif
-template class tnlStaticVector< 3, double >;
+template class StaticVector< 3, double >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class tnlStaticVector< 3, long double >;
+template class StaticVector< 3, long double >;
 #endif
 
 #ifdef INSTANTIATE_FLOAT
-template class tnlStaticVector< 4, float >;
+template class StaticVector< 4, float >;
 #endif
-template class tnlStaticVector< 4, double >;
+template class StaticVector< 4, double >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class tnlStaticVector< 4, long double >;
+template class StaticVector< 4, long double >;
 #endif
 
 #endif

@@ -41,7 +41,7 @@ class tnlMeshTraits
       typedef typename MeshConfig::CellTopology                                    CellTopology;
       typedef tnlMeshEntity< MeshConfig, CellTopology >                            CellType;
       typedef tnlMeshEntity< MeshConfig, tnlMeshVertexTopology >                   VertexType;
-      typedef tnlStaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
+      typedef Vectors::StaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
       typedef tnlMeshEntitySeed< MeshConfig, CellTopology >                        CellSeedType;
  
       typedef Arrays::Array< PointType, tnlHost, GlobalIndexType >                  PointArrayType;

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlStaticVectorTest.cu  -  description
+                          StaticVectorTest.cu  -  description
                              -------------------
     begin                : Feb 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -12,16 +12,16 @@
 #include <core/tnlHost.h>
 #include <cstdlib>
 
-#include "tnlStaticVectorTester.h"
+#include "StaticVectorTester.h"
 #include "../../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter::run< tnlStaticVectorTester< 1, double > >() ||
-       ! tnlUnitTestStarter::run< tnlStaticVectorTester< 2, double > >() ||
-       ! tnlUnitTestStarter::run< tnlStaticVectorTester< 3, double > >() ||
-       ! tnlUnitTestStarter::run< tnlStaticVectorTester< 4, double > >()
+   if( ! tnlUnitTestStarter::run< StaticVectorTester< 1, double > >() ||
+       ! tnlUnitTestStarter::run< StaticVectorTester< 2, double > >() ||
+       ! tnlUnitTestStarter::run< StaticVectorTester< 3, double > >() ||
+       ! tnlUnitTestStarter::run< StaticVectorTester< 4, double > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

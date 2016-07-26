@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlStaticVector.h  -  description
+                          StaticVector.h  -  description
                              -------------------
     begin                : Feb 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -16,301 +16,301 @@ namespace TNL {
 namespace Vectors {   
 
 template< int Size, typename Real = double >
-class tnlStaticVector : public Arrays::tnlStaticArray< Size, Real >
+class StaticVector : public Arrays::tnlStaticArray< Size, Real >
 {
    public:
    typedef Real RealType;
-   typedef tnlStaticVector< Size, Real > ThisType;
+   typedef StaticVector< Size, Real > ThisType;
    enum { size = Size };
 
    __cuda_callable__
-   tnlStaticVector();
+   StaticVector();
 
    __cuda_callable__
-   tnlStaticVector( const Real v[ Size ] );
+   StaticVector( const Real v[ Size ] );
 
    //! This sets all vector components to v
    __cuda_callable__
-   tnlStaticVector( const Real& v );
+   StaticVector( const Real& v );
 
    //! Copy constructor
    __cuda_callable__
-   tnlStaticVector( const tnlStaticVector< Size, Real >& v );
+   StaticVector( const StaticVector< Size, Real >& v );
 
    static String getType();
 
    //! Adding operator
    __cuda_callable__
-   tnlStaticVector& operator += ( const tnlStaticVector& v );
+   StaticVector& operator += ( const StaticVector& v );
 
    //! Subtracting operator
    __cuda_callable__
-   tnlStaticVector& operator -= ( const tnlStaticVector& v );
+   StaticVector& operator -= ( const StaticVector& v );
 
    //! Multiplication with number
    __cuda_callable__
-   tnlStaticVector& operator *= ( const Real& c );
+   StaticVector& operator *= ( const Real& c );
 
    //! Addition operator
    __cuda_callable__
-   tnlStaticVector operator + ( const tnlStaticVector& u ) const;
+   StaticVector operator + ( const StaticVector& u ) const;
 
    //! Subtraction operator
    __cuda_callable__
-   tnlStaticVector operator - ( const tnlStaticVector& u ) const;
+   StaticVector operator - ( const StaticVector& u ) const;
 
    //! Multiplication with number
    __cuda_callable__
-   tnlStaticVector operator * ( const Real& c ) const;
+   StaticVector operator * ( const Real& c ) const;
 
    //! Scalar product
    __cuda_callable__
-   Real operator * ( const tnlStaticVector& u ) const;
+   Real operator * ( const StaticVector& u ) const;
 
    __cuda_callable__
-   bool operator < ( const tnlStaticVector& v ) const;
+   bool operator < ( const StaticVector& v ) const;
 
    __cuda_callable__
-   bool operator <= ( const tnlStaticVector& v ) const;
+   bool operator <= ( const StaticVector& v ) const;
 
    __cuda_callable__
-   bool operator > ( const tnlStaticVector& v ) const;
+   bool operator > ( const StaticVector& v ) const;
 
    __cuda_callable__
-   bool operator >= ( const tnlStaticVector& v ) const;
+   bool operator >= ( const StaticVector& v ) const;
 
    template< typename OtherReal >
    __cuda_callable__
-   operator tnlStaticVector< Size, OtherReal >() const;
+   operator StaticVector< Size, OtherReal >() const;
  
    __cuda_callable__
    ThisType abs() const;
 };
 
 template< typename Real >
-class tnlStaticVector< 1, Real > : public Arrays::tnlStaticArray< 1, Real >
+class StaticVector< 1, Real > : public Arrays::tnlStaticArray< 1, Real >
 {
    public:
    typedef Real RealType;
-   typedef tnlStaticVector< 1, Real > ThisType;
+   typedef StaticVector< 1, Real > ThisType;
    enum { size = 1 };
 
    __cuda_callable__
-   tnlStaticVector();
+   StaticVector();
 
    //! This sets all vector components to v
    __cuda_callable__
-   tnlStaticVector( const Real& v );
+   StaticVector( const Real& v );
 
    //! Copy constructor
    __cuda_callable__
-   tnlStaticVector( const tnlStaticVector< 1, Real >& v );
+   StaticVector( const StaticVector< 1, Real >& v );
 
    static String getType();
 
    //! Addition operator
    __cuda_callable__
-   tnlStaticVector& operator += ( const tnlStaticVector& v );
+   StaticVector& operator += ( const StaticVector& v );
 
    //! Subtraction operator
    __cuda_callable__
-   tnlStaticVector& operator -= ( const tnlStaticVector& v );
+   StaticVector& operator -= ( const StaticVector& v );
 
    //! Multiplication with number
    __cuda_callable__
-   tnlStaticVector& operator *= ( const Real& c );
+   StaticVector& operator *= ( const Real& c );
 
    //! Addition operator
    __cuda_callable__
-   tnlStaticVector operator + ( const tnlStaticVector& u ) const;
+   StaticVector operator + ( const StaticVector& u ) const;
 
    //! Subtraction operator
    __cuda_callable__
-   tnlStaticVector operator - ( const tnlStaticVector& u ) const;
+   StaticVector operator - ( const StaticVector& u ) const;
 
    //! Multiplication with number
    __cuda_callable__
-   tnlStaticVector operator * ( const Real& c ) const;
+   StaticVector operator * ( const Real& c ) const;
 
    //! Scalar product
    __cuda_callable__
-   Real operator * ( const tnlStaticVector& u ) const;
+   Real operator * ( const StaticVector& u ) const;
 
    __cuda_callable__
-   bool operator < ( const tnlStaticVector& v ) const;
+   bool operator < ( const StaticVector& v ) const;
 
    __cuda_callable__
-   bool operator <= ( const tnlStaticVector& v ) const;
+   bool operator <= ( const StaticVector& v ) const;
 
    __cuda_callable__
-   bool operator > ( const tnlStaticVector& v ) const;
+   bool operator > ( const StaticVector& v ) const;
 
    __cuda_callable__
-   bool operator >= ( const tnlStaticVector& v ) const;
+   bool operator >= ( const StaticVector& v ) const;
 
    template< typename OtherReal >
    __cuda_callable__
-   operator tnlStaticVector< 1, OtherReal >() const;
+   operator StaticVector< 1, OtherReal >() const;
  
    __cuda_callable__
    ThisType abs() const;
 };
 
 template< typename Real >
-class tnlStaticVector< 2, Real > : public Arrays::tnlStaticArray< 2, Real >
+class StaticVector< 2, Real > : public Arrays::tnlStaticArray< 2, Real >
 {
    public:
    typedef Real RealType;
-   typedef tnlStaticVector< 2, Real > ThisType;
+   typedef StaticVector< 2, Real > ThisType;
    enum { size = 2 };
 
    __cuda_callable__
-   tnlStaticVector();
+   StaticVector();
 
    __cuda_callable__
-   tnlStaticVector( const Real v[ 2 ] );
+   StaticVector( const Real v[ 2 ] );
 
    //! This sets all vector components to v
    __cuda_callable__
-   tnlStaticVector( const Real& v );
+   StaticVector( const Real& v );
 
    __cuda_callable__
-   tnlStaticVector( const Real& v1, const Real& v2 );
+   StaticVector( const Real& v1, const Real& v2 );
 
    //! Copy constructor
    __cuda_callable__
-   tnlStaticVector( const tnlStaticVector< 2, Real >& v );
+   StaticVector( const StaticVector< 2, Real >& v );
 
    static String getType();
 
    //! Adding operator
    __cuda_callable__
-   tnlStaticVector& operator += ( const tnlStaticVector& v );
+   StaticVector& operator += ( const StaticVector& v );
 
    //! Subtracting operator
    __cuda_callable__
-   tnlStaticVector& operator -= ( const tnlStaticVector& v );
+   StaticVector& operator -= ( const StaticVector& v );
 
    //! Multiplication with number
    __cuda_callable__
-   tnlStaticVector& operator *= ( const Real& c );
+   StaticVector& operator *= ( const Real& c );
 
    //! Adding operator
    __cuda_callable__
-   tnlStaticVector operator + ( const tnlStaticVector& u ) const;
+   StaticVector operator + ( const StaticVector& u ) const;
 
    //! Subtracting operator
    __cuda_callable__
-   tnlStaticVector operator - ( const tnlStaticVector& u ) const;
+   StaticVector operator - ( const StaticVector& u ) const;
 
    //! Multiplication with number
    __cuda_callable__
-   tnlStaticVector operator * ( const Real& c ) const;
+   StaticVector operator * ( const Real& c ) const;
 
    //! Scalar product
    __cuda_callable__
-   Real operator * ( const tnlStaticVector& u ) const;
+   Real operator * ( const StaticVector& u ) const;
 
    __cuda_callable__
-   bool operator < ( const tnlStaticVector& v ) const;
+   bool operator < ( const StaticVector& v ) const;
 
    __cuda_callable__
-   bool operator <= ( const tnlStaticVector& v ) const;
+   bool operator <= ( const StaticVector& v ) const;
 
    __cuda_callable__
-   bool operator > ( const tnlStaticVector& v ) const;
+   bool operator > ( const StaticVector& v ) const;
 
    __cuda_callable__
-   bool operator >= ( const tnlStaticVector& v ) const;
+   bool operator >= ( const StaticVector& v ) const;
  
    template< typename OtherReal >
    __cuda_callable__
-   operator tnlStaticVector< 2, OtherReal >() const;
+   operator StaticVector< 2, OtherReal >() const;
  
    __cuda_callable__
    ThisType abs() const;
 };
 
 template< typename Real >
-class tnlStaticVector< 3, Real > : public Arrays::tnlStaticArray< 3, Real >
+class StaticVector< 3, Real > : public Arrays::tnlStaticArray< 3, Real >
 {
    public:
    typedef Real RealType;
-   typedef tnlStaticVector< 3, Real > ThisType;
+   typedef StaticVector< 3, Real > ThisType;
    enum { size = 3 };
 
    __cuda_callable__
-   tnlStaticVector();
+   StaticVector();
 
    __cuda_callable__
-   tnlStaticVector( const Real v[ 3 ] );
+   StaticVector( const Real v[ 3 ] );
 
    //! This sets all vector components to v
    __cuda_callable__
-   tnlStaticVector( const Real& v );
+   StaticVector( const Real& v );
 
    __cuda_callable__
-   tnlStaticVector( const Real& v1, const Real& v2, const Real& v3 );
+   StaticVector( const Real& v1, const Real& v2, const Real& v3 );
 
    //! Copy constructor
    __cuda_callable__
-   tnlStaticVector( const tnlStaticVector< 3, Real >& v );
+   StaticVector( const StaticVector< 3, Real >& v );
 
    static String getType();
 
    //! Addition operator
    __cuda_callable__
-   tnlStaticVector& operator += ( const tnlStaticVector& v );
+   StaticVector& operator += ( const StaticVector& v );
 
    //! Subtraction operator
    __cuda_callable__
-   tnlStaticVector& operator -= ( const tnlStaticVector& v );
+   StaticVector& operator -= ( const StaticVector& v );
 
    //! Multiplication with number
    __cuda_callable__
-   tnlStaticVector& operator *= ( const Real& c );
+   StaticVector& operator *= ( const Real& c );
 
    //! Addition operator
    __cuda_callable__
-   tnlStaticVector operator + ( const tnlStaticVector& u ) const;
+   StaticVector operator + ( const StaticVector& u ) const;
 
    //! Subtraction operator
    __cuda_callable__
-   tnlStaticVector operator - ( const tnlStaticVector& u ) const;
+   StaticVector operator - ( const StaticVector& u ) const;
 
    //! Multiplication with number
    __cuda_callable__
-   tnlStaticVector operator * ( const Real& c ) const;
+   StaticVector operator * ( const Real& c ) const;
 
    //! Scalar product
    __cuda_callable__
-   Real operator * ( const tnlStaticVector& u ) const;
+   Real operator * ( const StaticVector& u ) const;
 
    __cuda_callable__
-   bool operator < ( const tnlStaticVector& v ) const;
+   bool operator < ( const StaticVector& v ) const;
 
    __cuda_callable__
-   bool operator <= ( const tnlStaticVector& v ) const;
+   bool operator <= ( const StaticVector& v ) const;
 
    __cuda_callable__
-   bool operator > ( const tnlStaticVector& v ) const;
+   bool operator > ( const StaticVector& v ) const;
 
    __cuda_callable__
-   bool operator >= ( const tnlStaticVector& v ) const;
+   bool operator >= ( const StaticVector& v ) const;
 
    template< typename OtherReal >
    __cuda_callable__
-   operator tnlStaticVector< 3, OtherReal >() const;
+   operator StaticVector< 3, OtherReal >() const;
  
    __cuda_callable__
    ThisType abs() const;
 };
 
 template< int Size, typename Real >
-tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector< Size, Real >& u );
+StaticVector< Size, Real > operator * ( const Real& c, const StaticVector< Size, Real >& u );
 
 template< int Size, typename Real >
-tnlStaticVector< Size, Real > abs( const tnlStaticVector< Size, Real >& u ) { return u.abs(); };
+StaticVector< Size, Real > abs( const StaticVector< Size, Real >& u ) { return u.abs(); };
 
 } // namespace Vectors
 } // namespace TNL
@@ -326,10 +326,10 @@ namespace Vectors {
 // TODO: move to some other source file
 
 template< typename Real >
-tnlStaticVector< 3, Real > tnlVectorProduct( const tnlStaticVector< 3, Real >& u,
-                                             const tnlStaticVector< 3, Real >& v )
+StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
+                                             const StaticVector< 3, Real >& v )
 {
-   tnlStaticVector< 3, Real > p;
+   StaticVector< 3, Real > p;
    p[ 0 ] = u[ 1 ] * v[ 2 ] - u[ 2 ] * v[ 1 ];
    p[ 1 ] = u[ 2 ] * v[ 0 ] - u[ 0 ] * v[ 2 ];
    p[ 2 ] = u[ 0 ] * v[ 1 ] - u[ 1 ] * v[ 0 ];
@@ -337,25 +337,25 @@ tnlStaticVector< 3, Real > tnlVectorProduct( const tnlStaticVector< 3, Real >& u
 };
 
 template< typename Real >
-Real tnlScalarProduct( const tnlStaticVector< 2, Real >& u,
-                       const tnlStaticVector< 2, Real >& v )
+Real tnlScalarProduct( const StaticVector< 2, Real >& u,
+                       const StaticVector< 2, Real >& v )
 {
    return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ];
 };
 
 template< typename Real >
-Real tnlScalarProduct( const tnlStaticVector< 3, Real >& u,
-                       const tnlStaticVector< 3, Real >& v )
+Real tnlScalarProduct( const StaticVector< 3, Real >& u,
+                       const StaticVector< 3, Real >& v )
 {
    return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ] + u[ 2 ] * v[ 2 ];
 };
 
 template< typename Real >
-Real tnlTriangleArea( const tnlStaticVector< 2, Real >& a,
-                      const tnlStaticVector< 2, Real >& b,
-                      const tnlStaticVector< 2, Real >& c )
+Real tnlTriangleArea( const StaticVector< 2, Real >& a,
+                      const StaticVector< 2, Real >& b,
+                      const StaticVector< 2, Real >& c )
 {
-   tnlStaticVector< 3, Real > u1, u2;
+   StaticVector< 3, Real > u1, u2;
    u1. x() = b. x() - a. x();
    u1. y() = b. y() - a. y();
    u1. z() = 0.0;
@@ -363,16 +363,16 @@ Real tnlTriangleArea( const tnlStaticVector< 2, Real >& a,
    u2. y() = c. y() - a. y();
    u2. z() = 0;
 
-   const tnlStaticVector< 3, Real > v = tnlVectorProduct( u1, u2 );
+   const StaticVector< 3, Real > v = VectorProduct( u1, u2 );
    return 0.5 * ::sqrt( tnlScalarProduct( v, v ) );
 };
 
 template< typename Real >
-Real tnlTriangleArea( const tnlStaticVector< 3, Real >& a,
-                      const tnlStaticVector< 3, Real >& b,
-                      const tnlStaticVector< 3, Real >& c )
+Real tnlTriangleArea( const StaticVector< 3, Real >& a,
+                      const StaticVector< 3, Real >& b,
+                      const StaticVector< 3, Real >& c )
 {
-   tnlStaticVector< 3, Real > u1, u2;
+   StaticVector< 3, Real > u1, u2;
    u1. x() = b. x() - a. x();
    u1. y() = b. y() - a. y();
    u1. z() = 0.0;
@@ -380,7 +380,7 @@ Real tnlTriangleArea( const tnlStaticVector< 3, Real >& a,
    u2. y() = c. y() - a. y();
    u2. z() = 0;
 
-   const tnlStaticVector< 3, Real > v = tnlVectorProduct( u1, u2 );
+   const StaticVector< 3, Real > v = VectorProduct( u1, u2 );
    return 0.5 * ::sqrt( tnlScalarProduct( v, v ) );
 };
 

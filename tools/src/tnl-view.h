@@ -207,9 +207,9 @@ bool convertObject( const Mesh& mesh,
 
 
    if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
-       parsedObjectType[ 0 ] == "tnlVector" )
+       parsedObjectType[ 0 ] == "Vector" )
    {
-      tnlVector< Element, tnlHost, Index > vector;
+      Vectors::Vector< Element, tnlHost, Index > vector;
       if( ! vector. load( inputFileName ) )
          return false;
       if( ! mesh. write( vector, outputFileName, outputFormat ) )
@@ -219,7 +219,7 @@ bool convertObject( const Mesh& mesh,
    if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
    {
-      tnlMultiVector< Dimensions, Element, tnlHost, Index > multiVector;
+      Vectors::tnlMultiVector< Dimensions, Element, tnlHost, Index > multiVector;
       if( ! multiVector. load( inputFileName ) )
          return false;
       typedef tnlGrid< Dimensions, Real, tnlHost, Index > GridType;
@@ -245,7 +245,7 @@ bool setDimensions( const Mesh& mesh,
    if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
       dimensions = atoi( parsedObjectType[ 1 ]. getString() );
-   if( parsedObjectType[ 0 ] == "tnlVector" ||
+   if( parsedObjectType[ 0 ] == "Vector" ||
        parsedObjectType[ 0 ] == "tnlSharedVector" )
       dimensions = 1;
    switch( dimensions )
@@ -272,7 +272,7 @@ bool setIndexType( const Mesh& mesh,
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
       indexType = parsedObjectType[ 4 ];
    if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
-       parsedObjectType[ 0 ] == "tnlVector" )
+       parsedObjectType[ 0 ] == "Vector" )
       indexType = parsedObjectType[ 3 ];
 
    if( indexType == "int" )
@@ -296,39 +296,39 @@ bool setTupleType( const Mesh& mesh,
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlStaticVector< 1, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 1, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlStaticVector< 2, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 2, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlStaticVector< 3, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 3, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
             break;
       }
    if( dataType == "double" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlStaticVector< 1, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 1, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlStaticVector< 2, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 2, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlStaticVector< 3, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 3, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
       }
    if( dataType == "long double" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlStaticVector< 1, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 1, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlStaticVector< 2, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 2, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlStaticVector< 3, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 3, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
       }
 }
@@ -346,7 +346,7 @@ bool setElementType( const Mesh& mesh,
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
       elementType = parsedObjectType[ 2 ];
    if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
-       parsedObjectType[ 0 ] == "tnlVector" )
+       parsedObjectType[ 0 ] == "Vector" )
       elementType = parsedObjectType[ 1 ];
 
 
@@ -362,7 +362,7 @@ bool setElementType( const Mesh& mesh,
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
       return false;
    }
-   if( parsedElementType[ 0 ] == "tnlStaticVector" )
+   if( parsedElementType[ 0 ] == "StaticVector" )
       return setTupleType< Mesh >( mesh, inputFileName, parsedObjectType, parsedElementType, parameters );
 
    std::cerr << "Unknown element type " << elementType << "." << std::endl;
@@ -429,7 +429,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
          if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
              parsedObjectType[ 0 ] == "tnlSharedMultiVector" ||
              parsedObjectType[ 0 ] == "tnlSharedVector" ||
-             parsedObjectType[ 0 ] == "tnlVector" )
+             parsedObjectType[ 0 ] == "Vector" )
             setElementType< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );
          if( parsedObjectType[ 0 ] == "tnlMeshFunction" )
             setMeshFunction< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );

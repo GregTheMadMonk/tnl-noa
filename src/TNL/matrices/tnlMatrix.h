@@ -26,8 +26,8 @@ class tnlMatrix : public virtual Object
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Vectors::tnlVector< IndexType, DeviceType, IndexType > CompressedRowsLengthsVector;
-   typedef Vectors::tnlVector< RealType, DeviceType, IndexType > ValuesVector;
+   typedef Vectors::Vector< IndexType, DeviceType, IndexType > CompressedRowsLengthsVector;
+   typedef Vectors::Vector< RealType, DeviceType, IndexType > ValuesVector;
 
    tnlMatrix();
 
@@ -38,7 +38,7 @@ class tnlMatrix : public virtual Object
 
    virtual IndexType getRowLength( const IndexType row ) const = 0;
 
-   virtual void getCompressedRowsLengths( Vectors::tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const;
+   virtual void getCompressedRowsLengths( Vectors::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlMatrix< Real2, Device2, Index2 >& matrix );

@@ -50,12 +50,12 @@ class tnlSinBumpsFunction
 };
 
 template< typename Real >
-class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< Vectors::tnlStaticVector< 1, Real > >
+class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< Vectors::StaticVector< 1, Real > >
 {
    public:
  
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< 1, RealType > VertexType;
+      typedef Vectors::StaticVector< 1, RealType > VertexType;
 
 
       tnlSinBumpsFunction();
@@ -83,12 +83,12 @@ class tnlSinBumpsFunction< 1, Real  > : public tnlSinBumpsFunctionBase< Vectors:
 };
 
 template< typename Real >
-class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< Vectors::tnlStaticVector< 2, Real > >
+class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< Vectors::StaticVector< 2, Real > >
 {
    public:
 
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< 2, RealType > VertexType;
+      typedef Vectors::StaticVector< 2, RealType > VertexType;
  
 
       tnlSinBumpsFunction();
@@ -116,12 +116,12 @@ class tnlSinBumpsFunction< 2, Real > : public tnlSinBumpsFunctionBase< Vectors::
 };
 
 template< typename Real >
-class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< Vectors::tnlStaticVector< 3, Real > >
+class tnlSinBumpsFunction< 3, Real > : public tnlSinBumpsFunctionBase< Vectors::StaticVector< 3, Real > >
 {
    public:
 
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< 3, RealType > VertexType;
+      typedef Vectors::StaticVector< 3, RealType > VertexType;
 
       tnlSinBumpsFunction();
 

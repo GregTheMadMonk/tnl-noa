@@ -53,7 +53,7 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
    template< typename Vector >
    bool setDiagonals( const Vector& diagonals );
 
-   const Vectors::tnlVector< Index, Device, Index >& getDiagonals() const;
+   const Vectors::Vector< Index, Device, Index >& getDiagonals() const;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const tnlMultidiagonalMatrix< Real2, Device2, Index2 >& matrix );
@@ -188,9 +188,9 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
                              const IndexType column,
                              IndexType& index ) const;
 
-   Vectors::tnlVector< Real, Device, Index > values;
+   Vectors::Vector< Real, Device, Index > values;
 
-   Vectors::tnlVector< Index, Device, Index > diagonalsShift;
+   Vectors::Vector< Index, Device, Index > diagonalsShift;
 
    typedef tnlMultidiagonalMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlMultidiagonalMatrixDeviceDependentCode< DeviceType >;

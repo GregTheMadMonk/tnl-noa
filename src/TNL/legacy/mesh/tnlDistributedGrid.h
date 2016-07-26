@@ -33,29 +33,29 @@ class tnlDistributedGrid : public Object
 
    bool init( tnlCommunicator* communicator,
               const GridType& grid,
-              const tnlStaticVector< Dimensions, Index >& subdomainOverlaps );
+              const StaticVector< Dimensions, Index >& subdomainOverlaps );
 
    tnlCommunicator< Device >* getCommunicator() const;
 
-   const tnlStaticVector< Dimensions, Real >& getDomainLowerCorner() const;
+   const StaticVector< Dimensions, Real >& getDomainLowerCorner() const;
 
-   const tnlStaticVector< Dimensions, Real >& getDomainUpperCorner() const;
+   const StaticVector< Dimensions, Real >& getDomainUpperCorner() const;
 
-   const tnlStaticVector< Dimensions, Index >& getDimensions() const;
+   const StaticVector< Dimensions, Index >& getDimensions() const;
 
-   const tnlStaticVector< Dimensions, int >& getGridDimensions() const;
+   const StaticVector< Dimensions, int >& getGridDimensions() const;
 
-   const tnlStaticVector< Dimensions, int >& getLowerNeighbors() const;
+   const StaticVector< Dimensions, int >& getLowerNeighbors() const;
 
-   const tnlStaticVector< Dimensions, Index >& getLowerSubdomainsOverlaps() const;
+   const StaticVector< Dimensions, Index >& getLowerSubdomainsOverlaps() const;
 
-   const tnlStaticVector< Dimensions, int >& getNodeCoordinates() const;
+   const StaticVector< Dimensions, int >& getNodeCoordinates() const;
 
-   const tnlStaticVector< Dimensions, Index >& getSubdomainDimensions() const;
+   const StaticVector< Dimensions, Index >& getSubdomainDimensions() const;
 
-   const tnlStaticVector< Dimensions, Index >& getUpperSubdomainsOverlaps() const;
+   const StaticVector< Dimensions, Index >& getUpperSubdomainsOverlaps() const;
 
-   const tnlStaticVector< Dimensions, int >& getUppperNeighbors() const;
+   const StaticVector< Dimensions, int >& getUppperNeighbors() const;
 
    protected:
 
@@ -66,39 +66,39 @@ class tnlDistributedGrid : public Object
    /*!***
     * This is naturally generalized to more dimensions.
     */
-   tnlStaticVector< Dimensions, Real > domainLowerCorner;
+   StaticVector< Dimensions, Real > domainLowerCorner;
 
    //! In 2D this is the right top corner of the global domain.
    /*!***
     * This is naturally generalized to more dimensions.
     */
-   tnlStaticVector< Dimensions, Real > domainUpperCorner;
+   StaticVector< Dimensions, Real > domainUpperCorner;
 
    //! Dimensions of the global domain.
-   tnlStaticVector< Dimensions, Index > globalDimensions;
+   StaticVector< Dimensions, Index > globalDimensions;
 
    //! Dimensions of the local subdomain.
-   tnlStaticVector< Dimensions, Index > subdomainDimensions;
+   StaticVector< Dimensions, Index > subdomainDimensions;
 
    //! Number of the distributed grid nodes along each dimension.
-   tnlStaticVector< Dimensions, int > gridDimensions;
+   StaticVector< Dimensions, int > gridDimensions;
 
    //! Coordinates of this node of the distributed grid.
-   tnlStaticVector< Dimensions, int > nodeCoordinates;
+   StaticVector< Dimensions, int > nodeCoordinates;
 
    //! Here are device IDs taken from the tnlCommunicator.
    /*!***
     * In 2D, this is the device ID of the neighbor on the
     * right and above.
     */
-   tnlStaticVector< Dimensions, int > uppperNeighbors;
+   StaticVector< Dimensions, int > uppperNeighbors;
 
    //! Here are device IDs taken from the tnlCommunicator.
    /*!***
     * In 2D, this is the device ID of the neighbor on the
     * left and below.
     */
-   tnlStaticVector< Dimensions, int > lowerNeighbors;
+   StaticVector< Dimensions, int > lowerNeighbors;
 
    //! Here are widths of overlaps at subdomain boundaries with neighbors.
    /*!***
@@ -106,7 +106,7 @@ class tnlDistributedGrid : public Object
     * between neighboring nodes. In 2D, here are overlaps
     * with the neighbors on the right and above.
     */
-   tnlStaticVector< Dimensions, Index > upperSubdomainsOverlaps;
+   StaticVector< Dimensions, Index > upperSubdomainsOverlaps;
 
    //! Here are widths of overlaps at subdomain boundaries with neighbors.
    /*!***
@@ -114,7 +114,7 @@ class tnlDistributedGrid : public Object
     * between neighboring nodes. In 2D, here are overlaps
     * with the neighbors on the left and below.
     */
-   tnlStaticVector< Dimensions, Index > lowerSubdomainsOverlaps;
+   StaticVector< Dimensions, Index > lowerSubdomainsOverlaps;
 
 };
 
@@ -128,8 +128,8 @@ tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: tnlDistribute
 template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
 bool tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: init( tnlCommunicator* communicator,
                                                                               const GridType& grid,
-                                                                              const tnlStaticVector< Dimensions, int >& gridDimensions,
-                                                                              const tnlStaticVector< Dimensions, Index >& subdomainOverlaps )
+                                                                              const StaticVector< Dimensions, int >& gridDimensions,
+                                                                              const StaticVector< Dimensions, Index >& subdomainOverlaps )
 {
 
 }
@@ -141,61 +141,61 @@ tnlCommunicator* tnlDistributedGrid< Dimensions, GridType, Device, Real, Index >
 }
 
 template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
-const tnlStaticVector< Dimensions, Real >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getDomainLowerCorner() const
+const StaticVector< Dimensions, Real >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getDomainLowerCorner() const
 {
     return domainLowerCorner;
 }
 
 template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
-const tnlStaticVector< Dimensions, Real >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getDomainUpperCorner() const
+const StaticVector< Dimensions, Real >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getDomainUpperCorner() const
 {
     return domainUpperCorner;
 }
 
 template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
-const tnlStaticVector< Dimensions, Index >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getDimensions() const
+const StaticVector< Dimensions, Index >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getDimensions() const
 {
     return globalDimensions;
 }
 
 template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
-const tnlStaticVector< Dimensions, int >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getGridDimensions() const
+const StaticVector< Dimensions, int >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getGridDimensions() const
 {
     return gridDimensions;
 }
 
 template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
-const tnlStaticVector< Dimensions, int >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getLowerNeighbors() const
+const StaticVector< Dimensions, int >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getLowerNeighbors() const
 {
     return lowerNeighbors;
 }
 
 template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
-const tnlStaticVector< Dimensions, Index >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getLowerSubdomainsOverlaps() const
+const StaticVector< Dimensions, Index >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getLowerSubdomainsOverlaps() const
 {
     return lowerSubdomainsOverlaps;
 }
 
 template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
-const tnlStaticVector< Dimensions, int >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getNodeCoordinates() const
+const StaticVector< Dimensions, int >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getNodeCoordinates() const
 {
     return nodeCoordinates;
 }
 
 template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
-const tnlStaticVector< Dimensions, Index >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getSubdomainDimensions() const
+const StaticVector< Dimensions, Index >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getSubdomainDimensions() const
 {
     return subdomainDimensions;
 }
 
 template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
-const tnlStaticVector< Dimensions, Index >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getUpperSubdomainsOverlaps() const
+const StaticVector< Dimensions, Index >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getUpperSubdomainsOverlaps() const
 {
     return upperSubdomainsOverlaps;
 }
 
 template< int Dimensions, typename GridType, typename Device, typename Real, typename Index >
-const tnlStaticVector< Dimensions, int >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getUppperNeighbors() const
+const StaticVector< Dimensions, int >& tnlDistributedGrid< Dimensions, GridType, Device, Real, Index > :: getUppperNeighbors() const
 {
     return uppperNeighbors;
 }

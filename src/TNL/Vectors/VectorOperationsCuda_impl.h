@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlVectorOperationsCuda_impl.h  -  description
+                          VectorOperationsCuda_impl.h  -  description
                              -------------------
     begin                : Nov 8, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -18,7 +18,7 @@ namespace TNL {
 namespace Vectors {   
 
 template< typename Vector >
-void tnlVectorOperations< tnlCuda >::addElement( Vector& v,
+void VectorOperations< tnlCuda >::addElement( Vector& v,
                                                  const typename Vector::IndexType i,
                                                  const typename Vector::RealType& value )
 {
@@ -26,7 +26,7 @@ void tnlVectorOperations< tnlCuda >::addElement( Vector& v,
 }
 
 template< typename Vector >
-void tnlVectorOperations< tnlCuda >::addElement( Vector& v,
+void VectorOperations< tnlCuda >::addElement( Vector& v,
                                                  const typename Vector::IndexType i,
                                                  const typename Vector::RealType& value,
                                                  const typename Vector::RealType& thisElementMultiplicator )
@@ -35,7 +35,7 @@ void tnlVectorOperations< tnlCuda >::addElement( Vector& v,
 }
 
 template< typename Vector >
-typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorMax( const Vector& v )
+typename Vector :: RealType VectorOperations< tnlCuda > :: getVectorMax( const Vector& v )
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
@@ -53,7 +53,7 @@ typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorMax( cons
 }
 
 template< typename Vector >
-typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorMin( const Vector& v )
+typename Vector :: RealType VectorOperations< tnlCuda > :: getVectorMin( const Vector& v )
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
@@ -71,7 +71,7 @@ typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorMin( cons
 }
 
 template< typename Vector >
-typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorAbsMax( const Vector& v )
+typename Vector :: RealType VectorOperations< tnlCuda > :: getVectorAbsMax( const Vector& v )
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
@@ -89,7 +89,7 @@ typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorAbsMax( c
 }
 
 template< typename Vector >
-typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorAbsMin( const Vector& v )
+typename Vector :: RealType VectorOperations< tnlCuda > :: getVectorAbsMin( const Vector& v )
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
@@ -108,7 +108,7 @@ typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorAbsMin( c
 
 template< typename Vector >
 typename Vector::RealType
-tnlVectorOperations< tnlCuda >::
+VectorOperations< tnlCuda >::
 getVectorL1Norm( const Vector& v )
 {
    typedef typename Vector :: RealType Real;
@@ -128,7 +128,7 @@ getVectorL1Norm( const Vector& v )
 
 template< typename Vector >
 typename Vector::RealType
-tnlVectorOperations< tnlCuda >::
+VectorOperations< tnlCuda >::
 getVectorL2Norm( const Vector& v )
 {
    typedef typename Vector :: RealType Real;
@@ -149,7 +149,7 @@ getVectorL2Norm( const Vector& v )
 
 template< typename Vector >
 typename Vector::RealType
-tnlVectorOperations< tnlCuda >::
+VectorOperations< tnlCuda >::
 getVectorLpNorm( const Vector& v,
                  const typename Vector::RealType& p )
 {
@@ -176,7 +176,7 @@ getVectorLpNorm( const Vector& v,
 }
 
 template< typename Vector >
-typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorSum( const Vector& v )
+typename Vector :: RealType VectorOperations< tnlCuda > :: getVectorSum( const Vector& v )
 {
    typedef typename Vector :: RealType Real;
    typedef typename Vector :: IndexType Index;
@@ -194,7 +194,7 @@ typename Vector :: RealType tnlVectorOperations< tnlCuda > :: getVectorSum( cons
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferenceMax( const Vector1& v1,
+typename Vector1 :: RealType VectorOperations< tnlCuda > :: getVectorDifferenceMax( const Vector1& v1,
                                                             const Vector2& v2 )
 {
    typedef typename Vector1 :: RealType Real;
@@ -214,7 +214,7 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferen
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferenceMin( const Vector1& v1,
+typename Vector1 :: RealType VectorOperations< tnlCuda > :: getVectorDifferenceMin( const Vector1& v1,
                                                             const Vector2& v2 )
 {
    typedef typename Vector1 :: RealType Real;
@@ -235,7 +235,7 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferen
 
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferenceAbsMax( const Vector1& v1,
+typename Vector1 :: RealType VectorOperations< tnlCuda > :: getVectorDifferenceAbsMax( const Vector1& v1,
                                                                const Vector2& v2 )
 {
    typedef typename Vector1 :: RealType Real;
@@ -255,7 +255,7 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferen
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferenceAbsMin( const Vector1& v1,
+typename Vector1 :: RealType VectorOperations< tnlCuda > :: getVectorDifferenceAbsMin( const Vector1& v1,
                                                             const Vector2& v2 )
 {
    typedef typename Vector1 :: RealType Real;
@@ -276,7 +276,7 @@ typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferen
 
 template< typename Vector1, typename Vector2 >
 typename Vector1::RealType
-tnlVectorOperations< tnlCuda >::
+VectorOperations< tnlCuda >::
 getVectorDifferenceL1Norm( const Vector1& v1,
                            const Vector2& v2 )
 {
@@ -298,7 +298,7 @@ getVectorDifferenceL1Norm( const Vector1& v1,
 
 template< typename Vector1, typename Vector2 >
 typename Vector1::RealType
-tnlVectorOperations< tnlCuda >::
+VectorOperations< tnlCuda >::
 getVectorDifferenceL2Norm( const Vector1& v1,
                            const Vector2& v2 )
 {
@@ -321,7 +321,7 @@ getVectorDifferenceL2Norm( const Vector1& v1,
 
 template< typename Vector1, typename Vector2 >
 typename Vector1::RealType
-tnlVectorOperations< tnlCuda >::
+VectorOperations< tnlCuda >::
 getVectorDifferenceLpNorm( const Vector1& v1,
                            const Vector2& v2,
                            const typename Vector1 :: RealType& p )
@@ -346,7 +346,7 @@ getVectorDifferenceLpNorm( const Vector1& v1,
 }
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getVectorDifferenceSum( const Vector1& v1,
+typename Vector1 :: RealType VectorOperations< tnlCuda > :: getVectorDifferenceSum( const Vector1& v1,
                                                          const Vector2& v2 )
 {
    typedef typename Vector1 :: RealType Real;
@@ -382,7 +382,7 @@ __global__ void vectorScalarMultiplicationCudaKernel( Real* data,
 #endif
 
 template< typename Vector >
-void tnlVectorOperations< tnlCuda > :: vectorScalarMultiplication( Vector& v,
+void VectorOperations< tnlCuda > :: vectorScalarMultiplication( Vector& v,
                                                                    const typename Vector::RealType& alpha )
 {
    typedef typename Vector :: RealType Real;
@@ -407,7 +407,7 @@ void tnlVectorOperations< tnlCuda > :: vectorScalarMultiplication( Vector& v,
 
 
 template< typename Vector1, typename Vector2 >
-typename Vector1 :: RealType tnlVectorOperations< tnlCuda > :: getScalarProduct( const Vector1& v1,
+typename Vector1 :: RealType VectorOperations< tnlCuda > :: getScalarProduct( const Vector1& v1,
                                                                                  const Vector2& v2 )
 {
    typedef typename Vector1 :: RealType Real;
@@ -460,7 +460,7 @@ __global__ void vectorAddVectorCudaKernel( Real* y,
 #endif
 
 template< typename Vector1, typename Vector2 >
-void tnlVectorOperations< tnlCuda > :: addVector( Vector1& y,
+void VectorOperations< tnlCuda > :: addVector( Vector1& y,
                                                   const Vector2& x,
                                                   const typename Vector2::RealType& alpha,
                                                   const typename Vector1::RealType& thisMultiplicator )
@@ -529,7 +529,7 @@ template< typename Vector1,
           typename Vector2,
           typename Vector3 >
 void
-tnlVectorOperations< tnlCuda >::
+VectorOperations< tnlCuda >::
 addVectors( Vector1& v,
             const Vector2& v1,
             const typename Vector2::RealType& multiplicator1,
@@ -571,7 +571,7 @@ addVectors( Vector1& v,
 }
 
 template< typename Vector >
-void tnlVectorOperations< tnlCuda >::computePrefixSum( Vector& v,
+void VectorOperations< tnlCuda >::computePrefixSum( Vector& v,
                                                        typename Vector::IndexType begin,
                                                        typename Vector::IndexType end )
 {
@@ -594,7 +594,7 @@ void tnlVectorOperations< tnlCuda >::computePrefixSum( Vector& v,
 }
 
 template< typename Vector >
-void tnlVectorOperations< tnlCuda >::computeExclusivePrefixSum( Vector& v,
+void VectorOperations< tnlCuda >::computeExclusivePrefixSum( Vector& v,
                                                                 typename Vector::IndexType begin,
                                                                 typename Vector::IndexType end )
 {
@@ -628,250 +628,250 @@ namespace Vectors {
 /****
  * Max
  */
-extern template int         tnlVectorOperations< tnlCuda >::getVectorMax( const tnlVector< int, tnlCuda, int >& v );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorMax( const tnlVector< long int, tnlCuda, int >& v );
+extern template int         VectorOperations< tnlCuda >::getVectorMax( const Vector< int, tnlCuda, int >& v );
+extern template long int    VectorOperations< tnlCuda >::getVectorMax( const Vector< long int, tnlCuda, int >& v );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorMax( const tnlVector< float, tnlCuda, int >& v );
+extern template float       VectorOperations< tnlCuda >::getVectorMax( const Vector< float, tnlCuda, int >& v );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorMax( const tnlVector< double, tnlCuda, int >& v );
+extern template double      VectorOperations< tnlCuda >::getVectorMax( const Vector< double, tnlCuda, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorMax( const tnlVector< long double, tnlCuda, int >& v );
+extern template long double VectorOperations< tnlCuda >::getVectorMax( const Vector< long double, tnlCuda, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-extern template int         tnlVectorOperations< tnlCuda >::getVectorMax( const tnlVector< int, tnlCuda, long int >& v );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorMax( const tnlVector< long int, tnlCuda, long int >& v );
+extern template int         VectorOperations< tnlCuda >::getVectorMax( const Vector< int, tnlCuda, long int >& v );
+extern template long int    VectorOperations< tnlCuda >::getVectorMax( const Vector< long int, tnlCuda, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorMax( const tnlVector< float, tnlCuda, long int >& v );
+extern template float       VectorOperations< tnlCuda >::getVectorMax( const Vector< float, tnlCuda, long int >& v );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorMax( const tnlVector< double, tnlCuda, long int >& v );
+extern template double      VectorOperations< tnlCuda >::getVectorMax( const Vector< double, tnlCuda, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorMax( const tnlVector< long double, tnlCuda, long int >& v );
+extern template long double VectorOperations< tnlCuda >::getVectorMax( const Vector< long double, tnlCuda, long int >& v );
 #endif
 #endif
 
 /****
  * Min
  */
-extern template int         tnlVectorOperations< tnlCuda >::getVectorMin( const tnlVector< int, tnlCuda, int >& v );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorMin( const tnlVector< long int, tnlCuda, int >& v );
+extern template int         VectorOperations< tnlCuda >::getVectorMin( const Vector< int, tnlCuda, int >& v );
+extern template long int    VectorOperations< tnlCuda >::getVectorMin( const Vector< long int, tnlCuda, int >& v );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorMin( const tnlVector< float, tnlCuda, int >& v );
+extern template float       VectorOperations< tnlCuda >::getVectorMin( const Vector< float, tnlCuda, int >& v );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorMin( const tnlVector< double, tnlCuda, int >& v );
+extern template double      VectorOperations< tnlCuda >::getVectorMin( const Vector< double, tnlCuda, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorMin( const tnlVector< long double, tnlCuda, int >& v );
+extern template long double VectorOperations< tnlCuda >::getVectorMin( const Vector< long double, tnlCuda, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-extern template int         tnlVectorOperations< tnlCuda >::getVectorMin( const tnlVector< int, tnlCuda, long int >& v );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorMin( const tnlVector< long int, tnlCuda, long int >& v );
+extern template int         VectorOperations< tnlCuda >::getVectorMin( const Vector< int, tnlCuda, long int >& v );
+extern template long int    VectorOperations< tnlCuda >::getVectorMin( const Vector< long int, tnlCuda, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorMin( const tnlVector< float, tnlCuda, long int >& v );
+extern template float       VectorOperations< tnlCuda >::getVectorMin( const Vector< float, tnlCuda, long int >& v );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorMin( const tnlVector< double, tnlCuda, long int >& v );
+extern template double      VectorOperations< tnlCuda >::getVectorMin( const Vector< double, tnlCuda, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorMin( const tnlVector< long double, tnlCuda, long int >& v );
+extern template long double VectorOperations< tnlCuda >::getVectorMin( const Vector< long double, tnlCuda, long int >& v );
 #endif
 #endif
 
 /****
  * Abs max
  */
-extern template int         tnlVectorOperations< tnlCuda >::getVectorAbsMax( const tnlVector< int, tnlCuda, int >& v );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorAbsMax( const tnlVector< long int, tnlCuda, int >& v );
+extern template int         VectorOperations< tnlCuda >::getVectorAbsMax( const Vector< int, tnlCuda, int >& v );
+extern template long int    VectorOperations< tnlCuda >::getVectorAbsMax( const Vector< long int, tnlCuda, int >& v );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorAbsMax( const tnlVector< float, tnlCuda, int >& v );
+extern template float       VectorOperations< tnlCuda >::getVectorAbsMax( const Vector< float, tnlCuda, int >& v );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorAbsMax( const tnlVector< double, tnlCuda, int >& v );
+extern template double      VectorOperations< tnlCuda >::getVectorAbsMax( const Vector< double, tnlCuda, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorAbsMax( const tnlVector< long double, tnlCuda, int >& v );
+extern template long double VectorOperations< tnlCuda >::getVectorAbsMax( const Vector< long double, tnlCuda, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-extern template int         tnlVectorOperations< tnlCuda >::getVectorAbsMax( const tnlVector< int, tnlCuda, long int >& v );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorAbsMax( const tnlVector< long int, tnlCuda, long int >& v );
+extern template int         VectorOperations< tnlCuda >::getVectorAbsMax( const Vector< int, tnlCuda, long int >& v );
+extern template long int    VectorOperations< tnlCuda >::getVectorAbsMax( const Vector< long int, tnlCuda, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorAbsMax( const tnlVector< float, tnlCuda, long int >& v );
+extern template float       VectorOperations< tnlCuda >::getVectorAbsMax( const Vector< float, tnlCuda, long int >& v );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorAbsMax( const tnlVector< double, tnlCuda, long int >& v );
+extern template double      VectorOperations< tnlCuda >::getVectorAbsMax( const Vector< double, tnlCuda, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorAbsMax( const tnlVector< long double, tnlCuda, long int >& v );
+extern template long double VectorOperations< tnlCuda >::getVectorAbsMax( const Vector< long double, tnlCuda, long int >& v );
 #endif
 #endif
 
 /****
  * Abs min
  */
-extern template int         tnlVectorOperations< tnlCuda >::getVectorAbsMin( const tnlVector< int, tnlCuda, int >& v );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorAbsMin( const tnlVector< long int, tnlCuda, int >& v );
+extern template int         VectorOperations< tnlCuda >::getVectorAbsMin( const Vector< int, tnlCuda, int >& v );
+extern template long int    VectorOperations< tnlCuda >::getVectorAbsMin( const Vector< long int, tnlCuda, int >& v );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorAbsMin( const tnlVector< float, tnlCuda, int >& v );
+extern template float       VectorOperations< tnlCuda >::getVectorAbsMin( const Vector< float, tnlCuda, int >& v );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorAbsMin( const tnlVector< double, tnlCuda, int >& v );
+extern template double      VectorOperations< tnlCuda >::getVectorAbsMin( const Vector< double, tnlCuda, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorAbsMin( const tnlVector< long double, tnlCuda, int >& v );
+extern template long double VectorOperations< tnlCuda >::getVectorAbsMin( const Vector< long double, tnlCuda, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-extern template int         tnlVectorOperations< tnlCuda >::getVectorAbsMin( const tnlVector< int, tnlCuda, long int >& v );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorAbsMin( const tnlVector< long int, tnlCuda, long int >& v );
+extern template int         VectorOperations< tnlCuda >::getVectorAbsMin( const Vector< int, tnlCuda, long int >& v );
+extern template long int    VectorOperations< tnlCuda >::getVectorAbsMin( const Vector< long int, tnlCuda, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorAbsMin( const tnlVector< float, tnlCuda, long int >& v );
+extern template float       VectorOperations< tnlCuda >::getVectorAbsMin( const Vector< float, tnlCuda, long int >& v );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorAbsMin( const tnlVector< double, tnlCuda, long int >& v );
+extern template double      VectorOperations< tnlCuda >::getVectorAbsMin( const Vector< double, tnlCuda, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorAbsMin( const tnlVector< long double, tnlCuda, long int >& v );
+extern template long double VectorOperations< tnlCuda >::getVectorAbsMin( const Vector< long double, tnlCuda, long int >& v );
 #endif
 #endif
 
 /****
  * Lp norm
  */
-extern template int         tnlVectorOperations< tnlCuda >::getVectorLpNorm( const tnlVector< int, tnlCuda, int >& v, const int& p );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorLpNorm( const tnlVector< long int, tnlCuda, int >& v, const long int& p );
+extern template int         VectorOperations< tnlCuda >::getVectorLpNorm( const Vector< int, tnlCuda, int >& v, const int& p );
+extern template long int    VectorOperations< tnlCuda >::getVectorLpNorm( const Vector< long int, tnlCuda, int >& v, const long int& p );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorLpNorm( const tnlVector< float, tnlCuda, int >& v, const float& p );
+extern template float       VectorOperations< tnlCuda >::getVectorLpNorm( const Vector< float, tnlCuda, int >& v, const float& p );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorLpNorm( const tnlVector< double, tnlCuda, int >& v, const double& p );
+extern template double      VectorOperations< tnlCuda >::getVectorLpNorm( const Vector< double, tnlCuda, int >& v, const double& p );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorLpNorm( const tnlVector< long double, tnlCuda, int >& v, const long double& p );
+extern template long double VectorOperations< tnlCuda >::getVectorLpNorm( const Vector< long double, tnlCuda, int >& v, const long double& p );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-extern template int         tnlVectorOperations< tnlCuda >::getVectorLpNorm( const tnlVector< int, tnlCuda, long int >& v, const int& p );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorLpNorm( const tnlVector< long int, tnlCuda, long int >& v, const long int& p );
+extern template int         VectorOperations< tnlCuda >::getVectorLpNorm( const Vector< int, tnlCuda, long int >& v, const int& p );
+extern template long int    VectorOperations< tnlCuda >::getVectorLpNorm( const Vector< long int, tnlCuda, long int >& v, const long int& p );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorLpNorm( const tnlVector< float, tnlCuda, long int >& v, const float& p );
+extern template float       VectorOperations< tnlCuda >::getVectorLpNorm( const Vector< float, tnlCuda, long int >& v, const float& p );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorLpNorm( const tnlVector< double, tnlCuda, long int >& v, const double& p );
+extern template double      VectorOperations< tnlCuda >::getVectorLpNorm( const Vector< double, tnlCuda, long int >& v, const double& p );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorLpNorm( const tnlVector< long double, tnlCuda, long int >& v, const long double& p );
+extern template long double VectorOperations< tnlCuda >::getVectorLpNorm( const Vector< long double, tnlCuda, long int >& v, const long double& p );
 #endif
 #endif
 
 /****
  * Sum
  */
-extern template int         tnlVectorOperations< tnlCuda >::getVectorSum( const tnlVector< int, tnlCuda, int >& v );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorSum( const tnlVector< long int, tnlCuda, int >& v );
+extern template int         VectorOperations< tnlCuda >::getVectorSum( const Vector< int, tnlCuda, int >& v );
+extern template long int    VectorOperations< tnlCuda >::getVectorSum( const Vector< long int, tnlCuda, int >& v );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorSum( const tnlVector< float, tnlCuda, int >& v );
+extern template float       VectorOperations< tnlCuda >::getVectorSum( const Vector< float, tnlCuda, int >& v );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorSum( const tnlVector< double, tnlCuda, int >& v );
+extern template double      VectorOperations< tnlCuda >::getVectorSum( const Vector< double, tnlCuda, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorSum( const tnlVector< long double, tnlCuda, int >& v );
+extern template long double VectorOperations< tnlCuda >::getVectorSum( const Vector< long double, tnlCuda, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-extern template int         tnlVectorOperations< tnlCuda >::getVectorSum( const tnlVector< int, tnlCuda, long int >& v );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorSum( const tnlVector< long int, tnlCuda, long int >& v );
+extern template int         VectorOperations< tnlCuda >::getVectorSum( const Vector< int, tnlCuda, long int >& v );
+extern template long int    VectorOperations< tnlCuda >::getVectorSum( const Vector< long int, tnlCuda, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorSum( const tnlVector< float, tnlCuda, long int >& v );
+extern template float       VectorOperations< tnlCuda >::getVectorSum( const Vector< float, tnlCuda, long int >& v );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorSum( const tnlVector< double, tnlCuda, long int >& v );
+extern template double      VectorOperations< tnlCuda >::getVectorSum( const Vector< double, tnlCuda, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorSum( const tnlVector< long double, tnlCuda, long int >& v );
+extern template long double VectorOperations< tnlCuda >::getVectorSum( const Vector< long double, tnlCuda, long int >& v );
 #endif
 #endif
 
 /****
  * Difference max
  */
-extern template int         tnlVectorOperations< tnlCuda >::getVectorDifferenceMax( const tnlVector< int, tnlCuda, int >& v1, const tnlVector< int, tnlCuda, int >& v2 );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorDifferenceMax( const tnlVector< long int, tnlCuda, int >& v1, const tnlVector< long int, tnlCuda, int >& v2 );
+extern template int         VectorOperations< tnlCuda >::getVectorDifferenceMax( const Vector< int, tnlCuda, int >& v1, const Vector< int, tnlCuda, int >& v2 );
+extern template long int    VectorOperations< tnlCuda >::getVectorDifferenceMax( const Vector< long int, tnlCuda, int >& v1, const Vector< long int, tnlCuda, int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorDifferenceMax( const tnlVector< float, tnlCuda, int >& v1,  const tnlVector< float, tnlCuda, int >& v2);
+extern template float       VectorOperations< tnlCuda >::getVectorDifferenceMax( const Vector< float, tnlCuda, int >& v1,  const Vector< float, tnlCuda, int >& v2);
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorDifferenceMax( const tnlVector< double, tnlCuda, int >& v1, const tnlVector< double, tnlCuda, int >& v2 );
+extern template double      VectorOperations< tnlCuda >::getVectorDifferenceMax( const Vector< double, tnlCuda, int >& v1, const Vector< double, tnlCuda, int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorDifferenceMax( const tnlVector< long double, tnlCuda, int >& v1, const tnlVector< long double, tnlCuda, int >& v2 );
+extern template long double VectorOperations< tnlCuda >::getVectorDifferenceMax( const Vector< long double, tnlCuda, int >& v1, const Vector< long double, tnlCuda, int >& v2 );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-extern template int         tnlVectorOperations< tnlCuda >::getVectorDifferenceMax( const tnlVector< int, tnlCuda, long int >& v1, const tnlVector< int, tnlCuda, long int >& v2 );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorDifferenceMax( const tnlVector< long int, tnlCuda, long int >& v1, const tnlVector< long int, tnlCuda, long int >& v2 );
+extern template int         VectorOperations< tnlCuda >::getVectorDifferenceMax( const Vector< int, tnlCuda, long int >& v1, const Vector< int, tnlCuda, long int >& v2 );
+extern template long int    VectorOperations< tnlCuda >::getVectorDifferenceMax( const Vector< long int, tnlCuda, long int >& v1, const Vector< long int, tnlCuda, long int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorDifferenceMax( const tnlVector< float, tnlCuda, long int >& v1, const tnlVector< float, tnlCuda, long int >& v2 );
+extern template float       VectorOperations< tnlCuda >::getVectorDifferenceMax( const Vector< float, tnlCuda, long int >& v1, const Vector< float, tnlCuda, long int >& v2 );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorDifferenceMax( const tnlVector< double, tnlCuda, long int >& v1, const tnlVector< double, tnlCuda, long int >& v2 );
+extern template double      VectorOperations< tnlCuda >::getVectorDifferenceMax( const Vector< double, tnlCuda, long int >& v1, const Vector< double, tnlCuda, long int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorDifferenceMax( const tnlVector< long double, tnlCuda, long int >& v1, const tnlVector< long double, tnlCuda, long int >& v2 );
+extern template long double VectorOperations< tnlCuda >::getVectorDifferenceMax( const Vector< long double, tnlCuda, long int >& v1, const Vector< long double, tnlCuda, long int >& v2 );
 #endif
 #endif
 
 /****
  * Difference min
  */
-extern template int         tnlVectorOperations< tnlCuda >::getVectorDifferenceMin( const tnlVector< int, tnlCuda, int >& v1, const tnlVector< int, tnlCuda, int >& v2 );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorDifferenceMin( const tnlVector< long int, tnlCuda, int >& v1, const tnlVector< long int, tnlCuda, int >& v2 );
+extern template int         VectorOperations< tnlCuda >::getVectorDifferenceMin( const Vector< int, tnlCuda, int >& v1, const Vector< int, tnlCuda, int >& v2 );
+extern template long int    VectorOperations< tnlCuda >::getVectorDifferenceMin( const Vector< long int, tnlCuda, int >& v1, const Vector< long int, tnlCuda, int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorDifferenceMin( const tnlVector< float, tnlCuda, int >& v1,  const tnlVector< float, tnlCuda, int >& v2);
+extern template float       VectorOperations< tnlCuda >::getVectorDifferenceMin( const Vector< float, tnlCuda, int >& v1,  const Vector< float, tnlCuda, int >& v2);
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorDifferenceMin( const tnlVector< double, tnlCuda, int >& v1, const tnlVector< double, tnlCuda, int >& v2 );
+extern template double      VectorOperations< tnlCuda >::getVectorDifferenceMin( const Vector< double, tnlCuda, int >& v1, const Vector< double, tnlCuda, int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorDifferenceMin( const tnlVector< long double, tnlCuda, int >& v1, const tnlVector< long double, tnlCuda, int >& v2 );
+extern template long double VectorOperations< tnlCuda >::getVectorDifferenceMin( const Vector< long double, tnlCuda, int >& v1, const Vector< long double, tnlCuda, int >& v2 );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-extern template int         tnlVectorOperations< tnlCuda >::getVectorDifferenceMin( const tnlVector< int, tnlCuda, long int >& v1, const tnlVector< int, tnlCuda, long int >& v2 );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorDifferenceMin( const tnlVector< long int, tnlCuda, long int >& v1, const tnlVector< long int, tnlCuda, long int >& v2 );
+extern template int         VectorOperations< tnlCuda >::getVectorDifferenceMin( const Vector< int, tnlCuda, long int >& v1, const Vector< int, tnlCuda, long int >& v2 );
+extern template long int    VectorOperations< tnlCuda >::getVectorDifferenceMin( const Vector< long int, tnlCuda, long int >& v1, const Vector< long int, tnlCuda, long int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorDifferenceMin( const tnlVector< float, tnlCuda, long int >& v1, const tnlVector< float, tnlCuda, long int >& v2 );
+extern template float       VectorOperations< tnlCuda >::getVectorDifferenceMin( const Vector< float, tnlCuda, long int >& v1, const Vector< float, tnlCuda, long int >& v2 );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorDifferenceMin( const tnlVector< double, tnlCuda, long int >& v1, const tnlVector< double, tnlCuda, long int >& v2 );
+extern template double      VectorOperations< tnlCuda >::getVectorDifferenceMin( const Vector< double, tnlCuda, long int >& v1, const Vector< double, tnlCuda, long int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorDifferenceMin( const tnlVector< long double, tnlCuda, long int >& v1, const tnlVector< long double, tnlCuda, long int >& v2 );
+extern template long double VectorOperations< tnlCuda >::getVectorDifferenceMin( const Vector< long double, tnlCuda, long int >& v1, const Vector< long double, tnlCuda, long int >& v2 );
 #endif
 #endif
 
 /****
  * Difference abs max
  */
-extern template int         tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const tnlVector< int, tnlCuda, int >& v1, const tnlVector< int, tnlCuda, int >& v2 );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const tnlVector< long int, tnlCuda, int >& v1, const tnlVector< long int, tnlCuda, int >& v2 );
+extern template int         VectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const Vector< int, tnlCuda, int >& v1, const Vector< int, tnlCuda, int >& v2 );
+extern template long int    VectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const Vector< long int, tnlCuda, int >& v1, const Vector< long int, tnlCuda, int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const tnlVector< float, tnlCuda, int >& v1,  const tnlVector< float, tnlCuda, int >& v2);
+extern template float       VectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const Vector< float, tnlCuda, int >& v1,  const Vector< float, tnlCuda, int >& v2);
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const tnlVector< double, tnlCuda, int >& v1, const tnlVector< double, tnlCuda, int >& v2 );
+extern template double      VectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const Vector< double, tnlCuda, int >& v1, const Vector< double, tnlCuda, int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const tnlVector< long double, tnlCuda, int >& v1, const tnlVector< long double, tnlCuda, int >& v2 );
+extern template long double VectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const Vector< long double, tnlCuda, int >& v1, const Vector< long double, tnlCuda, int >& v2 );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-extern template int         tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const tnlVector< int, tnlCuda, long int >& v1, const tnlVector< int, tnlCuda, long int >& v2 );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const tnlVector< long int, tnlCuda, long int >& v1, const tnlVector< long int, tnlCuda, long int >& v2 );
+extern template int         VectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const Vector< int, tnlCuda, long int >& v1, const Vector< int, tnlCuda, long int >& v2 );
+extern template long int    VectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const Vector< long int, tnlCuda, long int >& v1, const Vector< long int, tnlCuda, long int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const tnlVector< float, tnlCuda, long int >& v1, const tnlVector< float, tnlCuda, long int >& v2 );
+extern template float       VectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const Vector< float, tnlCuda, long int >& v1, const Vector< float, tnlCuda, long int >& v2 );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const tnlVector< double, tnlCuda, long int >& v1, const tnlVector< double, tnlCuda, long int >& v2 );
+extern template double      VectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const Vector< double, tnlCuda, long int >& v1, const Vector< double, tnlCuda, long int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const tnlVector< long double, tnlCuda, long int >& v1, const tnlVector< long double, tnlCuda, long int >& v2 );
+extern template long double VectorOperations< tnlCuda >::getVectorDifferenceAbsMax( const Vector< long double, tnlCuda, long int >& v1, const Vector< long double, tnlCuda, long int >& v2 );
 #endif
 #endif
 
 /****
  * Difference abs min
  */
-extern template int         tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const tnlVector< int, tnlCuda, int >& v1, const tnlVector< int, tnlCuda, int >& v2 );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const tnlVector< long int, tnlCuda, int >& v1, const tnlVector< long int, tnlCuda, int >& v2 );
+extern template int         VectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const Vector< int, tnlCuda, int >& v1, const Vector< int, tnlCuda, int >& v2 );
+extern template long int    VectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const Vector< long int, tnlCuda, int >& v1, const Vector< long int, tnlCuda, int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const tnlVector< float, tnlCuda, int >& v1,  const tnlVector< float, tnlCuda, int >& v2);
+extern template float       VectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const Vector< float, tnlCuda, int >& v1,  const Vector< float, tnlCuda, int >& v2);
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const tnlVector< double, tnlCuda, int >& v1, const tnlVector< double, tnlCuda, int >& v2 );
+extern template double      VectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const Vector< double, tnlCuda, int >& v1, const Vector< double, tnlCuda, int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const tnlVector< long double, tnlCuda, int >& v1, const tnlVector< long double, tnlCuda, int >& v2 );
+extern template long double VectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const Vector< long double, tnlCuda, int >& v1, const Vector< long double, tnlCuda, int >& v2 );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-extern template int         tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const tnlVector< int, tnlCuda, long int >& v1, const tnlVector< int, tnlCuda, long int >& v2 );
-extern template long int    tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const tnlVector< long int, tnlCuda, long int >& v1, const tnlVector< long int, tnlCuda, long int >& v2 );
+extern template int         VectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const Vector< int, tnlCuda, long int >& v1, const Vector< int, tnlCuda, long int >& v2 );
+extern template long int    VectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const Vector< long int, tnlCuda, long int >& v1, const Vector< long int, tnlCuda, long int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-extern template float       tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const tnlVector< float, tnlCuda, long int >& v1, const tnlVector< float, tnlCuda, long int >& v2 );
+extern template float       VectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const Vector< float, tnlCuda, long int >& v1, const Vector< float, tnlCuda, long int >& v2 );
 #endif
-extern template double      tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const tnlVector< double, tnlCuda, long int >& v1, const tnlVector< double, tnlCuda, long int >& v2 );
+extern template double      VectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const Vector< double, tnlCuda, long int >& v1, const Vector< double, tnlCuda, long int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double tnlVectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const tnlVector< long double, tnlCuda, long int >& v1, const tnlVector< long double, tnlCuda, long int >& v2 );
+extern template long double VectorOperations< tnlCuda >::getVectorDifferenceAbsMin( const Vector< long double, tnlCuda, long int >& v1, const Vector< long double, tnlCuda, long int >& v2 );
 #endif
 #endif
 

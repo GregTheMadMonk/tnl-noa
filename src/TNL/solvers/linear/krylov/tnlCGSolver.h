@@ -67,7 +67,7 @@ class tnlCGSolver : public Object,
 
    bool setSize( IndexType size );
 
-   tnlVector< RealType, Device, IndexType >  r, new_r, p, Ap;
+   Vectors::Vector< RealType, Device, IndexType >  r, new_r, p, Ap;
 
    const MatrixType* matrix;
    const PreconditionerType* preconditioner;

@@ -55,11 +55,11 @@ template< typename Real, typename device, typename Index > class tnlGridOldTeste
    void testSetDomain()
    {
       tnlGridOld< 1, Real, device, Index > u1( "tnlGridOldTester: u1" );
-      u1. setDimensions( tnlStaticVector< 1, Index >( 11 ) );
+      u1. setDimensions( StaticVector< 1, Index >( 11 ) );
       u1. setValue( ( Real ) 1 );
-      u1. setDomain( tnlStaticVector< 1, Real >( 0.0 ),
-                     tnlStaticVector< 1, Real >( 1.0 ) );
-      CPPUNIT_ASSERT( u1. getSpaceSteps() == ( tnlStaticVector< 1, Real >( 0.1 ) ) );
+      u1. setDomain( StaticVector< 1, Real >( 0.0 ),
+                     StaticVector< 1, Real >( 1.0 ) );
+      CPPUNIT_ASSERT( u1. getSpaceSteps() == ( StaticVector< 1, Real >( 0.1 ) ) );
    };
 
 
@@ -68,7 +68,7 @@ template< typename Real, typename device, typename Index > class tnlGridOldTeste
       /*File file;
       tnlGridOld< 1, Real, device, Index > u1( "tnlGridOldTester:u1" );
       tnlGridOld< 1, Real, device, Index > v1( "tnlGridOldTester:v1" );
-      u1. setDimensions( tnlStaticVector< 1, Index >( 10 ) );
+      u1. setDimensions( StaticVector< 1, Index >( 10 ) );
       u1. setValue( ( Real ) 1 );
       file. open( "tnlGridOldTester-file.bin", tnlWriteMode );
       u1. save( file );
@@ -80,7 +80,7 @@ template< typename Real, typename device, typename Index > class tnlGridOldTeste
 
       tnlGridOld< 2, Real, device, Index > u2( "tnlGridOldTester:u2" );
       tnlGridOld< 2, Real, device, Index > v2( "tnlGridOldTester:v2" );
-      u2. setDimensions( tnlStaticVector< 2, Index >( 10 ) );
+      u2. setDimensions( StaticVector< 2, Index >( 10 ) );
       u2. setValue( ( Real ) 1 );
       file. open( "tnlGridOldTester-file.bin", tnlWriteMode );
       u2. save( file );
@@ -92,7 +92,7 @@ template< typename Real, typename device, typename Index > class tnlGridOldTeste
 
       tnlGridOld< 3, Real, device, Index > u3( "tnlGridOldTester:u3" );
       tnlGridOld< 3, Real, device, Index > v3( "tnlGridOldTester:v3" );
-      u3. setDimensions( tnlStaticVector< 3, Index >( 10 ) );
+      u3. setDimensions( StaticVector< 3, Index >( 10 ) );
       u3. setValue( ( Real ) 1 );
       file. open( "tnlGridOldTester-file.bin", tnlWriteMode );
       u3. save( file );

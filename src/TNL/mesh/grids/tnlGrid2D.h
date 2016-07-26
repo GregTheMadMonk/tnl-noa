@@ -27,8 +27,8 @@ class tnlGrid< 2, Real, Device, Index > : public Object
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlStaticVector< 2, Real > VertexType;
-   typedef tnlStaticVector< 2, Index > CoordinatesType;
+   typedef Vectors::StaticVector< 2, Real > VertexType;
+   typedef Vectors::StaticVector< 2, Index > CoordinatesType;
    typedef tnlGrid< 2, Real, tnlHost, Index > HostType;
    typedef tnlGrid< 2, Real, tnlCuda, Index > CudaType;
    typedef tnlGrid< 2, Real, Device, Index > ThisType;

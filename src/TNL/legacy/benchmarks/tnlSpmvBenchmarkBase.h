@@ -57,8 +57,8 @@ class tnlSpmvBenchmarkBase
     * the Hybrid format from the CUSP library. This format is not wrapped
     * in tnlMatrix.
     */
-   virtual void runBenchmark( const tnlVector< RealType, DeviceType, IndexType >& x,
-                              const tnlVector< RealType, tnlHost, IndexType >& refB,
+   virtual void runBenchmark( const Vector< RealType, DeviceType, IndexType >& x,
+                              const Vector< RealType, tnlHost, IndexType >& refB,
                               bool verbose );
 
    virtual void writeToLogTable( std::ostream& logFile,

@@ -55,7 +55,7 @@ class tnlSinWaveFunction< 1, Real > : public tnlSinWaveFunctionBase< 1, Real >
    public:
  
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< 1, RealType > VertexType;
+      typedef Vectors::StaticVector< 1, RealType > VertexType;
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -82,7 +82,7 @@ class tnlSinWaveFunction< 2, Real > : public tnlSinWaveFunctionBase< 2, Real >
    public:
  
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< 2, RealType > VertexType;
+      typedef Vectors::StaticVector< 2, RealType > VertexType;
  
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -109,7 +109,7 @@ class tnlSinWaveFunction< 3, Real > : public tnlSinWaveFunctionBase< 3, Real >
    public:
  
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< 3, RealType > VertexType;
+      typedef Vectors::StaticVector< 3, RealType > VertexType;
 
 
  

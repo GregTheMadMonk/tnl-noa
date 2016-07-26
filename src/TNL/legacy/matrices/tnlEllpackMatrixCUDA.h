@@ -61,10 +61,10 @@ class tnlEllpackMatrix< Real, tnlCuda, Index > : public tnlMatrix< Real, tnlCuda
                     Index column ) const;
 
    Real rowProduct( Index row,
-                    const tnlVector< Real, tnlCuda, Index >& vector ) const;
+                    const Vector< Real, tnlCuda, Index >& vector ) const;
 
-   void vectorProduct( const tnlVector< Real, tnlCuda, Index >& x,
-                       tnlVector< Real, tnlCuda, Index >& b ) const;
+   void vectorProduct( const Vector< Real, tnlCuda, Index >& x,
+                       Vector< Real, tnlCuda, Index >& b ) const;
 
    Real getRowL1Norm( Index row ) const
    { abort(); };
@@ -79,15 +79,15 @@ class tnlEllpackMatrix< Real, tnlCuda, Index > : public tnlMatrix< Real, tnlCuda
 
    Index findCOORow( Index row ) const;
 
-   tnlVector< Real, tnlCuda > ellpack_nonzero_elements;
+   Vector< Real, tnlCuda > ellpack_nonzero_elements;
 
-   tnlVector< Index, tnlCuda > ellpack_columns;
+   Vector< Index, tnlCuda > ellpack_columns;
 
-   tnlVector< Real, tnlCuda > coo_nonzero_elements;
+   Vector< Real, tnlCuda > coo_nonzero_elements;
 
-   tnlVector< Index, tnlCuda > coo_rows;
+   Vector< Index, tnlCuda > coo_rows;
 
-   tnlVector< Index, tnlCuda > coo_columns;
+   Vector< Index, tnlCuda > coo_columns;
 
    Index row_length;
 
@@ -248,8 +248,8 @@ Real tnlEllpackMatrix< Real, tnlCuda, Index > :: getElement( Index row,
 };
 
 template< typename Real, typename Index >
-void tnlEllpackMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlVector< Real, tnlCuda, Index >& x,
-                                                                tnlVector< Real, tnlCuda, Index >& b ) const
+void tnlEllpackMatrix< Real, tnlCuda, Index > :: vectorProduct( const Vector< Real, tnlCuda, Index >& x,
+                                                                Vector< Real, tnlCuda, Index >& b ) const
 {
    Assert( x. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for a multiplication have different sizes. "
@@ -273,7 +273,7 @@ void tnlEllpackMatrix< Real, tnlCuda, Index > :: vectorProduct( const tnlVector<
 
 template< typename Real, typename Index >
 Real tnlEllpackMatrix< Real, tnlCuda, Index > :: rowProduct( Index row,
-                                                             const tnlVector< Real, tnlCuda, Index >& vector ) const
+                                                             const Vector< Real, tnlCuda, Index >& vector ) const
 {
    Assert( vector. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for a multiplication have different sizes. "

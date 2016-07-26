@@ -327,20 +327,20 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
       const int rows = csrMatrix.getRows();
       const int columns = csrMatrix.getColumns();
       const long int nonzeroElements = csrMatrix.getNumberOfMatrixElements();
-      tnlVector< int, tnlHost, int > rowLengthsHost;
+      Vectors::Vector< int, tnlHost, int > rowLengthsHost;
       rowLengthsHost.setSize( rows );
       for( int row = 0; row < rows; row++ )
          rowLengthsHost[ row ] = csrMatrix.getRowLength( row );
 
-      typedef tnlVector< Real, tnlHost, int > HostVector;
+      typedef Vectors::Vector< Real, tnlHost, int > HostVector;
       HostVector hostX, hostB;
       hostX.setSize( csrMatrix.getColumns() );
       hostX.setValue( 1.0 );
       hostB.setSize( csrMatrix.getRows() );
 #ifdef HAVE_CUDA
-      typedef tnlVector< Real, tnlCuda, int > CudaVector;
+      typedef Vectors::Vector< Real, tnlCuda, int > CudaVector;
       CudaVector cudaX, cudaB;
-      tnlVector< int, tnlCuda, int > rowLengthsCuda;
+      Vectors::Vector< int, tnlCuda, int > rowLengthsCuda;
       cudaX.setSize( csrMatrix.getColumns() );
       cudaX.setValue( 1.0 );
       cudaB.setSize( csrMatrix.getRows() );

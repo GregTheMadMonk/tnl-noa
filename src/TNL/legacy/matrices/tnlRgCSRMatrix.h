@@ -91,10 +91,10 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
                     Index column ) const;
 
    Real rowProduct( Index row,
-                    const tnlVector< Real, Device, Index >& vector ) const;
+                    const Vector< Real, Device, Index >& vector ) const;
 
-   void vectorProduct( const tnlVector< Real, Device, Index >& x,
-                       tnlVector< Real, Device, Index >& b ) const;
+   void vectorProduct( const Vector< Real, Device, Index >& x,
+                       Vector< Real, Device, Index >& b ) const;
 
    Real getRowL1Norm( Index row ) const
    { abort(); };
@@ -143,20 +143,20 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy;
 
-   tnlVector< Real, Device, Index > nonzeroElements;
+   Vector< Real, Device, Index > nonzeroElements;
 
-   tnlVector< Index, Device, Index > columns;
+   Vector< Index, Device, Index > columns;
 
-   tnlVector< Index, Device, Index > groupOffsets;
+   Vector< Index, Device, Index > groupOffsets;
 
-   tnlVector< Index, Device, Index > nonzeroElementsInRow;
+   Vector< Index, Device, Index > nonzeroElementsInRow;
 
    Index groupSize;
 
    /****
     * This vector is only used if useAdaptiveGroupSize is true.
     */
-   tnlVector< Index, Device, Index > adaptiveGroupSizes;
+   Vector< Index, Device, Index > adaptiveGroupSizes;
 
    /****
     * This variable is only used if useAdaptiveGroupSize is true.
@@ -568,7 +568,7 @@ Real tnlRgCSRMatrix< Real, Device, Index > :: getElement( Index row,
 
 template< typename Real, typename Device, typename Index >
 Real tnlRgCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
-                                                          const tnlVector< Real, Device, Index >& vec ) const
+                                                          const Vector< Real, Device, Index >& vec ) const
 {
    Assert( 0 <= row && row < this->getSize(),
               std::cerr << "The row is outside the matrix." );
@@ -607,8 +607,8 @@ Real tnlRgCSRMatrix< Real, Device, Index > :: rowProduct( Index row,
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real, Device, Index >& vec,
-                                                             tnlVector< Real, Device, Index >& result ) const
+void tnlRgCSRMatrix< Real, Device, Index > :: vectorProduct( const Vector< Real, Device, Index >& vec,
+                                                             Vector< Real, Device, Index >& result ) const
 {
    dbgFunctionName( "tnlRgCSRMatrix< Real, tnlHost >", "vectorProduct" )
    Assert( vec. getSize() == this->getSize(),

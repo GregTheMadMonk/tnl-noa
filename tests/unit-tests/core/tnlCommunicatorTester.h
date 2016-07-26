@@ -105,7 +105,7 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
       tnlCommunicator< 1, tnlHost > com;
       com. setCommunicationGroupSize( 2 );
       com. start();
-      tnlVector< double > sendingLongVector( "sendingLongVector" ), receivingLongVector( "receivingLongVector" );
+      Vector< double > sendingLongVector( "sendingLongVector" ), receivingLongVector( "receivingLongVector" );
       sendingLongVector. setSize( 100 );
       receivingLongVector. setSize( 100 );
       if( com. getDeviceId() == 0 )
@@ -140,7 +140,7 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
       tnlCommunicator< 1, tnlHost > com;
       com. setCommunicationGroupSize( 4 );
       com. start();
-      tnlVector< double, tnlHost > v( "broadcast-vector", 100 );
+      Vector< double, tnlHost > v( "broadcast-vector", 100 );
       v. setValue( 3.14 );
       if( com. getDeviceId() == 0 )
          v. setValue( 2.73 );
@@ -168,14 +168,14 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
       const int groupSize = 4;
       com. setCommunicationGroupSize( groupSize );
       com. start();
-      tnlVector< double, tnlHost > originalData( "originalData" );
+      Vector< double, tnlHost > originalData( "originalData" );
       if( com. getDeviceId() == 0 )
       {
          originalData. setSize( groupSize );
          for( int i = 0; i < groupSize; i ++ )
             originalData[ i ] = i;
       }
-      tnlVector< double, tnlHost > scatteredData( "scatteredData" );
+      Vector< double, tnlHost > scatteredData( "scatteredData" );
       scatteredData. setSize( 1 );
       com. scatter( originalData,
                     scatteredData,
@@ -190,10 +190,10 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
       const int groupSize = 16;
       com. setCommunicationGroupSize( groupSize );
       com. start();
-      tnlVector< double, tnlHost > originalData( "originalData" );
+      Vector< double, tnlHost > originalData( "originalData" );
       originalData. setSize( 1 );
       originalData. setValue( com. getDeviceId() );
-      tnlVector< double, tnlHost > gatheredData( "gatheredData" );
+      Vector< double, tnlHost > gatheredData( "gatheredData" );
       if( com. getDeviceId() == 0 )
          gatheredData. setSize( com. getCommunicationGroupSize() );
       com. gather( originalData,

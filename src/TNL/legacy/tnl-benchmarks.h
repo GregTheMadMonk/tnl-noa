@@ -21,10 +21,10 @@ bool transferBenchmark( const int size,
                         double& device_to_device_band_width )
 {
 
-  tnlVector< T > host_vector( "transferBenchmark:host-vector", size );
-  tnlVector< T > host_vector2( "transferBenchmark:host-vector-2", size );
-  tnlVectorCUDA< T > device_vector( "transferBenchmark:device-vector", size );
-  tnlVectorCUDA< T > device_vector2( "transferBenchmark:device-vector-2", size );
+  Vector< T > host_vector( "transferBenchmark:host-vector", size );
+  Vector< T > host_vector2( "transferBenchmark:host-vector-2", size );
+  VectorCUDA< T > device_vector( "transferBenchmark:device-vector", size );
+  VectorCUDA< T > device_vector2( "transferBenchmark:device-vector-2", size );
 
    for( int i = 0; i < size; i ++ )
       host_vector[ i ] = i + 1;
@@ -77,7 +77,7 @@ bool transferBenchmark( const int size,
 }
 
 template< class T >
-void tnlCPUReductionSum( const tnlVector< T >& host_vector,
+void tnlCPUReductionSum( const Vector< T >& host_vector,
                          T& sum )
 {
    const T* data = host_vector. Data();
@@ -88,7 +88,7 @@ void tnlCPUReductionSum( const tnlVector< T >& host_vector,
 };
 
 template< class T >
-void tnlCPUReductionMin( const tnlVector< T >& host_vector,
+void tnlCPUReductionMin( const Vector< T >& host_vector,
                          T& min )
 {
    const T* data = host_vector. Data();
@@ -100,7 +100,7 @@ void tnlCPUReductionMin( const tnlVector< T >& host_vector,
 };
 
 template< class T >
-void tnlCPUReductionMax( const tnlVector< T >& host_vector,
+void tnlCPUReductionMax( const Vector< T >& host_vector,
                          T& max )
 {
    const T* data = host_vector. Data();
@@ -115,9 +115,9 @@ template< class T >
 void reductionBenchmark( const int size,
                          const int algorithm )
 {
-   tnlVector< T > host_vector( "reductionBenchmark:host-vector", size );
-   tnlVectorCUDA< T > device_vector( "reductionBenchmark:device-vector", size );
-   tnlVectorCUDA< T > device_aux( "reductionBenchmark:device-aux", size / 2 );
+   Vector< T > host_vector( "reductionBenchmark:host-vector", size );
+   VectorCUDA< T > device_vector( "reductionBenchmark:device-vector", size );
+   VectorCUDA< T > device_aux( "reductionBenchmark:device-aux", size / 2 );
 
    for( int i = 0; i < size; i ++ )
       host_vector[ i ] = i + 1;

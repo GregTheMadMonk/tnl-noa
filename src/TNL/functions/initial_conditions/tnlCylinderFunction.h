@@ -50,7 +50,7 @@ class tnlCylinderFunction< 1, Real > : public tnlCylinderFunctionBase< Real, 1 >
 
       enum { Dimensions = 1 };
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 
@@ -84,7 +84,7 @@ class tnlCylinderFunction< 2, Real > : public tnlCylinderFunctionBase< Real, 2 >
 
       enum { Dimensions = 2 };
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 
@@ -118,7 +118,7 @@ class tnlCylinderFunction< 3, Real > : public tnlCylinderFunctionBase< Real, 3 >
 
       enum { Dimensions = 3 };
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 

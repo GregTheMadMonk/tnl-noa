@@ -180,7 +180,7 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
    IndexType getElementIndex( const IndexType row,
                               const IndexType column ) const;
 
-   tnlVector< RealType, DeviceType, IndexType > values;
+   Vectors::Vector< RealType, DeviceType, IndexType > values;
 
    typedef tnlTridiagonalMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlTridiagonalMatrixDeviceDependentCode< DeviceType >;

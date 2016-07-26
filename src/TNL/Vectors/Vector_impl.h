@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlVector.h  -  description
+                          Vector.h  -  description
                              -------------------
     begin                : Nov 8, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -18,7 +18,7 @@ namespace Vectors {
 template< typename Real,
           typename Device,
           typename Index >
-tnlVector< Real, Device, Index >::tnlVector()
+Vector< Real, Device, Index >::Vector()
 {
 
 }
@@ -26,7 +26,7 @@ tnlVector< Real, Device, Index >::tnlVector()
 template< typename Real,
           typename Device,
           typename Index >
-tnlVector< Real, Device, Index >::tnlVector( const Index size )
+Vector< Real, Device, Index >::Vector( const Index size )
 {
    this->setSize( size );
 }
@@ -35,9 +35,9 @@ tnlVector< Real, Device, Index >::tnlVector( const Index size )
 template< typename Real,
           typename Device,
           typename Index >
-String tnlVector< Real, Device, Index >::getType()
+String Vector< Real, Device, Index >::getType()
 {
-   return String( "tnlVector< " ) +
+   return String( "Vector< " ) +
                     TNL::getType< Real >() + ", " +
                      Device::getDeviceType() + ", " +
                     TNL::getType< Index >() + " >";
@@ -46,7 +46,7 @@ String tnlVector< Real, Device, Index >::getType()
 template< typename Real,
           typename Device,
           typename Index >
-String tnlVector< Real, Device, Index >::getTypeVirtual() const
+String Vector< Real, Device, Index >::getTypeVirtual() const
 {
    return this->getType();
 };
@@ -54,7 +54,7 @@ String tnlVector< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-String tnlVector< Real, Device, Index >::getSerializationType()
+String Vector< Real, Device, Index >::getSerializationType()
 {
    return HostType::getType();
 };
@@ -62,7 +62,7 @@ String tnlVector< Real, Device, Index >::getSerializationType()
 template< typename Real,
           typename Device,
           typename Index >
-String tnlVector< Real, Device, Index >::getSerializationTypeVirtual() const
+String Vector< Real, Device, Index >::getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 };
@@ -70,27 +70,27 @@ String tnlVector< Real, Device, Index >::getSerializationTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-void tnlVector< Real, Device, Index >::addElement( const IndexType i,
+void Vector< Real, Device, Index >::addElement( const IndexType i,
                                                    const RealType& value )
 {
-   tnlVectorOperations< Device >::addElement( *this, i, value );
+   VectorOperations< Device >::addElement( *this, i, value );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlVector< Real, Device, Index >::addElement( const IndexType i,
+void Vector< Real, Device, Index >::addElement( const IndexType i,
                                                    const RealType& value,
                                                    const RealType& thisElementMultiplicator )
 {
-   tnlVectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
+   VectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
 }
 
 template< typename Real,
            typename Device,
            typename Index >
-tnlVector< Real, Device, Index >&
-   tnlVector< Real, Device, Index >::operator = ( const tnlVector< Real, Device, Index >& vector )
+Vector< Real, Device, Index >&
+   Vector< Real, Device, Index >::operator = ( const Vector< Real, Device, Index >& vector )
 {
    Arrays::Array< Real, Device, Index >::operator = ( vector );
    return ( *this );
@@ -99,9 +99,9 @@ tnlVector< Real, Device, Index >&
 template< typename Real,
            typename Device,
            typename Index >
-   template< typename Vector >
-tnlVector< Real, Device, Index >&
-   tnlVector< Real, Device, Index >::operator = ( const Vector& vector )
+   template< typename VectorT >
+Vector< Real, Device, Index >&
+   Vector< Real, Device, Index >::operator = ( const VectorT& vector )
 {
    Arrays::Array< Real, Device, Index >::operator = ( vector );
    return ( *this );
@@ -110,8 +110,8 @@ tnlVector< Real, Device, Index >&
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-bool tnlVector< Real, Device, Index >::operator == ( const Vector& vector ) const
+   template< typename VectorT >
+bool Vector< Real, Device, Index >::operator == ( const VectorT& vector ) const
 {
    return Arrays::Array< Real, Device, Index >::operator == ( vector );
 }
@@ -119,8 +119,8 @@ bool tnlVector< Real, Device, Index >::operator == ( const Vector& vector ) cons
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-bool tnlVector< Real, Device, Index >::operator != ( const Vector& vector ) const
+   template< typename VectorT >
+bool Vector< Real, Device, Index >::operator != ( const VectorT& vector ) const
 {
    return Arrays::Array< Real, Device, Index >::operator != ( vector );
 }
@@ -128,8 +128,8 @@ bool tnlVector< Real, Device, Index >::operator != ( const Vector& vector ) cons
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index >::operator -= ( const Vector& vector )
+   template< typename VectorT >
+Vector< Real, Device, Index >& Vector< Real, Device, Index >::operator -= ( const VectorT& vector )
 {
    this->addVector( vector, -1.0 );
    return *this;
@@ -138,8 +138,8 @@ tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index >::operator -= 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index >::operator += ( const Vector& vector )
+   template< typename VectorT >
+Vector< Real, Device, Index >& Vector< Real, Device, Index >::operator += ( const VectorT& vector )
 {
    this->addVector( vector );
    return *this;
@@ -148,18 +148,18 @@ tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index >::operator += 
 template< typename Real,
           typename Device,
           typename Index >
-tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index >::operator *= ( const RealType& c )
+Vector< Real, Device, Index >& Vector< Real, Device, Index >::operator *= ( const RealType& c )
 {
-   tnlVectorOperations< Device >::vectorScalarMultiplication( *this, c );
+   VectorOperations< Device >::vectorScalarMultiplication( *this, c );
    return *this;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index >::operator /= ( const RealType& c )
+Vector< Real, Device, Index >& Vector< Real, Device, Index >::operator /= ( const RealType& c )
 {
-   tnlVectorOperations< Device >::vectorScalarMultiplication( *this, 1.0 / c );
+   VectorOperations< Device >::vectorScalarMultiplication( *this, 1.0 / c );
    return *this;
 }
 
@@ -167,229 +167,229 @@ tnlVector< Real, Device, Index >& tnlVector< Real, Device, Index >::operator /= 
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlVector< Real, Device, Index >::max() const
+Real Vector< Real, Device, Index >::max() const
 {
-   return tnlVectorOperations< Device >::getVectorMax( *this );
+   return VectorOperations< Device >::getVectorMax( *this );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlVector< Real, Device, Index >::min() const
+Real Vector< Real, Device, Index >::min() const
 {
-   return tnlVectorOperations< Device >::getVectorMin( *this );
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Real tnlVector< Real, Device, Index >::absMax() const
-{
-   return tnlVectorOperations< Device >::getVectorAbsMax( *this );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Real tnlVector< Real, Device, Index >::absMin() const
-{
-   return tnlVectorOperations< Device >::getVectorAbsMin( *this );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Real tnlVector< Real, Device, Index >::lpNorm( const Real& p ) const
-{
-   return tnlVectorOperations< Device >::getVectorLpNorm( *this, p );
+   return VectorOperations< Device >::getVectorMin( *this );
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlVector< Real, Device, Index >::sum() const
+Real Vector< Real, Device, Index >::absMax() const
 {
-   return tnlVectorOperations< Device >::getVectorSum( *this );
+   return VectorOperations< Device >::getVectorAbsMax( *this );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Real Vector< Real, Device, Index >::absMin() const
+{
+   return VectorOperations< Device >::getVectorAbsMin( *this );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Real Vector< Real, Device, Index >::lpNorm( const Real& p ) const
+{
+   return VectorOperations< Device >::getVectorLpNorm( *this, p );
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
-template< typename Vector >
-Real tnlVector< Real, Device, Index >::differenceMax( const Vector& v ) const
+Real Vector< Real, Device, Index >::sum() const
 {
-   return tnlVectorOperations< Device >::getVectorDifferenceMax( *this, v );
+   return VectorOperations< Device >::getVectorSum( *this );
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
-template< typename Vector >
-Real tnlVector< Real, Device, Index >::differenceMin( const Vector& v ) const
+template< typename VectorT >
+Real Vector< Real, Device, Index >::differenceMax( const VectorT& v ) const
 {
-   return tnlVectorOperations< Device >::getVectorDifferenceMin( *this, v );
+   return VectorOperations< Device >::getVectorDifferenceMax( *this, v );
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
-template< typename Vector >
-Real tnlVector< Real, Device, Index >::differenceAbsMax( const Vector& v ) const
+template< typename VectorT >
+Real Vector< Real, Device, Index >::differenceMin( const VectorT& v ) const
 {
-   return tnlVectorOperations< Device >::getVectorDifferenceAbsMax( *this, v );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-template< typename Vector >
-Real tnlVector< Real, Device, Index >::differenceAbsMin( const Vector& v ) const
-{
-   return tnlVectorOperations< Device >::getVectorDifferenceAbsMin( *this, v );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-template< typename Vector >
-Real tnlVector< Real, Device, Index >::differenceLpNorm( const Vector& v, const Real& p ) const
-{
-   return tnlVectorOperations< Device >::getVectorDifferenceLpNorm( *this, v, p );
+   return VectorOperations< Device >::getVectorDifferenceMin( *this, v );
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
-template< typename Vector >
-Real tnlVector< Real, Device, Index >::differenceSum( const Vector& v ) const
+template< typename VectorT >
+Real Vector< Real, Device, Index >::differenceAbsMax( const VectorT& v ) const
 {
-   return tnlVectorOperations< Device >::getVectorDifferenceSum( *this, v );
+   return VectorOperations< Device >::getVectorDifferenceAbsMax( *this, v );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+template< typename VectorT >
+Real Vector< Real, Device, Index >::differenceAbsMin( const VectorT& v ) const
+{
+   return VectorOperations< Device >::getVectorDifferenceAbsMin( *this, v );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+template< typename VectorT >
+Real Vector< Real, Device, Index >::differenceLpNorm( const VectorT& v, const Real& p ) const
+{
+   return VectorOperations< Device >::getVectorDifferenceLpNorm( *this, v, p );
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlVector< Real, Device, Index >::scalarMultiplication( const Real& alpha )
+template< typename VectorT >
+Real Vector< Real, Device, Index >::differenceSum( const VectorT& v ) const
 {
-   tnlVectorOperations< Device >::vectorScalarMultiplication( *this, alpha );
+   return VectorOperations< Device >::getVectorDifferenceSum( *this, v );
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
-template< typename Vector >
-Real tnlVector< Real, Device, Index >::scalarProduct( const Vector& v ) const
+void Vector< Real, Device, Index >::scalarMultiplication( const Real& alpha )
 {
-   return tnlVectorOperations< Device >::getScalarProduct( *this, v );
+   VectorOperations< Device >::vectorScalarMultiplication( *this, alpha );
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+template< typename VectorT >
+Real Vector< Real, Device, Index >::scalarProduct( const VectorT& v ) const
+{
+   return VectorOperations< Device >::getScalarProduct( *this, v );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-template< typename Vector >
-void tnlVector< Real, Device, Index >::addVector( const Vector& x,
+template< typename VectorT >
+void Vector< Real, Device, Index >::addVector( const VectorT& x,
                                                     const Real& multiplicator,
                                                     const Real& thisMultiplicator )
 {
-   tnlVectorOperations< Device >::addVector( *this, x, multiplicator, thisMultiplicator );
+   VectorOperations< Device >::addVector( *this, x, multiplicator, thisMultiplicator );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
+   template< typename VectorT >
 void
-tnlVector< Real, Device, Index >::
-addVectors( const Vector& v1,
+Vector< Real, Device, Index >::
+addVectors( const VectorT& v1,
             const Real& multiplicator1,
-            const Vector& v2,
+            const VectorT& v2,
             const Real& multiplicator2,
             const Real& thisMultiplicator )
 {
-   tnlVectorOperations< Device >::addVectors( *this, v1, multiplicator1, v2, multiplicator2, thisMultiplicator );
+   VectorOperations< Device >::addVectors( *this, v1, multiplicator1, v2, multiplicator2, thisMultiplicator );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlVector< Real, Device, Index >::computePrefixSum()
+void Vector< Real, Device, Index >::computePrefixSum()
 {
-   tnlVectorOperations< Device >::computePrefixSum( *this, 0, this->getSize() );
+   VectorOperations< Device >::computePrefixSum( *this, 0, this->getSize() );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlVector< Real, Device, Index >::computePrefixSum( const IndexType begin,
+void Vector< Real, Device, Index >::computePrefixSum( const IndexType begin,
                                                            const IndexType end )
 {
-   tnlVectorOperations< Device >::computePrefixSum( *this, begin, end );
+   VectorOperations< Device >::computePrefixSum( *this, begin, end );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlVector< Real, Device, Index >::computeExclusivePrefixSum()
+void Vector< Real, Device, Index >::computeExclusivePrefixSum()
 {
-   tnlVectorOperations< Device >::computeExclusivePrefixSum( *this, 0, this->getSize() );
+   VectorOperations< Device >::computeExclusivePrefixSum( *this, 0, this->getSize() );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlVector< Real, Device, Index >::computeExclusivePrefixSum( const IndexType begin,
+void Vector< Real, Device, Index >::computeExclusivePrefixSum( const IndexType begin,
                                                                     const IndexType end )
 {
-   tnlVectorOperations< Device >::computeExclusivePrefixSum( *this, begin, end );
+   VectorOperations< Device >::computeExclusivePrefixSum( *this, begin, end );
 }
 
 
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlVector< float, tnlHost, int >;
-extern template tnlVector< float, tnlHost, int >& tnlVector< float, tnlHost, int >:: operator = ( const tnlVector< double, tnlHost, int >& vector );
+extern template class Vector< float, tnlHost, int >;
+extern template Vector< float, tnlHost, int >& Vector< float, tnlHost, int >:: operator = ( const Vector< double, tnlHost, int >& vector );
 #endif
 
-extern template class tnlVector< double, tnlHost, int >;
+extern template class Vector< double, tnlHost, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlVector< long double, tnlHost, int >;
+extern template class Vector< long double, tnlHost, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlVector< float, tnlHost, long int >;
+extern template class Vector< float, tnlHost, long int >;
 #endif
-extern template class tnlVector< double, tnlHost, long int >;
+extern template class Vector< double, tnlHost, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlVector< long double, tnlHost, long int >;
+extern template class Vector< long double, tnlHost, long int >;
 #endif
 #endif
 
 #ifdef HAVE_CUDA
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlVector< float, tnlCuda, int >;
+extern template class Vector< float, tnlCuda, int >;
 #endif
-extern template class tnlVector< double, tnlCuda, int >;
+extern template class Vector< double, tnlCuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlVector< long double, tnlCuda, int >;
+extern template class Vector< long double, tnlCuda, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlVector< float, tnlCuda, long int >;
+extern template class Vector< float, tnlCuda, long int >;
 #endif
-extern template class tnlVector< double, tnlCuda, long int >;
+extern template class Vector< double, tnlCuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlVector< long double, tnlCuda, long int >;
+extern template class Vector< long double, tnlCuda, long int >;
 #endif
 #endif
 #endif

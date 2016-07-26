@@ -27,7 +27,7 @@ setupMatrix( const MeshType& mesh,
    const Index dofs = mesh.template getEntitiesCount< typename MeshType::Cell >();
    matrix.setDimensions( dofs, dofs );
    CoordinatesType centerCell( stencilSize );
-   tnlVector< Index, Device, Index > diagonals;
+   Vectors::Vector< Index, Device, Index > diagonals;
    if( ! diagonals.setSize( 3 ) )
       return false;
    Index centerCellIndex = mesh.getCellIndex( CoordinatesType( stencilSize ) );
@@ -53,7 +53,7 @@ setupMatrix( const MeshType& mesh,
    const Index dofs = mesh.template getEntitiesCount< typename MeshType::Cell >();
    matrix.setDimensions( dofs, dofs );
    CoordinatesType centerCell( stencilSize );
-   tnlVector< Index, Device, Index > diagonals;
+   Vectors::Vector< Index, Device, Index > diagonals;
    if( ! diagonals.setSize( 5 ) )
       return false;
    Index centerCellIndex = mesh.getCellIndex( CoordinatesType( stencilSize, stencilSize ) );
@@ -81,7 +81,7 @@ setupMatrix( const MeshType& mesh,
    const Index dofs = mesh.template getEntitiesCount< typename MeshType::Cell >();
    matrix.setDimensions( dofs, dofs );
    CoordinatesType centerCell( stencilSize );
-   tnlVector< Index, Device, Index > diagonals;
+   Vectors::Vector< Index, Device, Index > diagonals;
    if( ! diagonals.setSize( 7 ) )
       return false;
    Index centerCellIndex = mesh.getCellIndex( CoordinatesType( stencilSize, stencilSize, stencilSize ) );

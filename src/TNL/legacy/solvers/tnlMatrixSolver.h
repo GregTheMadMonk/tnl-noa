@@ -38,15 +38,15 @@ class tnlMatrixSolver : public Object
    virtual void printOut();
 
    virtual bool solve( const tnlMatrix< Real, Device, Index >& A,
-                       const tnlVector< Real, Device, Index >& b,
-                       tnlVector< Real, Device, Index >& x,
+                       const Vector< Real, Device, Index >& b,
+                       Vector< Real, Device, Index >& x,
                        const Real& max_residue,
                        const Index max_iterations,
                        tnlPreconditioner< Real >* precond = 0 ) = 0;
 
    Real getResidue( const tnlMatrix< Real, Device, Index >& A,
-                    const tnlVector< Real, Device, Index >& b,
-                    const tnlVector< Real, Device, Index >& x,
+                    const Vector< Real, Device, Index >& b,
+                    const Vector< Real, Device, Index >& x,
                     const Real b_norm = 1.0 );
 
    virtual ~tnlMatrixSolver();
@@ -131,8 +131,8 @@ void tnlMatrixSolver< Real, Device, Index > :: printOut()
 
 template< typename Real, typename Device, typename Index >
 Real tnlMatrixSolver< Real, Device, Index > :: getResidue( const tnlMatrix< Real, Device, Index >& A,
-                                                           const tnlVector< Real, Device, Index >& b,
-                                                           const tnlVector< Real, Device, Index >& x,
+                                                           const Vector< Real, Device, Index >& b,
+                                                           const Vector< Real, Device, Index >& x,
                                                            const Real b_norm )
 {
    const Index size = A. getSize();

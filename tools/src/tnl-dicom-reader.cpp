@@ -44,7 +44,7 @@ bool processDicomSeries( const Config::ParameterContainer& parameters )
 
    typedef tnlGrid< 2, double, tnlHost, int > GridType;
    GridType grid;
-   tnlVector< double, tnlHost, int > vector;
+   Vectors::Vector< double, tnlHost, int > vector;
    tnlRegionOfInterest< int > roi;
    for( int i = 0; i < dicomSeriesNames.getSize(); i++ )
    {

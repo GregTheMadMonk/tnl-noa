@@ -191,7 +191,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       this->setEmptyMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x, b1, b2;
+      Vector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -210,7 +210,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       this->setDiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x, b1, b2;
+      Vector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -229,7 +229,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       this->setTridiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x, b1, b2;
+      Vector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -248,7 +248,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       this->setUpperTriangularMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x, b1, b2;
+      Vector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -267,7 +267,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       this->setFullMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x, b1, b2;
+      Vector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -286,7 +286,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       argcsrMatrix. copyFrom( csrMatrix );
       const int size = csrMatrix. getRows();
 
-      tnlVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      Vector< T > x( "x" ), b1( "b1" ), b2( "b2" );
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );

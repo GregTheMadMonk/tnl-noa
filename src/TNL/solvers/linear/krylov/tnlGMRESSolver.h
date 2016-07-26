@@ -69,9 +69,9 @@ class tnlGMRESSolver : public Object,
    template< typename VectorT >
    void update( IndexType k,
                 IndexType m,
-                const Vectors::tnlVector< RealType, tnlHost, IndexType >& H,
-                const Vectors::tnlVector< RealType, tnlHost, IndexType >& s,
-                Vectors::tnlVector< RealType, DeviceType, IndexType >& v,
+                const Vectors::Vector< RealType, tnlHost, IndexType >& H,
+                const Vectors::Vector< RealType, tnlHost, IndexType >& s,
+                Vectors::Vector< RealType, DeviceType, IndexType >& v,
                 VectorT& x );
 
    void generatePlaneRotation( RealType &dx,
@@ -87,8 +87,8 @@ class tnlGMRESSolver : public Object,
 
    bool setSize( IndexType _size, IndexType m );
 
-   Vectors::tnlVector< RealType, DeviceType, IndexType > _r, w, _v, _M_tmp;
-   Vectors::tnlVector< RealType, tnlHost, IndexType > _s, _cs, _sn, _H;
+   Vectors::Vector< RealType, DeviceType, IndexType > _r, w, _v, _M_tmp;
+   Vectors::Vector< RealType, tnlHost, IndexType > _s, _cs, _sn, _H;
 
    IndexType size, restarting;
 

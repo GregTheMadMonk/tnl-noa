@@ -26,7 +26,7 @@ class tnlDummyProblem
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlVector< Real, Device, Index > DofVectorType;
+      typedef Vectors::Vector< Real, Device, Index > DofVectorType;
       typedef tnlGrid< 1, Real, Device, Index > MeshType;
       typedef DofVectorType MeshDependentDataType;
 };

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlVectorTest.cpp  -  description
+                          VectorTest.cpp  -  description
                              -------------------
     begin                : Jul 20, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -18,10 +18,10 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlVectorTester< float, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlVectorTester< double, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlVectorTester< float, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlVectorTester< double, tnlHost, long int > >()
+   if( ! tnlUnitTestStarter :: run< VectorTester< float, tnlHost, int > >() ||
+       ! tnlUnitTestStarter :: run< VectorTester< double, tnlHost, int > >() ||
+       ! tnlUnitTestStarter :: run< VectorTester< float, tnlHost, long int > >() ||
+       ! tnlUnitTestStarter :: run< VectorTester< double, tnlHost, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

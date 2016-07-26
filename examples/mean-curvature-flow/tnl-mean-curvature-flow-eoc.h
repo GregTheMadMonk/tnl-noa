@@ -81,7 +81,7 @@ class meanCurvatureFlowEocSetter
       typedef tnlExactNonlinearDiffusion< tnlExactGradientNorm< Dimensions >, Dimensions > ExactOperator;
       typedef tnlTestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
       typedef tnlMeanCurvatureFlowEocRhs< ExactOperator, TestFunction, Dimensions > RightHandSide;
-      typedef tnlStaticVector < MeshType::meshDimensions, Real > Vertex;
+      typedef StaticVector < MeshType::meshDimensions, Real > Vertex;
       typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Dimensions, Real, Index > BoundaryConditions;
       typedef tnlMeanCurvatureFlowEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;

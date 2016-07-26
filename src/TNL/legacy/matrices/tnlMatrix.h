@@ -72,7 +72,7 @@ class tnlMatrix : public Object
 
    virtual Index getArtificialZeroElements() const;
 
-   //bool setRowsReordering( const tnlVector< Index, Device, Index >& reorderingPermutation );
+   //bool setRowsReordering( const Vector< Index, Device, Index >& reorderingPermutation );
 
    virtual Real getElement( Index row, Index column ) const = 0;
 
@@ -84,15 +84,15 @@ class tnlMatrix : public Object
    virtual bool addToElement( Index row, Index column, const Real& v ) = 0;
  
    virtual Real rowProduct( const Index row,
-                            const tnlVector< Real, Device, Index >& vec ) const = 0;
+                            const Vector< Real, Device, Index >& vec ) const = 0;
  
    template< typename Vector1, typename Vector2 >
    void vectorProduct( const Vector1& vec,
                        Vector2& result ) const{}
 
    virtual bool performSORIteration( const Real& omega,
-                                     const tnlVector< Real, Device, Index >& b,
-                                     tnlVector< Real, Device, Index >& x,
+                                     const Vector< Real, Device, Index >& b,
+                                     Vector< Real, Device, Index >& x,
                                      Index firstRow,
                                      Index lastRow ) const;
 
@@ -127,7 +127,7 @@ class tnlMatrix : public Object
     * Computes permutation of the rows such that the rows would be
     * ordered decreasingly by the number of the non-zero elements.
     */
-   bool sortRowsDecreasingly( tnlVector< Index, Device, Index >& permutation );
+   bool sortRowsDecreasingly( Vector< Index, Device, Index >& permutation );
 
    virtual bool read( std::istream& str,
 		                int verbose = 0 );
@@ -190,8 +190,8 @@ Index tnlMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& 
 
 template< typename Real, typename Device, typename Index >
 bool tnlMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
-                                                              const tnlVector< Real, Device, Index >& b,
-                                                              tnlVector< Real, Device, Index >& x,
+                                                              const Vector< Real, Device, Index >& b,
+                                                              Vector< Real, Device, Index >& x,
                                                               Index firstRow,
                                                               Index lastRow ) const
 {
@@ -408,7 +408,7 @@ bool tnlMatrix< Real, Device, Index > :: read( std::istream& file,
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlVector< Index, Device, Index >& permutation )
+bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( Vector< Index, Device, Index >& permutation )
 {
    dbgFunctionName( "tnlMatrix< Real, Device, Index >", "sortRowsDecreasingly" );
    /****
@@ -430,7 +430,7 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( tnlVector< Index,
       permutation[ this->getNonzeroElementsInRow( i ) ] ++;
    }
 
-   tnlVector< Index, tnlHost, Index > buckets( "tnlMatrix::reorderRowsDecreasingly:buckets" );
+   Vector< Index, tnlHost, Index > buckets( "tnlMatrix::reorderRowsDecreasingly:buckets" );
    buckets. setSize( matrixSize + 1 );
    buckets. setValue( 0 );
 

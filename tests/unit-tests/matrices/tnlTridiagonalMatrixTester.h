@@ -28,7 +28,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
 {
    public:
    typedef tnlTridiagonalMatrix< RealType, Device, IndexType > MatrixType;
-   typedef tnlVector< RealType, Device, IndexType > VectorType;
+   typedef Vectors::Vector< RealType, Device, IndexType > VectorType;
    typedef tnlTridiagonalMatrixTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
@@ -129,8 +129,8 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
 
-      tnlVector< IndexType, tnlHost, IndexType > columns;
-      tnlVector< RealType, tnlHost, IndexType > values;
+      Vectors::Vector< IndexType, tnlHost, IndexType > columns;
+      Vectors::Vector< RealType, tnlHost, IndexType > values;
       columns.setSize( 3 );
       values.setSize( 3 );
       for( IndexType i = 4; i <= 6; i++ )

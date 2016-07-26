@@ -77,8 +77,8 @@ class tnlNeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, F
    typedef Index IndexType;
 
    typedef Function FunctionType;
-   typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef tnlStaticVector< 1, RealType > VertexType;
+   typedef Vectors::Vector< RealType, DeviceType, IndexType> DofVectorType;
+   typedef Vectors::StaticVector< 1, RealType > VertexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef tnlNeumannBoundaryConditions< MeshType, Function, Real, Index > ThisType;
    typedef tnlNeumannBoundaryConditionsBase< Function > BaseType;
@@ -170,8 +170,8 @@ class tnlNeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, F
       typedef Index IndexType;
 
       typedef Function FunctionType;
-      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-      typedef tnlStaticVector< 2, RealType > VertexType;
+      typedef Vectors::Vector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef Vectors::StaticVector< 2, RealType > VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef tnlNeumannBoundaryConditions< MeshType, Function, Real, Index > ThisType;
       typedef tnlNeumannBoundaryConditionsBase< Function > BaseType;
@@ -289,8 +289,8 @@ class tnlNeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, F
       typedef Index IndexType;
 
       typedef Function FunctionType;
-      typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-      typedef tnlStaticVector< 3, RealType > VertexType;
+      typedef Vectors::Vector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef Vectors::StaticVector< 3, RealType > VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef tnlNeumannBoundaryConditions< MeshType, Function, Real, Index > ThisType;
       typedef tnlNeumannBoundaryConditionsBase< Function > BaseType;   

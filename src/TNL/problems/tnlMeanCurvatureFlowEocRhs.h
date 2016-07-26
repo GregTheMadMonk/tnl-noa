@@ -24,7 +24,7 @@ class tnlMeanCurvatureFlowEocRhs : public tnlDomain< Dimensions, SpaceDomain >
       typedef ExactOperator ExactOperatorType;
       typedef TestFunction TestFunctionType;
       typedef typename TestFunctionType::RealType RealType;
-      typedef tnlStaticVector< Dimensions, RealType > VertexType;
+      typedef StaticVector< Dimensions, RealType > VertexType;
 
       bool setup( const Config::ParameterContainer& parameters,
                   const String& prefix = "" )

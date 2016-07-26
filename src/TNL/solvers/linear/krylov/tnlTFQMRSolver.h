@@ -69,7 +69,7 @@ class tnlTFQMRSolver : public Object,
 
    bool setSize( IndexType size );
 
-   tnlVector< RealType, Device, IndexType >  d, r, w, u, v, r_ast, Au, M_tmp;
+   Vectors::Vector< RealType, Device, IndexType >  d, r, w, u, v, r_ast, Au, M_tmp;
 
    IndexType size;
 

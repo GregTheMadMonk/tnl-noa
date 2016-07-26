@@ -17,7 +17,7 @@
 
 template< typename Real, typename Device, typename Index >
 bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
-                       tnlCurve< tnlStaticVector< 2, Real > >& crv,
+                       tnlCurve< StaticVector< 2, Real > >& crv,
                        const Real level = 0.0 )
 {
    dbgFunctionName( "", "GetLevelSetCurve" );
@@ -26,7 +26,7 @@ bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
    const Index ySize = u. getDimensions(). y();
 
    // this list stores curves or just curve fargments
-   List< List< tnlStaticVector< 2, Index > >* > curves;
+   List< List< StaticVector< 2, Index > >* > curves;
 
    // generating curves or fragments
    for( Index i = 0; i < xSize - 1; i ++ )
@@ -47,13 +47,13 @@ bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
          for( Index k = 0; k < curves. getSize(); k ++ )
          {
             Index l = curves[ k ] -> getSize();
-            tnlStaticVector< 2, Index > mi = ( * curves[ k ] )[ l - 1 ];
+            StaticVector< 2, Index > mi = ( * curves[ k ] )[ l - 1 ];
             Index n1 = abs( ( Index ) i - ( Index ) mi. x() );
             Index n2 = abs( ( Index ) j - ( Index ) mi. y() );
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
-               curves[ k ] -> Append( tnlStaticVector< 2, Index >( i, j ) );
+               curves[ k ] -> Append( StaticVector< 2, Index >( i, j ) );
                added = true;
                dbgCout( "Appending to list no. " << k << "; list size -> " <<
                          curves[ k ] -> getSize() );
@@ -65,7 +65,7 @@ bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
             if( ( n1 == 1 && n2 == 0 ) ||
                 ( n1 == 0 && n2 == 1 ) )
             {
-               curves[ k ] -> Prepend( tnlStaticVector< 2, Index >( i, j ) );
+               curves[ k ] -> Prepend( StaticVector< 2, Index >( i, j ) );
                added = true;
                dbgCout( "Prepending to list no. " << k << "; list size ->  " <<
                      curves[ k ] -> getSize() );
@@ -75,8 +75,8 @@ bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
          // If it is not create new curve fragment.
          if( ! added )
          {
-            List< tnlStaticVector< 2, Index > >* new_list = new List< tnlStaticVector< 2, Index > >;
-            new_list -> Append( tnlStaticVector< 2, Index >( i, j ) );
+            List< StaticVector< 2, Index > >* new_list = new List< StaticVector< 2, Index > >;
+            new_list -> Append( StaticVector< 2, Index >( i, j ) );
             curves. Append( new_list );
             dbgCout( "Adding new list." );
          }
@@ -92,16 +92,16 @@ bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
       fragmented = false;
       for( Index i = 0; i < curves. getSize(); i ++ )
       {
-         List< tnlStaticVector< 2, Index > >& c1 = * curves[ i ];
-         tnlStaticVector< 2, Index > c1_start = c1[ 0 ];
-         tnlStaticVector< 2, Index > c1_end = c1[ c1. getSize() - 1 ];
+         List< StaticVector< 2, Index > >& c1 = * curves[ i ];
+         StaticVector< 2, Index > c1_start = c1[ 0 ];
+         StaticVector< 2, Index > c1_end = c1[ c1. getSize() - 1 ];
          for( Index j = 0 ; j < curves. getSize(); j ++ )
          {
             if( i == j ) continue;
-            List< tnlStaticVector< 2, Index > >& c2 = * curves[ j ];
+            List< StaticVector< 2, Index > >& c2 = * curves[ j ];
             assert( &c2 != &c1 );
-            tnlStaticVector< 2, Index > c2_start = c2[ 0 ];
-            tnlStaticVector< 2, Index > c2_end = c2[ c2. getSize() - 1 ];
+            StaticVector< 2, Index > c2_start = c2[ 0 ];
+            StaticVector< 2, Index > c2_end = c2[ c2. getSize() - 1 ];
             Index n1, n2;
             n1 = abs( ( Index ) c1_start. x() - ( Index ) c2_end. x() );
             n2 = abs( ( Index ) c1_start. y() - ( Index ) c2_end. y() );
@@ -181,10 +181,10 @@ bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
    // the end match).
    for( Index i = 0; i < curves. getSize(); i ++ )
    {
-      List< tnlStaticVector< 2, Index > >& c = * curves[ i ];
+      List< StaticVector< 2, Index > >& c = * curves[ i ];
       Index l = c. getSize();
-      tnlStaticVector< 2, Index > m1 = c[ 0 ];
-      tnlStaticVector< 2, Index > m2 = c[ l - 1 ];
+      StaticVector< 2, Index > m1 = c[ 0 ];
+      StaticVector< 2, Index > m2 = c[ l - 1 ];
       Index n1 = abs( ( Index ) m1. x() - ( Index ) m2. x() );
       Index n2 = abs( ( Index ) m1. y() - ( Index ) m2. y() );
       if( ( n1 == 1 && n2 == 0 ) ||
@@ -200,19 +200,19 @@ bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
    const Real a_y = u. getDomainLowerCorner(). y();
    const Real h_x = u. getSpaceSteps(). x();
    const Real h_y = u. getSpaceSteps(). y();
-   tnlStaticVector< 2, Real > null_vector;
+   StaticVector< 2, Real > null_vector;
    if( ! crv. isEmpty() )
       crv. Append( null_vector, true ); //separator
    for( Index i = 0; i < curves. getSize(); i ++ )
    {
       if( i > 0 ) crv. Append( null_vector, true );  //separator
-      List< tnlStaticVector< 2, Index > >& c = * curves[ i ];
+      List< StaticVector< 2, Index > >& c = * curves[ i ];
       Index l = c. getSize();
-      tnlStaticVector< 2, Real > first;
+      StaticVector< 2, Real > first;
       for( Index j = 0; j < l - 1; j ++ )
       {
-         tnlStaticVector< 2, Index > m1 = c[ j ];
-         tnlStaticVector< 2, Index > m2 = c[ j + 1 ];
+         StaticVector< 2, Index > m1 = c[ j ];
+         StaticVector< 2, Index > m2 = c[ j + 1 ];
          Index n1 = m2. x() - m1. x();
          Index n2 = m2. y() - m1. y();
          Real p[ 2 ], v[ 2 ];
@@ -254,11 +254,11 @@ bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
          Real r = v[ 0 ] / ( v[ 1 ] - v[ 0 ] );
          p[ 0 ] += ( ( Real ) n2  ) * r * h_x;
          p[ 1 ] += ( ( Real ) -n1  ) * r * h_y;
-         crv. Append( tnlStaticVector< 2, Real >( p ) );
-         if( j == 0 ) first = tnlStaticVector< 2, Real >( p );
+         crv. Append( StaticVector< 2, Real >( p ) );
+         if( j == 0 ) first = StaticVector< 2, Real >( p );
       }
-      tnlStaticVector< 2, Index > m1 = c[ 0 ];
-      tnlStaticVector< 2, Index > m2 = c[ l - 1 ];
+      StaticVector< 2, Index > m1 = c[ 0 ];
+      StaticVector< 2, Index > m2 = c[ l - 1 ];
       if( m1 == m2  )
          crv. Append( first );
    }

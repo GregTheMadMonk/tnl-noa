@@ -278,7 +278,7 @@ assemblyLinearSystem( const RealType& time,
   std::cout << std::endl << u << std::endl;
    abort();*/
    /*cout << "Matrix multiplication test ..." << std::endl;
-   tnlVector< RealType, DeviceType, IndexType > y;
+   Vector< RealType, DeviceType, IndexType > y;
    y.setLike( u );
    TimerRT timer;
    timer.reset();

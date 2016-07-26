@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlVector.h  -  description
+                          Vector.h  -  description
                              -------------------
     begin                : Nov 7, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -14,26 +14,29 @@
 #include <TNL/functions/tnlDomain.h>
 
 namespace TNL {
-namespace Vectors {   
 
 class tnlHost;
+
+namespace Vectors {   
+
+
 
 template< typename Real = double,
            typename Device = tnlHost,
            typename Index = int >
-class tnlVector : public Arrays::Array< Real, Device, Index >
+class Vector : public Arrays::Array< Real, Device, Index >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlVector< Real, TNL::tnlHost, Index > HostType;
-   typedef tnlVector< Real, TNL::tnlCuda, Index > CudaType;
+   typedef Vector< Real, TNL::tnlHost, Index > HostType;
+   typedef Vector< Real, TNL::tnlCuda, Index > CudaType;
 
-   tnlVector();
+   Vector();
 
-   tnlVector( const Index size );
+   Vector( const Index size );
 
    static String getType();
 
@@ -50,26 +53,26 @@ class tnlVector : public Arrays::Array< Real, Device, Index >
                     const RealType& value,
                     const RealType& thisElementMultiplicator );
 
-   tnlVector< Real, Device, Index >& operator = ( const tnlVector< Real, Device, Index >& array );
+   Vector< Real, Device, Index >& operator = ( const Vector< Real, Device, Index >& array );
 
-   template< typename Vector >
-   tnlVector< Real, Device, Index >& operator = ( const Vector& vector );
+   template< typename VectorT >
+   Vector< Real, Device, Index >& operator = ( const VectorT& vector );
 
-   template< typename Vector >
-   bool operator == ( const Vector& vector ) const;
+   template< typename VectorT >
+   bool operator == ( const VectorT& vector ) const;
 
-   template< typename Vector >
-   bool operator != ( const Vector& vector ) const;
+   template< typename VectorT >
+   bool operator != ( const VectorT& vector ) const;
 
-   template< typename Vector >
-   tnlVector< Real, Device, Index >& operator -= ( const Vector& vector );
+   template< typename VectorT >
+   Vector< Real, Device, Index >& operator -= ( const VectorT& vector );
 
-   template< typename Vector >
-   tnlVector< Real, Device, Index >& operator += ( const Vector& vector );
+   template< typename VectorT >
+   Vector< Real, Device, Index >& operator += ( const VectorT& vector );
 
-   tnlVector< Real, Device, Index >& operator *= ( const RealType& c );
+   Vector< Real, Device, Index >& operator *= ( const RealType& c );
  
-   tnlVector< Real, Device, Index >& operator /= ( const RealType& c );
+   Vector< Real, Device, Index >& operator /= ( const RealType& c );
 
    Real max() const;
 

@@ -40,7 +40,7 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
 {
    public:
    typedef tnlDenseMatrix< RealType, Device, IndexType > MatrixType;
-   typedef tnlVector< RealType, Device, IndexType > VectorType;
+   typedef Vectors::Vector< RealType, Device, IndexType > VectorType;
    typedef tnlDenseMatrixTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
@@ -169,8 +169,8 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
 
-      tnlVector< IndexType, tnlHost, IndexType > columns;
-      tnlVector< RealType, tnlHost, IndexType > values;
+      Vectors::Vector< IndexType, tnlHost, IndexType > columns;
+      Vectors::Vector< RealType, tnlHost, IndexType > values;
       columns.setSize( 10 );
       values.setSize( 10 );
       for( IndexType i = 0; i < 10; i++ )
@@ -201,8 +201,8 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
 
-      tnlVector< IndexType, Device, IndexType > columns;
-      tnlVector< RealType, Device, IndexType > values;
+      Vectors::Vector< IndexType, Device, IndexType > columns;
+      Vectors::Vector< RealType, Device, IndexType > values;
       columns.setSize( 10 );
       values.setSize( 10 );
       for( IndexType i = 0; i < 10; i++ )

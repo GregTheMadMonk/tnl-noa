@@ -13,7 +13,7 @@ class tnlDiagonalPreconditioner
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlVector< Real, Device, Index > VectorType;
+   typedef Vectors::Vector< Real, Device, Index > VectorType;
 
    template< typename Matrix >
    void update( const Matrix& matrix );

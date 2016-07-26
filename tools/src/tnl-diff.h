@@ -185,7 +185,7 @@ bool computeDifferenceOfVectors( const Mesh& mesh, const Config::ParameterContai
    if( verbose )
      std::cout << std::endl;
 
-   tnlVector< Real, tnlHost, Index > v1, v2;
+   Vectors::Vector< Real, tnlHost, Index > v1, v2;
    Real totalL1Diff( 0.0 ), totalL2Diff( 0.0 ), totalMaxDiff( 0.0 );
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {
@@ -276,7 +276,7 @@ bool computeDifferenceOfVectors( const Mesh& mesh, const Config::ParameterContai
          differenceFileName = inputFiles[ i ];
          RemoveFileExtension( differenceFileName );
          differenceFileName += ".diff.tnl";
-         tnlVector< Real, tnlHost, Index > diff;
+         Vectors::Vector< Real, tnlHost, Index > diff;
          diff.setLike( v1 );
          diff = v1;
          diff -= v2;
@@ -295,7 +295,7 @@ bool computeDifference( const Mesh& mesh, const String& objectType, const Config
 {
    if( objectType == "tnlMeshFunction" )
       return computeDifferenceOfMeshFunctions< Mesh, Element, Real, Index >( mesh, parameters );
-   if( objectType == "tnlVector" || objectType == "tnlSharedVector" )
+   if( objectType == "Vector" || objectType == "tnlSharedVector" )
       return computeDifferenceOfVectors< Mesh, Element, Real, Index >( mesh, parameters );
 }
 
@@ -311,7 +311,7 @@ bool setIndexType( const Mesh& mesh,
        parsedObjectType[ 0 ] == "tnlSharedMultiVector"   )
       indexType = parsedObjectType[ 4 ];
    if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
-       parsedObjectType[ 0 ] == "tnlVector" )
+       parsedObjectType[ 0 ] == "Vector" )
       indexType = parsedObjectType[ 3 ];
 
    if(parsedObjectType[ 0 ] == "tnlMeshFunction" )
@@ -338,39 +338,39 @@ bool setTupleType( const Mesh& mesh,
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlStaticVector< 1, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 1, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlStaticVector< 2, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 2, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlStaticVector< 3, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 3, float >, float >( mesh, inputFileName, parsedObjectType, parameters );
             break;
       }
    if( dataType == "double" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlStaticVector< 1, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 1, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlStaticVector< 2, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 2, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlStaticVector< 3, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 3, double >, double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
       }
    if( dataType == "long double" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< Mesh, tnlStaticVector< 1, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 1, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< Mesh, tnlStaticVector< 2, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 2, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< Mesh, tnlStaticVector< 3, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
+            return setIndexType< Mesh, Vectors::StaticVector< 3, long double >, long double >( mesh, inputFileName, parsedObjectType, parameters );
             break;
       }
 }
@@ -389,7 +389,7 @@ bool setElementType( const Mesh& mesh,
    if( parsedObjectType[ 0 ] == "tnlMeshFunction" )
       elementType = parsedObjectType[ 3 ];
    if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
-       parsedObjectType[ 0 ] == "tnlVector" )
+       parsedObjectType[ 0 ] == "Vector" )
       elementType = parsedObjectType[ 1 ];
 
 
@@ -405,7 +405,7 @@ bool setElementType( const Mesh& mesh,
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
       return false;
    }
-   if( parsedElementType[ 0 ] == "tnlStaticVector" )
+   if( parsedElementType[ 0 ] == "StaticVector" )
       return setTupleType< Mesh >( mesh, inputFileName, parsedObjectType, parsedElementType, parameters );
 
    std::cerr << "Unknown element type " << elementType << "." << std::endl;

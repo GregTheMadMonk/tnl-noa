@@ -37,25 +37,25 @@ class eulerProblem:
       typedef typename DifferentialOperator::Pressure Pressure;
 
       //definition
-	   tnlVector< RealType, DeviceType, IndexType > _uRho;
-	   tnlVector< RealType, DeviceType, IndexType > _uRhoVelocityX;
-	   tnlVector< RealType, DeviceType, IndexType > _uRhoVelocityY;
-	   tnlVector< RealType, DeviceType, IndexType > _uEnergy;
+	   Vectors::Vector< RealType, DeviceType, IndexType > _uRho;
+	   Vectors::Vector< RealType, DeviceType, IndexType > _uRhoVelocityX;
+	   Vectors::Vector< RealType, DeviceType, IndexType > _uRhoVelocityY;
+	   Vectors::Vector< RealType, DeviceType, IndexType > _uEnergy;
 
-	   tnlVector< RealType, DeviceType, IndexType > _fuRho;
-	   tnlVector< RealType, DeviceType, IndexType > _fuRhoVelocityX;
-	   tnlVector< RealType, DeviceType, IndexType > _fuRhoVelocityY;
-	   tnlVector< RealType, DeviceType, IndexType > _fuEnergy;
+	   Vectors::Vector< RealType, DeviceType, IndexType > _fuRho;
+	   Vectors::Vector< RealType, DeviceType, IndexType > _fuRhoVelocityX;
+	   Vectors::Vector< RealType, DeviceType, IndexType > _fuRhoVelocityY;
+	   Vectors::Vector< RealType, DeviceType, IndexType > _fuEnergy;
 
-      tnlVector< RealType, DeviceType, IndexType > rho;
-      tnlVector< RealType, DeviceType, IndexType > rhoVelX;
-      tnlVector< RealType, DeviceType, IndexType > rhoVelY;
-      tnlVector< RealType, DeviceType, IndexType > energy;
-      tnlVector< RealType, DeviceType, IndexType > data;
-      tnlVector< RealType, DeviceType, IndexType > pressure;
-      tnlVector< RealType, DeviceType, IndexType > velocity;
-      tnlVector< RealType, DeviceType, IndexType > velocityX;
-      tnlVector< RealType, DeviceType, IndexType > velocityY;
+      Vectors::Vector< RealType, DeviceType, IndexType > rho;
+      Vectors::Vector< RealType, DeviceType, IndexType > rhoVelX;
+      Vectors::Vector< RealType, DeviceType, IndexType > rhoVelY;
+      Vectors::Vector< RealType, DeviceType, IndexType > energy;
+      Vectors::Vector< RealType, DeviceType, IndexType > data;
+      Vectors::Vector< RealType, DeviceType, IndexType > pressure;
+      Vectors::Vector< RealType, DeviceType, IndexType > velocity;
+      Vectors::Vector< RealType, DeviceType, IndexType > velocityX;
+      Vectors::Vector< RealType, DeviceType, IndexType > velocityY;
       double gamma;
 
       static String getTypeStatic();

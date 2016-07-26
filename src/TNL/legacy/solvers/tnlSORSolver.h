@@ -28,8 +28,8 @@ class tnlSORSolverOld : public tnlMatrixSolver< Real, Device, Index >
    Real getSOROmega( ) const;
 
    bool solve( const tnlMatrix< Real, Device, Index >& A,
-               const tnlVector< Real, Device, Index >& b,
-               tnlVector< Real, Device, Index >& x,
+               const Vector< Real, Device, Index >& b,
+               Vector< Real, Device, Index >& x,
                const Real& max_residue,
                const Index max_iterations,
                tnlPreconditioner< Real >* precond = 0 );
@@ -73,8 +73,8 @@ Real tnlSORSolverOld< Real, Device, Index > :: getSOROmega( ) const
 
 template< typename Real, typename Device, typename Index >
 bool tnlSORSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, Device, Index >& A,
-                                                   const tnlVector< Real, Device, Index >& b,
-                                                   tnlVector< Real, Device, Index >& x,
+                                                   const Vector< Real, Device, Index >& b,
+                                                   Vector< Real, Device, Index >& x,
                                                    const Real& max_residue,
                                                    const Index max_iterations,
                                                    tnlPreconditioner< Real >* precond )

@@ -52,10 +52,10 @@ class tnlFullMatrix : public tnlMatrix< Real, Device, Index >,
    bool addToElement( Index i, Index j, const Real& v );
 
    Real rowProduct( const Index row,
-                    const tnlVector< Real, Device, Index >& vec ) const;
+                    const Vector< Real, Device, Index >& vec ) const;
 
-   void vectorProduct( const tnlVector< Real, Device, Index >& vec,
-                       tnlVector< Real, Device, Index >& result ) const;
+   void vectorProduct( const Vector< Real, Device, Index >& vec,
+                       Vector< Real, Device, Index >& result ) const;
 
 
    //! Multiply row
@@ -109,7 +109,7 @@ bool tnlFullMatrix< Real, Device, Index > :: setSize( Index new_size )
       return false;
    }
    tnlMatrix< Real, Device, Index > :: size = 0;
-   if( ! tnlMultiArray< 2, Real, Device, Index > :: setDimensions( tnlStaticVector< 2, Index >( new_size, new_size ) ) )
+   if( ! tnlMultiArray< 2, Real, Device, Index > :: setDimensions( StaticVector< 2, Index >( new_size, new_size ) ) )
       return false;
    tnlMatrix< Real, Device, Index > :: size = new_size;
    tnlMultiArray< 2, Real, Device, Index > :: setValue( 0.0 );
@@ -175,7 +175,7 @@ bool tnlFullMatrix< Real, Device, Index > :: addToElement( Index i, Index j, con
 
 template< typename Real, typename Device, typename Index >
 Real tnlFullMatrix< Real, Device, Index > :: rowProduct( const Index row,
-                                                         const tnlVector< Real, Device, Index >& vec ) const
+                                                         const Vector< Real, Device, Index >& vec ) const
 {
    Assert( 0 <= row && row < this->getSize(),
               std::cerr << "The row is outside the matrix." );
@@ -205,8 +205,8 @@ Real tnlFullMatrix< Real, Device, Index > :: rowProduct( const Index row,
 };
 
 template< typename Real, typename Device, typename Index >
-void tnlFullMatrix< Real, Device, Index > :: vectorProduct( const tnlVector< Real, Device, Index >& vec,
-                                                            tnlVector< Real, Device, Index >& result ) const
+void tnlFullMatrix< Real, Device, Index > :: vectorProduct( const Vector< Real, Device, Index >& vec,
+                                                            Vector< Real, Device, Index >& result ) const
 {
    Assert( vec. getSize() == this->getSize(),
               std::cerr << "The matrix and vector for a multiplication have different sizes. "

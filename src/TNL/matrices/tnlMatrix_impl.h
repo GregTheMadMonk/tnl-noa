@@ -40,7 +40,7 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
-void tnlMatrix< Real, Device, Index >::getCompressedRowsLengths( Vectors::tnlVector< IndexType, DeviceType, IndexType >& rowLengths ) const
+void tnlMatrix< Real, Device, Index >::getCompressedRowsLengths( Vectors::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
    for( IndexType row = 0; row < this->getRows(); row++ )
@@ -98,8 +98,8 @@ bool tnlMatrix< Real, Device, Index >::copyFrom( const Matrix& matrix,
    this->setLike( matrix );
    if( ! this->setCompressedRowsLengths( rowLengths ) )
       return false;
-   Vectors::tnlVector< RealType, tnlHost, IndexType > values;
-   Vectors::tnlVector< IndexType, tnlHost, IndexType > columns;
+   Vectors::Vector< RealType, tnlHost, IndexType > values;
+   Vectors::Vector< IndexType, tnlHost, IndexType > columns;
    if( ! values.setSize( this->getColumns() ) ||
        ! columns.setSize( this->getColumns() ) )
       return false;
@@ -120,12 +120,12 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index >::operator = (
 {
    this->setLike( m );
 
-   Vectors::tnlVector< IndexType, DeviceType, IndexType > rowLengths;
+   Vectors::Vector< IndexType, DeviceType, IndexType > rowLengths;
    m.getCompressedRowsLengths( rowLengths );
    this->setCompressedRowsLengths( rowLengths );
 
-   Vectors::tnlVector< RealType, DeviceType, IndexType > rowValues;
-   Vectors::tnlVector< IndexType, DeviceType, IndexType > rowColumns;
+   Vectors::Vector< RealType, DeviceType, IndexType > rowValues;
+   Vectors::Vector< IndexType, DeviceType, IndexType > rowColumns;
    const IndexType maxRowLength = rowLengths.max();
    rowValues.setSize( maxRowLength );
    rowColumns.setSize( maxRowLength );

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlStaticVector.h  -  description
+                          StaticVector.h  -  description
                              -------------------
     begin                : 2006/03/04
     copyright            : (C) 2006 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlStaticVectorH
-#define tnlStaticVectorH
+#ifndef StaticVectorH
+#define StaticVectorH
 
 #include <TNL/Assert.h>
 #include <string.h>
@@ -21,7 +21,7 @@
 enum { tnlX = 0, tnlY, tnlZ };
 
 template< int Size, typename Real = double >
-class tnlStaticVector
+class StaticVector
 {
    public:
    typedef Real RealType;
@@ -29,37 +29,37 @@ class tnlStaticVector
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlStaticVector();
+   StaticVector();
 
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlStaticVector( const Real v[ Size ] );
+   StaticVector( const Real v[ Size ] );
 
    //! This sets all vector components to v
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlStaticVector( const Real& v );
+   StaticVector( const Real& v );
 
    //! Copy constructor
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlStaticVector( const tnlStaticVector< Size, Real >& v );
+   StaticVector( const StaticVector< Size, Real >& v );
 
    //! This is constructore of vector with Size = 2.
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlStaticVector( const Real& v1,
+   StaticVector( const Real& v1,
               const Real& v2 );
 
    //! This is constructore of vector with Size = 3
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlStaticVector( const Real& v1,
+   StaticVector( const Real& v1,
              const Real& v2,
              const Real& v3 );
 
@@ -115,83 +115,83 @@ class tnlStaticVector
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlStaticVector& operator += ( const tnlStaticVector& v );
+   StaticVector& operator += ( const StaticVector& v );
 
    //! Subtracting operator
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlStaticVector& operator -= ( const tnlStaticVector& v );
+   StaticVector& operator -= ( const StaticVector& v );
 
    //! Multiplication with number
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlStaticVector& operator *= ( const Real& c );
+   StaticVector& operator *= ( const Real& c );
 
    //! Adding operator
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlStaticVector operator + ( const tnlStaticVector& u ) const;
+   StaticVector operator + ( const StaticVector& u ) const;
 
    //! Subtracting operator
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlStaticVector operator - ( const tnlStaticVector& u ) const;
+   StaticVector operator - ( const StaticVector& u ) const;
 
    //! Multiplication with number
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlStaticVector operator * ( const Real& c ) const;
+   StaticVector operator * ( const Real& c ) const;
 
    //!
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   tnlStaticVector& operator = ( const tnlStaticVector& v );
+   StaticVector& operator = ( const StaticVector& v );
 
    //! Scalar product
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   Real operator * ( const tnlStaticVector& u ) const;
+   Real operator * ( const StaticVector& u ) const;
 
    //! Comparison operator
    template< typename Real2 >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   bool operator == ( const tnlStaticVector< Size, Real2 >& v ) const;
+   bool operator == ( const StaticVector< Size, Real2 >& v ) const;
 
    //! Comparison operator
    template< typename Real2 >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   bool operator != ( const tnlStaticVector< Size, Real2 >& v ) const;
+   bool operator != ( const StaticVector< Size, Real2 >& v ) const;
 
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   bool operator < ( const tnlStaticVector& v ) const;
+   bool operator < ( const StaticVector& v ) const;
 
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   bool operator <= ( const tnlStaticVector& v ) const;
+   bool operator <= ( const StaticVector& v ) const;
 
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   bool operator > ( const tnlStaticVector& v ) const;
+   bool operator > ( const StaticVector& v ) const;
 
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-   bool operator >= ( const tnlStaticVector& v ) const;
+   bool operator >= ( const StaticVector& v ) const;
 
    bool save( File& file ) const;
 
@@ -203,16 +203,16 @@ class tnlStaticVector
 };
 
 template< int Size, typename Real >
-tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector< Size, Real >& u );
+StaticVector< Size, Real > operator * ( const Real& c, const StaticVector< Size, Real >& u );
 
 template< int Size, typename Real >
-ostream& operator << ( std::ostream& str, const tnlStaticVector< Size, Real >& v );
+ostream& operator << ( std::ostream& str, const StaticVector< Size, Real >& v );
 
 template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlStaticVector< Size, Real > :: tnlStaticVector()
+StaticVector< Size, Real > :: StaticVector()
 {
    bzero( data, Size * sizeof( Real ) );
 };
@@ -221,7 +221,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlStaticVector< Size, Real > :: tnlStaticVector( const Real v[ Size ] )
+StaticVector< Size, Real > :: StaticVector( const Real v[ Size ] )
 {
    if( Size == 1 )
       data[ 0 ] = v[ 0 ];
@@ -247,7 +247,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlStaticVector< Size, Real > :: tnlStaticVector( const Real& v )
+StaticVector< Size, Real > :: StaticVector( const Real& v )
 {
    if( Size == 1 )
       data[ 0 ] = v;
@@ -270,7 +270,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlStaticVector< Size, Real > :: tnlStaticVector( const tnlStaticVector< Size, Real >& v )
+StaticVector< Size, Real > :: StaticVector( const StaticVector< Size, Real >& v )
 {
    if( Size == 1 )
       data[ 0 ] = v[ 0 ];
@@ -297,7 +297,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlStaticVector< Size, Real > :: tnlStaticVector( const Real& v1,
+StaticVector< Size, Real > :: StaticVector( const Real& v1,
                                     const Real& v2 )
 {
    Assert( Size == 2,
@@ -310,7 +310,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlStaticVector< Size, Real > :: tnlStaticVector( const Real& v1,
+StaticVector< Size, Real > :: StaticVector( const Real& v1,
                                       const Real& v2,
                                       const Real& v3 )
 {
@@ -325,9 +325,9 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-String tnlStaticVector< Size, Real > :: getType()
+String StaticVector< Size, Real > :: getType()
 {
-   return String( "tnlStaticVector< " ) +
+   return String( "StaticVector< " ) +
           String( Size ) +
           String( ", " ) +
          TNL::getType< Real >() +
@@ -338,7 +338,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-const Real& tnlStaticVector< Size, Real > :: operator[]( int i ) const
+const Real& StaticVector< Size, Real > :: operator[]( int i ) const
 {
    assert( i >= 0 && i < Size );
    return data[ i ];
@@ -348,7 +348,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-Real& tnlStaticVector< Size, Real > :: operator[]( int i )
+Real& StaticVector< Size, Real > :: operator[]( int i )
 {
    assert( i < Size );
    return data[ i ];
@@ -358,12 +358,12 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-Real& tnlStaticVector< Size, Real > :: x()
+Real& StaticVector< Size, Real > :: x()
 {
    Assert( Size > 0, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 1 )
    {
-      printf( "The size of the tnlStaticVector is too small to get x coordinate.\n" );
+      printf( "The size of the StaticVector is too small to get x coordinate.\n" );
       abort();
    }
    return data[ 0 ];
@@ -373,12 +373,12 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-const Real& tnlStaticVector< Size, Real > :: x() const
+const Real& StaticVector< Size, Real > :: x() const
 {
    Assert( Size > 0, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 1 )
    {
-      printf( "The size of the tnlStaticVector is too small to get x coordinate.\n" );
+      printf( "The size of the StaticVector is too small to get x coordinate.\n" );
       abort();
    }
    return data[ 0 ];
@@ -388,12 +388,12 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-Real& tnlStaticVector< Size, Real > :: y()
+Real& StaticVector< Size, Real > :: y()
 {
    Assert( Size > 1, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 2 )
    {
-      printf( "The size of the tnlStaticVector is too small to get y coordinate.\n" );
+      printf( "The size of the StaticVector is too small to get y coordinate.\n" );
       abort();
    }
    return data[ 1 ];
@@ -403,12 +403,12 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-const Real& tnlStaticVector< Size, Real > :: y() const
+const Real& StaticVector< Size, Real > :: y() const
 {
    Assert( Size > 1, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 2 )
    {
-      printf( "The size of the tnlStaticVector is too small to get y coordinate.\n" );
+      printf( "The size of the StaticVector is too small to get y coordinate.\n" );
       abort();
    }
    return data[ 1 ];
@@ -419,12 +419,12 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-Real& tnlStaticVector< Size, Real > :: z()
+Real& StaticVector< Size, Real > :: z()
 {
    Assert( Size > 2, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 3 )
    {
-      printf( "The size of the tnlStaticVector is too small to get z coordinate.\n" );
+      printf( "The size of the StaticVector is too small to get z coordinate.\n" );
       abort();
    }
    return data[ 2 ];
@@ -434,12 +434,12 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-const Real& tnlStaticVector< Size, Real > :: z() const
+const Real& StaticVector< Size, Real > :: z() const
 {
    Assert( Size > 2, std::cerr << "Size = " << Size << std::endl; );
    if( Size < 3 )
    {
-      printf( "The size of the tnlStaticVector is too small to get z coordinate.\n" );
+      printf( "The size of the StaticVector is too small to get z coordinate.\n" );
       abort();
    }
    return data[ 2 ];
@@ -449,7 +449,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real > :: operator += ( const tnlStaticVector& v )
+StaticVector< Size, Real >& StaticVector< Size, Real > :: operator += ( const StaticVector& v )
 {
    if( Size == 1 )
       data[ 0 ] += v. data[ 0 ];
@@ -476,7 +476,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real > :: operator -= ( const tnlStaticVector& v )
+StaticVector< Size, Real >& StaticVector< Size, Real > :: operator -= ( const StaticVector& v )
 {
    if( Size == 1 )
       data[ 0 ] -= v. data[ 0 ];
@@ -503,7 +503,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real > :: operator *= ( const Real& c )
+StaticVector< Size, Real >& StaticVector< Size, Real > :: operator *= ( const Real& c )
 {
    if( Size == 1 )
       data[ 0 ] *= c;
@@ -530,36 +530,36 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlStaticVector< Size, Real > tnlStaticVector< Size, Real > :: operator + ( const tnlStaticVector& u ) const
+StaticVector< Size, Real > StaticVector< Size, Real > :: operator + ( const StaticVector& u ) const
 {
    // TODO: Leads to sigsegv
-   return tnlStaticVector( * this ) += u;
+   return StaticVector( * this ) += u;
 };
 
 template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlStaticVector< Size, Real > tnlStaticVector< Size, Real > :: operator - ( const tnlStaticVector& u ) const
+StaticVector< Size, Real > StaticVector< Size, Real > :: operator - ( const StaticVector& u ) const
 {
    // TODO: Leads to sigsegv
-   return tnlStaticVector( * this ) -= u;
+   return StaticVector( * this ) -= u;
 };
 
 template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlStaticVector< Size, Real > tnlStaticVector< Size, Real > :: operator * ( const Real& c ) const
+StaticVector< Size, Real > StaticVector< Size, Real > :: operator * ( const Real& c ) const
 {
-   return tnlStaticVector( * this ) *= c;
+   return StaticVector( * this ) *= c;
 };
 
 template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-tnlStaticVector< Size, Real >& tnlStaticVector< Size, Real > :: operator = ( const tnlStaticVector& v )
+StaticVector< Size, Real >& StaticVector< Size, Real > :: operator = ( const StaticVector& v )
 {
    memcpy( &data[ 0 ], &v. data[ 0 ], Size * sizeof( Real ) );
    /*int i;
@@ -572,7 +572,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-Real tnlStaticVector< Size, Real > :: operator * ( const tnlStaticVector& u ) const
+Real StaticVector< Size, Real > :: operator * ( const StaticVector& u ) const
 {
    if( Size == 1 )
       return data[ 0 ] * u[ 0 ];
@@ -597,7 +597,7 @@ template< typename Real2 >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-bool tnlStaticVector< Size, Real > :: operator == ( const tnlStaticVector< Size, Real2 >& u ) const
+bool StaticVector< Size, Real > :: operator == ( const StaticVector< Size, Real2 >& u ) const
 {
    if( Size == 1 )
       return data[ 0 ] == u[ 0 ];
@@ -620,7 +620,7 @@ template< typename Real2 >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-bool tnlStaticVector< Size, Real > :: operator != ( const tnlStaticVector< Size, Real2 >& u ) const
+bool StaticVector< Size, Real > :: operator != ( const StaticVector< Size, Real2 >& u ) const
 {
    if( Size == 1 )
       return data[ 0 ] != u[ 0 ];
@@ -641,7 +641,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-bool tnlStaticVector< Size, Real > :: operator < ( const tnlStaticVector& u ) const
+bool StaticVector< Size, Real > :: operator < ( const StaticVector& u ) const
 {
    if( Size == 1 )
       return data[ 0 ] < u[ 0 ];
@@ -665,7 +665,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-bool tnlStaticVector< Size, Real > :: operator <= ( const tnlStaticVector& u ) const
+bool StaticVector< Size, Real > :: operator <= ( const StaticVector& u ) const
 {
    if( Size == 1 )
       return data[ 0 ] <= u[ 0 ];
@@ -686,7 +686,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-bool tnlStaticVector< Size, Real > :: operator > ( const tnlStaticVector& u ) const
+bool StaticVector< Size, Real > :: operator > ( const StaticVector& u ) const
 {
    if( Size == 1 )
       return data[ 0 ] > u[ 0 ];
@@ -707,7 +707,7 @@ template< int Size, typename Real >
 #ifdef HAVE_CUDA
    __host__ __device__
 #endif
-bool tnlStaticVector< Size, Real > :: operator >= ( const tnlStaticVector& u ) const
+bool StaticVector< Size, Real > :: operator >= ( const StaticVector& u ) const
 {
    if( Size == 1 )
       return data[ 0 ] >= u[ 0 ];
@@ -725,23 +725,23 @@ bool tnlStaticVector< Size, Real > :: operator >= ( const tnlStaticVector& u ) c
 }
 
 template< int Size, typename Real >
-bool tnlStaticVector< Size, Real > :: save( File& file ) const
+bool StaticVector< Size, Real > :: save( File& file ) const
 {
    int size = Size;
 #ifdef HAVE_NOT_CXX11
    if( ! file. write< int, tnlHost >( &size ) ||
        ! file. write< Real, tnlHost, int >( data, size ) )
-      std::cerr << "Unable to write tnlStaticVector." << std::endl;
+      std::cerr << "Unable to write StaticVector." << std::endl;
 #else
    if( ! file. write( &size ) ||
        ! file. write( data, size ) )
-      std::cerr << "Unable to write tnlStaticVector." << std::endl;
+      std::cerr << "Unable to write StaticVector." << std::endl;
 #endif
    return true;
 };
 
 template< int Size, typename Real >
-bool tnlStaticVector< Size, Real > :: load( File& file)
+bool StaticVector< Size, Real > :: load( File& file)
 {
    int size;
 #ifdef HAVE_NOT_CXX11
@@ -750,12 +750,12 @@ bool tnlStaticVector< Size, Real > :: load( File& file)
    if( ! file. read( &size ) )
 #endif
    {
-      std::cerr << "Unable to read tnlStaticVector." << std::endl;
+      std::cerr << "Unable to read StaticVector." << std::endl;
       return false;
    }
    if( size != Size )
    {
-      std::cerr << "You try to read tnlStaticVector with wrong size " << size
+      std::cerr << "You try to read StaticVector with wrong size " << size
            << ". It should be " << Size << std::endl;
       return false;
    }
@@ -765,14 +765,14 @@ bool tnlStaticVector< Size, Real > :: load( File& file)
    if( ! file. read( data, size ) )
 #endif
    {
-      std::cerr << "Unable to read tnlStaticVector." << std::endl;
+      std::cerr << "Unable to read StaticVector." << std::endl;
       return false;
    }
    return true;
 }
 
 template< int Size, typename Real >
-tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector< Size, Real >& u )
+StaticVector< Size, Real > operator * ( const Real& c, const StaticVector< Size, Real >& u )
 {
    return u * c;
 }
@@ -780,7 +780,7 @@ tnlStaticVector< Size, Real > operator * ( const Real& c, const tnlStaticVector<
 
 
 // TODO: remove
-template< int Size, typename Real > bool Save( std::ostream& file, const tnlStaticVector< Size, Real >& vec )
+template< int Size, typename Real > bool Save( std::ostream& file, const StaticVector< Size, Real >& vec )
 {
    for( int i = 0; i < Size; i ++ )
       file. write( ( char* ) &vec[ i ], sizeof( Real ) );
@@ -789,7 +789,7 @@ template< int Size, typename Real > bool Save( std::ostream& file, const tnlStat
 };
 
 // TODO: remove
-template< int Size, typename Real > bool Load( std::istream& file, tnlStaticVector< Size, Real >& vec )
+template< int Size, typename Real > bool Load( std::istream& file, StaticVector< Size, Real >& vec )
 {
    for( int i = 0; i < Size; i ++ )
       file. read( ( char* ) &vec[ i ], sizeof( Real ) );
@@ -798,7 +798,7 @@ template< int Size, typename Real > bool Load( std::istream& file, tnlStaticVect
 };
 
 template< int Size, typename Real >
-ostream& operator << ( std::ostream& str, const tnlStaticVector< Size, Real >& v )
+ostream& operator << ( std::ostream& str, const StaticVector< Size, Real >& v )
 {
    for( int i = 0; i < Size - 1; i ++ )
       str << v[ i ] << ", ";
@@ -807,10 +807,10 @@ ostream& operator << ( std::ostream& str, const tnlStaticVector< Size, Real >& v
 };
 
 template< typename Real >
-tnlStaticVector< 3, Real > tnlVectorProduct( const tnlStaticVector< 3, Real >& u,
-                                      const tnlStaticVector< 3, Real >& v )
+StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
+                                      const StaticVector< 3, Real >& v )
 {
-   tnlStaticVector< 3, Real > p;
+   StaticVector< 3, Real > p;
    p[ 0 ] = u[ 1 ] * v[ 2 ] - u[ 2 ] * v[ 1 ];
    p[ 1 ] = u[ 2 ] * v[ 0 ] - u[ 0 ] * v[ 2 ];
    p[ 2 ] = u[ 0 ] * v[ 1 ] - u[ 1 ] * v[ 0 ];
@@ -818,25 +818,25 @@ tnlStaticVector< 3, Real > tnlVectorProduct( const tnlStaticVector< 3, Real >& u
 };
 
 template< typename Real >
-Real tnlScalarProduct( const tnlStaticVector< 2, Real >& u,
-                       const tnlStaticVector< 2, Real >& v )
+Real tnlScalarProduct( const StaticVector< 2, Real >& u,
+                       const StaticVector< 2, Real >& v )
 {
    return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ];
 };
 
 template< typename Real >
-Real tnlScalarProduct( const tnlStaticVector< 3, Real >& u,
-                       const tnlStaticVector< 3, Real >& v )
+Real tnlScalarProduct( const StaticVector< 3, Real >& u,
+                       const StaticVector< 3, Real >& v )
 {
    return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ] + u[ 2 ] * v[ 2 ];
 };
 
 template< typename Real >
-Real tnlTriangleArea( const tnlStaticVector< 2, Real >& a,
-                      const tnlStaticVector< 2, Real >& b,
-                      const tnlStaticVector< 2, Real >& c )
+Real tnlTriangleArea( const StaticVector< 2, Real >& a,
+                      const StaticVector< 2, Real >& b,
+                      const StaticVector< 2, Real >& c )
 {
-   tnlStaticVector< 3, Real > u1, u2;
+   StaticVector< 3, Real > u1, u2;
    u1. x() = b. x() - a. x();
    u1. y() = b. y() - a. y();
    u1. z() = 0.0;
@@ -844,7 +844,7 @@ Real tnlTriangleArea( const tnlStaticVector< 2, Real >& a,
    u2. y() = c. y() - a. y();
    u2. z() = 0;
 
-   const tnlStaticVector< 3, Real > v = tnlVectorProduct( u1, u2 );
+   const StaticVector< 3, Real > v = VectorProduct( u1, u2 );
    return 0.5 * ::sqrt( tnlScalarProduct( v, v ) );
 };
 

@@ -18,9 +18,7 @@ namespace TNL {
    class File;
    class tnlHost;
    class tnlCuda;
-} // namespace TNL
 
-namespace TNL {
 namespace Arrays {   
 
 

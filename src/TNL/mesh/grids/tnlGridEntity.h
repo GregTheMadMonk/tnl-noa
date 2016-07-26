@@ -59,8 +59,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimension
  
       constexpr static int getMeshDimensions() { return meshDimensions; };
  
-      typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
-      typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
+      typedef Vectors::StaticVector< meshDimensions, IndexType > EntityOrientationType;
+      typedef Vectors::StaticVector< meshDimensions, IndexType > EntityBasisType;
       typedef tnlGridEntity< GridType, entityDimensions, Config > ThisType;
       typedef typename GridType::VertexType VertexType;
  
@@ -187,8 +187,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Con
       constexpr static int getMeshDimensions() { return meshDimensions; };
  
  
-      typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
-      typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
+      typedef Vectors::StaticVector< meshDimensions, IndexType > EntityOrientationType;
+      typedef Vectors::StaticVector< meshDimensions, IndexType > EntityBasisType;
       typedef tnlGridEntity< GridType, entityDimensions, Config > ThisType;
       typedef tnlNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
  
@@ -313,8 +313,8 @@ class tnlGridEntity< tnlGrid< Dimensions, Real, Device, Index >, 0, Config >
  
       constexpr static int getMeshDimensions() { return meshDimensions; };
  
-      typedef tnlStaticVector< meshDimensions, IndexType > EntityOrientationType;
-      typedef tnlStaticVector< meshDimensions, IndexType > EntityBasisType;
+      typedef Vectors::StaticVector< meshDimensions, IndexType > EntityOrientationType;
+      typedef Vectors::StaticVector< meshDimensions, IndexType > EntityBasisType;
       typedef tnlGridEntity< GridType, entityDimensions, Config > ThisType;
       typedef tnlNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
  

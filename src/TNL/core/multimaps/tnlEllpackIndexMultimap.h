@@ -32,7 +32,7 @@ class tnlEllpackIndexMultimap
       typedef Index                                                        IndexType;
       typedef tnlEllpackIndexMultimapValues< IndexType, DeviceType >       ValuesAccessorType;
       typedef tnlEllpackIndexMultimapConstValues< IndexType, DeviceType >  ConstValuesAccessorType;
-      typedef tnlVector< IndexType, DeviceType, IndexType >                ValuesAllocationVectorType;
+      typedef Vectors::Vector< IndexType, DeviceType, IndexType >                ValuesAllocationVectorType;
  
       tnlEllpackIndexMultimap();
  
@@ -55,7 +55,7 @@ class tnlEllpackIndexMultimap
  
    protected:
  
-      tnlVector< IndexType, DeviceType, IndexType > values;
+      Vectors::Vector< IndexType, DeviceType, IndexType > values;
  
       IndexType keysRange, valuesRange, valuesMaxCount;
 };

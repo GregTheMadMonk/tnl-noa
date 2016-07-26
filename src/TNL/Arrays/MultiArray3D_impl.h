@@ -73,7 +73,7 @@ bool tnlMultiArray< 3, Element, Device, Index > :: setDimensions( const Index kS
 }
 
 template< typename Element, typename Device, typename Index >
-bool tnlMultiArray< 3, Element, Device, Index > :: setDimensions( const Vectors::tnlStaticVector< 3, Index >& dimensions )
+bool tnlMultiArray< 3, Element, Device, Index > :: setDimensions( const Vectors::StaticVector< 3, Index >& dimensions )
 {
    Assert( dimensions[ 0 ] > 0 && dimensions[ 1 ] > 0 && dimensions[ 2 ],
               std::cerr << "dimensions = " << dimensions );
@@ -98,7 +98,7 @@ bool tnlMultiArray< 3, Element, Device, Index > :: setLike( const MultiArray& mu
 template< typename Element, typename Device, typename Index >
 void tnlMultiArray< 3, Element, Device, Index >::reset()
 {
-   this->dimensions = Vectors::tnlStaticVector< 3, Index >( ( Index ) 0 );
+   this->dimensions = Vectors::StaticVector< 3, Index >( ( Index ) 0 );
    Array< Element, Device, Index >::reset();
 }
 
@@ -115,7 +115,7 @@ void tnlMultiArray< 3, Element, Device, Index > :: getDimensions( Index& kSize,
 
 template< typename Element, typename Device, typename Index >
 __cuda_callable__
-const Vectors::tnlStaticVector< 3, Index >& tnlMultiArray< 3, Element, Device, Index > :: getDimensions() const
+const Vectors::StaticVector< 3, Index >& tnlMultiArray< 3, Element, Device, Index > :: getDimensions() const
 {
    return this->dimensions;
 }

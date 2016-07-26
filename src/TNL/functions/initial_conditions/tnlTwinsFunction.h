@@ -42,7 +42,7 @@ class tnlTwinsFunction< 1, Real > : public tnlTwinsFunctionBase< Real, 1 >
 
       enum { Dimensions = 1 };
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 
@@ -76,7 +76,7 @@ class tnlTwinsFunction< 2, Real > : public tnlTwinsFunctionBase< Real, 2 >
 
       enum { Dimensions = 2 };
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 
@@ -110,7 +110,7 @@ class tnlTwinsFunction< 3, Real > : public tnlTwinsFunctionBase< Real, 3 >
 
       enum { Dimensions = 3 };
       typedef Real RealType;
-      typedef Vectors::tnlStaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 

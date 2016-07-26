@@ -75,8 +75,8 @@ typename Matrix::RealType tnlSpmvBenchmarkBase< Matrix >::getMaxError() const
 }
 
 template< typename Matrix >
-void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const tnlVector< RealType, DeviceType, IndexType >& x,
-                                                   const tnlVector< RealType, tnlHost, IndexType >& refB,
+void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const Vector< RealType, DeviceType, IndexType >& x,
+                                                   const Vector< RealType, tnlHost, IndexType >& refB,
                                                    bool verbose )
 {
    benchmarkWasSuccesful = false;
@@ -91,7 +91,7 @@ void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const tnlVector< RealType, De
    }
 #endif
 
-   tnlVector< RealType, DeviceType, IndexType > b( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
+   Vector< RealType, DeviceType, IndexType > b( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
    if( ! b. setSize( refB. getSize() ) )
       return;
 
@@ -110,7 +110,7 @@ void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const tnlVector< RealType, De
    this->time = rt_timer. getTime();
 
    firstErrorOccurence = 0;
-   tnlVector< RealType, tnlHost, IndexType > resB( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
+   Vector< RealType, tnlHost, IndexType > resB( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
    if( ! resB. setSize( b. getSize() ) )
    {
       std::cerr << "I am not able to allocate copy of vector b on the host." << std::endl;
