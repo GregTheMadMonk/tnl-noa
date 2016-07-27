@@ -11,9 +11,10 @@
 #pragma once 
 
 #include <cstring>
-#include <TNL/core/images/tnlPGMImage.h>
+#include <TNL/Images//PGMImage.h>
 
 namespace TNL {
+namespace Images {   
 
 template< typename Index >
 tnlPGMImage< Index >::
@@ -84,7 +85,7 @@ template< typename Index >
              typename Vector >
 bool
 tnlPGMImage< Index >::
-read( const tnlRegionOfInterest< Index > roi,
+read( const RegionOfInterest< Index > roi,
       const tnlGrid< 2, Real, Device, Index >& grid,
       Vector& vector )
 {
@@ -216,5 +217,6 @@ tnlPGMImage< Index >::
    close();
 }
 
+} // namespace Images
 } // namespace TNL
 

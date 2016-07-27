@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDicomSeries.h  -  description
+                          DicomSeries.h  -  description
                              -------------------
     begin                : Jul 31, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -18,9 +18,9 @@
 #include <TNL/List.h>
 #include <TNL/String.h>
 #include <TNL/core/param-types.h>
-#include <TNL/core/images/tnlImage.h>
-#include <TNL/core/images/tnlDicomHeader.h>
-#include <TNL/core/images/tnlRegionOfInterest.h>
+#include <TNL/Images//Image.h>
+#include <TNL/Images//DicomHeader.h>
+#include <TNL/Images//RegionOfInterest.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/tnlConfig.h>
 
@@ -35,7 +35,9 @@
 
 namespace TNL {
 
-template<> inline String getType< tnlDicomHeader * > () { return String( "tnlDicomHeader *" ); }
+template<> inline String getType< Images::DicomHeader * > () { return String( "DicomHeader *" ); }
+
+namespace Images {   
 
 struct WindowCenterWidth
 {
@@ -55,13 +57,13 @@ struct ImagesInfo
  * DICOM serie (searches the directory of the file). Call isDicomSeriesLoaded()
  * function to check if the load was successful.
  */
-class tnlDicomSeries : public tnlImage< int >
+class DicomSeries : public tnlImage< int >
 {
    public:
  
-      inline tnlDicomSeries( const String& filePath );
+      inline DicomSeries( const String& filePath );
  
-      inline virtual ~tnlDicomSeries();
+      inline virtual ~DicomSeries();
 
       inline int getImagesCount();
  
@@ -71,7 +73,7 @@ class tnlDicomSeries : public tnlImage< int >
                 typename Vector >
       bool getImage( const int imageIdx,
                      const tnlGrid< 2, Real, Device, Index >& grid,
-                     const tnlRegionOfInterest< int > roi,
+                     const RegionOfInterest< int > roi,
                      Vector& vector );
  
 #ifdef HAVE_DCMTK_H
@@ -90,7 +92,7 @@ class tnlDicomSeries : public tnlImage< int >
  
       inline void freeData();
  
-      inline tnlDicomHeader &getHeader(int image);
+      inline DicomHeader &getHeader(int image);
  
       inline bool isDicomSeriesLoaded();
 
@@ -104,7 +106,7 @@ class tnlDicomSeries : public tnlImage< int >
 
       List< String > fileList;
  
-      Arrays::Array<tnlDicomHeader *,Devices::Host,int> dicomSeriesHeaders;
+      Arrays::Array<DicomHeader *,Devices::Host,int> dicomSeriesHeaders;
 
       bool isLoaded;
  
@@ -117,7 +119,8 @@ class tnlDicomSeries : public tnlImage< int >
       ImagesInfo imagesInfo;
 };
 
+} // namespace Images
 } // namespace TNL
 
-#include <TNL/core/images/tnlDicomSeries_impl.h>
+#include <TNL/Images//DicomSeries_impl.h>
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDicomImageInfo.h  -  description
+                          DicomImageInfo.h  -  description
                              -------------------
     begin                : Jul 19, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -22,8 +22,9 @@
 #endif
 
 namespace TNL {
+namespace Images {   
 
-class tnlDicomHeader;
+class DicomHeader;
 
 /***ImageInfoObj class stores selected informations about images.
   (accesses information via DicomHeader class)
@@ -49,13 +50,13 @@ struct PixelSpacing
     double x, y;
     };
 
-class tnlDicomImageInfo
+class DicomImageInfo
 {
    public:
  
-      inline tnlDicomImageInfo( tnlDicomHeader &tnlDicomHeader);
+      inline DicomImageInfo( DicomHeader &DicomHeader);
  
-      inline virtual ~tnlDicomImageInfo();
+      inline virtual ~DicomImageInfo();
 
       inline ImagePositionToPatient getImagePositionToPatient();
  
@@ -71,7 +72,7 @@ class tnlDicomImageInfo
 
    private:
  
-      tnlDicomHeader &dicomHeader;
+      DicomHeader &dicomHeader;
  
       bool retrieveInfo();
  
@@ -92,7 +93,8 @@ class tnlDicomImageInfo
       int width, height, depth;
 };
 
+} // namespace Images
 } // namespace TNL
 
-#include <TNL/core/images/tnlDicomImageInfo_impl.h>
+#include <TNL/Images//DicomImageInfo_impl.h>
 

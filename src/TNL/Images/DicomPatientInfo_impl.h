@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDicomPatientInfo_impl.h  -  description
+                          DicomPatientInfo_impl.h  -  description
                              -------------------
     begin                : Jul 19, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "tnlDicomPatientInfo.h"
-#include "tnlDicomHeader.h"
+#include <TNL/Images/DicomPatientInfo.h>
+#include <TNL/Images/DicomHeader.h>
 
 #ifdef HAVE_DCMTK_H
 #define HAVE_CONFIG_H
@@ -23,18 +23,19 @@
 #endif
 
 namespace TNL {
+namespace Images {   
 
-inline tnlDicomPatientInfo::tnlDicomPatientInfo( tnlDicomHeader &dicomHeader )
+inline DicomPatientInfo::DicomPatientInfo( DicomHeader &dicomHeader )
 : dicomHeader( dicomHeader )
 {
     isObjectRetrieved = false;
 }
 
-inline tnlDicomPatientInfo::~tnlDicomPatientInfo()
+inline DicomPatientInfo::~DicomPatientInfo()
 {
 }
 
-inline bool tnlDicomPatientInfo::retrieveInfo()
+inline bool DicomPatientInfo::retrieveInfo()
 {
 #ifdef HAVE_DCMTK_H
    OFString str;
@@ -59,46 +60,47 @@ inline bool tnlDicomPatientInfo::retrieveInfo()
 #endif
 }
 
-inline const String& tnlDicomPatientInfo::getName()
+inline const String& DicomPatientInfo::getName()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return name;
 }
 
-inline const String& tnlDicomPatientInfo::getSex()
+inline const String& DicomPatientInfo::getSex()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return sex;
 }
 
-inline const String& tnlDicomPatientInfo::getID()
+inline const String& DicomPatientInfo::getID()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return ID;
 }
 
-inline const String& tnlDicomPatientInfo::getWeight()
+inline const String& DicomPatientInfo::getWeight()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return weight;
 }
 
-inline const String& tnlDicomPatientInfo::getPosition()
+inline const String& DicomPatientInfo::getPosition()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return patientPosition;
 }
 
-inline const String& tnlDicomPatientInfo::getOrientation()
+inline const String& DicomPatientInfo::getOrientation()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return patientOrientation;
 }
 
+} // namespace Images
 } // namespace TNL

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlRegionOfInterest.h  -  description
+                          RegionOfInterest.h  -  description
                              -------------------
     begin                : Jul 22, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -12,16 +12,17 @@
 
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/core/images/tnlImage.h>
+#include <TNL/Images//Image.h>
 
 namespace TNL {
+namespace Images {   
 
 template< typename Index = int >
-class tnlRegionOfInterest
+class RegionOfInterest
 {
    public:
  
-      tnlRegionOfInterest();
+      RegionOfInterest();
  
       bool setup( const Config::ParameterContainer& parameters,
                   const tnlImage< Index >* image );
@@ -51,8 +52,9 @@ class tnlRegionOfInterest
       Index top, bottom, left, right;
 };
 
+} // namespace Images
 } // namespace TNL
 
-#include <TNL/core/images/tnlRegionOfInterest_impl.h>
+#include <TNL/Images//RegionOfInterest_impl.h>
 
 

@@ -11,6 +11,7 @@
 #pragma once
 
 namespace TNL {
+namespace Images {   
 
 template< typename Index = int >
 class tnlImage
@@ -37,5 +38,6 @@ class tnlImage
  
 };
 
+} // namespace Images
 } // namespace TNL
 

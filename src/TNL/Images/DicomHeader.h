@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDicomHeader.h  -  description
+                          DicomHeader.h  -  description
                              -------------------
     begin                : Jul 19, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -22,43 +22,44 @@
 #endif
 
 namespace TNL {
+namespace Images {
 
-class tnlDicomSeriesInfo;
-class tnlDicomPatientInfo;
-class tnlDicomImageInfo;
+class DicomSeriesInfo;
+class DicomPatientInfo;
+class DicomImageInfo;
 
 /***
  * Class provides acces to the DICOM file header (contains complete
  *   information about DICOM file) and stores the information objects
  *   focused on essential data about image, patient and serie.
  */
-class tnlDicomHeader
+class DicomHeader
 {
    public:
  
-      inline tnlDicomHeader();
+      inline DicomHeader();
  
-      inline virtual ~tnlDicomHeader();
+      inline virtual ~DicomHeader();
 
 #ifdef HAVE_DCMTK_H
       inline DcmFileFormat &getFileFormat();
 #endif
  
-      inline tnlDicomImageInfo &getImageInfo();
+      inline DicomImageInfo &getImageInfo();
  
-      inline tnlDicomPatientInfo &getPatientInfo();
+      inline DicomPatientInfo &getPatientInfo();
  
-      inline tnlDicomSeriesInfo &getSeriesInfo();
+      inline DicomSeriesInfo &getSeriesInfo();
 
       inline bool loadFromFile( const String& fileName );
 
    protected:
  
-      tnlDicomImageInfo *imageInfoObj;
+      DicomImageInfo *imageInfoObj;
  
-      tnlDicomPatientInfo *patientInfoObj;
+      DicomPatientInfo *patientInfoObj;
  
-      tnlDicomSeriesInfo *seriesInfoObj;
+      DicomSeriesInfo *seriesInfoObj;
 
 #ifdef HAVE_DCMTK_H
       DcmFileFormat *fileFormat;
@@ -67,7 +68,8 @@ class tnlDicomHeader
       bool isLoaded;
 };
 
+} // namespace Images
 } // namespace TNL
 
-#include <TNL/core/images/tnlDicomHeader_impl.h>
+#include <TNL/Images//DicomHeader_impl.h>
 

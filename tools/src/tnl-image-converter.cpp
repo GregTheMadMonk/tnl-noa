@@ -12,10 +12,10 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/core/mfilename.h>
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/core/images/tnlPGMImage.h>
-#include <TNL/core/images/tnlPNGImage.h>
-#include <TNL/core/images/tnlJPEGImage.h>
-#include <TNL/core/images/tnlRegionOfInterest.h>
+#include <TNL/Images//PGMImage.h>
+#include <TNL/Images//PNGImage.h>
+#include <TNL/Images//JPEGImage.h>
+#include <TNL/Images//RegionOfInterest.h>
 
 using namespace TNL;
 
@@ -44,12 +44,12 @@ bool processImages( const Config::ParameterContainer& parameters )
     typedef tnlGrid< 2, double, Devices::Host, int > GridType;
     GridType grid;
     Vectors::Vector< double, Devices::Host, int > vector;
-    tnlRegionOfInterest< int > roi;
+    Images::RegionOfInterest< int > roi;
     for( int i = 0; i < inputImages.getSize(); i++ )
     {
       const String& fileName = inputImages[ i ];
       std::cout << "Processing image file " << fileName << "... ";
-      tnlPGMImage< int > pgmImage;
+      Images::tnlPGMImage< int > pgmImage;
       if( pgmImage.openForRead( fileName ) )
       {
          std::cout << "PGM format detected ...";
@@ -75,7 +75,7 @@ bool processImages( const Config::ParameterContainer& parameters )
          pgmImage.close();
          continue;
       }
-      tnlPNGImage< int > pngImage;
+      Images::PNGImage< int > pngImage;
       if( pngImage.openForRead( fileName ) )
       {
          std::cout << "PNG format detected ...";
@@ -101,7 +101,7 @@ bool processImages( const Config::ParameterContainer& parameters )
          pgmImage.close();
          continue;
       }
-      tnlJPEGImage< int > jpegImage;
+      Images::JPEGImage< int > jpegImage;
       if( jpegImage.openForRead( fileName ) )
       {
          std::cout << "JPEG format detected ...";
@@ -155,7 +155,7 @@ bool processTNLFiles( const Config::ParameterContainer& parameters )
       }
       if( imageFormat == "pgm" || imageFormat == "pgm-binary" || imageFormat == "pgm-ascii" )
       {
-         tnlPGMImage< int > image;
+         Images::tnlPGMImage< int > image;
          String outputFileName( fileName );
          RemoveFileExtension( outputFileName );
          outputFileName += ".pgm";
@@ -169,7 +169,7 @@ bool processTNLFiles( const Config::ParameterContainer& parameters )
       }
       if( imageFormat == "png" )
       {
-         tnlPNGImage< int > image;
+         Images::PNGImage< int > image;
          String outputFileName( fileName );
          RemoveFileExtension( outputFileName );
          outputFileName += ".png";
@@ -179,7 +179,7 @@ bool processTNLFiles( const Config::ParameterContainer& parameters )
       }
       if( imageFormat == "jpg" )
       {
-         tnlJPEGImage< int > image;
+         Images::JPEGImage< int > image;
          String outputFileName( fileName );
          RemoveFileExtension( outputFileName );
          outputFileName += ".jpg";

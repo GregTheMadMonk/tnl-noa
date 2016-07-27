@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlJPEGImage_impl.h  -  description
+                          JPEGImage_impl.h  -  description
                              -------------------
     begin                : Jul 25, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -10,10 +10,11 @@
 
 #pragma once
 
-#include <TNL/core/images/tnlJPEGImage.h>
+#include <TNL/Images//JPEGImage.h>
 #include <setjmp.h>
 
 namespace TNL {
+namespace Images {   
 
 #ifdef HAVE_JPEG_H
 inline void my_error_exit( j_common_ptr cinfo )
@@ -31,15 +32,15 @@ inline void my_error_exit( j_common_ptr cinfo )
 #endif
 
 template< typename Index >
-tnlJPEGImage< Index >::
-tnlJPEGImage() :
+JPEGImage< Index >::
+JPEGImage() :
    fileOpen( false )
 {
 }
 
 template< typename Index >
 bool
-tnlJPEGImage< Index >::
+JPEGImage< Index >::
 readHeader()
 {
 #ifdef HAVE_JPEG_H
@@ -76,7 +77,7 @@ readHeader()
 
 template< typename Index >
 bool
-tnlJPEGImage< Index >::
+JPEGImage< Index >::
 openForRead( const String& fileName )
 {
    this->close();
@@ -97,8 +98,8 @@ template< typename Index >
              typename Device,
              typename Vector >
 bool
-tnlJPEGImage< Index >::
-read( const tnlRegionOfInterest< Index > roi,
+JPEGImage< Index >::
+read( const RegionOfInterest< Index > roi,
       const tnlGrid< 2, Real, Device, Index >& grid,
       Vector& vector )
 {
@@ -178,7 +179,7 @@ template< typename Index >
    template< typename Real,
              typename Device >
 bool
-tnlJPEGImage< Index >::
+JPEGImage< Index >::
 writeHeader( const tnlGrid< 2, Real, Device, Index >& grid )
 {
 #ifdef HAVE_JPEG_H
@@ -201,7 +202,7 @@ template< typename Index >
    template< typename Real,
              typename Device >
 bool
-tnlJPEGImage< Index >::
+JPEGImage< Index >::
 openForWrite( const String& fileName,
               tnlGrid< 2, Real, Device, Index >& grid )
 {
@@ -223,7 +224,7 @@ template< typename Index >
              typename Device,
              typename Vector >
 bool
-tnlJPEGImage< Index >::
+JPEGImage< Index >::
 write( const tnlGrid< 2, Real, Device, Index >& grid,
        Vector& vector )
 {
@@ -262,7 +263,7 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
 
 template< typename Index >
 void
-tnlJPEGImage< Index >::
+JPEGImage< Index >::
 close()
 {
    if( this->fileOpen )
@@ -271,12 +272,13 @@ close()
 }
 
 template< typename Index >
-tnlJPEGImage< Index >::
-~tnlJPEGImage()
+JPEGImage< Index >::
+~JPEGImage()
 {
    close();
 }
 
+} // namespace Images
 } // namespace TNL
 
 

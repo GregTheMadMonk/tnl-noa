@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlPNGImage.h  -  description
+                          PNGImage.h  -  description
                              -------------------
     begin                : Jul 24, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -17,26 +17,27 @@
 #endif
 
 #include <TNL/String.h>
-#include <TNL/core/images/tnlImage.h>
-#include <TNL/core/images/tnlRegionOfInterest.h>
+#include <TNL/Images//Image.h>
+#include <TNL/Images//RegionOfInterest.h>
 
 namespace TNL {
+namespace Images {   
 
 template< typename Index = int >
-class tnlPNGImage : public tnlImage< Index >
+class PNGImage : public tnlImage< Index >
 {
    public:
  
       typedef Index IndexType;
  
-      tnlPNGImage();
+      PNGImage();
  
       bool openForRead( const String& fileName );
  
       template< typename Real,
                 typename Device,
                 typename Vector >
-      bool read( const tnlRegionOfInterest< Index > roi,
+      bool read( const RegionOfInterest< Index > roi,
                  const tnlGrid< 2, Real, Device, Index >& grid,
                  Vector& vector );
  
@@ -53,7 +54,7 @@ class tnlPNGImage : public tnlImage< Index >
  
       void close();
  
-      ~tnlPNGImage();
+      ~PNGImage();
  
    protected:
  
@@ -76,7 +77,8 @@ class tnlPNGImage : public tnlImage< Index >
 #endif
 };
 
+} // namespace Images
 } // namespace TNL
 
-#include <TNL/core/images/tnlPNGImage_impl.h>
+#include <TNL/Images//PNGImage_impl.h>
 

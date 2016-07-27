@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlPNGImage_impl.h  -  description
+                          PNGImage_impl.h  -  description
                              -------------------
     begin                : Jul 24, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -10,20 +10,21 @@
 
 #pragma once 
 
-#include <TNL/core/images/tnlPNGImage.h>
+#include <TNL/Images//PNGImage.h>
 
 namespace TNL {
+namespace Images {   
 
 template< typename Index >
-tnlPNGImage< Index >::
-tnlPNGImage() :
+PNGImage< Index >::
+PNGImage() :
    fileOpen( false )
 {
 }
 
 template< typename Index >
 bool
-tnlPNGImage< Index >::
+PNGImage< Index >::
 readHeader()
 {
 #ifdef HAVE_PNG_H
@@ -100,7 +101,7 @@ readHeader()
 
 template< typename Index >
 bool
-tnlPNGImage< Index >::
+PNGImage< Index >::
 openForRead( const String& fileName )
 {
    this->close();
@@ -121,8 +122,8 @@ template< typename Index >
              typename Device,
              typename Vector >
 bool
-tnlPNGImage< Index >::
-read( const tnlRegionOfInterest< Index > roi,
+PNGImage< Index >::
+read( const RegionOfInterest< Index > roi,
       const tnlGrid< 2, Real, Device, Index >& grid,
       Vector& vector )
 {
@@ -217,7 +218,7 @@ template< typename Index >
    template< typename Real,
              typename Device >
 bool
-tnlPNGImage< Index >::
+PNGImage< Index >::
 writeHeader( const tnlGrid< 2, Real, Device, Index >& grid )
 {
 #ifdef HAVE_PNG_H
@@ -275,7 +276,7 @@ template< typename Index >
    template< typename Real,
              typename Device >
 bool
-tnlPNGImage< Index >::
+PNGImage< Index >::
 openForWrite( const String& fileName,
               tnlGrid< 2, Real, Device, Index >& grid )
 {
@@ -297,7 +298,7 @@ template< typename Index >
              typename Device,
              typename Vector >
 bool
-tnlPNGImage< Index >::
+PNGImage< Index >::
 write( const tnlGrid< 2, Real, Device, Index >& grid,
        Vector& vector )
 {
@@ -342,7 +343,7 @@ write( const tnlGrid< 2, Real, Device, Index >& grid,
 
 template< typename Index >
 void
-tnlPNGImage< Index >::
+PNGImage< Index >::
 close()
 {
    if( this->fileOpen )
@@ -351,11 +352,12 @@ close()
 }
 
 template< typename Index >
-tnlPNGImage< Index >::
-~tnlPNGImage()
+PNGImage< Index >::
+~PNGImage()
 {
    close();
 }
 
+} // namespace Images
 } // namespace TNL
 

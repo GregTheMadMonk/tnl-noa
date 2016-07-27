@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDicomSeries.h  -  description
+                          DicomSeries.h  -  description
                              -------------------
     begin                : Jul 19, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -25,20 +25,21 @@
 #endif
 
 namespace TNL {
+namespace Images {   
 
-class tnlDicomHeader;
+class DicomHeader;
 
 /***
  * SeriesInfoObj class stores selected informations about DICOM series.
- * (accesses information via tnlDicomHeader class)
+ * (accesses information via DicomHeader class)
  */
-class tnlDicomSeriesInfo
+class DicomSeriesInfo
 {
    public:
  
-       inline tnlDicomSeriesInfo( tnlDicomHeader &dicomHeader );
+       inline DicomSeriesInfo( DicomHeader &dicomHeader );
  
-       inline virtual ~tnlDicomSeriesInfo();
+       inline virtual ~DicomSeriesInfo();
 
        inline const String& getModality();
  
@@ -66,7 +67,7 @@ class tnlDicomSeriesInfo
  
    private:
  
-       tnlDicomHeader &dicomHeader;
+       DicomHeader &dicomHeader;
  
        bool retrieveInfo();
  
@@ -105,7 +106,8 @@ class tnlDicomSeriesInfo
        String acquisitionTime;
 };
 
+} // namespace Images
 } // namespace TNL
 
-#include <TNL/core/images/tnlDicomSeriesInfo_impl.h>
+#include <TNL/Images//DicomSeriesInfo_impl.h>
 

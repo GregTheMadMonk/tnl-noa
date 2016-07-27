@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDicomSeriesInfo_impl.h  -  description
+                          DicomSeriesInfo_impl.h  -  description
                              -------------------
     begin                : Jul 19, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -13,23 +13,24 @@
 
 #pragma once
 
-#include <TNL/core/images/tnlDicomSeriesInfo.h>
-#include <TNL/core/images/tnlDicomHeader.h>
+#include <TNL/Images//DicomSeriesInfo.h>
+#include <TNL/Images//DicomHeader.h>
 #include <stdio.h>
 
 namespace TNL {
+namespace Images {   
 
-inline tnlDicomSeriesInfo::tnlDicomSeriesInfo( tnlDicomHeader &dicomHeader)
+inline DicomSeriesInfo::DicomSeriesInfo( DicomHeader &dicomHeader)
 : dicomHeader( dicomHeader )
 {
     isObjectRetrieved = false;
 }
 
-inline tnlDicomSeriesInfo::~tnlDicomSeriesInfo()
+inline DicomSeriesInfo::~DicomSeriesInfo()
 {
 }
 
-inline bool tnlDicomSeriesInfo::retrieveInfo()
+inline bool DicomSeriesInfo::retrieveInfo()
 {
 #ifdef HAVE_DCMTK_H
    OFString str;
@@ -95,88 +96,89 @@ inline bool tnlDicomSeriesInfo::retrieveInfo()
 #endif
 }
 
-inline const String& tnlDicomSeriesInfo::getModality()
+inline const String& DicomSeriesInfo::getModality()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->modality;
 }
 
-inline const String& tnlDicomSeriesInfo::getStudyInstanceUID()
+inline const String& DicomSeriesInfo::getStudyInstanceUID()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->studyInstanceUID;
 }
 
-inline const String& tnlDicomSeriesInfo::getSeriesInstanceUID()
+inline const String& DicomSeriesInfo::getSeriesInstanceUID()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesInstanceUID;
 }
 
-inline const String& tnlDicomSeriesInfo::getSeriesNumber()
+inline const String& DicomSeriesInfo::getSeriesNumber()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesNumber;
 }
 
-inline const String& tnlDicomSeriesInfo::getSeriesDescription()
+inline const String& DicomSeriesInfo::getSeriesDescription()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesDescription;
 }
 
-inline const String& tnlDicomSeriesInfo::getSeriesDate()
+inline const String& DicomSeriesInfo::getSeriesDate()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesDate;
 }
 
-inline const String& tnlDicomSeriesInfo::getSeriesTime()
+inline const String& DicomSeriesInfo::getSeriesTime()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->seriesTime;
 }
 
-inline const String& tnlDicomSeriesInfo::getPerformingPhysiciansName()
+inline const String& DicomSeriesInfo::getPerformingPhysiciansName()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->performingPhysiciansName;
 }
 
-inline const String& tnlDicomSeriesInfo::getPerformingPhysicianIdentificationSequence()
+inline const String& DicomSeriesInfo::getPerformingPhysicianIdentificationSequence()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->performingPhysicianIdentificationSequence;
 }
 
-inline const String& tnlDicomSeriesInfo::getOperatorsName()
+inline const String& DicomSeriesInfo::getOperatorsName()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->operatorsName;
 }
 
-inline const String& tnlDicomSeriesInfo::getOperatorIdentificationSequence()
+inline const String& DicomSeriesInfo::getOperatorIdentificationSequence()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->operatorIdentificationSequence;
 }
 
-inline const String& tnlDicomSeriesInfo::getAcquisitionTime()
+inline const String& DicomSeriesInfo::getAcquisitionTime()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return this->acquisitionTime;
 }
 
+} // namespace Images
 } // namespace TNL

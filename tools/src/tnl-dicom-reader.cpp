@@ -11,7 +11,7 @@
 #include <TNL/tnlConfig.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/core/images/tnlDicomSeries.h>
+#include <TNL/Images//DicomSeries.h>
 #include <TNL/core/mfilename.h>
 
 using namespace TNL;
@@ -45,12 +45,12 @@ bool processDicomSeries( const Config::ParameterContainer& parameters )
    typedef tnlGrid< 2, double, Devices::Host, int > GridType;
    GridType grid;
    Vectors::Vector< double, Devices::Host, int > vector;
-   tnlRegionOfInterest< int > roi;
+   Images::RegionOfInterest< int > roi;
    for( int i = 0; i < dicomSeriesNames.getSize(); i++ )
    {
       const String& seriesName = dicomSeriesNames[ i ];
       std::cout << "Reading a file " << seriesName << std::endl;
-      tnlDicomSeries dicomSeries( seriesName.getString() );
+      Images::DicomSeries dicomSeries( seriesName.getString() );
       if( !dicomSeries.isDicomSeriesLoaded() )
       {
          std::cerr << "Loading of the DICOM series " << seriesName << " failed." << std::endl;

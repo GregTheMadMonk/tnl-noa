@@ -1,6 +1,5 @@
 ADD_SUBDIRECTORY( containers )
 ADD_SUBDIRECTORY( cuda )
-ADD_SUBDIRECTORY( images )
 ADD_SUBDIRECTORY( multimaps )
 
 set (headers 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDicomHeader_impl.h  -  description
+                          DicomHeader_impl.h  -  description
                              -------------------
     begin                : Jul 19, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -13,25 +13,26 @@
 
 #pragma once
 
-#include <TNL/core/images/tnlDicomHeader.h>
-#include <TNL/core/images/tnlDicomSeriesInfo.h>
-#include <TNL/core/images/tnlDicomPatientInfo.h>
-#include <TNL/core/images/tnlDicomImageInfo.h>
+#include <TNL/Images//DicomHeader.h>
+#include <TNL/Images//DicomSeriesInfo.h>
+#include <TNL/Images//DicomPatientInfo.h>
+#include <TNL/Images//DicomImageInfo.h>
 
 namespace TNL {
+namespace Images {
 
-inline tnlDicomHeader::tnlDicomHeader()
+inline DicomHeader::DicomHeader()
 {
 #ifdef HAVE_DCMTK_H
     fileFormat = new DcmFileFormat();
 #endif
     isLoaded = false;
-    imageInfoObj = new tnlDicomImageInfo(*this);
-    patientInfoObj = new tnlDicomPatientInfo(*this);
-    seriesInfoObj = new tnlDicomSeriesInfo(*this);
+    imageInfoObj = new DicomImageInfo(*this);
+    patientInfoObj = new DicomPatientInfo(*this);
+    seriesInfoObj = new DicomSeriesInfo(*this);
 }
 
-inline tnlDicomHeader::~tnlDicomHeader()
+inline DicomHeader::~DicomHeader()
 {
     delete imageInfoObj;
     delete patientInfoObj;
@@ -41,7 +42,7 @@ inline tnlDicomHeader::~tnlDicomHeader()
 #endif
 }
 
-inline bool tnlDicomHeader::loadFromFile( const String& fileName )
+inline bool DicomHeader::loadFromFile( const String& fileName )
 {
 #ifdef HAVE_DCMTK_H
     OFCondition status = fileFormat->loadFile( fileName.getString() );
@@ -56,26 +57,27 @@ inline bool tnlDicomHeader::loadFromFile( const String& fileName )
 }
 
 #ifdef HAVE_DCMTK_H
-inline DcmFileFormat &tnlDicomHeader::getFileFormat()
+inline DcmFileFormat &DicomHeader::getFileFormat()
 {
     return *fileFormat;
 }
 #endif
 
-inline tnlDicomImageInfo &tnlDicomHeader::getImageInfo()
+inline DicomImageInfo &DicomHeader::getImageInfo()
 {
     return *imageInfoObj;
 }
 
-inline tnlDicomPatientInfo &tnlDicomHeader::getPatientInfo()
+inline DicomPatientInfo &DicomHeader::getPatientInfo()
 {
     return *patientInfoObj;
 }
 
-inline tnlDicomSeriesInfo &tnlDicomHeader::getSeriesInfo()
+inline DicomSeriesInfo &DicomHeader::getSeriesInfo()
 {
     return *seriesInfoObj;
 }
 
+} // namespace Images
 } // namespace TNL
 

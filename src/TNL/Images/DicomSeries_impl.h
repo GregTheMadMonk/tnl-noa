@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDicomSeries_impl.h  -  description
+                          DicomSeries_impl.h  -  description
                              -------------------
     begin                : Jul 19, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -13,11 +13,12 @@
 
 #pragma once
 
-#include <TNL/core/images/tnlDicomSeries.h>
-#include <TNL/core/images/tnlDicomSeriesInfo.h>
+#include <TNL/Images//DicomSeries.h>
+#include <TNL/Images//DicomSeriesInfo.h>
 #include <dirent.h>
 
 namespace TNL {
+namespace Images {   
 
 int findLastIndexOf(String &str, const char* c)
 {
@@ -39,7 +40,7 @@ int filter(const struct dirent *dire)
     return 1;
 }
 
-inline tnlDicomSeries::tnlDicomSeries( const String& filePath)
+inline DicomSeries::DicomSeries( const String& filePath)
 {
 #ifdef HAVE_DCMTK_H
     dicomImage = 0;
@@ -55,12 +56,12 @@ inline tnlDicomSeries::tnlDicomSeries( const String& filePath)
         isLoaded = true;
 }
 
-inline tnlDicomSeries::~tnlDicomSeries()
+inline DicomSeries::~DicomSeries()
 {
     int length = dicomSeriesHeaders.getSize();
     for(int i = 0; i < length; i++)
     {
-        tnlDicomHeader *header = dicomSeriesHeaders[i];
+        DicomHeader *header = dicomSeriesHeaders[i];
         delete header;
         header = 0;
     }
@@ -79,10 +80,10 @@ template< typename Real,
           typename Index,
           typename Vector >
 bool
-tnlDicomSeries::
+DicomSeries::
 getImage( const int imageIdx,
           const tnlGrid< 2, Real, Device, Index >& grid,
-          const tnlRegionOfInterest< int > roi,
+          const RegionOfInterest< int > roi,
           Vector& vector )
 {
 #ifdef HAVE_DCMTK_H
@@ -118,7 +119,7 @@ getImage( const int imageIdx,
 #endif
 }
 
-inline bool tnlDicomSeries::retrieveFileList( const String& filePath)
+inline bool DicomSeries::retrieveFileList( const String& filePath)
 {
     String filePathString(filePath);
     String suffix(filePath.getString(), filePathString.getLength() - 3);
@@ -176,11 +177,11 @@ inline bool tnlDicomSeries::retrieveFileList( const String& filePath)
    return true;
 }
 
-inline bool tnlDicomSeries::loadImage( const String& filePath, int number)
+inline bool DicomSeries::loadImage( const String& filePath, int number)
 {
 #ifdef HAVE_DCMTK_H
    //load header
-   tnlDicomHeader *header = new tnlDicomHeader();
+   DicomHeader *header = new DicomHeader();
    dicomSeriesHeaders.setSize( fileList.getSize() );
    dicomSeriesHeaders.setElement( number, header );
    if( !header->loadFromFile( filePath ) )
@@ -315,7 +316,7 @@ inline bool tnlDicomSeries::loadImage( const String& filePath, int number)
 }
 
 
-inline bool tnlDicomSeries::loadDicomSeries( const String& filePath )
+inline bool DicomSeries::loadDicomSeries( const String& filePath )
 {
    /***
     * Load list of files
@@ -338,44 +339,44 @@ inline bool tnlDicomSeries::loadDicomSeries( const String& filePath )
    return true;
 }
 
-inline int tnlDicomSeries::getImagesCount()
+inline int DicomSeries::getImagesCount()
 {
     return imagesInfo.imagesCount;
 }
 
 #ifdef HAVE_DCMTK_H
-inline const Uint16 *tnlDicomSeries::getData( int imageNumber )
+inline const Uint16 *DicomSeries::getData( int imageNumber )
 {
     return &pixelData[ imageNumber * imagesInfo.frameUintsCount ];
 }
 #endif
 
-inline int tnlDicomSeries::getColorCount()
+inline int DicomSeries::getColorCount()
 {
     return imagesInfo.colorsCount;
 }
 
-inline int tnlDicomSeries::getBitsPerSampleCount()
+inline int DicomSeries::getBitsPerSampleCount()
 {
     return imagesInfo.bps;
 }
 
-inline int tnlDicomSeries::getMinColorValue()
+inline int DicomSeries::getMinColorValue()
 {
     return imagesInfo.minColorValue;
 }
 
-inline WindowCenterWidth tnlDicomSeries::getWindowDefaults()
+inline WindowCenterWidth DicomSeries::getWindowDefaults()
 {
     return imagesInfo.window;
 }
 
-inline int tnlDicomSeries::getMaxColorValue()
+inline int DicomSeries::getMaxColorValue()
 {
     return imagesInfo.maxColorValue;
 }
 
-inline void tnlDicomSeries::freeData()
+inline void DicomSeries::freeData()
 {
 #ifdef HAVE_DCMTK_H
     if (pixelData)
@@ -384,16 +385,17 @@ inline void tnlDicomSeries::freeData()
 #endif
 }
 
-inline tnlDicomHeader &tnlDicomSeries::getHeader(int image)
+inline DicomHeader &DicomSeries::getHeader(int image)
 {
     //check user argument
     if((image > 0) | (image <= dicomSeriesHeaders.getSize()))
         return *dicomSeriesHeaders.getElement(image);
 }
 
-inline bool tnlDicomSeries::isDicomSeriesLoaded()
+inline bool DicomSeries::isDicomSeriesLoaded()
 {
     return isLoaded;
 }
 
+} // namespace Images
 } // namespace TNL

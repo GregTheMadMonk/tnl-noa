@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDicomPatientInfo.h  -  description
+                          DicomPatientInfo.h  -  description
                              -------------------
     begin                : Jul 19, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -25,20 +25,21 @@
 #endif
 
 namespace TNL {
+namespace Images {   
 
-class tnlDicomHeader;
+class DicomHeader;
 
 /***
  * PatientInfoObj class stores selected informations about patient.
- * (accesses information via tnlDicomHeader class)
+ * (accesses information via DicomHeader class)
  */
-class tnlDicomPatientInfo
+class DicomPatientInfo
 {
    public:
  
-      inline tnlDicomPatientInfo(tnlDicomHeader &atnlDicomHeader);
+      inline DicomPatientInfo(DicomHeader &aDicomHeader);
  
-      inline virtual ~tnlDicomPatientInfo();
+      inline virtual ~DicomPatientInfo();
 
       inline const String& getName();
  
@@ -54,7 +55,7 @@ class tnlDicomPatientInfo
 
    private:
 
-       tnlDicomHeader &dicomHeader;
+       DicomHeader &dicomHeader;
        bool retrieveInfo();
        bool isObjectRetrieved;
 
@@ -71,7 +72,8 @@ class tnlDicomPatientInfo
        String patientOrientation;
 };
 
+} // namespace Images
 } // namespace TNL
 
-#include <TNL/core/images/tnlDicomPatientInfo_impl.h>
+#include <TNL/Images//DicomPatientInfo_impl.h>
 

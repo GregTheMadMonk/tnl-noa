@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlRegionOfInterest.h  -  description
+                          RegionOfInterest.h  -  description
                              -------------------
     begin                : Jul 22, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -10,20 +10,21 @@
 
 #pragma once
 
-#include "tnlImage.h"
+#include <TNL/Images/Image.h>
 
 namespace TNL {
+namespace Images {   
 
 template< typename Index >
-tnlRegionOfInterest< Index >::
-tnlRegionOfInterest()
+RegionOfInterest< Index >::
+RegionOfInterest()
 : top( -1 ), bottom( -1 ), left( -1 ), right( -1 )
 {
 }
  
 template< typename Index >
 bool
-tnlRegionOfInterest< Index >::
+RegionOfInterest< Index >::
 setup( const Config::ParameterContainer& parameters,
        const tnlImage< Index >* image )
 {
@@ -95,7 +96,7 @@ setup( const Config::ParameterContainer& parameters,
 
 template< typename Index >
 bool
-tnlRegionOfInterest< Index >::
+RegionOfInterest< Index >::
 check( const tnlImage< Index >* image ) const
 {
    if( top >= image->getHeight() ||
@@ -108,7 +109,7 @@ check( const tnlImage< Index >* image ) const
 
 template< typename Index >
 Index
-tnlRegionOfInterest< Index >::
+RegionOfInterest< Index >::
 getTop() const
 {
    return this->top;
@@ -116,7 +117,7 @@ getTop() const
 
 template< typename Index >
 Index
-tnlRegionOfInterest< Index >::
+RegionOfInterest< Index >::
 getBottom() const
 {
    return this->bottom;
@@ -124,7 +125,7 @@ getBottom() const
 
 template< typename Index >
 Index
-tnlRegionOfInterest< Index >::
+RegionOfInterest< Index >::
 getLeft() const
 {
    return this->left;
@@ -132,7 +133,7 @@ getLeft() const
 
 template< typename Index >
 Index
-tnlRegionOfInterest< Index >::
+RegionOfInterest< Index >::
 getRight() const
 {
    return this->right;
@@ -140,7 +141,7 @@ getRight() const
 
 template< typename Index >
 Index
-tnlRegionOfInterest< Index >::
+RegionOfInterest< Index >::
 getWidth() const
 {
    return this->right - this->left;
@@ -148,7 +149,7 @@ getWidth() const
 
 template< typename Index >
 Index
-tnlRegionOfInterest< Index >::
+RegionOfInterest< Index >::
 getHeight() const
 {
    return this->bottom - this->top;
@@ -157,7 +158,7 @@ getHeight() const
 template< typename Index >
    template< typename Grid >
 bool
-tnlRegionOfInterest< Index >::
+RegionOfInterest< Index >::
 setGrid( Grid& grid,
          bool verbose )
 {
@@ -179,7 +180,7 @@ setGrid( Grid& grid,
 
 template< typename Index >
 bool
-tnlRegionOfInterest< Index >::
+RegionOfInterest< Index >::
 isIn( const Index row, const Index column ) const
 {
    if( row >= top && row < bottom &&
@@ -188,5 +189,5 @@ isIn( const Index row, const Index column ) const
    return false;
 }
 
+} // namespace Images
 } // namespace TNL
-

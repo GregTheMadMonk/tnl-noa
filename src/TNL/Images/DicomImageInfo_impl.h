@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDicomImageInfo_impl.h  -  description
+                          DicomImageInfo_impl.h  -  description
                              -------------------
     begin                : Jul 19, 2015
     copyright            : (C) 2015 by Tomas Oberhuber et al.
@@ -13,23 +13,24 @@
 
 #pragma once
 
-#include <TNL/core/images/tnlDicomImageInfo.h>
-#include <TNL/core/images/tnlDicomHeader.h>
+#include <TNL/Images//DicomImageInfo.h>
+#include <TNL/Images//DicomHeader.h>
 
 namespace TNL {
+namespace Images {   
 
-inline tnlDicomImageInfo::tnlDicomImageInfo( tnlDicomHeader& dicomHeader )
+inline DicomImageInfo::DicomImageInfo( DicomHeader& dicomHeader )
 : dicomHeader( dicomHeader )
 {
     isObjectRetrieved = false;
     depth = 0;
 }
 
-inline tnlDicomImageInfo::~tnlDicomImageInfo()
+inline DicomImageInfo::~DicomImageInfo()
 {
 }
 
-inline bool tnlDicomImageInfo::retrieveInfo()
+inline bool DicomImageInfo::retrieveInfo()
 {
 #ifdef HAVE_DCMTK_H
    dicomHeader.getFileFormat().getDataset()->findAndGetFloat64(DCM_ImagePositionPatient,imagePositionToPatient.x,0);
@@ -61,46 +62,47 @@ inline bool tnlDicomImageInfo::retrieveInfo()
 #endif
 }
 
-inline ImagePositionToPatient tnlDicomImageInfo::getImagePositionToPatient()
+inline ImagePositionToPatient DicomImageInfo::getImagePositionToPatient()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return imagePositionToPatient;
 }
 
-inline ImageOrientationToPatient tnlDicomImageInfo::getImageOrientationToPatient()
+inline ImageOrientationToPatient DicomImageInfo::getImageOrientationToPatient()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return imageOrientationToPatient;
 }
 
-inline double tnlDicomImageInfo::getSliceThickness()
+inline double DicomImageInfo::getSliceThickness()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return sliceThickness;
 }
 
-inline double tnlDicomImageInfo::getSliceLocation()
+inline double DicomImageInfo::getSliceLocation()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return sliceLocation;
 }
 
-inline PixelSpacing tnlDicomImageInfo::getPixelSpacing()
+inline PixelSpacing DicomImageInfo::getPixelSpacing()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return pixelSpacing;
 }
 
-inline int tnlDicomImageInfo::getNumberOfSlices()
+inline int DicomImageInfo::getNumberOfSlices()
 {
     if(!isObjectRetrieved)
         retrieveInfo();
     return numberOfSlices;
 }
 
+} // namespace Images
 } // namespace TNL
