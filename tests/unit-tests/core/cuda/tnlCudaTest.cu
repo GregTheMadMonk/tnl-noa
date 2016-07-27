@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCudaTest.cu  -  description
+                          Devices::CudaTest.cu  -  description
                              -------------------
     begin                : Mar 20, 2013
     copyright            : (C) 2013 by Tomas Oberhuber

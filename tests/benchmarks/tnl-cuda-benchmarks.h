@@ -8,11 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUDABENCHMARKS_H_
+#ifndef tnlCudaBENCHMARKS_H_
 #define TNLCUDBENCHMARKS_H_
 
 #include <TNL/SystemInfo.h>
-#include <TNL/core/tnlCudaDeviceInfo.h>
+#include <TNL/Devices/CudaDeviceInfo.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 
@@ -139,9 +139,9 @@ main( int argc, char* argv[] )
                         + String( cacheSizes.L1instruction ) + ", "
                         + String( cacheSizes.L2 ) + ", "
                         + String( cacheSizes.L3 );
-    const int activeGPU = tnlCudaDeviceInfo::getActiveDevice();
-    const String deviceArch = String( tnlCudaDeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
-                                 String( tnlCudaDeviceInfo::getArchitectureMinor( activeGPU ) );
+    const int activeGPU = Devices::CudaDeviceInfo::getActiveDevice();
+    const String deviceArch = String( Devices::CudaDeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
+                                 String( Devices::CudaDeviceInfo::getArchitectureMinor( activeGPU ) );
     Benchmark::MetadataMap metadata {
         { "host name", systemInfo.getHostname() },
         { "architecture", systemInfo.getArchitecture() },
@@ -153,13 +153,13 @@ main( int argc, char* argv[] )
         { "CPU threads per core", systemInfo.getNumberOfThreads( cpu_id ) / systemInfo.getNumberOfCores( cpu_id ) },
         { "CPU max frequency (MHz)", systemInfo.getCPUMaxFrequency( cpu_id ) / 1e3 },
         { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
-        { "GPU name", tnlCudaDeviceInfo::getDeviceName( activeGPU ) },
+        { "GPU name", Devices::CudaDeviceInfo::getDeviceName( activeGPU ) },
         { "GPU architecture", deviceArch },
-        { "GPU CUDA cores", tnlCudaDeviceInfo::getCudaCores( activeGPU ) },
-        { "GPU clock rate (MHz)", (double) tnlCudaDeviceInfo::getClockRate( activeGPU ) / 1e3 },
-        { "GPU global memory (GB)", (double) tnlCudaDeviceInfo::getGlobalMemory( activeGPU ) / 1e9 },
-        { "GPU memory clock rate (MHz)", (double) tnlCudaDeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 },
-        { "GPU memory ECC enabled", tnlCudaDeviceInfo::getECCEnabled( activeGPU ) },
+        { "GPU CUDA cores", Devices::CudaDeviceInfo::getCudaCores( activeGPU ) },
+        { "GPU clock rate (MHz)", (double) Devices::CudaDeviceInfo::getClockRate( activeGPU ) / 1e3 },
+        { "GPU global memory (GB)", (double) Devices::CudaDeviceInfo::getGlobalMemory( activeGPU ) / 1e9 },
+        { "GPU memory clock rate (MHz)", (double) Devices::CudaDeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 },
+        { "GPU memory ECC enabled", Devices::CudaDeviceInfo::getECCEnabled( activeGPU ) },
     };
 
     if( precision == "all" || precision == "float" )
@@ -174,9 +174,9 @@ main( int argc, char* argv[] )
 
     return EXIT_SUCCESS;
 #else
-    tnlCudaSupportMissingMessage;
+    CudaSupportMissingMessage;
     return EXIT_FAILURE;
 #endif
 }
 
-#endif /* TNLCUDABENCHMARKS_H_ */
+#endif /* Devices::CudaBENCHMARKS_H_ */

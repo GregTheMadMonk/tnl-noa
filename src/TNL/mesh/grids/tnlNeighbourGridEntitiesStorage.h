@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 #include <TNL/mesh/tnlDimensionsTag.h>
 
 namespace TNL {

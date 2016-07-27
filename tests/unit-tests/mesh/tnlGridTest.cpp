@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
 #ifndef HAVE_NOT_CXX11
@@ -21,9 +21,9 @@ int main( int argc, char* argv[] )
 {
 #ifndef HAVE_NOT_CXX11
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlGridTester< 1, double, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlGridTester< 2, double, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlGridTester< 3, double, tnlHost, int > >()
+   if( ! tnlUnitTestStarter :: run< tnlGridTester< 1, double, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlGridTester< 2, double, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlGridTester< 3, double, Devices::Host, int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

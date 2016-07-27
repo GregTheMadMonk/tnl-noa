@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCuda_impl.h  -  description
+                          Cuda_impl.h  -  description
                              -------------------
     begin                : Jan 21, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -10,32 +10,27 @@
 
 #pragma once
 
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
+namespace Devices {   
 
 __cuda_callable__ 
-inline tnlDeviceEnum tnlCuda::getDevice()
-{
-   return tnlCudaDevice;
-};
-
-__cuda_callable__ 
-inline int tnlCuda::getMaxGridSize()
+inline int Cuda::getMaxGridSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 65535;
 };
 
 __cuda_callable__
-inline int tnlCuda::getMaxBlockSize()
+inline int Cuda::getMaxBlockSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 1024;
 };
 
 __cuda_callable__ 
-inline int tnlCuda::getWarpSize()
+inline int Cuda::getWarpSize()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 32;
@@ -43,22 +38,22 @@ inline int tnlCuda::getWarpSize()
 
 #ifdef HAVE_CUDA
 template< typename Index >
-__device__ Index tnlCuda::getGlobalThreadIdx( const Index gridIdx )
+__device__ Index Cuda::getGlobalThreadIdx( const Index gridIdx )
 {
-   return ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   return ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
 }
 #endif
 
 
 __cuda_callable__ 
-inline int tnlCuda::getNumberOfSharedMemoryBanks()
+inline int Cuda::getNumberOfSharedMemoryBanks()
 {
    // TODO: make it preprocessor macro constant defined in tnlConfig
    return 32;
 }
 
 template< typename ObjectType >
-ObjectType* tnlCuda::passToDevice( const ObjectType& object )
+ObjectType* Cuda::passToDevice( const ObjectType& object )
 {
 #ifdef HAVE_CUDA
    ObjectType* deviceObject;
@@ -85,7 +80,7 @@ ObjectType* tnlCuda::passToDevice( const ObjectType& object )
 }
 
 template< typename ObjectType >
-ObjectType tnlCuda::passFromDevice( const ObjectType* object )
+ObjectType Cuda::passFromDevice( const ObjectType* object )
 {
 #ifdef HAVE_CUDA
    ObjectType aux;
@@ -102,7 +97,7 @@ ObjectType tnlCuda::passFromDevice( const ObjectType* object )
 }
 
 template< typename ObjectType >
-void tnlCuda::passFromDevice( const ObjectType* deviceObject,
+void Cuda::passFromDevice( const ObjectType* deviceObject,
                               ObjectType& hostObject )
 {
 #ifdef HAVE_CUDA
@@ -117,7 +112,7 @@ void tnlCuda::passFromDevice( const ObjectType* deviceObject,
 }
 
 template< typename ObjectType >
-void tnlCuda::print( const ObjectType* deviceObject, std::ostream& str )
+void Cuda::print( const ObjectType* deviceObject, std::ostream& str )
 {
 #ifdef HAVE_CUDA
    ObjectType hostObject;
@@ -128,7 +123,7 @@ void tnlCuda::print( const ObjectType* deviceObject, std::ostream& str )
 
 
 template< typename ObjectType >
-void tnlCuda::freeFromDevice( ObjectType* deviceObject )
+void Cuda::freeFromDevice( ObjectType* deviceObject )
 {
 #ifdef HAVE_CUDA
    cudaFree( deviceObject );
@@ -140,9 +135,9 @@ void tnlCuda::freeFromDevice( ObjectType* deviceObject )
 
 #ifdef HAVE_CUDA
 template< typename Index >
-__device__ Index tnlCuda::getInterleaving( const Index index )
+__device__ Index Cuda::getInterleaving( const Index index )
 {
-   return index + index / tnlCuda::getNumberOfSharedMemoryBanks();
+   return index + index / Cuda::getNumberOfSharedMemoryBanks();
 }
 
 template< typename Element >
@@ -166,4 +161,5 @@ __device__ inline getSharedMemory< long int >::operator long int*()
 
 #endif /* HAVE_CUDA */
 
+} // namespace Devices
 } // namespace TNL

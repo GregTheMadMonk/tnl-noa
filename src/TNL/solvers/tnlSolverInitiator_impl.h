@@ -15,8 +15,8 @@
 #include <TNL/solvers/linear/krylov/tnlCGSolver.h>
 #include <TNL/solvers/linear/krylov/tnlBICGStabSolver.h>
 #include <TNL/solvers/linear/krylov/tnlGMRESSolver.h>
-#include <TNL/core/tnlHost.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Host.h>
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 
@@ -71,9 +71,9 @@ class tnlSolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
            std::cout << "Setting DeviceType to ... " << device << std::endl;
 
          if( device == "host" )
-            return tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, tnlHost, ConfigTag >::run( parameters );
+            return tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::Host, ConfigTag >::run( parameters );
          if( device == "cuda" )
-            return tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, tnlCuda, ConfigTag >::run( parameters );
+            return tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::Cuda, ConfigTag >::run( parameters );
          std::cerr << "The device '" << device << "' is not defined. " << std::endl;
          return false;
       }

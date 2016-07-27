@@ -139,9 +139,9 @@ bool runTest()
 int main( int argc, char* argv[] )
 {
    using namespace TNL;
-   if( ! runTest< tnlGrid< 1, double, tnlHost, int > >() ||
-       ! runTest< tnlGrid< 2, double, tnlHost, int > >() ||
-       ! runTest< tnlGrid< 3, double, tnlHost, int > >() )
+   if( ! runTest< tnlGrid< 1, double, Devices::Host, int > >() ||
+       ! runTest< tnlGrid< 2, double, Devices::Host, int > >() ||
+       ! runTest< tnlGrid< 3, double, Devices::Host, int > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <type_traits>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 #include <TNL/functions/tnlMeshFunction.h>
 #include <TNL/solvers/pde/tnlBoundaryConditionsSetter.h>
 

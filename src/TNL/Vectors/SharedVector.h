@@ -16,14 +16,17 @@
 
 namespace TNL {
 
-   class tnlHost;
+namespace Devices
+{
+   class Host;
+}
 
 namespace Vectors {   
 
 
 
 template< typename Real = double,
-           typename Device= tnlHost,
+           typename Device= Devices::Host,
            typename Index = int >
 class SharedVector : public Arrays::tnlSharedArray< Real, Device, Index >
 {
@@ -32,8 +35,8 @@ class SharedVector : public Arrays::tnlSharedArray< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef SharedVector< Real, tnlHost, Index > HostType;
-   typedef SharedVector< Real, tnlCuda, Index > CudaType;
+   typedef SharedVector< Real, Devices::Host, Index > HostType;
+   typedef SharedVector< Real, Devices::Cuda, Index > CudaType;
 
 
    __cuda_callable__

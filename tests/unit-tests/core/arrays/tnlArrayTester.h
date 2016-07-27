@@ -25,7 +25,7 @@ using namespace TNL::Arrays;
 
 #ifdef HAVE_CUDA
 template< typename ElementType, typename IndexType >
-__global__ void testSetGetElementKernel( Array< ElementType, tnlCuda, IndexType >* u );
+__global__ void testSetGetElementKernel( Array< ElementType, Devices::Cuda, IndexType >* u );
 #endif
 
 class testingClassForArrayTester
@@ -126,18 +126,18 @@ class ArrayTester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( u. getElement( i ) == i );
 
       u.setValue( 0 );
-      if( Device::getDevice() == tnlHostDevice )
+      if( std::is_same< Device, Devices::Host >::value )
       {
          for( int i = 0; i < 10; i ++ )
             u[ i ] =  i;
       }
-      if( Device::getDevice() == tnlCudaDevice )
+      if( std::is_same< Device, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
          Array< ElementType, Device, IndexType >* kernel_u =
-                  tnlCuda::passToDevice( u );
+                  Devices::Cuda::passToDevice( u );
          testSetGetElementKernel<<< 1, 16 >>>( kernel_u );
-         tnlCuda::freeFromDevice( kernel_u );
+         Devices::Cuda::freeFromDevice( kernel_u );
          CPPUNIT_ASSERT( checkCudaDevice );
 #endif
       }
@@ -182,7 +182,7 @@ class ArrayTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( ! ( v != u ) );
 
       v.setValue( 0 );
-      Array< ElementType, tnlHost, IndexType > w;
+      Array< ElementType, Devices::Host, IndexType > w;
       w.setSize( 10 );
       w = u;
 
@@ -259,7 +259,7 @@ class ArrayTester : public CppUnit :: TestCase
 
 #ifdef HAVE_CUDA
 template< typename ElementType, typename IndexType >
-__global__ void testSetGetElementKernel( Array< ElementType, tnlCuda, IndexType >* u )
+__global__ void testSetGetElementKernel( Array< ElementType, Devices::Cuda, IndexType >* u )
 {
    if( threadIdx.x < ( *u ).getSize() )
       ( *u )[ threadIdx.x ] = threadIdx.x;

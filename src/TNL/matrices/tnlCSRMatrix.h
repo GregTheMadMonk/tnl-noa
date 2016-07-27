@@ -26,7 +26,7 @@ class tnlCusparseCSRMatrix;
 template< typename Device >
 class tnlCSRMatrixDeviceDependentCode;
 
-template< typename Real, typename Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = Devices::Host, typename Index = int >
 class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
 {
    public:
@@ -36,8 +36,8 @@ class tnlCSRMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef Index IndexType;
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef tnlCSRMatrix< Real, Device, Index > ThisType;
-   typedef tnlCSRMatrix< Real, tnlHost, Index > HostType;
-   typedef tnlCSRMatrix< Real, tnlCuda, Index > CudaType;
+   typedef tnlCSRMatrix< Real, Devices::Host, Index > HostType;
+   typedef tnlCSRMatrix< Real, Devices::Cuda, Index > CudaType;
    typedef tnlSparseMatrix< Real, Device, Index > BaseType;
    typedef typename BaseType::MatrixRow MatrixRow;
 

@@ -15,37 +15,37 @@
 
 namespace TNL {
 
-template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlHost, int > >;
-template class tnlGMRESSolver< tnlCSRMatrix< double, tnlHost, int > >;
-template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlHost, long int > >;
-template class tnlGMRESSolver< tnlCSRMatrix< double, tnlHost, long int > >;
+template class tnlGMRESSolver< tnlCSRMatrix< float,  Devices::Host, int > >;
+template class tnlGMRESSolver< tnlCSRMatrix< double, Devices::Host, int > >;
+template class tnlGMRESSolver< tnlCSRMatrix< float,  Devices::Host, long int > >;
+template class tnlGMRESSolver< tnlCSRMatrix< double, Devices::Host, long int > >;
 
-/*template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlHost, int > >;
-template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlHost, int > >;
-template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlHost, long int > >;
-template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlHost, long int > >;
+/*template class tnlGMRESSolver< tnlEllpackMatrix< float,  Devices::Host, int > >;
+template class tnlGMRESSolver< tnlEllpackMatrix< double, Devices::Host, int > >;
+template class tnlGMRESSolver< tnlEllpackMatrix< float,  Devices::Host, long int > >;
+template class tnlGMRESSolver< tnlEllpackMatrix< double, Devices::Host, long int > >;
 
-template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  tnlHost, int > >;
-template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, tnlHost, int > >;
-template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  tnlHost, long int > >;
-template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, tnlHost, long int > >;*/
+template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  Devices::Host, int > >;
+template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, Devices::Host, int > >;
+template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  Devices::Host, long int > >;
+template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, Devices::Host, long int > >;*/
 
 
 #ifdef HAVE_CUDA
-template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlCuda, int > >;
-template class tnlGMRESSolver< tnlCSRMatrix< double, tnlCuda, int > >;
-template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlCuda, long int > >;
-template class tnlGMRESSolver< tnlCSRMatrix< double, tnlCuda, long int > >;
+template class tnlGMRESSolver< tnlCSRMatrix< float,  Devices::Cuda, int > >;
+template class tnlGMRESSolver< tnlCSRMatrix< double, Devices::Cuda, int > >;
+template class tnlGMRESSolver< tnlCSRMatrix< float,  Devices::Cuda, long int > >;
+template class tnlGMRESSolver< tnlCSRMatrix< double, Devices::Cuda, long int > >;
 
-/*template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlCuda, int > >;
-template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlCuda, int > >;
-template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlCuda, long int > >;
-template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlCuda, long int > >;*/
+/*template class tnlGMRESSolver< tnlEllpackMatrix< float,  Devices::Cuda, int > >;
+template class tnlGMRESSolver< tnlEllpackMatrix< double, Devices::Cuda, int > >;
+template class tnlGMRESSolver< tnlEllpackMatrix< float,  Devices::Cuda, long int > >;
+template class tnlGMRESSolver< tnlEllpackMatrix< double, Devices::Cuda, long int > >;*/
 
-/*template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  tnlCuda, int > >;
-template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, tnlCuda, int > >;
-template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  tnlCuda, long int > >;
-template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, tnlCuda, long int > >;*/
+/*template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  Devices::Cuda, int > >;
+template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, Devices::Cuda, int > >;
+template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  Devices::Cuda, long int > >;
+template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, Devices::Cuda, long int > >;*/
 #endif
 
 } // namespace TNL

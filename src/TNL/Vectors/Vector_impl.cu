@@ -17,20 +17,20 @@ namespace Vectors {
 
 #ifdef HAVE_CUDA
 #ifdef INSTANTIATE_FLOAT
-template class Vector< float, tnlCuda, int >;
+template class Vector< float, Devices::Cuda, int >;
 #endif
-template class Vector< double, tnlCuda, int >;
+template class Vector< double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class Vector< long double, tnlCuda, int >;
+template class Vector< long double, Devices::Cuda, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class Vector< float, tnlCuda, long int >;
+template class Vector< float, Devices::Cuda, long int >;
 #endif
-template class Vector< double, tnlCuda, long int >;
+template class Vector< double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class Vector< long double, tnlCuda, long int >;
+template class Vector< long double, Devices::Cuda, long int >;
 #endif
 #endif
 #endif

@@ -15,10 +15,10 @@ namespace TNL {
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef HAVE_CUDA
-template class tnlContainer< float, tnlCuda, int >;
-template class tnlContainer< double, tnlCuda, int >;
-template class tnlContainer< float, tnlCuda, long int >;
-template class tnlContainer< double, tnlCuda, long int >;
+template class tnlContainer< float, Devices::Cuda, int >;
+template class tnlContainer< double, Devices::Cuda, int >;
+template class tnlContainer< float, Devices::Cuda, long int >;
+template class tnlContainer< double, Devices::Cuda, long int >;
 #endif
 
 #endif

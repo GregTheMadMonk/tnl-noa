@@ -97,7 +97,7 @@ evaluateEntities( OutMeshFunction& meshFunction,
    typedef tnlMeshFunctionEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData > AssignmentEntitiesProcessor;
    typedef tnlMeshFunctionEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData > AdditionEntitiesProcessor;
  
-   if( std::is_same< MeshDeviceType, tnlHost >::value )
+   if( std::is_same< MeshDeviceType, Devices::Host >::value )
    {
       TraverserUserData userData( &function, &time, &meshFunction, &outFunctionMultiplicator, &inFunctionMultiplicator );
       tnlTraverser< MeshType, MeshEntityType > meshTraverser;
@@ -141,13 +141,13 @@ evaluateEntities( OutMeshFunction& meshFunction,
             break;
       }
    }
-   if( std::is_same< MeshDeviceType, tnlCuda >::value )
+   if( std::is_same< MeshDeviceType, Devices::Cuda >::value )
    {
-      OutMeshFunction* kernelMeshFunction = tnlCuda::passToDevice( meshFunction );
-      InFunction* kernelFunction = tnlCuda::passToDevice( function );
-      RealType* kernelTime = tnlCuda::passToDevice( time );
-      RealType* kernelOutFunctionMultiplicator = tnlCuda::passToDevice( outFunctionMultiplicator );
-      RealType* kernelInFunctionMultiplicator = tnlCuda::passToDevice( inFunctionMultiplicator );
+      OutMeshFunction* kernelMeshFunction = Devices::Cuda::passToDevice( meshFunction );
+      InFunction* kernelFunction = Devices::Cuda::passToDevice( function );
+      RealType* kernelTime = Devices::Cuda::passToDevice( time );
+      RealType* kernelOutFunctionMultiplicator = Devices::Cuda::passToDevice( outFunctionMultiplicator );
+      RealType* kernelInFunctionMultiplicator = Devices::Cuda::passToDevice( inFunctionMultiplicator );
  
       TraverserUserData userData( kernelFunction, kernelTime, kernelMeshFunction, kernelOutFunctionMultiplicator, kernelInFunctionMultiplicator );
       checkCudaDevice;
@@ -193,11 +193,11 @@ evaluateEntities( OutMeshFunction& meshFunction,
       }
 
       checkCudaDevice;
-      tnlCuda::freeFromDevice( kernelMeshFunction );
-      tnlCuda::freeFromDevice( kernelFunction );
-      tnlCuda::freeFromDevice( kernelTime );
-      tnlCuda::freeFromDevice( kernelOutFunctionMultiplicator );
-      tnlCuda::freeFromDevice( kernelInFunctionMultiplicator );
+      Devices::Cuda::freeFromDevice( kernelMeshFunction );
+      Devices::Cuda::freeFromDevice( kernelFunction );
+      Devices::Cuda::freeFromDevice( kernelTime );
+      Devices::Cuda::freeFromDevice( kernelOutFunctionMultiplicator );
+      Devices::Cuda::freeFromDevice( kernelInFunctionMultiplicator );
       checkCudaDevice;
    }
 }

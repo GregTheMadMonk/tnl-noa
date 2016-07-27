@@ -14,7 +14,7 @@
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::setup( const tnlCSRMatrix< RealType, tnlHost, IndexType >& matrix )
+bool tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::setup( const tnlCSRMatrix< RealType, Devices::Host, IndexType >& matrix )
 {
    this->matrix = matrix;
 }
@@ -40,7 +40,7 @@ template< typename Real,
 void tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::writeToLogTable( std::ostream& logFile,
                                                                                const double& csrGflops,
                                                                                const String& inputMtxFile,
-                                                                               const tnlCSRMatrix< RealType, tnlHost, IndexType >& csrMatrix,
+                                                                               const tnlCSRMatrix< RealType, Devices::Host, IndexType >& csrMatrix,
                                                                                bool writeMatrixInfo  ) const
 {
 

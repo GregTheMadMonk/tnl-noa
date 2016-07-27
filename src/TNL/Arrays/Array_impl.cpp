@@ -16,40 +16,40 @@ namespace Arrays {
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-template class Array< float, tnlHost, int >;
+template class Array< float, Devices::Host, int >;
 #endif
-template class Array< double, tnlHost, int >;
+template class Array< double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class Array< long double, tnlHost, int >;
+template class Array< long double, Devices::Host, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class Array< float, tnlHost, long int >;
+template class Array< float, Devices::Host, long int >;
 #endif
-template class Array< double, tnlHost, long int >;
+template class Array< double, Devices::Host, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class Array< long double, tnlHost, long int >;
+template class Array< long double, Devices::Host, long int >;
 #endif
 #endif
 
 #ifndef HAVE_CUDA
 #ifdef INSTANTIATE_FLOAT
-template class Array< float, tnlCuda, int >;
+template class Array< float, Devices::Cuda, int >;
 #endif
-template class Array< double, tnlCuda, int >;
+template class Array< double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class Array< long double, tnlCuda, int >;
+template class Array< long double, Devices::Cuda, int >;
 #endif
 
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class Array< float, tnlCuda, long int >;
+template class Array< float, Devices::Cuda, long int >;
 #endif
-template class Array< double, tnlCuda, long int >;
+template class Array< double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class Array< long double, tnlCuda, long int >;
+template class Array< long double, Devices::Cuda, long int >;
 #endif
 #endif
 

@@ -14,7 +14,7 @@
 #include <math.h>
 #include <TNL/legacy/solvers/tnlMatrixSolver.h>
 
-template< typename Real, typename Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = Devices::Host, typename Index = int >
 class tnlSORSolverOld : public tnlMatrixSolver< Real, Device, Index >
 {
    public:

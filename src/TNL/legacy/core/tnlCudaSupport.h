@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCudaSupport.h  -  description
+                          Devices::CudaSupport.h  -  description
                              -------------------
     begin                : Feb 23, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUDASUPPORT_H_
-#define TNLCUDASUPPORT_H_
+#ifndef Devices::CudaSUPPORT_H_
+#define Devices::CudaSUPPORT_H_
 
 #include <iostream>
 
@@ -506,4 +506,4 @@ Type tnlPassFromCudaDevice( const Type* device_data )
 }
 
 
-#endif /* TNLCUDASUPPORT_H_ */
+#endif /* Devices::CudaSUPPORT_H_ */

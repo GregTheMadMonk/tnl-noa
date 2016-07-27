@@ -41,7 +41,7 @@ update( const RealType& time,
                                            typename MeshFunction::DeviceType,
                                            typename MeshFunction::IndexType > >::value != true,
       "Error: I am getting Vector instead of tnlMeshFunction or similar object. You might forget to bind DofVector into tnlMeshFunction in you method getExplicitRHS."  );
-   if( std::is_same< DeviceType, tnlHost >::value )
+   if( std::is_same< DeviceType, Devices::Host >::value )
    {
       TraverserUserData userData( time, differentialOperator, boundaryConditions, rightHandSide, u, fu );
       tnlTraverser< MeshType, EntityType > meshTraverser;
@@ -55,16 +55,16 @@ update( const RealType& time,
                                                       userData );
 
    }
-   if( std::is_same< DeviceType, tnlCuda >::value )
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
       if( this->gpuTransferTimer )
          this->gpuTransferTimer->start();
-      RealType* kernelTime = tnlCuda::passToDevice( time );
-      DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
-      BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
-      RightHandSide* kernelRightHandSide = tnlCuda::passToDevice( rightHandSide );
-      MeshFunction* kernelU = tnlCuda::passToDevice( u );
-      MeshFunction* kernelFu = tnlCuda::passToDevice( fu );
+      RealType* kernelTime = Devices::Cuda::passToDevice( time );
+      DifferentialOperator* kernelDifferentialOperator = Devices::Cuda::passToDevice( differentialOperator );
+      BoundaryConditions* kernelBoundaryConditions = Devices::Cuda::passToDevice( boundaryConditions );
+      RightHandSide* kernelRightHandSide = Devices::Cuda::passToDevice( rightHandSide );
+      MeshFunction* kernelU = Devices::Cuda::passToDevice( u );
+      MeshFunction* kernelFu = Devices::Cuda::passToDevice( fu );
      if( this->gpuTransferTimer )
          this->gpuTransferTimer->stop();
 
@@ -84,12 +84,12 @@ update( const RealType& time,
          this->gpuTransferTimer->start();
  
       checkCudaDevice;
-      tnlCuda::freeFromDevice( kernelTime );
-      tnlCuda::freeFromDevice( kernelDifferentialOperator );
-      tnlCuda::freeFromDevice( kernelBoundaryConditions );
-      tnlCuda::freeFromDevice( kernelRightHandSide );
-      tnlCuda::freeFromDevice( kernelU );
-      tnlCuda::freeFromDevice( kernelFu );
+      Devices::Cuda::freeFromDevice( kernelTime );
+      Devices::Cuda::freeFromDevice( kernelDifferentialOperator );
+      Devices::Cuda::freeFromDevice( kernelBoundaryConditions );
+      Devices::Cuda::freeFromDevice( kernelRightHandSide );
+      Devices::Cuda::freeFromDevice( kernelU );
+      Devices::Cuda::freeFromDevice( kernelFu );
       checkCudaDevice;
  
       if( this->gpuTransferTimer )

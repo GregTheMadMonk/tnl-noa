@@ -13,7 +13,7 @@
 #include <TNL/solvers/tnlSolverInitiator.h>
 #include <TNL/solvers/tnlSolverStarter.h>
 #include <TNL/solvers/tnlSolverConfig.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 
@@ -29,8 +29,8 @@ run( int argc, char* argv[] )
    ProblemConfig< MeshConfig >::configSetup( configDescription );
    tnlSolverConfig< MeshConfig, ProblemConfig< MeshConfig> >::configSetup( configDescription );
    configDescription.addDelimiter( "Parallelization setup:" );
-   tnlHost::configSetup( configDescription );
-   tnlCuda::configSetup( configDescription );
+   Devices::Host::configSetup( configDescription );
+   Devices::Cuda::configSetup( configDescription );
 
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return false;

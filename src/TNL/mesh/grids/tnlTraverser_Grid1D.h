@@ -82,12 +82,12 @@ class tnlTraverser< tnlGrid< 1, Real, Device, Index >, GridEntity, 0 >
 template< typename Real,
           typename Index,
           typename GridEntity >
-class tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, GridEntity, 1 >
+class tnlTraverser< tnlGrid< 1, Real, Devices::Cuda, Index >, GridEntity, 1 >
 {
    public:
-      typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
+      typedef tnlGrid< 1, Real, Devices::Cuda, Index > GridType;
       typedef Real RealType;
-      typedef tnlCuda DeviceType;
+      typedef Devices::Cuda DeviceType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
 
@@ -125,12 +125,12 @@ class tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, GridEntity, 1 >
 template< typename Real,
           typename Index,
           typename GridEntity >
-class tnlTraverser< tnlGrid< 1, Real, tnlCuda, Index >, GridEntity, 0 >
+class tnlTraverser< tnlGrid< 1, Real, Devices::Cuda, Index >, GridEntity, 0 >
 {
    public:
-      typedef tnlGrid< 1, Real, tnlCuda, Index > GridType;
+      typedef tnlGrid< 1, Real, Devices::Cuda, Index > GridType;
       typedef Real RealType;
-      typedef tnlCuda DeviceType;
+      typedef Devices::Cuda DeviceType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
 

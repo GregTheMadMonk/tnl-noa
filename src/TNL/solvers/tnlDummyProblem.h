@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
 
 namespace TNL {
 
 template< typename Real = double,
-          typename Device = tnlHost,
+          typename Device = Devices::Host,
           typename Index = int >
 class tnlDummyProblem
 {

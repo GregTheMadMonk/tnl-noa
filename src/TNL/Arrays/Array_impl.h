@@ -480,7 +480,7 @@ bool Array< Element, Device, Index > :: save( File& file ) const
    if( ! Object :: save( file ) )
       return false;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. write< const Index, tnlHost >( &this->size ) )
+   if( ! file. write< const Index, Devices::Host >( &this->size ) )
       return false;
 #else
    if( ! file. write( &this->size ) )
@@ -506,7 +506,7 @@ load( File& file )
       return false;
    Index _size;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. read< Index, tnlHost >( &_size ) )
+   if( ! file. read< Index, Devices::Host >( &_size ) )
       return false;
 #else
    if( ! file. read( &_size ) )
@@ -541,7 +541,7 @@ boundLoad( File& file )
       return false;
    Index _size;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. read< Index, tnlHost >( &_size ) )
+   if( ! file. read< Index, Devices::Host >( &_size ) )
       return false;
 #else
    if( ! file. read( &_size ) )
@@ -626,33 +626,33 @@ std::ostream& operator << ( std::ostream& str, const Array< Element, Device, Ind
 // TODO: this does not work with CUDA 5.5 - fix it later
 
 #ifdef INSTANTIATE_FLOAT
-extern template class Array< float, tnlHost, int >;
+extern template class Array< float, Devices::Host, int >;
 #endif
-extern template class Array< double, tnlHost, int >;
+extern template class Array< double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Array< long double, tnlHost, int >;
+extern template class Array< long double, Devices::Host, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class Array< float, tnlHost, long int >;
+extern template class Array< float, Devices::Host, long int >;
 #endif
-extern template class Array< double, tnlHost, long int >;
+extern template class Array< double, Devices::Host, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Array< long double, tnlHost, long int >;
+extern template class Array< long double, Devices::Host, long int >;
 #endif
 #endif
 
 #ifdef HAVE_CUDA
 /*
  #ifdef INSTANTIATE_FLOAT
- extern template class Array< float, tnlCuda, int >;
+ extern template class Array< float, Devices::Cuda, int >;
  #endif
- extern template class Array< double, tnlCuda, int >;
+ extern template class Array< double, Devices::Cuda, int >;
  #ifdef INSTANTIATE_FLOAT
- extern template class Array< float, tnlCuda, long int >;
+ extern template class Array< float, Devices::Cuda, long int >;
  #endif
- extern template class Array< double, tnlCuda, long int >;*/
+ extern template class Array< double, Devices::Cuda, long int >;*/
 #endif
 
 #endif

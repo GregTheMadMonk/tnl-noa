@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/Assert.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 #ifdef HAVE_CUDA
 #include <cusparse.h>
 #endif
@@ -21,8 +21,8 @@ class tnlCusparseCSRMatrixBase
 {
    public:
       typedef Real RealType;
-      typedef tnlCuda DeviceType;
-      typedef tnlCSRMatrix< RealType, tnlCuda, int > MatrixType;
+      typedef Devices::Cuda DeviceType;
+      typedef tnlCSRMatrix< RealType, Devices::Cuda, int > MatrixType;
 
       tnlCusparseCSRMatrixBase()
       : matrix( 0 )

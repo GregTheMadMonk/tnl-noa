@@ -355,41 +355,41 @@ void Vector< Real, Device, Index >::computeExclusivePrefixSum( const IndexType b
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-extern template class Vector< float, tnlHost, int >;
-extern template Vector< float, tnlHost, int >& Vector< float, tnlHost, int >:: operator = ( const Vector< double, tnlHost, int >& vector );
+extern template class Vector< float, Devices::Host, int >;
+extern template Vector< float, Devices::Host, int >& Vector< float, Devices::Host, int >:: operator = ( const Vector< double, Devices::Host, int >& vector );
 #endif
 
-extern template class Vector< double, tnlHost, int >;
+extern template class Vector< double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Vector< long double, tnlHost, int >;
+extern template class Vector< long double, Devices::Host, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class Vector< float, tnlHost, long int >;
+extern template class Vector< float, Devices::Host, long int >;
 #endif
-extern template class Vector< double, tnlHost, long int >;
+extern template class Vector< double, Devices::Host, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Vector< long double, tnlHost, long int >;
+extern template class Vector< long double, Devices::Host, long int >;
 #endif
 #endif
 
 #ifdef HAVE_CUDA
 #ifdef INSTANTIATE_FLOAT
-extern template class Vector< float, tnlCuda, int >;
+extern template class Vector< float, Devices::Cuda, int >;
 #endif
-extern template class Vector< double, tnlCuda, int >;
+extern template class Vector< double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Vector< long double, tnlCuda, int >;
+extern template class Vector< long double, Devices::Cuda, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class Vector< float, tnlCuda, long int >;
+extern template class Vector< float, Devices::Cuda, long int >;
 #endif
-extern template class Vector< double, tnlCuda, long int >;
+extern template class Vector< double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Vector< long double, tnlCuda, long int >;
+extern template class Vector< long double, Devices::Cuda, long int >;
 #endif
 #endif
 #endif

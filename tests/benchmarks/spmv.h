@@ -43,7 +43,7 @@ __global__ void setCudaTestMatrixKernel( Matrix* matrix,
                                          const int elementsPerRow,
                                          const int gridIdx )
 {
-    const int rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+    const int rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
     if( rowIdx >= matrix->getRows() )
         return;
     int col = rowIdx - elementsPerRow / 2;
@@ -62,19 +62,19 @@ void setCudaTestMatrix( Matrix& matrix,
 #ifdef HAVE_CUDA
     typedef typename Matrix::IndexType IndexType;
     typedef typename Matrix::RealType RealType;
-    Matrix* kernel_matrix = tnlCuda::passToDevice( matrix );
-    dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+    Matrix* kernel_matrix = Devices::Cuda::passToDevice( matrix );
+    dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
     const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-    const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+    const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
     for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ ) {
         if( gridIdx == cudaGrids - 1 )
-            cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+            cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
         setCudaTestMatrixKernel< Matrix >
             <<< cudaGridSize, cudaBlockSize >>>
             ( kernel_matrix, elementsPerRow, gridIdx );
         checkCudaDevice;
     }
-    tnlCuda::freeFromDevice( kernel_matrix );
+    Devices::Cuda::freeFromDevice( kernel_matrix );
 #endif
 }
 
@@ -89,15 +89,15 @@ benchmarkSpMV( Benchmark & benchmark,
                const int & size,
                const int elementsPerRow = 5 )
 {
-    typedef Matrix< Real, tnlHost, int > HostMatrix;
-    typedef Matrix< Real, tnlCuda, int > DeviceMatrix;
-    typedef Vectors::Vector< Real, tnlHost, int > HostVector;
-    typedef Vectors::Vector< Real, tnlCuda, int > CudaVector;
+    typedef Matrix< Real, Devices::Host, int > HostMatrix;
+    typedef Matrix< Real, Devices::Cuda, int > DeviceMatrix;
+    typedef Vectors::Vector< Real, Devices::Host, int > HostVector;
+    typedef Vectors::Vector< Real, Devices::Cuda, int > CudaVector;
 
     HostMatrix hostMatrix;
     DeviceMatrix deviceMatrix;
-    Vectors::Vector< int, tnlHost, int > hostRowLengths;
-    Vectors::Vector< int, tnlCuda, int > deviceRowLengths;
+    Vectors::Vector< int, Devices::Host, int > hostRowLengths;
+    Vectors::Vector< int, Devices::Cuda, int > deviceRowLengths;
     HostVector hostVector, hostVector2;
     CudaVector deviceVector, deviceVector2;
 

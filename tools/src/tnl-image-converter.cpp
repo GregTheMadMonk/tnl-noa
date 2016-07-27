@@ -41,9 +41,9 @@ bool processImages( const Config::ParameterContainer& parameters )
     String meshFile = parameters.getParameter< String >( "mesh-file" );
     bool verbose = parameters.getParameter< bool >( "verbose" );
  
-    typedef tnlGrid< 2, double, tnlHost, int > GridType;
+    typedef tnlGrid< 2, double, Devices::Host, int > GridType;
     GridType grid;
-    Vectors::Vector< double, tnlHost, int > vector;
+    Vectors::Vector< double, Devices::Host, int > vector;
     tnlRegionOfInterest< int > roi;
     for( int i = 0; i < inputImages.getSize(); i++ )
     {
@@ -137,13 +137,13 @@ bool processTNLFiles( const Config::ParameterContainer& parameters )
    String meshFile = parameters.getParameter< String >( "mesh-file" );
    bool verbose = parameters.getParameter< bool >( "verbose" );
  
-   tnlGrid< 2, double, tnlHost, int > grid;
+   tnlGrid< 2, double, Devices::Host, int > grid;
    if( ! grid.load( meshFile ) )
    {
       std::cerr << "I am not able to load the mesh file " << meshFile << "." << std::endl;
       return false;
    }
-   Vectors::Vector< double, tnlHost, int > vector;
+   Vectors::Vector< double, Devices::Host, int > vector;
    for( int i = 0; i < inputFiles.getSize(); i++ )
    {
       const String& fileName = inputFiles[ i ];

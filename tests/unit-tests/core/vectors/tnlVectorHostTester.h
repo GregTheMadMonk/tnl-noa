@@ -202,14 +202,14 @@ template< class T > class VectorHostTester : public CppUnit :: TestCase
 
    void testSaveAndLoad()
    {
-      Vector< T, tnlHost > v( "test-long-vector-u" );
+      Vector< T, Devices::Host > v( "test-long-vector-u" );
       v. setSize( 100 );
       v. setValue( 3.14147 );
       File file;
       file. open( "test-file.tnl", tnlWriteMode );
       v. save( file );
       file. close();
-      Vector< T, tnlHost > u( "test-long-vector-u" );
+      Vector< T, Devices::Host > u( "test-long-vector-u" );
       file. open( "test-file.tnl", tnlReadMode );
       u. load( file );
       file. close();

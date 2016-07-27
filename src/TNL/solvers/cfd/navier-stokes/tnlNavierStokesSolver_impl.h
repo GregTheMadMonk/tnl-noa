@@ -312,12 +312,12 @@ void tnlNavierStokesSolver< AdvectionScheme,
                                                                         const Vector& dofs_rho_u2,
                                                                         const Vector& dofs_e )
 {
-   if( DeviceType :: getDevice() == tnlHostDevice )
+   if( DeviceType :: getDevice() == Devices::HostDevice )
    {
       const IndexType size = dofs_rho.getSize();
 
       #ifdef HAVE_OPENMP
-      #pragma omp parallel for, if( tnlHost::isOMPEnabled() )
+      #pragma omp parallel for, if( Devices::Host::isOMPEnabled() )
       #endif
       for( IndexType c = 0; c < size; c++ )
          {
@@ -379,7 +379,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
    const IndexType& xSize = this->mesh->getDimensions().x();
    const IndexType& ySize = this->mesh->getDimensions().y();
 
-   if( DeviceType::getDevice() == tnlHostDevice )
+   if( DeviceType::getDevice() == Devices::HostDevice )
    {
       for( IndexType i = 0; i < xSize; i ++ )
       {
@@ -441,7 +441,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
    writePhysicalVariables( time, -4 );
 
 #ifdef HAVE_OPENMP
-  #pragma omp parallel for, if( tnlHost::isOMPEnabled() )
+  #pragma omp parallel for, if( Devices::Host::isOMPEnabled() )
   #endif
   for( IndexType j = 0; j < ySize; j ++ )
      for( IndexType i = 0; i < xSize; i ++ )

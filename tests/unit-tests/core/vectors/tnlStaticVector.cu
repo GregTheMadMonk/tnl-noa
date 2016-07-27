@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/tnlConfig.h>
-#include <core/tnlHost.h>
+#include <core/Devices::Host.h>
 #include <cstdlib>
 
 #include "StaticVectorTester.h"

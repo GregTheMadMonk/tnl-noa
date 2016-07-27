@@ -38,7 +38,7 @@ class heatEquationConfig
             config.addEntryEnum< String >( "dirichlet" );
             config.addEntryEnum< String >( "neumann" );
 
-         typedef tnlGrid< 1, double, tnlHost, int > Mesh;
+         typedef tnlGrid< 1, double, Devices::Host, int > Mesh;
          typedef tnlMeshFunction< Mesh > MeshFunction;
          tnlDirichletBoundaryConditions< Mesh, MeshFunction >::configSetup( config );
          tnlDirichletBoundaryConditions< Mesh, tnlConstantFunction< 1 > >::configSetup( config );

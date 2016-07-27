@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
 #include "tnlVectorTester.h"
@@ -18,10 +18,10 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< VectorTester< float, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< VectorTester< double, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< VectorTester< float, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< VectorTester< double, tnlHost, long int > >()
+   if( ! tnlUnitTestStarter :: run< VectorTester< float, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< VectorTester< double, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< VectorTester< float, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< VectorTester< double, Devices::Host, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

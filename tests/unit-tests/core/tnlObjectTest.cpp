@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
 #include "tnlObjectTester.h"

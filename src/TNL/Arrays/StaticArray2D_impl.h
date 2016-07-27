@@ -190,7 +190,7 @@ inline void tnlStaticArray< 2, Element >::setValue( const ElementType& val )
 template< typename Element >
 bool tnlStaticArray< 2, Element >::save( File& file ) const
 {
-   if( ! file. write< Element, tnlHost, int >( data, size ) )
+   if( ! file. write< Element, Devices::Host, int >( data, size ) )
    {
       std::cerr << "Unable to write " << getType() << "." << std::endl;
       return false;
@@ -201,7 +201,7 @@ bool tnlStaticArray< 2, Element >::save( File& file ) const
 template< typename Element >
 bool tnlStaticArray< 2, Element >::load( File& file)
 {
-   if( ! file.read< Element, tnlHost, int >( data, size ) )
+   if( ! file.read< Element, Devices::Host, int >( data, size ) )
    {
       std::cerr << "Unable to read " << getType() << "." << std::endl;
       return false;

@@ -100,8 +100,8 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
    };
 
    void GetExplicitRHS( const Real& time,
-                        tnlGridOld< 2, Real, tnlHost, int >& u,
-                        tnlGridOld< 2, Real, tnlHost, int >& fu )
+                        tnlGridOld< 2, Real, Devices::Host, int >& u,
+                        tnlGridOld< 2, Real, Devices::Host, int >& fu )
    {
       const Index xSize = u. getDimensions(). x();
       const Index ySize = u. getDimensions(). y();
@@ -116,8 +116,8 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
    }
 
    void GetExplicitRHS( const Real& time,
-                        tnlGridOld< 2, Real, tnlCuda, int >& u,
-                        tnlGridOld< 2, Real, tnlCuda, int >& fu )
+                        tnlGridOld< 2, Real, Devices::Cuda, int >& u,
+                        tnlGridOld< 2, Real, Devices::Cuda, int >& fu )
    {
 #ifdef HAVE_CUDA
       const Index xSize = u. getDimensions(). x();
@@ -138,7 +138,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
    {
       const Index size = 128;
 
-      tnlGridOld< 2, Real, tnlHost, int > hostU( "hostU");
+      tnlGridOld< 2, Real, Devices::Host, int > hostU( "hostU");
       hostU. setDimensions( StaticVector< 2, Index >( size, size ) );
       hostU. setDomain( StaticVector< 2, Real >( 0.0, 0.0 ),
                         StaticVector< 2, Real >( 1.0, 1.0 ) );
@@ -161,18 +161,18 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       mersonSolver. setTau( 0.001 );
 
 
-      tnlGridOld< 2, Real, tnlCuda, int > deviceU( "deviceU" );
+      tnlGridOld< 2, Real, Devices::Cuda, int > deviceU( "deviceU" );
       deviceU. setLike( hostU );
       deviceU = hostU;
 
-      tnlGridOld< 2, Real, tnlHost, int > hostAuxU( "hostAuxU" );
+      tnlGridOld< 2, Real, Devices::Host, int > hostAuxU( "hostAuxU" );
       hostAuxU. setLike( hostU );
 
 #ifdef HAVE_CUDA
       /*tnlMersonSolver< tnlMersonSolverTester< Real, Device, Index >,
-                       tnlGridOld< 2, Real, tnlCuda, Index >,
+                       tnlGridOld< 2, Real, Devices::Cuda, Index >,
                        Real,
-                       tnlCuda,
+                       Devices::Cuda,
                        Index > mersonSolverCUDA( "mersonSolverCuda" );
       mersonSolverCUDA. setVerbosity( 2 );
       mersonSolverCUDA. setAdaptivity( 0.001 );

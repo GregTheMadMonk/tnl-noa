@@ -206,7 +206,7 @@ bool resolveMesh( const List< String >& parsedMeshType,
   std::cout << "+ -> Setting mesh type to " << parsedMeshType[ 0 ] << " ... " << std::endl;
    if( parsedMeshType[ 0 ] == "tnlGrid" )
    {
-      typedef tnlGrid< Dimensions, RealType, tnlHost, IndexType > MeshType;
+      typedef tnlGrid< Dimensions, RealType, Devices::Host, IndexType > MeshType;
       return resolveRealType< MeshType >( parameters );
    }
    std::cerr << "Unknown mesh type." << std::endl;

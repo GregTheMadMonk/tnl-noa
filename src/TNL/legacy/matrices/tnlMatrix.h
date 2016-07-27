@@ -37,7 +37,7 @@ class tnlMatrixClass
 
 template< typename Real, typename device, typename Index > class tnlCSRMatrix;
 
-template< typename Real, typename Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = Devices::Host, typename Index = int >
 class tnlMatrix : public Object
 {
    public:
@@ -232,7 +232,7 @@ bool tnlMatrix< Real, Device, Index > :: save( File& file ) const
 {
    if( ! Object :: save( file ) ) return false;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. write< const Index, tnlHost >( &size ) )
+   if( ! file. write< const Index, Devices::Host >( &size ) )
 #else
    if( ! file. write( &size ) )
 #endif
@@ -245,7 +245,7 @@ bool tnlMatrix< Real, Device, Index > :: load( File& file )
 {
    if( ! Object :: load( file ) ) return false;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. read< Index, tnlHost >( &size ) )
+   if( ! file. read< Index, Devices::Host >( &size ) )
 #else
    if( ! file. read( &size ) )
 #endif
@@ -430,7 +430,7 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( Vector< Index, De
       permutation[ this->getNonzeroElementsInRow( i ) ] ++;
    }
 
-   Vector< Index, tnlHost, Index > buckets( "tnlMatrix::reorderRowsDecreasingly:buckets" );
+   Vector< Index, Devices::Host, Index > buckets( "tnlMatrix::reorderRowsDecreasingly:buckets" );
    buckets. setSize( matrixSize + 1 );
    buckets. setValue( 0 );
 

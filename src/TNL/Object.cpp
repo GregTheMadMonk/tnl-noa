@@ -44,7 +44,7 @@ String Object :: getSerializationTypeVirtual() const
 bool Object :: save( File& file ) const
 {
 #ifdef HAVE_NOT_CXX11
-   if( ! file. write< const char, tnlHost, int >( magic_number, strlen( magic_number ) ) )
+   if( ! file. write< const char, Devices::Host, int >( magic_number, strlen( magic_number ) ) )
 #else
    if( ! file. write( magic_number, strlen( magic_number ) ) )
 #endif
@@ -130,7 +130,7 @@ bool getObjectType( File& file, String& type )
 {
    char mn[ 10 ];
 #ifdef HAVE_NOT_CXX11
-   if( ! file. read< char, tnlHost, int >( mn, strlen( magic_number ) ) )
+   if( ! file. read< char, Devices::Host, int >( mn, strlen( magic_number ) ) )
 #else
    if( ! file. read( mn, strlen( magic_number ) ) )
 #endif

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <TNL/Vectors/StaticVector.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
@@ -20,7 +20,7 @@ namespace TNL {
 
 template< int FunctionDimensions,
           typename Real = double,
-          typename Device = tnlHost >
+          typename Device = Devices::Host >
 class tnlTestFunction : public tnlDomain< FunctionDimensions, SpaceDomain >
 {
    protected:

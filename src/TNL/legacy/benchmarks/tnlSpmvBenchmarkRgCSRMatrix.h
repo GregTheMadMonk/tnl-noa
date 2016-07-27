@@ -20,7 +20,7 @@ class tnlSpmvBenchmarkRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index
 
    tnlSpmvBenchmarkRgCSRMatrix();
 
-   bool setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix );
+   bool setup( const tnlCSRMatrix< Real, Devices::Host, Index >& matrix );
 
    void tearDown();
 
@@ -29,7 +29,7 @@ class tnlSpmvBenchmarkRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
                          const String& inputMtxFile,
-                         const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                         const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                          bool writeMatrixInfo ) const;
 
    void setGroupSize( const Index groupSize );
@@ -67,10 +67,10 @@ tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: tnlSpmvBenchmarkRgCSRMatri
 template< typename Real,
           typename Device,
           typename Index>
-bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix )
+bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix )
 {
    Assert( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
-   if( Device :: getDevice() == tnlHostDevice )
+   if( Device :: getDevice() == Devices::HostDevice )
    {
       this->matrix. tuneFormat( groupSize,
                                   this->useAdaptiveGroupSize,
@@ -78,10 +78,10 @@ bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMa
       if( ! this->matrix. copyFrom( csrMatrix ) )
          return false;
    }
-   if( Device :: getDevice() == tnlCudaDevice )
+   if( Device :: getDevice() == Devices::CudaDevice )
    {
 #ifdef HAVE_CUDA
-      tnlRgCSRMatrix< Real, tnlHost, Index > hostMatrix( "tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup : hostMatrix" );
+      tnlRgCSRMatrix< Real, Devices::Host, Index > hostMatrix( "tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup : hostMatrix" );
       hostMatrix. tuneFormat( groupSize,
                               this->useAdaptiveGroupSize,
                               this->adaptiveGroupSizeStrategy );
@@ -110,7 +110,7 @@ template< typename Real,
 void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeProgress() const
 {
   std::cout << left << std::setw( this->formatColumnWidth - 15 ) << "Row-grouped CSR ";
-   if( Device :: getDevice() == tnlCudaDevice )
+   if( Device :: getDevice() == Devices::CudaDevice )
    {
       if( useAdaptiveGroupSize )
         std::cout << std::setw( 5 ) << "Var.";
@@ -133,8 +133,8 @@ void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeProgress() const
    else
        std::cout << right << std::setw( this->benchmarkStatusColumnWidth ) << "  FAILED - maxError is " << this->maxError << ". ";
 #ifndef HAVE_CUDA
-   if( Device :: getDevice() == tnlCudaDevice )
-      tnlCudaSupportMissingMessage;;
+   if( Device :: getDevice() == Devices::CudaDevice )
+      CudaSupportMissingMessage;;
 #endif
      std::cout << std::endl;
 }
@@ -186,7 +186,7 @@ template< typename Real,
 void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( std::ostream& logFile,
                                                                             const double& csrGflops,
                                                                             const String& inputMtxFile,
-                                                                            const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                                                                            const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                                                                             bool writeMatrixInfo ) const
 {
    String bgColor;

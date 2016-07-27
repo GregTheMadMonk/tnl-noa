@@ -12,7 +12,7 @@
 
 #include <cmath>
 #include <TNL/core/tnlConstants.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 
 #ifdef HAVE_CUDA
 #include <cuda.h>

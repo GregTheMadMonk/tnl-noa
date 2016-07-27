@@ -30,7 +30,7 @@ template< typename Device >
 class tnlSlicedEllpackMatrixDeviceDependentCode;
 
 template< typename Real = double,
-          typename Device = tnlHost,
+          typename Device = Devices::Host,
           typename Index = int,
           int SliceSize = 32 >
 class tnlSlicedEllpackMatrix;
@@ -39,8 +39,8 @@ class tnlSlicedEllpackMatrix;
 template< typename Real,
           typename Index,
           int SliceSize >
-__global__ void tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel( tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >* matrix,
-                                                                                   const typename tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >::CompressedRowsLengthsVector* rowLengths,
+__global__ void tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel( tnlSlicedEllpackMatrix< Real, Devices::Cuda, Index, SliceSize >* matrix,
+                                                                                   const typename tnlSlicedEllpackMatrix< Real, Devices::Cuda, Index, SliceSize >::CompressedRowsLengthsVector* rowLengths,
                                                                                    int gridIdx );
 #endif
 
@@ -59,8 +59,8 @@ class tnlSlicedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
    typedef tnlSlicedEllpackMatrix< Real, Device, Index > ThisType;
-   typedef tnlSlicedEllpackMatrix< Real, tnlHost, Index > HostType;
-   typedef tnlSlicedEllpackMatrix< Real, tnlCuda, Index > CudaType;
+   typedef tnlSlicedEllpackMatrix< Real, Devices::Host, Index > HostType;
+   typedef tnlSlicedEllpackMatrix< Real, Devices::Cuda, Index > CudaType;
    typedef tnlSparseMatrix< Real, Device, Index > BaseType;
    typedef typename BaseType::MatrixRow MatrixRow;
 
@@ -193,8 +193,8 @@ class tnlSlicedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef tnlSlicedEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlSlicedEllpackMatrixDeviceDependentCode< DeviceType >;
 #ifdef HAVE_CUDA
-   /*friend __global__ void tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize >( tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >* matrix,
-                                                                                      const typename tnlSlicedEllpackMatrix< Real, tnlCuda, Index, SliceSize >::CompressedRowsLengthsVector* rowLengths,
+   /*friend __global__ void tnlSlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize >( tnlSlicedEllpackMatrix< Real, Devices::Cuda, Index, SliceSize >* matrix,
+                                                                                      const typename tnlSlicedEllpackMatrix< Real, Devices::Cuda, Index, SliceSize >::CompressedRowsLengthsVector* rowLengths,
                                                                                       int gridIdx );
     */
    // TODO: The friend declaration above does not work because of __global__ storage specifier. Therefore we declare the following method as public. Fix this, when possible.

@@ -360,12 +360,12 @@ typename tnlTridiagonalMatrix< Real, Device, Index >::MatrixRow
 tnlTridiagonalMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex )
 {
-   if( Device::getDevice() == tnlHostDevice )
+   if( std::is_same< Device, Devices::Host >::value )
       return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, rowIndex ) ],
                         rowIndex,
                         this->getColumns(),
                         1 );
-   if( Device::getDevice() == tnlCudaDevice )
+   if( std::is_same< Device, Devices::Cuda >::value )
       return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, rowIndex ) ],
                         rowIndex,
                         this->getColumns(),
@@ -440,12 +440,12 @@ template< typename Real,
           typename Real2,
           typename Index,
           typename Index2 >
-__global__ void tnlTridiagonalMatrixTranspositionCudaKernel( const tnlTridiagonalMatrix< Real2, tnlCuda, Index2 >* inMatrix,
-                                                             tnlTridiagonalMatrix< Real, tnlCuda, Index >* outMatrix,
+__global__ void tnlTridiagonalMatrixTranspositionCudaKernel( const tnlTridiagonalMatrix< Real2, Devices::Cuda, Index2 >* inMatrix,
+                                                             tnlTridiagonalMatrix< Real, Devices::Cuda, Index >* outMatrix,
                                                              const Real matrixMultiplicator,
                                                              const Index gridIdx )
 {
-   const Index rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const Index rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( rowIdx < inMatrix->getRows() )
    {
       if( rowIdx > 0 )
@@ -473,7 +473,7 @@ void tnlTridiagonalMatrix< Real, Device, Index >::getTransposition( const tnlTri
    Assert( this->getRows() == matrix.getRows(),
                std::cerr << "This matrix rows: " << this->getRows() << std::endl
                     << "That matrix rows: " << matrix.getRows() << std::endl );
-   if( Device::getDevice() == tnlHostDevice )
+   if( std::is_same< Device, Devices::Host >::value )
    {
       const IndexType& rows = matrix.getRows();
       for( IndexType i = 1; i < rows; i++ )
@@ -484,27 +484,27 @@ void tnlTridiagonalMatrix< Real, Device, Index >::getTransposition( const tnlTri
          this->setElement( i - 1, i, aux );
       }
    }
-   if( Device::getDevice() == tnlCudaDevice )
+   if( std::is_same< Device, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      ThisType* kernel_this = tnlCuda::passToDevice( *this );
+      ThisType* kernel_this = Devices::Cuda::passToDevice( *this );
       typedef  tnlTridiagonalMatrix< Real2, Device, Index2 > InMatrixType;
-      InMatrixType* kernel_inMatrix = tnlCuda::passToDevice( matrix );
-      dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+      InMatrixType* kernel_inMatrix = Devices::Cuda::passToDevice( matrix );
+      dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
       const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-      const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+      const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
       {
          if( gridIdx == cudaGrids - 1 )
-            cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+            cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
          tnlTridiagonalMatrixTranspositionCudaKernel<<< cudaGridSize, cudaBlockSize >>>
                                                     ( kernel_inMatrix,
                                                       kernel_this,
                                                       matrixMultiplicator,
                                                       gridIdx );
       }
-      tnlCuda::freeFromDevice( kernel_this );
-      tnlCuda::freeFromDevice( kernel_inMatrix );
+      Devices::Cuda::freeFromDevice( kernel_this );
+      Devices::Cuda::freeFromDevice( kernel_inMatrix );
       checkCudaDevice;
 #endif
    }
@@ -603,11 +603,11 @@ Index tnlTridiagonalMatrix< Real, Device, Index >::getElementIndex( const IndexT
 }
 
 template<>
-class tnlTridiagonalMatrixDeviceDependentCode< tnlHost >
+class tnlTridiagonalMatrixDeviceDependentCode< Devices::Host >
 {
    public:
 
-      typedef tnlHost Device;
+      typedef Devices::Host Device;
 
       template< typename Index >
       __cuda_callable__
@@ -648,7 +648,7 @@ class tnlTridiagonalMatrixDeviceDependentCode< tnlHost >
                                  OutVector& outVector )
       {
 #ifdef HAVE_OPENMP
-#pragma omp parallel for if( tnlHost::isOMPEnabled() )
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
 #endif
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
@@ -656,11 +656,11 @@ class tnlTridiagonalMatrixDeviceDependentCode< tnlHost >
 };
 
 template<>
-class tnlTridiagonalMatrixDeviceDependentCode< tnlCuda >
+class tnlTridiagonalMatrixDeviceDependentCode< Devices::Cuda >
 {
    public:
  
-      typedef tnlCuda Device;
+      typedef Devices::Cuda Device;
 
       template< typename Index >
       __cuda_callable__

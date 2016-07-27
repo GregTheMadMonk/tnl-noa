@@ -20,7 +20,7 @@ template< typename Device >
 class tnlTridiagonalMatrixDeviceDependentCode;
 
 template< typename Real = double,
-          typename Device = tnlHost,
+          typename Device = Devices::Host,
           typename Index = int >
 class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
 {
@@ -31,8 +31,8 @@ class tnlTridiagonalMatrix : public tnlMatrix< Real, Device, Index >
    typedef Index IndexType;
    typedef typename tnlMatrix< Real, Device, Index >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef tnlTridiagonalMatrix< Real, Device, Index > ThisType;
-   typedef tnlTridiagonalMatrix< Real, tnlHost, Index > HostType;
-   typedef tnlTridiagonalMatrix< Real, tnlCuda, Index > CudaType;
+   typedef tnlTridiagonalMatrix< Real, Devices::Host, Index > HostType;
+   typedef tnlTridiagonalMatrix< Real, Devices::Cuda, Index > CudaType;
    typedef tnlMatrix< Real, Device, Index > BaseType;
    typedef tnlTridiagonalMatrixRow< Real, Index > MatrixRow;
 

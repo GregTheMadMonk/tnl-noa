@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCUDAKernelsTester.h
+                          Devices::CudaKernelsTester.h
                              -------------------
     begin                : Jan 14, 2010
     copyright            : (C) 2009 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUDAKERNELSTESTER_H_
-#define TNLCUDAKERNELSTESTER_H_
+#ifndef Devices::CudaKERNELSTESTER_H_
+#define Devices::CudaKERNELSTESTER_H_
 
 #include <iostream>
 #include <math.h>
@@ -29,56 +29,56 @@ using namespace std;
 using namespace TNL;
 
 
-template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
+template< class T > class Devices::CudaKernelsTester : public CppUnit :: TestCase
 {
    public:
-   tnlCUDAKernelsTester(){};
+   Devices::CudaKernelsTester(){};
 
    virtual
-   ~tnlCUDAKernelsTester(){};
+   ~Devices::CudaKernelsTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlCUDAKernelsTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "Devices::CudaKernelsTester" );
       CppUnit :: TestResult result;
 
       T param;
       String test_name = String( "testSimpleReduction1< " ) + getType( param ) + String( " >" );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< Devices::CudaKernelsTester< T > >(
     		               test_name. getString(),
-                               & tnlCUDAKernelsTester< T > :: testSimpleReduction1 )
+                               & Devices::CudaKernelsTester< T > :: testSimpleReduction1 )
                              );
       test_name = String( "testSimpleReduction2< " ) + getType( param ) + String( " >" );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< Devices::CudaKernelsTester< T > >(
                                test_name. getString(),
-                               & tnlCUDAKernelsTester< T > :: testSimpleReduction2 )
+                               & Devices::CudaKernelsTester< T > :: testSimpleReduction2 )
                               );
       test_name = String( "testSimpleReduction3< " ) + getType( param ) + String( " >" );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< Devices::CudaKernelsTester< T > >(
                                test_name. getString(),
-                               & tnlCUDAKernelsTester< T > :: testSimpleReduction3 )
+                               & Devices::CudaKernelsTester< T > :: testSimpleReduction3 )
                               );
       test_name = String( "testSimpleReduction4< " ) + getType( param ) + String( " >" );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< Devices::CudaKernelsTester< T > >(
                                test_name. getString(),
-                               & tnlCUDAKernelsTester< T > :: testSimpleReduction4 )
+                               & Devices::CudaKernelsTester< T > :: testSimpleReduction4 )
                               );
       test_name = String( "testSimpleReduction5< " ) + getType( param ) + String( " >" );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< Devices::CudaKernelsTester< T > >(
                                test_name. getString(),
-                               & tnlCUDAKernelsTester< T > :: testSimpleReduction5 )
+                               & Devices::CudaKernelsTester< T > :: testSimpleReduction5 )
                               );
       test_name = String( "testReduction< " ) + getType( param ) + String( " >" );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCUDAKernelsTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< Devices::CudaKernelsTester< T > >(
                                test_name. getString(),
-                               & tnlCUDAKernelsTester< T > :: testReduction )
+                               & Devices::CudaKernelsTester< T > :: testReduction )
                              );
 
       return suiteOfTests;
    };
 
    bool testSetup( Vector< T >& host_input,
-		           Vector< T, tnlCuda >& device_input,
+		           Vector< T, Devices::Cuda >& device_input,
 		           int size )
    {
 	   if( ! host_input. SetNewSize( size ) )
@@ -99,7 +99,7 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 		               const int desired_grid_size )
    {
       const int size = host_input. getSize();
-      Vector< T, tnlCuda > device_input;
+      Vector< T, Devices::Cuda > device_input;
       if( ! device_input. setSize( size ) )
          return false;
       device_input. copyFrom( host_input );
@@ -119,34 +119,34 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
       switch( algorithm_efficiency )
       {
          case 1:
-            tnlCUDASimpleReduction1Min( size, device_input. Data(), min, 0 );
-            tnlCUDASimpleReduction1Max( size, device_input. Data(), max, 0 );
-            tnlCUDASimpleReduction1Sum( size, device_input. Data(), sum, 0 );
+            Devices::CudaSimpleReduction1Min( size, device_input. Data(), min, 0 );
+            Devices::CudaSimpleReduction1Max( size, device_input. Data(), max, 0 );
+            Devices::CudaSimpleReduction1Sum( size, device_input. Data(), sum, 0 );
             break;
          case 2:
-            tnlCUDASimpleReduction2Min( size, device_input. Data(), min );
-            tnlCUDASimpleReduction2Max( size, device_input. Data(), max );
-            tnlCUDASimpleReduction2Sum( size, device_input. Data(), sum );
+            Devices::CudaSimpleReduction2Min( size, device_input. Data(), min );
+            Devices::CudaSimpleReduction2Max( size, device_input. Data(), max );
+            Devices::CudaSimpleReduction2Sum( size, device_input. Data(), sum );
             break;
          case 3:
-            tnlCUDASimpleReduction3Min( size, device_input. Data(), min );
-            tnlCUDASimpleReduction3Max( size, device_input. Data(), max );
-            tnlCUDASimpleReduction3Sum( size, device_input. Data(), sum );
+            Devices::CudaSimpleReduction3Min( size, device_input. Data(), min );
+            Devices::CudaSimpleReduction3Max( size, device_input. Data(), max );
+            Devices::CudaSimpleReduction3Sum( size, device_input. Data(), sum );
             break;
          case 4:
-            tnlCUDASimpleReduction4Min( size, device_input. Data(), min );
-            tnlCUDASimpleReduction4Max( size, device_input. Data(), max );
-            tnlCUDASimpleReduction4Sum( size, device_input. Data(), sum );
+            Devices::CudaSimpleReduction4Min( size, device_input. Data(), min );
+            Devices::CudaSimpleReduction4Max( size, device_input. Data(), max );
+            Devices::CudaSimpleReduction4Sum( size, device_input. Data(), sum );
             break;
          case 5:
-            tnlCUDASimpleReduction5Min( size, device_input. Data(), min );
-            tnlCUDASimpleReduction5Max( size, device_input. Data(), max );
-            tnlCUDASimpleReduction5Sum( size, device_input. Data(), sum );
+            Devices::CudaSimpleReduction5Min( size, device_input. Data(), min );
+            Devices::CudaSimpleReduction5Max( size, device_input. Data(), max );
+            Devices::CudaSimpleReduction5Sum( size, device_input. Data(), sum );
             break;
          default:
-            tnlCUDAReductionMin( size, device_input. Data(), min );
-            tnlCUDAReductionMax( size, device_input. Data(), max );
-            tnlCUDAReductionSum( size, device_input. Data(), sum );
+            tnlCudaReductionMin( size, device_input. Data(), min );
+            tnlCudaReductionMax( size, device_input. Data(), max );
+            tnlCudaReductionSum( size, device_input. Data(), sum );
       }
 
 
@@ -330,4 +330,4 @@ template< class T > class tnlCUDAKernelsTester : public CppUnit :: TestCase
 };
 
 
-#endif /* TNLCUDAKERNELSTESTER_H_ */
+#endif /* Devices::CudaKERNELSTESTER_H_ */

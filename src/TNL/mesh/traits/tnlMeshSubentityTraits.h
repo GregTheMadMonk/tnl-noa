@@ -42,7 +42,7 @@ class tnlMeshSubentityTraits
 
       typedef Arrays::tnlStaticArray< count, GlobalIndexType >              StorageArrayType;
       typedef Arrays::tnlSharedArray< GlobalIndexType,
-                                      tnlHost,
+                                      Devices::Host,
                                       LocalIndexType >                      AccessArrayType;
       typedef Arrays::tnlStaticArray< count, GlobalIndexType >              IdArrayType;
       typedef Arrays::tnlStaticArray< count, SubentityType >                SubentityContainerType;

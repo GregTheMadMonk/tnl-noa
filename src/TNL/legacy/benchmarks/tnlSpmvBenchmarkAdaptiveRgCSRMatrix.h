@@ -21,7 +21,7 @@ class tnlSpmvBenchmarkAdaptiveRgCSRMatrix : public tnlSpmvBenchmark< Real, Devic
 
    tnlSpmvBenchmarkAdaptiveRgCSRMatrix();
 
-   bool setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix );
+   bool setup( const tnlCSRMatrix< Real, Devices::Host, Index >& matrix );
 
    void tearDown();
 
@@ -30,7 +30,7 @@ class tnlSpmvBenchmarkAdaptiveRgCSRMatrix : public tnlSpmvBenchmark< Real, Devic
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
                          const String& inputMtxFile,
-                         const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                         const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                          bool writeMatrixInfo  ) const;
 
    void setDesiredChunkSize( const Index desiredChunkSize );
@@ -75,10 +75,10 @@ tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlSpmvBenchmarkAd
 template< typename Real,
           typename Device,
           typename Index>
-bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
+bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, Devices::Host, Index >& matrix )
 {
    //Assert( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
-   if( Device :: getDevice() == tnlHostDevice )
+   if( Device :: getDevice() == Devices::HostDevice )
    {
       this->matrix. tuneFormat( desiredChunkSize, cudaBlockSize );
       if( ! this->matrix. copyFrom( matrix ) )
@@ -86,10 +86,10 @@ bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const 
       //matrix. printOut(std::cout, "text", 30 );
       //this->matrix. printOut(std::cout, "text", 30 );
    }
-   if( Device :: getDevice() == tnlCudaDevice )
+   if( Device :: getDevice() == Devices::CudaDevice )
    {
 #ifdef HAVE_CUDA
-      tnlAdaptiveRgCSRMatrix< Real, tnlHost, Index > hostMatrix( "tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup : hostMatrix" );
+      tnlAdaptiveRgCSRMatrix< Real, Devices::Host, Index > hostMatrix( "tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup : hostMatrix" );
       hostMatrix. tuneFormat( desiredChunkSize, cudaBlockSize );
       hostMatrix. copyFrom( matrix );
       if( ! this->matrix. copyFrom( hostMatrix ) )
@@ -117,7 +117,7 @@ template< typename Real,
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeProgress() const
 {
   std::cout << left << std::setw( this->formatColumnWidth - 15 ) << "Adap. Row-grouped CSR ";
-   if( Device :: getDevice() == tnlCudaDevice )
+   if( Device :: getDevice() == Devices::CudaDevice )
      std::cout << std::setw( 5 ) << this->desiredChunkSize
            << std::setw( 10 ) << this->cudaBlockSize;
    else
@@ -130,8 +130,8 @@ void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeProgress
    else
        std::cout << right << std::setw( this->benchmarkStatusColumnWidth ) << "  FAILED";
 #ifndef HAVE_CUDA
-   if( Device :: getDevice() == tnlCudaDevice )
-      tnlCudaSupportMissingMessage;;
+   if( Device :: getDevice() == Devices::CudaDevice )
+      CudaSupportMissingMessage;;
 #endif
      std::cout << std::endl;
 }
@@ -142,7 +142,7 @@ template< typename Real,
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTable( std::ostream& logFile,
                                                                                     const double& csrGflops,
                                                                                     const String& inputMtxFile,
-                                                                                    const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                                                                                    const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                                                                                     bool writeMatrixInfo  ) const
 {
    if( this->getBenchmarkWasSuccesful() )

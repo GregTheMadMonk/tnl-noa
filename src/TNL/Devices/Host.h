@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlHost.h  -  description
+                          Host.h  -  description
                              -------------------
     begin                : Nov 7, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -11,7 +11,6 @@
 #pragma once 
 
 #include <unistd.h>
-#include <TNL/core/tnlDevice.h>
 #include <TNL/String.h>
 
 namespace TNL {
@@ -21,18 +20,13 @@ namespace Config {
    class ParameterContainer;
 }
 
-class tnlHost
+namespace Devices {
+
+class Host
 {
    public:
 
-      enum { DeviceType = tnlHostDevice };
-
       static String getDeviceType();
-
-   #ifdef HAVE_CUDA
-      __host__ __device__
-   #endif
-      static inline tnlDeviceEnum getDevice() { return tnlHostDevice; };
 
       static size_t getFreeMemory();
  
@@ -62,4 +56,5 @@ class tnlHost
 
 };
 
+} // namespace Devices
 } // namespace TNL

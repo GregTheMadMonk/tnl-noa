@@ -16,90 +16,90 @@ namespace Vectors {
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 1, float,  tnlHost, int >;
+template class MultiVector< 1, float,  Devices::Host, int >;
 #endif
-template class MultiVector< 1, double, tnlHost, int >;
+template class MultiVector< 1, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 1, float,  tnlHost, long int >;
+template class MultiVector< 1, float,  Devices::Host, long int >;
 #endif
-template class MultiVector< 1, double, tnlHost, long int >;
+template class MultiVector< 1, double, Devices::Host, long int >;
 #endif
 
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 2, float,  tnlHost, int >;
+template class MultiVector< 2, float,  Devices::Host, int >;
 #endif
-template class MultiVector< 2, double, tnlHost, int >;
+template class MultiVector< 2, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 2, float,  tnlHost, long int >;
+template class MultiVector< 2, float,  Devices::Host, long int >;
 #endif
-template class MultiVector< 2, double, tnlHost, long int >;
+template class MultiVector< 2, double, Devices::Host, long int >;
 #endif
 
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 3, float,  tnlHost, int >;
+template class MultiVector< 3, float,  Devices::Host, int >;
 #endif
-template class MultiVector< 3, double, tnlHost, int >;
+template class MultiVector< 3, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 3, float,  tnlHost, long int >;
+template class MultiVector< 3, float,  Devices::Host, long int >;
 #endif
-template class MultiVector< 3, double, tnlHost, long int >;
+template class MultiVector< 3, double, Devices::Host, long int >;
 #endif
 
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 4, float,  tnlHost, int >;
+template class MultiVector< 4, float,  Devices::Host, int >;
 #endif
-template class MultiVector< 4, double, tnlHost, int >;
+template class MultiVector< 4, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 4, float,  tnlHost, long int >;
+template class MultiVector< 4, float,  Devices::Host, long int >;
 #endif
-template class MultiVector< 4, double, tnlHost, long int >;
+template class MultiVector< 4, double, Devices::Host, long int >;
 #endif
 
 #ifdef HAVE_CUDA
 
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 1, float,  tnlCuda, int >;
+template class MultiVector< 1, float,  Devices::Cuda, int >;
 #endif
-template class MultiVector< 1, double, tnlCuda, int >;
+template class MultiVector< 1, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 1, float,  tnlCuda, long int >;
+template class MultiVector< 1, float,  Devices::Cuda, long int >;
 #endif
-template class MultiVector< 1, double, tnlCuda, long int >;
+template class MultiVector< 1, double, Devices::Cuda, long int >;
 #endif
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 2, float,  tnlCuda, int >;
+template class MultiVector< 2, float,  Devices::Cuda, int >;
 #endif
-template class MultiVector< 2, double, tnlCuda, int >;
+template class MultiVector< 2, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 2, float,  tnlCuda, long int >;
+template class MultiVector< 2, float,  Devices::Cuda, long int >;
 #endif
-template class MultiVector< 2, double, tnlCuda, long int >;
+template class MultiVector< 2, double, Devices::Cuda, long int >;
 #endif
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 3, float,  tnlCuda, int >;
+template class MultiVector< 3, float,  Devices::Cuda, int >;
 #endif
-template class MultiVector< 3, double, tnlCuda, int >;
+template class MultiVector< 3, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 3, float,  tnlCuda, long int >;
+template class MultiVector< 3, float,  Devices::Cuda, long int >;
 #endif
-template class MultiVector< 3, double, tnlCuda, long int >;
+template class MultiVector< 3, double, Devices::Cuda, long int >;
 #endif
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 4, float,  tnlCuda, int >;
+template class MultiVector< 4, float,  Devices::Cuda, int >;
 #endif
-template class MultiVector< 4, double, tnlCuda, int >;
+template class MultiVector< 4, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class MultiVector< 4, float,  tnlCuda, long int >;
+template class MultiVector< 4, float,  Devices::Cuda, long int >;
 #endif
-template class MultiVector< 4, double, tnlCuda, long int >;
+template class MultiVector< 4, double, Devices::Cuda, long int >;
 #endif
 
 #endif

@@ -195,12 +195,12 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
       for( int i = 0; i < Size; i++ )
          a[ i ] = i+1;
 
-      tnlSharedArray< ElementType, tnlHost > sharedArray;
+      tnlSharedArray< ElementType, Devices::Host > sharedArray;
       sharedArray.bind( a );
       for( int i = 0; i < Size; i++ )
          CPPUNIT_ASSERT( a[ i ] == sharedArray[ i ] );
 
-      tnlConstSharedArray< ElementType, tnlHost > constSharedArray;
+      tnlConstSharedArray< ElementType, Devices::Host > constSharedArray;
       constSharedArray.bind( a );
       for( int i = 0; i < Size; i++ )
          CPPUNIT_ASSERT( a[ i ] == constSharedArray[ i ] );

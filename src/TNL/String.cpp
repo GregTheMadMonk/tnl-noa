@@ -328,13 +328,13 @@ bool String :: save( File& file ) const
 
    int len = strlen( string );
 #ifdef HAVE_NOT_CXX11
-   if( ! file. write< int, tnlHost >( &len ) )
+   if( ! file. write< int, Devices::Host >( &len ) )
 #else
    if( ! file. write( &len ) )
 #endif
       return false;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. write< char, tnlHost, int >( string, len ) )
+   if( ! file. write< char, Devices::Host, int >( string, len ) )
 #else
    if( ! file. write( string, len ) )
 #endif
@@ -346,7 +346,7 @@ bool String :: load( File& file )
 {
    int _length;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. read< int, tnlHost >( &_length ) )
+   if( ! file. read< int, Devices::Host >( &_length ) )
 #else
    if( ! file. read( &_length ) )
 #endif
@@ -373,7 +373,7 @@ bool String :: load( File& file )
    }
 
 #ifdef HAVE_NOT_CXX11
-   if( ! file. read< char, tnlHost, int >( string, _length ) )
+   if( ! file. read< char, Devices::Host, int >( string, _length ) )
 #else
    if( ! file. read( string, _length ) )
 #endif

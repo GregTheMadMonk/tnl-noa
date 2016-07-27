@@ -121,44 +121,44 @@ tnlSORSolver< Matrix, Preconditioner > :: ~tnlSORSolver()
 
 namespace TNL {
 
-extern template class tnlSORSolver< tnlCSRMatrix< float,  tnlHost, int > >;
-extern template class tnlSORSolver< tnlCSRMatrix< double, tnlHost, int > >;
-extern template class tnlSORSolver< tnlCSRMatrix< float,  tnlHost, long int > >;
-extern template class tnlSORSolver< tnlCSRMatrix< double, tnlHost, long int > >;
+extern template class tnlSORSolver< tnlCSRMatrix< float,  Devices::Host, int > >;
+extern template class tnlSORSolver< tnlCSRMatrix< double, Devices::Host, int > >;
+extern template class tnlSORSolver< tnlCSRMatrix< float,  Devices::Host, long int > >;
+extern template class tnlSORSolver< tnlCSRMatrix< double, Devices::Host, long int > >;
 
 // TODO: fix this
 
-/*extern template class tnlSORSolver< tnlEllpackMatrix< float,  tnlHost, int > >;
-extern template class tnlSORSolver< tnlEllpackMatrix< double, tnlHost, int > >;
-extern template class tnlSORSolver< tnlEllpackMatrix< float,  tnlHost, long int > >;
-extern template class tnlSORSolver< tnlEllpackMatrix< double, tnlHost, long int > >;
+/*extern template class tnlSORSolver< tnlEllpackMatrix< float,  Devices::Host, int > >;
+extern template class tnlSORSolver< tnlEllpackMatrix< double, Devices::Host, int > >;
+extern template class tnlSORSolver< tnlEllpackMatrix< float,  Devices::Host, long int > >;
+extern template class tnlSORSolver< tnlEllpackMatrix< double, Devices::Host, long int > >;
 
-extern template class tnlSORSolver< tnlMultiDiagonalMatrix< float,  tnlHost, int > >;
-extern template class tnlSORSolver< tnlMultiDiagonalMatrix< double, tnlHost, int > >;
-extern template class tnlSORSolver< tnlMultiDiagonalMatrix< float,  tnlHost, long int > >;
-extern template class tnlSORSolver< tnlMultiDiagonalMatrix< double, tnlHost, long int > >;*/
+extern template class tnlSORSolver< tnlMultiDiagonalMatrix< float,  Devices::Host, int > >;
+extern template class tnlSORSolver< tnlMultiDiagonalMatrix< double, Devices::Host, int > >;
+extern template class tnlSORSolver< tnlMultiDiagonalMatrix< float,  Devices::Host, long int > >;
+extern template class tnlSORSolver< tnlMultiDiagonalMatrix< double, Devices::Host, long int > >;*/
 
 
 #ifdef HAVE_CUDA
 // TODO: fix this - it does not work with CUDA
-/*extern template class tnlSORSolver< tnlCSRMatrix< float,  tnlCuda, int > >;
-extern template class tnlSORSolver< tnlCSRMatrix< double, tnlCuda, int > >;
-extern template class tnlSORSolver< tnlCSRMatrix< float,  tnlCuda, long int > >;
-extern template class tnlSORSolver< tnlCSRMatrix< double, tnlCuda, long int > >;*/
+/*extern template class tnlSORSolver< tnlCSRMatrix< float,  Devices::Cuda, int > >;
+extern template class tnlSORSolver< tnlCSRMatrix< double, Devices::Cuda, int > >;
+extern template class tnlSORSolver< tnlCSRMatrix< float,  Devices::Cuda, long int > >;
+extern template class tnlSORSolver< tnlCSRMatrix< double, Devices::Cuda, long int > >;*/
 
 
 /*
-extern template class tnlSORSolver< tnlEllpackMatrix< float,  tnlCuda, int > >;
-extern template class tnlSORSolver< tnlEllpackMatrix< double, tnlCuda, int > >;
-extern template class tnlSORSolver< tnlEllpackMatrix< float,  tnlCuda, long int > >;
-extern template class tnlSORSolver< tnlEllpackMatrix< double, tnlCuda, long int > >;
+extern template class tnlSORSolver< tnlEllpackMatrix< float,  Devices::Cuda, int > >;
+extern template class tnlSORSolver< tnlEllpackMatrix< double, Devices::Cuda, int > >;
+extern template class tnlSORSolver< tnlEllpackMatrix< float,  Devices::Cuda, long int > >;
+extern template class tnlSORSolver< tnlEllpackMatrix< double, Devices::Cuda, long int > >;
 */
 
 /*
-extern template class tnlSORSolver< tnlMutliDiagonalMatrix< float,  tnlCuda, int > >;
-extern template class tnlSORSolver< tnlMutliDiagonalMatrix< double, tnlCuda, int > >;
-extern template class tnlSORSolver< tnlMutliDiagonalMatrix< float,  tnlCuda, long int > >;
-extern template class tnlSORSolver< tnlMutliDiagonalMatrix< double, tnlCuda, long int > >;
+extern template class tnlSORSolver< tnlMutliDiagonalMatrix< float,  Devices::Cuda, int > >;
+extern template class tnlSORSolver< tnlMutliDiagonalMatrix< double, Devices::Cuda, int > >;
+extern template class tnlSORSolver< tnlMutliDiagonalMatrix< float,  Devices::Cuda, long int > >;
+extern template class tnlSORSolver< tnlMutliDiagonalMatrix< double, Devices::Cuda, long int > >;
 */
 #endif
 

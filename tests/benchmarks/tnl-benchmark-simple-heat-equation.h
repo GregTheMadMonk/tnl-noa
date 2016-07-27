@@ -17,7 +17,7 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Timer.h>
 #include <TNL/TimerRT.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 
 using namespace std;
 using namespace TNL;
@@ -334,7 +334,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters )
    /****
     * Explicit Euler solver
     */
-   const int maxCudaGridSize = tnlCuda::getMaxGridSize();
+   const int maxCudaGridSize = Devices::Cuda::getMaxGridSize();
    dim3 cudaBlockSize( 16, 16 );
    dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
                       gridYSize / 16 + ( gridYSize % 16 != 0 ) );

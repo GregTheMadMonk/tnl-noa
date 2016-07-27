@@ -15,7 +15,11 @@
 // Forward declarations
 namespace TNL {
    class File;
-   class tnlHost;
+   
+namespace Devices
+{
+   class Host;
+}
 
 namespace Arrays {   
 
@@ -24,7 +28,7 @@ template< typename Element, typename Device, typename Index >
 class Array;
 
 template< typename Element,
-          typename Device = tnlHost,
+          typename Device = Devices::Host,
           typename Index = int >
 class tnlConstSharedArray : public Object
 {
@@ -33,8 +37,8 @@ class tnlConstSharedArray : public Object
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlConstSharedArray< Element, tnlHost, Index > HostType;
-   typedef tnlConstSharedArray< Element, tnlCuda, Index > CudaType;
+   typedef tnlConstSharedArray< Element, Devices::Host, Index > HostType;
+   typedef tnlConstSharedArray< Element, Devices::Cuda, Index > CudaType;
 
    tnlConstSharedArray();
 

@@ -29,7 +29,7 @@ class tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > > : public tnlSpmvBe
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   bool setup( const tnlCSRMatrix< RealType, tnlHost, IndexType >& matrix );
+   bool setup( const tnlCSRMatrix< RealType, Devices::Host, IndexType >& matrix );
 
    void tearDown();
 
@@ -38,7 +38,7 @@ class tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > > : public tnlSpmvBe
    void writeToLogTable( std::ostream& logFile,
                                     const double& csrGflops,
                                     const String& inputMtxFile,
-                                    const tnlCSRMatrix< RealType, tnlHost, IndexType >& csrMatrix,
+                                    const tnlCSRMatrix< RealType, Devices::Host, IndexType >& csrMatrix,
                                     bool writeMatrixInfo  ) const;
 };
 

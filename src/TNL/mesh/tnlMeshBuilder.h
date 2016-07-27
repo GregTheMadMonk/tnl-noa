@@ -109,7 +109,7 @@ class tnlMeshBuilder
 
       PointArrayType points;
       CellSeedArrayType cellSeeds;
-      Arrays::Array< bool, tnlHost, GlobalIndexType > pointsSet;
+      Arrays::Array< bool, Devices::Host, GlobalIndexType > pointsSet;
 };
 
 } // namespace TNL

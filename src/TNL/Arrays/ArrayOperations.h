@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/core/tnlHost.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Host.h>
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 namespace Arrays {   
@@ -21,7 +21,7 @@ template< typename DestinationDevice,
 class ArrayOperations{};
 
 template<>
-class ArrayOperations< tnlHost >
+class ArrayOperations< Devices::Host >
 {
    public:
 
@@ -68,7 +68,7 @@ class ArrayOperations< tnlHost >
 };
 
 template<>
-class ArrayOperations< tnlCuda >
+class ArrayOperations< Devices::Cuda >
 {
    public:
 
@@ -113,7 +113,7 @@ class ArrayOperations< tnlCuda >
 };
 
 template<>
-class ArrayOperations< tnlCuda, tnlHost >
+class ArrayOperations< Devices::Cuda, Devices::Host >
 {
    public:
 
@@ -133,7 +133,7 @@ class ArrayOperations< tnlCuda, tnlHost >
 };
 
 template<>
-class ArrayOperations< tnlHost, tnlCuda >
+class ArrayOperations< Devices::Host, Devices::Cuda >
 {
    public:
 

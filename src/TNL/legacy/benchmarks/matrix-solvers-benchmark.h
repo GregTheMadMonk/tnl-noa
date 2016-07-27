@@ -14,7 +14,7 @@
 #include <fstream>
 #include <TNL/File.h>
 #include <TNL/Object.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/matrices/tnlCSRMatrix.h>
@@ -169,7 +169,7 @@ bool benchmarkMatrixOnDevice( const Config::ParameterContainer&  parameters,
       writeTestFailToLog( parameters );
       return false;
 #else
-      if( DeviceType :: getDeviceType() != "tnlHost" )
+      if( DeviceType :: getDeviceType() != "Devices::Host" )
       {
          std::cerr << "PETSC tests can run only on host. The current device is " << DeviceType :: getDeviceType() << std::endl;
          writeTestFailToLog( parameters );
@@ -246,7 +246,7 @@ bool benchmarkMatrix( const Config::ParameterContainer&  parameters )
    /****
     * Loading the matrix from the input file
     */
-   typedef tnlCSRMatrix< Real, tnlHost, Index > csrMatrixType;
+   typedef tnlCSRMatrix< Real, Devices::Host, Index > csrMatrixType;
    String inputFile = parameters. getParameter< String >( "input-file" );
    csrMatrixType csrMatrix;
    if( ! csrMatrix. load( inputFile ) )
@@ -278,9 +278,9 @@ bool benchmarkMatrix( const Config::ParameterContainer&  parameters )
     */
    const Index size = csrMatrix. getRows();
   std::cout << "Matrix size is " << size << std::endl;
-   Vector< Real, tnlHost, Index > x1( "matrix-solvers-benchmark:x1" );
-   Vector< Real, tnlHost, Index > x( "matrix-solvers-benchmark:x" );
-   Vector< Real, tnlHost, Index > b( "matrix-solvers-benchmark:b" );
+   Vector< Real, Devices::Host, Index > x1( "matrix-solvers-benchmark:x1" );
+   Vector< Real, Devices::Host, Index > x( "matrix-solvers-benchmark:x" );
+   Vector< Real, Devices::Host, Index > b( "matrix-solvers-benchmark:b" );
    if( ! x1. setSize( size ) ||
        ! x. setSize( size ) ||
        ! b. setSize( size ) )
@@ -300,11 +300,11 @@ bool benchmarkMatrix( const Config::ParameterContainer&  parameters )
    if( device == "cuda" )
    {
 #ifdef HAVE_CUDA
-      tnlRgCSRMatrix< Real, tnlCuda, Index > rgCSRMatrix( "matrix-solvers-benchmark:rgCSRMatrix" );
+      tnlRgCSRMatrix< Real, Devices::Cuda, Index > rgCSRMatrix( "matrix-solvers-benchmark:rgCSRMatrix" );
       // FIX THIS
       //rgCSRMatrix = csrMatrix;
-      /*Vector< Real, tnlCuda, Index > cudaX( "matrix-solvers-benchmark:cudaX" );
-      Vector< Real, tnlCuda, Index > cudaB( "matrix-solvers-benchmark:cudaB" );
+      /*Vector< Real, Devices::Cuda, Index > cudaX( "matrix-solvers-benchmark:cudaX" );
+      Vector< Real, Devices::Cuda, Index > cudaB( "matrix-solvers-benchmark:cudaB" );
       cudaX. setLike( x );
       cudaX = x;
       cudaB. setLike( b );
@@ -313,7 +313,7 @@ bool benchmarkMatrix( const Config::ParameterContainer&  parameters )
          return false;
       x = cudaX;*/
 #else
-      tnlCudaSupportMissingMessage;;
+      CudaSupportMissingMessage;;
       return false;
 #endif
    }

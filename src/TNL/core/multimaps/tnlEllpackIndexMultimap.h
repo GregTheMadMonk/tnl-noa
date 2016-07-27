@@ -15,15 +15,15 @@
 namespace TNL {
 
 template< typename Index = int,
-          typename Device = tnlHost >
+          typename Device = Devices::Host >
 class tnlEllpackIndexMultimapValues;
 
 template< typename Index = int,
-          typename Device = tnlHost >
+          typename Device = Devices::Host >
 class tnlEllpackIndexMultimapConstValues;
 
 template< typename Index = int,
-          typename Device = tnlHost >
+          typename Device = Devices::Host >
 class tnlEllpackIndexMultimap
 {
    public:

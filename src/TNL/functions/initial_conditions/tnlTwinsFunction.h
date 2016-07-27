@@ -13,7 +13,7 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Vectors/StaticVector.h>
 #include <TNL/functions/tnlDomain.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 

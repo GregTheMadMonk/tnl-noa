@@ -15,7 +15,7 @@
 
 namespace TNL {
 
-template< typename Element, typename Device = tnlHost, typename Index = int >
+template< typename Element, typename Device = Devices::Host, typename Index = int >
 class tnlContainer : public Object
 {
    public:

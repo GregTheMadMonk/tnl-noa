@@ -21,7 +21,7 @@
 namespace TNL {
 
 template< typename MeshConfig > //,
-          //typename Device = tnlHost >
+          //typename Device = Devices::Host >
 class tnlMesh : public Object/*,
                 public tnlMeshStorageLayers< MeshConfig >*/
 {

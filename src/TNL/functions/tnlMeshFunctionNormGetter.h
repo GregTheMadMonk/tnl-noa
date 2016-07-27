@@ -27,15 +27,15 @@ template< int Dimensions,
           typename MeshIndex,
           int EntityDimensions,
           typename Real >
-class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex >, EntityDimensions, Real >,
-                                 tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex > >
+class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal, Devices::Host, MeshIndex >, EntityDimensions, Real >,
+                                 tnlGrid< Dimensions, MeshReal, Devices::Host, MeshIndex > >
 {
    public:
  
-      typedef tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
-      typedef tnlGrid< Dimensions, MeshReal, tnlHost, MeshIndex > GridType;
+      typedef tnlMeshFunction< tnlGrid< Dimensions, MeshReal, Devices::Host, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
+      typedef tnlGrid< Dimensions, MeshReal, Devices::Host, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
-      typedef tnlHost DeviceType;
+      typedef Devices::Host DeviceType;
       typedef MeshIndex MeshIndexType;
       typedef typename MeshFunctionType::RealType RealType;
       typedef typename MeshFunctionType::MeshType MeshType;
@@ -106,15 +106,15 @@ template< int Dimensions,
           typename MeshIndex,
           int EntityDimensions,
           typename Real >
-class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlCuda, MeshIndex >, EntityDimensions, Real >,
-                                 tnlGrid< Dimensions, MeshReal, tnlCuda, MeshIndex > >
+class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal, Devices::Cuda, MeshIndex >, EntityDimensions, Real >,
+                                 tnlGrid< Dimensions, MeshReal, Devices::Cuda, MeshIndex > >
 {
    public:
  
-      typedef tnlMeshFunction< tnlGrid< Dimensions, MeshReal, tnlCuda, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
-      typedef tnlGrid< Dimensions, MeshReal, tnlCuda, MeshIndex > GridType;
+      typedef tnlMeshFunction< tnlGrid< Dimensions, MeshReal, Devices::Cuda, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
+      typedef tnlGrid< Dimensions, MeshReal, Devices::Cuda, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
-      typedef tnlCuda DeviceType;
+      typedef Devices::Cuda DeviceType;
       typedef MeshIndex MeshIndexType;
       typedef typename MeshFunctionType::RealType RealType;
       typedef typename MeshFunctionType::MeshType MeshType;

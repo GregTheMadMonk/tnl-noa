@@ -26,7 +26,7 @@ template< typename MeshConfig, typename MeshEntity, int SubDimensions > class tn
 template< typename MeshConfig, typename MeshEntity, int SuperDimensions > class tnlMeshSuperentityTraits;
 
 template< typename MeshConfig,
-          typename Device = tnlHost >
+          typename Device = Devices::Host >
 class tnlMeshTraits
 {
    public:
@@ -44,11 +44,11 @@ class tnlMeshTraits
       typedef Vectors::StaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
       typedef tnlMeshEntitySeed< MeshConfig, CellTopology >                        CellSeedType;
  
-      typedef Arrays::Array< PointType, tnlHost, GlobalIndexType >                  PointArrayType;
-      typedef Arrays::Array< CellSeedType, tnlHost, GlobalIndexType >               CellSeedArrayType;
-      typedef Arrays::Array< GlobalIndexType, tnlHost, GlobalIndexType >            GlobalIdArrayType;
-      typedef Arrays::tnlConstSharedArray< GlobalIndexType, tnlHost, LocalIndexType >  IdArrayAccessorType;
-      typedef Arrays::tnlConstSharedArray< LocalIndexType, tnlHost, LocalIndexType >   IdPermutationArrayAccessorType;
+      typedef Arrays::Array< PointType, Devices::Host, GlobalIndexType >                  PointArrayType;
+      typedef Arrays::Array< CellSeedType, Devices::Host, GlobalIndexType >               CellSeedArrayType;
+      typedef Arrays::Array< GlobalIndexType, Devices::Host, GlobalIndexType >            GlobalIdArrayType;
+      typedef Arrays::tnlConstSharedArray< GlobalIndexType, Devices::Host, LocalIndexType >  IdArrayAccessorType;
+      typedef Arrays::tnlConstSharedArray< LocalIndexType, Devices::Host, LocalIndexType >   IdPermutationArrayAccessorType;
  
       template< int Dimensions > using EntityTraits =
          tnlMeshEntityTraits< MeshConfig, Dimensions >;

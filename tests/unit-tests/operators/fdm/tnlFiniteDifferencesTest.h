@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
 #include "../tnlPDEOperatorEocTest.h"
@@ -196,10 +196,10 @@ bool test()
 {
    const bool writeFunctions( false );
    const bool verbose( true );
-   if( ! setDifferenceOrder< double, tnlHost, int, double, int, 64, writeFunctions, verbose >() )
+   if( ! setDifferenceOrder< double, Devices::Host, int, double, int, 64, writeFunctions, verbose >() )
       return false;
 #ifdef HAVE_CUDA
-   if( ! setDifferenceOrder< double, tnlCuda, int, double, int, 64, writeFunctions, verbose >() )
+   if( ! setDifferenceOrder< double, Devices::Cuda, int, double, int, 64, writeFunctions, verbose >() )
       return false;
 #endif
     return true;

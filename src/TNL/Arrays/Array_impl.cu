@@ -17,21 +17,21 @@ namespace Arrays {
 
 #ifdef HAVE_CUDA
 #ifdef INSTANTIATE_FLOAT
-template class Array< float, tnlCuda, int >;
+template class Array< float, Devices::Cuda, int >;
 #endif
-template class Array< double, tnlCuda, int >;
+template class Array< double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class Array< long double, tnlCuda, int >;
+template class Array< long double, Devices::Cuda, int >;
 #endif
 
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class Array< float, tnlCuda, long int >;
+template class Array< float, Devices::Cuda, long int >;
 #endif
-template class Array< double, tnlCuda, long int >;
+template class Array< double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class Array< long double, tnlCuda, long int >;
+template class Array< long double, Devices::Cuda, long int >;
 #endif
 #endif
 

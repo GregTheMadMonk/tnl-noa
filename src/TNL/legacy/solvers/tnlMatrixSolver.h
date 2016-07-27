@@ -18,7 +18,7 @@
 #include <TNL/matrices/tnlMatrix.h>
 #include <TNL/legacy/solvers/tnlPreconditioner.h>
 
-template< typename Real, typename Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = Devices::Host, typename Index = int >
 class tnlMatrixSolver : public Object
 {
    public:

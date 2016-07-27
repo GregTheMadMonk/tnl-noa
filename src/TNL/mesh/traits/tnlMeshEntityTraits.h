@@ -72,14 +72,14 @@ class tnlMeshEntityTraits
       typedef tnlMeshEntitySeedKey< MeshConfig, EntityTopology >                   Key;
 
 
-      typedef Arrays::Array< EntityType, tnlHost, GlobalIndexType >               StorageArrayType;
-      typedef Arrays::tnlSharedArray< EntityType, tnlHost, GlobalIndexType >         AccessArrayType;
+      typedef Arrays::Array< EntityType, Devices::Host, GlobalIndexType >               StorageArrayType;
+      typedef Arrays::tnlSharedArray< EntityType, Devices::Host, GlobalIndexType >         AccessArrayType;
       typedef tnlIndexedSet< EntityType, GlobalIndexType, Key >                      UniqueContainerType;
       typedef tnlIndexedSet< SeedType, GlobalIndexType, Key >                        SeedIndexedSetType;
-      typedef Arrays::Array< SeedType, tnlHost, GlobalIndexType >                 SeedArrayType;
-      typedef Arrays::Array< ReferenceOrientationType, tnlHost, GlobalIndexType > ReferenceOrientationArrayType;
+      typedef Arrays::Array< SeedType, Devices::Host, GlobalIndexType >                 SeedArrayType;
+      typedef Arrays::Array< ReferenceOrientationType, Devices::Host, GlobalIndexType > ReferenceOrientationArrayType;
 
-      typedef Arrays::tnlConstSharedArray< EntityType, tnlHost, GlobalIndexType >    SharedArrayType;
+      typedef Arrays::tnlConstSharedArray< EntityType, Devices::Host, GlobalIndexType >    SharedArrayType;
 };
 
 } // namespace TNL

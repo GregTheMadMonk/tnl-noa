@@ -17,7 +17,7 @@
 namespace TNL {
 namespace Vectors {   
    
-template< int Dimensions, typename Real = double, typename Device = tnlHost, typename Index = int >
+template< int Dimensions, typename Real = double, typename Device = Devices::Host, typename Index = int >
 class MultiVector : public Vector< Real, Device, Index >
 {
 };
@@ -30,8 +30,8 @@ class MultiVector< 1, Real, Device, Index > : public Vector< Real, Device, Index
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef MultiVector< Dimensions, Real, tnlHost, Index > HostType;
-   typedef MultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
+   typedef MultiVector< Dimensions, Real, Devices::Host, Index > HostType;
+   typedef MultiVector< Dimensions, Real, Devices::Cuda, Index > CudaType;
 
    MultiVector();
 
@@ -111,8 +111,8 @@ class MultiVector< 2, Real, Device, Index > : public Vector< Real, Device, Index
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef MultiVector< Dimensions, Real, tnlHost, Index > HostType;
-   typedef MultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
+   typedef MultiVector< Dimensions, Real, Devices::Host, Index > HostType;
+   typedef MultiVector< Dimensions, Real, Devices::Cuda, Index > CudaType;
 
    MultiVector();
 
@@ -193,8 +193,8 @@ class MultiVector< 3, Real, Device, Index > : public Vector< Real, Device, Index
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef MultiVector< Dimensions, Real, tnlHost, Index > HostType;
-   typedef MultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
+   typedef MultiVector< Dimensions, Real, Devices::Host, Index > HostType;
+   typedef MultiVector< Dimensions, Real, Devices::Cuda, Index > CudaType;
 
    MultiVector();
 
@@ -275,8 +275,8 @@ class MultiVector< 4, Real, Device, Index > : public Vector< Real, Device, Index
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef MultiVector< Dimensions, Real, tnlHost, Index > HostType;
-   typedef MultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
+   typedef MultiVector< Dimensions, Real, Devices::Host, Index > HostType;
+   typedef MultiVector< Dimensions, Real, Devices::Cuda, Index > CudaType;
 
    MultiVector();
 

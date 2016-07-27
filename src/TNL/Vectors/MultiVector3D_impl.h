@@ -265,26 +265,26 @@ bool MultiVector< 3, Real, Device, Index > :: load( const String& fileName )
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-extern template class MultiVector< 3, float,  tnlHost, int >;
+extern template class MultiVector< 3, float,  Devices::Host, int >;
 #endif
-extern template class MultiVector< 3, double, tnlHost, int >;
+extern template class MultiVector< 3, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class MultiVector< 3, float,  tnlHost, long int >;
+extern template class MultiVector< 3, float,  Devices::Host, long int >;
 #endif
-extern template class MultiVector< 3, double, tnlHost, long int >;
+extern template class MultiVector< 3, double, Devices::Host, long int >;
 #endif
 
 #ifdef HAVE_CUDA
 /*#ifdef INSTANTIATE_FLOAT
-extern template class MultiVector< 3, float,  tnlCuda, int >;
+extern template class MultiVector< 3, float,  Devices::Cuda, int >;
 #endif
-extern template class MultiVector< 3, double, tnlCuda, int >;
+extern template class MultiVector< 3, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class MultiVector< 3, float,  tnlCuda, long int >;
+extern template class MultiVector< 3, float,  Devices::Cuda, long int >;
 #endif
-extern template class MultiVector< 3, double, tnlCuda, long int >;
+extern template class MultiVector< 3, double, Devices::Cuda, long int >;
 #endif*/
 #endif
 

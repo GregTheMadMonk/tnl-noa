@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCuda.cpp  -  description
+                          Cuda.cpp  -  description
                              -------------------
     begin                : Jul 11, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,42 +8,43 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/tnlConfig.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
+namespace Devices {
  
-String tnlCuda :: getDeviceType()
+String Cuda::getDeviceType()
 {
-   return String( "tnlCuda" );
+   return String( "Cuda" );
 }
 
-int tnlCuda::getGPUTransferBufferSize()
+int Cuda::getGPUTransferBufferSize()
 {
    return 1 << 20;
 }
 
-int tnlCuda::getNumberOfBlocks( const int threads,
+int Cuda::getNumberOfBlocks( const int threads,
                                 const int blockSize )
 {
    return roundUpDivision( threads, blockSize );
 }
 
-int tnlCuda::getNumberOfGrids( const int blocks,
+int Cuda::getNumberOfGrids( const int blocks,
                                const int gridSize )
 {
    return roundUpDivision( blocks, gridSize );
 }
 
-/*size_t tnlCuda::getFreeMemory()
+/*size_t Cuda::getFreeMemory()
 {
 
 }*/
 
-void tnlCuda::configSetup( Config::ConfigDescription& config, const String& prefix )
+void Cuda::configSetup( Config::ConfigDescription& config, const String& prefix )
 {
 #ifdef HAVE_CUDA
    config.addEntry<  int >( prefix + "cuda-device", "Choose CUDA device to run the computationon.", 0 );
@@ -52,7 +53,7 @@ void tnlCuda::configSetup( Config::ConfigDescription& config, const String& pref
 #endif
 }
  
-bool tnlCuda::setup( const Config::ParameterContainer& parameters,
+bool Cuda::setup( const Config::ParameterContainer& parameters,
                       const String& prefix )
 {
 #ifdef HAVE_CUDA
@@ -66,5 +67,6 @@ bool tnlCuda::setup( const Config::ParameterContainer& parameters,
    return true;
 }
 
+} // namespace Devices
 } // namespace TNL
 

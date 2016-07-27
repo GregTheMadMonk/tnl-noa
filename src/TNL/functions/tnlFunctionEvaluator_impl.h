@@ -30,7 +30,7 @@ assignment( const Function& function,
 
 {
    typedef typename MeshType::template MeshEntity< MeshFunction::EntityDimensions > MeshEntityType;
-   if( std::is_same< DeviceType, tnlHost >::value )
+   if( std::is_same< DeviceType, Devices::Host >::value )
    {
       TraverserUserData userData( time, function, u, functionCoefficient, dofVectorCoefficient );
       tnlTraverser< MeshType, MeshEntityType > meshTraverser;
@@ -44,13 +44,13 @@ assignment( const Function& function,
                                                       userData );
 
    }
-   if( std::is_same< DeviceType, tnlCuda >::value )
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
-      RealType* kernelTime = tnlCuda::passToDevice( time );
-      Function* kernelFunction = tnlCuda::passToDevice( function );
-      MeshFunction* kernelU = tnlCuda::passToDevice( u );
-      RealType* kernelFunctionCoefficient = tnlCuda::passToDevice( functionCoefficient );
-      RealType* kernelDofVectorCoefficient = tnlCuda::passToDevice( dofVectorCoefficient );
+      RealType* kernelTime = Devices::Cuda::passToDevice( time );
+      Function* kernelFunction = Devices::Cuda::passToDevice( function );
+      MeshFunction* kernelU = Devices::Cuda::passToDevice( u );
+      RealType* kernelFunctionCoefficient = Devices::Cuda::passToDevice( functionCoefficient );
+      RealType* kernelDofVectorCoefficient = Devices::Cuda::passToDevice( dofVectorCoefficient );
       TraverserUserData userData( *kernelTime, *kernelFunction, *kernelU, *kernelFunctionCoefficient, *kernelDofVectorCoefficient );
       checkCudaDevice;
       tnlTraverser< MeshType, MeshEntityType > meshTraverser;
@@ -64,11 +64,11 @@ assignment( const Function& function,
                                                       userData );
 
       checkCudaDevice;
-      tnlCuda::freeFromDevice( kernelTime );
-      tnlCuda::freeFromDevice( kernelFunction );
-      tnlCuda::freeFromDevice( kernelU );
-      tnlCuda::freeFromDevice( kernelFunctionCoefficient );
-      tnlCuda::freeFromDevice( kernelDofVectorCoefficient );
+      Devices::Cuda::freeFromDevice( kernelTime );
+      Devices::Cuda::freeFromDevice( kernelFunction );
+      Devices::Cuda::freeFromDevice( kernelU );
+      Devices::Cuda::freeFromDevice( kernelFunctionCoefficient );
+      Devices::Cuda::freeFromDevice( kernelDofVectorCoefficient );
       checkCudaDevice;
    }
 }

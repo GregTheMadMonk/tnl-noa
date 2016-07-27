@@ -26,7 +26,7 @@ getCompressedRowsLengths( const Mesh& mesh,
                BoundaryConditions& boundaryConditions,
                CompressedRowsLengthsVector& rowLengths ) const
 {
-   if( DeviceType::DeviceType == tnlHostDevice )
+   if( std::is_same< DeviceType, Devices::Host >::value )
    {
       TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );
       tnlTraverser< MeshType, EntityType > meshTraversal;
@@ -39,11 +39,11 @@ getCompressedRowsLengths( const Mesh& mesh,
                                                     ( mesh,
                                                       userData );
    }
-   if( DeviceType::DeviceType == tnlCudaDevice )
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
-      DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
-      BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
-      CompressedRowsLengthsVector* kernelCompressedRowsLengths = tnlCuda::passToDevice( rowLengths );
+      DifferentialOperator* kernelDifferentialOperator = Devices::Cuda::passToDevice( differentialOperator );
+      BoundaryConditions* kernelBoundaryConditions = Devices::Cuda::passToDevice( boundaryConditions );
+      CompressedRowsLengthsVector* kernelCompressedRowsLengths = Devices::Cuda::passToDevice( rowLengths );
       TraversalUserData userData( *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelCompressedRowsLengths );
       checkCudaDevice;
       tnlTraverser< MeshType, EntityType > meshTraversal;
@@ -57,9 +57,9 @@ getCompressedRowsLengths( const Mesh& mesh,
                                                       userData );
 
       checkCudaDevice;
-      tnlCuda::freeFromDevice( kernelDifferentialOperator );
-      tnlCuda::freeFromDevice( kernelBoundaryConditions );
-      tnlCuda::freeFromDevice( kernelCompressedRowsLengths );
+      Devices::Cuda::freeFromDevice( kernelDifferentialOperator );
+      Devices::Cuda::freeFromDevice( kernelBoundaryConditions );
+      Devices::Cuda::freeFromDevice( kernelCompressedRowsLengths );
       checkCudaDevice;
    }
 }
@@ -79,7 +79,7 @@ getCompressedRowsLengths( const MeshType& mesh,
                const BoundaryConditions& boundaryConditions,
                CompressedRowsLengthsVector& rowLengths ) const
 {
-   if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+   if( std::is_same< DeviceType, Devices::Host >::value )
    {
       TraversalUserData userData( differentialOperator, boundaryConditions, rowLengths );
       tnlTraverser< MeshType, EntityType > meshTraversal;
@@ -92,11 +92,11 @@ getCompressedRowsLengths( const MeshType& mesh,
                                                     ( mesh,
                                                       userData );
    }
-   if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
-      DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
-      BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
-      CompressedRowsLengthsVector* kernelCompressedRowsLengths = tnlCuda::passToDevice( rowLengths );
+      DifferentialOperator* kernelDifferentialOperator = Devices::Cuda::passToDevice( differentialOperator );
+      BoundaryConditions* kernelBoundaryConditions = Devices::Cuda::passToDevice( boundaryConditions );
+      CompressedRowsLengthsVector* kernelCompressedRowsLengths = Devices::Cuda::passToDevice( rowLengths );
       TraversalUserData userData( *kernelDifferentialOperator, *kernelBoundaryConditions, *kernelCompressedRowsLengths );
       checkCudaDevice;
       tnlTraverser< MeshType, EntityType > meshTraversal;
@@ -110,9 +110,9 @@ getCompressedRowsLengths( const MeshType& mesh,
                                                       userData );
 
       checkCudaDevice;
-      tnlCuda::freeFromDevice( kernelDifferentialOperator );
-      tnlCuda::freeFromDevice( kernelBoundaryConditions );
-      tnlCuda::freeFromDevice( kernelCompressedRowsLengths );
+      Devices::Cuda::freeFromDevice( kernelDifferentialOperator );
+      Devices::Cuda::freeFromDevice( kernelBoundaryConditions );
+      Devices::Cuda::freeFromDevice( kernelCompressedRowsLengths );
       checkCudaDevice;
    }
 }

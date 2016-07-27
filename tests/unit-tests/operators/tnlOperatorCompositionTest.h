@@ -138,9 +138,9 @@ bool setOperator()
 
 int main( int argc, char* argv[] )
 {
-   if( ! setOperator< tnlGrid< 1, double, tnlHost, int > >() ||
-       ! setOperator< tnlGrid< 2, double, tnlHost, int > >() ||
-       ! setOperator< tnlGrid< 3, double, tnlHost, int > >() )
+   if( ! setOperator< tnlGrid< 1, double, Devices::Host, int > >() ||
+       ! setOperator< tnlGrid< 2, double, Devices::Host, int > >() ||
+       ! setOperator< tnlGrid< 3, double, Devices::Host, int > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

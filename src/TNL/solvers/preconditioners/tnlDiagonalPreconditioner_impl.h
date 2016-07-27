@@ -48,21 +48,21 @@ update( const Matrix& matrix )
    if( diagonal.getSize() != matrix.getRows() )
       diagonal.setSize( matrix.getRows() );
 
-   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlHostDevice )
+   if( std::is_same< DeviceType, Devices::Host >::value )
    {
       for( int i = 0; i < diagonal.getSize(); i++ ) {
          diagonal[ i ] = matrix.getElement( i, i );
       }
    }
-   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlCudaDevice )
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      Matrix* kernelMatrix = tnlCuda::passToDevice( matrix );
+      Matrix* kernelMatrix = Devices::Cuda::passToDevice( matrix );
 
       const Index& size = diagonal.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
-      cudaBlocks.x = min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
+      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
 
       matrixDiagonalToVectorKernel<<< cudaBlocks, cudaBlockSize >>>(
             kernelMatrix,
@@ -70,7 +70,7 @@ update( const Matrix& matrix )
             size );
 
       checkCudaDevice;
-      tnlCuda::freeFromDevice( kernelMatrix );
+      Devices::Cuda::freeFromDevice( kernelMatrix );
       checkCudaDevice;
 #endif
    }
@@ -82,20 +82,19 @@ bool
 tnlDiagonalPreconditioner< Real, Device, Index >::
 solve( const Vector1& b, Vector2& x ) const
 {
-//  std::cout << getType() << "->solve()" << std::endl;
-   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlHostDevice )
+   if( std::is_same< DeviceType, Devices::Host >::value )
    {
       for( int i = 0; i < diagonal.getSize(); i++ ) {
          x[ i ] = b[ i ] / diagonal[ i ];
       }
    }
-   if( ( tnlDeviceEnum ) DeviceType::DeviceType == tnlCudaDevice )
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
       const Index& size = diagonal.getSize();
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
-      cudaBlocks.x = min( tnlCuda::getMaxGridSize(), tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
+      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );      
 
       elementwiseVectorDivisionKernel<<< cudaBlocks, cudaBlockSize >>>(
             b.getData(),

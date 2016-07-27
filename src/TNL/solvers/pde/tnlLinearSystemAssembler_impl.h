@@ -47,7 +47,7 @@ assembly( const RealType& time,
    const IndexType maxRowLength = matrix.getMaxRowLength();
    Assert( maxRowLength > 0, );
 
-   if( std::is_same< DeviceType, tnlHost >::value )
+   if( std::is_same< DeviceType, Devices::Host >::value )
    {
       TraverserUserData userData( time,
                                   tau,
@@ -67,16 +67,16 @@ assembly( const RealType& time,
                                                     ( mesh,
                                                       userData );
    }
-   if( std::is_same< DeviceType, tnlCuda >::value )
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
-      RealType* kernelTime = tnlCuda::passToDevice( time );
-      RealType* kernelTau = tnlCuda::passToDevice( tau );
-      DifferentialOperator* kernelDifferentialOperator = tnlCuda::passToDevice( differentialOperator );
-      BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
-      RightHandSide* kernelRightHandSide = tnlCuda::passToDevice( rightHandSide );
-      MeshFunction* kernelU = tnlCuda::passToDevice( u );
-      DofVector* kernelB = tnlCuda::passToDevice( b );
-      MatrixType* kernelMatrix = tnlCuda::passToDevice( matrix );
+      RealType* kernelTime = Devices::Cuda::passToDevice( time );
+      RealType* kernelTau = Devices::Cuda::passToDevice( tau );
+      DifferentialOperator* kernelDifferentialOperator = Devices::Cuda::passToDevice( differentialOperator );
+      BoundaryConditions* kernelBoundaryConditions = Devices::Cuda::passToDevice( boundaryConditions );
+      RightHandSide* kernelRightHandSide = Devices::Cuda::passToDevice( rightHandSide );
+      MeshFunction* kernelU = Devices::Cuda::passToDevice( u );
+      DofVector* kernelB = Devices::Cuda::passToDevice( b );
+      MatrixType* kernelMatrix = Devices::Cuda::passToDevice( matrix );
       TraverserUserData userData( *kernelTime,
                                   *kernelTau,
                                   *kernelDifferentialOperator,
@@ -97,14 +97,14 @@ assembly( const RealType& time,
                                                       userData );
 
       checkCudaDevice;
-      tnlCuda::freeFromDevice( kernelTime );
-      tnlCuda::freeFromDevice( kernelTau );
-      tnlCuda::freeFromDevice( kernelDifferentialOperator );
-      tnlCuda::freeFromDevice( kernelBoundaryConditions );
-      tnlCuda::freeFromDevice( kernelRightHandSide );
-      tnlCuda::freeFromDevice( kernelU );
-      tnlCuda::freeFromDevice( kernelB );
-      tnlCuda::freeFromDevice( kernelMatrix );
+      Devices::Cuda::freeFromDevice( kernelTime );
+      Devices::Cuda::freeFromDevice( kernelTau );
+      Devices::Cuda::freeFromDevice( kernelDifferentialOperator );
+      Devices::Cuda::freeFromDevice( kernelBoundaryConditions );
+      Devices::Cuda::freeFromDevice( kernelRightHandSide );
+      Devices::Cuda::freeFromDevice( kernelU );
+      Devices::Cuda::freeFromDevice( kernelB );
+      Devices::Cuda::freeFromDevice( kernelMatrix );
       checkCudaDevice;
    }
 }

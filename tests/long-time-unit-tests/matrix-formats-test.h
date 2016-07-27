@@ -137,31 +137,31 @@ int main( int argc, char* argv[] )
    const String& matrixFormat = parameters.getParameter< String >( "matrix-format" );
    if( matrixFormat == "dense" )
    {
-       if( !testMatrix< tnlDenseMatrix< double, tnlHost, int > >( parameters ) )
+       if( !testMatrix< tnlDenseMatrix< double, Devices::Host, int > >( parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "ellpack" )
    {
-       if( !testMatrix< tnlEllpackMatrix< double, tnlHost, int > >( parameters ) )
+       if( !testMatrix< tnlEllpackMatrix< double, Devices::Host, int > >( parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "sliced-ellpack" )
    {
-       if( !testMatrix< tnlSlicedEllpackMatrix< double, tnlHost, int > >( parameters ) )
+       if( !testMatrix< tnlSlicedEllpackMatrix< double, Devices::Host, int > >( parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "chunked-ellpack" )
    {
-       if( !testMatrix< tnlChunkedEllpackMatrix< double, tnlHost, int > >( parameters ) )
+       if( !testMatrix< tnlChunkedEllpackMatrix< double, Devices::Host, int > >( parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "csr" )
    {
-       if( !testMatrix< tnlCSRMatrix< double, tnlHost, int > >( parameters ) )
+       if( !testMatrix< tnlCSRMatrix< double, Devices::Host, int > >( parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }

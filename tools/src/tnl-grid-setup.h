@@ -30,7 +30,7 @@ bool setupGrid( const Config::ParameterContainer& parameters )
       std::cout << "Setting dimensions to  ... " << sizeX << std::endl;
       std::cout << "Writing the grid to the file " << outputFile << " .... ";
 
-      typedef tnlGrid< 1, RealType, tnlHost, IndexType > GridType;
+      typedef tnlGrid< 1, RealType, Devices::Host, IndexType > GridType;
       typedef typename GridType::VertexType VertexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       GridType grid;
@@ -53,7 +53,7 @@ bool setupGrid( const Config::ParameterContainer& parameters )
      std::cout << "Setting dimensions to  ... " << sizeX << "x" << sizeY << std::endl;
      std::cout << "Writing the grid to the file " << outputFile << " .... ";
 
-      typedef tnlGrid< 2, RealType, tnlHost, IndexType > GridType;
+      typedef tnlGrid< 2, RealType, Devices::Host, IndexType > GridType;
       typedef typename GridType::VertexType VertexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       GridType grid;
@@ -79,7 +79,7 @@ bool setupGrid( const Config::ParameterContainer& parameters )
      std::cout << "Setting dimensions to  ... " << sizeX << "x" << sizeY << "x" << sizeZ << std::endl;
      std::cout << "Writing the grid to the file " << outputFile << " .... ";
 
-      typedef tnlGrid< 3, RealType, tnlHost, IndexType > GridType;
+      typedef tnlGrid< 3, RealType, Devices::Host, IndexType > GridType;
       typedef typename GridType::VertexType VertexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       GridType grid;

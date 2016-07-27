@@ -11,13 +11,16 @@
 #pragma once 
 
 #include <TNL/Object.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 
 // Forward declarations
 namespace TNL {
    class File;
-   class tnlHost;
-   class tnlCuda;
+
+namespace Devices {   
+   class Host;
+   class Cuda;
+}
 
 namespace Arrays {   
 
@@ -29,7 +32,7 @@ template< int Size, typename Element >
 class tnlStaticArray;
 
 template< typename Element,
-          typename Device = tnlHost,
+          typename Device = Devices::Host,
           typename Index = int >
 class tnlSharedArray : public Object
 {
@@ -38,8 +41,8 @@ class tnlSharedArray : public Object
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlSharedArray< Element, tnlHost, Index > HostType;
-   typedef tnlSharedArray< Element, tnlCuda, Index > CudaType;
+   typedef tnlSharedArray< Element, Devices::Host, Index > HostType;
+   typedef tnlSharedArray< Element, Devices::Cuda, Index > CudaType;
 
    __cuda_callable__
    tnlSharedArray();

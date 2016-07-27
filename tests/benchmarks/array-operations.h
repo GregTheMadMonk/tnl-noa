@@ -16,8 +16,8 @@ benchmarkArrayOperations( Benchmark & benchmark,
                           const int & loops,
                           const int & size )
 {
-    typedef Arrays::Array< Real, tnlHost, Index > HostArray;
-    typedef Arrays::Array< Real, tnlCuda, Index > CudaArray;
+    typedef Arrays::Array< Real, Devices::Host, Index > HostArray;
+    typedef Arrays::Array< Real, Devices::Cuda, Index > CudaArray;
     using namespace std;
 
     double datasetSize = ( double ) ( loops * size ) * sizeof( Real ) / oneGB;

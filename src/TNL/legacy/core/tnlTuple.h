@@ -729,8 +729,8 @@ bool StaticVector< Size, Real > :: save( File& file ) const
 {
    int size = Size;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. write< int, tnlHost >( &size ) ||
-       ! file. write< Real, tnlHost, int >( data, size ) )
+   if( ! file. write< int, Devices::Host >( &size ) ||
+       ! file. write< Real, Devices::Host, int >( data, size ) )
       std::cerr << "Unable to write StaticVector." << std::endl;
 #else
    if( ! file. write( &size ) ||
@@ -745,7 +745,7 @@ bool StaticVector< Size, Real > :: load( File& file)
 {
    int size;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. read< int, tnlHost >( &size ) )
+   if( ! file. read< int, Devices::Host >( &size ) )
 #else
    if( ! file. read( &size ) )
 #endif
@@ -760,7 +760,7 @@ bool StaticVector< Size, Real > :: load( File& file)
       return false;
    }
 #ifdef HAVE_NOT_CXX11
-   if( ! file. read< Real, tnlHost, int >( data, size ) )
+   if( ! file. read< Real, Devices::Host, int >( data, size ) )
 #else
    if( ! file. read( data, size ) )
 #endif

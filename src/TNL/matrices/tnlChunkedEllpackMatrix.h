@@ -30,7 +30,7 @@ namespace TNL {
 template< typename Device >
 class tnlChunkedEllpackMatrixDeviceDependentCode;
 
-template< typename Real, typename Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = Devices::Host, typename Index = int >
 class tnlChunkedEllpackMatrix;
 
 #ifdef HAVE_CUDA
@@ -52,7 +52,7 @@ struct tnlChunkedEllpackSliceInfo
 template< typename Real,
           typename Index,
           typename Vector >
-__global__ void tnlChunkedEllpackMatrixVectorProductCudaKernel( const tnlChunkedEllpackMatrix< Real, tnlCuda, Index >* matrix,
+__global__ void tnlChunkedEllpackMatrixVectorProductCudaKernel( const tnlChunkedEllpackMatrix< Real, Devices::Cuda, Index >* matrix,
                                                                 const Vector* inVector,
                                                                 Vector* outVector,
                                                                 int gridIdx );
@@ -69,8 +69,8 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef tnlChunkedEllpackSliceInfo< IndexType > ChunkedEllpackSliceInfo;
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >:: CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef tnlChunkedEllpackMatrix< Real, Device, Index > ThisType;
-   typedef tnlChunkedEllpackMatrix< Real, tnlHost, Index > HostType;
-   typedef tnlChunkedEllpackMatrix< Real, tnlCuda, Index > CudaType;
+   typedef tnlChunkedEllpackMatrix< Real, Devices::Host, Index > HostType;
+   typedef tnlChunkedEllpackMatrix< Real, Devices::Cuda, Index > CudaType;
    typedef tnlSparseMatrix< Real, Device, Index > BaseType;
    typedef typename BaseType::MatrixRow MatrixRow;
 
@@ -229,7 +229,7 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    protected:
 
 
-   void resolveSliceSizes( const Vectors::Vector< Index, tnlHost, Index >& rowLengths );
+   void resolveSliceSizes( const Vectors::Vector< Index, Devices::Host, Index >& rowLengths );
 
    bool setSlice( const CompressedRowsLengthsVector& rowLengths,
                   const IndexType sliceIdx,
@@ -310,12 +310,12 @@ class tnlChunkedEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 
    typedef tnlChunkedEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class tnlChunkedEllpackMatrixDeviceDependentCode< DeviceType >;
-   friend class tnlChunkedEllpackMatrix< RealType, tnlHost, IndexType >;
-   friend class tnlChunkedEllpackMatrix< RealType, tnlCuda, IndexType >;
+   friend class tnlChunkedEllpackMatrix< RealType, Devices::Host, IndexType >;
+   friend class tnlChunkedEllpackMatrix< RealType, Devices::Cuda, IndexType >;
 
 #ifdef HAVE_CUDA
    template< typename Vector >
-   friend void tnlChunkedEllpackMatrixVectorProductCudaKernel( const tnlChunkedEllpackMatrix< Real, tnlCuda, Index >* matrix,
+   friend void tnlChunkedEllpackMatrixVectorProductCudaKernel( const tnlChunkedEllpackMatrix< Real, Devices::Cuda, Index >* matrix,
                                                                const Vector* inVector,
                                                                Vector* outVector,
                                                                int gridIdx );

@@ -18,7 +18,7 @@
 namespace TNL {
 namespace Arrays {   
 
-template< int Dimensions, typename Element = double, typename Device = tnlHost, typename Index = int >
+template< int Dimensions, typename Element = double, typename Device = Devices::Host, typename Index = int >
 class tnlMultiArray : public Array< Element, Device, Index >
 {
 };
@@ -31,8 +31,8 @@ class tnlMultiArray< 1, Element, Device, Index > : public Array< Element, Device
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlMultiArray< 1, Element, tnlHost, Index > HostType;
-   typedef tnlMultiArray< 1, Element, tnlCuda, Index > CudaType;
+   typedef tnlMultiArray< 1, Element, Devices::Host, Index > HostType;
+   typedef tnlMultiArray< 1, Element, Devices::Cuda, Index > CudaType;
 
 
    tnlMultiArray();
@@ -110,8 +110,8 @@ class tnlMultiArray< 2, Element, Device, Index > : public Array< Element, Device
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlMultiArray< 2, Element, tnlHost, Index > HostType;
-   typedef tnlMultiArray< 2, Element, tnlCuda, Index > CudaType;
+   typedef tnlMultiArray< 2, Element, Devices::Host, Index > HostType;
+   typedef tnlMultiArray< 2, Element, Devices::Cuda, Index > CudaType;
 
 
    tnlMultiArray();
@@ -193,8 +193,8 @@ class tnlMultiArray< 3, Element, Device, Index > : public Array< Element, Device
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlMultiArray< 3, Element, tnlHost, Index > HostType;
-   typedef tnlMultiArray< 3, Element, tnlCuda, Index > CudaType;
+   typedef tnlMultiArray< 3, Element, Devices::Host, Index > HostType;
+   typedef tnlMultiArray< 3, Element, Devices::Cuda, Index > CudaType;
 
 
    tnlMultiArray();
@@ -276,8 +276,8 @@ class tnlMultiArray< 4, Element, Device, Index > : public Array< Element, Device
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlMultiArray< 4, Element, tnlHost, Index > HostType;
-   typedef tnlMultiArray< 4, Element, tnlCuda, Index > CudaType;
+   typedef tnlMultiArray< 4, Element, Devices::Host, Index > HostType;
+   typedef tnlMultiArray< 4, Element, Devices::Cuda, Index > CudaType;
 
 
    tnlMultiArray();
@@ -376,83 +376,83 @@ namespace Arrays {
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 1, float,  tnlHost, int >;
+extern template class tnlMultiArray< 1, float,  Devices::Host, int >;
 #endif
-extern template class tnlMultiArray< 1, double, tnlHost, int >;
+extern template class tnlMultiArray< 1, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 1, float,  tnlHost, long int >;
+extern template class tnlMultiArray< 1, float,  Devices::Host, long int >;
 #endif
-extern template class tnlMultiArray< 1, double, tnlHost, long int >;
+extern template class tnlMultiArray< 1, double, Devices::Host, long int >;
 #endif
 
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 2, float,  tnlHost, int >;
+extern template class tnlMultiArray< 2, float,  Devices::Host, int >;
 #endif
-extern template class tnlMultiArray< 2, double, tnlHost, int >;
+extern template class tnlMultiArray< 2, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 2, float,  tnlHost, long int >;
+extern template class tnlMultiArray< 2, float,  Devices::Host, long int >;
 #endif
-extern template class tnlMultiArray< 2, double, tnlHost, long int >;
+extern template class tnlMultiArray< 2, double, Devices::Host, long int >;
 #endif
 
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 3, float,  tnlHost, int >;
+extern template class tnlMultiArray< 3, float,  Devices::Host, int >;
 #endif
-extern template class tnlMultiArray< 3, double, tnlHost, int >;
+extern template class tnlMultiArray< 3, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 3, float,  tnlHost, long int >;
+extern template class tnlMultiArray< 3, float,  Devices::Host, long int >;
 #endif
-extern template class tnlMultiArray< 3, double, tnlHost, long int >;
+extern template class tnlMultiArray< 3, double, Devices::Host, long int >;
 #endif
 
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 4, float,  tnlHost, int >;
+extern template class tnlMultiArray< 4, float,  Devices::Host, int >;
 #endif
-extern template class tnlMultiArray< 4, double, tnlHost, int >;
+extern template class tnlMultiArray< 4, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 4, float,  tnlHost, long int >;
+extern template class tnlMultiArray< 4, float,  Devices::Host, long int >;
 #endif
-extern template class tnlMultiArray< 4, double, tnlHost, long int >;
+extern template class tnlMultiArray< 4, double, Devices::Host, long int >;
 #endif
 
 // TODO: There are problems with nvlink - it might be better in later versions
 /*
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 1, float,  tnlCuda, int >;
+extern template class tnlMultiArray< 1, float,  Devices::Cuda, int >;
 #endif
-extern template class tnlMultiArray< 1, double, tnlCuda, int >;
+extern template class tnlMultiArray< 1, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 1, float,  tnlCuda, long int >;
+extern template class tnlMultiArray< 1, float,  Devices::Cuda, long int >;
 #endif
-extern template class tnlMultiArray< 1, double, tnlCuda, long int >;
+extern template class tnlMultiArray< 1, double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 2, float,  tnlCuda, int >;
+extern template class tnlMultiArray< 2, float,  Devices::Cuda, int >;
 #endif
-extern template class tnlMultiArray< 2, double, tnlCuda, int >;
+extern template class tnlMultiArray< 2, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 2, float,  tnlCuda, long int >;
+extern template class tnlMultiArray< 2, float,  Devices::Cuda, long int >;
 #endif
-extern template class tnlMultiArray< 2, double, tnlCuda, long int >;
+extern template class tnlMultiArray< 2, double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 3, float,  tnlCuda, int >;
+extern template class tnlMultiArray< 3, float,  Devices::Cuda, int >;
 #endif
-extern template class tnlMultiArray< 3, double, tnlCuda, int >;
+extern template class tnlMultiArray< 3, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 3, float,  tnlCuda, long int >;
+extern template class tnlMultiArray< 3, float,  Devices::Cuda, long int >;
 #endif
-extern template class tnlMultiArray< 3, double, tnlCuda, long int >;
+extern template class tnlMultiArray< 3, double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 4, float,  tnlCuda, int >;
+extern template class tnlMultiArray< 4, float,  Devices::Cuda, int >;
 #endif
-extern template class tnlMultiArray< 4, double, tnlCuda, int >;
+extern template class tnlMultiArray< 4, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 4, float,  tnlCuda, long int >;
+extern template class tnlMultiArray< 4, float,  Devices::Cuda, long int >;
 #endif
-extern template class tnlMultiArray< 4, double, tnlCuda, long int >;*/
+extern template class tnlMultiArray< 4, double, Devices::Cuda, long int >;*/
 
 #endif
 

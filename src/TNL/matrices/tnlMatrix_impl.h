@@ -92,14 +92,14 @@ template< typename Real,
 bool tnlMatrix< Real, Device, Index >::copyFrom( const Matrix& matrix,
                                                  const CompressedRowsLengthsVector& rowLengths )
 {
-   /*tnlStaticAssert( DeviceType::DeviceType == tnlHostDevice, );
+   /*tnlStaticAssert( DeviceType::DeviceType == Devices::HostDevice, );
    tnlStaticAssert( DeviceType::DeviceType == Matrix:DeviceType::DeviceType, );*/
 
    this->setLike( matrix );
    if( ! this->setCompressedRowsLengths( rowLengths ) )
       return false;
-   Vectors::Vector< RealType, tnlHost, IndexType > values;
-   Vectors::Vector< IndexType, tnlHost, IndexType > columns;
+   Vectors::Vector< RealType, Devices::Host, IndexType > values;
+   Vectors::Vector< IndexType, Devices::Host, IndexType > columns;
    if( ! values.setSize( this->getColumns() ) ||
        ! columns.setSize( this->getColumns() ) )
       return false;
@@ -174,8 +174,8 @@ bool tnlMatrix< Real, Device, Index >::save( File& file ) const
 {
 #ifdef HAVE_NOT_CXX11
    if( ! Object::save( file ) ||
-       ! file.write< IndexType, tnlHost, Index >( &this->rows, 1 ) ||
-       ! file.write< IndexType, tnlHost, Index >( &this->columns, 1 ) ||
+       ! file.write< IndexType, Devices::Host, Index >( &this->rows, 1 ) ||
+       ! file.write< IndexType, Devices::Host, Index >( &this->columns, 1 ) ||
        ! this->values.save( file ) )
       return false;
 #else
@@ -195,8 +195,8 @@ bool tnlMatrix< Real, Device, Index >::load( File& file )
 {
 #ifdef HAVE_NOT_CXX11
    if( ! Object::load( file ) ||
-       ! file.read< IndexType, tnlHost, Index >( &this->rows, 1 ) ||
-       ! file.read< IndexType, tnlHost, Index >( &this->columns, 1 ) ||
+       ! file.read< IndexType, Devices::Host, Index >( &this->rows, 1 ) ||
+       ! file.read< IndexType, Devices::Host, Index >( &this->columns, 1 ) ||
        ! this->values.load( file ) )
       return false;
 #else
@@ -225,8 +225,8 @@ __global__ void tnlMatrixVectorProductCudaKernel( const Matrix* matrix,
                                                   OutVector* outVector,
                                                   int gridIdx )
 {
-   static_assert( Matrix::DeviceType::DeviceType == tnlCudaDevice, "" );
-   const typename Matrix::IndexType rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   static_assert( std::is_same< typename Matrix::DeviceType, Devices::Cuda >::value, "" );
+   const typename Matrix::IndexType rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( rowIdx < matrix->getRows() )
       ( *outVector )[ rowIdx ] = matrix->rowVectorProduct( rowIdx, *inVector );
 }
@@ -241,16 +241,16 @@ void tnlMatrixVectorProductCuda( const Matrix& matrix,
 {
 #ifdef HAVE_CUDA
    typedef typename Matrix::IndexType IndexType;
-   Matrix* kernel_this = tnlCuda::passToDevice( matrix );
-   InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
-   OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
-   dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+   Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
+   InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
+   OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
+   dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
    const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-   const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+   const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
    for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
    {
       if( gridIdx == cudaGrids - 1 )
-         cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+         cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
       tnlMatrixVectorProductCudaKernel<<< cudaGridSize, cudaBlockSize >>>
                                      ( kernel_this,
                                        kernel_inVector,
@@ -258,9 +258,9 @@ void tnlMatrixVectorProductCuda( const Matrix& matrix,
                                        gridIdx );
       checkCudaDevice;
    }
-   tnlCuda::freeFromDevice( kernel_this );
-   tnlCuda::freeFromDevice( kernel_inVector );
-   tnlCuda::freeFromDevice( kernel_outVector );
+   Devices::Cuda::freeFromDevice( kernel_this );
+   Devices::Cuda::freeFromDevice( kernel_inVector );
+   Devices::Cuda::freeFromDevice( kernel_outVector );
    checkCudaDevice;
 #endif
 }

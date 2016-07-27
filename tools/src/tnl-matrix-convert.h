@@ -29,9 +29,9 @@ bool convertMatrix( const String& input_file,
    /*tnlMatrix< REAL >* matrix( NULL ), *verify_matrix( NULL );
    if( output_matrix_format == "csr" )
    {
-      matrix = new tnlCSRMatrix< REAL, tnlHost >( input_file. getString() );
+      matrix = new tnlCSRMatrix< REAL, Devices::Host >( input_file. getString() );
       if( verify )
-         verify_matrix = new tnlCSRMatrix< REAL, tnlHost >( "verify-matrix" );
+         verify_matrix = new tnlCSRMatrix< REAL, Devices::Host >( "verify-matrix" );
    }
    if( ! matrix )
    {

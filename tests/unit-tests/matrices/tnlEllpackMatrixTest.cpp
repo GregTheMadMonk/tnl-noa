@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
 #include "tnlSparseMatrixTester.h"
@@ -19,10 +19,10 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlEllpackMatrix< float, tnlHost, int > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlEllpackMatrix< double, tnlHost, int > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlEllpackMatrix< float, tnlHost, long int > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlEllpackMatrix< double, tnlHost, long int > > >()
+   if( ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlEllpackMatrix< float, Devices::Host, int > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlEllpackMatrix< double, Devices::Host, int > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlEllpackMatrix< float, Devices::Host, long int > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlEllpackMatrix< double, Devices::Host, long int > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

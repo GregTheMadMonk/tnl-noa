@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <TNL/matrices/tnlCSRMatrix.h>
 #include <cstdlib>
 
@@ -19,8 +19,8 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlCSRMatrix< float, tnlCuda, int > > >() ||
-       ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlCSRMatrix< double, tnlCuda, int > > >()
+   if( ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlCSRMatrix< float, Devices::Cuda, int > > >() ||
+       ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlCSRMatrix< double, Devices::Cuda, int > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

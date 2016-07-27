@@ -48,4 +48,4 @@ set( tnl_arrays_SOURCES
      ${common_SOURCES}
      PARENT_SCOPE )
                    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/Arrays )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Arrays )

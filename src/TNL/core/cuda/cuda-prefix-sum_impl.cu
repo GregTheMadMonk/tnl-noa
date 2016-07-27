@@ -11,6 +11,7 @@
 #include <TNL/core/cuda/cuda-prefix-sum.h>
  
 namespace TNL {
+namespace Devices {
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -83,4 +84,5 @@ template bool cudaPrefixSum( const long int size,
 #endif
 #endif
 
+} // namespace Devices
 } // namespace TNL

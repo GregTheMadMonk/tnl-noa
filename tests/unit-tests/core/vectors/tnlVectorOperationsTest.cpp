@@ -10,13 +10,13 @@
 
 #include "tnlVectorOperationsTester.h"
 #include "../../tnlUnitTestStarter.h"
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 
 using namespace TNL;
 
 int main( int argc, char* argv[] )
 {
-   if( ! tnlUnitTestStarter :: run< VectorOperationsTester< double, tnlHost > >() )
+   if( ! tnlUnitTestStarter :: run< VectorOperationsTester< double, Devices::Host > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

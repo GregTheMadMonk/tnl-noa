@@ -28,7 +28,7 @@
 //! Wrapper for Cusparse CSR matrix
 /*!
  */
-template< typename Real, typename Device = tnlHost, typename Index = int  >
+template< typename Real, typename Device = Devices::Host, typename Index = int  >
 class tnlCusparseCSRMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
@@ -74,7 +74,7 @@ class tnlCusparseCSRMatrix : public tnlMatrix< Real, Device, Index >
                       const Real& value );
 
 
-   bool copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix );
+   bool copyFrom( const tnlCSRMatrix< Real, Devices::Host, Index >& csr_matrix );
 
    template< typename Device2 >
    bool copyFrom( const tnlRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix );
@@ -272,7 +272,7 @@ bool tnlCusparseCSRMatrix< Real, Device, Index > :: addToElement( Index row, Ind
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlCusparseCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, tnlHost, Index >& csr_matrix )
+bool tnlCusparseCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, Devices::Host, Index >& csr_matrix )
 {
    if( ! this->setSize( csr_matrix. getSize() ) ||
        ! this->setNonzeroElements( csr_matrix. getNonzeroElements() ) )

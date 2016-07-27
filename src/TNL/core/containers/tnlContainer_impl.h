@@ -104,16 +104,16 @@ bool tnlContainer< Element, Device, Index >::load( File& file )
 
 // TODO: this does not work with CUDA 5.5 - fix it later
 
-/*extern template class tnlContainer< float, tnlHost, int >;
-extern template class tnlContainer< double, tnlHost, int >;
-extern template class tnlContainer< float, tnlHost, long int >;
-extern template class tnlContainer< double, tnlHost, long int >;*/
+/*extern template class tnlContainer< float, Devices::Host, int >;
+extern template class tnlContainer< double, Devices::Host, int >;
+extern template class tnlContainer< float, Devices::Host, long int >;
+extern template class tnlContainer< double, Devices::Host, long int >;*/
 
 #ifdef HAVE_CUDA
-/*extern template class tnlContainer< float, tnlCuda, int >;
-extern template class tnlContainer< double, tnlCuda, int >;
-extern template class tnlContainer< float, tnlCuda, long int >;
-extern template class tnlContainer< double, tnlCuda, long int >;*/
+/*extern template class tnlContainer< float, Devices::Cuda, int >;
+extern template class tnlContainer< double, Devices::Cuda, int >;
+extern template class tnlContainer< float, Devices::Cuda, long int >;
+extern template class tnlContainer< double, Devices::Cuda, long int >;*/
 #endif
 
 #endif

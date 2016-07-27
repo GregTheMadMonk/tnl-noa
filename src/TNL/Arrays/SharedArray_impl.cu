@@ -17,20 +17,20 @@ namespace Arrays {
 
 #ifdef HAVE_CUDA
 #ifdef INSTANTIATE_FLOAT
-template class tnlSharedArray< float, tnlCuda, int >;
+template class tnlSharedArray< float, Devices::Cuda, int >;
 #endif
-template class tnlSharedArray< double, tnlCuda, int >;
+template class tnlSharedArray< double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlSharedArray< long double, tnlCuda, int >;
+extern template class tnlSharedArray< long double, Devices::Cuda, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class tnlSharedArray< float, tnlCuda, long int >;
+template class tnlSharedArray< float, Devices::Cuda, long int >;
 #endif
-template class tnlSharedArray< double, tnlCuda, long int >;
+template class tnlSharedArray< double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlSharedArray< long double, tnlCuda, long int >;
+extern template class tnlSharedArray< long double, Devices::Cuda, long int >;
 #endif
 #endif
 #endif

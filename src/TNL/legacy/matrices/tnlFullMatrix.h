@@ -16,7 +16,7 @@
 
 const int tnlMaxFullMatrixSize = 65536;
 
-template< typename Real, typename Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = Devices::Host, typename Index = int >
 class tnlFullMatrix : public tnlMatrix< Real, Device, Index >,
                       virtual public tnlMultiArray< 2, Real, Device, Index >
 {
@@ -188,7 +188,7 @@ Real tnlFullMatrix< Real, Device, Index > :: rowProduct( const Index row,
    Index pos = row * size;
    const Real* data = tnlMultiArray< 2, Real, Device, Index > :: getData();
    Real res( 0.0 );
-   if( Device :: getDevice() == tnlHostDevice )
+   if( Device :: getDevice() == Devices::HostDevice )
    {
       for( Index i = 0; i < size; i ++ )
       {
@@ -196,7 +196,7 @@ Real tnlFullMatrix< Real, Device, Index > :: rowProduct( const Index row,
          pos ++;
       }
    }
-   if( Device :: getDevice() == tnlCudaDevice )
+   if( Device :: getDevice() == Devices::CudaDevice )
    {
       Assert( false, );
       //TODO: implement this
@@ -278,9 +278,9 @@ tnlFullMatrix< Real, Device, Index > :: ~tnlFullMatrix()
 
 //! Matrix product
 template< typename Real, typename Device, typename Index >
-void MatrixProduct( const tnlFullMatrix< Real, tnlHost, Index >& m1,
-                    const tnlFullMatrix< Real, tnlHost, Index >& m2,
-                    tnlFullMatrix< Real, tnlHost, Index >& result )
+void MatrixProduct( const tnlFullMatrix< Real, Devices::Host, Index >& m1,
+                    const tnlFullMatrix< Real, Devices::Host, Index >& m2,
+                    tnlFullMatrix< Real, Devices::Host, Index >& result )
 {
    assert( m1. GetSize() == m2. GetSize() && m2. GetSize() == result. GetSize() );
    Index size = result. GetSize();
@@ -296,9 +296,9 @@ void MatrixProduct( const tnlFullMatrix< Real, tnlHost, Index >& m1,
 
 //! Matrix sum
 template< typename Real, typename Device, typename Index >
-void MatrixSum( const tnlFullMatrix< Real, tnlHost, Index >& m1,
-                const tnlFullMatrix< Real, tnlHost, Index >& m2,
-                tnlFullMatrix< Real, tnlHost, Index >& result )
+void MatrixSum( const tnlFullMatrix< Real, Devices::Host, Index >& m1,
+                const tnlFullMatrix< Real, Devices::Host, Index >& m2,
+                tnlFullMatrix< Real, Devices::Host, Index >& result )
 {
    assert( m1. GetSize() == m2. GetSize() && m2. GetSize() == result. GetSize() );
    Index size = result. GetSize();

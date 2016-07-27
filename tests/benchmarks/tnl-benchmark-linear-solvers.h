@@ -98,11 +98,11 @@ bool readMatrix( const Config::ParameterContainer& parameters,
    const String fileName = parameters.getParameter< String >( "input-file" );
 
    Matrix* hostMatrix;
-   if( Matrix::DeviceType::DeviceType == ( int ) tnlCudaDevice )
+   if( std::is_same< typename Matrix::DeviceType, Devices::Cuda >::value )
    {
 
    }
-   if( Matrix::DeviceType::DeviceType == ( int ) tnlHostDevice )
+   if( std::is_same< typename Matrix::DeviceType, Devices::Host >::value )
    {
       hostMatrix = &matrix;
       try
@@ -190,10 +190,10 @@ bool resolveDevice( const Config::ParameterContainer& parameters )
    const String& device = parameters.getParameter< String >( "device" );
 
    if( device == "host" )
-      return resolveMatrixFormat< Real, tnlHost >( parameters );
+      return resolveMatrixFormat< Real, Devices::Host >( parameters );
 
    if( device == "cuda" )
-      return resolveMatrixFormat< Real, tnlCuda >( parameters );
+      return resolveMatrixFormat< Real, Devices::Cuda >( parameters );
 
    std::cerr << "Uknown device " << device << "." << std::endl;
    return false;

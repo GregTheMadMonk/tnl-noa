@@ -15,7 +15,7 @@ namespace TNL {
 #ifdef HAVE_CUDA
 
 template< typename Operation, int blockSize >
-class tnlCUDAReduction
+class tnlCudaReduction
 {
    public:
 
@@ -32,7 +32,7 @@ class tnlCUDAReduction
 };
  
 /*template< typename Real, typename Index, int blockSize >
-class tnlCUDAReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize >
+class tnlCudaReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize >
 {
    public:
  

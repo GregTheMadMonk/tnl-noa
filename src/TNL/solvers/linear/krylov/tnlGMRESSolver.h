@@ -69,8 +69,8 @@ class tnlGMRESSolver : public Object,
    template< typename VectorT >
    void update( IndexType k,
                 IndexType m,
-                const Vectors::Vector< RealType, tnlHost, IndexType >& H,
-                const Vectors::Vector< RealType, tnlHost, IndexType >& s,
+                const Vectors::Vector< RealType, Devices::Host, IndexType >& H,
+                const Vectors::Vector< RealType, Devices::Host, IndexType >& s,
                 Vectors::Vector< RealType, DeviceType, IndexType >& v,
                 VectorT& x );
 
@@ -88,7 +88,7 @@ class tnlGMRESSolver : public Object,
    bool setSize( IndexType _size, IndexType m );
 
    Vectors::Vector< RealType, DeviceType, IndexType > _r, w, _v, _M_tmp;
-   Vectors::Vector< RealType, tnlHost, IndexType > _s, _cs, _sn, _H;
+   Vectors::Vector< RealType, Devices::Host, IndexType > _s, _cs, _sn, _H;
 
    IndexType size, restarting;
 
@@ -106,38 +106,38 @@ class tnlGMRESSolver : public Object,
 
 namespace TNL {
 
-extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlHost, int > >;
-extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlHost, int > >;
-extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlHost, long int > >;
-extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlHost, long int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< float,  Devices::Host, int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< double, Devices::Host, int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< float,  Devices::Host, long int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< double, Devices::Host, long int > >;
 
-/*extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlHost, int > >;
-extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlHost, int > >;
-extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlHost, long int > >;
-extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlHost, long int > >;
+/*extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  Devices::Host, int > >;
+extern template class tnlGMRESSolver< tnlEllpackMatrix< double, Devices::Host, int > >;
+extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  Devices::Host, long int > >;
+extern template class tnlGMRESSolver< tnlEllpackMatrix< double, Devices::Host, long int > >;
 
-extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  tnlHost, int > >;
-extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, tnlHost, int > >;
-extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  tnlHost, long int > >;
-extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, tnlHost, long int > >;*/
+extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  Devices::Host, int > >;
+extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, Devices::Host, int > >;
+extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< float,  Devices::Host, long int > >;
+extern template class tnlGMRESSolver< tnlMultiDiagonalMatrix< double, Devices::Host, long int > >;*/
 
 
 #ifdef HAVE_CUDA
 // TODO: fix this - does not work with CUDA 5.5
-/*extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlCuda, int > >;
-extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlCuda, int > >;
-extern template class tnlGMRESSolver< tnlCSRMatrix< float,  tnlCuda, long int > >;
-extern template class tnlGMRESSolver< tnlCSRMatrix< double, tnlCuda, long int > >;*/
+/*extern template class tnlGMRESSolver< tnlCSRMatrix< float,  Devices::Cuda, int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< double, Devices::Cuda, int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< float,  Devices::Cuda, long int > >;
+extern template class tnlGMRESSolver< tnlCSRMatrix< double, Devices::Cuda, long int > >;*/
 
-/*extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlCuda, int > >;
-extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlCuda, int > >;
-extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  tnlCuda, long int > >;
-extern template class tnlGMRESSolver< tnlEllpackMatrix< double, tnlCuda, long int > >;
+/*extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  Devices::Cuda, int > >;
+extern template class tnlGMRESSolver< tnlEllpackMatrix< double, Devices::Cuda, int > >;
+extern template class tnlGMRESSolver< tnlEllpackMatrix< float,  Devices::Cuda, long int > >;
+extern template class tnlGMRESSolver< tnlEllpackMatrix< double, Devices::Cuda, long int > >;
 
-extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< float,  tnlCuda, int > >;
-extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< double, tnlCuda, int > >;
-extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< float,  tnlCuda, long int > >;
-extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< double, tnlCuda, long int > >;*/
+extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< float,  Devices::Cuda, int > >;
+extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< double, Devices::Cuda, int > >;
+extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< float,  Devices::Cuda, long int > >;
+extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< double, Devices::Cuda, long int > >;*/
 #endif
 
 } // namespace TNL

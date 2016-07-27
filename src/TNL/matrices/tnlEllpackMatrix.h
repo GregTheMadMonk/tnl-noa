@@ -18,7 +18,7 @@ namespace TNL {
 template< typename Device >
 class tnlEllpackMatrixDeviceDependentCode;
 
-template< typename Real, typename Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = Devices::Host, typename Index = int >
 class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
 {
    public:
@@ -30,8 +30,8 @@ class tnlEllpackMatrix : public tnlSparseMatrix< Real, Device, Index >
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename tnlSparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
    typedef tnlEllpackMatrix< Real, Device, Index > ThisType;
-   typedef tnlEllpackMatrix< Real, tnlHost, Index > HostType;
-   typedef tnlEllpackMatrix< Real, tnlCuda, Index > CudaType;
+   typedef tnlEllpackMatrix< Real, Devices::Host, Index > HostType;
+   typedef tnlEllpackMatrix< Real, Devices::Cuda, Index > CudaType;
    typedef tnlSparseMatrix< Real, Device, Index > BaseType;
    typedef typename BaseType::MatrixRow MatrixRow;
 

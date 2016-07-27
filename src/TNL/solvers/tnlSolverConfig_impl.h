@@ -22,7 +22,7 @@ template< typename ConfigTag,
           typename ProblemConfig >
 bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescription& config )
 {
-   typedef tnlDummyProblem< double, tnlHost, int > DummyProblem;
+   typedef tnlDummyProblem< double, Devices::Host, int > DummyProblem;
 
    config.addDelimiter( " === General parameters ==== " );
    /****
@@ -44,10 +44,10 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDes
    config.addEntry< String >( "device",
                                  "Device to use for the computations.",
                                  "host" );
-   if( tnlConfigTagDevice< ConfigTag, tnlHost >::enabled )
+   if( tnlConfigTagDevice< ConfigTag, Devices::Host >::enabled )
       config.addEntryEnum( "host" );
 #ifdef HAVE_CUDA
-   if( tnlConfigTagDevice< ConfigTag, tnlCuda >::enabled )
+   if( tnlConfigTagDevice< ConfigTag, Devices::Cuda >::enabled )
       config.addEntryEnum( "cuda" );
 #endif
 
@@ -129,17 +129,17 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDes
    if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled )
    {
       config.addDelimiter( " === Explicit solvers parameters === " );
-      tnlExplicitSolver< tnlDummyProblem< double, tnlHost, int > >::configSetup( config );
+      tnlExplicitSolver< tnlDummyProblem< double, Devices::Host, int > >::configSetup( config );
       if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitEulerSolverTag >::enabled )
-         tnlEulerSolver< tnlDummyProblem< double, tnlHost, int > >::configSetup( config );
+         tnlEulerSolver< tnlDummyProblem< double, Devices::Host, int > >::configSetup( config );
 
       if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitMersonSolverTag >::enabled )
-         tnlMersonSolver< tnlDummyProblem< double, tnlHost, int > >::configSetup( config );
+         tnlMersonSolver< tnlDummyProblem< double, Devices::Host, int > >::configSetup( config );
    }
    if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled )
    {
       config.addDelimiter( " === Semi-implicit solvers parameters === " );
-      typedef tnlCSRMatrix< double, tnlHost, int > MatrixType;
+      typedef tnlCSRMatrix< double, Devices::Host, int > MatrixType;
       if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitCGSolverTag >::enabled )
          tnlCGSolver< MatrixType >::configSetup( config );
       if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitBICGStabSolverTag >::enabled )

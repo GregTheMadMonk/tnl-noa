@@ -12,8 +12,8 @@
 
 #include <TNL/core/cuda/cuda-reduction.h>
 #include <TNL/core/cuda/reduction-operations.h>
-#include <TNL/core/tnlHost.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Host.h>
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 namespace Vectors {   
@@ -22,7 +22,7 @@ template< typename Device >
 class VectorOperations{};
 
 template<>
-class VectorOperations< tnlHost >
+class VectorOperations< Devices::Host >
 {
    public:
 
@@ -131,7 +131,7 @@ class VectorOperations< tnlHost >
 };
 
 template<>
-class VectorOperations< tnlCuda >
+class VectorOperations< Devices::Cuda >
 {
    public:
 

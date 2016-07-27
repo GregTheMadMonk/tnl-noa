@@ -25,14 +25,14 @@ using namespace TNL;
 
 #ifdef HAVE_CUDA
 template< typename ElementType, typename IndexType >
-__global__ void testSetGetElementKernel( tnlMultiArray< 1, ElementType, tnlCuda, IndexType >* u )
+__global__ void testSetGetElementKernel( tnlMultiArray< 1, ElementType, Devices::Cuda, IndexType >* u )
 {
    if( threadIdx.x < ( *u ).getDimensions().x() )
       ( *u )( threadIdx.x ) = threadIdx.x;
 }
 
 template< typename ElementType, typename IndexType >
-__global__ void testSetGetElementKernel( tnlMultiArray< 2, ElementType, tnlCuda, IndexType >* u )
+__global__ void testSetGetElementKernel( tnlMultiArray< 2, ElementType, Devices::Cuda, IndexType >* u )
 {
    if( threadIdx.x < ( *u ).getDimensions().x() &&
        threadIdx.x < ( *u ).getDimensions().y() )
@@ -40,7 +40,7 @@ __global__ void testSetGetElementKernel( tnlMultiArray< 2, ElementType, tnlCuda,
 }
 
 template< typename ElementType, typename IndexType >
-__global__ void testSetGetElementKernel( tnlMultiArray< 3, ElementType, tnlCuda, IndexType >* u )
+__global__ void testSetGetElementKernel( tnlMultiArray< 3, ElementType, Devices::Cuda, IndexType >* u )
 {
    if( threadIdx.x < ( *u ).getDimensions().x() &&
        threadIdx.x < ( *u ).getDimensions().y() &&
@@ -138,18 +138,18 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
       using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
       u. setDimensions( 10 );
-      if( Device::getDevice() == tnlHostDevice )
+      if( std::is_same< Device, Devices::Host >::value )
       {
          for( int i = 0; i < 10; i ++ )
             this->setDiagonalElement( u, i, i  );
       }
-      if( Device::getDevice() == tnlCudaDevice )
+      if( std::is_same< Device, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
          tnlMultiArray< Dimensions, ElementType, Device, IndexType >* kernel_u =
-                  tnlCuda::passToDevice( u );
+                  Devices::Cuda::passToDevice( u );
          testSetGetElementKernel<<< 1, 16 >>>( kernel_u );
-         tnlCuda::freeFromDevice( kernel_u );
+         Devices::Cuda::freeFromDevice( kernel_u );
          CPPUNIT_ASSERT( checkCudaDevice );
 #endif
       }

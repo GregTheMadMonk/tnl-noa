@@ -23,7 +23,7 @@ namespace TNL {
 template< typename Real,
           typename Index,
           typename Vector >
-void tnlChunkedEllpackMatrixVectorProductCuda( const tnlChunkedEllpackMatrix< Real, tnlCuda, Index >& matrix,
+void tnlChunkedEllpackMatrixVectorProductCuda( const tnlChunkedEllpackMatrix< Real, Devices::Cuda, Index >& matrix,
                                                const Vector& inVector,
                                                Vector& outVector );
 
@@ -85,7 +85,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setDimensions( const IndexT
 template< typename Real,
           typename Device,
           typename Index >
-void tnlChunkedEllpackMatrix< Real, Device, Index >::resolveSliceSizes( const Vectors::Vector< Index, tnlHost, Index >& rowLengths )
+void tnlChunkedEllpackMatrix< Real, Device, Index >::resolveSliceSizes( const Vectors::Vector< Index, Devices::Host, Index >& rowLengths )
 {
    /****
     * Iterate over rows and allocate slices so that each slice has
@@ -212,7 +212,7 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setCompressedRowsLengths( c
 
    IndexType elementsToAllocation( 0 );
 
-   if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+   if( std::is_same< Device, Devices::Host >::value )
    {
       DeviceDependentCode::resolveSliceSizes( *this, rowLengths );
       this->rowPointers.setElement( 0, 0 );
@@ -220,11 +220,12 @@ bool tnlChunkedEllpackMatrix< Real, Device, Index >::setCompressedRowsLengths( c
          this->setSlice( rowLengths, sliceIndex, elementsToAllocation );
       this->rowPointers.computePrefixSum();
    }
-   if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+
+   if( std::is_same< Device, Devices::Cuda >::value )
    {
-      tnlChunkedEllpackMatrix< RealType, tnlHost, IndexType > hostMatrix;
+      tnlChunkedEllpackMatrix< RealType, Devices::Host, IndexType > hostMatrix;
       hostMatrix.setDimensions( this->getRows(), this->getColumns() );
-      Vectors::Vector< IndexType, tnlHost, IndexType > hostCompressedRowsLengths;
+      Vectors::Vector< IndexType, Devices::Host, IndexType > hostCompressedRowsLengths;
       hostCompressedRowsLengths.setLike( rowLengths);
       hostCompressedRowsLengths = rowLengths;
       hostMatrix.setNumberOfChunksInSlice( this->chunksInSlice );
@@ -1064,9 +1065,9 @@ __device__ void tnlChunkedEllpackMatrix< Real, Device, Index >::computeSliceVect
                                                                                            OutVector* outVector,
                                                                                            int sliceIdx  ) const
 {
-   static_assert( DeviceType::DeviceType == tnlCudaDevice, "" );
+   static_assert( std::is_same < DeviceType, Devices::Cuda >::value, "" );
 
-   RealType* chunkProducts = getSharedMemory< RealType >();
+   RealType* chunkProducts = Devices::getSharedMemory< RealType >();
    ChunkedEllpackSliceInfo* sliceInfo = ( ChunkedEllpackSliceInfo* ) & chunkProducts[ blockDim.x ];
 
    if( threadIdx.x == 0 )
@@ -1265,11 +1266,11 @@ void tnlChunkedEllpackMatrix< Real, Device, Index >::printStructure( std::ostrea
 }
 
 template<>
-class tnlChunkedEllpackMatrixDeviceDependentCode< tnlHost >
+class tnlChunkedEllpackMatrixDeviceDependentCode< Devices::Host >
 {
    public:
 
-      typedef tnlHost Device;
+      typedef Devices::Host Device;
 
       template< typename Real,
                 typename Index >
@@ -1312,12 +1313,12 @@ template< typename Real,
           typename Index,
           typename InVector,
           typename OutVector >
-__global__ void tnlChunkedEllpackMatrixVectorProductCudaKernel( const tnlChunkedEllpackMatrix< Real, tnlCuda, Index >* matrix,
+__global__ void tnlChunkedEllpackMatrixVectorProductCudaKernel( const tnlChunkedEllpackMatrix< Real, Devices::Cuda, Index >* matrix,
                                                                 const InVector* inVector,
                                                                 OutVector* outVector,
                                                                 int gridIdx )
 {
-   const Index sliceIdx = gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x;
+   const Index sliceIdx = gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x;
    if( sliceIdx < matrix->getNumberOfSlices() )
       matrix->computeSliceVectorProduct( inVector, outVector, sliceIdx );
 
@@ -1326,11 +1327,11 @@ __global__ void tnlChunkedEllpackMatrixVectorProductCudaKernel( const tnlChunked
 
 
 template<>
-class tnlChunkedEllpackMatrixDeviceDependentCode< tnlCuda >
+class tnlChunkedEllpackMatrixDeviceDependentCode< Devices::Cuda >
 {
    public:
 
-      typedef tnlCuda Device;
+      typedef Devices::Cuda Device;
  
       template< typename Real,
                 typename Index >
@@ -1367,22 +1368,22 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlCuda >
                                  OutVector& outVector )
       {
          #ifdef HAVE_CUDA
-            typedef tnlChunkedEllpackMatrix< Real, tnlCuda, Index > Matrix;
+            typedef tnlChunkedEllpackMatrix< Real, Devices::Cuda, Index > Matrix;
             typedef Index IndexType;
             typedef Real RealType;
-            Matrix* kernel_this = tnlCuda::passToDevice( matrix );
-            InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
-            OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
+            Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
+            InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
+            OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
             dim3 cudaBlockSize( matrix.getNumberOfChunksInSlice() ),
-                 cudaGridSize( tnlCuda::getMaxGridSize() );
+                 cudaGridSize( Devices::Cuda::getMaxGridSize() );
             const IndexType cudaBlocks = matrix.getNumberOfSlices();
-            const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+            const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
             const IndexType sharedMemory = cudaBlockSize.x * sizeof( RealType ) +
                                            sizeof( tnlChunkedEllpackSliceInfo< IndexType > );
             for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
             {
                if( gridIdx == cudaGrids - 1 )
-                  cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+                  cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
                tnlChunkedEllpackMatrixVectorProductCudaKernel< Real, Index, InVector, OutVector >
                                                              <<< cudaGridSize, cudaBlockSize, sharedMemory  >>>
                                                              ( kernel_this,
@@ -1390,9 +1391,9 @@ class tnlChunkedEllpackMatrixDeviceDependentCode< tnlCuda >
                                                                kernel_outVector,
                                                                gridIdx );
             }
-            tnlCuda::freeFromDevice( kernel_this );
-            tnlCuda::freeFromDevice( kernel_inVector );
-            tnlCuda::freeFromDevice( kernel_outVector );
+            Devices::Cuda::freeFromDevice( kernel_this );
+            Devices::Cuda::freeFromDevice( kernel_inVector );
+            Devices::Cuda::freeFromDevice( kernel_outVector );
             checkCudaDevice;
          #endif
       }

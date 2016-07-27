@@ -251,7 +251,7 @@ bool tnlMatrixReader< Matrix >::readMtxHeader( std::istream& file,
 
 template< typename Matrix >
 bool tnlMatrixReader< Matrix >::computeCompressedRowsLengthsFromMtxFile( std::istream& file,
-                                                              Vectors::Vector< int, tnlHost, int >& rowLengths,
+                                                              Vectors::Vector< int, Devices::Host, int >& rowLengths,
                                                               const int columns,
                                                               const int rows,
                                                               bool symmetricMatrix,
@@ -372,7 +372,7 @@ bool tnlMatrixReader< Matrix >::parseMtxLineWithElement( const String& line,
 }
 
 template<>
-class tnlMatrixReaderDeviceDependentCode< tnlHost >
+class tnlMatrixReaderDeviceDependentCode< Devices::Host >
 {
    public:
 
@@ -387,7 +387,7 @@ class tnlMatrixReaderDeviceDependentCode< tnlHost >
 };
 
 template<>
-class tnlMatrixReaderDeviceDependentCode< tnlCuda >
+class tnlMatrixReaderDeviceDependentCode< Devices::Cuda >
 {
    public:
 

@@ -32,8 +32,8 @@ class tnlGrid< 1, Real, Device, Index > : public Object
    typedef Index IndexType;
    typedef Vectors::StaticVector< 1, Real > VertexType;
    typedef Vectors::StaticVector< 1, Index > CoordinatesType;
-   typedef tnlGrid< 1, Real, tnlHost, Index > HostType;
-   typedef tnlGrid< 1, Real, tnlCuda, Index > CudaType;
+   typedef tnlGrid< 1, Real, Devices::Host, Index > HostType;
+   typedef tnlGrid< 1, Real, Devices::Cuda, Index > CudaType;
    typedef tnlGrid< 1, Real, Device, Index > ThisType;
  
    static const int meshDimensions = 1;

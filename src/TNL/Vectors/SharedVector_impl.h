@@ -75,7 +75,7 @@ template< typename Real,
           typename Index >
 String SharedVector< Real, Device, Index > :: getSerializationType()
 {
-   return Vector< Real, tnlHost, Index >::getType();
+   return Vector< Real, Devices::Host, Index >::getType();
 };
 
 template< typename Real,
@@ -372,19 +372,19 @@ void SharedVector< Real, Device, Index > :: computeExclusivePrefixSum( const Ind
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-extern template class SharedVector< float, tnlHost, int >;
+extern template class SharedVector< float, Devices::Host, int >;
 #endif
-extern template class SharedVector< double, tnlHost, int >;
+extern template class SharedVector< double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class SharedVector< long double, tnlHost, int >;
+extern template class SharedVector< long double, Devices::Host, int >;
 #endif
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class SharedVector< float, tnlHost, long int >;
+extern template class SharedVector< float, Devices::Host, long int >;
 #endif
-extern template class SharedVector< double, tnlHost, long int >;
+extern template class SharedVector< double, Devices::Host, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class SharedVector< long double, tnlHost, long int >;
+extern template class SharedVector< long double, Devices::Host, long int >;
 #endif
 #endif
 
@@ -392,19 +392,19 @@ extern template class SharedVector< long double, tnlHost, long int >;
 // TODO: fix this - it does not work with CUDA 5.5
 /*
 #ifdef INSTANTIATE_FLOAT
-extern template class SharedVector< float, tnlCuda, int >;
+extern template class SharedVector< float, Devices::Cuda, int >;
 #endif
-extern template class SharedVector< double, tnlCuda, int >;
+extern template class SharedVector< double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class SharedVector< long double, tnlCuda, int >;
+extern template class SharedVector< long double, Devices::Cuda, int >;
 #endif
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class SharedVector< float, tnlCuda, long int >;
+extern template class SharedVector< float, Devices::Cuda, long int >;
 #endif
-extern template class SharedVector< double, tnlCuda, long int >;
+extern template class SharedVector< double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class SharedVector< long double, tnlCuda, long int >;
+extern template class SharedVector< long double, Devices::Cuda, long int >;
 #endif
  #endif
  */

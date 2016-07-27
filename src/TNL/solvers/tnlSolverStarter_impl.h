@@ -13,7 +13,7 @@
 #include <TNL/tnlConfig.h>
 #include <TNL/Logger.h>
 #include <TNL/String.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 #include <TNL/solvers/ode/tnlMersonSolver.h>
 #include <TNL/solvers/ode/tnlEulerSolver.h>
 #include <TNL/solvers/linear/stationary/tnlSORSolver.h>
@@ -86,8 +86,8 @@ bool tnlSolverStarter< ConfigTag > :: run( const Config::ParameterContainer& par
    /****
     * Create and set-up the problem
     */
-   if( ! tnlHost::setup( parameters ) ||
-       ! tnlCuda::setup( parameters ) )
+   if( ! Devices::Host::setup( parameters ) ||
+       ! Devices::Cuda::setup( parameters ) )
       return false;
    Problem problem;
    if( ! problem.setup( parameters ) )

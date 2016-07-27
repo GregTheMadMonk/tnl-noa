@@ -13,7 +13,7 @@
 namespace TNL {
 
 template< typename Real = double,
-          typename Device = tnlHost,
+          typename Device = Devices::Host,
           typename Index = int >
 class tnlDummyMesh
 {

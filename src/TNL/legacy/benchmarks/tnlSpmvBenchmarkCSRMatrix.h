@@ -15,11 +15,11 @@
 #include <TNL/matrices/tnlCSRMatrix.h>
 
 template< typename Real, typename Index>
-class tnlSpmvBenchmarkCSRMatrix : public tnlSpmvBenchmark< Real, tnlHost, Index, tnlCSRMatrix >
+class tnlSpmvBenchmarkCSRMatrix : public tnlSpmvBenchmark< Real, Devices::Host, Index, tnlCSRMatrix >
 {
    public:
 
-   bool setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix );
+   bool setup( const tnlCSRMatrix< Real, Devices::Host, Index >& matrix );
 
    void tearDown();
 
@@ -28,7 +28,7 @@ class tnlSpmvBenchmarkCSRMatrix : public tnlSpmvBenchmark< Real, tnlHost, Index,
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
                          const String& inputMtxFile,
-                         const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                         const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                          bool writeMatrixInfo  ) const;
    Real getForwardBackwardDifference() const;
 
@@ -42,12 +42,12 @@ class tnlSpmvBenchmarkCSRMatrix : public tnlSpmvBenchmark< Real, tnlHost, Index,
 };
 
 template< typename Real, typename Index>
-bool tnlSpmvBenchmarkCSRMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
+bool tnlSpmvBenchmarkCSRMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real, Devices::Host, Index >& matrix )
 {
    this->matrix = matrix;
 
    const Index size = matrix. getSize();
-   Vector< Real, tnlHost > refX( "ref-x", size ), refB( "ref-b", size), backwardRefB( "backwardRef-b", size);
+   Vector< Real, Devices::Host > refX( "ref-x", size ), refB( "ref-b", size), backwardRefB( "backwardRef-b", size);
    refX. setValue( 1.0 );
    this->matrix. vectorProduct( refX, refB );
    this->matrix. setBackwardSpMV( true );
@@ -94,7 +94,7 @@ template< typename Real,
 void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeToLogTable( std::ostream& logFile,
                                                                   const double& csrGflops,
                                                                   const String& inputMtxFile,
-                                                                  const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                                                                  const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                                                                   bool writeMatrixInfo  ) const
 {
    if( this->getBenchmarkWasSuccesful() )

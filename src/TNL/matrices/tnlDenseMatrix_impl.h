@@ -316,11 +316,11 @@ typename tnlDenseMatrix< Real, Device, Index >::MatrixRow
 tnlDenseMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex )
 {
-   if( Device::getDevice() == tnlHostDevice )
+   if( std::is_same< Device, Devices::Host >::value )
       return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, 0 ) ],
                         this->columns,
                         1 );
-   if( Device::getDevice() == tnlCudaDevice )
+   if( std::is_same< Device, Devices::Cuda >::value )
       return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, 0 ) ],
                         this->columns,
                         this->rows );
@@ -334,11 +334,11 @@ const typename tnlDenseMatrix< Real, Device, Index >::MatrixRow
 tnlDenseMatrix< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
-   if( Device::getDevice() == tnlHostDevice )
+   if( std::is_same< Device, Devices::Host >::value )
       return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, 0 ) ],
                         this->columns,
                         1 );
-   if( Device::getDevice() == tnlCudaDevice )
+   if( std::is_same< Device, Devices::Cuda >::value )
       return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, 0 ) ],
                         this->columns,
                         this->rows );
@@ -404,7 +404,7 @@ template< typename Real,
           typename Matrix2,
           int tileDim,
           int tileRowBlockSize >
-__global__ void tnlDenseMatrixMatrixProductKernel( tnlDenseMatrix< Real, tnlCuda, Index >* resultMatrix,
+__global__ void tnlDenseMatrixMatrixProductKernel( tnlDenseMatrix< Real, Devices::Cuda, Index >* resultMatrix,
                                                    const Matrix1* matrixA,
                                                    const Matrix2* matrixB,
                                                    const Real matrixAMultiplicator,
@@ -515,7 +515,7 @@ void tnlDenseMatrix< Real, Device, Index >::getMatrixProduct( const Matrix1& mat
                  << "Matrix2 columns: " << matrix2.getColumns() << std::endl
                  << "Matrix2 rows: " << matrix2.getRows() << std::endl );
 
-   if( Device::getDevice() == tnlHostDevice )
+   if( std::is_same< Device, Devices::Host >::value )
       for( IndexType i = 0; i < this->getRows(); i += tileDim )
          for( IndexType j = 0; j < this->getColumns(); j += tileDim )
          {
@@ -535,7 +535,7 @@ void tnlDenseMatrix< Real, Device, Index >::getMatrixProduct( const Matrix1& mat
                             matrix1.getElementFast( i + i1, k1 ) * matrix2.getElementFast( k1, j + j1 ) );
             }
          }
-   if( Device::getDevice() == tnlCudaDevice )
+   if( std::is_same< Device, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
       dim3 cudaBlockSize( 0 ), cudaGridSize( 0 );
@@ -546,20 +546,20 @@ void tnlDenseMatrix< Real, Device, Index >::getMatrixProduct( const Matrix1& mat
       const IndexType cudaBlockRows( matrixProductCudaBlockSize / tileDim );
       cudaBlockSize.x = cudaBlockColumns;
       cudaBlockSize.y = cudaBlockRows;
-      const IndexType rowGrids = roundUpDivision( rowTiles, tnlCuda::getMaxGridSize() );
-      const IndexType columnGrids = roundUpDivision( columnTiles, tnlCuda::getMaxGridSize() );
+      const IndexType rowGrids = roundUpDivision( rowTiles, Devices::Cuda::getMaxGridSize() );
+      const IndexType columnGrids = roundUpDivision( columnTiles, Devices::Cuda::getMaxGridSize() );
 
       for( IndexType gridIdx_x = 0; gridIdx_x < columnGrids; gridIdx_x++ )
          for( IndexType gridIdx_y = 0; gridIdx_y < rowGrids; gridIdx_y++ )
          {
-            cudaGridSize.x = cudaGridSize.y = tnlCuda::getMaxGridSize();
+            cudaGridSize.x = cudaGridSize.y = Devices::Cuda::getMaxGridSize();
             if( gridIdx_x == columnGrids - 1 )
-               cudaGridSize.x = columnTiles % tnlCuda::getMaxGridSize();
+               cudaGridSize.x = columnTiles % Devices::Cuda::getMaxGridSize();
             if( gridIdx_y == rowGrids - 1 )
-               cudaGridSize.y = rowTiles % tnlCuda::getMaxGridSize();
-            ThisType* this_kernel = tnlCuda::passToDevice( *this );
-            Matrix1* matrix1_kernel = tnlCuda::passToDevice( matrix1 );
-            Matrix2* matrix2_kernel = tnlCuda::passToDevice( matrix2 );
+               cudaGridSize.y = rowTiles % Devices::Cuda::getMaxGridSize();
+            ThisType* this_kernel = Devices::Cuda::passToDevice( *this );
+            Matrix1* matrix1_kernel = Devices::Cuda::passToDevice( matrix1 );
+            Matrix2* matrix2_kernel = Devices::Cuda::passToDevice( matrix2 );
             tnlDenseMatrixMatrixProductKernel< Real,
                                                Index,
                                                Matrix1,
@@ -576,9 +576,9 @@ void tnlDenseMatrix< Real, Device, Index >::getMatrixProduct( const Matrix1& mat
                                                matrix2Multiplicator,
                                                gridIdx_x,
                                                gridIdx_y );
-            tnlCuda::freeFromDevice( this_kernel );
-            tnlCuda::freeFromDevice( matrix1_kernel );
-            tnlCuda::freeFromDevice( matrix2_kernel );
+            Devices::Cuda::freeFromDevice( this_kernel );
+            Devices::Cuda::freeFromDevice( matrix1_kernel );
+            Devices::Cuda::freeFromDevice( matrix2_kernel );
          }
 #endif
    }
@@ -590,7 +590,7 @@ template< typename Real,
           typename Matrix,
           int tileDim,
           int tileRowBlockSize >
-__global__ void tnlDenseMatrixTranspositionAlignedKernel( tnlDenseMatrix< Real, tnlCuda, Index >* resultMatrix,
+__global__ void tnlDenseMatrixTranspositionAlignedKernel( tnlDenseMatrix< Real, Devices::Cuda, Index >* resultMatrix,
                                                           const Matrix* inputMatrix,
                                                           const Real matrixMultiplicator,
                                                           const Index gridIdx_x,
@@ -629,7 +629,7 @@ __global__ void tnlDenseMatrixTranspositionAlignedKernel( tnlDenseMatrix< Real, 
         rowBlock < tileDim;
         rowBlock += tileRowBlockSize )
    {
-      tile[ tnlCuda::getInterleaving( threadIdx.x*tileDim +  threadIdx.y + rowBlock ) ] =
+      tile[ Devices::Cuda::getInterleaving( threadIdx.x*tileDim +  threadIdx.y + rowBlock ) ] =
                inputMatrix->getElementFast( readColumnPosition,
                                             readRowPosition + rowBlock );
    }
@@ -648,7 +648,7 @@ __global__ void tnlDenseMatrixTranspositionAlignedKernel( tnlDenseMatrix< Real, 
    {
       resultMatrix->setElementFast( writeColumnPosition,
                                     writeRowPosition + rowBlock,
-                                    matrixMultiplicator * tile[ tnlCuda::getInterleaving( ( threadIdx.y + rowBlock ) * tileDim + threadIdx.x ) ] );
+                                    matrixMultiplicator * tile[ Devices::Cuda::getInterleaving( ( threadIdx.y + rowBlock ) * tileDim + threadIdx.x ) ] );
 
    }
 
@@ -659,7 +659,7 @@ template< typename Real,
           typename Matrix,
           int tileDim,
           int tileRowBlockSize >
-__global__ void tnlDenseMatrixTranspositionNonAlignedKernel( tnlDenseMatrix< Real, tnlCuda, Index >* resultMatrix,
+__global__ void tnlDenseMatrixTranspositionNonAlignedKernel( tnlDenseMatrix< Real, Devices::Cuda, Index >* resultMatrix,
                                                              const Matrix* inputMatrix,
                                                              const Real matrixMultiplicator,
                                                              const Index gridIdx_x,
@@ -701,7 +701,7 @@ __global__ void tnlDenseMatrixTranspositionNonAlignedKernel( tnlDenseMatrix< Rea
            rowBlock += tileRowBlockSize )
       {
          if( readRowPosition + rowBlock < rows )
-            tile[ tnlCuda::getInterleaving( threadIdx.x*tileDim +  threadIdx.y + rowBlock ) ] =
+            tile[ Devices::Cuda::getInterleaving( threadIdx.x*tileDim +  threadIdx.y + rowBlock ) ] =
                inputMatrix->getElementFast( readColumnPosition,
                                             readRowPosition + rowBlock );
       }
@@ -725,7 +725,7 @@ __global__ void tnlDenseMatrixTranspositionNonAlignedKernel( tnlDenseMatrix< Rea
          if( writeRowPosition + rowBlock < columns )
             resultMatrix->setElementFast( writeColumnPosition,
                                           writeRowPosition + rowBlock,
-                                          matrixMultiplicator * tile[ tnlCuda::getInterleaving( ( threadIdx.y + rowBlock ) * tileDim + threadIdx.x ) ] );
+                                          matrixMultiplicator * tile[ Devices::Cuda::getInterleaving( ( threadIdx.y + rowBlock ) * tileDim + threadIdx.x ) ] );
       }
    }
 
@@ -748,7 +748,7 @@ void tnlDenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matr
                     << "That matrix columns: " << matrix.getColumns() << std::endl
                     << "That matrix rows: " << matrix.getRows() << std::endl );
  
-   if( Device::getDevice() == tnlHostDevice )
+   if( std::is_same< Device, Devices::Host >::value )
    {
       const IndexType& rows = matrix.getRows();
       const IndexType& columns = matrix.getColumns();
@@ -758,7 +758,7 @@ void tnlDenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matr
                for( IndexType l = j; l < j + tileDim && l < columns; l++ )
                   this->setElement( l, k, matrixMultiplicator * matrix. getElement( k, l ) );
    }
-   if( Device::getDevice() == tnlCudaDevice )
+   if( std::is_same< Device, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
       dim3 cudaBlockSize( 0 ), cudaGridSize( 0 );
@@ -769,21 +769,21 @@ void tnlDenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matr
       const IndexType cudaBlockRows( matrixProductCudaBlockSize / tileDim );
       cudaBlockSize.x = cudaBlockColumns;
       cudaBlockSize.y = cudaBlockRows;
-      const IndexType rowGrids = roundUpDivision( rowTiles, tnlCuda::getMaxGridSize() );
-      const IndexType columnGrids = roundUpDivision( columnTiles, tnlCuda::getMaxGridSize() );
-      const IndexType sharedMemorySize = tileDim*tileDim + tileDim*tileDim/tnlCuda::getNumberOfSharedMemoryBanks();
+      const IndexType rowGrids = roundUpDivision( rowTiles, Devices::Cuda::getMaxGridSize() );
+      const IndexType columnGrids = roundUpDivision( columnTiles, Devices::Cuda::getMaxGridSize() );
+      const IndexType sharedMemorySize = tileDim*tileDim + tileDim*tileDim/Devices::Cuda::getNumberOfSharedMemoryBanks();
 
-      ThisType* this_device = tnlCuda::passToDevice( *this );
-      Matrix* matrix_device = tnlCuda::passToDevice( matrix );
+      ThisType* this_device = Devices::Cuda::passToDevice( *this );
+      Matrix* matrix_device = Devices::Cuda::passToDevice( matrix );
 
       for( IndexType gridIdx_x = 0; gridIdx_x < columnGrids; gridIdx_x++ )
          for( IndexType gridIdx_y = 0; gridIdx_y < rowGrids; gridIdx_y++ )
          {
-            cudaGridSize.x = cudaGridSize.y = tnlCuda::getMaxGridSize();
+            cudaGridSize.x = cudaGridSize.y = Devices::Cuda::getMaxGridSize();
             if( gridIdx_x == columnGrids - 1)
-               cudaGridSize.x = columnTiles % tnlCuda::getMaxGridSize();
+               cudaGridSize.x = columnTiles % Devices::Cuda::getMaxGridSize();
             if( gridIdx_y == rowGrids - 1 )
-               cudaGridSize.y = rowTiles % tnlCuda::getMaxGridSize();
+               cudaGridSize.y = rowTiles % Devices::Cuda::getMaxGridSize();
             if( ( gridIdx_x < columnGrids - 1 || matrix.getColumns() % tileDim == 0 ) &&
                 ( gridIdx_y < rowGrids - 1 || matrix.getRows() % tileDim == 0 ) )
             {
@@ -819,8 +819,8 @@ void tnlDenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matr
             }
             checkCudaDevice;
          }
-      tnlCuda::freeFromDevice( this_device );
-      tnlCuda::freeFromDevice( matrix_device );
+      Devices::Cuda::freeFromDevice( this_device );
+      Devices::Cuda::freeFromDevice( matrix_device );
 #endif
    }
 }
@@ -902,20 +902,21 @@ __cuda_callable__
 Index tnlDenseMatrix< Real, Device, Index >::getElementIndex( const IndexType row,
                                                               const IndexType column ) const
 {
-   Assert( Device::getDevice() == tnlHostDevice || Device::getDevice() == tnlCudaDevice, )
-   if( Device::getDevice() == tnlHostDevice )
+   Assert( ( std::is_same< Device, Devices::Host >::value ||
+          std::is_same< Device, Devices::Cuda >::value ), )
+   if( std::is_same< Device, Devices::Host >::value )
       return row * this->columns + column;
-   if( Device::getDevice() == tnlCudaDevice)
+   if( std::is_same< Device, Devices::Cuda >::value )
       return column * this->rows + row;
    return -1;
 }
 
 template<>
-class tnlDenseMatrixDeviceDependentCode< tnlHost >
+class tnlDenseMatrixDeviceDependentCode< Devices::Host >
 {
    public:
 
-      typedef tnlHost Device;
+      typedef Devices::Host Device;
 
       template< typename Real,
                 typename Index,
@@ -926,7 +927,7 @@ class tnlDenseMatrixDeviceDependentCode< tnlHost >
                                  OutVector& outVector )
       {
 #ifdef HAVE_OPENMP
-#pragma omp parallel for if( tnlHost::isOMPEnabled() )
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
 #endif
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
@@ -934,11 +935,11 @@ class tnlDenseMatrixDeviceDependentCode< tnlHost >
 };
 
 template<>
-class tnlDenseMatrixDeviceDependentCode< tnlCuda >
+class tnlDenseMatrixDeviceDependentCode< Devices::Cuda >
 {
    public:
 
-      typedef tnlCuda Device;
+      typedef Devices::Cuda Device;
 
       template< typename Real,
                 typename Index,

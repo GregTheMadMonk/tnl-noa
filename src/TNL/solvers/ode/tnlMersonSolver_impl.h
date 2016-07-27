@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/core/tnlHost.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Host.h>
+#include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
@@ -261,46 +261,46 @@ void tnlMersonSolver< Problem > :: computeKFunctions( DofVectorType& u,
 
    RealType tau_3 = tau / 3.0;
 
-   if( DeviceType :: getDevice() == tnlHostDevice )
+   if( std::is_same< DeviceType, Devices::Host >::value )
    {
       this->problem->getExplicitRHS( time, tau, u, k1 );
 
    #ifdef HAVE_OPENMP
-   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, tau, tau_3 ) if( tnlHost::isOMPEnabled() )
+   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, tau, tau_3 ) if( Devices::Host::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 1.0 / 3.0 * _k1[ i ] );
       this->problem->getExplicitRHS( time + tau_3, tau, kAux, k2 );
 
    #ifdef HAVE_OPENMP
-   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k2, tau, tau_3 ) if( tnlHost::isOMPEnabled() )
+   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k2, tau, tau_3 ) if( Devices::Host::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * 1.0 / 6.0 * ( _k1[ i ] + _k2[ i ] );
       this->problem->getExplicitRHS( time + tau_3, tau, kAux, k3 );
 
    #ifdef HAVE_OPENMP
-   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, tau, tau_3 ) if( tnlHost::isOMPEnabled() )
+   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, tau, tau_3 ) if( Devices::Host::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 0.125 * _k1[ i ] + 0.375 * _k3[ i ] );
       this->problem->getExplicitRHS( time + 0.5 * tau, tau, kAux, k4 );
 
    #ifdef HAVE_OPENMP
-   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, _k4, tau, tau_3 ) if( tnlHost::isOMPEnabled() )
+   #pragma omp parallel for firstprivate( size, _kAux, _u, _k1, _k3, _k4, tau, tau_3 ) if( Devices::Host::isOMPEnabled() )
    #endif
       for( IndexType i = 0; i < size; i ++ )
          _kAux[ i ] = _u[ i ] + tau * ( 0.5 * _k1[ i ] - 1.5 * _k3[ i ] + 2.0 * _k4[ i ] );
       this->problem->getExplicitRHS( time + tau, tau, kAux, k5 );
    }
-   if( DeviceType :: getDevice() == tnlCudaDevice )
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
       dim3 cudaBlockSize( 512 );
-      const IndexType cudaBlocks = tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x );
-      const IndexType cudaGrids = tnlCuda::getNumberOfGrids( cudaBlocks );
-      this->cudaBlockResidue.setSize( min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
-      const IndexType threadsPerGrid = tnlCuda::getMaxGridSize() * cudaBlockSize.x;
+      const IndexType cudaBlocks = Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
+      const IndexType cudaGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks );
+      this->cudaBlockResidue.setSize( min( cudaBlocks, Devices::Cuda::getMaxGridSize() ) );
+      const IndexType threadsPerGrid = Devices::Cuda::getMaxGridSize() * cudaBlockSize.x;
 
       this->problem->getExplicitRHS( time, tau, u, k1 );
       cudaThreadSynchronize();
@@ -374,7 +374,7 @@ typename Problem :: RealType tnlMersonSolver< Problem > :: computeError( const R
 #endif
 
    RealType eps( 0.0 ), maxEps( 0.0 );
-   if( DeviceType :: getDevice() == tnlHostDevice )
+   if( std::is_same< DeviceType, Devices::Host >::value )
    {
       // TODO: implement OpenMP support
       for( IndexType i = 0; i < size; i ++  )
@@ -387,14 +387,14 @@ typename Problem :: RealType tnlMersonSolver< Problem > :: computeError( const R
          eps = max( eps, err );
       }
    }
-   if( DeviceType :: getDevice() == tnlCudaDevice )
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
       dim3 cudaBlockSize( 512 );
-      const IndexType cudaBlocks = tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x );
-      const IndexType cudaGrids = tnlCuda::getNumberOfGrids( cudaBlocks );
-      this->cudaBlockResidue.setSize( min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
-      const IndexType threadsPerGrid = tnlCuda::getMaxGridSize() * cudaBlockSize.x;
+      const IndexType cudaBlocks = Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
+      const IndexType cudaGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks );
+      this->cudaBlockResidue.setSize( min( cudaBlocks, Devices::Cuda::getMaxGridSize() ) );
+      const IndexType threadsPerGrid = Devices::Cuda::getMaxGridSize() * cudaBlockSize.x;
 
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
       {
@@ -443,10 +443,10 @@ void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
    k5. touch();
 #endif
 
-   if( DeviceType :: getDevice() == tnlHostDevice )
+   if( std::is_same< DeviceType, Devices::Host >::value )
    {
 #ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:localResidue) firstprivate( size, _u, _k1, _k4, _k5, tau ) if( tnlHost::isOMPEnabled() )
+#pragma omp parallel for reduction(+:localResidue) firstprivate( size, _u, _k1, _k4, _k5, tau ) if( Devices::Host::isOMPEnabled() )
 #endif
       for( IndexType i = 0; i < size; i ++ )
       {
@@ -455,14 +455,14 @@ void tnlMersonSolver< Problem > :: computeNewTimeLevel( DofVectorType& u,
          localResidue += abs( ( RealType ) add );
       }
    }
-   if( DeviceType :: getDevice() == tnlCudaDevice )
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
       dim3 cudaBlockSize( 512 );
-      const IndexType cudaBlocks = tnlCuda::getNumberOfBlocks( size, cudaBlockSize.x );
-      const IndexType cudaGrids = tnlCuda::getNumberOfGrids( cudaBlocks );
-      this->cudaBlockResidue.setSize( min( cudaBlocks, tnlCuda::getMaxGridSize() ) );
-      const IndexType threadsPerGrid = tnlCuda::getMaxGridSize() * cudaBlockSize.x;
+      const IndexType cudaBlocks = Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
+      const IndexType cudaGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks );
+      this->cudaBlockResidue.setSize( min( cudaBlocks, Devices::Cuda::getMaxGridSize() ) );
+      const IndexType threadsPerGrid = Devices::Cuda::getMaxGridSize() * cudaBlockSize.x;
 
       localResidue = 0.0;
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )

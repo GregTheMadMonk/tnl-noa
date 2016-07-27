@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCudaDeviceInfo.h  -  description
+                          CudaDeviceInfo.h  -  description
                              -------------------
     begin                : Jun 21, 2015
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -11,11 +11,12 @@
 #pragma once
 
 #include <stdlib.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
+namespace Devices {
 
-class tnlCudaDeviceInfo
+class CudaDeviceInfo
 {
    public:
 
@@ -45,5 +46,6 @@ class tnlCudaDeviceInfo
 
 };
 
+} // namespace Devices
 } // namespace TNL
 

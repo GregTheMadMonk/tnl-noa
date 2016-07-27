@@ -14,49 +14,49 @@ namespace TNL {
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-template class tnlGrid< 1, float,  tnlHost, int >;
-template class tnlGrid< 1, double, tnlHost, int >;
+template class tnlGrid< 1, float,  Devices::Host, int >;
+template class tnlGrid< 1, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
-template class tnlGrid< 1, float,  tnlHost, long int >;
-template class tnlGrid< 1, double, tnlHost, long int >;
+template class tnlGrid< 1, float,  Devices::Host, long int >;
+template class tnlGrid< 1, double, Devices::Host, long int >;
 #endif
 
-template class tnlGrid< 2, float,  tnlHost, int >;
-template class tnlGrid< 2, double, tnlHost, int >;
+template class tnlGrid< 2, float,  Devices::Host, int >;
+template class tnlGrid< 2, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
-template class tnlGrid< 2, float,  tnlHost, long int >;
-template class tnlGrid< 2, double, tnlHost, long int >;
+template class tnlGrid< 2, float,  Devices::Host, long int >;
+template class tnlGrid< 2, double, Devices::Host, long int >;
 #endif
 
-template class tnlGrid< 3, float,  tnlHost, int >;
-template class tnlGrid< 3, double, tnlHost, int >;
+template class tnlGrid< 3, float,  Devices::Host, int >;
+template class tnlGrid< 3, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
-template class tnlGrid< 3, float,  tnlHost, long int >;
-template class tnlGrid< 3, double, tnlHost, long int >;
+template class tnlGrid< 3, float,  Devices::Host, long int >;
+template class tnlGrid< 3, double, Devices::Host, long int >;
 #endif
 
 #ifdef HAVE_CUDA
 #endif
 
-template class tnlGrid< 1, float,  tnlCuda, int >;
-template class tnlGrid< 1, double, tnlCuda, int >;
+template class tnlGrid< 1, float,  Devices::Cuda, int >;
+template class tnlGrid< 1, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_INT
-template class tnlGrid< 1, float,  tnlCuda, long int >;
-template class tnlGrid< 1, double, tnlCuda, long int >;
+template class tnlGrid< 1, float,  Devices::Cuda, long int >;
+template class tnlGrid< 1, double, Devices::Cuda, long int >;
 #endif
 
-template class tnlGrid< 2, float,  tnlCuda, int >;
-template class tnlGrid< 2, double, tnlCuda, int >;
+template class tnlGrid< 2, float,  Devices::Cuda, int >;
+template class tnlGrid< 2, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_INT
-template class tnlGrid< 2, float,  tnlCuda, long int >;
-template class tnlGrid< 2, double, tnlCuda, long int >;
+template class tnlGrid< 2, float,  Devices::Cuda, long int >;
+template class tnlGrid< 2, double, Devices::Cuda, long int >;
 #endif
 
-template class tnlGrid< 3, float,  tnlCuda, int >;
-template class tnlGrid< 3, double, tnlCuda, int >;
+template class tnlGrid< 3, float,  Devices::Cuda, int >;
+template class tnlGrid< 3, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_INT
-template class tnlGrid< 3, float,  tnlCuda, long int >;
-template class tnlGrid< 3, double, tnlCuda, long int >;
+template class tnlGrid< 3, float,  Devices::Cuda, long int >;
+template class tnlGrid< 3, double, Devices::Cuda, long int >;
 #endif
 
 #endif

@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 #include <TNL/functions/tnlFunctionAdapter.h>
 
 namespace TNL {

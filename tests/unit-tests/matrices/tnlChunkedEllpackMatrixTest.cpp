@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <TNL/matrices/tnlChunkedEllpackMatrix.h>
 #include <cstdlib>
 
@@ -20,18 +20,18 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlHost, int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlHost, int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlHost, long int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlHost, long int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlHost, int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlHost, int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlHost, long int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlHost, long int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlHost, int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlHost, int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, tnlHost, long int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, tnlHost, long int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >()
+   if( ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, Devices::Host, int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, Devices::Host, int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, Devices::Host, long int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, Devices::Host, long int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, Devices::Host, int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, Devices::Host, int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, Devices::Host, long int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, Devices::Host, long int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, Devices::Host, int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, Devices::Host, int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, Devices::Host, long int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
+       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, Devices::Host, long int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

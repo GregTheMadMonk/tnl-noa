@@ -19,7 +19,7 @@
 #define NAVIERSTOKESSOLVER_H_
 
 #include <TNL/Logger.h>
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/matrices/tnlCSRMatrix.h>

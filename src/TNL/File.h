@@ -20,8 +20,8 @@
 
 #include <TNL/Assert.h>
 #include <TNL/String.h>
-#include <TNL/core/tnlHost.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Host.h>
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 
@@ -92,18 +92,18 @@ class File
 	template< typename Type, typename Device >
 	bool write( const Type* buffer );
 #else
-   template< typename Type, typename Device = tnlHost, typename Index = int >
+   template< typename Type, typename Device = Devices::Host, typename Index = int >
    bool read( Type* buffer,
               const Index& elements );
 
-   template< typename Type, typename Device = tnlHost >
+   template< typename Type, typename Device = Devices::Host >
    bool read( Type* buffer );
 
-   template< typename Type, typename Device = tnlHost, typename Index = int >
+   template< typename Type, typename Device = Devices::Host, typename Index = int >
    bool write( const Type* buffer,
                const Index elements );
 
-   template< typename Type, typename Device = tnlHost >
+   template< typename Type, typename Device = Devices::Host >
    bool write( const Type* buffer );
 
 #endif

@@ -188,7 +188,7 @@ class tnlMeshInitializerLayer< MeshConfig,
    typedef tnlMeshInitializer< MeshConfig >                                         InitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, EntityTopology >                   EntityInitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, EntityTopology >                   CellInitializerType;
-   typedef Arrays::Array< CellInitializerType, tnlHost, GlobalIndexType >        CellInitializerContainerType;
+   typedef Arrays::Array< CellInitializerType, Devices::Host, GlobalIndexType >        CellInitializerContainerType;
    typedef typename MeshTraits::CellSeedArrayType                                   CellSeedArrayType;
    typedef typename MeshTraits::LocalIndexType                                      LocalIndexType;
    typedef typename MeshTraits::PointArrayType                                      PointArrayType;
@@ -294,7 +294,7 @@ class tnlMeshInitializerLayer< MeshConfig,
    typedef tnlMeshInitializer< MeshConfig >                                         InitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, EntityTopology >                   EntityInitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, EntityTopology >                   CellInitializerType;
-   typedef Arrays::Array< CellInitializerType, tnlHost, GlobalIndexType >        CellInitializerContainerType;
+   typedef Arrays::Array< CellInitializerType, Devices::Host, GlobalIndexType >        CellInitializerContainerType;
    typedef typename EntityTraits::SeedArrayType                                     EntitySeedArrayType;
    typedef typename MeshTraits::CellSeedArrayType                                   CellSeedArrayType;
    typedef typename MeshTraits::LocalIndexType                                      LocalIndexType;
@@ -406,7 +406,7 @@ class tnlMeshInitializerLayer< MeshConfig,
    typedef tnlMeshInitializer< MeshConfig >                                   InitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, CellTopology >               CellInitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, EntityTopology >             EntityInitializerType;
-   typedef Arrays::Array< EntityInitializerType, tnlHost, GlobalIndexType >        EntityInitializerContainerType;
+   typedef Arrays::Array< EntityInitializerType, Devices::Host, GlobalIndexType >        EntityInitializerContainerType;
    typedef typename MeshTraits::CellSeedArrayType                             CellSeedArrayType;
    typedef typename MeshTraits::LocalIndexType                                LocalIndexType;
    typedef typename MeshTraits::PointArrayType                                PointArrayType;
@@ -552,7 +552,7 @@ class tnlMeshInitializerLayer< MeshConfig,
    typedef tnlMeshInitializer< MeshConfig >                                   InitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, CellTopology >               CellInitializerType;
    typedef tnlMeshEntityInitializer< MeshConfig, EntityTopology >             VertexInitializerType;
-   typedef Arrays::Array< VertexInitializerType, tnlHost, GlobalIndexType >        VertexInitializerContainerType;
+   typedef Arrays::Array< VertexInitializerType, Devices::Host, GlobalIndexType >        VertexInitializerContainerType;
    typedef typename tnlMeshTraits< MeshConfig >::CellSeedArrayType            CellSeedArrayType;
    typedef typename tnlMeshTraits< MeshConfig >::LocalIndexType               LocalIndexType;
    typedef typename tnlMeshTraits< MeshConfig >::PointArrayType               PointArrayType;

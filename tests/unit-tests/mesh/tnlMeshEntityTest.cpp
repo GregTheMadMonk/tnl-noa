@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
 #ifndef HAVE_NOT_CXX11
@@ -21,7 +21,7 @@ int main( int argc, char* argv[] )
 {
 #ifndef HAVE_NOT_CXX11
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlMeshEntityTester< double, tnlHost, long int > >()
+   if( ! tnlUnitTestStarter :: run< tnlMeshEntityTester< double, Devices::Host, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

@@ -35,7 +35,7 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlAdaptiveRgCSRMatrixTester" );
       CppUnit :: TestResult result;
 
-      if( Device :: getDevice() == tnlHostDevice )
+      if( Device :: getDevice() == Devices::HostDevice )
       {
          suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlAdaptiveRgCSRMatrixTester< Real, Device > >(
                                   "ifEmptyMatrixIsStoredProperly",
@@ -204,16 +204,16 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
       tnlCSRMatrix< Real > csrMatrix;//( "test-matrix:Empty" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Empty" );
       this->setEmptyMatrix( csrMatrix, size );
-      if( Device :: getDevice() == tnlHostDevice )
+      if( Device :: getDevice() == Devices::HostDevice )
          argcsrMatrix. copyFrom( csrMatrix );
       else
       {
-         tnlAdaptiveRgCSRMatrix< Real, tnlHost > hostArgcsrMatrix( "test-matrix:host-aux" );
+         tnlAdaptiveRgCSRMatrix< Real, Devices::Host > hostArgcsrMatrix( "test-matrix:host-aux" );
          hostArgcsrMatrix. copyFrom( csrMatrix );
          argcsrMatrix. copyFrom( hostArgcsrMatrix );
       }
 
-      Vector< Real, tnlHost > x1( "x1" ), b1( "b1" );
+      Vector< Real, Devices::Host > x1( "x1" ), b1( "b1" );
       Vector< Real, Device > x2( "x2" ), b2( "b2" );
       x1. setSize( size );
       x2. setSize( size );
@@ -234,16 +234,16 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
       tnlCSRMatrix< Real > csrMatrix;//( "test-matrix:Diagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:Diagonal" );
       this->setDiagonalMatrix( csrMatrix, size );
-      if( Device :: getDevice() == tnlHostDevice )
+      if( Device :: getDevice() == Devices::HostDevice )
          argcsrMatrix. copyFrom( csrMatrix );
       else
       {
-         tnlAdaptiveRgCSRMatrix< Real, tnlHost > hostArgcsrMatrix( "test-matrix:host-aux" );
+         tnlAdaptiveRgCSRMatrix< Real, Devices::Host > hostArgcsrMatrix( "test-matrix:host-aux" );
          hostArgcsrMatrix. copyFrom( csrMatrix );
          argcsrMatrix. copyFrom( hostArgcsrMatrix );
       }
 
-      Vector< Real, tnlHost > x1( "x1" ), b1( "b1" );
+      Vector< Real, Devices::Host > x1( "x1" ), b1( "b1" );
       Vector< Real, Device > x2( "x2" ), b2( "b2" );
       x1. setSize( size );
       x2. setSize( size );
@@ -263,16 +263,16 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
       tnlCSRMatrix< Real > csrMatrix;//( "test-matrix:TriDiagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:TriDiagonal" );
       this->setTridiagonalMatrix( csrMatrix, size );
-      if( Device :: getDevice() == tnlHostDevice )
+      if( Device :: getDevice() == Devices::HostDevice )
          argcsrMatrix. copyFrom( csrMatrix );
       else
       {
-         tnlAdaptiveRgCSRMatrix< Real, tnlHost > hostArgcsrMatrix( "test-matrix:host-aux" );
+         tnlAdaptiveRgCSRMatrix< Real, Devices::Host > hostArgcsrMatrix( "test-matrix:host-aux" );
          hostArgcsrMatrix. copyFrom( csrMatrix );
          argcsrMatrix. copyFrom( hostArgcsrMatrix );
       }
 
-      Vector< Real, tnlHost > x1( "x1" ), b1( "b1" );
+      Vector< Real, Devices::Host > x1( "x1" ), b1( "b1" );
       Vector< Real, Device > x2( "x2" ), b2( "b2" );
       x1. setSize( size );
       x2. setSize( size );
@@ -291,16 +291,16 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
       tnlCSRMatrix< Real > csrMatrix;//( "test-matrix:TriDiagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:TriDiagonal" );
       this->setUpperTriangularMatrix( csrMatrix, size );
-      if( Device :: getDevice() == tnlHostDevice )
+      if( Device :: getDevice() == Devices::HostDevice )
          argcsrMatrix. copyFrom( csrMatrix );
       else
       {
-         tnlAdaptiveRgCSRMatrix< Real, tnlHost > hostArgcsrMatrix( "test-matrix:host-aux" );
+         tnlAdaptiveRgCSRMatrix< Real, Devices::Host > hostArgcsrMatrix( "test-matrix:host-aux" );
          hostArgcsrMatrix. copyFrom( csrMatrix );
          argcsrMatrix. copyFrom( hostArgcsrMatrix );
       }
 
-      Vector< Real, tnlHost > x1( "x1" ), b1( "b1" );
+      Vector< Real, Devices::Host > x1( "x1" ), b1( "b1" );
       Vector< Real, Device > x2( "x2" ), b2( "b2" );
       x1. setSize( size );
       x2. setSize( size );
@@ -320,16 +320,16 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
       tnlCSRMatrix< Real > csrMatrix;//( "test-matrix:full" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:full" );
       this->setFullMatrix( csrMatrix, size );
-      if( Device :: getDevice() == tnlHostDevice )
+      if( Device :: getDevice() == Devices::HostDevice )
          argcsrMatrix. copyFrom( csrMatrix );
       else
       {
-         tnlAdaptiveRgCSRMatrix< Real, tnlHost > hostArgcsrMatrix( "test-matrix:host-aux" );
+         tnlAdaptiveRgCSRMatrix< Real, Devices::Host > hostArgcsrMatrix( "test-matrix:host-aux" );
          hostArgcsrMatrix. copyFrom( csrMatrix );
          argcsrMatrix. copyFrom( hostArgcsrMatrix );
       }
 
-      Vector< Real, tnlHost > x1( "x1" ), b1( "b1" );
+      Vector< Real, Devices::Host > x1( "x1" ), b1( "b1" );
       Vector< Real, Device > x2( "x2" ), b2( "b2" );
       x1. setSize( size );
       x2. setSize( size );
@@ -348,17 +348,17 @@ template< class Real, typename Device > class tnlAdaptiveRgCSRMatrixTester : pub
       tnlCSRMatrix< Real > csrMatrix;//( "test-matrix:TriDiagonal" );
       tnlAdaptiveRgCSRMatrix< Real, Device > argcsrMatrix( "test-matrix:TriDiagonal" );
       this->setBcsstk20Matrix( csrMatrix );
-      if( Device :: getDevice() == tnlHostDevice )
+      if( Device :: getDevice() == Devices::HostDevice )
          argcsrMatrix. copyFrom( csrMatrix );
       else
       {
-         tnlAdaptiveRgCSRMatrix< Real, tnlHost > hostArgcsrMatrix( "test-matrix:host-aux" );
+         tnlAdaptiveRgCSRMatrix< Real, Devices::Host > hostArgcsrMatrix( "test-matrix:host-aux" );
          hostArgcsrMatrix. copyFrom( csrMatrix );
          argcsrMatrix. copyFrom( hostArgcsrMatrix );
       }
 
       const int size = csrMatrix. getRows();
-      Vector< Real, tnlHost > x1( "x1" ), b1( "b1" );
+      Vector< Real, Devices::Host > x1( "x1" ), b1( "b1" );
       Vector< Real, Device > x2( "x2" ), b2( "b2" );
       x1. setSize( size );
       x2. setSize( size );

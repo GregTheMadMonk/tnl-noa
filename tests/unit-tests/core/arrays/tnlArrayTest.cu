@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
 #include "tnlArrayTester.h"
@@ -18,16 +18,16 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( //! tnlUnitTestStarter :: run< ArrayTester< char, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< ArrayTester< int, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< ArrayTester< long int, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< ArrayTester< float, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< ArrayTester< double, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< ArrayTester< char, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< ArrayTester< int, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< ArrayTester< long int, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< ArrayTester< float, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< ArrayTester< double, tnlCuda, long int > >()
+   if( //! tnlUnitTestStarter :: run< ArrayTester< char, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< int, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< long int, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< float, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< double, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< char, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< int, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< long int, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< float, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< double, Devices::Cuda, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

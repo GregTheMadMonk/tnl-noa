@@ -11,13 +11,13 @@
 #pragma once
 
 #include <TNL/Object.h>
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <TNL/Vectors/Vector.h>
 
 namespace TNL {
 
 template< typename Real = double,
-          typename Device = tnlHost,
+          typename Device = Devices::Host,
           typename Index = int >
 class tnlMatrix : public virtual Object
 {

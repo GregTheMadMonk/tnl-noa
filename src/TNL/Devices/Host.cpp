@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlHost.h  -  description
+                          Host.h  -  description
                              -------------------
     begin                : Nov 7, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #ifdef HAVE_OPENMP
 #include <omp.h>
 #endif
@@ -16,34 +16,35 @@
 #include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
+namespace Devices {   
 
 
-bool tnlHost::ompEnabled( true );
-int tnlHost::maxThreadsCount( -1 );
+bool Host::ompEnabled( true );
+int Host::maxThreadsCount( -1 );
 
-String tnlHost::getDeviceType()
+String Host::getDeviceType()
 {
-   return String( "tnlHost" );
+   return String( "Devices::Host" );
 };
 
-size_t tnlHost::getFreeMemory()
+size_t Host::getFreeMemory()
 {
    long pages = sysconf(_SC_PHYS_PAGES);
    long page_size = sysconf(_SC_PAGE_SIZE);
    return pages * page_size;
 };
 
-void tnlHost::enableOMP()
+void Host::enableOMP()
 {
    ompEnabled = true;
 }
 
-void tnlHost::disableOMP()
+void Host::disableOMP()
 {
    ompEnabled = false;
 }
 
-void tnlHost::setMaxThreadsCount( int maxThreadsCount_ )
+void Host::setMaxThreadsCount( int maxThreadsCount_ )
 {
    maxThreadsCount = maxThreadsCount_;
 #ifdef HAVE_OPENMP
@@ -51,7 +52,7 @@ void tnlHost::setMaxThreadsCount( int maxThreadsCount_ )
 #endif
 }
 
-int tnlHost::getMaxThreadsCount()
+int Host::getMaxThreadsCount()
 {
 #ifdef HAVE_OPENMP
    if( maxThreadsCount == -1 )
@@ -62,7 +63,7 @@ int tnlHost::getMaxThreadsCount()
 #endif
 }
  
-int tnlHost::getThreadIdx()
+int Host::getThreadIdx()
 {
 #ifdef HAVE_OPENMP
    return omp_get_thread_num();
@@ -71,7 +72,7 @@ int tnlHost::getThreadIdx()
 #endif
 }
 
-void tnlHost::configSetup( Config::ConfigDescription& config, const String& prefix )
+void Host::configSetup( Config::ConfigDescription& config, const String& prefix )
 {
 #ifdef HAVE_OPENMP
    config.addEntry< bool >( prefix + "omp-enabled", "Enable support of OpenMP.", true );
@@ -83,13 +84,14 @@ void tnlHost::configSetup( Config::ConfigDescription& config, const String& pref
  
 }
  
-bool tnlHost::setup( const Config::ParameterContainer& parameters,
-                    const String& prefix )
+bool Host::setup( const Config::ParameterContainer& parameters,
+                  const String& prefix )
 {
    ompEnabled = parameters.getParameter< bool >( prefix + "omp-enabled" );
    maxThreadsCount = parameters.getParameter< int >( prefix + "omp-max-threads" );
    return true;
 }
 
+} // namespace Devices
 } // namespace TNL
 

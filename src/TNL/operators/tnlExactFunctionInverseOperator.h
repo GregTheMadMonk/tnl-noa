@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/String.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 #include <TNL/operators/tnlOperator.h>
 #include <TNL/operators/tnlExactIdentityOperator.h>
 

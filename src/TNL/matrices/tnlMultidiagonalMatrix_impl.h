@@ -422,14 +422,14 @@ getRow( const IndexType rowIndex )
 
    IndexType firstRowElementIndex;
    this->getElementIndexFast( rowIndex, rowIndex + this->diagonalsShift[ firstRowElement ], firstRowElementIndex );
-   if( Device::getDevice() == tnlHostDevice )
+   if( std::is_same< Device, Devices::Host >::value )
       return MatrixRow( &this->values.getData()[ firstRowElementIndex ],
                         &this->diagonalsShift.getData()[ firstRowElement ],
                         this->diagonalsShift.getSize() - firstRowElement,
                         rowIndex,
                         this->getColumns(),
                         1 );
-   if( Device::getDevice() == tnlCudaDevice )
+   if( std::is_same< Device, Devices::Cuda >::value )
       return MatrixRow( &this->values.getData()[ firstRowElementIndex ],
                         &this->diagonalsShift.getData()[ firstRowElement ],
                         this->diagonalsShift.getSize()- firstRowElement,
@@ -453,14 +453,14 @@ getRow( const IndexType rowIndex ) const
 
    IndexType firstRowElementIndex;
    this->getElementIndexFast( rowIndex, rowIndex + this->diagonalsShift[ firstRowElement ], firstRowElementIndex );
-   if( Device::getDevice() == tnlHostDevice )
+   if( std::is_same< Device, Devices::Host >::value )
       return MatrixRow( &this->values.getData()[ firstRowElementIndex ],
                         &this->diagonalsShift.getData()[ firstRowElement ],
                         this->diagonalsShift.getSize() - firstRowElement,
                         rowIndex,
                         this->getColumns(),
                         1 );
-   if( Device::getDevice() == tnlCudaDevice )
+   if( std::is_same< Device, Devices::Cuda >::value )
       return MatrixRow( &this->values.getData()[ firstRowElementIndex ],
                         &this->diagonalsShift.getData()[ firstRowElement ],
                         this->diagonalsShift.getSize()- firstRowElement,
@@ -704,11 +704,11 @@ bool tnlMultidiagonalMatrix< Real, Device, Index >::getElementIndexFast( const I
 }
 
 template<>
-class tnlMultidiagonalMatrixDeviceDependentCode< tnlHost >
+class tnlMultidiagonalMatrixDeviceDependentCode< Devices::Host >
 {
    public:
 
-      typedef tnlHost Device;
+      typedef Devices::Host Device;
 
       template< typename Index >
       __cuda_callable__
@@ -729,7 +729,7 @@ class tnlMultidiagonalMatrixDeviceDependentCode< tnlHost >
                                  OutVector& outVector )
       {
 #ifdef HAVE_OPENMP
-#pragma omp parallel for if( tnlHost::isOMPEnabled() )
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
 #endif
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
@@ -737,11 +737,11 @@ class tnlMultidiagonalMatrixDeviceDependentCode< tnlHost >
 };
 
 template<>
-class tnlMultidiagonalMatrixDeviceDependentCode< tnlCuda >
+class tnlMultidiagonalMatrixDeviceDependentCode< Devices::Cuda >
 {
    public:
 
-      typedef tnlCuda Device;
+      typedef Devices::Cuda Device;
 
       template< typename Index >
       __cuda_callable__

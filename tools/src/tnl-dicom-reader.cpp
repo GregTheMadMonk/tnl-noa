@@ -42,9 +42,9 @@ bool processDicomSeries( const Config::ParameterContainer& parameters )
    String meshFile = parameters.getParameter< String >( "mesh-file" );
    bool verbose = parameters.getParameter< bool >( "verbose" );
 
-   typedef tnlGrid< 2, double, tnlHost, int > GridType;
+   typedef tnlGrid< 2, double, Devices::Host, int > GridType;
    GridType grid;
-   Vectors::Vector< double, tnlHost, int > vector;
+   Vectors::Vector< double, Devices::Host, int > vector;
    tnlRegionOfInterest< int > roi;
    for( int i = 0; i < dicomSeriesNames.getSize(); i++ )
    {

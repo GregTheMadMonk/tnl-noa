@@ -57,8 +57,8 @@ bool tnlEllpackMatrix< Real, Device, Index >::setDimensions( const IndexType row
                    << " columns = " << columns << std::endl );
    this->rows = rows;
    this->columns = columns;
-   if( Device::DeviceType == ( int ) tnlCudaDevice )
-      this->alignedRows = roundToMultiple( columns, tnlCuda::getWarpSize() );
+   if( std::is_same< Device, Devices::Cuda >::value )
+      this->alignedRows = roundToMultiple( columns, Devices::Cuda::getWarpSize() );
    else this->alignedRows = rows;
    if( this->rowLengths != 0 )
       return allocateElements();
@@ -570,7 +570,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::save( File& file ) const
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::save( file) ) return false;
 #ifdef HAVE_NOT_CXX11
-   if( ! file.write< IndexType, tnlHost, IndexType >( &this->rowLengths, 1 ) ) return false;
+   if( ! file.write< IndexType, Devices::Host, IndexType >( &this->rowLengths, 1 ) ) return false;
 #else
    if( ! file.write( &this->rowLengths ) ) return false;
 #endif
@@ -584,7 +584,7 @@ bool tnlEllpackMatrix< Real, Device, Index >::load( File& file )
 {
    if( ! tnlSparseMatrix< Real, Device, Index >::load( file) ) return false;
 #ifdef HAVE_NOT_CXX11
-   if( ! file.read< IndexType, tnlHost, IndexType >( &this->rowLengths, 1 ) ) return false;
+   if( ! file.read< IndexType, Devices::Host, IndexType >( &this->rowLengths, 1 ) ) return false;
 #else
    if( ! file.read( &this->rowLengths ) ) return false;
 #endif
@@ -641,11 +641,11 @@ bool tnlEllpackMatrix< Real, Device, Index >::allocateElements()
 }
 
 template<>
-class tnlEllpackMatrixDeviceDependentCode< tnlHost >
+class tnlEllpackMatrixDeviceDependentCode< Devices::Host >
 {
    public:
 
-      typedef tnlHost Device;
+      typedef Devices::Host Device;
 
       template< typename Real,
                 typename Index >
@@ -682,7 +682,7 @@ class tnlEllpackMatrixDeviceDependentCode< tnlHost >
                                  OutVector& outVector )
       {
 #ifdef HAVE_OPENMP
-#pragma omp parallel for if( tnlHost::isOMPEnabled() )
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
 #endif
          for( Index row = 0; row < matrix.getRows(); row ++ )
             outVector[ row ] = matrix.rowVectorProduct( row, inVector );
@@ -714,7 +714,7 @@ __global__ void tnlEllpackMatrixVectorProductCudaKernel(
    Real* outVector,
    const Index gridIdx )
 {
-   const Index rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const Index rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( rowIdx >= rows )
       return;
    Index i = rowIdx;
@@ -735,11 +735,11 @@ __global__ void tnlEllpackMatrixVectorProductCudaKernel(
 
 
 template<>
-class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
+class tnlEllpackMatrixDeviceDependentCode< Devices::Cuda >
 {
    public:
 
-      typedef tnlCuda Device;
+      typedef Devices::Cuda Device;
 
       template< typename Real,
                 typename Index >
@@ -779,16 +779,16 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
          #ifdef HAVE_CUDA
             typedef tnlEllpackMatrix< Real, Device, Index > Matrix;
             typedef typename Matrix::IndexType IndexType;
-            //Matrix* kernel_this = tnlCuda::passToDevice( matrix );
-            //InVector* kernel_inVector = tnlCuda::passToDevice( inVector );
-            //OutVector* kernel_outVector = tnlCuda::passToDevice( outVector );
-            dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+            //Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
+            //InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
+            //OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
+            dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
             const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-            const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+            const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
             for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
             {
                if( gridIdx == cudaGrids - 1 )
-                  cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+                  cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
                tnlEllpackMatrixVectorProductCudaKernel
                < Real, Index >
                 <<< cudaGridSize, cudaBlockSize >>>
@@ -804,9 +804,9 @@ class tnlEllpackMatrixDeviceDependentCode< tnlCuda >
                   gridIdx );
                checkCudaDevice;
             }
-            //tnlCuda::freeFromDevice( kernel_this );
-            //tnlCuda::freeFromDevice( kernel_inVector );
-            //tnlCuda::freeFromDevice( kernel_outVector );
+            //Devices::Cuda::freeFromDevice( kernel_this );
+            //Devices::Cuda::freeFromDevice( kernel_inVector );
+            //Devices::Cuda::freeFromDevice( kernel_outVector );
             checkCudaDevice;
             cudaThreadSynchronize();
          #endif

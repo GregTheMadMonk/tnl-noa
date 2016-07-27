@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
 #include "tnlMultidiagonalMatrixTester.h"
@@ -18,10 +18,10 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlMultidiagonalMatrixTester< float, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultidiagonalMatrixTester< double, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultidiagonalMatrixTester< float, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultidiagonalMatrixTester< double, tnlHost, long int > >()
+   if( ! tnlUnitTestStarter :: run< tnlMultidiagonalMatrixTester< float, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultidiagonalMatrixTester< double, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultidiagonalMatrixTester< float, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultidiagonalMatrixTester< double, Devices::Host, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

@@ -45,7 +45,7 @@ int main( int argc, char* argv[] )
    String meshFile = parameters. getParameter< String >( "mesh" );
    /*if( meshFile == "" )
    {
-      if( ! processFiles< tnlDummyMesh< double, tnlHost, int > >( parameters ) )
+      if( ! processFiles< tnlDummyMesh< double, Devices::Host, int > >( parameters ) )
          return EXIT_FAILURE;
       return EXIT_SUCCESS;
    }*/
@@ -67,19 +67,19 @@ int main( int argc, char* argv[] )
       int dimensions = atoi( parsedMeshType[ 1 ].getString() );
       if( dimensions == 1 )
       {
-         typedef tnlGrid< 1, double, tnlHost, int > MeshType;
+         typedef tnlGrid< 1, double, Devices::Host, int > MeshType;
          if( ! processFiles< MeshType >( parameters ) )
             return EXIT_FAILURE;
       }
       if( dimensions == 2 )
       {
-         typedef tnlGrid< 2, double, tnlHost, int > MeshType;
+         typedef tnlGrid< 2, double, Devices::Host, int > MeshType;
          if( ! processFiles< MeshType >( parameters ) )
             return EXIT_FAILURE;
       }
       if( dimensions == 3 )
       {
-         typedef tnlGrid< 3, double, tnlHost, int > MeshType;
+         typedef tnlGrid< 3, double, Devices::Host, int > MeshType;
          if( ! processFiles< MeshType >( parameters ) )
             return EXIT_FAILURE;
       }

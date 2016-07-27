@@ -42,4 +42,4 @@ else()
 ENDIF()    
 
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/Vectors )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Vectors )

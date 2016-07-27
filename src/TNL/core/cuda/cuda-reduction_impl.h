@@ -42,13 +42,13 @@ const int minGPUReductionDataSize = 256;//65536; //16384;//1024;//256;
 #ifdef HAVE_CUDA
 
 template< typename Operation, int blockSize >
-__global__ void tnlCUDAReductionKernel( Operation operation,
+__global__ void tnlCudaReductionKernel( Operation operation,
                                         const typename Operation :: IndexType size,
                                         const typename Operation :: RealType* input1,
                                         const typename Operation :: RealType* input2,
                                         typename Operation :: ResultType* output )
 {
-   typedef tnlCUDAReduction< Operation, blockSize > Reduction;
+   typedef tnlCudaReduction< Operation, blockSize > Reduction;
    Reduction::reduce( operation, size, input1, input2, output );
 };
 
@@ -65,7 +65,7 @@ typename Operation::IndexType reduceOnCudaDevice( Operation& operation,
  
    const IndexType desGridSize( minGPUReductionDataSize );
    dim3 blockSize( 256 ), gridSize( 0 );
-   gridSize.x = min( tnlCuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
+   gridSize.x = min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
  
    // create reference to the reduction buffer singleton and set default size
    tnlCudaReductionBuffer & cudaReductionBuffer = tnlCudaReductionBuffer::getInstance( 8 * minGPUReductionDataSize );
@@ -82,39 +82,39 @@ typename Operation::IndexType reduceOnCudaDevice( Operation& operation,
    switch( blockSize.x )
    {
       case 512:
-         tnlCUDAReductionKernel< Operation, 512 >
+         tnlCudaReductionKernel< Operation, 512 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case 256:
-         tnlCUDAReductionKernel< Operation, 256 >
+         tnlCudaReductionKernel< Operation, 256 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case 128:
-         tnlCUDAReductionKernel< Operation, 128 >
+         tnlCudaReductionKernel< Operation, 128 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case  64:
-         tnlCUDAReductionKernel< Operation,  64 >
+         tnlCudaReductionKernel< Operation,  64 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case  32:
-         tnlCUDAReductionKernel< Operation,  32 >
+         tnlCudaReductionKernel< Operation,  32 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case  16:
-         tnlCUDAReductionKernel< Operation,  16 >
+         tnlCudaReductionKernel< Operation,  16 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
      case   8:
-         tnlCUDAReductionKernel< Operation,   8 >
+         tnlCudaReductionKernel< Operation,   8 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case   4:
-         tnlCUDAReductionKernel< Operation,   4 >
+         tnlCudaReductionKernel< Operation,   4 >
         <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
         break;
       case   2:
-         tnlCUDAReductionKernel< Operation,   2 >
+         tnlCudaReductionKernel< Operation,   2 >
          <<< gridSize, blockSize, shmem >>>( operation, size, input1, input2, output);
          break;
       case   1:
@@ -149,10 +149,10 @@ bool reductionOnCudaDevice( Operation& operation,
    RealType hostArray2[ minGPUReductionDataSize ];
    if( size <= minGPUReductionDataSize )
    {
-      if( ! Arrays::ArrayOperations< tnlHost, tnlCuda >::copyMemory< RealType, RealType, IndexType >( hostArray1, deviceInput1, size ) )
+      if( ! Arrays::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray1, deviceInput1, size ) )
          return false;
       if( deviceInput2 && !
-          Arrays::ArrayOperations< tnlHost, tnlCuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, size ) )
+          Arrays::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, size ) )
          return false;
       result = operation.initialValue();
       for( IndexType i = 0; i < size; i ++ )
@@ -186,7 +186,7 @@ bool reductionOnCudaDevice( Operation& operation,
     * Transfer the reduced data from device to host.
     */
    ResultType resultArray[ minGPUReductionDataSize ];
-   if( ! Arrays::ArrayOperations< tnlHost, tnlCuda >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
+   if( ! Arrays::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
       return false;
  
    #ifdef CUDA_REDUCTION_PROFILING
@@ -214,7 +214,7 @@ bool reductionOnCudaDevice( Operation& operation,
  
    return checkCudaDevice;
 #else
-   tnlCudaSupportMissingMessage;;
+   CudaSupportMissingMessage;;
    return false;
 #endif
 };

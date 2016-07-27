@@ -35,9 +35,9 @@ template< class T > class tnlCurveElement
    bool save( File& file ) const
    {
 #ifdef HAVE_NOT_CXX11
-      if( ! file. write< const T, tnlHost >( &position ) )
+      if( ! file. write< const T, Devices::Host >( &position ) )
          return false;
-      if( ! file. write< const bool, tnlHost >( &separator ) )
+      if( ! file. write< const bool, Devices::Host >( &separator ) )
          return false;
       return true;
 #else
@@ -52,9 +52,9 @@ template< class T > class tnlCurveElement
    bool load( File& file )
    {
 #ifdef HAVE_NOT_CXX11
-      if( ! file. read< T, tnlHost >( &position ) )
+      if( ! file. read< T, Devices::Host >( &position ) )
          return false;
-      if( ! file. read< bool, tnlHost >( &separator ) )
+      if( ! file. read< bool, Devices::Host >( &separator ) )
          return false;
       return true;
 #else

@@ -16,38 +16,38 @@ namespace Vectors {
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-template class SharedVector< float, tnlHost, int >;
+template class SharedVector< float, Devices::Host, int >;
 #endif
-template class SharedVector< double, tnlHost, int >;
+template class SharedVector< double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class SharedVector< long double, tnlHost, int >;
+template class SharedVector< long double, Devices::Host, int >;
 #endif
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class SharedVector< float, tnlHost, long int >;
+template class SharedVector< float, Devices::Host, long int >;
 #endif
-template class SharedVector< double, tnlHost, long int >;
+template class SharedVector< double, Devices::Host, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class SharedVector< long double, tnlHost, long int >;
+template class SharedVector< long double, Devices::Host, long int >;
 #endif
 #endif
 
 #ifdef HAVE_CUDA
 #ifdef INSTANTIATE_FLOAT
-template class SharedVector< float, tnlCuda, int >;
+template class SharedVector< float, Devices::Cuda, int >;
 #endif
-template class SharedVector< double, tnlCuda, int >;
+template class SharedVector< double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class SharedVector< long double, tnlCuda, int >;
+template class SharedVector< long double, Devices::Cuda, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class SharedVector< float, tnlCuda, long int >;
+template class SharedVector< float, Devices::Cuda, long int >;
 #endif
-template class SharedVector< double, tnlCuda, long int >;
+template class SharedVector< double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class SharedVector< long double, tnlCuda, long int >;
+template class SharedVector< long double, Devices::Cuda, long int >;
 #endif
 #endif
 

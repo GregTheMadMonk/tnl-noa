@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 #include <TNL/String.h>
 
 
@@ -40,7 +40,7 @@ class Object
 
    /****
     * Type getter. This returns the type in C++ style - for example the returned value
-    * may look as follows: "Vector< double, tnlCuda >".
+    * may look as follows: "Vector< double, Devices::Cuda >".
     */
    static String getType();
 
@@ -48,8 +48,8 @@ class Object
 
    /****
     * This is used for load and save methods.
-    * Each object is saved as if it was stored on tnlHost. So even Vector< double, tnlCuda >
-    * is saved as Vector< double, tnlHost >.
+    * Each object is saved as if it was stored on Devices::Host. So even Vector< double, Devices::Cuda >
+    * is saved as Vector< double, Devices::Host >.
     */
    static String getSerializationType();
 

@@ -138,85 +138,85 @@ void reductionBenchmark( const int size,
             tnlCPUReductionMin( host_vector, sum );
             tnlCPUReductionMax( host_vector, sum );
          case 1:
-            tnlCUDASimpleReduction1Sum( size,
+            Devices::CudaSimpleReduction1Sum( size,
                                         device_vector. Data(),
                                         sum,
                                         device_aux. Data() );
-            tnlCUDASimpleReduction1Min( size,
+            Devices::CudaSimpleReduction1Min( size,
                                         device_vector. Data(),
                                         min,
                                         device_aux. Data() );
-            tnlCUDASimpleReduction1Max( size,
+            Devices::CudaSimpleReduction1Max( size,
                                         device_vector. Data(),
                                         max,
                                         device_aux. Data() );
             break;
          case 2:
-            tnlCUDASimpleReduction2Sum( size,
+            Devices::CudaSimpleReduction2Sum( size,
                                         device_vector. Data(),
                                         sum,
                                         device_aux. Data() );
-            tnlCUDASimpleReduction2Min( size,
+            Devices::CudaSimpleReduction2Min( size,
                                         device_vector. Data(),
                                         min,
                                         device_aux. Data() );
-            tnlCUDASimpleReduction2Max( size,
+            Devices::CudaSimpleReduction2Max( size,
                                         device_vector. Data(),
                                         max,
                                         device_aux. Data() );
             break;
          case 3:
-            tnlCUDASimpleReduction3Sum( size,
+            Devices::CudaSimpleReduction3Sum( size,
                                         device_vector. Data(),
                                         sum,
                                         device_aux. Data() );
-            tnlCUDASimpleReduction3Min( size,
+            Devices::CudaSimpleReduction3Min( size,
                                         device_vector. Data(),
                                         min,
                                         device_aux. Data() );
-            tnlCUDASimpleReduction3Max( size,
+            Devices::CudaSimpleReduction3Max( size,
                                         device_vector. Data(),
                                         max,
                                         device_aux. Data() );
             break;
          case 4:
-            tnlCUDASimpleReduction4Sum( size,
+            Devices::CudaSimpleReduction4Sum( size,
                                         device_vector. Data(),
                                         sum,
                                         device_aux. Data() );
-            tnlCUDASimpleReduction4Min( size,
+            Devices::CudaSimpleReduction4Min( size,
                                         device_vector. Data(),
                                         min,
                                         device_aux. Data() );
-            tnlCUDASimpleReduction4Max( size,
+            Devices::CudaSimpleReduction4Max( size,
                                         device_vector. Data(),
                                         max,
                                         device_aux. Data() );
             break;
          case 5:
-            tnlCUDASimpleReduction5Sum( size,
+            Devices::CudaSimpleReduction5Sum( size,
                                         device_vector. Data(),
                                         sum,
                                         device_aux. Data() );
-            tnlCUDASimpleReduction5Min( size,
+            Devices::CudaSimpleReduction5Min( size,
                                         device_vector. Data(),
                                         min,
                                         device_aux. Data() );
-            tnlCUDASimpleReduction5Max( size,
+            Devices::CudaSimpleReduction5Max( size,
                                         device_vector. Data(),
                                         max,
                                         device_aux. Data() );
             break;
          default:
-            tnlCUDAReductionSum( size,
+            tnlCudaReductionSum( size,
                                  device_vector. Data(),
                                  sum,
                                  device_aux. Data() );
-            tnlCUDAReductionMin( size,
+            tnlCudaReductionMin( size,
                                  device_vector. Data(),
                                  min,
                                  device_aux. Data() );
-            tnlCUDAReductionMax( size,
+            tnlCudaReductionMax( size,
                                  device_vector. Data(),
                                  max,
                                  device_aux. Data() );

@@ -6,29 +6,22 @@ ADD_SUBDIRECTORY( multimaps )
 set (headers 
              tnlConstants.h
              tnlCurve.h
-             tnlCuda.h
-             tnlCudaDeviceInfo.h
-             tnlDevice.h
              tnlDynamicTypeTag.h
              tnlFeature.h
              tnlFlopsCounter.h
-             tnlHost.h 
              tnlIndexedSet.h
              tnlReal.h
              mfilename.h 
              mfuncs.h 
              mpi-supp.h 
              param-types.h
-             tnlCuda_impl.h
              tnlIndexedSet_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/core )
 set( common_SOURCES
      ${CURRENT_DIR}/tnlFlopsCounter.cpp 
      ${CURRENT_DIR}/mfilename.cpp 
-     ${CURRENT_DIR}/mpi-supp.cpp 
-     ${CURRENT_DIR}/tnlCuda.cpp
-     ${CURRENT_DIR}/tnlHost.cpp )
+     ${CURRENT_DIR}/mpi-supp.cpp )
 
 IF( BUILD_CUDA )
    set( tnl_core_CUDA__SOURCES
@@ -38,8 +31,6 @@ IF( BUILD_CUDA )
         ${tnl_core_vectors_CUDA__SOURCES}
         ${tnl_core_images_CUDA__SOURCES}
         ${common_SOURCES} 
-        ${CURRENT_DIR}/tnlCuda.cu
-        ${CURRENT_DIR}/tnlCudaDeviceInfo.cu
         PARENT_SCOPE )
 ENDIF()    
 
@@ -50,7 +41,6 @@ set( tnl_core_SOURCES
      ${tnl_core_vectors_SOURCES}
      ${tnl_core_images_SOURCES}
      ${common_SOURCES}
-     ${CURRENT_DIR}/tnlCudaDeviceInfo.cpp
      PARENT_SCOPE )
     
 

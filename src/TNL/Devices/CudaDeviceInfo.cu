@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCudaDeviceInfo.cu  -  description
+                          CudaDeviceInfo.cu  -  description
                              -------------------
     begin                : Jun 21, 2015
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -10,13 +10,14 @@
 
 #ifdef HAVE_CUDA
 
-#include <TNL/core/tnlCudaDeviceInfo.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
+namespace Devices {
 
 int
-tnlCudaDeviceInfo::
+CudaDeviceInfo::
 getNumberOfDevices()
 {
     int devices;
@@ -25,7 +26,7 @@ getNumberOfDevices()
 }
 
 int
-tnlCudaDeviceInfo::
+CudaDeviceInfo::
 getActiveDevice()
 {
     int device;
@@ -34,7 +35,7 @@ getActiveDevice()
 }
 
 String
-tnlCudaDeviceInfo::
+CudaDeviceInfo::
 getDeviceName( int deviceNum )
 {
     cudaDeviceProp properties;
@@ -43,7 +44,7 @@ getDeviceName( int deviceNum )
 }
 
 int
-tnlCudaDeviceInfo::
+CudaDeviceInfo::
 getArchitectureMajor( int deviceNum )
 {
     cudaDeviceProp properties;
@@ -52,7 +53,7 @@ getArchitectureMajor( int deviceNum )
 }
 
 int
-tnlCudaDeviceInfo::
+CudaDeviceInfo::
 getArchitectureMinor( int deviceNum )
 {
     cudaDeviceProp properties;
@@ -61,7 +62,7 @@ getArchitectureMinor( int deviceNum )
 }
 
 int
-tnlCudaDeviceInfo::
+CudaDeviceInfo::
 getClockRate( int deviceNum )
 {
     cudaDeviceProp properties;
@@ -70,7 +71,7 @@ getClockRate( int deviceNum )
 }
 
 size_t
-tnlCudaDeviceInfo::
+CudaDeviceInfo::
 getGlobalMemory( int deviceNum )
 {
     cudaDeviceProp properties;
@@ -79,7 +80,7 @@ getGlobalMemory( int deviceNum )
 }
 
 int
-tnlCudaDeviceInfo::
+CudaDeviceInfo::
 getMemoryClockRate( int deviceNum )
 {
     cudaDeviceProp properties;
@@ -88,7 +89,7 @@ getMemoryClockRate( int deviceNum )
 }
 
 bool
-tnlCudaDeviceInfo::
+CudaDeviceInfo::
 getECCEnabled( int deviceNum )
 {
     cudaDeviceProp properties;
@@ -97,7 +98,7 @@ getECCEnabled( int deviceNum )
 }
 
 int
-tnlCudaDeviceInfo::
+CudaDeviceInfo::
 getCudaMultiprocessors( int deviceNum )
 {
     cudaDeviceProp properties;
@@ -106,11 +107,11 @@ getCudaMultiprocessors( int deviceNum )
 }
 
 int
-tnlCudaDeviceInfo::
+CudaDeviceInfo::
 getCudaCoresPerMultiprocessors( int deviceNum )
 {
-    int major = tnlCudaDeviceInfo::getArchitectureMajor( deviceNum );
-    int minor = tnlCudaDeviceInfo::getArchitectureMinor( deviceNum );
+    int major = CudaDeviceInfo::getArchitectureMajor( deviceNum );
+    int minor = CudaDeviceInfo::getArchitectureMinor( deviceNum );
     switch( major )
     {
         case 1:   // Tesla generation, G80, G8x, G9x classes
@@ -133,13 +134,14 @@ getCudaCoresPerMultiprocessors( int deviceNum )
 }
 
 int
-tnlCudaDeviceInfo::
+CudaDeviceInfo::
 getCudaCores( int deviceNum )
 {
-    return tnlCudaDeviceInfo::getCudaMultiprocessors( deviceNum ) *
-           tnlCudaDeviceInfo::getCudaCoresPerMultiprocessors( deviceNum );
+    return CudaDeviceInfo::getCudaMultiprocessors( deviceNum ) *
+           CudaDeviceInfo::getCudaCoresPerMultiprocessors( deviceNum );
 }
 
+} // namespace Devices
 } // namespace TNL
 
 #endif

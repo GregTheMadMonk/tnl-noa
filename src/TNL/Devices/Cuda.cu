@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCuda.cu  -  description
+                          Cuda.cu  -  description
                              -------------------
     begin                : Dec 22, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -8,13 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
+namespace Devices {
 
-/*void tnlCuda::configSetup( tnlConfigDescription& config, const String& prefix )
+/*void Cuda::configSetup( tnlConfigDescription& config, const String& prefix )
 {
 #ifdef HAVE_CUDA
    config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device.", 0 );
@@ -23,7 +24,7 @@ namespace TNL {
 #endif
 }
  
-bool tnlCuda::setup( const tnlParameterContainer& parameters,
+bool Cuda::setup( const tnlParameterContainer& parameters,
                     const String& prefix )
 {
    int cudaDevice = parameters.getParameter< int >( prefix + "cuda-device" );
@@ -35,7 +36,7 @@ bool tnlCuda::setup( const tnlParameterContainer& parameters,
 }
 */
 
-bool tnlCuda::checkDevice( const char* file_name, int line )
+bool Cuda::checkDevice( const char* file_name, int line )
 {
    cudaError error = cudaGetLastError();
    if( error == cudaSuccess )
@@ -413,4 +414,5 @@ bool tnlCuda::checkDevice( const char* file_name, int line )
    return false;
 }
 
+} // namespace Devices
 } // namespace TNL

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <TNL/matrices/tnlMatrix.h>
 #include <TNL/matrices/tnlDenseMatrixRow.h>
 #include <TNL/Arrays/Array.h>
@@ -21,7 +21,7 @@ template< typename Device >
 class tnlDenseMatrixDeviceDependentCode;
 
 template< typename Real = double,
-          typename Device = tnlHost,
+          typename Device = Devices::Host,
           typename Index = int >
 class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
 {
@@ -32,8 +32,8 @@ class tnlDenseMatrix : public tnlMatrix< Real, Device, Index >
    typedef Index IndexType;
    typedef typename tnlMatrix< Real, Device, Index >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef tnlDenseMatrix< Real, Device, Index > ThisType;
-   typedef tnlDenseMatrix< Real, tnlHost, Index > HostType;
-   typedef tnlDenseMatrix< Real, tnlCuda, Index > CudaType;
+   typedef tnlDenseMatrix< Real, Devices::Host, Index > HostType;
+   typedef tnlDenseMatrix< Real, Devices::Cuda, Index > CudaType;
    typedef tnlMatrix< Real, Device, Index > BaseType;
    typedef tnlDenseMatrixRow< Real, Index > MatrixRow;
 

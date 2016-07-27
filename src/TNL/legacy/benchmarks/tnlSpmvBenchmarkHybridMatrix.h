@@ -22,18 +22,18 @@
 
 
 template< typename Real, typename Index>
-class tnlSpmvBenchmarkHybridMatrix : public tnlSpmvBenchmark< Real, tnlHost, Index, tnlCSRMatrix >
+class tnlSpmvBenchmarkHybridMatrix : public tnlSpmvBenchmark< Real, Devices::Host, Index, tnlCSRMatrix >
 {
    public:
 
    void setFileName( const String& fileName );
 
-   bool setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix );
+   bool setup( const tnlCSRMatrix< Real, Devices::Host, Index >& matrix );
 
    void tearDown();
 
-   void runBenchmark( const Vector< Real, tnlHost, Index >& x,
-                      const Vector< Real, tnlHost, Index >& refB,
+   void runBenchmark( const Vector< Real, Devices::Host, Index >& x,
+                      const Vector< Real, Devices::Host, Index >& refB,
                       bool verbose );
 
    void writeProgress() const;
@@ -41,7 +41,7 @@ class tnlSpmvBenchmarkHybridMatrix : public tnlSpmvBenchmark< Real, tnlHost, Ind
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
                          const String& inputMtxFile,
-                         const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                         const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                          bool writeMatrixInfo  ) const;
 
    void setNonzeroElements( const Index nonzeroElements );
@@ -60,7 +60,7 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: setFileName( const String& f
 }
 
 template< typename Real, typename Index>
-bool tnlSpmvBenchmarkHybridMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real, tnlHost, Index >& matrix )
+bool tnlSpmvBenchmarkHybridMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real, Devices::Host, Index >& matrix )
 {
    return true;
 }
@@ -74,8 +74,8 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: tearDown()
 
 template< typename Real,
           typename Index>
-void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const Vector< Real, tnlHost, Index >& _x,
-                                                                  const Vector< Real, tnlHost, Index >& refB,
+void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: runBenchmark( const Vector< Real, Devices::Host, Index >& _x,
+                                                                  const Vector< Real, Devices::Host, Index >& refB,
                                                                   bool verbose )
 {
    this->benchmarkWasSuccesful = false;
@@ -169,7 +169,7 @@ template< typename Real,
 void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: writeToLogTable( std::ostream& logFile,
                                                                      const double& csrGflops,
                                                                      const String& inputMtxFile,
-                                                                     const tnlCSRMatrix< Real, tnlHost, Index >& csrMatrix,
+                                                                     const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                                                                      bool writeMatrixInfo  ) const
 {
    if( this->getBenchmarkWasSuccesful() )

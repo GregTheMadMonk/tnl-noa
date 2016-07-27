@@ -19,7 +19,7 @@ namespace TNL {
 template< typename Device >
 class tnlMultidiagonalMatrixDeviceDependentCode;
 
-template< typename Real, typename Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = Devices::Host, typename Index = int >
 class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
@@ -29,8 +29,8 @@ class tnlMultidiagonalMatrix : public tnlMatrix< Real, Device, Index >
    typedef Index IndexType;
    typedef typename tnlMatrix< Real, Device, Index >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef tnlMultidiagonalMatrix< Real, Device, Index > ThisType;
-   typedef tnlMultidiagonalMatrix< Real, tnlHost, Index > HostType;
-   typedef tnlMultidiagonalMatrix< Real, tnlCuda, Index > CudaType;
+   typedef tnlMultidiagonalMatrix< Real, Devices::Host, Index > HostType;
+   typedef tnlMultidiagonalMatrix< Real, Devices::Cuda, Index > CudaType;
    typedef tnlMatrix< Real, Device, Index > BaseType;
    typedef tnlMultidiagonalMatrixRow< Real, Index > MatrixRow;
 

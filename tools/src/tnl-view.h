@@ -98,12 +98,12 @@ bool setMeshEntityType( const Mesh& mesh,
 
 template< typename MeshReal,
           typename MeshIndex >
-bool setMeshEntityDimensions( const tnlGrid< 1, MeshReal, tnlHost, MeshIndex >& mesh,
+bool setMeshEntityDimensions( const tnlGrid< 1, MeshReal, Devices::Host, MeshIndex >& mesh,
                               const String& inputFileName,
                               const List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
-   typedef tnlGrid< 1, MeshReal, tnlHost, MeshIndex > Mesh;
+   typedef tnlGrid< 1, MeshReal, Devices::Host, MeshIndex > Mesh;
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
    {
@@ -121,12 +121,12 @@ bool setMeshEntityDimensions( const tnlGrid< 1, MeshReal, tnlHost, MeshIndex >& 
 
 template< typename MeshReal,
           typename MeshIndex >
-bool setMeshEntityDimensions( const tnlGrid< 2, MeshReal, tnlHost, MeshIndex >& mesh,
+bool setMeshEntityDimensions( const tnlGrid< 2, MeshReal, Devices::Host, MeshIndex >& mesh,
                               const String& inputFileName,
                               const List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
-   typedef tnlGrid< 2, MeshReal, tnlHost, MeshIndex > Mesh;
+   typedef tnlGrid< 2, MeshReal, Devices::Host, MeshIndex > Mesh;
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
    {
@@ -147,12 +147,12 @@ bool setMeshEntityDimensions( const tnlGrid< 2, MeshReal, tnlHost, MeshIndex >& 
 
 template< typename MeshReal,
           typename MeshIndex >
-bool setMeshEntityDimensions( const tnlGrid< 3, MeshReal, tnlHost, MeshIndex >& mesh,
+bool setMeshEntityDimensions( const tnlGrid< 3, MeshReal, Devices::Host, MeshIndex >& mesh,
                               const String& inputFileName,
                               const List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
-   typedef tnlGrid< 3, MeshReal, tnlHost, MeshIndex > Mesh;
+   typedef tnlGrid< 3, MeshReal, Devices::Host, MeshIndex > Mesh;
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
    {
@@ -209,7 +209,7 @@ bool convertObject( const Mesh& mesh,
    if( parsedObjectType[ 0 ] == "SharedVector" ||
        parsedObjectType[ 0 ] == "Vector" )
    {
-      Vectors::Vector< Element, tnlHost, Index > vector;
+      Vectors::Vector< Element, Devices::Host, Index > vector;
       if( ! vector. load( inputFileName ) )
          return false;
       if( ! mesh. write( vector, outputFileName, outputFormat ) )
@@ -219,10 +219,10 @@ bool convertObject( const Mesh& mesh,
    if( parsedObjectType[ 0 ] == "MultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
    {
-      Vectors::MultiVector< Dimensions, Element, tnlHost, Index > multiVector;
+      Vectors::MultiVector< Dimensions, Element, Devices::Host, Index > multiVector;
       if( ! multiVector. load( inputFileName ) )
          return false;
-      typedef tnlGrid< Dimensions, Real, tnlHost, Index > GridType;
+      typedef tnlGrid< Dimensions, Real, Devices::Host, Index > GridType;
       typedef typename GridType::VertexType VertexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       GridType grid;

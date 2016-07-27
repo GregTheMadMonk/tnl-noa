@@ -16,19 +16,19 @@
 namespace TNL {
 
 #ifdef INSTANTIATE_FLOAT
-template class tnlTestFunction< 1, float, tnlCuda >;
-template class tnlTestFunction< 2, float, tnlCuda >;
-template class tnlTestFunction< 3, float, tnlCuda >;
+template class tnlTestFunction< 1, float, Devices::Cuda >;
+template class tnlTestFunction< 2, float, Devices::Cuda >;
+template class tnlTestFunction< 3, float, Devices::Cuda >;
 #endif
 
-template class tnlTestFunction< 1, double, tnlCuda >;
-template class tnlTestFunction< 2, double, tnlCuda >;
-template class tnlTestFunction< 3, double, tnlCuda >;
+template class tnlTestFunction< 1, double, Devices::Cuda >;
+template class tnlTestFunction< 2, double, Devices::Cuda >;
+template class tnlTestFunction< 3, double, Devices::Cuda >;
 
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class tnlTestFunction< 1, long double, tnlCuda >;
-template class tnlTestFunction< 2, long double, tnlCuda >;
-template class tnlTestFunction< 3, long double, tnlCuda >;
+template class tnlTestFunction< 1, long double, Devices::Cuda >;
+template class tnlTestFunction< 2, long double, Devices::Cuda >;
+template class tnlTestFunction< 3, long double, Devices::Cuda >;
 #endif
 
 } // namespace TNL

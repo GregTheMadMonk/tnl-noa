@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/tnlHost.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
 #include <TNL/core/multimaps/tnlEllpackIndexMultimap.h>
@@ -19,8 +19,8 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlIndexMultimapTester< tnlEllpackIndexMultimap< int, tnlHost > > >() ||
-       ! tnlUnitTestStarter :: run< tnlIndexMultimapTester< tnlEllpackIndexMultimap< long int, tnlHost > > >()
+   if( ! tnlUnitTestStarter :: run< tnlIndexMultimapTester< tnlEllpackIndexMultimap< int, Devices::Host > > >() ||
+       ! tnlUnitTestStarter :: run< tnlIndexMultimapTester< tnlEllpackIndexMultimap< long int, Devices::Host > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

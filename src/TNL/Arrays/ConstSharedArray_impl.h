@@ -147,7 +147,7 @@ const Element& tnlConstSharedArray< Element, Device, Index > :: operator[] ( Ind
               std::cerr << "Wrong index for operator[] in tnlConstSharedArray with name "
                         << " index is " << i
                         << " and array size is " << this->getSize() );
-   // TODO: add static assert - this does not make sense for tnlCudaDevice
+   // TODO: add static assert - this does not make sense for Devices::CudaDevice
    return ArrayOperations< Device >::getArrayElementReference( this->data, i );
 };
 
@@ -273,39 +273,39 @@ std::ostream& operator << ( std::ostream& str, const tnlConstSharedArray< Elemen
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlConstSharedArray< float, tnlHost, int >;
+extern template class tnlConstSharedArray< float, Devices::Host, int >;
 #endif
-extern template class tnlConstSharedArray< double, tnlHost, int >;
+extern template class tnlConstSharedArray< double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlConstSharedArray< long double, tnlHost, int >;
+extern template class tnlConstSharedArray< long double, Devices::Host, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlConstSharedArray< float, tnlHost, long int >;
+extern template class tnlConstSharedArray< float, Devices::Host, long int >;
 #endif
-extern template class tnlConstSharedArray< double, tnlHost, long int >;
+extern template class tnlConstSharedArray< double, Devices::Host, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlConstSharedArray< long double, tnlHost, long int >;
+extern template class tnlConstSharedArray< long double, Devices::Host, long int >;
 #endif
 #endif
 
 #ifdef HAVE_CUDA
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlConstSharedArray< float, tnlCuda, int >;
+extern template class tnlConstSharedArray< float, Devices::Cuda, int >;
 #endif
-extern template class tnlConstSharedArray< double, tnlCuda, int >;
+extern template class tnlConstSharedArray< double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlConstSharedArray< long double, tnlCuda, int >;
+extern template class tnlConstSharedArray< long double, Devices::Cuda, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlConstSharedArray< float, tnlCuda, long int >;
+extern template class tnlConstSharedArray< float, Devices::Cuda, long int >;
 #endif
-extern template class tnlConstSharedArray< double, tnlCuda, long int >;
+extern template class tnlConstSharedArray< double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlConstSharedArray< long double, tnlCuda, long int >;
+extern template class tnlConstSharedArray< long double, Devices::Cuda, long int >;
 #endif
 
 #endif

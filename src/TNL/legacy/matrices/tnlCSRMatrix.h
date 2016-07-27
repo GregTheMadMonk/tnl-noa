@@ -40,7 +40,7 @@ template< typename Real, typename device, typename Index > class tnlEllpackMatri
  */
 
 // TODO: add CUDA support
-template< typename Real, typename Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = Devices::Host, typename Index = int >
 class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
 {
    public:
@@ -221,15 +221,15 @@ class tnlCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    template< typename Real2, typename Device2, typename Index2 >
       friend class tnlCSRMatrix;
-   friend class tnlMatrix< Real, tnlHost, Index >;
-   friend class tnlMatrix< Real, tnlCuda, Index >;
-   friend class tnlCusparseCSRMatrix< Real, tnlCuda, Index >;
-   friend class tnlRgCSRMatrix< Real, tnlHost, Index >;
-   friend class tnlRgCSRMatrix< Real, tnlCuda, Index >;
-   friend class tnlAdaptiveRgCSRMatrix< Real, tnlHost, Index >;
-   friend class tnlAdaptiveRgCSRMatrix< Real, tnlCuda, Index >;
-   friend class tnlFastCSRMatrix< Real, tnlHost, Index >;
-   friend class tnlEllpackMatrix< Real, tnlHost, Index >;
+   friend class tnlMatrix< Real, Devices::Host, Index >;
+   friend class tnlMatrix< Real, Devices::Cuda, Index >;
+   friend class tnlCusparseCSRMatrix< Real, Devices::Cuda, Index >;
+   friend class tnlRgCSRMatrix< Real, Devices::Host, Index >;
+   friend class tnlRgCSRMatrix< Real, Devices::Cuda, Index >;
+   friend class tnlAdaptiveRgCSRMatrix< Real, Devices::Host, Index >;
+   friend class tnlAdaptiveRgCSRMatrix< Real, Devices::Cuda, Index >;
+   friend class tnlFastCSRMatrix< Real, Devices::Host, Index >;
+   friend class tnlEllpackMatrix< Real, Devices::Host, Index >;
 };
 
 template< typename Real, typename Device, typename Index >
@@ -735,7 +735,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: save( File& file ) const
    if( ! columns. save( file ) ) return false;
    if( ! row_offsets. save( file ) ) return false;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. write< const Index, tnlHost >( &last_nonzero_element ) )
+   if( ! file. write< const Index, Devices::Host >( &last_nonzero_element ) )
 #else
    if( ! file. write( &last_nonzero_element ) )
 #endif
@@ -751,7 +751,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: load( File& file )
    if( ! columns. load( file ) ) return false;
    if( ! row_offsets. load( file ) ) return false;
 #ifdef HAVE_NOT_CXX11
-   if( ! file. read< Index, tnlHost >( &last_nonzero_element ) )
+   if( ! file. read< Index, Devices::Host >( &last_nonzero_element ) )
 #else
    if( ! file. read( &last_nonzero_element ) )
 #endif
@@ -1046,7 +1046,7 @@ bool tnlCSRMatrix< Real, Device, Index > :: read( std::istream& file,
    dbgExpr( header_end );
    file. clear();
    file. seekg( header_end, std::ios::beg );
-   Vector< Index, tnlHost > insertedElementsInRows( "tnlCSRMatrix::insertedElementsInRows" );
+   Vector< Index, Devices::Host > insertedElementsInRows( "tnlCSRMatrix::insertedElementsInRows" );
    insertedElementsInRows. setSize( size );
    insertedElementsInRows. setValue( 0 );
    while( line. getLine( file ) )

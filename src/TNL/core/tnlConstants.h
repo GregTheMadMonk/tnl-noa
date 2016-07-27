@@ -14,7 +14,7 @@
 #include <float.h>
 #include <cstdio>
 #include <TNL/Assert.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 

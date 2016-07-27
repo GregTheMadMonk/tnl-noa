@@ -16,7 +16,7 @@
 #include <TNL/Vectors/SharedVector.h>
 #include <TNL/legacy/solvers/tnlMatrixSolver.h>
 
-template< typename Real, typename Device = tnlHost, typename Index = int >
+template< typename Real, typename Device = Devices::Host, typename Index = int >
 class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >
 {
    public:
@@ -44,8 +44,8 @@ class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >
     */
    void update( Index k,
                 Index m,
-                const Vector< Real, tnlHost, Index >& H,
-                const Vector< Real, tnlHost, Index >& s,
+                const Vector< Real, Devices::Host, Index >& H,
+                const Vector< Real, Devices::Host, Index >& s,
                 Vector< Real, Device, Index >& v,
                 Vector< Real, Device, Index >& x );
 
@@ -63,7 +63,7 @@ class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >
    bool setSize( Index _size, Index m );
 
    Vector< Real, Device, Index > _r, _w, _v, _M_tmp;
-   Vector< Real, tnlHost, Index > _s, _cs, _sn, _H;
+   Vector< Real, Devices::Host, Index > _s, _cs, _sn, _H;
 
    Index size, restarting;
 };
@@ -309,13 +309,13 @@ tnlGMRESSolverOld< Real, Device, Index > :: ~tnlGMRESSolverOld()
 template< typename Real, typename Device, typename Index >
 void tnlGMRESSolverOld< Real, Device, Index > :: update( Index k,
                                                       Index m,
-                                                      const Vector< Real, tnlHost, Index >& H,
-                                                      const Vector< Real, tnlHost, Index >& s,
+                                                      const Vector< Real, Devices::Host, Index >& H,
+                                                      const Vector< Real, Devices::Host, Index >& s,
                                                       Vector< Real, Device, Index >& v,
                                                       Vector< Real, Device, Index >& x )
 {
    //dbgFunctionName( "tnlGMRESSolverOld", "Update" );
-   Vector< Real, tnlHost, Index > y( "tnlGMRESSolverOld::update:y" );
+   Vector< Real, Devices::Host, Index > y( "tnlGMRESSolverOld::update:y" );
    y. setSize( m + 1 );
 
    Index i, j;

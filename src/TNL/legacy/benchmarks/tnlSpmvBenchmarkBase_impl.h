@@ -76,14 +76,14 @@ typename Matrix::RealType tnlSpmvBenchmarkBase< Matrix >::getMaxError() const
 
 template< typename Matrix >
 void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const Vector< RealType, DeviceType, IndexType >& x,
-                                                   const Vector< RealType, tnlHost, IndexType >& refB,
+                                                   const Vector< RealType, Devices::Host, IndexType >& refB,
                                                    bool verbose )
 {
    benchmarkWasSuccesful = false;
    if( ! setupOk )
       return;
 #ifndef HAVE_CUDA
-   if( DeviceType::getDevice() == tnlCudaDevice )
+   if( DeviceType::getDevice() == Devices::CudaDevice )
    {
       if( verbose )
          writeProgress();
@@ -110,7 +110,7 @@ void tnlSpmvBenchmarkBase< Matrix >::runBenchmark( const Vector< RealType, Devic
    this->time = rt_timer. getTime();
 
    firstErrorOccurence = 0;
-   Vector< RealType, tnlHost, IndexType > resB( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
+   Vector< RealType, Devices::Host, IndexType > resB( "tnlSpmvBenchmark< Real, Device, Index, Matrix > :: runBenchmark : b" );
    if( ! resB. setSize( b. getSize() ) )
    {
       std::cerr << "I am not able to allocate copy of vector b on the host." << std::endl;
@@ -188,7 +188,7 @@ String tnlSpmvBenchmarkBase< Matrix > :: getBgColorBySpeedUp( const double& spee
 
 template< typename Matrix >
 bool tnlSpmvBenchmarkBase< Matrix > :: printMatrixInHtml( const String& fileName,
-                                                          tnlMatrix< RealType, tnlHost, IndexType >& matrix ) const
+                                                          tnlMatrix< RealType, Devices::Host, IndexType >& matrix ) const
 {
    //cout << "Writing to file " << fileName << std::endl;
    std::fstream file;

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 #include <TNL/functions/tnlConstantFunction.h>
 #include <TNL/functions/tnlExpBumpFunction.h>
 #include <TNL/functions/tnlSinBumpsFunction.h>
@@ -100,13 +100,13 @@ setupFunction( const Config::ParameterContainer& parameters,
       return false;
    }
 
-   if( Device::DeviceType == ( int ) tnlHostDevice )
+   if( std::is_same< Device, Devices::Host >::value )
    {
       this->function = auxFunction;
    }
-   if( Device::DeviceType == ( int ) tnlCudaDevice )
+   if( std::is_same< Device, Devices::Cuda >::value )
    {
-      this->function = tnlCuda::passToDevice( *auxFunction );
+      this->function = Devices::Cuda::passToDevice( *auxFunction );
       delete auxFunction;
       if( ! checkCudaDevice )
          return false;
@@ -390,15 +390,15 @@ void
 tnlTestFunction< FunctionDimensions, Real, Device >::
 deleteFunction()
 {
-   if( Device::DeviceType == ( int ) tnlHostDevice )
+   if( std::is_same< Device, Devices::Host >::value )
    {
       if( function )
          delete ( FunctionType * ) function;
    }
-   if( Device::DeviceType == ( int ) tnlCudaDevice )
+   if( std::is_same< Device, Devices::Cuda >::value )
    {
       if( function )
-         tnlCuda::freeFromDevice( ( FunctionType * ) function );
+         Devices::Cuda::freeFromDevice( ( FunctionType * ) function );
    }
 }
 
@@ -449,12 +449,12 @@ void
 tnlTestFunction< FunctionDimensions, Real, Device >::
 copyFunction( const void* function )
 {
-   if( Device::DeviceType == ( int ) tnlHostDevice )
+   if( std::is_same< Device, Devices::Host >::value )
    {
       FunctionType* f = new FunctionType;
       *f = * ( FunctionType* )function;
    }
-   if( Device::DeviceType == ( int ) tnlCudaDevice )
+   if( std::is_same< Device, Devices::Cuda >::value )
    {
       Assert( false, );
       abort();
@@ -470,14 +470,14 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 printFunction( std::ostream& str ) const
 {
    FunctionType* f = ( FunctionType* ) this->function;
-   if( std::is_same< Device, tnlHost >::value )
+   if( std::is_same< Device, Devices::Host >::value )
    {
       str << *f;
       return str;
    }
-   if( std::is_same< Device, tnlCuda >::value )
+   if( std::is_same< Device, Devices::Cuda >::value )
    {
-      tnlCuda::print( f, str );
+      Devices::Cuda::print( f, str );
       return str;
    }
    return str;
@@ -530,36 +530,36 @@ tnlTestFunction< FunctionDimensions, Real, Device >::
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlTestFunction< 1, float, tnlHost >;
-extern template class tnlTestFunction< 2, float, tnlHost >;
-extern template class tnlTestFunction< 3, float, tnlHost >;
+extern template class tnlTestFunction< 1, float, Devices::Host >;
+extern template class tnlTestFunction< 2, float, Devices::Host >;
+extern template class tnlTestFunction< 3, float, Devices::Host >;
 #endif
 
-extern template class tnlTestFunction< 1, double, tnlHost >;
-extern template class tnlTestFunction< 2, double, tnlHost >;
-extern template class tnlTestFunction< 3, double, tnlHost >;
+extern template class tnlTestFunction< 1, double, Devices::Host >;
+extern template class tnlTestFunction< 2, double, Devices::Host >;
+extern template class tnlTestFunction< 3, double, Devices::Host >;
 
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlTestFunction< 1, long double, tnlHost >;
-extern template class tnlTestFunction< 2, long double, tnlHost >;
-extern template class tnlTestFunction< 3, long double, tnlHost >;
+extern template class tnlTestFunction< 1, long double, Devices::Host >;
+extern template class tnlTestFunction< 2, long double, Devices::Host >;
+extern template class tnlTestFunction< 3, long double, Devices::Host >;
 #endif
 
 #ifdef HAVE_CUDA
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlTestFunction< 1, float, tnlCuda>;
-extern template class tnlTestFunction< 2, float, tnlCuda >;
-extern template class tnlTestFunction< 3, float, tnlCuda >;
+extern template class tnlTestFunction< 1, float, Devices::Cuda>;
+extern template class tnlTestFunction< 2, float, Devices::Cuda >;
+extern template class tnlTestFunction< 3, float, Devices::Cuda >;
 #endif
 
-extern template class tnlTestFunction< 1, double, tnlCuda >;
-extern template class tnlTestFunction< 2, double, tnlCuda >;
-extern template class tnlTestFunction< 3, double, tnlCuda >;
+extern template class tnlTestFunction< 1, double, Devices::Cuda >;
+extern template class tnlTestFunction< 2, double, Devices::Cuda >;
+extern template class tnlTestFunction< 3, double, Devices::Cuda >;
 
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlTestFunction< 1, long double, tnlCuda >;
-extern template class tnlTestFunction< 2, long double, tnlCuda >;
-extern template class tnlTestFunction< 3, long double, tnlCuda >;
+extern template class tnlTestFunction< 1, long double, Devices::Cuda >;
+extern template class tnlTestFunction< 2, long double, Devices::Cuda >;
+extern template class tnlTestFunction< 3, long double, Devices::Cuda >;
 #endif
 #endif
 

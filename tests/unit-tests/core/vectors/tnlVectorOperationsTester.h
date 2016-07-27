@@ -69,13 +69,13 @@ class VectorOperationsTester : public CppUnit :: TestCase
    template< typename Vector >
    void setLinearSequence( Vector& deviceVector )
    {
-      Vectors::Vector< typename Vector :: RealType, tnlHost > a;
+      Vectors::Vector< typename Vector :: RealType, Devices::Host > a;
       a. setSize( deviceVector. getSize() );
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = i;
 
       ArrayOperations< typename Vector::DeviceType,
-                          tnlHost >::
+                          Devices::Host >::
       template copyMemory< typename Vector::RealType,
                            typename Vector::RealType,
                            typename Vector::IndexType >
@@ -88,13 +88,13 @@ class VectorOperationsTester : public CppUnit :: TestCase
    template< typename Vector >
    void setOnesSequence( Vector& deviceVector )
    {
-      Vectors::Vector< typename Vector :: RealType, tnlHost > a;
+      Vectors::Vector< typename Vector :: RealType, Devices::Host > a;
       a. setSize( deviceVector. getSize() );
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = 1;
 
       ArrayOperations< typename Vector::DeviceType,
-                          tnlHost >::
+                          Devices::Host >::
       template copyMemory< typename Vector::RealType,
                            typename Vector::RealType,
                            typename Vector::IndexType >
@@ -107,13 +107,13 @@ class VectorOperationsTester : public CppUnit :: TestCase
    template< typename Vector >
    void setNegativeLinearSequence( Vector& deviceVector )
    {
-      Vectors::Vector< typename Vector :: RealType, tnlHost > a;
+      Vectors::Vector< typename Vector :: RealType, Devices::Host > a;
       a. setSize( deviceVector. getSize() );
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = -i;
 
       ArrayOperations< typename Vector::DeviceType,
-                          tnlHost >::
+                          Devices::Host >::
       template copyMemory< typename Vector::RealType,
                            typename Vector::RealType,
                            typename Vector::IndexType >
@@ -126,14 +126,14 @@ class VectorOperationsTester : public CppUnit :: TestCase
    void setOscilatingSequence( Vector& deviceVector,
                                typename Vector::RealType v )
    {
-      Vectors::Vector< typename Vector::RealType, tnlHost > a;
+      Vectors::Vector< typename Vector::RealType, Devices::Host > a;
       a.setSize( deviceVector. getSize() );
       a[ 0 ] = v;
       for( int i = 1; i < a. getSize(); i ++ )
          a.getData()[ i ] = a.getData()[ i-1 ] * -1;
 
       ArrayOperations< typename Vector::DeviceType,
-                          tnlHost >::
+                          Devices::Host >::
       template copyMemory< typename Vector::RealType,
                            typename Vector::RealType,
                            typename Vector::IndexType >

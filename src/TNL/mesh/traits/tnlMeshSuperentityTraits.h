@@ -44,9 +44,9 @@ class tnlMeshSuperentityTraits
    /****
     * Type of container for storing of the superentities indecis.
     */
-   typedef Arrays::Array< GlobalIndexType, tnlHost, LocalIndexType >             StorageArrayType;
+   typedef Arrays::Array< GlobalIndexType, Devices::Host, LocalIndexType >             StorageArrayType;
  
-   typedef tnlEllpackIndexMultimap< GlobalIndexType, tnlHost >                        StorageNetworkType;
+   typedef tnlEllpackIndexMultimap< GlobalIndexType, Devices::Host >                        StorageNetworkType;
    typedef tnlMeshSuperentityAccessor< typename StorageNetworkType::ValuesAccessorType > SuperentityAccessorType;
  
    /****
@@ -54,7 +54,7 @@ class tnlMeshSuperentityTraits
     * method. We introduce it because of the compatibility with the subentities
     * which are usually stored in static array.
     */
-   typedef Arrays::tnlSharedArray< GlobalIndexType, tnlHost, LocalIndexType >       AccessArrayType;
+   typedef Arrays::tnlSharedArray< GlobalIndexType, Devices::Host, LocalIndexType >       AccessArrayType;
 
    /****
     * This is used by the mesh initializer.

@@ -18,150 +18,150 @@ namespace Vectors {
 /****
  * Max
  */
-template int         VectorOperations< tnlHost >::getVectorMax( const Vector< int, tnlHost, int >& v );
-template long int    VectorOperations< tnlHost >::getVectorMax( const Vector< long int, tnlHost, int >& v );
+template int         VectorOperations< Devices::Host >::getVectorMax( const Vector< int, Devices::Host, int >& v );
+template long int    VectorOperations< Devices::Host >::getVectorMax( const Vector< long int, Devices::Host, int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorMax( const Vector< float, tnlHost, int >& v );
+template float       VectorOperations< Devices::Host >::getVectorMax( const Vector< float, Devices::Host, int >& v );
 #endif
-template double      VectorOperations< tnlHost >::getVectorMax( const Vector< double, tnlHost, int >& v );
+template double      VectorOperations< Devices::Host >::getVectorMax( const Vector< double, Devices::Host, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorMax( const Vector< long double, tnlHost, int >& v );
+template long double VectorOperations< Devices::Host >::getVectorMax( const Vector< long double, Devices::Host, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         VectorOperations< tnlHost >::getVectorMax( const Vector< int, tnlHost, long int >& v );
-template long int    VectorOperations< tnlHost >::getVectorMax( const Vector< long int, tnlHost, long int >& v );
+template int         VectorOperations< Devices::Host >::getVectorMax( const Vector< int, Devices::Host, long int >& v );
+template long int    VectorOperations< Devices::Host >::getVectorMax( const Vector< long int, Devices::Host, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorMax( const Vector< float, tnlHost, long int >& v );
+template float       VectorOperations< Devices::Host >::getVectorMax( const Vector< float, Devices::Host, long int >& v );
 #endif
-template double      VectorOperations< tnlHost >::getVectorMax( const Vector< double, tnlHost, long int >& v );
+template double      VectorOperations< Devices::Host >::getVectorMax( const Vector< double, Devices::Host, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorMax( const Vector< long double, tnlHost, long int >& v );
+template long double VectorOperations< Devices::Host >::getVectorMax( const Vector< long double, Devices::Host, long int >& v );
 #endif
 #endif
 
 /****
  * Min
  */
-template int         VectorOperations< tnlHost >::getVectorMin( const Vector< int, tnlHost, int >& v );
-template long int    VectorOperations< tnlHost >::getVectorMin( const Vector< long int, tnlHost, int >& v );
+template int         VectorOperations< Devices::Host >::getVectorMin( const Vector< int, Devices::Host, int >& v );
+template long int    VectorOperations< Devices::Host >::getVectorMin( const Vector< long int, Devices::Host, int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorMin( const Vector< float, tnlHost, int >& v );
+template float       VectorOperations< Devices::Host >::getVectorMin( const Vector< float, Devices::Host, int >& v );
 #endif
-template double      VectorOperations< tnlHost >::getVectorMin( const Vector< double, tnlHost, int >& v );
+template double      VectorOperations< Devices::Host >::getVectorMin( const Vector< double, Devices::Host, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorMin( const Vector< long double, tnlHost, int >& v );
+template long double VectorOperations< Devices::Host >::getVectorMin( const Vector< long double, Devices::Host, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         VectorOperations< tnlHost >::getVectorMin( const Vector< int, tnlHost, long int >& v );
-template long int    VectorOperations< tnlHost >::getVectorMin( const Vector< long int, tnlHost, long int >& v );
+template int         VectorOperations< Devices::Host >::getVectorMin( const Vector< int, Devices::Host, long int >& v );
+template long int    VectorOperations< Devices::Host >::getVectorMin( const Vector< long int, Devices::Host, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorMin( const Vector< float, tnlHost, long int >& v );
+template float       VectorOperations< Devices::Host >::getVectorMin( const Vector< float, Devices::Host, long int >& v );
 #endif
-template double      VectorOperations< tnlHost >::getVectorMin( const Vector< double, tnlHost, long int >& v );
+template double      VectorOperations< Devices::Host >::getVectorMin( const Vector< double, Devices::Host, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorMin( const Vector< long double, tnlHost, long int >& v );
+template long double VectorOperations< Devices::Host >::getVectorMin( const Vector< long double, Devices::Host, long int >& v );
 #endif
 #endif
 
 /****
  * Abs max
  */
-template int         VectorOperations< tnlHost >::getVectorAbsMax( const Vector< int, tnlHost, int >& v );
-template long int    VectorOperations< tnlHost >::getVectorAbsMax( const Vector< long int, tnlHost, int >& v );
+template int         VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< int, Devices::Host, int >& v );
+template long int    VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< long int, Devices::Host, int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorAbsMax( const Vector< float, tnlHost, int >& v );
+template float       VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< float, Devices::Host, int >& v );
 #endif
-template double      VectorOperations< tnlHost >::getVectorAbsMax( const Vector< double, tnlHost, int >& v );
+template double      VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< double, Devices::Host, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorAbsMax( const Vector< long double, tnlHost, int >& v );
+template long double VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< long double, Devices::Host, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         VectorOperations< tnlHost >::getVectorAbsMax( const Vector< int, tnlHost, long int >& v );
-template long int    VectorOperations< tnlHost >::getVectorAbsMax( const Vector< long int, tnlHost, long int >& v );
+template int         VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< int, Devices::Host, long int >& v );
+template long int    VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< long int, Devices::Host, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorAbsMax( const Vector< float, tnlHost, long int >& v );
+template float       VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< float, Devices::Host, long int >& v );
 #endif
-template double      VectorOperations< tnlHost >::getVectorAbsMax( const Vector< double, tnlHost, long int >& v );
+template double      VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< double, Devices::Host, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorAbsMax( const Vector< long double, tnlHost, long int >& v );
+template long double VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< long double, Devices::Host, long int >& v );
 #endif
 #endif
 
 /****
  * Abs min
  */
-template int         VectorOperations< tnlHost >::getVectorAbsMin( const Vector< int, tnlHost, int >& v );
-template long int    VectorOperations< tnlHost >::getVectorAbsMin( const Vector< long int, tnlHost, int >& v );
+template int         VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< int, Devices::Host, int >& v );
+template long int    VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< long int, Devices::Host, int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorAbsMin( const Vector< float, tnlHost, int >& v );
+template float       VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< float, Devices::Host, int >& v );
 #endif
-template double      VectorOperations< tnlHost >::getVectorAbsMin( const Vector< double, tnlHost, int >& v );
+template double      VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< double, Devices::Host, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorAbsMin( const Vector< long double, tnlHost, int >& v );
+template long double VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< long double, Devices::Host, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         VectorOperations< tnlHost >::getVectorAbsMin( const Vector< int, tnlHost, long int >& v );
-template long int    VectorOperations< tnlHost >::getVectorAbsMin( const Vector< long int, tnlHost, long int >& v );
+template int         VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< int, Devices::Host, long int >& v );
+template long int    VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< long int, Devices::Host, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorAbsMin( const Vector< float, tnlHost, long int >& v );
+template float       VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< float, Devices::Host, long int >& v );
 #endif
-template double      VectorOperations< tnlHost >::getVectorAbsMin( const Vector< double, tnlHost, long int >& v );
+template double      VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< double, Devices::Host, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorAbsMin( const Vector< long double, tnlHost, long int >& v );
+template long double VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< long double, Devices::Host, long int >& v );
 #endif
 #endif
 
 /****
  * L1 norm
  */
-template int         VectorOperations< tnlHost >::getVectorL1Norm( const Vector< int, tnlHost, int >& v );
-template long int    VectorOperations< tnlHost >::getVectorL1Norm( const Vector< long int, tnlHost, int >& v );
+template int         VectorOperations< Devices::Host >::getVectorL1Norm( const Vector< int, Devices::Host, int >& v );
+template long int    VectorOperations< Devices::Host >::getVectorL1Norm( const Vector< long int, Devices::Host, int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorL1Norm( const Vector< float, tnlHost, int >& v );
+template float       VectorOperations< Devices::Host >::getVectorL1Norm( const Vector< float, Devices::Host, int >& v );
 #endif
-template double      VectorOperations< tnlHost >::getVectorL1Norm( const Vector< double, tnlHost, int >& v );
+template double      VectorOperations< Devices::Host >::getVectorL1Norm( const Vector< double, Devices::Host, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorL1Norm( const Vector< long double, tnlHost, int >& v );
+template long double VectorOperations< Devices::Host >::getVectorL1Norm( const Vector< long double, Devices::Host, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         VectorOperations< tnlHost >::getVectorL1Norm( const Vector< int, tnlHost, long int >& v );
-template long int    VectorOperations< tnlHost >::getVectorL1Norm( const Vector< long int, tnlHost, long int >& v );
+template int         VectorOperations< Devices::Host >::getVectorL1Norm( const Vector< int, Devices::Host, long int >& v );
+template long int    VectorOperations< Devices::Host >::getVectorL1Norm( const Vector< long int, Devices::Host, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorL1Norm( const Vector< float, tnlHost, long int >& v );
+template float       VectorOperations< Devices::Host >::getVectorL1Norm( const Vector< float, Devices::Host, long int >& v );
 #endif
-template double      VectorOperations< tnlHost >::getVectorL1Norm( const Vector< double, tnlHost, long int >& v );
+template double      VectorOperations< Devices::Host >::getVectorL1Norm( const Vector< double, Devices::Host, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorL1Norm( const Vector< long double, tnlHost, long int >& v );
+template long double VectorOperations< Devices::Host >::getVectorL1Norm( const Vector< long double, Devices::Host, long int >& v );
 #endif
 #endif
 
 /****
  * L2 norm
  */
-template int         VectorOperations< tnlHost >::getVectorL2Norm( const Vector< int, tnlHost, int >& v );
-template long int    VectorOperations< tnlHost >::getVectorL2Norm( const Vector< long int, tnlHost, int >& v );
+template int         VectorOperations< Devices::Host >::getVectorL2Norm( const Vector< int, Devices::Host, int >& v );
+template long int    VectorOperations< Devices::Host >::getVectorL2Norm( const Vector< long int, Devices::Host, int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorL2Norm( const Vector< float, tnlHost, int >& v );
+template float       VectorOperations< Devices::Host >::getVectorL2Norm( const Vector< float, Devices::Host, int >& v );
 #endif
-template double      VectorOperations< tnlHost >::getVectorL2Norm( const Vector< double, tnlHost, int >& v );
+template double      VectorOperations< Devices::Host >::getVectorL2Norm( const Vector< double, Devices::Host, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorL2Norm( const Vector< long double, tnlHost, int >& v );
+template long double VectorOperations< Devices::Host >::getVectorL2Norm( const Vector< long double, Devices::Host, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         VectorOperations< tnlHost >::getVectorL2Norm( const Vector< int, tnlHost, long int >& v );
-template long int    VectorOperations< tnlHost >::getVectorL2Norm( const Vector< long int, tnlHost, long int >& v );
+template int         VectorOperations< Devices::Host >::getVectorL2Norm( const Vector< int, Devices::Host, long int >& v );
+template long int    VectorOperations< Devices::Host >::getVectorL2Norm( const Vector< long int, Devices::Host, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorL2Norm( const Vector< float, tnlHost, long int >& v );
+template float       VectorOperations< Devices::Host >::getVectorL2Norm( const Vector< float, Devices::Host, long int >& v );
 #endif
-template double      VectorOperations< tnlHost >::getVectorL2Norm( const Vector< double, tnlHost, long int >& v );
+template double      VectorOperations< Devices::Host >::getVectorL2Norm( const Vector< double, Devices::Host, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorL2Norm( const Vector< long double, tnlHost, long int >& v );
+template long double VectorOperations< Devices::Host >::getVectorL2Norm( const Vector< long double, Devices::Host, long int >& v );
 #endif
 #endif
 
@@ -169,25 +169,25 @@ template long double VectorOperations< tnlHost >::getVectorL2Norm( const Vector<
 /****
  * Lp norm
  */
-template int         VectorOperations< tnlHost >::getVectorLpNorm( const Vector< int, tnlHost, int >& v, const int& p );
-template long int    VectorOperations< tnlHost >::getVectorLpNorm( const Vector< long int, tnlHost, int >& v, const long int& p );
+template int         VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< int, Devices::Host, int >& v, const int& p );
+template long int    VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< long int, Devices::Host, int >& v, const long int& p );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorLpNorm( const Vector< float, tnlHost, int >& v, const float& p );
+template float       VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< float, Devices::Host, int >& v, const float& p );
 #endif
-template double      VectorOperations< tnlHost >::getVectorLpNorm( const Vector< double, tnlHost, int >& v, const double& p );
+template double      VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< double, Devices::Host, int >& v, const double& p );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorLpNorm( const Vector< long double, tnlHost, int >& v, const long double& p );
+template long double VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< long double, Devices::Host, int >& v, const long double& p );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         VectorOperations< tnlHost >::getVectorLpNorm( const Vector< int, tnlHost, long int >& v, const int& p );
-template long int    VectorOperations< tnlHost >::getVectorLpNorm( const Vector< long int, tnlHost, long int >& v, const long int& p );
+template int         VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< int, Devices::Host, long int >& v, const int& p );
+template long int    VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< long int, Devices::Host, long int >& v, const long int& p );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorLpNorm( const Vector< float, tnlHost, long int >& v, const float& p );
+template float       VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< float, Devices::Host, long int >& v, const float& p );
 #endif
-template double      VectorOperations< tnlHost >::getVectorLpNorm( const Vector< double, tnlHost, long int >& v, const double& p );
+template double      VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< double, Devices::Host, long int >& v, const double& p );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorLpNorm( const Vector< long double, tnlHost, long int >& v, const long double& p );
+template long double VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< long double, Devices::Host, long int >& v, const long double& p );
 #endif
 #endif
 
@@ -196,125 +196,125 @@ template long double VectorOperations< tnlHost >::getVectorLpNorm( const Vector<
 /****
  * Sum
  */
-template int         VectorOperations< tnlHost >::getVectorSum( const Vector< int, tnlHost, int >& v );
-template long int    VectorOperations< tnlHost >::getVectorSum( const Vector< long int, tnlHost, int >& v );
+template int         VectorOperations< Devices::Host >::getVectorSum( const Vector< int, Devices::Host, int >& v );
+template long int    VectorOperations< Devices::Host >::getVectorSum( const Vector< long int, Devices::Host, int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorSum( const Vector< float, tnlHost, int >& v );
+template float       VectorOperations< Devices::Host >::getVectorSum( const Vector< float, Devices::Host, int >& v );
 #endif
-template double      VectorOperations< tnlHost >::getVectorSum( const Vector< double, tnlHost, int >& v );
+template double      VectorOperations< Devices::Host >::getVectorSum( const Vector< double, Devices::Host, int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorSum( const Vector< long double, tnlHost, int >& v );
+template long double VectorOperations< Devices::Host >::getVectorSum( const Vector< long double, Devices::Host, int >& v );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         VectorOperations< tnlHost >::getVectorSum( const Vector< int, tnlHost, long int >& v );
-template long int    VectorOperations< tnlHost >::getVectorSum( const Vector< long int, tnlHost, long int >& v );
+template int         VectorOperations< Devices::Host >::getVectorSum( const Vector< int, Devices::Host, long int >& v );
+template long int    VectorOperations< Devices::Host >::getVectorSum( const Vector< long int, Devices::Host, long int >& v );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorSum( const Vector< float, tnlHost, long int >& v );
+template float       VectorOperations< Devices::Host >::getVectorSum( const Vector< float, Devices::Host, long int >& v );
 #endif
-template double      VectorOperations< tnlHost >::getVectorSum( const Vector< double, tnlHost, long int >& v );
+template double      VectorOperations< Devices::Host >::getVectorSum( const Vector< double, Devices::Host, long int >& v );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorSum( const Vector< long double, tnlHost, long int >& v );
+template long double VectorOperations< Devices::Host >::getVectorSum( const Vector< long double, Devices::Host, long int >& v );
 #endif
 #endif
 
 /****
  * Difference max
  */
-template int         VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< int, tnlHost, int >& v1, const Vector< int, tnlHost, int >& v2 );
-template long int    VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< long int, tnlHost, int >& v1, const Vector< long int, tnlHost, int >& v2 );
+template int         VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< int, Devices::Host, int >& v1, const Vector< int, Devices::Host, int >& v2 );
+template long int    VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< long int, Devices::Host, int >& v1, const Vector< long int, Devices::Host, int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< float, tnlHost, int >& v1,  const Vector< float, tnlHost, int >& v2);
+template float       VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< float, Devices::Host, int >& v1,  const Vector< float, Devices::Host, int >& v2);
 #endif
-template double      VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< double, tnlHost, int >& v1, const Vector< double, tnlHost, int >& v2 );
+template double      VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< double, Devices::Host, int >& v1, const Vector< double, Devices::Host, int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< long double, tnlHost, int >& v1, const Vector< long double, tnlHost, int >& v2 );
+template long double VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< long double, Devices::Host, int >& v1, const Vector< long double, Devices::Host, int >& v2 );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< int, tnlHost, long int >& v1, const Vector< int, tnlHost, long int >& v2 );
-template long int    VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< long int, tnlHost, long int >& v1, const Vector< long int, tnlHost, long int >& v2 );
+template int         VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< int, Devices::Host, long int >& v1, const Vector< int, Devices::Host, long int >& v2 );
+template long int    VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< long int, Devices::Host, long int >& v1, const Vector< long int, Devices::Host, long int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< float, tnlHost, long int >& v1, const Vector< float, tnlHost, long int >& v2 );
+template float       VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< float, Devices::Host, long int >& v1, const Vector< float, Devices::Host, long int >& v2 );
 #endif
-template double      VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< double, tnlHost, long int >& v1, const Vector< double, tnlHost, long int >& v2 );
+template double      VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< double, Devices::Host, long int >& v1, const Vector< double, Devices::Host, long int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorDifferenceMax( const Vector< long double, tnlHost, long int >& v1, const Vector< long double, tnlHost, long int >& v2 );
+template long double VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< long double, Devices::Host, long int >& v1, const Vector< long double, Devices::Host, long int >& v2 );
 #endif
 #endif
 
 /****
  * Difference min
  */
-template int         VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< int, tnlHost, int >& v1, const Vector< int, tnlHost, int >& v2 );
-template long int    VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< long int, tnlHost, int >& v1, const Vector< long int, tnlHost, int >& v2 );
+template int         VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< int, Devices::Host, int >& v1, const Vector< int, Devices::Host, int >& v2 );
+template long int    VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< long int, Devices::Host, int >& v1, const Vector< long int, Devices::Host, int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< float, tnlHost, int >& v1,  const Vector< float, tnlHost, int >& v2);
+template float       VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< float, Devices::Host, int >& v1,  const Vector< float, Devices::Host, int >& v2);
 #endif
-template double      VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< double, tnlHost, int >& v1, const Vector< double, tnlHost, int >& v2 );
+template double      VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< double, Devices::Host, int >& v1, const Vector< double, Devices::Host, int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< long double, tnlHost, int >& v1, const Vector< long double, tnlHost, int >& v2 );
+template long double VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< long double, Devices::Host, int >& v1, const Vector< long double, Devices::Host, int >& v2 );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< int, tnlHost, long int >& v1, const Vector< int, tnlHost, long int >& v2 );
-template long int    VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< long int, tnlHost, long int >& v1, const Vector< long int, tnlHost, long int >& v2 );
+template int         VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< int, Devices::Host, long int >& v1, const Vector< int, Devices::Host, long int >& v2 );
+template long int    VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< long int, Devices::Host, long int >& v1, const Vector< long int, Devices::Host, long int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< float, tnlHost, long int >& v1, const Vector< float, tnlHost, long int >& v2 );
+template float       VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< float, Devices::Host, long int >& v1, const Vector< float, Devices::Host, long int >& v2 );
 #endif
-template double      VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< double, tnlHost, long int >& v1, const Vector< double, tnlHost, long int >& v2 );
+template double      VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< double, Devices::Host, long int >& v1, const Vector< double, Devices::Host, long int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorDifferenceMin( const Vector< long double, tnlHost, long int >& v1, const Vector< long double, tnlHost, long int >& v2 );
+template long double VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< long double, Devices::Host, long int >& v1, const Vector< long double, Devices::Host, long int >& v2 );
 #endif
 #endif
 
 /****
  * Difference abs max
  */
-template int         VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< int, tnlHost, int >& v1, const Vector< int, tnlHost, int >& v2 );
-template long int    VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< long int, tnlHost, int >& v1, const Vector< long int, tnlHost, int >& v2 );
+template int         VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< int, Devices::Host, int >& v1, const Vector< int, Devices::Host, int >& v2 );
+template long int    VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< long int, Devices::Host, int >& v1, const Vector< long int, Devices::Host, int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< float, tnlHost, int >& v1,  const Vector< float, tnlHost, int >& v2);
+template float       VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< float, Devices::Host, int >& v1,  const Vector< float, Devices::Host, int >& v2);
 #endif
-template double      VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< double, tnlHost, int >& v1, const Vector< double, tnlHost, int >& v2 );
+template double      VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< double, Devices::Host, int >& v1, const Vector< double, Devices::Host, int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< long double, tnlHost, int >& v1, const Vector< long double, tnlHost, int >& v2 );
+template long double VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< long double, Devices::Host, int >& v1, const Vector< long double, Devices::Host, int >& v2 );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< int, tnlHost, long int >& v1, const Vector< int, tnlHost, long int >& v2 );
-template long int    VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< long int, tnlHost, long int >& v1, const Vector< long int, tnlHost, long int >& v2 );
+template int         VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< int, Devices::Host, long int >& v1, const Vector< int, Devices::Host, long int >& v2 );
+template long int    VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< long int, Devices::Host, long int >& v1, const Vector< long int, Devices::Host, long int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< float, tnlHost, long int >& v1, const Vector< float, tnlHost, long int >& v2 );
+template float       VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< float, Devices::Host, long int >& v1, const Vector< float, Devices::Host, long int >& v2 );
 #endif
-template double      VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< double, tnlHost, long int >& v1, const Vector< double, tnlHost, long int >& v2 );
+template double      VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< double, Devices::Host, long int >& v1, const Vector< double, Devices::Host, long int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorDifferenceAbsMax( const Vector< long double, tnlHost, long int >& v1, const Vector< long double, tnlHost, long int >& v2 );
+template long double VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< long double, Devices::Host, long int >& v1, const Vector< long double, Devices::Host, long int >& v2 );
 #endif
 #endif
 
 /****
  * Difference abs min
  */
-template int         VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< int, tnlHost, int >& v1, const Vector< int, tnlHost, int >& v2 );
-template long int    VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< long int, tnlHost, int >& v1, const Vector< long int, tnlHost, int >& v2 );
+template int         VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< int, Devices::Host, int >& v1, const Vector< int, Devices::Host, int >& v2 );
+template long int    VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< long int, Devices::Host, int >& v1, const Vector< long int, Devices::Host, int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< float, tnlHost, int >& v1,  const Vector< float, tnlHost, int >& v2);
+template float       VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< float, Devices::Host, int >& v1,  const Vector< float, Devices::Host, int >& v2);
 #endif
-template double      VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< double, tnlHost, int >& v1, const Vector< double, tnlHost, int >& v2 );
+template double      VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< double, Devices::Host, int >& v1, const Vector< double, Devices::Host, int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< long double, tnlHost, int >& v1, const Vector< long double, tnlHost, int >& v2 );
+template long double VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< long double, Devices::Host, int >& v1, const Vector< long double, Devices::Host, int >& v2 );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-template int         VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< int, tnlHost, long int >& v1, const Vector< int, tnlHost, long int >& v2 );
-template long int    VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< long int, tnlHost, long int >& v1, const Vector< long int, tnlHost, long int >& v2 );
+template int         VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< int, Devices::Host, long int >& v1, const Vector< int, Devices::Host, long int >& v2 );
+template long int    VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< long int, Devices::Host, long int >& v1, const Vector< long int, Devices::Host, long int >& v2 );
 #ifdef INSTANTIATE_FLOAT
-template float       VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< float, tnlHost, long int >& v1, const Vector< float, tnlHost, long int >& v2 );
+template float       VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< float, Devices::Host, long int >& v1, const Vector< float, Devices::Host, long int >& v2 );
 #endif
-template double      VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< double, tnlHost, long int >& v1, const Vector< double, tnlHost, long int >& v2 );
+template double      VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< double, Devices::Host, long int >& v1, const Vector< double, Devices::Host, long int >& v2 );
 #ifdef INSTANTIATE_LONG_DOUBLE
-template long double VectorOperations< tnlHost >::getVectorDifferenceAbsMin( const Vector< long double, tnlHost, long int >& v1, const Vector< long double, tnlHost, long int >& v2 );
+template long double VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< long double, Devices::Host, long int >& v1, const Vector< long double, Devices::Host, long int >& v2 );
 #endif
 #endif
 

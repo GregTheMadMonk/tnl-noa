@@ -32,10 +32,10 @@ const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-sparse-matrix-benchmark.cfg.
 double bestCudaRgCSRGflops( 0 );
 
 template< typename Real >
-void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
-                           const Vector< Real, tnlHost >& refX,
-                           const Vector< Real, tnlCuda >& cudaX,
-                           Vector< Real, tnlHost >& refB,
+void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, Devices::Host, int >& csrMatrix,
+                           const Vector< Real, Devices::Host >& refX,
+                           const Vector< Real, Devices::Cuda >& cudaX,
+                           Vector< Real, Devices::Host >& refB,
                            bool formatTest,
                            const int maxIterations,
                            const bool useAdaptiveGroupSize,
@@ -46,7 +46,7 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
                            const String& logFileName,
                            std::fstream& logFile )
 {
-   tnlSpmvBenchmarkRgCSRMatrix< Real, tnlHost, int > hostRgCsrMatrixBenchmark;
+   tnlSpmvBenchmarkRgCSRMatrix< Real, Devices::Host, int > hostRgCsrMatrixBenchmark;
    for( int groupSize = 16; groupSize <= 64; groupSize *= 2 )
    {
 
@@ -67,7 +67,7 @@ void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, tnlHost, int >& csrMatrix,
                                                     csrMatrix,
                                                     true );
 
-      tnlSpmvBenchmarkRgCSRMatrix< Real, tnlCuda, int > cudaRgCsrMatrixBenchmark;
+      tnlSpmvBenchmarkRgCSRMatrix< Real, Devices::Cuda, int > cudaRgCsrMatrixBenchmark;
       cudaRgCsrMatrixBenchmark. setGroupSize( groupSize );
       cudaRgCsrMatrixBenchmark. setup( csrMatrix );
       cudaRgCsrMatrixBenchmark. setMaxIterations( maxIterations );
@@ -96,7 +96,7 @@ bool benchmarkMatrix( const Config::ParameterContainer& parameters )
    /****
     * Read the CSR matrix ...
     */
-   typedef tnlCSRMatrix< RealType, tnlHost, int > CsrMatrix;
+   typedef tnlCSRMatrix< RealType, Devices::Host, int > CsrMatrix;
    CsrMatrix csrMatrix;
 
    const String& inputFileName = parameters.getParameter< String >( "input-file" );
@@ -127,8 +127,8 @@ bool benchmarkMatrix( const Config::ParameterContainer& parameters )
 
    const long int rows = csrMatrix.getRows();
    const long int columns = csrMatrix.getColumns();
-   Vector< RealType, tnlHost > refX( "ref-x", columns ), refB( "ref-b", rows );
-   Vector< RealType, tnlCuda > cudaX( "cudaX", columns );
+   Vector< RealType, Devices::Host > refX( "ref-x", columns ), refB( "ref-b", rows );
+   Vector< RealType, Devices::Cuda > cudaX( "cudaX", columns );
    refX. setValue( 0.0 );
    for( int i = 0; i < columns; i ++ )
       refX[ i ] = 1.0; //( Real ) i * 1.0 / ( Real ) size;
@@ -138,7 +138,7 @@ bool benchmarkMatrix( const Config::ParameterContainer& parameters )
    /****
     * CSR format benchmark
     */
-   tnlSpmvBenchmark< tnlCSRMatrix< RealType, tnlHost, int > > csrMatrixBenchmark;
+   tnlSpmvBenchmark< tnlCSRMatrix< RealType, Devices::Host, int > > csrMatrixBenchmark;
 
    /****
     * Use the first instance of tnlSpmvBenchmark which we have
@@ -235,7 +235,7 @@ bool benchmarkMatrix( const Config::ParameterContainer& parameters )
                          logFileName,
                          logFile );
 
-   tnlSpmvBenchmarkRgCSRMatrix< Real, tnlHost, int > hostRgCsrMatrixBenchmark;
+   tnlSpmvBenchmarkRgCSRMatrix< Real, Devices::Host, int > hostRgCsrMatrixBenchmark;
    hostRgCsrMatrixBenchmark. setGroupSize( 16 );
    hostRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
    hostRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize );
@@ -251,7 +251,7 @@ bool benchmarkMatrix( const Config::ParameterContainer& parameters )
                                                  inputMtxFile,
                                                  csrMatrix,
                                                  true );
-   tnlSpmvBenchmarkRgCSRMatrix< Real, tnlCuda, int > cudaRgCsrMatrixBenchmark;
+   tnlSpmvBenchmarkRgCSRMatrix< Real, Devices::Cuda, int > cudaRgCsrMatrixBenchmark;
    for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
    {
       cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
@@ -279,9 +279,9 @@ bool benchmarkMatrix( const Config::ParameterContainer& parameters )
    if( verbose )
      std::cout << "          ------------------------------- Test with sorted matrix ----------------------------------          " << std::endl;
 
-   Vector< int, tnlHost > rowPermutation( "rowPermutation" );
+   Vector< int, Devices::Host > rowPermutation( "rowPermutation" );
    {
-      tnlCSRMatrix< Real, tnlHost > orderedCsrMatrix( "orderedCsrMatrix" );
+      tnlCSRMatrix< Real, Devices::Host > orderedCsrMatrix( "orderedCsrMatrix" );
       csrMatrix. sortRowsDecreasingly( rowPermutation );
 
       /****
@@ -312,7 +312,7 @@ bool benchmarkMatrix( const Config::ParameterContainer& parameters )
                             logFileName,
                             logFile );
 
-      tnlSpmvBenchmarkRgCSRMatrix< Real, tnlHost, int > hostRgCsrMatrixBenchmark;
+      tnlSpmvBenchmarkRgCSRMatrix< Real, Devices::Host, int > hostRgCsrMatrixBenchmark;
       hostRgCsrMatrixBenchmark. setGroupSize( 16 );
       hostRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true ); // TODO: fix with true - not implemented yet
       hostRgCsrMatrixBenchmark. setAdaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByFirstGroup );
@@ -330,7 +330,7 @@ bool benchmarkMatrix( const Config::ParameterContainer& parameters )
                                                     true );
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {
-         tnlSpmvBenchmarkRgCSRMatrix< Real, tnlCuda, int > cudaRgCsrMatrixBenchmark;
+         tnlSpmvBenchmarkRgCSRMatrix< Real, Devices::Cuda, int > cudaRgCsrMatrixBenchmark;
          cudaRgCsrMatrixBenchmark. setCudaBlockSize( cudaBlockSize );
          cudaRgCsrMatrixBenchmark. setGroupSize( 16 );
          cudaRgCsrMatrixBenchmark. setUseAdaptiveGroupSize( true );
@@ -358,7 +358,7 @@ bool benchmarkMatrix( const Config::ParameterContainer& parameters )
 
    for( int desiredChunkSize = 1; desiredChunkSize <= 32; desiredChunkSize *= 2 )
    {
-      tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, tnlCuda, int > cudaArgCsrMatrixBenchmark;
+      tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Devices::Cuda, int > cudaArgCsrMatrixBenchmark;
       cudaArgCsrMatrixBenchmark. setDesiredChunkSize( desiredChunkSize );
       for( int cudaBlockSize = 32; cudaBlockSize <= 256; cudaBlockSize *= 2 )
       {

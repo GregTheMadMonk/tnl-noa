@@ -13,7 +13,7 @@
 
 #include <TNL/legacy/mesh/tnlGridOld.h>
 
-template< int Dimensions, typename Real = double, typename Device = tnlHost, typename Index = int >
+template< int Dimensions, typename Real = double, typename Device = Devices::Host, typename Index = int >
 class tnlMPIMesh
 {
 };

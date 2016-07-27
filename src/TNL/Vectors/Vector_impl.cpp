@@ -16,22 +16,22 @@ namespace Vectors {
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-template class Vector< float, tnlHost, int >;
-template Vector< float, tnlHost, int >& Vector< float, tnlHost, int >:: operator = ( const Vector< double, tnlHost, int >& vector );
+template class Vector< float, Devices::Host, int >;
+template Vector< float, Devices::Host, int >& Vector< float, Devices::Host, int >:: operator = ( const Vector< double, Devices::Host, int >& vector );
 #endif
 
 
-template class Vector< double, tnlHost, int >;
+template class Vector< double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class Vector< long double, tnlHost, int >;
+template class Vector< long double, Devices::Host, int >;
 #endif
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class Vector< float, tnlHost, long int >;
+template class Vector< float, Devices::Host, long int >;
 #endif
-template class Vector< double, tnlHost, long int >;
+template class Vector< double, Devices::Host, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class Vector< long double, tnlHost, long int >;
+template class Vector< long double, Devices::Host, long int >;
 #endif
 #endif
 

@@ -159,7 +159,7 @@ class tnlMultidiagonalMatrixTester : public CppUnit :: TestCase
 
    void addRowFastTest()
    {
-      if( Device::getDevice() == tnlHostDevice )
+      if( std::is_same< Device, Devices::Host >::value )
       {
          MatrixType m;
          m.setDimensions( 10, 10 );

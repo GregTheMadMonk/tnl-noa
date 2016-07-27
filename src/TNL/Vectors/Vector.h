@@ -15,14 +15,17 @@
 
 namespace TNL {
 
-class tnlHost;
+namespace Devices
+{ 
+   class Host;
+}
 
 namespace Vectors {   
 
 
 
 template< typename Real = double,
-           typename Device = tnlHost,
+           typename Device = Devices::Host,
            typename Index = int >
 class Vector : public Arrays::Array< Real, Device, Index >
 {
@@ -31,8 +34,8 @@ class Vector : public Arrays::Array< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Vector< Real, TNL::tnlHost, Index > HostType;
-   typedef Vector< Real, TNL::tnlCuda, Index > CudaType;
+   typedef Vector< Real, TNL::Devices::Host, Index > HostType;
+   typedef Vector< Real, TNL::Devices::Cuda, Index > CudaType;
 
    Vector();
 

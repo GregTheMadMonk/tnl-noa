@@ -104,7 +104,7 @@ class tnlDicomSeries : public tnlImage< int >
 
       List< String > fileList;
  
-      Arrays::Array<tnlDicomHeader *,tnlHost,int> dicomSeriesHeaders;
+      Arrays::Array<tnlDicomHeader *,Devices::Host,int> dicomSeriesHeaders;
 
       bool isLoaded;
  

@@ -12,7 +12,7 @@
 #include <TNL/Logger.h>
 #include <TNL/tnlConfig.h>
 #include <TNL/SystemInfo.h>
-#include <TNL/core/tnlCudaDeviceInfo.h>
+#include <TNL/Devices/CudaDeviceInfo.h>
 
 namespace TNL {
 
@@ -72,24 +72,24 @@ bool Logger :: writeSystemInformation( const Config::ParameterContainer& paramet
       // TODO: Printing all devices does not make sense, but in the future TNL
       //       might use more than one device for computations. Printing only
       //       the active device for now...
-//      int devices = tnlCudaDeviceInfo::getNumberOfDevices();
+//      int devices = Devices::CudaDeviceInfo::getNumberOfDevices();
 //      writeParameter< int >( "Number of devices", devices, 1 );
 //      for( int i = 0; i < devices; i++ )
 //      {
 //        writeParameter< int >( "Device no.", i, 1 );
-        int i = tnlCudaDeviceInfo::getActiveDevice();
-        writeParameter< String >( "Name", tnlCudaDeviceInfo::getDeviceName( i ), 2 );
-        String deviceArch = String( tnlCudaDeviceInfo::getArchitectureMajor( i ) ) + "." +
-                                String( tnlCudaDeviceInfo::getArchitectureMinor( i ) );
+        int i = Devices::CudaDeviceInfo::getActiveDevice();
+        writeParameter< String >( "Name", Devices::CudaDeviceInfo::getDeviceName( i ), 2 );
+        String deviceArch = String( Devices::CudaDeviceInfo::getArchitectureMajor( i ) ) + "." +
+                                String( Devices::CudaDeviceInfo::getArchitectureMinor( i ) );
         writeParameter< String >( "Architecture", deviceArch, 2 );
-        writeParameter< int >( "CUDA cores", tnlCudaDeviceInfo::getCudaCores( i ), 2 );
-        double clockRate = ( double ) tnlCudaDeviceInfo::getClockRate( i ) / 1.0e3;
+        writeParameter< int >( "CUDA cores", Devices::CudaDeviceInfo::getCudaCores( i ), 2 );
+        double clockRate = ( double ) Devices::CudaDeviceInfo::getClockRate( i ) / 1.0e3;
         writeParameter< double >( "Clock rate (in MHz)", clockRate, 2 );
-        double globalMemory = ( double ) tnlCudaDeviceInfo::getGlobalMemory( i ) / 1.0e9;
+        double globalMemory = ( double ) Devices::CudaDeviceInfo::getGlobalMemory( i ) / 1.0e9;
         writeParameter< double >( "Global memory (in GB)", globalMemory, 2 );
-        double memoryClockRate = ( double ) tnlCudaDeviceInfo::getMemoryClockRate( i ) / 1.0e3;
+        double memoryClockRate = ( double ) Devices::CudaDeviceInfo::getMemoryClockRate( i ) / 1.0e3;
         writeParameter< double >( "Memory clock rate (in Mhz)", memoryClockRate, 2 );
-        writeParameter< bool >( "ECC enabled", tnlCudaDeviceInfo::getECCEnabled( i ), 2 );
+        writeParameter< bool >( "ECC enabled", Devices::CudaDeviceInfo::getECCEnabled( i ), 2 );
 //      }
    }
    writeParameter< String >( "System:", systemInfo.getSystemName() );

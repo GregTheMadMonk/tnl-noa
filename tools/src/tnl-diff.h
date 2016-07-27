@@ -185,7 +185,7 @@ bool computeDifferenceOfVectors( const Mesh& mesh, const Config::ParameterContai
    if( verbose )
      std::cout << std::endl;
 
-   Vectors::Vector< Real, tnlHost, Index > v1, v2;
+   Vectors::Vector< Real, Devices::Host, Index > v1, v2;
    Real totalL1Diff( 0.0 ), totalL2Diff( 0.0 ), totalMaxDiff( 0.0 );
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {
@@ -276,7 +276,7 @@ bool computeDifferenceOfVectors( const Mesh& mesh, const Config::ParameterContai
          differenceFileName = inputFiles[ i ];
          RemoveFileExtension( differenceFileName );
          differenceFileName += ".diff.tnl";
-         Vectors::Vector< Real, tnlHost, Index > diff;
+         Vectors::Vector< Real, Devices::Host, Index > diff;
          diff.setLike( v1 );
          diff = v1;
          diff -= v2;

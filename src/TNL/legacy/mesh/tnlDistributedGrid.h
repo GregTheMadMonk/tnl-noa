@@ -16,7 +16,7 @@
 
 template< int Dimensions,
           typename GridType,
-          typename Device = tnlHost,
+          typename Device = Devices::Host,
           typename Real = double,
           typename Index = int >
 class tnlDistributedGrid : public Object

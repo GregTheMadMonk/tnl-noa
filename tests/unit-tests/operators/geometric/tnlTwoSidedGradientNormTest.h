@@ -127,10 +127,10 @@ int main( int argc, char* argv[] )
    const bool verbose( true );
    const bool write( false );
  
-   if( ! setMesh< tnlHost, write, verbose  >() )
+   if( ! setMesh< Devices::Host, write, verbose  >() )
       return EXIT_FAILURE;
 #ifdef HAVE_CUDA
-   if( ! setMesh< tnlCuda, write, verbose >() )
+   if( ! setMesh< Devices::Cuda, write, verbose >() )
       return EXIT_FAILURE;
 #endif
    return EXIT_SUCCESS;

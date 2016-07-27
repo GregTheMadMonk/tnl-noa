@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 #include <cstdlib>
 
 #include "tnlMultiArrayTester.h"
@@ -18,36 +18,36 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, char, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, int, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, long int, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, float, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, double, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, char, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, int, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, long int, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, float, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, double, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, char, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, int, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, long int, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, float, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, double, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, char, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, int, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, long int, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, float, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, double, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, char, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, int, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, long int, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, float, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, double, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, char, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, int, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, long int, tnlCuda, long int > >() ||
-       //! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, float, tnlCuda, long int > >()
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, double, tnlCuda, long int > >()
+   if( ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, char, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, int, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, long int, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, float, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, double, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, char, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, int, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, long int, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, float, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, double, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, char, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, int, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, long int, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, float, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, double, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, char, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, int, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, long int, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, float, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, double, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, char, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, int, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, long int, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, float, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, double, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, char, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, int, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, long int, Devices::Cuda, long int > >() ||
+       //! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, float, Devices::Cuda, long int > >()
+       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, double, Devices::Cuda, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

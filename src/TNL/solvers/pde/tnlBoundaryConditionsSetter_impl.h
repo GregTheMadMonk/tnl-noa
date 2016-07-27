@@ -23,7 +23,7 @@ apply( const BoundaryConditions& boundaryConditions,
        const RealType& time,
        MeshFunction& u )
 {
-   if( std::is_same< DeviceType, tnlHost >::value )
+   if( std::is_same< DeviceType, Devices::Host >::value )
    {
       TraverserUserData userData( time, boundaryConditions, u );
       tnlTraverser< MeshType, EntityType > meshTraverser;
@@ -32,11 +32,11 @@ apply( const BoundaryConditions& boundaryConditions,
                                                     ( u.getMesh(),
                                                       userData );
    }
-   if( std::is_same< DeviceType, tnlCuda >::value )
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
-      RealType* kernelTime = tnlCuda::passToDevice( time );
-      BoundaryConditions* kernelBoundaryConditions = tnlCuda::passToDevice( boundaryConditions );
-      MeshFunction* kernelU = tnlCuda::passToDevice( u );
+      RealType* kernelTime = Devices::Cuda::passToDevice( time );
+      BoundaryConditions* kernelBoundaryConditions = Devices::Cuda::passToDevice( boundaryConditions );
+      MeshFunction* kernelU = Devices::Cuda::passToDevice( u );
       TraverserUserData userData( *kernelTime, *kernelBoundaryConditions, *kernelU );
       checkCudaDevice;
       tnlTraverser< MeshType, EntityType > meshTraverser;
@@ -44,9 +44,9 @@ apply( const BoundaryConditions& boundaryConditions,
                                                       TraverserBoundaryEntitiesProcessor >
                                                     ( u.getMesh(),
                                                       userData );
-      tnlCuda::freeFromDevice( kernelTime );
-      tnlCuda::freeFromDevice( kernelBoundaryConditions );
-      tnlCuda::freeFromDevice( kernelU );
+      Devices::Cuda::freeFromDevice( kernelTime );
+      Devices::Cuda::freeFromDevice( kernelBoundaryConditions );
+      Devices::Cuda::freeFromDevice( kernelU );
       checkCudaDevice;
    }
 }

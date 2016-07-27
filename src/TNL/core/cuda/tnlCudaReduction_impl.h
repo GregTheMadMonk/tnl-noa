@@ -15,7 +15,7 @@ namespace TNL {
 template< typename Operation, int blockSize >
 __device__
 void
-tnlCUDAReduction< Operation, blockSize >::
+tnlCudaReduction< Operation, blockSize >::
 reduce( Operation& operation,
         const IndexType size,
         const RealType* input1,
@@ -151,7 +151,7 @@ reduce( Operation& operation,
 template< typename Real, typename Index, int blockSize >
 __device__
 void
-tnlCUDAReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize >::
+tnlCudaReduction< tnlParallelReductionScalarProduct< Real, Index >, blockSize >::
 reduce( Operation& operation,
         const IndexType size,
         const RealType* input1,

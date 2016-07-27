@@ -46,7 +46,7 @@ class tnlSpmvBenchmarkBase
 
    void writeProgressTableHeader();
 
-   virtual bool setup( const tnlCSRMatrix< RealType, tnlHost, IndexType >& matrix ) = 0;
+   virtual bool setup( const tnlCSRMatrix< RealType, Devices::Host, IndexType >& matrix ) = 0;
 
    virtual void tearDown() = 0;
 
@@ -58,13 +58,13 @@ class tnlSpmvBenchmarkBase
     * in tnlMatrix.
     */
    virtual void runBenchmark( const Vector< RealType, DeviceType, IndexType >& x,
-                              const Vector< RealType, tnlHost, IndexType >& refB,
+                              const Vector< RealType, Devices::Host, IndexType >& refB,
                               bool verbose );
 
    virtual void writeToLogTable( std::ostream& logFile,
                                  const double& csrGflops,
                                  const String& inputMtxFile,
-                                 const tnlCSRMatrix< RealType, tnlHost, IndexType >& csrMatrix,
+                                 const tnlCSRMatrix< RealType, Devices::Host, IndexType >& csrMatrix,
                                  bool writeMatrixInfo  ) const = 0;
 
    protected:
@@ -78,7 +78,7 @@ class tnlSpmvBenchmarkBase
     * Helper method for writing matrix statistics and information to HTML
     */
    bool printMatrixInHtml( const String& fileName,
-                           tnlMatrix< RealType, tnlHost, IndexType >& matrix ) const;
+                           tnlMatrix< RealType, Devices::Host, IndexType >& matrix ) const;
 
 
    bool benchmarkWasSuccesful;

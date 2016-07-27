@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 #include <TNL/matrices/tnlSlicedEllpackMatrix.h>
 #include <cstdlib>
 
@@ -19,10 +19,10 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-  if( ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlSlicedEllpackMatrix< float, tnlCuda, int, 32 > > >() ||
-      ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlSlicedEllpackMatrix< double, tnlCuda, int, 32 > > >() ||
-      ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlSlicedEllpackMatrix< float, tnlCuda, int, 4 > > >() ||
-      ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlSlicedEllpackMatrix< double, tnlCuda, int, 4 > > >()
+  if( ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlSlicedEllpackMatrix< float, Devices::Cuda, int, 32 > > >() ||
+      ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlSlicedEllpackMatrix< double, Devices::Cuda, int, 32 > > >() ||
+      ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlSlicedEllpackMatrix< float, Devices::Cuda, int, 4 > > >() ||
+      ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlSlicedEllpackMatrix< double, Devices::Cuda, int, 4 > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

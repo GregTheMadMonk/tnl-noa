@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCuda.h  -  description
+                          Devices::Cuda.h  -  description
                              -------------------
     begin                : Nov 7, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -12,7 +12,6 @@
 
 #include <iostream>
 #include <unistd.h>
-#include <TNL/core/tnlDevice.h>
 #include <TNL/String.h>
 #include <TNL/Assert.h>
 
@@ -22,7 +21,8 @@ namespace Config {
    class ConfigDescription;
    class ParameterContainer;
 }
-   
+
+namespace Devices {
 
 #ifdef HAVE_CUDA
 #define __cuda_callable__ __device__ __host__
@@ -31,15 +31,11 @@ namespace Config {
 #endif
 
 
-class tnlCuda
+class Cuda
 {
    public:
 
-   enum { DeviceType = tnlCudaDevice };
-
    static String getDeviceType();
-
-   __cuda_callable__ static inline tnlDeviceEnum getDevice();
 
    __cuda_callable__ static inline int getMaxGridSize();
 
@@ -99,13 +95,13 @@ class tnlCuda
 
 };
 
-#define checkCudaDevice tnlCuda::checkDevice( __FILE__, __LINE__ )
+#define checkCudaDevice Devices::Cuda::checkDevice( __FILE__, __LINE__ )
 
-#define tnlCudaSupportMissingMessage \
+#define CudaSupportMissingMessage \
    std::cerr << "The CUDA support is missing in the source file " << __FILE__ << " at line " << __LINE__ << ". Please set WITH_CUDA=yes in the install script. " << std::endl;
 
 
-// TODO: This would be nice in tnlCuda but C++ standard does not allow it.
+// TODO: This would be nice in Cuda but C++ standard does not allow it.
 #ifdef HAVE_CUDA
    template< typename Element >
    struct getSharedMemory
@@ -127,6 +123,7 @@ class tnlCuda
 
 #endif
 
+} // namespace Devices
 } // namespace TNL   
    
-#include <TNL/core/tnlCuda_impl.h>
+#include <TNL/Devices/Cuda_impl.h>

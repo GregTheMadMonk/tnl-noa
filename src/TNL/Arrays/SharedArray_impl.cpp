@@ -16,39 +16,39 @@ namespace Arrays {
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-template class tnlSharedArray< float, tnlHost, int >;
+template class tnlSharedArray< float, Devices::Host, int >;
 #endif
-template class tnlSharedArray< double, tnlHost, int >;
+template class tnlSharedArray< double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class tnlSharedArray< long double, tnlHost, int >;
+template class tnlSharedArray< long double, Devices::Host, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class tnlSharedArray< float, tnlHost, long int >;
+template class tnlSharedArray< float, Devices::Host, long int >;
 #endif
-template class tnlSharedArray< double, tnlHost, long int >;
+template class tnlSharedArray< double, Devices::Host, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class tnlSharedArray< long double, tnlHost, long int >;
+template class tnlSharedArray< long double, Devices::Host, long int >;
 #endif
 #endif
 
 /*#ifdef HAVE_CUDA
 #ifdef INSTANTIATE_FLOAT
-template class tnlSharedArray< float, tnlCuda, int >;
+template class tnlSharedArray< float, Devices::Cuda, int >;
 #endif
-template class tnlSharedArray< double, tnlCuda, int >;
+template class tnlSharedArray< double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class tnlSharedArray< long double, tnlCuda, int >;
+template class tnlSharedArray< long double, Devices::Cuda, int >;
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-template class tnlSharedArray< float, tnlCuda, long int >;
+template class tnlSharedArray< float, Devices::Cuda, long int >;
 #endif
-template class tnlSharedArray< double, tnlCuda, long int >;
+template class tnlSharedArray< double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-template class tnlSharedArray< long double, tnlCuda, long int >;
+template class tnlSharedArray< long double, Devices::Cuda, long int >;
 #endif
 #endif
 #endif*/

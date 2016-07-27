@@ -52,13 +52,13 @@ class tnlFileTester : public CppUnit :: TestCase
       }
       int intData( 5 );
 #ifdef HAVE_NOT_CXX11
-      file. write< int, tnlHost >( &intData );
+      file. write< int, Devices::Host >( &intData );
 #else
       file. write( &intData );
 #endif
       double doubleData[ 3 ] = { 1.0, 2.0, 3.0 };
 #ifdef HAVE_NOT_CXX11
-      file. write< double, tnlHost >( doubleData, 3 );
+      file. write< double, Devices::Host >( doubleData, 3 );
 #else
       file. write( doubleData, 3 );
 #endif
@@ -76,8 +76,8 @@ class tnlFileTester : public CppUnit :: TestCase
       int newIntData;
       double newDoubleData[ 3 ];
 #ifdef HAVE_NOT_CXX11
-      file. read< int, tnlHost >( &newIntData );
-      file. read< double, tnlHost >( newDoubleData, 3 );
+      file. read< int, Devices::Host >( &newIntData );
+      file. read< double, Devices::Host >( newDoubleData, 3 );
 #else
       file. read( &newIntData, 1 );
       file. read( newDoubleData, 3 );
@@ -113,8 +113,8 @@ class tnlFileTester : public CppUnit :: TestCase
          return;
       }
 
-      file. write< int, tnlCuda >( cudaIntData );
-      file. write< float, tnlCuda, int >( cudaFloatData, 3 );
+      file. write< int, Devices::Cuda >( cudaIntData );
+      file. write< float, Devices::Cuda, int >( cudaFloatData, 3 );
       if( ! file. close() )
       {
          std::cerr << "Unable to close the file test-file.tnl" << std::endl;
@@ -132,8 +132,8 @@ class tnlFileTester : public CppUnit :: TestCase
       float* newCudaFloatData;
       cudaMalloc( ( void** ) &newCudaIntData, sizeof( int ) );
       cudaMalloc( ( void** ) &newCudaFloatData, 3 * sizeof( float ) );
-      file. read< int, tnlCuda >( newCudaIntData, 1 );
-      file. read< float, tnlCuda, int >( newCudaFloatData, 3 );
+      file. read< int, Devices::Cuda >( newCudaIntData, 1 );
+      file. read< float, Devices::Cuda, int >( newCudaFloatData, 3 );
       cudaMemcpy( &newIntData,
                   newCudaIntData,
                   sizeof( int ),

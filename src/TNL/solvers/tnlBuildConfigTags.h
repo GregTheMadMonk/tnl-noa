@@ -31,7 +31,7 @@ class tnlDefaultBuildConfigTag{};
  */
 template< typename ConfigTag, typename Device > struct tnlConfigTagDevice{ enum { enabled = true }; };
 #ifndef HAVE_CUDA
-template< typename ConfigTag > struct tnlConfigTagDevice< ConfigTag, tnlCuda >{ enum { enabled = false }; };
+template< typename ConfigTag > struct tnlConfigTagDevice< ConfigTag, Devices::Cuda >{ enum { enabled = false }; };
 #endif
 
 /****
