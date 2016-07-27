@@ -233,7 +233,7 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, 
              const IndexType& dy = 0,
              const IndexType& dz = 0 ) const;    
 
-      tnlSharedVector< RealType, DeviceType, IndexType > u;
+      SharedVector< RealType, DeviceType, IndexType > u;
       Vector< RealType, DeviceType, IndexType> q;
       RealType eps;
 };
@@ -253,7 +253,7 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlSharedVector< RealType, DeviceType, IndexType > DofVectorType;
+   typedef SharedVector< RealType, DeviceType, IndexType > DofVectorType;
    
    static String getType(); 
 
@@ -288,7 +288,7 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, 
           const IndexType& dy = 0,
           const IndexType& dz = 0 ) const;
        
-   tnlSharedVector< RealType, DeviceType, IndexType > u;
+   SharedVector< RealType, DeviceType, IndexType > u;
    Vector< RealType, DeviceType, IndexType> q;
    RealType eps;
 };
@@ -343,7 +343,7 @@ class tnlFiniteVolumeOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, 
              const IndexType& dy = 0,
              const IndexType& dz = 0 ) const;
 
-      tnlSharedVector< RealType, DeviceType, IndexType > u;
+      SharedVector< RealType, DeviceType, IndexType > u;
       Vector< RealType, DeviceType, IndexType> q;
       RealType eps;
 };

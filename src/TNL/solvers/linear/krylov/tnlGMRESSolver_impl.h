@@ -143,7 +143,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector&
    this->resetIterations();
    this->setResidue( beta / normb );
 
-   Vectors::tnlSharedVector< RealType, DeviceType, IndexType > vi, vk;
+   Vectors::SharedVector< RealType, DeviceType, IndexType > vi, vk;
    while( this->checkNextIteration() )
    {
       const IndexType m = restarting;
@@ -318,7 +318,7 @@ void tnlGMRESSolver< Matrix, Preconditioner > :: update( IndexType k,
          y[ j ] -= H[ j + i * ( m + 1 ) ] * y[ i ];
    }
 
-   Vectors::tnlSharedVector< RealType, DeviceType, IndexType > vi;
+   Vectors::SharedVector< RealType, DeviceType, IndexType > vi;
    for( i = 0; i <= k; i++)
    {
       vi. bind( &( v. getData()[ i * this->size ] ), x. getSize() );

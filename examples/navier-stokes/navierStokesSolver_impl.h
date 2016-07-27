@@ -206,7 +206,7 @@ bool navierStokesSolver< Mesh, EulerScheme >::setup( const Config::ParameterCont
 template< typename Mesh, typename EulerScheme >
 bool navierStokesSolver< Mesh, EulerScheme > :: setInitialCondition( const Config::ParameterContainer& parameters )
 {
-   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
+   SharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
    const IndexType& dofs = mesh. getDofs();
    dofs_rho.    bind( & dofVector. getData()[ 0        ], dofs );
    dofs_rho_u1. bind( & dofVector. getData()[     dofs ], dofs );

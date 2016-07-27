@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/debug/tnlDebug.h>
-
 namespace TNL {
 
 template< typename RealType,
@@ -76,7 +74,6 @@ template< typename Matrix,
    template< typename Vector, typename ResidueGetter >
 bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
 {
-   dbgFunctionName( "tnlBICGStabSolver", "Solve" );
    if( ! this->setSize( matrix->getRows() ) ) return false;
 
    this->resetIterations();
@@ -86,12 +83,10 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vect
    // r_0 = b - A x_0, p_0 = r_0
    // r^ast_0 = r_0
 
-   dbgCout( "Computing Ax" );
    this->matrix -> vectorProduct( x, r );
 
    //if( bNorm == 0.0 ) bNorm = 1.0;
 
-   dbgCout( "Computing r_0, r_ast_0, p_0 and b_norm ..." );
    /*if( M )
    {
       M -> Solve( b, M_tmp );

@@ -9,7 +9,6 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/Object.h>
-#include <TNL/debug/tnlDebug.h>
 #include <TNL/Assert.h>
 #include <TNL/File.h>
 #include <TNL/List.h>
@@ -129,7 +128,6 @@ bool Object :: boundLoad( const String& fileName )
 
 bool getObjectType( File& file, String& type )
 {
-   dbgFunctionName( "", "getObjectType" );
    char mn[ 10 ];
 #ifdef HAVE_NOT_CXX11
    if( ! file. read< char, tnlHost, int >( mn, strlen( magic_number ) ) )

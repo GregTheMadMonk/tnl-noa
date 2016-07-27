@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMultiVector3D_impl.h  -  description
+                          MultiVector3D_impl.h  -  description
                              -------------------
     begin                : Nov 13, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -14,14 +14,14 @@ namespace TNL {
 namespace Vectors {   
 
 template< typename Real, typename Device, typename Index >
-tnlMultiVector< 3, Real, Device, Index > :: tnlMultiVector()
+MultiVector< 3, Real, Device, Index > :: MultiVector()
 {
 }
 
 template< typename Real, typename Device, typename Index >
-String tnlMultiVector< 3, Real, Device, Index > :: getType()
+String MultiVector< 3, Real, Device, Index > :: getType()
 {
-   return String( "tnlMultiVector< ") +
+   return String( "MultiVector< ") +
           String( Dimensions ) +
           String( ", " ) +
           String( TNL::getType< Real >() ) +
@@ -35,7 +35,7 @@ String tnlMultiVector< 3, Real, Device, Index > :: getType()
 template< typename Real,
           typename Device,
           typename Index >
-String tnlMultiVector< 3, Real, Device, Index > :: getTypeVirtual() const
+String MultiVector< 3, Real, Device, Index > :: getTypeVirtual() const
 {
    return this->getType();
 };
@@ -43,7 +43,7 @@ String tnlMultiVector< 3, Real, Device, Index > :: getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-String tnlMultiVector< 3, Real, Device, Index > :: getSerializationType()
+String MultiVector< 3, Real, Device, Index > :: getSerializationType()
 {
    return HostType::getType();
 };
@@ -51,13 +51,13 @@ String tnlMultiVector< 3, Real, Device, Index > :: getSerializationType()
 template< typename Real,
           typename Device,
           typename Index >
-String tnlMultiVector< 3, Real, Device, Index > :: getSerializationTypeVirtual() const
+String MultiVector< 3, Real, Device, Index > :: getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 };
 
 template< typename Real, typename Device, typename Index >
-bool tnlMultiVector< 3, Real, Device, Index > :: setDimensions( const Index kSize,
+bool MultiVector< 3, Real, Device, Index > :: setDimensions( const Index kSize,
                                                                        const Index jSize,
                                                                        const Index iSize )
 {
@@ -73,7 +73,7 @@ bool tnlMultiVector< 3, Real, Device, Index > :: setDimensions( const Index kSiz
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMultiVector< 3, Real, Device, Index > :: setDimensions( const StaticVector< 3, Index >& dimensions )
+bool MultiVector< 3, Real, Device, Index > :: setDimensions( const StaticVector< 3, Index >& dimensions )
 {
    Assert( dimensions[ 0 ] > 0 && dimensions[ 1 ] > 0 && dimensions[ 2 ],
               std::cerr << "dimensions = " << dimensions );
@@ -84,16 +84,16 @@ bool tnlMultiVector< 3, Real, Device, Index > :: setDimensions( const StaticVect
 }
 
 template< typename Real, typename Device, typename Index >
-   template< typename MultiVector >
-bool tnlMultiVector< 3, Real, Device, Index > :: setLike( const MultiVector& multiVector )
+   template< typename MultiVectorT >
+bool MultiVector< 3, Real, Device, Index > :: setLike( const MultiVectorT& multiVector )
 {
    return setDimensions( multiVector. getDimensions() );
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlMultiVector< 3, Real, Device, Index > :: getDimensions( Index& kSize,
-                                                                  Index& jSize,
-                                                                  Index& iSize ) const
+void MultiVector< 3, Real, Device, Index > :: getDimensions( Index& kSize,
+                                                             Index& jSize,
+                                                             Index& iSize ) const
 {
    iSize = this->dimensions[ 0 ];
    jSize = this->dimensions[ 1 ];
@@ -101,13 +101,13 @@ void tnlMultiVector< 3, Real, Device, Index > :: getDimensions( Index& kSize,
 }
 
 template< typename Real, typename Device, typename Index >
-const StaticVector< 3, Index >& tnlMultiVector< 3, Real, Device, Index > :: getDimensions() const
+const StaticVector< 3, Index >& MultiVector< 3, Real, Device, Index > :: getDimensions() const
 {
    return this->dimensions;
 }
 
 template< typename Real, typename Device, typename Index >
-Index tnlMultiVector< 3, Real, Device, Index > :: getElementIndex( const Index k,
+Index MultiVector< 3, Real, Device, Index > :: getElementIndex( const Index k,
                                                                      const Index j,
                                                                      const Index i ) const
 {
@@ -122,7 +122,7 @@ Index tnlMultiVector< 3, Real, Device, Index > :: getElementIndex( const Index k
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlMultiVector< 3, Real, Device, Index > :: getElement( const Index k,
+Real MultiVector< 3, Real, Device, Index > :: getElement( const Index k,
                                                                   const Index j,
                                                                   const Index i ) const
 {
@@ -130,7 +130,7 @@ Real tnlMultiVector< 3, Real, Device, Index > :: getElement( const Index k,
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlMultiVector< 3, Real, Device, Index > :: setElement( const Index k,
+void MultiVector< 3, Real, Device, Index > :: setElement( const Index k,
                                                                     const Index j,
                                                                     const Index i, Real value )
 {
@@ -139,7 +139,7 @@ void tnlMultiVector< 3, Real, Device, Index > :: setElement( const Index k,
 
 
 template< typename Real, typename Device, typename Index >
-Real& tnlMultiVector< 3, Real, Device, Index > :: operator()( const Index k,
+Real& MultiVector< 3, Real, Device, Index > :: operator()( const Index k,
                                                                         const Index j,
                                                                         const Index i )
 {
@@ -147,7 +147,7 @@ Real& tnlMultiVector< 3, Real, Device, Index > :: operator()( const Index k,
 }
 
 template< typename Real, typename Device, typename Index >
-const Real& tnlMultiVector< 3, Real, Device, Index > :: operator()( const Index k,
+const Real& MultiVector< 3, Real, Device, Index > :: operator()( const Index k,
                                                                                const Index j,
                                                                                const Index i ) const
 {
@@ -155,8 +155,8 @@ const Real& tnlMultiVector< 3, Real, Device, Index > :: operator()( const Index 
 }
 
 template< typename Real, typename Device, typename Index >
-   template< typename MultiVector >
-bool tnlMultiVector< 3, Real, Device, Index > :: operator == ( const MultiVector& vector ) const
+   template< typename MultiVectorT >
+bool MultiVector< 3, Real, Device, Index > :: operator == ( const MultiVectorT& vector ) const
 {
    // TODO: Static assert on dimensions
    Assert( this->getDimensions() == vector. getDimensions(),
@@ -167,15 +167,15 @@ bool tnlMultiVector< 3, Real, Device, Index > :: operator == ( const MultiVector
 }
 
 template< typename Real, typename Device, typename Index >
-   template< typename MultiVector >
-bool tnlMultiVector< 3, Real, Device, Index > :: operator != ( const MultiVector& vector ) const
+   template< typename MultiVectorT >
+bool MultiVector< 3, Real, Device, Index > :: operator != ( const MultiVectorT& vector ) const
 {
    return ! ( (* this ) == vector );
 }
 
 template< typename Real, typename Device, typename Index >
-tnlMultiVector< 3, Real, Device, Index >&
-   tnlMultiVector< 3, Real, Device, Index > :: operator = ( const tnlMultiVector< 3, Real, Device, Index >& vector )
+MultiVector< 3, Real, Device, Index >&
+   MultiVector< 3, Real, Device, Index > :: operator = ( const MultiVector< 3, Real, Device, Index >& vector )
 {
    // TODO: Static assert on dimensions
    Assert( this->getDimensions() == vector. getDimensions(),
@@ -187,9 +187,9 @@ tnlMultiVector< 3, Real, Device, Index >&
 }
 
 template< typename Real, typename Device, typename Index >
-   template< typename MultiVector >
-tnlMultiVector< 3, Real, Device, Index >&
-   tnlMultiVector< 3, Real, Device, Index > :: operator = ( const MultiVector& vector )
+   template< typename MultiVectorT >
+MultiVector< 3, Real, Device, Index >&
+   MultiVector< 3, Real, Device, Index > :: operator = ( const MultiVectorT& vector )
 {
    // TODO: Static assert on dimensions
    Assert( this->getDimensions() == vector. getDimensions(),
@@ -201,39 +201,39 @@ tnlMultiVector< 3, Real, Device, Index >&
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMultiVector< 3, Real, Device, Index > :: save( File& file ) const
+bool MultiVector< 3, Real, Device, Index > :: save( File& file ) const
 {
    if( ! Vector< Real, Device, Index > :: save( file ) )
    {
-      std::cerr << "I was not able to write the Vector of tnlMultiVector." << std::endl;
+      std::cerr << "I was not able to write the Vector of MultiVector." << std::endl;
       return false;
    }
    if( ! dimensions. save( file ) )
    {
-      std::cerr << "I was not able to write the dimensions of tnlMultiVector." << std::endl;
+      std::cerr << "I was not able to write the dimensions of MultiVector." << std::endl;
       return false;
    }
    return true;
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMultiVector< 3, Real, Device, Index > :: load( File& file )
+bool MultiVector< 3, Real, Device, Index > :: load( File& file )
 {
    if( ! Vector< Real, Device, Index > :: load( file ) )
    {
-      std::cerr << "I was not able to read the Vector of tnlMultiVector." << std::endl;
+      std::cerr << "I was not able to read the Vector of MultiVector." << std::endl;
       return false;
    }
    if( ! dimensions. load( file ) )
    {
-      std::cerr << "I was not able to read the dimensions of tnlMultiVector." << std::endl;
+      std::cerr << "I was not able to read the dimensions of MultiVector." << std::endl;
       return false;
    }
    return true;
 }
 
 template< typename Real, typename Device, typename Index >
-std::ostream& operator << ( std::ostream& str, const tnlMultiVector< 3, Real, Device, Index >& Vector )
+std::ostream& operator << ( std::ostream& str, const MultiVector< 3, Real, Device, Index >& Vector )
 {
    for( Index k = 0; k < Vector. getDimensions()[ 2 ]; k ++ )
    {
@@ -251,13 +251,13 @@ std::ostream& operator << ( std::ostream& str, const tnlMultiVector< 3, Real, De
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMultiVector< 3, Real, Device, Index > :: save( const String& fileName ) const
+bool MultiVector< 3, Real, Device, Index > :: save( const String& fileName ) const
 {
    return Object :: save( fileName );
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMultiVector< 3, Real, Device, Index > :: load( const String& fileName )
+bool MultiVector< 3, Real, Device, Index > :: load( const String& fileName )
 {
    return Object :: load( fileName );
 }
@@ -265,26 +265,26 @@ bool tnlMultiVector< 3, Real, Device, Index > :: load( const String& fileName )
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiVector< 3, float,  tnlHost, int >;
+extern template class MultiVector< 3, float,  tnlHost, int >;
 #endif
-extern template class tnlMultiVector< 3, double, tnlHost, int >;
+extern template class MultiVector< 3, double, tnlHost, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiVector< 3, float,  tnlHost, long int >;
+extern template class MultiVector< 3, float,  tnlHost, long int >;
 #endif
-extern template class tnlMultiVector< 3, double, tnlHost, long int >;
+extern template class MultiVector< 3, double, tnlHost, long int >;
 #endif
 
 #ifdef HAVE_CUDA
 /*#ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiVector< 3, float,  tnlCuda, int >;
+extern template class MultiVector< 3, float,  tnlCuda, int >;
 #endif
-extern template class tnlMultiVector< 3, double, tnlCuda, int >;
+extern template class MultiVector< 3, double, tnlCuda, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiVector< 3, float,  tnlCuda, long int >;
+extern template class MultiVector< 3, float,  tnlCuda, long int >;
 #endif
-extern template class tnlMultiVector< 3, double, tnlCuda, long int >;
+extern template class MultiVector< 3, double, tnlCuda, long int >;
 #endif*/
 #endif
 

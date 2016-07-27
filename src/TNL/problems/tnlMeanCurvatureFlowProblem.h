@@ -92,7 +92,7 @@ class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
 
       protected:
 
-      tnlSharedVector< RealType, DeviceType, IndexType > solution;
+      SharedVector< RealType, DeviceType, IndexType > solution;
 
       DifferentialOperator differentialOperator;
 

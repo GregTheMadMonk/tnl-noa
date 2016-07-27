@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSharedVector.h  -  description
+                          SharedVector.h  -  description
                              -------------------
     begin                : Nov 7, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -25,29 +25,29 @@ namespace Vectors {
 template< typename Real = double,
            typename Device= tnlHost,
            typename Index = int >
-class tnlSharedVector : public Arrays::tnlSharedArray< Real, Device, Index >
+class SharedVector : public Arrays::tnlSharedArray< Real, Device, Index >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlSharedVector< Real, tnlHost, Index > HostType;
-   typedef tnlSharedVector< Real, tnlCuda, Index > CudaType;
+   typedef SharedVector< Real, tnlHost, Index > HostType;
+   typedef SharedVector< Real, tnlCuda, Index > CudaType;
 
 
    __cuda_callable__
-   tnlSharedVector();
+   SharedVector();
 
    __cuda_callable__
-   tnlSharedVector( Real* data,
+   SharedVector( Real* data,
                     const Index size );
 
    __cuda_callable__
-   tnlSharedVector( Vector< Real, Device, Index >& vector );
+   SharedVector( Vector< Real, Device, Index >& vector );
 
    __cuda_callable__
-   tnlSharedVector( tnlSharedVector< Real, Device, Index >& vector );
+   SharedVector( SharedVector< Real, Device, Index >& vector );
 
    static String getType();
 
@@ -64,10 +64,10 @@ class tnlSharedVector : public Arrays::tnlSharedArray< Real, Device, Index >
                     const RealType& value,
                     const RealType& thisElementMultiplicator );
 
-   tnlSharedVector< Real, Device, Index >& operator = ( const tnlSharedVector< Real, Device, Index >& array );
+   SharedVector< Real, Device, Index >& operator = ( const SharedVector< Real, Device, Index >& array );
 
    template< typename Vector >
-   tnlSharedVector< Real, Device, Index >& operator = ( const Vector& array );
+   SharedVector< Real, Device, Index >& operator = ( const Vector& array );
 
    template< typename Vector >
    bool operator == ( const Vector& array ) const;
@@ -76,14 +76,14 @@ class tnlSharedVector : public Arrays::tnlSharedArray< Real, Device, Index >
    bool operator != ( const Vector& array ) const;
 
    template< typename Vector >
-   tnlSharedVector< Real, Device, Index >& operator -= ( const Vector& vector );
+   SharedVector< Real, Device, Index >& operator -= ( const Vector& vector );
 
    template< typename Vector >
-   tnlSharedVector< Real, Device, Index >& operator += ( const Vector& vector );
+   SharedVector< Real, Device, Index >& operator += ( const Vector& vector );
  
-   tnlSharedVector< Real, Device, Index >& operator *= ( const RealType& c );
+   SharedVector< Real, Device, Index >& operator *= ( const RealType& c );
  
-   tnlSharedVector< Real, Device, Index >& operator /= ( const RealType& c );
+   SharedVector< Real, Device, Index >& operator /= ( const RealType& c );
 
    //bool save( File& file ) const;
 

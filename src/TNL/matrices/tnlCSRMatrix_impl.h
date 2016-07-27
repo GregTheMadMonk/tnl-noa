@@ -83,7 +83,7 @@ bool tnlCSRMatrix< Real, Device, Index >::setCompressedRowsLengths( const Compre
     */
    Assert( this->getRows() > 0, );
    Assert( this->getColumns() > 0, );
-   Vectors::tnlSharedVector< IndexType, DeviceType, IndexType > rowPtrs;
+   Vectors::SharedVector< IndexType, DeviceType, IndexType > rowPtrs;
    rowPtrs.bind( this->rowPointers.getData(), this->getRows() );
    rowPtrs = rowLengths;
    this->rowPointers.setElement( this->rows, 0 );

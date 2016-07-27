@@ -350,7 +350,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
    Assert( this->u2Viscosity, );
    Assert( this->boundaryConditions, );
 
-   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e,
+   SharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e,
                                                       rho_t, rho_u1_t, rho_u2_t, e_t;
 
    const IndexType& dofs = this->mesh->getDofs();
@@ -516,7 +516,7 @@ bool tnlNavierStokesSolver< AdvectionScheme,
                       BoundaryConditions >::writePhysicalVariables( const RealType& t,
                                                                     const IndexType step )
 {
-   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
+   SharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
    const IndexType& dofs = mesh->getDofs();
    dofs_rho.    bind( & dofVector.getData()[ 0        ], dofs );
    dofs_rho_u1. bind( & dofVector.getData()[     dofs ], dofs );
@@ -553,7 +553,7 @@ bool tnlNavierStokesSolver< AdvectionScheme,
                       BoundaryConditions >::writeConservativeVariables( const RealType& t,
                                                                         const IndexType step )
 {
-   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
+   SharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
 
    const IndexType& dofs = mesh->getDofs();
    dofs_rho.    bind( & dofVector.getData()[ 0        ], dofs );
@@ -611,7 +611,7 @@ bool tnlNavierStokesSolver< AdvectionScheme,
                                                               const IndexType step,
                                                               DofVector& rhs )
 {
-   tnlSharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
+   SharedVector< RealType, DeviceType, IndexType > dofs_rho, dofs_rho_u1, dofs_rho_u2, dofs_e;
 
    const IndexType& dofs = mesh->getDofs();
    dofs_rho.    bind( & rhs.getData()[ 0        ], dofs );

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSharedVector.h  -  description
+                          SharedVector.h  -  description
                              -------------------
     begin                : Nov 8, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -19,7 +19,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-tnlSharedVector< Real, Device, Index >::tnlSharedVector()
+SharedVector< Real, Device, Index >::SharedVector()
 {
 }
 
@@ -27,7 +27,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-tnlSharedVector< Real, Device, Index >::tnlSharedVector( Real* data,
+SharedVector< Real, Device, Index >::SharedVector( Real* data,
                                                          const Index size )
 : Arrays::tnlSharedArray< Real, Device, Index >( data, size )
 {
@@ -37,7 +37,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-tnlSharedVector< Real, Device, Index >::tnlSharedVector( Vector< Real, Device, Index >& vector )
+SharedVector< Real, Device, Index >::SharedVector( Vector< Real, Device, Index >& vector )
 : Arrays::tnlSharedArray< Real, Device, Index >( vector )
 {
 }
@@ -46,7 +46,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-tnlSharedVector< Real, Device, Index >::tnlSharedVector( tnlSharedVector< Real, Device, Index >& vector )
+SharedVector< Real, Device, Index >::SharedVector( SharedVector< Real, Device, Index >& vector )
 : Arrays::tnlSharedArray< Real, Device, Index >( vector )
 {
 }
@@ -54,9 +54,9 @@ tnlSharedVector< Real, Device, Index >::tnlSharedVector( tnlSharedVector< Real, 
 template< typename Real,
           typename Device,
           typename Index >
-String tnlSharedVector< Real, Device, Index > :: getType()
+String SharedVector< Real, Device, Index > :: getType()
 {
-   return String( "tnlSharedVector< " ) +
+   return String( "SharedVector< " ) +
                     TNL::getType< Real >() + ", " +
                      Device :: getDeviceType() + ", " +
                     TNL::getType< Index >() + " >";
@@ -65,7 +65,7 @@ String tnlSharedVector< Real, Device, Index > :: getType()
 template< typename Real,
           typename Device,
           typename Index >
-String tnlSharedVector< Real, Device, Index > :: getTypeVirtual() const
+String SharedVector< Real, Device, Index > :: getTypeVirtual() const
 {
    return this->getType();
 };
@@ -73,7 +73,7 @@ String tnlSharedVector< Real, Device, Index > :: getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-String tnlSharedVector< Real, Device, Index > :: getSerializationType()
+String SharedVector< Real, Device, Index > :: getSerializationType()
 {
    return Vector< Real, tnlHost, Index >::getType();
 };
@@ -81,7 +81,7 @@ String tnlSharedVector< Real, Device, Index > :: getSerializationType()
 template< typename Real,
           typename Device,
           typename Index >
-String tnlSharedVector< Real, Device, Index > :: getSerializationTypeVirtual() const
+String SharedVector< Real, Device, Index > :: getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 };
@@ -89,7 +89,7 @@ String tnlSharedVector< Real, Device, Index > :: getSerializationTypeVirtual() c
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSharedVector< Real, Device, Index >::addElement( const IndexType i,
+void SharedVector< Real, Device, Index >::addElement( const IndexType i,
                                                          const RealType& value )
 {
    VectorOperations< Device >::addElement( *this, i, value );
@@ -98,7 +98,7 @@ void tnlSharedVector< Real, Device, Index >::addElement( const IndexType i,
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSharedVector< Real, Device, Index >::addElement( const IndexType i,
+void SharedVector< Real, Device, Index >::addElement( const IndexType i,
                                                          const RealType& value,
                                                          const RealType& thisElementMultiplicator )
 {
@@ -108,8 +108,8 @@ void tnlSharedVector< Real, Device, Index >::addElement( const IndexType i,
 template< typename Real,
            typename Device,
            typename Index >
-tnlSharedVector< Real, Device, Index >&
-   tnlSharedVector< Real, Device, Index > :: operator = ( const tnlSharedVector< Real, Device, Index >& vector )
+SharedVector< Real, Device, Index >&
+   SharedVector< Real, Device, Index > :: operator = ( const SharedVector< Real, Device, Index >& vector )
 {
    Arrays::tnlSharedArray< Real, Device, Index > :: operator = ( vector );
    return ( *this );
@@ -119,8 +119,8 @@ template< typename Real,
            typename Device,
            typename Index >
    template< typename Vector >
-tnlSharedVector< Real, Device, Index >&
-   tnlSharedVector< Real, Device, Index > :: operator = ( const Vector& vector )
+SharedVector< Real, Device, Index >&
+   SharedVector< Real, Device, Index > :: operator = ( const Vector& vector )
 {
    Arrays::tnlSharedArray< Real, Device, Index > :: operator = ( vector );
    return ( *this );
@@ -130,7 +130,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-bool tnlSharedVector< Real, Device, Index > :: operator == ( const Vector& vector ) const
+bool SharedVector< Real, Device, Index > :: operator == ( const Vector& vector ) const
 {
    return Arrays::tnlSharedArray< Real, Device, Index > :: operator == ( vector );
 }
@@ -139,7 +139,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-bool tnlSharedVector< Real, Device, Index > :: operator != ( const Vector& vector ) const
+bool SharedVector< Real, Device, Index > :: operator != ( const Vector& vector ) const
 {
    return Arrays::tnlSharedArray< Real, Device, Index > :: operator != ( vector );
 }
@@ -148,7 +148,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :: operator -= ( const Vector& vector )
+SharedVector< Real, Device, Index >& SharedVector< Real, Device, Index > :: operator -= ( const Vector& vector )
 {
    this->addVector( vector, -1.0 );
    return ( *this );
@@ -158,7 +158,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :: operator += ( const Vector& vector )
+SharedVector< Real, Device, Index >& SharedVector< Real, Device, Index > :: operator += ( const Vector& vector )
 {
    this->addVector( vector );
    return ( *this );
@@ -167,7 +167,7 @@ tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :
 template< typename Real,
           typename Device,
           typename Index >
-tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :: operator *= ( const RealType& c )
+SharedVector< Real, Device, Index >& SharedVector< Real, Device, Index > :: operator *= ( const RealType& c )
 {
    VectorOperations< Device >::vectorScalarMultiplication( *this, c );
    return *this;
@@ -176,7 +176,7 @@ tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :
 template< typename Real,
           typename Device,
           typename Index >
-tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :: operator /= ( const RealType& c )
+SharedVector< Real, Device, Index >& SharedVector< Real, Device, Index > :: operator /= ( const RealType& c )
 {
    VectorOperations< Device >::vectorScalarMultiplication( *this, 1.0/ c );
    return *this;
@@ -185,7 +185,7 @@ tnlSharedVector< Real, Device, Index >& tnlSharedVector< Real, Device, Index > :
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlSharedVector< Real, Device, Index > :: max() const
+Real SharedVector< Real, Device, Index > :: max() const
 {
    return VectorOperations< Device > :: getVectorMax( *this );
 }
@@ -193,7 +193,7 @@ Real tnlSharedVector< Real, Device, Index > :: max() const
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlSharedVector< Real, Device, Index > :: min() const
+Real SharedVector< Real, Device, Index > :: min() const
 {
    return VectorOperations< Device > :: getVectorMin( *this );
 }
@@ -202,7 +202,7 @@ Real tnlSharedVector< Real, Device, Index > :: min() const
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlSharedVector< Real, Device, Index > :: absMax() const
+Real SharedVector< Real, Device, Index > :: absMax() const
 {
    return VectorOperations< Device > :: getVectorAbsMax( *this );
 }
@@ -210,7 +210,7 @@ Real tnlSharedVector< Real, Device, Index > :: absMax() const
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlSharedVector< Real, Device, Index > :: absMin() const
+Real SharedVector< Real, Device, Index > :: absMin() const
 {
    return VectorOperations< Device > :: getVectorAbsMin( *this );
 }
@@ -218,7 +218,7 @@ Real tnlSharedVector< Real, Device, Index > :: absMin() const
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlSharedVector< Real, Device, Index > :: lpNorm( const Real& p ) const
+Real SharedVector< Real, Device, Index > :: lpNorm( const Real& p ) const
 {
    return VectorOperations< Device > :: getVectorLpNorm( *this, p );
 }
@@ -227,7 +227,7 @@ Real tnlSharedVector< Real, Device, Index > :: lpNorm( const Real& p ) const
 template< typename Real,
           typename Device,
           typename Index >
-Real tnlSharedVector< Real, Device, Index > :: sum() const
+Real SharedVector< Real, Device, Index > :: sum() const
 {
    return VectorOperations< Device > :: getVectorSum( *this );
 }
@@ -237,7 +237,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: differenceMax( const Vector& v ) const
+Real SharedVector< Real, Device, Index > :: differenceMax( const Vector& v ) const
 {
    return VectorOperations< Device > :: getVectorDifferenceMax( *this, v );
 }
@@ -247,7 +247,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: differenceMin( const Vector& v ) const
+Real SharedVector< Real, Device, Index > :: differenceMin( const Vector& v ) const
 {
    return VectorOperations< Device > :: getVectorDifferenceMin( *this, v );
 }
@@ -257,7 +257,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: differenceAbsMax( const Vector& v ) const
+Real SharedVector< Real, Device, Index > :: differenceAbsMax( const Vector& v ) const
 {
    return VectorOperations< Device > :: getVectorDifferenceAbsMax( *this, v );
 }
@@ -266,7 +266,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: differenceAbsMin( const Vector& v ) const
+Real SharedVector< Real, Device, Index > :: differenceAbsMin( const Vector& v ) const
 {
    return VectorOperations< Device > :: getVectorDifferenceAbsMin( *this, v );
 }
@@ -275,7 +275,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: differenceLpNorm( const Vector& v, const Real& p ) const
+Real SharedVector< Real, Device, Index > :: differenceLpNorm( const Vector& v, const Real& p ) const
 {
    return VectorOperations< Device > :: getVectorDifferenceLpNorm( *this, v, p );
 }
@@ -285,7 +285,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: differenceSum( const Vector& v ) const
+Real SharedVector< Real, Device, Index > :: differenceSum( const Vector& v ) const
 {
    return VectorOperations< Device > :: getVectorDifferenceSum( *this, v );
 }
@@ -294,7 +294,7 @@ Real tnlSharedVector< Real, Device, Index > :: differenceSum( const Vector& v ) 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSharedVector< Real, Device, Index > :: scalarMultiplication( const Real& alpha )
+void SharedVector< Real, Device, Index > :: scalarMultiplication( const Real& alpha )
 {
    VectorOperations< Device > :: vectorScalarMultiplication( *this, alpha );
 }
@@ -304,7 +304,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-Real tnlSharedVector< Real, Device, Index > :: scalarProduct( const Vector& v )
+Real SharedVector< Real, Device, Index > :: scalarProduct( const Vector& v )
 {
    return VectorOperations< Device > :: getScalarProduct( *this, v );
 }
@@ -313,7 +313,7 @@ template< typename Real,
           typename Device,
           typename Index >
 template< typename Vector >
-void tnlSharedVector< Real, Device, Index > :: addVector( const Vector& x,
+void SharedVector< Real, Device, Index > :: addVector( const Vector& x,
                                                           const Real& alpha,
                                                           const Real& thisMultiplicator )
 {
@@ -325,7 +325,7 @@ template< typename Real,
           typename Index >
    template< typename Vector >
 void
-tnlSharedVector< Real, Device, Index >::
+SharedVector< Real, Device, Index >::
 addVectors( const Vector& v1,
             const Real& multiplicator1,
             const Vector& v2,
@@ -338,7 +338,7 @@ addVectors( const Vector& v1,
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSharedVector< Real, Device, Index > :: computePrefixSum()
+void SharedVector< Real, Device, Index > :: computePrefixSum()
 {
    VectorOperations< Device >::computePrefixSum( *this, 0, this->getSize() );
 }
@@ -346,7 +346,7 @@ void tnlSharedVector< Real, Device, Index > :: computePrefixSum()
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSharedVector< Real, Device, Index > :: computePrefixSum( const IndexType begin,
+void SharedVector< Real, Device, Index > :: computePrefixSum( const IndexType begin,
                                                                  const IndexType end )
 {
    VectorOperations< Device >::computePrefixSum( *this, begin, end );
@@ -355,7 +355,7 @@ void tnlSharedVector< Real, Device, Index > :: computePrefixSum( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSharedVector< Real, Device, Index > :: computeExclusivePrefixSum()
+void SharedVector< Real, Device, Index > :: computeExclusivePrefixSum()
 {
    VectorOperations< Device >::computeExclusivePrefixSum( *this, 0, this->getSize() );
 }
@@ -363,7 +363,7 @@ void tnlSharedVector< Real, Device, Index > :: computeExclusivePrefixSum()
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSharedVector< Real, Device, Index > :: computeExclusivePrefixSum( const IndexType begin,
+void SharedVector< Real, Device, Index > :: computeExclusivePrefixSum( const IndexType begin,
                                                                           const IndexType end )
 {
    VectorOperations< Device >::computeExclusivePrefixSum( *this, begin, end );
@@ -372,19 +372,19 @@ void tnlSharedVector< Real, Device, Index > :: computeExclusivePrefixSum( const 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlSharedVector< float, tnlHost, int >;
+extern template class SharedVector< float, tnlHost, int >;
 #endif
-extern template class tnlSharedVector< double, tnlHost, int >;
+extern template class SharedVector< double, tnlHost, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlSharedVector< long double, tnlHost, int >;
+extern template class SharedVector< long double, tnlHost, int >;
 #endif
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlSharedVector< float, tnlHost, long int >;
+extern template class SharedVector< float, tnlHost, long int >;
 #endif
-extern template class tnlSharedVector< double, tnlHost, long int >;
+extern template class SharedVector< double, tnlHost, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlSharedVector< long double, tnlHost, long int >;
+extern template class SharedVector< long double, tnlHost, long int >;
 #endif
 #endif
 
@@ -392,19 +392,19 @@ extern template class tnlSharedVector< long double, tnlHost, long int >;
 // TODO: fix this - it does not work with CUDA 5.5
 /*
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlSharedVector< float, tnlCuda, int >;
+extern template class SharedVector< float, tnlCuda, int >;
 #endif
-extern template class tnlSharedVector< double, tnlCuda, int >;
+extern template class SharedVector< double, tnlCuda, int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlSharedVector< long double, tnlCuda, int >;
+extern template class SharedVector< long double, tnlCuda, int >;
 #endif
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlSharedVector< float, tnlCuda, long int >;
+extern template class SharedVector< float, tnlCuda, long int >;
 #endif
-extern template class tnlSharedVector< double, tnlCuda, long int >;
+extern template class SharedVector< double, tnlCuda, long int >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlSharedVector< long double, tnlCuda, long int >;
+extern template class SharedVector< long double, tnlCuda, long int >;
 #endif
  #endif
  */

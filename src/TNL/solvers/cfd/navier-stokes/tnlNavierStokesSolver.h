@@ -30,7 +30,7 @@ class tnlNavierStokesSolver
    typedef typename AdvectionScheme::DeviceType DeviceType;
    typedef typename AdvectionScheme::IndexType IndexType;
    typedef Vector< RealType, DeviceType, IndexType > VectorType;
-   typedef tnlSharedVector< RealType, DeviceType, IndexType > DofVectorType;
+   typedef SharedVector< RealType, DeviceType, IndexType > DofVectorType;
 
    tnlNavierStokesSolver();
 

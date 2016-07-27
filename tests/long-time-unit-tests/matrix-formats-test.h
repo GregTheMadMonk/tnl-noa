@@ -15,7 +15,6 @@
 
 #include <cstdlib>
 #include <TNL/File.h>
-#include <TNL/debug/tnlDebug.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/matrices/tnlDenseMatrix.h>

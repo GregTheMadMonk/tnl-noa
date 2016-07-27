@@ -90,7 +90,7 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, Pressure
 
    const PressureGradient* pressureGradient;
 
-   tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2, e;
+   SharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2, e;
 };
 
 template< typename Real,
@@ -159,7 +159,7 @@ class tnlLaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry
 
    const PressureGradient* pressureGradient;
 
-   tnlSharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2, energy, p;
+   SharedVector< RealType, DeviceType, IndexType > rho, rho_u1, rho_u2, energy, p;
 };
 
 } // namespace TNL

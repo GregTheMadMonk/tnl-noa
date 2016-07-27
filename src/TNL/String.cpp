@@ -12,7 +12,6 @@
 #include <string.h>
 #include <assert.h>
 #include <TNL/String.h>
-#include <TNL/debug/tnlDebug.h>
 #include <TNL/Assert.h>
 #include <TNL/List.h>
 #include <TNL/File.h>
@@ -284,9 +283,7 @@ char* String :: getString()
 
 bool String :: save( std::ostream& file ) const
 {
-   dbgFunctionName( "String", "save" );
    assert( string );
-   dbgExpr( string );
 
    int len = strlen( string );
    file. write( ( char* ) &len, sizeof( int ) );
@@ -326,10 +323,8 @@ bool String :: load( std::istream& file )
 
 bool String :: save( File& file ) const
 {
-   dbgFunctionName( "String", "Write" );
    Assert( string,
               std::cerr << "string = " << string );
-   dbgExpr( string );
 
    int len = strlen( string );
 #ifdef HAVE_NOT_CXX11
@@ -428,7 +423,6 @@ bool String :: getLine( std::istream& stream )
 
 int String :: parse( List< String >& list, const char separator ) const
 {
-   dbgFunctionName( "String", "parse" );
    list.reset();
    String copy( *this );
    int len = copy. getLength();
@@ -440,7 +434,6 @@ int String :: parse( List< String >& list, const char separator ) const
       if( copy[ i ] == 0 ) continue;
       String new_string;
       new_string. setString( &copy. getString()[ i ] );
-      dbgExpr( new_string );
       i += new_string. getLength();
       list. Append( new_string );
    }

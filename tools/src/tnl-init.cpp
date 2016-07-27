@@ -11,7 +11,6 @@
 #include "tnl-init.h"
 
 #include <TNL/File.h>
-#include <TNL/debug/tnlDebug.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/functions/tnlTestFunction.h>

@@ -295,7 +295,7 @@ bool computeDifference( const Mesh& mesh, const String& objectType, const Config
 {
    if( objectType == "tnlMeshFunction" )
       return computeDifferenceOfMeshFunctions< Mesh, Element, Real, Index >( mesh, parameters );
-   if( objectType == "Vector" || objectType == "tnlSharedVector" )
+   if( objectType == "Vector" || objectType == "SharedVector" )
       return computeDifferenceOfVectors< Mesh, Element, Real, Index >( mesh, parameters );
 }
 
@@ -307,10 +307,10 @@ bool setIndexType( const Mesh& mesh,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
-   if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
+   if( parsedObjectType[ 0 ] == "MultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector"   )
       indexType = parsedObjectType[ 4 ];
-   if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
+   if( parsedObjectType[ 0 ] == "SharedVector" ||
        parsedObjectType[ 0 ] == "Vector" )
       indexType = parsedObjectType[ 3 ];
 
@@ -383,12 +383,12 @@ bool setElementType( const Mesh& mesh,
 {
    String elementType;
 
-   if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
+   if( parsedObjectType[ 0 ] == "MultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
       elementType = parsedObjectType[ 2 ];
    if( parsedObjectType[ 0 ] == "tnlMeshFunction" )
       elementType = parsedObjectType[ 3 ];
-   if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
+   if( parsedObjectType[ 0 ] == "SharedVector" ||
        parsedObjectType[ 0 ] == "Vector" )
       elementType = parsedObjectType[ 1 ];
 

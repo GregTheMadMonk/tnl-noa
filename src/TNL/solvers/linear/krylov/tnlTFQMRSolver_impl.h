@@ -69,7 +69,6 @@ template< typename Matrix,
    template< typename Vector, typename ResidueGetter >
 bool tnlTFQMRSolver< Matrix, Preconditioner > :: solve( const Vector& b, Vector& x )
 {
-   dbgFunctionName( "tnlTFQMRSolver", "Solve" );
    if( ! this->setSize( matrix -> getRows() ) ) return false;
 
    RealType tau, theta, eta, rho, alpha, b_norm, w_norm;

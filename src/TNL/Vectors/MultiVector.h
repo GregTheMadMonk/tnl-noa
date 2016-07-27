@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMultiVector.h  -  description
+                          MultiVector.h  -  description
                              -------------------
     begin                : Nov 25, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -18,24 +18,24 @@ namespace TNL {
 namespace Vectors {   
    
 template< int Dimensions, typename Real = double, typename Device = tnlHost, typename Index = int >
-class tnlMultiVector : public Vector< Real, Device, Index >
+class MultiVector : public Vector< Real, Device, Index >
 {
 };
 
 template< typename Real, typename Device, typename Index >
-class tnlMultiVector< 1, Real, Device, Index > : public Vector< Real, Device, Index >
+class MultiVector< 1, Real, Device, Index > : public Vector< Real, Device, Index >
 {
    public:
    enum { Dimensions = 1};
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlMultiVector< Dimensions, Real, tnlHost, Index > HostType;
-   typedef tnlMultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
+   typedef MultiVector< Dimensions, Real, tnlHost, Index > HostType;
+   typedef MultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
 
-   tnlMultiVector();
+   MultiVector();
 
-   tnlMultiVector( const String& name );
+   MultiVector( const String& name );
 
    static String getType();
 
@@ -55,7 +55,7 @@ class tnlMultiVector< 1, Real, Device, Index > : public Vector< Real, Device, In
 
    //! Set dimensions of the Vector using another Vector as a template
    template< typename MultiVector >
-   bool setLike( const tnlMultiVector& v );
+   bool setLike( const MultiVector& v );
  
    Index getElementIndex( const Index i ) const;
 
@@ -83,10 +83,10 @@ class tnlMultiVector< 1, Real, Device, Index > : public Vector< Real, Device, In
    template< typename MultiVector >
    bool operator != ( const MultiVector& Vector ) const;
 
-   tnlMultiVector< 1, Real, Device, Index >& operator = ( const tnlMultiVector< 1, Real, Device, Index >& Vector );
+   MultiVector< 1, Real, Device, Index >& operator = ( const MultiVector< 1, Real, Device, Index >& Vector );
 
-   template< typename MultiVector >
-   tnlMultiVector< 1, Real, Device, Index >& operator = ( const MultiVector& Vector );
+   template< typename MultiVectorT >
+   MultiVector< 1, Real, Device, Index >& operator = ( const MultiVectorT& Vector );
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -104,19 +104,19 @@ class tnlMultiVector< 1, Real, Device, Index > : public Vector< Real, Device, In
 };
 
 template< typename Real, typename Device, typename Index >
-class tnlMultiVector< 2, Real, Device, Index > : public Vector< Real, Device, Index >
+class MultiVector< 2, Real, Device, Index > : public Vector< Real, Device, Index >
 {
    public:
    enum { Dimensions = 2 };
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlMultiVector< Dimensions, Real, tnlHost, Index > HostType;
-   typedef tnlMultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
+   typedef MultiVector< Dimensions, Real, tnlHost, Index > HostType;
+   typedef MultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
 
-   tnlMultiVector();
+   MultiVector();
 
-   tnlMultiVector( const String& name );
+   MultiVector( const String& name );
 
    static String getType();
 
@@ -164,10 +164,10 @@ class tnlMultiVector< 2, Real, Device, Index > : public Vector< Real, Device, In
    template< typename MultiVector >
    bool operator != ( const MultiVector& Vector ) const;
 
-   tnlMultiVector< 2, Real, Device, Index >& operator = ( const tnlMultiVector< 2, Real, Device, Index >& Vector );
+   MultiVector< 2, Real, Device, Index >& operator = ( const MultiVector< 2, Real, Device, Index >& Vector );
 
-   template< typename MultiVector >
-   tnlMultiVector< 2, Real, Device, Index >& operator = ( const MultiVector& Vector );
+   template< typename MultiVectorT >
+   MultiVector< 2, Real, Device, Index >& operator = ( const MultiVectorT& Vector );
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -185,7 +185,7 @@ class tnlMultiVector< 2, Real, Device, Index > : public Vector< Real, Device, In
 };
 
 template< typename Real, typename Device, typename Index >
-class tnlMultiVector< 3, Real, Device, Index > : public Vector< Real, Device, Index >
+class MultiVector< 3, Real, Device, Index > : public Vector< Real, Device, Index >
 {
    public:
 
@@ -193,12 +193,12 @@ class tnlMultiVector< 3, Real, Device, Index > : public Vector< Real, Device, In
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlMultiVector< Dimensions, Real, tnlHost, Index > HostType;
-   typedef tnlMultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
+   typedef MultiVector< Dimensions, Real, tnlHost, Index > HostType;
+   typedef MultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
 
-   tnlMultiVector();
+   MultiVector();
 
-   tnlMultiVector( const String& name );
+   MultiVector( const String& name );
 
    static String getType();
 
@@ -246,10 +246,10 @@ class tnlMultiVector< 3, Real, Device, Index > : public Vector< Real, Device, In
    template< typename MultiVector >
    bool operator != ( const MultiVector& Vector ) const;
 
-   tnlMultiVector< 3, Real, Device, Index >& operator = ( const tnlMultiVector< 3, Real, Device, Index >& Vector );
+   MultiVector< 3, Real, Device, Index >& operator = ( const MultiVector< 3, Real, Device, Index >& Vector );
 
-   template< typename MultiVector >
-   tnlMultiVector< 3, Real, Device, Index >& operator = ( const MultiVector& Vector );
+   template< typename MultiVectorT >
+   MultiVector< 3, Real, Device, Index >& operator = ( const MultiVectorT& Vector );
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -267,7 +267,7 @@ class tnlMultiVector< 3, Real, Device, Index > : public Vector< Real, Device, In
 };
 
 template< typename Real, typename Device, typename Index >
-class tnlMultiVector< 4, Real, Device, Index > : public Vector< Real, Device, Index >
+class MultiVector< 4, Real, Device, Index > : public Vector< Real, Device, Index >
 {
    public:
 
@@ -275,12 +275,12 @@ class tnlMultiVector< 4, Real, Device, Index > : public Vector< Real, Device, In
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlMultiVector< Dimensions, Real, tnlHost, Index > HostType;
-   typedef tnlMultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
+   typedef MultiVector< Dimensions, Real, tnlHost, Index > HostType;
+   typedef MultiVector< Dimensions, Real, tnlCuda, Index > CudaType;
 
-   tnlMultiVector();
+   MultiVector();
 
-   tnlMultiVector( const String& name );
+   MultiVector( const String& name );
 
    static String getType();
 
@@ -300,7 +300,7 @@ class tnlMultiVector< 4, Real, Device, Index > : public Vector< Real, Device, In
 
    //! Set dimensions of the Vector using another Vector as a template
    template< typename MultiVector >
-   bool setLike( const tnlMultiVector& v );
+   bool setLike( const MultiVector& v );
 
    Index getElementIndex( const Index l, const Index k, const Index j, const Index i ) const;
 
@@ -328,10 +328,10 @@ class tnlMultiVector< 4, Real, Device, Index > : public Vector< Real, Device, In
    template< typename MultiVector >
    bool operator != ( const MultiVector& Vector ) const;
 
-   tnlMultiVector< 4, Real, Device, Index >& operator = ( const tnlMultiVector< 4, Real, Device, Index >& Vector );
+   MultiVector< 4, Real, Device, Index >& operator = ( const MultiVector< 4, Real, Device, Index >& Vector );
 
-   template< typename MultiVector >
-   tnlMultiVector< 4, Real, Device, Index >& operator = ( const MultiVector& Vector );
+   template< typename MultiVectorT >
+   MultiVector< 4, Real, Device, Index >& operator = ( const MultiVectorT& Vector );
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -349,16 +349,16 @@ class tnlMultiVector< 4, Real, Device, Index > : public Vector< Real, Device, In
 };
 
 template< typename Real, typename device, typename Index >
-std::ostream& operator << ( std::ostream& str, const tnlMultiVector< 1, Real, device, Index >& Vector );
+std::ostream& operator << ( std::ostream& str, const MultiVector< 1, Real, device, Index >& Vector );
 
 template< typename Real, typename device, typename Index >
-std::ostream& operator << ( std::ostream& str, const tnlMultiVector< 2, Real, device, Index >& Vector );
+std::ostream& operator << ( std::ostream& str, const MultiVector< 2, Real, device, Index >& Vector );
 
 template< typename Real, typename device, typename Index >
-std::ostream& operator << ( std::ostream& str, const tnlMultiVector< 3, Real, device, Index >& Vector );
+std::ostream& operator << ( std::ostream& str, const MultiVector< 3, Real, device, Index >& Vector );
 
 template< typename Real, typename device, typename Index >
-std::ostream& operator << ( std::ostream& str, const tnlMultiVector< 4, Real, device, Index >& Vector );
+std::ostream& operator << ( std::ostream& str, const MultiVector< 4, Real, device, Index >& Vector );
 
 } // namespace Vectors
 } // namespace TNL

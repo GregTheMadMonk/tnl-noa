@@ -206,7 +206,7 @@ bool convertObject( const Mesh& mesh,
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
 
-   if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
+   if( parsedObjectType[ 0 ] == "SharedVector" ||
        parsedObjectType[ 0 ] == "Vector" )
    {
       Vectors::Vector< Element, tnlHost, Index > vector;
@@ -216,10 +216,10 @@ bool convertObject( const Mesh& mesh,
          return false;
    }
 
-   if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
+   if( parsedObjectType[ 0 ] == "MultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
    {
-      Vectors::tnlMultiVector< Dimensions, Element, tnlHost, Index > multiVector;
+      Vectors::MultiVector< Dimensions, Element, tnlHost, Index > multiVector;
       if( ! multiVector. load( inputFileName ) )
          return false;
       typedef tnlGrid< Dimensions, Real, tnlHost, Index > GridType;
@@ -242,11 +242,11 @@ bool setDimensions( const Mesh& mesh,
                     const Config::ParameterContainer& parameters )
 {
    int dimensions( 0 );
-   if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
+   if( parsedObjectType[ 0 ] == "MultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
       dimensions = atoi( parsedObjectType[ 1 ]. getString() );
    if( parsedObjectType[ 0 ] == "Vector" ||
-       parsedObjectType[ 0 ] == "tnlSharedVector" )
+       parsedObjectType[ 0 ] == "SharedVector" )
       dimensions = 1;
    switch( dimensions )
    {
@@ -268,10 +268,10 @@ bool setIndexType( const Mesh& mesh,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
-   if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
+   if( parsedObjectType[ 0 ] == "MultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
       indexType = parsedObjectType[ 4 ];
-   if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
+   if( parsedObjectType[ 0 ] == "SharedVector" ||
        parsedObjectType[ 0 ] == "Vector" )
       indexType = parsedObjectType[ 3 ];
 
@@ -342,10 +342,10 @@ bool setElementType( const Mesh& mesh,
    String elementType;
 
    // TODO: Fix this even for arrays
-   if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
+   if( parsedObjectType[ 0 ] == "MultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
       elementType = parsedObjectType[ 2 ];
-   if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
+   if( parsedObjectType[ 0 ] == "SharedVector" ||
        parsedObjectType[ 0 ] == "Vector" )
       elementType = parsedObjectType[ 1 ];
 
@@ -426,9 +426,9 @@ bool processFiles( const Config::ParameterContainer& parameters )
             error = true;
             continue;
          }
-         if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
+         if( parsedObjectType[ 0 ] == "MultiVector" ||
              parsedObjectType[ 0 ] == "tnlSharedMultiVector" ||
-             parsedObjectType[ 0 ] == "tnlSharedVector" ||
+             parsedObjectType[ 0 ] == "SharedVector" ||
              parsedObjectType[ 0 ] == "Vector" )
             setElementType< Mesh >( mesh, inputFiles[ i ], parsedObjectType, parameters );
          if( parsedObjectType[ 0 ] == "tnlMeshFunction" )
