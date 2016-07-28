@@ -21,7 +21,7 @@
 #include <TNL/solvers/tnlSolver.h>
 #include <TNL/solvers/tnlFastBuildConfigTag.h>
 #include <TNL/solvers/tnlBuildConfigTags.h>
-#include <TNL/functions/tnlTestFunction.h>
+#include <TNL/Functions/tnlTestFunction.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>
 #include <TNL/problems/tnlMeanCurvatureFlowEocRhs.h>

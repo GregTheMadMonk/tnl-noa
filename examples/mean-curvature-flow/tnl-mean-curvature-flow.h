@@ -23,13 +23,13 @@
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>
-#include <TNL/functions/tnlConstantFunction.h>
+#include <TNL/Functions/Analytic/tnlConstantFunction.h>
 #include <TNL/problems/tnlMeanCurvatureFlowProblem.h>
 #include <TNL/operators/diffusion/tnlOneSidedNonlinearDiffusion.h>
 #include <TNL/operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <TNL/operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
 #include <TNL/operators/diffusion/nonlinear-diffusion-operators/tnlFiniteVolumeNonlinearOperator.h>
-#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/Functions/tnlMeshFunction.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;

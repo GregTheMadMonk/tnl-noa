@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/functions/tnlDomain.h>
+#include <TNL/Functions/tnlDomain.h>
 #include <TNL/operators/tnlExactIdentityOperator.h>
 
 

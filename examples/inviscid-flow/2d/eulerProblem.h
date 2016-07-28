@@ -1,7 +1,7 @@
 #pragma once
 
 #include <TNL/problems/tnlPDEProblem.h>
-#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/Functions/tnlMeshFunction.h>
 
 namespace TNL {
 

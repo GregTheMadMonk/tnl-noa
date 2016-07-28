@@ -11,7 +11,7 @@
 #ifndef TNLPDEOPERATOREOCTESTFUNCTIONSETTER_H
 #define	TNLPDEOPERATOREOCTESTFUNCTIONSETTER_H
 
-#include <TNL/functions/tnlExpBumpFunction.h>
+#include <TNL/Functions/Analytic/tnlExpBumpFunction.h>
 
 using namespace TNL;
 

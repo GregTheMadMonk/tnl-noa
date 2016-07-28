@@ -13,7 +13,7 @@
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Vectors/SharedVector.h>
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/functions/tnlDomain.h>
+#include <TNL/Functions/tnlDomain.h>
 
 namespace TNL {
 

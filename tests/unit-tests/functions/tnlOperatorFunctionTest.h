@@ -11,9 +11,9 @@
 #ifndef TNLOPERATORFUNCTIONTEST_H
 #define	TNLOPERATORFUNCTIONTEST_H
 
-#include <TNL/functions/tnlOperatorFunction.h>
+#include <TNL/Functions/tnlOperatorFunction.h>
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/functions/tnlExpBumpFunction.h>
+#include <TNL/Functions/Analytic/tnlExpBumpFunction.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include "../tnlUnitTestStarter.h"

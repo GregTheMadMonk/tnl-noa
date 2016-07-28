@@ -17,8 +17,8 @@
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>
-#include <TNL/functions/tnlConstantFunction.h>
-#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/Functions/Analytic/tnlConstantFunction.h>
+#include <TNL/Functions/tnlMeshFunction.h>
 #include <TNL/problems/tnlHeatEquationProblem.h>
 #include <TNL/mesh/tnlGrid.h>
 

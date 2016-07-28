@@ -21,7 +21,7 @@
 #include <TNL/operators/fdm/tnlCentralFiniteDifference.h>
 #include <TNL/operators/fdm/tnlExactDifference.h>
 #include "../tnlPDEOperatorEocTestResult.h"
-#include <TNL/functions/tnlExpBumpFunction.h>
+#include <TNL/Functions/Analytic/tnlExpBumpFunction.h>
 
 using namespace TNL;
 

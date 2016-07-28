@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/functions/tnlOperatorFunction.h>
-#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/Functions/tnlOperatorFunction.h>
+#include <TNL/Functions/tnlMeshFunction.h>
 #include <TNL/operators/tnlOperator.h>
 #include <TNL/operators/tnlExactOperatorComposition.h>
 

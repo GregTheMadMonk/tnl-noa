@@ -15,8 +15,8 @@
 #include <TNL/operators/geometric/tnlFDMGradientNorm.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>
 #include <TNL/operators/diffusion/tnlOneSidedNonlinearDiffusion.h>
-#include <TNL/functions/tnlOperatorFunction.h>
-#include <TNL/functions/tnlConstantFunction.h>
+#include <TNL/Functions/tnlOperatorFunction.h>
+#include <TNL/Functions/Analytic/tnlConstantFunction.h>
 #include <TNL/operators/diffusion/tnlExactMeanCurvature.h>
 
 namespace TNL {

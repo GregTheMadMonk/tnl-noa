@@ -18,7 +18,7 @@
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Vectors/MultiVector.h>
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/Functions/tnlMeshFunction.h>
 
 using namespace std;
 using namespace TNL;

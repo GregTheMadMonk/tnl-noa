@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <TNL/functions/tnlFunctionAdapter.h>
+#include <TNL/Functions/tnlFunctionAdapter.h>
 
 namespace TNL {
 

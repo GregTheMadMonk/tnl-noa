@@ -11,8 +11,8 @@
 #pragma once
 
 #include <TNL/operators/tnlOperator.h>
-#include <TNL/functions/tnlConstantFunction.h>
-#include <TNL/functions/tnlFunctionAdapter.h>
+#include <TNL/Functions/Analytic/tnlConstantFunction.h>
+#include <TNL/Functions/tnlFunctionAdapter.h>
 
 namespace TNL {
 

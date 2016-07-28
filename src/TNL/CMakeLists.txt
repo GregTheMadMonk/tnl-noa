@@ -1,10 +1,11 @@
 ADD_SUBDIRECTORY( Arrays )
 ADD_SUBDIRECTORY( Config )
 ADD_SUBDIRECTORY( Devices )
+ADD_SUBDIRECTORY( Functions )
 ADD_SUBDIRECTORY( Images )
 ADD_SUBDIRECTORY( Vectors )
 
-ADD_SUBDIRECTORY( functions )
+
 ADD_SUBDIRECTORY( core )
 ADD_SUBDIRECTORY( matrices )
 ADD_SUBDIRECTORY( mesh )
@@ -44,8 +45,10 @@ set( common_SOURCES
 set( tnl_SOURCES ${tnl_arrays_SOURCES}
                  ${tnl_config_SOURCES}
                  ${tnl_devices_SOURCES}
-                 ${tnl_images_SOURCES}
                  ${tnl_functions_SOURCES}
+                 ${tnl_images_SOURCES}
+
+
                  ${tnl_core_SOURCES}
                  ${tnl_legacy_SOURCES}
                  ${tnl_matrices_SOURCES}
@@ -59,8 +62,9 @@ set( tnl_SOURCES ${tnl_arrays_SOURCES}
 set( tnl_CUDA__SOURCES ${tnl_arrays_CUDA__SOURCES}                       
                        ${tnl_config_CUDA__SOURCES}
                        ${tnl_devices_CUDA__SOURCES}
-                       ${tnl_images_CUDA__SOURCES}
                        ${tnl_functions_CUDA__SOURCES}
+                       ${tnl_images_CUDA__SOURCES}
+
                        ${tnl_core_CUDA__SOURCES}
                        ${tnl_legacy_CUDA__SOURCES}
                        ${tnl_matrices_CUDA__SOURCES}

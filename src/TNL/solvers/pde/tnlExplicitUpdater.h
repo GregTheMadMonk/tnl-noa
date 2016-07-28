@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/functions/tnlFunctionAdapter.h>
+#include <TNL/Functions/tnlFunctionAdapter.h>
 #include <TNL/Timer.h>
 
 namespace TNL {

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/Functions/tnlMeshFunction.h>
 
 namespace TNL {
 

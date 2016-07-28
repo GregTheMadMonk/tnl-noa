@@ -14,7 +14,7 @@
 #include <TNL/problems/tnlPDEProblem.h>
 #include <TNL/operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <TNL/matrices/tnlCSRMatrix.h>
-#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/Functions/tnlMeshFunction.h>
 
 namespace TNL {
 

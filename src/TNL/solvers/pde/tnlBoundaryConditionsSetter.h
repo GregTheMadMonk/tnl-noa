@@ -12,7 +12,7 @@
 #pragma once
 
 #include <TNL/Devices/Cuda.h>
-#include <TNL/functions/tnlFunctionAdapter.h>
+#include <TNL/Functions/tnlFunctionAdapter.h>
 
 namespace TNL {
 

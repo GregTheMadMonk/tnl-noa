@@ -16,7 +16,7 @@
 #include <TNL/core/mfilename.h>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Vectors/StaticVector.h>
-#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/Functions/tnlMeshFunction.h>
 
 using namespace TNL;
 

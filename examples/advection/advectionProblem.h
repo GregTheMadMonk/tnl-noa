@@ -2,7 +2,7 @@
 #define advectionPROBLEM_H_
 
 #include <TNL/problems/tnlPDEProblem.h>
-#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/Functions/tnlMeshFunction.h>
 
 using namespace TNL;
 

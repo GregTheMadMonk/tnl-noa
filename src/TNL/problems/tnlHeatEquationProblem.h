@@ -19,7 +19,7 @@
 #include <TNL/problems/tnlPDEProblem.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/matrices/tnlEllpackMatrix.h>
-#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/Functions/tnlMeshFunction.h>
 #include <TNL/Timer.h>
 
 namespace TNL {

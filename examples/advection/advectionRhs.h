@@ -1,6 +1,6 @@
 #ifndef advectionRHS_H_
 #define advectionRHS_H_
-#include <TNL/functions/tnlDomain.h>
+#include <TNL/Functions/tnlDomain.h>
 template< typename Mesh, typename Real >class advectionRhs
   : public tnlDomain< Mesh::meshDimensions, MeshDomain > 
  {

@@ -14,10 +14,10 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/functions/tnlTestFunction.h>
+#include <TNL/Functions/tnlTestFunction.h>
 #include <TNL/operators/tnlFiniteDifferences.h>
 #include <TNL/core/mfilename.h>
-#include <TNL/functions/tnlMeshFunction.h>
+#include <TNL/Functions/tnlMeshFunction.h>
 
 using namespace TNL;
 

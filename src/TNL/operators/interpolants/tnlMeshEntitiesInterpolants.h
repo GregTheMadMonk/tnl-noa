@@ -11,7 +11,7 @@
 #pragma once
 
 #include <type_traits>
-#include <TNL/functions/tnlDomain.h>
+#include <TNL/Functions/tnlDomain.h>
 
 namespace TNL {
 

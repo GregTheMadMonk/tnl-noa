@@ -12,7 +12,7 @@
 #define TNLPDEOPERATOREOCTESTSETTER_H_
 
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/functions/tnlExpBumpFunction.h>
+#include <TNL/Functions/Analytic/tnlExpBumpFunction.h>
 
 using namespace TNL;
 

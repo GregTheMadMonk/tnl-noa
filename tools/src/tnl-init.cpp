@@ -13,7 +13,7 @@
 #include <TNL/File.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/functions/tnlTestFunction.h>
+#include <TNL/Functions/tnlTestFunction.h>
 #include <TNL/mesh/tnlDummyMesh.h>
 #include <TNL/mesh/tnlGrid.h>
 
