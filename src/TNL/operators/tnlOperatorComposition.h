@@ -41,10 +41,10 @@ class tnlOperatorComposition
    public:
  
       typedef typename InnerOperator::MeshType MeshType;
-      typedef tnlMeshFunction< MeshType, InnerOperator::getPreimageEntitiesDimensions() > PreimageFunctionType;
-      typedef tnlMeshFunction< MeshType, InnerOperator::getImageEntitiesDimensions() > ImageFunctionType;
-      typedef tnlOperatorFunction< InnerOperator, PreimageFunctionType, InnerBoundaryConditions > InnerOperatorFunction;
-      typedef tnlOperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
+      typedef Functions::tnlMeshFunction< MeshType, InnerOperator::getPreimageEntitiesDimensions() > PreimageFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType, InnerOperator::getImageEntitiesDimensions() > ImageFunctionType;
+      typedef Functions::tnlOperatorFunction< InnerOperator, PreimageFunctionType, InnerBoundaryConditions > InnerOperatorFunction;
+      typedef Functions::tnlOperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
       typedef typename InnerOperator::RealType RealType;
       typedef typename InnerOperator::IndexType IndexType;
       typedef tnlExactOperatorComposition< typename OuterOperator::ExactOperatorType,
@@ -116,17 +116,17 @@ class tnlOperatorComposition
 template< typename OuterOperator,
           typename InnerOperator >
 class tnlOperatorComposition< OuterOperator, InnerOperator, void >
-   : public tnlDomain< InnerOperator::getDimensions(), InnerOperator::getDomainType() >
+   : public Functions::tnlDomain< InnerOperator::getDimensions(), InnerOperator::getDomainType() >
 {
       static_assert( std::is_same< typename OuterOperator::MeshType, typename InnerOperator::MeshType >::value,
          "Both operators have different mesh types." );
    public:
  
       typedef typename InnerOperator::MeshType MeshType;
-      typedef tnlMeshFunction< MeshType, InnerOperator::getPreimageEntitiesDimensions() > PreimageFunctionType;
-      typedef tnlMeshFunction< MeshType, InnerOperator::getImageEntitiesDimensions() > ImageFunctionType;
-      typedef tnlOperatorFunction< InnerOperator, PreimageFunctionType, void > InnerOperatorFunction;
-      typedef tnlOperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
+      typedef Functions::tnlMeshFunction< MeshType, InnerOperator::getPreimageEntitiesDimensions() > PreimageFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType, InnerOperator::getImageEntitiesDimensions() > ImageFunctionType;
+      typedef Functions::tnlOperatorFunction< InnerOperator, PreimageFunctionType, void > InnerOperatorFunction;
+      typedef Functions::tnlOperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
       typedef typename InnerOperator::RealType RealType;
       typedef typename InnerOperator::IndexType IndexType;
  

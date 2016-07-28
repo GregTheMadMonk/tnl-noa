@@ -36,7 +36,7 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 1, MeshReal, Device, M
    public:
       typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
-      typedef tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
                          std::ostream& str );
@@ -56,7 +56,7 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 1, MeshReal, Device, M
    public:
       typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
-      typedef tnlMeshFunction< MeshType, 0, RealType > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
                          std::ostream& str );
@@ -76,7 +76,7 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Device, M
    public:
       typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
-      typedef tnlMeshFunction< MeshType, 2, RealType > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType, 2, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
                          std::ostream& str );
@@ -96,7 +96,7 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Device, M
    public:
       typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
-      typedef tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
                          std::ostream& str );
@@ -116,7 +116,7 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 2, MeshReal, Device, M
    public:
       typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
-      typedef tnlMeshFunction< MeshType, 0, RealType > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
                          std::ostream& str );
@@ -136,7 +136,7 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, M
    public:
       typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
-      typedef tnlMeshFunction< MeshType, 3, RealType > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType, 3, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
                          std::ostream& str );
@@ -156,7 +156,7 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, M
    public:
       typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
-      typedef tnlMeshFunction< MeshType, 2, RealType > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType, 2, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
                          std::ostream& str );
@@ -176,7 +176,7 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, M
    public:
       typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
-      typedef tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
                          std::ostream& str );
@@ -196,7 +196,7 @@ class tnlMeshFunctionVTKWriter< tnlMeshFunction< tnlGrid< 3, MeshReal, Device, M
    public:
       typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
-      typedef tnlMeshFunction< MeshType, 0, RealType > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
       static bool write( const MeshFunctionType& function,
                          std::ostream& str );

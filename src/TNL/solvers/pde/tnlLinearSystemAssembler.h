@@ -144,8 +144,8 @@ class tnlLinearSystemAssembler
                  *userData.matrix,
                  *userData.b );
  
-            typedef tnlFunctionAdapter< MeshType, RightHandSide > RhsFunctionAdapter;
-            typedef tnlFunctionAdapter< MeshType, MeshFunction > MeshFunctionAdapter;
+            typedef Functions::tnlFunctionAdapter< MeshType, RightHandSide > RhsFunctionAdapter;
+            typedef Functions::tnlFunctionAdapter< MeshType, MeshFunction > MeshFunctionAdapter;
             const RealType& rhs = RhsFunctionAdapter::getValue
                ( *userData.rightHandSide,
                  entity,

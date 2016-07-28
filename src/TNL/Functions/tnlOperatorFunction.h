@@ -70,7 +70,7 @@ class tnlOperatorFunction< Operator, MeshFunction, void, true >
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;
       typedef typename OperatorType::ExactOperatorType ExactOperatorType;
-      typedef tnlMeshFunction< MeshType, OperatorType::getPreimageEntitiesDimensions() > PreimageFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType, OperatorType::getPreimageEntitiesDimensions() > PreimageFunctionType;
  
       static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };
  
@@ -139,7 +139,7 @@ class tnlOperatorFunction< Operator, PreimageFunction, void, false >
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;
       typedef PreimageFunction PreimageFunctionType;
-      typedef tnlMeshFunction< MeshType, Operator::getImageEntitiesDimensions() > ImageFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType, Operator::getImageEntitiesDimensions() > ImageFunctionType;
       typedef tnlOperatorFunction< Operator, PreimageFunction, void, true > OperatorFunction;
       typedef typename OperatorType::ExactOperatorType ExactOperatorType;
  
@@ -243,7 +243,7 @@ class tnlOperatorFunction< Operator, PreimageFunction, BoundaryConditions, false
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;
       typedef PreimageFunction PreimageFunctionType;
-      typedef tnlMeshFunction< MeshType, Operator::getImageEntitiesDimensions() > ImageFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType, Operator::getImageEntitiesDimensions() > ImageFunctionType;
       typedef BoundaryConditions BoundaryConditionsType;
       typedef tnlOperatorFunction< Operator, PreimageFunction, void, true > OperatorFunction;
       typedef typename OperatorType::ExactOperatorType ExactOperatorType;

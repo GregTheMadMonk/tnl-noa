@@ -26,7 +26,7 @@ template< typename Mesh,
           typename Index = typename Mesh::IndexType,
           bool EvaluateNonlinearityOnFly = false >
 class tnlOneSidedMeanCurvature
-   : public tnlOperator< Mesh, MeshInteriorDomain, Mesh::getMeshDimensions(), Mesh::getMeshDimensions(), Real, Index >
+   : public tnlOperator< Mesh, Functions::MeshInteriorDomain, Mesh::getMeshDimensions(), Mesh::getMeshDimensions(), Real, Index >
 {
    public:
  
@@ -35,10 +35,10 @@ class tnlOneSidedMeanCurvature
       typedef Index IndexType;
       typedef tnlFDMGradientNorm< MeshType, tnlForwardFiniteDifference, RealType, IndexType > GradientNorm;
       typedef tnlFunctionInverseOperator< GradientNorm > NonlinearityOperator;
-      typedef tnlMeshFunction< MeshType, MeshType::getMeshDimensions(), RealType > NonlinearityMeshFunction;
-      typedef tnlConstantFunction< MeshType::getMeshDimensions(), RealType > NonlinearityBoundaryConditionsFunction;
+      typedef Functions::tnlMeshFunction< MeshType, MeshType::getMeshDimensions(), RealType > NonlinearityMeshFunction;
+      typedef Functions::tnlConstantFunction< MeshType::getMeshDimensions(), RealType > NonlinearityBoundaryConditionsFunction;
       typedef tnlNeumannBoundaryConditions< MeshType, NonlinearityBoundaryConditionsFunction > NonlinearityBoundaryConditions;
-      typedef tnlOperatorFunction< NonlinearityOperator, NonlinearityMeshFunction, NonlinearityBoundaryConditions, EvaluateNonlinearityOnFly > Nonlinearity;
+      typedef Functions::tnlOperatorFunction< NonlinearityOperator, NonlinearityMeshFunction, NonlinearityBoundaryConditions, EvaluateNonlinearityOnFly > Nonlinearity;
       typedef tnlOneSidedNonlinearDiffusion< Mesh, Nonlinearity, RealType, IndexType > NonlinearDiffusion;
       typedef tnlExactMeanCurvature< Mesh::getMeshDimensions(), RealType > ExactOperatorType;
  

@@ -41,13 +41,13 @@ class tnlOperatorCompositionTest
    typedef typename OperatorType::IndexType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef typename MeshType::VertexType VertexType;
-   typedef tnlExpBumpFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > TestFunctionType;
-   typedef tnlConstantFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > ConstantFunction;
+   typedef Functions::tnlExpBumpFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > TestFunctionType;
+   typedef Functions::tnlConstantFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > ConstantFunction;
    typedef tnlNeumannBoundaryConditions< MeshType, ConstantFunction > BoundaryConditions;
    typedef tnlOperatorComposition< OperatorType, OperatorType, BoundaryConditions > OperatorComposition;
-   typedef tnlMeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
-   typedef tnlOperatorFunction< OperatorType, MeshFunctionType, BoundaryConditions > OperatorFunction;
-   typedef tnlOperatorFunction< OperatorType, OperatorFunction, BoundaryConditions > OperatorFunction2;
+   typedef Functions::tnlMeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
+   typedef Functions::tnlOperatorFunction< OperatorType, MeshFunctionType, BoundaryConditions > OperatorFunction;
+   typedef Functions::tnlOperatorFunction< OperatorType, OperatorFunction, BoundaryConditions > OperatorFunction2;
 
    tnlOperatorCompositionTest(){};
 
@@ -83,7 +83,7 @@ class tnlOperatorCompositionTest
       //f1 = testFunction;
       OperatorComposition operatorComposition( operator_, operator_, boundaryConditions, mesh );
       //operatorComposition.refresh();
-      tnlOperatorFunction< OperatorComposition, MeshFunctionType, BoundaryConditions > operatorFunction3( operatorComposition, boundaryConditions, f1 );
+      Functions::tnlOperatorFunction< OperatorComposition, MeshFunctionType, BoundaryConditions > operatorFunction3( operatorComposition, boundaryConditions, f1 );
       operatorFunction3.refresh();
  
       /*f1 = testFunction;

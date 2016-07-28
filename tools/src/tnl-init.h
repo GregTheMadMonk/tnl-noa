@@ -34,13 +34,13 @@ bool renderFunction( const Config::ParameterContainer& parameters )
    if( ! mesh.load( meshFile ) )
       return false;
 
-   typedef tnlTestFunction< MeshType::meshDimensions, RealType > FunctionType;
+   typedef Functions::tnlTestFunction< MeshType::meshDimensions, RealType > FunctionType;
    FunctionType function;
   std::cout << "Setting up the function ... " << std::endl;
    if( ! function.setup( parameters, "" ) )
       return false;
   std::cout << "done." << std::endl;
-   typedef tnlMeshFunction< MeshType, MeshType::meshDimensions > MeshFunctionType;
+   typedef Functions::tnlMeshFunction< MeshType, MeshType::meshDimensions > MeshFunctionType;
    MeshFunctionType meshFunction( mesh );
    //if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
    //   return false;
@@ -67,7 +67,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
       }
       else
       {
-         tnlMeshFunctionEvaluator< MeshFunctionType, FunctionType >::evaluate( meshFunction, function, time );
+         Functions::tnlMeshFunctionEvaluator< MeshFunctionType, FunctionType >::evaluate( meshFunction, function, time );
       }
 
       String outputFile = parameters.getParameter< String >( "output-file" );

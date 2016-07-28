@@ -27,7 +27,7 @@ class tnlExactGradientNorm
  */
 template< typename Real >
 class tnlExactGradientNorm< 1, Real >
-   : public tnlDomain< 1, SpaceDomain >
+   : public Functions::tnlDomain< 1, Functions::SpaceDomain >
 {
    public:
 
@@ -95,7 +95,7 @@ class tnlExactGradientNorm< 1, Real >
  */
 template< typename Real >
 class tnlExactGradientNorm< 2, Real >
-   : public tnlDomain< 2, SpaceDomain >
+   : public Functions::tnlDomain< 2, Functions::SpaceDomain >
 {
    public:
 
@@ -169,7 +169,7 @@ class tnlExactGradientNorm< 2, Real >
 
 template< typename Real >
 class tnlExactGradientNorm< 3, Real >
-   : public tnlDomain< 3, SpaceDomain >
+   : public Functions::tnlDomain< 3, Functions::SpaceDomain >
 {
    public:
 

@@ -166,7 +166,7 @@ setMesh( const MeshType& mesh )
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::MeshType&
+const typename Functions::tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::MeshType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getMesh() const
 {
@@ -176,7 +176,7 @@ getMesh() const
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::VectorType&
+const typename Functions::tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::VectorType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getData() const
 {
@@ -186,7 +186,7 @@ getData() const
 template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
-typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::VectorType&
+typename Functions::tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::VectorType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getData()
 {
@@ -217,7 +217,7 @@ template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
    template< typename EntityType >
-typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType
+typename Functions::tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 getValue( const EntityType& meshEntity ) const
 {
@@ -243,7 +243,7 @@ template< typename Mesh,
           typename Real >
    template< typename EntityType >
 __cuda_callable__
-typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType&
+typename Functions::tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator()( const EntityType& meshEntity,
             const RealType& time )
@@ -257,7 +257,7 @@ template< typename Mesh,
           typename Real >
    template< typename EntityType >
 __cuda_callable__
-const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType&
+const typename Functions::tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator()( const EntityType& meshEntity,
             const RealType& time ) const
@@ -270,7 +270,7 @@ template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
 __cuda_callable__
-typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType&
+typename Functions::tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator[]( const IndexType& meshEntityIndex )
 {
@@ -281,7 +281,7 @@ template< typename Mesh,
           int MeshEntityDimensions,
           typename Real >
 __cuda_callable__
-const typename tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType&
+const typename Functions::tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::RealType&
 tnlMeshFunction< Mesh, MeshEntityDimensions, Real >::
 operator[]( const IndexType& meshEntityIndex ) const
 {

@@ -95,7 +95,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                      MeshDependentDataType& meshDependentData )
 {
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-   tnlMeshFunction< Mesh > u( mesh, dofs );
+   Functions::tnlMeshFunction< Mesh > u( mesh, dofs );
    if( ! u.boundLoad( initialConditionFile ) )
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
@@ -239,7 +239,7 @@ assemblyLinearSystem( const RealType& time,
                              Matrix,
                              DofVectorType > systemAssembler;
 
-   tnlMeshFunction< Mesh > u( mesh, _u );
+   Functions::tnlMeshFunction< Mesh > u( mesh, _u );
    systemAssembler.template assembly< typename Mesh::Cell >( time,
                                                              tau,
                                                              mesh,

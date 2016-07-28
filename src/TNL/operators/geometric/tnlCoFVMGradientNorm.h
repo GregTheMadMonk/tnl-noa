@@ -81,7 +81,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlCoFVMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, 0, Real, Index >
-   : public tnlOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >, MeshInteriorDomain, 1, 0, Real, Index >
+   : public tnlOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >, Functions::MeshInteriorDomain, 1, 0, Real, Index >
 {
    public:
  
@@ -141,7 +141,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlCoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, Index >
-   : public tnlOperator< tnlGrid< 2,MeshReal, Device, MeshIndex >, MeshInteriorDomain, 2, 1, Real, Index >
+   : public tnlOperator< tnlGrid< 2,MeshReal, Device, MeshIndex >, Functions::MeshInteriorDomain, 2, 1, Real, Index >
 {
    public:
  
@@ -259,7 +259,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class tnlCoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, Index >
-   : public tnlOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, MeshInteriorDomain, 3, 2, Real, Index >
+   : public tnlOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, Functions::MeshInteriorDomain, 3, 2, Real, Index >
 {
    public:
  

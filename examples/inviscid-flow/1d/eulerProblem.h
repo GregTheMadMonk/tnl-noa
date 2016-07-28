@@ -21,13 +21,13 @@ class eulerProblem:
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
-      typedef tnlMeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< Mesh > MeshFunctionType;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
 
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
       using typename BaseType::MeshDependentDataType;
-      typedef tnlMeshFunction<Mesh,Mesh::getMeshDimensions(),RealType>MeshFunction;
+      typedef Functions::tnlMeshFunction<Mesh,Mesh::getMeshDimensions(),RealType>MeshFunction;
       
       typedef typename DifferentialOperator::Continuity Continuity;
       typedef typename DifferentialOperator::Momentum Momentum;

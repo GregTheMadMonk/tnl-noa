@@ -40,7 +40,7 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntry< String >( "help", "Write help." );
  
    config.addDelimiter                            ( "Functions parameters:" );
-   tnlTestFunction< 1 >::configSetup( config );
+   Functions::tnlTestFunction< 1 >::configSetup( config );
 }
 
 int main( int argc, char* argv[] )

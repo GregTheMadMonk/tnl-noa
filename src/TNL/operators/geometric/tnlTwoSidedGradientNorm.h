@@ -31,7 +31,7 @@ template< typename MeshReal,
           typename Index >
 class tnlTwoSidedGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
    : public tnlOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >,
-                         MeshInteriorDomain, 1, 1, Real, Index >
+                         Functions::MeshInteriorDomain, 1, 1, Real, Index >
 {
    public:
  
@@ -84,7 +84,7 @@ template< typename MeshReal,
           typename Index >
 class tnlTwoSidedGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
    : public tnlOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >,
-                         MeshInteriorDomain, 2, 2, Real, Index >
+                         Functions::MeshInteriorDomain, 2, 2, Real, Index >
 {
    public:
  
@@ -147,7 +147,7 @@ template< typename MeshReal,
           typename Index >
 class tnlTwoSidedGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >
    : public tnlOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >,
-                         MeshInteriorDomain, 3, 3, Real, Index >
+                         Functions::MeshInteriorDomain, 3, 3, Real, Index >
 {
    public:
  

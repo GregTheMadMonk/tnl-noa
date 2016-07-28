@@ -23,7 +23,7 @@ namespace TNL {
 template< typename ExactOperator,
           typename TestFunction >
 class tnlHeatEquationEocRhs
- : public tnlDomain< TestFunction::Dimensions, SpaceDomain >
+ : public Functions::tnlDomain< TestFunction::Dimensions, Functions::SpaceDomain >
 {
    public:
 

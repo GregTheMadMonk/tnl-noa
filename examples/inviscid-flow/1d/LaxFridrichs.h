@@ -20,7 +20,7 @@ class LaxFridrichs
    public:
       typedef Real RealType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< Mesh > MeshFunctionType;
  
       typedef LaxFridrichsContinuity< Mesh, Real, Index > Continuity;
       typedef LaxFridrichsMomentum< Mesh, Real, Index > Momentum;

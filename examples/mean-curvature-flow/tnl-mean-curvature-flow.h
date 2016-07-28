@@ -121,7 +121,7 @@ class meanCurvatureFlowSetter
          return solverStarter.template run< Solver >( parameters );
       }
       //typedef Vector< Real, Device, Index > VectorType;
-      typedef tnlMeshFunction< MeshType > MeshFunction;
+      typedef Functions::tnlMeshFunction< MeshType > MeshFunction;
       if( boundaryConditionsType == "dirichlet" )
       {
          typedef tnlDirichletBoundaryConditions< MeshType, MeshFunction, Dimensions, Real, Index > BoundaryConditions;

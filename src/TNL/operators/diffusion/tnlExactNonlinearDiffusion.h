@@ -26,7 +26,7 @@ class tnlExactNonlinearDiffusion
 template< typename Nonlinearity,
           typename InnerOperator >
 class tnlExactNonlinearDiffusion< 1, Nonlinearity, InnerOperator >
-   : public tnlDomain< 1, SpaceDomain >
+   : public Functions::tnlDomain< 1, Functions::SpaceDomain >
 {
    public:
 
@@ -80,7 +80,7 @@ class tnlExactNonlinearDiffusion< 1, Nonlinearity, InnerOperator >
 template< typename Nonlinearity,
           typename InnerOperator >
 class tnlExactNonlinearDiffusion< 2, Nonlinearity, InnerOperator >
-   : public tnlDomain< 2, SpaceDomain >
+   : public Functions::tnlDomain< 2, Functions::SpaceDomain >
 {
    public:
  
@@ -139,7 +139,7 @@ class tnlExactNonlinearDiffusion< 2, Nonlinearity, InnerOperator >
 template< typename Nonlinearity,
           typename InnerOperator  >
 class tnlExactNonlinearDiffusion< 3, Nonlinearity, InnerOperator >
-   : public tnlDomain< 3, SpaceDomain >
+   : public Functions::tnlDomain< 3, Functions::SpaceDomain >
 {
    public:
  

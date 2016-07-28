@@ -49,7 +49,7 @@ bool computeDifferenceOfMeshFunctions( const Mesh& mesh, const Config::Parameter
    if( verbose )
      std::cout << std::endl;
 
-   tnlMeshFunction< Mesh, Mesh::getMeshDimensions(), Real > v1( mesh ), v2( mesh ), diff( mesh );
+   Functions::tnlMeshFunction< Mesh, Mesh::getMeshDimensions(), Real > v1( mesh ), v2( mesh ), diff( mesh );
    Real totalL1Diff( 0.0 ), totalL2Diff( 0.0 ), totalMaxDiff( 0.0 );
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {

@@ -17,7 +17,7 @@ template< int Dimensions,
           int YDerivative,
           int ZDerivative >
 class tnlExactDifference
-   : public tnlDomain< Dimensions, SpaceDomain >
+   : public Functions::tnlDomain< Dimensions, Functions::SpaceDomain >
 {
    public:
  

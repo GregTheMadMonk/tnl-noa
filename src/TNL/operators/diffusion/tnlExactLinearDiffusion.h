@@ -19,7 +19,7 @@ class tnlExactLinearDiffusion
 {};
 
 template<>
-class tnlExactLinearDiffusion< 1 > : public tnlDomain< 1, SpaceDomain >
+class tnlExactLinearDiffusion< 1 > : public Functions::tnlDomain< 1, Functions::SpaceDomain >
 {
    public:
 
@@ -35,7 +35,7 @@ class tnlExactLinearDiffusion< 1 > : public tnlDomain< 1, SpaceDomain >
 };
 
 template<>
-class tnlExactLinearDiffusion< 2 > : public tnlDomain< 2, SpaceDomain >
+class tnlExactLinearDiffusion< 2 > : public Functions::tnlDomain< 2, Functions::SpaceDomain >
 {
    public:
  
@@ -51,7 +51,7 @@ class tnlExactLinearDiffusion< 2 > : public tnlDomain< 2, SpaceDomain >
 };
 
 template<>
-class tnlExactLinearDiffusion< 3 > : public tnlDomain< 3 >
+class tnlExactLinearDiffusion< 3 > : public Functions::tnlDomain< 3 >
 {
    public:
  

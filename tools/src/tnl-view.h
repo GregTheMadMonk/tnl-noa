@@ -76,7 +76,7 @@ bool setMeshFunctionRealType( const Mesh& mesh,
                               const String& inputFileName,
                               const Config::ParameterContainer& parameters  )
 {
-   return writeMeshFunction< tnlMeshFunction< Mesh, EntityDimensions, Real > >( mesh, inputFileName, parameters );
+   return writeMeshFunction< Functions::tnlMeshFunction< Mesh, EntityDimensions, Real > >( mesh, inputFileName, parameters );
 }
 
 template< typename Mesh,

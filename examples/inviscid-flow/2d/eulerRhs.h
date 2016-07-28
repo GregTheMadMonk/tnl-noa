@@ -6,7 +6,7 @@
 namespace TNL {
 
 template< typename Mesh, typename Real >class eulerRhs
-  : public tnlDomain< Mesh::meshDimensions, MeshDomain > 
+  : public Functions::tnlDomain< Mesh::meshDimensions, Functions::MeshDomain > 
  {
    public:
 

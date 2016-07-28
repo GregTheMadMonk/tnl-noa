@@ -41,8 +41,8 @@ class tnlOperatorFunctionTest
    typedef typename OperatorType::IndexType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef typename MeshType::VertexType VertexType;
-   typedef tnlExpBumpFunction< MeshType::getMeshDimensions(), RealType > TestFunctionType;
-   typedef tnlMeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
+   typedef Functions::tnlExpBumpFunction< MeshType::getMeshDimensions(), RealType > TestFunctionType;
+   typedef Functions::tnlMeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
 
    tnlOperatorFunctionTest(){};
 
@@ -62,7 +62,7 @@ class tnlOperatorFunctionTest
    void testWithNoBoundaryConditions()
    {
       MeshType mesh;
-      typedef tnlOperatorFunction< Operator, MeshFunctionType, void, EvaluateOnFly > OperatorFunctionType;
+      typedef Functions::tnlOperatorFunction< Operator, MeshFunctionType, void, EvaluateOnFly > OperatorFunctionType;
       mesh.setDimensions( CoordinatesType( 25 ) );
       mesh.setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
       TestFunctionType testFunction;
@@ -91,7 +91,7 @@ class tnlOperatorFunctionTest
    {
       MeshType mesh;
       typedef tnlDirichletBoundaryConditions< MeshType > BoundaryConditionsType;
-      typedef tnlOperatorFunction< Operator, MeshFunctionType, BoundaryConditionsType, EvaluateOnFly > OperatorFunctionType;
+      typedef Functions::tnlOperatorFunction< Operator, MeshFunctionType, BoundaryConditionsType, EvaluateOnFly > OperatorFunctionType;
       mesh.setDimensions( CoordinatesType( 25 ) );
       mesh.setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
       TestFunctionType testFunction;

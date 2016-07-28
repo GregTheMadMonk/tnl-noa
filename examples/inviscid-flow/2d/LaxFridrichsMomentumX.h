@@ -26,7 +26,7 @@ class LaxFridrichsMomentumX< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Ind
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static String getType();
@@ -93,7 +93,7 @@ class LaxFridrichsMomentumX< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Ind
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static String getType();
@@ -159,7 +159,7 @@ class LaxFridrichsMomentumX< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Ind
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static String getType();

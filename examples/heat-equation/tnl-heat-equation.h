@@ -39,9 +39,9 @@ class heatEquationConfig
             config.addEntryEnum< String >( "neumann" );
 
          typedef tnlGrid< 1, double, Devices::Host, int > Mesh;
-         typedef tnlMeshFunction< Mesh > MeshFunction;
+         typedef Functions::tnlMeshFunction< Mesh > MeshFunction;
          tnlDirichletBoundaryConditions< Mesh, MeshFunction >::configSetup( config );
-         tnlDirichletBoundaryConditions< Mesh, tnlConstantFunction< 1 > >::configSetup( config );
+         tnlDirichletBoundaryConditions< Mesh, Functions::tnlConstantFunction< 1 > >::configSetup( config );
          config.addEntry< String >( "boundary-conditions-file", "File with the values of the boundary conditions.", "boundary.tnl" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< double >( "right-hand-side-constant", "This sets a constant value for the right-hand side.", 0.0 );
@@ -69,13 +69,13 @@ class heatEquationSetter
    {
       enum { Dimensions = MeshType::meshDimensions };
       typedef tnlLinearDiffusion< MeshType, Real, Index > ApproximateOperator;
-      typedef tnlConstantFunction< Dimensions, Real > RightHandSide;
+      typedef Functions::tnlConstantFunction< Dimensions, Real > RightHandSide;
       typedef Vectors::StaticVector < MeshType::meshDimensions, Real > Vertex;
 
       String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
       if( parameters.checkParameter( "boundary-conditions-constant" ) )
       {
-         typedef tnlConstantFunction< Dimensions, Real > ConstantFunction;
+         typedef Functions::tnlConstantFunction< Dimensions, Real > ConstantFunction;
          if( boundaryConditionsType == "dirichlet" )
          {
             typedef tnlDirichletBoundaryConditions< MeshType, ConstantFunction > BoundaryConditions;
@@ -88,7 +88,7 @@ class heatEquationSetter
          SolverStarter solverStarter;
          return solverStarter.template run< Problem >( parameters );
       }
-      typedef tnlMeshFunction< MeshType > MeshFunction;
+      typedef Functions::tnlMeshFunction< MeshType > MeshFunction;
       if( boundaryConditionsType == "dirichlet" )
       {
          typedef tnlDirichletBoundaryConditions< MeshType, MeshFunction > BoundaryConditions;

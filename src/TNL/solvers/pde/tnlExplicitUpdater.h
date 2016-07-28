@@ -122,7 +122,7 @@ class tnlExplicitUpdater
                      entity,
                      *userData.time );
 
-               typedef tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+               typedef Functions::tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
                ( * userData.fu )( entity ) +=
                   FunctionAdapter::getValue(
                      *userData.rightHandSide,

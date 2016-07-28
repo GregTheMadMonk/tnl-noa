@@ -33,7 +33,7 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
 {
    public:
  
-      typedef tnlMeshFunction< tnlGrid< Dimensions, MeshReal, Devices::Host, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< tnlGrid< Dimensions, MeshReal, Devices::Host, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
       typedef tnlGrid< Dimensions, MeshReal, Devices::Host, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
       typedef Devices::Host DeviceType;
@@ -112,7 +112,7 @@ class tnlMeshFunctionNormGetter< tnlMeshFunction< tnlGrid< Dimensions, MeshReal,
 {
    public:
  
-      typedef tnlMeshFunction< tnlGrid< Dimensions, MeshReal, Devices::Cuda, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< tnlGrid< Dimensions, MeshReal, Devices::Cuda, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
       typedef tnlGrid< Dimensions, MeshReal, Devices::Cuda, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
       typedef Devices::Cuda DeviceType;

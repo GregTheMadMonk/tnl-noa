@@ -34,7 +34,7 @@ class tnlMeshFunction :
       typedef typename MeshType::IndexType IndexType;
       typedef Real RealType;
       typedef Vectors::Vector< RealType, DeviceType, IndexType > VectorType;
-      typedef tnlMeshFunction< Mesh, MeshEntityDimensions, Real > ThisType;
+      typedef Functions::tnlMeshFunction< Mesh, MeshEntityDimensions, Real > ThisType;
  
       static constexpr int getEntitiesDimensions() { return MeshEntityDimensions; };
  

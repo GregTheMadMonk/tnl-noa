@@ -18,7 +18,7 @@ namespace TNL {
 
 template< int Dimensions >
 class tnlExactIdentityOperator
-   : public tnlDomain< Dimensions, SpaceDomain >
+   : public Functions::tnlDomain< Dimensions, Functions::SpaceDomain >
 {
    public:
  

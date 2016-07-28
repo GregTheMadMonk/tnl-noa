@@ -41,7 +41,7 @@ class tnlMeshFunctionEvaluator : public tnlDomain< OutMeshFunction::getEntitiesD
       typedef typename MeshType::DeviceType MeshDeviceType;
       typedef typename MeshType::IndexType MeshIndexType;
       typedef typename OutMeshFunction::RealType RealType;
-      typedef tnlMeshFunctionEvaluatorTraverserUserData< OutMeshFunction, InFunction, RealType > TraverserUserData;
+      typedef Functions::tnlMeshFunctionEvaluatorTraverserUserData< OutMeshFunction, InFunction, RealType > TraverserUserData;
 
  
       const static int meshEntityDimensions = OutMeshFunction::getEntitiesDimensions();

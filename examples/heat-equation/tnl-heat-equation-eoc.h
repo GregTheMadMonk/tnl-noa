@@ -34,7 +34,7 @@ class heatEquationEocConfig
       {
          config.addDelimiter( "Heat equation EOC settings:" );
          config.addDelimiter( "Tests setting::" );
-         tnlTestFunction< 3, double >::configSetup( config );
+         Functions::tnlTestFunction< 3, double >::configSetup( config );
       }
 };
 
@@ -59,7 +59,7 @@ class heatEquationSetter
       enum { Dimensions = MeshType::meshDimensions };
       typedef tnlLinearDiffusion< MeshType, Real, Index > ApproximateOperator;
       typedef tnlExactLinearDiffusion< Dimensions > ExactOperator;
-      typedef tnlTestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
+      typedef Functions::tnlTestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
       typedef tnlHeatEquationEocRhs< ExactOperator, TestFunction > RightHandSide;
       typedef Vectors::StaticVector < MeshType::meshDimensions, Real > Vertex;
       typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Dimensions, Real, Index > BoundaryConditions;

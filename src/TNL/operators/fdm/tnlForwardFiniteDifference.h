@@ -38,7 +38,7 @@ template< int Dimensions,
           typename Index >
 class tnlForwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >, XDifference, YDifference, ZDifference, Real, Index >
 : public tnlOperator< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >,
-                      MeshInteriorDomain, Dimensions, Dimensions, Real, Index >
+                      Functions::MeshInteriorDomain, Dimensions, Dimensions, Real, Index >
 {
    public:
  

@@ -15,12 +15,12 @@
 namespace TNL {
 
 template< typename Mesh,
-          tnlDomainType DomainType = MeshInteriorDomain,
+          Functions::tnlDomainType DomainType = Functions::MeshInteriorDomain,
           int PreimageEntitiesDimensions = Mesh::getMeshDimensions(),
           int ImageEntitiesDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class tnlOperator : public tnlDomain< Mesh::getMeshDimensions(), DomainType >
+class tnlOperator : public Functions::tnlDomain< Mesh::getMeshDimensions(), DomainType >
 {
    public:
  

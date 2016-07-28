@@ -80,7 +80,7 @@ class eulerSetter
           String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
           if( parameters.checkParameter( "boundary-conditions-constant" ) )
           {
-             typedef tnlConstantFunction< Dimensions, Real > ConstantFunction;
+             typedef Functions::tnlConstantFunction< Dimensions, Real > ConstantFunction;
              if( boundaryConditionsType == "dirichlet" )
              {
                 typedef tnlDirichletBoundaryConditions< MeshType, ConstantFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
@@ -93,7 +93,7 @@ class eulerSetter
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }
-          typedef tnlMeshFunction< MeshType > MeshFunction;
+          typedef Functions::tnlMeshFunction< MeshType > MeshFunction;
           if( boundaryConditionsType == "dirichlet" )
           {
              typedef tnlDirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;

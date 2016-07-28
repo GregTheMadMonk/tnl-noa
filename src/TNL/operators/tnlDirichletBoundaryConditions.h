@@ -17,13 +17,13 @@
 namespace TNL {
 
 template< typename Mesh,
-          typename Function = tnlConstantFunction< Mesh::getMeshDimensions(), typename Mesh::RealType >,
+          typename Function = Functions::tnlConstantFunction< Mesh::getMeshDimensions(), typename Mesh::RealType >,
           int MeshEntitiesDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class tnlDirichletBoundaryConditions
 : public tnlOperator< Mesh,
-                      MeshBoundaryDomain,
+                      Functions::MeshBoundaryDomain,
                       MeshEntitiesDimensions,
                       MeshEntitiesDimensions,
                       Real,
@@ -77,7 +77,7 @@ class tnlDirichletBoundaryConditions
                                  const RealType& time = 0 ) const
       {
          //static_assert( EntityType::getDimensions() == MeshEntitiesDimensions, "Wrong mesh entity dimensions." );
-         return tnlFunctionAdapter< MeshType, Function >::template getValue( this->function, entity, time );
+         return Functions::tnlFunctionAdapter< MeshType, Function >::template getValue( this->function, entity, time );
       }
 
       template< typename EntityType >
@@ -104,7 +104,7 @@ class tnlDirichletBoundaryConditions
          typename Matrix::MatrixRow matrixRow = matrix.getRow( entity.getIndex() );
          const IndexType& index = entity.getIndex();
          matrixRow.setElement( 0, index, 1.0 );
-         b[ index ] = tnlFunctionAdapter< MeshType, Function >::getValue( this->function, entity, time );
+         b[ index ] = Functions::tnlFunctionAdapter< MeshType, Function >::getValue( this->function, entity, time );
       }
  
 

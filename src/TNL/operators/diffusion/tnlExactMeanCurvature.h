@@ -19,7 +19,7 @@ namespace TNL {
 template< int Dimensions,
           typename InnerOperator = tnlExactIdentityOperator< Dimensions > >
 class tnlExactMeanCurvature
-: public tnlDomain< Dimensions, SpaceDomain >
+: public Functions::tnlDomain< Dimensions, Functions::SpaceDomain >
 {
    public:
  

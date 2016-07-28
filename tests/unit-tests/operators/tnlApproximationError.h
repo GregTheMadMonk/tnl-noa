@@ -34,7 +34,7 @@ class tnlApproximationError
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::VertexType VertexType;
-      typedef tnlConstantFunction< MeshType::meshDimensions, RealType > ConstantFunctionType;
+      typedef Functions::tnlConstantFunction< MeshType::meshDimensions, RealType > ConstantFunctionType;
       typedef tnlDirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
 
       static void getError( const ExactOperator& exactOperator,
@@ -46,13 +46,13 @@ class tnlApproximationError
                             RealType& maxError,
                             bool writeFunctions )
       {
-         typedef tnlMeshFunction< MeshType, MeshEntity::getDimensions() > MeshFunction;
-         typedef tnlDirichletBoundaryConditions< MeshType, tnlConstantFunction< MeshType::meshDimensions > > DirichletBoundaryConditions;
-         typedef tnlOperatorFunction< DirichletBoundaryConditions, MeshFunction > BoundaryOperatorFunction;
-         typedef tnlOperatorFunction< ApproximateOperator, MeshFunction > OperatorFunction;
-         typedef tnlExactOperatorFunction< ExactOperator, Function > ExactOperatorFunction;
+         typedef Functions::tnlMeshFunction< MeshType, MeshEntity::getDimensions() > MeshFunction;
+         typedef tnlDirichletBoundaryConditions< MeshType, Functions::tnlConstantFunction< MeshType::meshDimensions > > DirichletBoundaryConditions;
+         typedef Functions::tnlOperatorFunction< DirichletBoundaryConditions, MeshFunction > BoundaryOperatorFunction;
+         typedef Functions::tnlOperatorFunction< ApproximateOperator, MeshFunction > OperatorFunction;
+         typedef Functions::tnlExactOperatorFunction< ExactOperator, Function > ExactOperatorFunction;
 
-         tnlMeshFunction< MeshType, MeshEntity::getDimensions() > exactU( mesh ), u( mesh ), v( mesh );
+         Functions::tnlMeshFunction< MeshType, MeshEntity::getDimensions() > exactU( mesh ), u( mesh ), v( mesh );
          OperatorFunction operatorFunction( approximateOperator, v );
          ExactOperatorFunction exactOperatorFunction( exactOperator, function );
          DirichletBoundaryConditions boundaryConditions;
