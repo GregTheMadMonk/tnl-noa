@@ -47,7 +47,7 @@ bool File :: read( Type* buffer,
    const Index host_buffer_size = std::min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
                                           elements );
    void* host_buffer( 0 );
-   if( Device :: getDeviceType() == "Devices::Host" )
+   if( std::is_same< Device, Devices::Host >::value )
    {
       if( fread( buffer,
              sizeof( Type ),
@@ -61,7 +61,7 @@ bool File :: read( Type* buffer,
       this->readElements = elements;
       return true;
    }
-   if( Device :: getDeviceType() == "Devices::Cuda" )
+   if( std::is_same< Device, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
       /*!***
@@ -141,7 +141,7 @@ bool File ::  write( const Type* buffer,
    this->writtenElements = 0;
    const long int host_buffer_size = std::min( ( Index ) ( tnlFileGPUvsCPUTransferBufferSize / sizeof( Type ) ),
                                           elements );
-   if( Device :: getDeviceType() == "Devices::Host" )
+   if( std::is_same< Device, Devices::Host >::value )
    {
       if( fwrite( buf,
                   sizeof( Type ),
@@ -155,7 +155,7 @@ bool File ::  write( const Type* buffer,
       this->writtenElements = elements;
       return true;
    }
-   if( Device :: getDeviceType() == "Devices::Cuda" )
+   if( std::is_same< Device, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
          /*!***
