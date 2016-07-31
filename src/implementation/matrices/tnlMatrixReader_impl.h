@@ -29,7 +29,8 @@ using namespace std;
 template< typename Matrix >
 bool tnlMatrixReader< Matrix >::readMtxFile( const tnlString& fileName,
                                              Matrix& matrix,
-                                             bool verbose )
+                                             bool verbose,
+                                             bool symReader = false )
 {
    fstream file;
    file.open( fileName.getString(), ios::in );
@@ -38,22 +39,24 @@ bool tnlMatrixReader< Matrix >::readMtxFile( const tnlString& fileName,
       cerr << "I am not able to open the file " << fileName << "." << endl;
       return false;
    }
-   return readMtxFile( file, matrix, verbose );
+   return readMtxFile( file, matrix, verbose, symReader );
 }
 
 template< typename Matrix >
 bool tnlMatrixReader< Matrix >::readMtxFile( std::istream& file,
                                              Matrix& matrix,
-                                             bool verbose )
+                                             bool verbose,
+                                             bool symReader )
 {
-   return tnlMatrixReaderDeviceDependentCode< typename Matrix::DeviceType >::readMtxFile( file, matrix, verbose );
+   return tnlMatrixReaderDeviceDependentCode< typename Matrix::DeviceType >::readMtxFile( file, matrix, verbose, symReader );
 }
 
 template< typename Matrix >
 bool tnlMatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
                                                        Matrix& matrix,
                                                        typename Matrix::RowLengthsVector& rowLengths,
-                                                       bool verbose )
+                                                       bool verbose,
+                                                       bool symReader )
 {
    IndexType rows, columns;
    bool symmetricMatrix( false );
@@ -75,7 +78,7 @@ bool tnlMatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
    if( ! matrix.setRowLengths( rowLengths ) )
       return false;
 
-   if( ! readMatrixElementsFromMtxFile( file, matrix, symmetricMatrix, verbose ) )
+   if( ! readMatrixElementsFromMtxFile( file, matrix, symmetricMatrix, verbose, symReader ) )
       return false;
    return true;
 }
@@ -318,7 +321,8 @@ template< typename Matrix >
 bool tnlMatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& file,
                                                                Matrix& matrix,
                                                                bool symmetricMatrix,
-                                                               bool verbose )
+                                                               bool verbose,
+                                                               bool symReader )
 {
    file.clear();
    file.seekg( 0,  ios::beg );
@@ -340,12 +344,15 @@ bool tnlMatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& fil
          return false;
       matrix.setElement( row - 1, column - 1, value );
       processedElements++;
-      if( symmetricMatrix && row != column )
+      if( symmetricMatrix && row != column && symReader )
       {
           continue;
       }
-      if( verbose )
-         cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements() << "                       \r" << flush;
+      else if( symmetricMatrix && row != column )
+      {
+          matrix.setElement( column - 1, row - 1, value );
+          processedElements++;
+      }
    }
    file.clear();
    long int fileSize = file.tellg();
@@ -383,10 +390,11 @@ class tnlMatrixReaderDeviceDependentCode< tnlHost >
    template< typename Matrix >
    static bool readMtxFile( std::istream& file,
                             Matrix& matrix,
-                            bool verbose )
+                            bool verbose,
+                            bool symReader )
    {
       typename Matrix::RowLengthsVector rowLengths;
-      return tnlMatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose );
+      return tnlMatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose, symReader );
    }
 };
 
@@ -398,14 +406,15 @@ class tnlMatrixReaderDeviceDependentCode< tnlCuda >
    template< typename Matrix >
    static bool readMtxFile( std::istream& file,
                             Matrix& matrix,
-                            bool verbose )
+                            bool verbose,
+                            bool symReader )
    {
       typedef typename Matrix::HostType HostMatrixType;
       typedef typename HostMatrixType::RowLengthsVector RowLengthsVector;
 
       HostMatrixType hostMatrix;
       RowLengthsVector rowLengthsVector;
-      if( ! tnlMatrixReader< HostMatrixType >::readMtxFileHostMatrix( file, hostMatrix, rowLengthsVector, verbose ) )
+      if( ! tnlMatrixReader< HostMatrixType >::readMtxFileHostMatrix( file, hostMatrix, rowLengthsVector, verbose, symReader ) )
          return false;
 
       typename Matrix::RowLengthsVector cudaRowLengthsVector;
