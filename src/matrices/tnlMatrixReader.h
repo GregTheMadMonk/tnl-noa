@@ -36,16 +36,19 @@ class tnlMatrixReader
 
    static bool readMtxFile( const tnlString& fileName,
                             Matrix& matrix,
-                            bool verbose = false );
+                            bool verbose = false,
+                            bool symReader = false );
 
    static bool readMtxFile( std::istream& file,
                             Matrix& matrix,
-                            bool verbose = false );
+                            bool verbose = false,
+                            bool symReader = false );
 
    static bool readMtxFileHostMatrix( std::istream& file,
                                       Matrix& matrix,
                                       typename Matrix::RowLengthsVector& rowLengths,
-                                      bool verbose );
+                                      bool verbose
+                                      bool symReader );
 
 
    static bool verifyMtxFile( std::istream& file,
@@ -78,7 +81,8 @@ class tnlMatrixReader
    static bool readMatrixElementsFromMtxFile( std::istream& file,
                                               Matrix& matrix,
                                               bool symmetricMatrix,
-                                              bool verbose );
+                                              bool verbose,
+                                              bool symReader );
 
    static bool parseMtxLineWithElement( const tnlString& line,
                                         IndexType& row,

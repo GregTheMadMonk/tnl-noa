@@ -30,7 +30,7 @@ template< typename Matrix >
 bool tnlMatrixReader< Matrix >::readMtxFile( const tnlString& fileName,
                                              Matrix& matrix,
                                              bool verbose,
-                                             bool symReader = false )
+                                             bool symReader )
 {
    fstream file;
    file.open( fileName.getString(), ios::in );
