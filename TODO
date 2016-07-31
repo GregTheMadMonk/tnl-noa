@@ -11,6 +11,11 @@ TODO:
 
 
 TODO:
+ - zrejme bude potreba udrzovat ke kazdemu objektu jeho obraz na GPU/MIC
+ - to by zarizovala metoda syncToDevice() napr. kazdy objekt by mel promennou modified, ktera by rikala, jestli se zmenil a zda je nutne ho
+   prekopirovavat
+
+TODO:
  - zavest namespaces
 
 TODO: CUDA unified memory
@@ -20,11 +25,6 @@ TODO: CUDA unified memory
  - pokud jde o MeshDependentData, stacilo by, aby uzivatel pretizil operator new a delete. Pokud by to neudelal, mohlo by 
 se s nimi pracovat postaru
  - bylo by dobre to obalit unique poinetry, aby se nemusela delat dealokace rucne
-
-TODO: shared pointery
- - mohli bysme pomoci nich odstranit Shared objekty
- - asi by bylo lepsi datcounter z shared pointeru primo do array a tento counter by se alokoval az po porvnim sdileni dat
- - diky tomu by se array mohlo vytvaret i na gpu bez nutnosti dynamicke alokace, jen by nebylo mozne delat bind (nebo nejaky zjednoduseny)
 
 TODO: Mesh
  * vsechny traits zkusit presunout do jednotneho MeshTraits, tj. temer MeshConfigTraits ale pojmenovat jako MeshTraits

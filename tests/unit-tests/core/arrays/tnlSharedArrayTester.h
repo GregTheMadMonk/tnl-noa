@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLSHAREDARRAYTESTER_H_
 #define TNLSHAREDARRAYTESTER_H_
@@ -23,8 +16,10 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/arrays/tnlSharedArray.h>
-#include <core/tnlFile.h>
+#include <TNL/Arrays/SharedArray.h>
+#include <TNL/File.h>
+
+using namespace TNL;
 
 template< typename ElementType, typename Device, typename IndexType >
 class tnlSharedArrayTester : public CppUnit :: TestCase
@@ -105,7 +100,7 @@ class tnlSharedArrayTester : public CppUnit :: TestCase
       v. setSize( 100 );
       for( int i = 0; i < 100; i ++ )
          v. setElement( i, 3.14147 );
-      tnlFile file;
+      File file;
       file. open( "test-file.tnl", tnlWriteMode );
       v. save( file );
       file. close();

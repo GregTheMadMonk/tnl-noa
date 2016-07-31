@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLLISTTESTER_H_
 #define TNLLISTTESTER_H_
@@ -26,8 +19,10 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlList.h>
-#include <core/tnlFile.h>
+#include <TNL/List.h>
+#include <TNL/File.h>
+
+using namespace TNL;
 
 class tnlListTester : public CppUnit :: TestCase
 {

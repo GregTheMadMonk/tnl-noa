@@ -6,21 +6,14 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include "tnl-matrix-convert.h"
 #include <string.h>
-#include <debug/tnlDebug.h>
-#include <core/tnlObject.h>
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
+#include <TNL/debug/tnlDebug.h>
+#include <TNL/Object.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 
 #include "tnlConfig.h"
 const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-matrix-convert.cfg.desc";
@@ -30,8 +23,8 @@ int main( int argc, char* argv[] )
    dbgFunctionName( "", "main" );
    dbgInit( "" );
 
-   tnlParameterContainer parameters;
-   tnlConfigDescription conf_desc;
+   Config::ParameterContainer parameters;
+   Config::ConfigDescription conf_desc;
 
    if( conf_desc.parseConfigDescription( configFile ) != 0 )
       return 1;
@@ -40,15 +33,15 @@ int main( int argc, char* argv[] )
       conf_desc.printUsage( argv[ 0 ] );
       return 1;
    }
-   tnlString input_file = parameters. getParameter< tnlString >( "input-file" );
-   tnlString output_file = parameters. getParameter< tnlString >( "output-file" );
-   tnlString output_matrix_format = parameters. getParameter< tnlString >( "output-matrix-format" );
-   tnlString precision = parameters. getParameter< tnlString >( "precision" );
+   String input_file = parameters. getParameter< String >( "input-file" );
+   String output_file = parameters. getParameter< String >( "output-file" );
+   String output_matrix_format = parameters. getParameter< String >( "output-matrix-format" );
+   String precision = parameters. getParameter< String >( "precision" );
    int verbose = parameters. getParameter< int >( "verbose");
    bool verify = parameters. getParameter< bool >( "verify");
 
    if( verbose )
-      cout << "Processing file " << input_file << " ... " << endl;
+      std::cout << "Processing file " << input_file << " ... " << std::endl;
 
    if( precision == "float" )
    {
@@ -75,6 +68,6 @@ int main( int argc, char* argv[] )
    }
 
 
-   cerr << "Unknnown precision " << precision << " was given. Can be only float of double." << endl;
+   std::cerr << "Unknnown precision " << precision << " was given. Can be only float of double." << std::endl;
    return EXIT_FAILURE;
 }

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef POLYGONIZER_H
 #define POLYGONIZER_H
@@ -130,10 +123,10 @@ class POLYGONIZER
     int is poligonization mode - polygonize cube or tetrahedrons
     */
    int Implicit( const SOLID*, RECIEVER*, const VECTOR&, const VECTOR&, const double&, int );
-   
+ 
    int Parametric( const SOLID*, RECIEVER*, const unsigned int, const unsigned int );
    protected:
-   
+ 
    //! This solid will be polygonized using method SOLID :: Solid_Function( const VECTOR& );
    const SOLID* solid;
 
@@ -141,10 +134,10 @@ class POLYGONIZER
    RECIEVER* reciever;
 
    //! Position of the first cube
-   /*! Thus, it is also position of the origin for cubes indexing 
+   /*! Thus, it is also position of the origin for cubes indexing
     */
    VECTOR position;
-   
+ 
    //! Bounds for polygonizer
    /*! All coubes outside culled.
     */

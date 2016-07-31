@@ -6,17 +6,22 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLSPARSEMATRIXTESTER_H_
 #define TNLSPARSEMATRIXTESTER_H_
+
+#ifdef HAVE_CPPUNIT
+#include <cppunit/TestSuite.h>
+#include <cppunit/TestResult.h>
+#include <cppunit/TestCaller.h>
+#include <cppunit/TestCase.h>
+#include <cppunit/Message.h>
+#include <TNL/File.h>
+#include <TNL/Vectors/Vector.h>
+#endif 
+
+using namespace TNL;
 
 template< typename Matrix,
           typename TestSetup >
@@ -30,14 +35,6 @@ class tnlSparseMatrixTesterMatrixSetter
    }
 };
 
-#ifdef HAVE_CPPUNIT
-#include <cppunit/TestSuite.h>
-#include <cppunit/TestResult.h>
-#include <cppunit/TestCaller.h>
-#include <cppunit/TestCase.h>
-#include <cppunit/Message.h>
-#include <core/tnlFile.h>
-#include <core/vectors/tnlVector.h>
 
 #ifdef HAVE_CUDA
 template< typename MatrixType >
@@ -81,6 +78,8 @@ __global__ void tnlSparseMatrixTester__setRowFast_LowerTriangularMatrixTestCudaK
 
 #endif
 
+#ifdef HAVE_CPPUNIT
+
 class tnlSparseMatrixTestDefaultSetup
 {};
 
@@ -93,8 +92,8 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    typedef typename Matrix::RealType RealType;
    typedef typename Matrix::DeviceType DeviceType;
    typedef typename Matrix::IndexType IndexType;
-   typedef tnlVector< RealType, DeviceType, IndexType > VectorType;
-   typedef tnlVector< IndexType, DeviceType, IndexType > IndexVector;
+   typedef Vectors::Vector< RealType, DeviceType, IndexType > VectorType;
+   typedef Vectors::Vector< IndexType, DeviceType, IndexType > IndexVector;
    typedef tnlSparseMatrixTester< MatrixType, MatrixSetup > TesterType;
    typedef tnlSparseMatrixTesterMatrixSetter< MatrixType, MatrixSetup > MatrixSetter;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
@@ -106,7 +105,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
 
    static CppUnit :: Test* suite()
    {
-      tnlString testSuiteName( "tnlSparseMatrixTester< " );
+      String testSuiteName( "tnlSparseMatrixTester< " );
       testSuiteName += MatrixType::getType() + " >";
 
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( testSuiteName.getString() );
@@ -194,28 +193,28 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       rowLengths.setValue( 7 );
       m.setCompressedRowsLengths( rowLengths );
 
-      if( DeviceType::getDevice() == tnlHostDevice )
+      if( std::is_same< DeviceType, Devices::Host >::value )
       {
          for( int i = 0; i < 7; i++ )
             CPPUNIT_ASSERT( m.setElementFast( 0, i, i ) );
          //CPPUNIT_ASSERT( m.setElementFast( 0, 8, 8 ) == false );
       }
 
-      if( DeviceType::getDevice() == tnlCudaDevice )
+      if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
-         MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
+         MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          tnlSparseMatrixTester__setElementFastTestCudaKernel< MatrixType >
                                                             <<< cudaGridSize, cudaBlockSize >>>
                                                             ( kernel_matrix,
                                                               kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_matrix );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_matrix );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -259,26 +258,26 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       rowLengths.setValue( 7 );
       m.setCompressedRowsLengths( rowLengths );
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( std::is_same< DeviceType, Devices::Host >::value )
       {
          for( int i = 0; i < 10; i++ )
             m.setElementFast( i, i, i );
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
-         MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
+         MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          tnlSparseMatrixTester__setElementFast_DiagonalMatrixTestCudaKernel< MatrixType >
                                                                            <<< cudaGridSize, cudaBlockSize >>>
                                                                            ( kernel_matrix,
                                                                              kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_matrix );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_matrix );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -340,7 +339,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       rowLengths.setValue( 10 );
       m.setCompressedRowsLengths( rowLengths );
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( std::is_same< DeviceType, Devices::Host >::value )
       {
          for( int i = 0; i < 10; i++ )
             m.setElementFast( i, i, i );
@@ -348,21 +347,21 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
             for( int j = 0; j < 10; j++ )
                m.addElementFast( i, j, 1, 0.5 );
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
-         MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
+         MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          tnlSparseMatrixTester__setElementFast_DenseMatrixTestCudaKernel1< MatrixType >
                                                                          <<< cudaGridSize, cudaBlockSize >>>
                                                                          ( kernel_matrix,
                                                                            kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_matrix );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_matrix );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -377,27 +376,27 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       m.reset();
       m.setDimensions( 10, 10 );
       m.setCompressedRowsLengths( rowLengths );
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( std::is_same< DeviceType, Devices::Host >::value )
       {
          for( int i = 9; i >= 0; i-- )
             for( int j = 9; j >= 0; j-- )
                m.setElementFast( i, j, i+j );
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
-         MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
+         MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          tnlSparseMatrixTester__setElementFast_DenseMatrixTestCudaKernel2< MatrixType >
                                                                          <<< cudaGridSize, cudaBlockSize >>>
                                                                          ( kernel_matrix,
                                                                            kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_matrix );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_matrix );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -456,27 +455,27 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          rowLengths.setElement( i, i+1 );
       m.setCompressedRowsLengths( rowLengths );
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( std::is_same< DeviceType, Devices::Host >::value )
       {
          for( int i = 0; i < 10; i++ )
             for( int j = 0; j <= i; j++ )
                m.setElementFast( i, j, i + j );
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
-         MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
+         MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          tnlSparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel1< MatrixType >
                                                                                    <<< cudaGridSize, cudaBlockSize >>>
                                                                                    ( kernel_matrix,
                                                                                      kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_matrix );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_matrix );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -491,27 +490,27 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       m.reset();
       m.setDimensions( 10, 10 );
       m.setCompressedRowsLengths( rowLengths );
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( std::is_same< DeviceType, Devices::Host >::value )
       {
          for( int i = 9; i >= 0; i-- )
             for( int j = i; j >= 0; j-- )
                m.setElementFast( i, j, i + j );
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
-         MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
+         MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          tnlSparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel2< MatrixType >
                                                                                    <<< cudaGridSize, cudaBlockSize >>>
                                                                                    ( kernel_matrix,
                                                                                      kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_matrix );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_matrix );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -538,7 +537,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
-            if( abs( i - j ) <= 1 )
+            if( std::abs( i - j ) <= 1 )
                m.addElement( i, j, 1 );
 
       for( int i = 0; i < 10; i++ )
@@ -546,7 +545,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
             if( i == j )
                CPPUNIT_ASSERT( m.getElement( i, i ) == i + 1 );
             else
-               if( abs( i - j ) == 1 )
+               if( std::abs( i - j ) == 1 )
                   CPPUNIT_ASSERT( m.getElement( i, j ) == 1 );
                else
                   CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
@@ -597,7 +596,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       m.setCompressedRowsLengths( rowLengths );
 
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( std::is_same< DeviceType, Devices::Host >::value )
       {
          RealType values[ 1 ];
          IndexType columnIndexes[ 1 ];
@@ -608,12 +607,12 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, 1 );
          }
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
-         MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
+         MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
@@ -621,9 +620,9 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
                                                                        <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                        ( kernel_matrix,
                                                                          kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_matrix );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_matrix );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -702,7 +701,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          columnIndexes[ i ] = i;
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( std::is_same< DeviceType, Devices::Host >::value )
       {
          for( int i = 0; i < 10; i++ )
          {
@@ -715,12 +714,12 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, 10 );
          }
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
-         MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
+         MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
@@ -728,9 +727,9 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
                                                                         <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                         ( kernel_matrix,
                                                                           kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_matrix );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_matrix );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -746,7 +745,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       m.setDimensions( 10, 10 );
       m.setCompressedRowsLengths( rowLengths );
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( std::is_same< DeviceType, Devices::Host >::value )
       {
          for( int i = 9; i >= 0; i-- )
          {
@@ -755,12 +754,12 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, 10 );
          }
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
-         MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
+         MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
@@ -768,9 +767,9 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
                                                                      <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                      ( kernel_matrix,
                                                                        kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_matrix );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_matrix );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -847,7 +846,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          columnIndexes[ i ] = i;
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( std::is_same< DeviceType, Devices::Host >::value )
       {
          for( int i = 0; i < 10; i++ )
          {
@@ -856,12 +855,12 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, i + 1 );
          }
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
-         MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
+         MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
@@ -869,9 +868,9 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
                                                                               <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                               ( kernel_matrix,
                                                                                 kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_matrix );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_matrix );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }
@@ -887,7 +886,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
       m.setDimensions( 10, 10 );
       m.setCompressedRowsLengths( rowLengths );
 
-      if( DeviceType::DeviceType == ( int ) tnlHostDevice )
+      if( std::is_same< DeviceType, Devices::Host >::value )
       {
          for( int i = 9; i >= 0; i-- )
          {
@@ -896,12 +895,12 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
             m.setRowFast( i, columnIndexes, values, i + 1 );
          }
       }
-      if( DeviceType::DeviceType == ( int ) tnlCudaDevice )
+      if( std::is_same< DeviceType, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
-         MatrixType* kernel_matrix = tnlCuda::passToDevice( m );
+         MatrixType* kernel_matrix = Devices::Cuda::passToDevice( m );
          bool testResult( true );
-         bool* kernel_testResult = tnlCuda::passToDevice( testResult );
+         bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
@@ -909,9 +908,9 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
                                                                               <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                               ( kernel_matrix,
                                                                                 kernel_testResult );
-         CPPUNIT_ASSERT( tnlCuda::passFromDevice( kernel_testResult ) );
-         tnlCuda::freeFromDevice( kernel_matrix );
-         tnlCuda::freeFromDevice( kernel_testResult );
+         CPPUNIT_ASSERT( Devices::Cuda::passFromDevice( kernel_testResult ) );
+         Devices::Cuda::freeFromDevice( kernel_matrix );
+         Devices::Cuda::freeFromDevice( kernel_testResult );
          checkCudaDevice;
 #endif
       }

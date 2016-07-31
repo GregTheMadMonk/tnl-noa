@@ -1,107 +1,102 @@
 /***************************************************************************
-                          tnlSharedVectorTester.h -  description
+                          SharedVectorTester.h -  description
                              -------------------
     begin                : Nov 8, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSHAREDVECTORTESTER_H_
-#define TNLSHAREDVECTORTESTER_H_
+#ifndef SharedVectorTESTER_H_
+#define SharedVectorTESTER_H_
 
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/vectors/tnlSharedVector.h>
-#include <core/tnlFile.h>
+#include <TNL/Vectors/SharedVector.h>
+#include <TNL/File.h>
+
+using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
-class tnlSharedVectorTester : public CppUnit :: TestCase
+class SharedVectorTester : public CppUnit :: TestCase
 {
    public:
-   tnlSharedVectorTester(){};
+   SharedVectorTester(){};
 
    virtual
-   ~tnlSharedVectorTester(){};
+   ~SharedVectorTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlSharedVectorTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "SharedVectorTester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testMax",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testMax )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testMax )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testMin",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testMin )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testMin )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testAbsMax",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testAbsMax )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testAbsMax )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testAbsMin",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testAbsMin )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testAbsMin )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testLpNorm",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testLpNorm )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testLpNorm )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testSum",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testSum )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testSum )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testDifferenceMax",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testDifferenceMax )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testDifferenceMax )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testDifferenceMin",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testDifferenceMin )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testDifferenceMin )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testDifferenceAbsMax",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testDifferenceAbsMax )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testDifferenceAbsMax )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testDifferenceAbsMin",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testDifferenceAbsMin )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testDifferenceAbsMin )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testDifferenceLpNorm",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testDifferenceLpNorm )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testDifferenceLpNorm )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testDifferenceSum",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testDifferenceSum )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testDifferenceSum )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testScalarMultiplication",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testScalarMultiplication )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testScalarMultiplication )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testScalarProduct",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testScalarProduct )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testScalarProduct )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testalphaXPlusY",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testalphaXPlusY )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testalphaXPlusY )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSharedVectorTester< RealType, Device, IndexType > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SharedVectorTester< RealType, Device, IndexType > >(
                                "testalphaXPlusY",
-                               & tnlSharedVectorTester< RealType, Device, IndexType > :: testalphaXPlusY )
+                               & SharedVectorTester< RealType, Device, IndexType > :: testalphaXPlusY )
                                );
       return suiteOfTests;
    }
@@ -109,7 +104,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
    void testMax()
    {
       RealType data[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v;
+      SharedVector< RealType, Device, IndexType > v;
       v. bind( data, 10 );
       for( int i = 0; i < 10; i ++ )
          data[ i ] = i;
@@ -119,7 +114,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
    void testMin()
    {
       RealType data[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v;
+      SharedVector< RealType, Device, IndexType > v;
       v. bind( data, 10 );
       for( int i = 0; i < 10; i ++ )
          data[ i ] = i;
@@ -129,7 +124,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
    void testAbsMax()
    {
       RealType data[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v;
+      SharedVector< RealType, Device, IndexType > v;
       v. bind( data, 10 );
       for( int i = 0; i < 10; i ++ )
          data[ i ] = -i;
@@ -139,7 +134,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
    void testAbsMin()
    {
       RealType data[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v;
+      SharedVector< RealType, Device, IndexType > v;
       v. bind( data, 10 );
       for( int i = 0; i < 10; i ++ )
          data[ i ] = -i;
@@ -149,19 +144,19 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
    void testLpNorm()
    {
       RealType data[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v;
+      SharedVector< RealType, Device, IndexType > v;
       v. bind( data, 10 );
       for( int i = 0; i < 10; i ++ )
          data[ i ] = -2;
       CPPUNIT_ASSERT( v. lpNorm( 1 ) == 20.0 );
-      CPPUNIT_ASSERT( v. lpNorm( 2 ) == sqrt( 40.0 ) );
-      CPPUNIT_ASSERT( v. lpNorm( 3 ) == pow( 80.0, 1.0/3.0 ) );
+      CPPUNIT_ASSERT( v. lpNorm( 2 ) == ::sqrt( 40.0 ) );
+      CPPUNIT_ASSERT( v. lpNorm( 3 ) == ::pow( 80.0, 1.0/3.0 ) );
    };
 
    void testSum()
    {
       RealType data[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v;
+      SharedVector< RealType, Device, IndexType > v;
       v. bind( data, 10 );
       for( int i = 0; i < 10; i ++ )
          data[ i ] = -2;
@@ -175,7 +170,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
    void testDifferenceMax()
    {
       RealType data1[ 10 ], data2[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v1, v2;
+      SharedVector< RealType, Device, IndexType > v1, v2;
       v1. bind( data1, 10 );
       v2. bind( data2, 10 );
       for( int i = 0; i < 10; i ++ )
@@ -189,7 +184,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
    void testDifferenceMin()
    {
       RealType data1[ 10 ], data2[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v1, v2;
+      SharedVector< RealType, Device, IndexType > v1, v2;
       v1. bind( data1, 10 );
       v2. bind( data2, 10 );
       for( int i = 0; i < 10; i ++ )
@@ -203,7 +198,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
    void testDifferenceAbsMax()
    {
       RealType data1[ 10 ], data2[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v1, v2;
+      SharedVector< RealType, Device, IndexType > v1, v2;
       v1. bind( data1, 10 );
       v2. bind( data2, 10 );
       for( int i = 0; i < 10; i ++ )
@@ -217,7 +212,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
    void testDifferenceAbsMin()
    {
       RealType data1[ 10 ], data2[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v1, v2;
+      SharedVector< RealType, Device, IndexType > v1, v2;
       v1. bind( data1, 10 );
       v2. bind( data2, 10 );
       for( int i = 0; i < 10; i ++ )
@@ -231,7 +226,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
    void testDifferenceLpNorm()
    {
       RealType data1[ 10 ], data2[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v1, v2;
+      SharedVector< RealType, Device, IndexType > v1, v2;
       v1. bind( data1, 10 );
       v2. bind( data2, 10 );
       for( int i = 0; i < 10; i ++ )
@@ -240,14 +235,14 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
          data2[ i ] = 1;
       }
       CPPUNIT_ASSERT( v1. differenceLpNorm( v2, 1.0 ) == 20.0 );
-      CPPUNIT_ASSERT( v1. differenceLpNorm( v2, 2.0 ) == sqrt( 40.0 ) );
-      CPPUNIT_ASSERT( v1. differenceLpNorm( v2, 3.0 ) == pow( 80.0, 1.0/3.0 ) );
+      CPPUNIT_ASSERT( v1. differenceLpNorm( v2, 2.0 ) == ::sqrt( 40.0 ) );
+      CPPUNIT_ASSERT( v1. differenceLpNorm( v2, 3.0 ) == ::pow( 80.0, 1.0/3.0 ) );
    };
 
    void testDifferenceSum()
    {
       RealType data1[ 10 ], data2[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v1, v2;
+      SharedVector< RealType, Device, IndexType > v1, v2;
       v1. bind( data1, 10 );
       v2. bind( data2, 10 );
       for( int i = 0; i < 10; i ++ )
@@ -261,7 +256,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
    void testScalarMultiplication()
    {
       RealType data[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v;
+      SharedVector< RealType, Device, IndexType > v;
       v. bind( data, 10 );
       for( int i = 0; i < 10; i ++ )
          data[ i ] = i;
@@ -274,7 +269,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
    void testScalarProduct()
    {
       RealType data1[ 10 ], data2[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v1, v2;
+      SharedVector< RealType, Device, IndexType > v1, v2;
       v1. bind( data1, 10 );
       v2. bind( data2, 10 );
       data1[ 0 ] = -1;
@@ -290,7 +285,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
    void testalphaXPlusY()
    {
       RealType data1[ 10 ], data2[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v1, v2;
+      SharedVector< RealType, Device, IndexType > v1, v2;
       v1. bind( data1, 10 );
       v2. bind( data2, 10 );
       for( int i = 0; i < 10; i ++ )
@@ -306,7 +301,7 @@ class tnlSharedVectorTester : public CppUnit :: TestCase
    void testSaxmy()
    {
       RealType data1[ 10 ], data2[ 10 ];
-      tnlSharedVector< RealType, Device, IndexType > v1, v2;
+      SharedVector< RealType, Device, IndexType > v1, v2;
       v1. bind( data1, 10 );
       v2. bind( data2, 10 );
       for( int i = 0; i < 10; i ++ )

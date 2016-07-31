@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include <string.h>
 #include "polygonizer.h"
@@ -144,18 +137,18 @@ int POLYGONIZER :: Implicit( const SOLID* sld, RECIEVER* _reciever,
    bound_cr = cr;
    if( cube_stack. empty() && ! Init( solid -> Position(), solid, cb_size ) )
    {
-      cerr << "Can not find initial points for polygonization" << endl;
+      std::cerr << "Can not find initial points for polygonization" << std::endl;
       return 0;
    }
-   cout << "Starting polygonizer ... " << endl;
+   std::cout << "Starting polygonizer ... " << std::endl;
    /*VECTOR in( sld -> Position() ), out( sld -> Position() );
    if( ! Find_Point( 1, in, 1.0 ) ||
        ! Find_Point( 0, out, 1.0 ) )
       {
-         cerr << "Can not find initial points for polygonization" << endl;
+         std::cerr << "Can not find initial points for polygonization" << std::endl;
          return 0;
       }
-   cout << "Starting polygonizer ... " << endl;
+   std::cout << "Starting polygonizer ... " << std::endl;
    position = Compute_Surface_Point( in, out, solid -> Continuous_Function( in ) );
 
    CUBE *c = new CUBE( 0, 0, 0 );
@@ -168,7 +161,7 @@ int POLYGONIZER :: Implicit( const SOLID* sld, RECIEVER* _reciever,
    while( ! cube_stack. empty() )
    {
       c = cube_stack. top();
-      cout << "Current stack size is " << cube_stack. size() << " cubes. " << '\r' << flush;
+      std::cout << "Current stack size is " << cube_stack. size() << " cubes. " << '\r' << std::flush;
       cube_stack. pop();
       jkl = cube_stack. size();
       if( ! Triangulate_Cube( c ) )
@@ -177,19 +170,19 @@ int POLYGONIZER :: Implicit( const SOLID* sld, RECIEVER* _reciever,
          return 0;
       }
       Test_Face( c -> i - 1, c -> j, c -> k, c, L, LBN, LBF, LTN, LTF );
-      cout << "Current stack size is " << cube_stack. size() << " cubes. " << '\r' << flush;
+      std::cout << "Current stack size is " << cube_stack. size() << " cubes. " << '\r' << std::flush;
       Test_Face( c -> i + 1, c -> j, c -> k, c, R, RBN, RBF, RTN, RTF );
-      cout << "Current stack size is " << cube_stack. size() << " cubes. " << '\r' << flush;
+      std::cout << "Current stack size is " << cube_stack. size() << " cubes. " << '\r' << std::flush;
       Test_Face( c -> i, c -> j - 1, c -> k, c, B, LBN, LBF, RBN, RBF );
-      cout << "Current stack size is " << cube_stack. size() << " cubes. " << '\r' << flush;
+      std::cout << "Current stack size is " << cube_stack. size() << " cubes. " << '\r' << std::flush;
       Test_Face( c -> i, c -> j + 1, c -> k, c, T, LTN, LTF, RTN, RTF );
-      cout << "Current stack size is " << cube_stack. size() << " cubes. " << '\r' << flush;
+      std::cout << "Current stack size is " << cube_stack. size() << " cubes. " << '\r' << std::flush;
       Test_Face( c -> i, c -> j, c -> k - 1, c, N, LBN, LTN, RBN, RTN );
-      cout << "Current stack size is " << cube_stack. size() << " cubes. " << '\r' << flush;
+      std::cout << "Current stack size is " << cube_stack. size() << " cubes. " << '\r' << std::flush;
       Test_Face( c -> i, c -> j, c -> k + 1, c, F, LBF, LTF, RBF, RTF );
-      cout << "Current stack size is " << cube_stack. size() << " cubes. " << '\r' << flush;
+      std::cout << "Current stack size is " << cube_stack. size() << " cubes. " << '\r' << std::flush;
    }
-   cout << endl;
+   std::cout << std::endl;
    Free_Memory();
    return 1;
 }
@@ -197,7 +190,7 @@ int POLYGONIZER :: Implicit( const SOLID* sld, RECIEVER* _reciever,
 int POLYGONIZER :: Triangulate_Cube( CUBE* cube )
 {
    #ifdef DBG_POLYGONIZER
-   cout << "Cube polygonize: " << cube -> i << " " << cube -> j << " " << cube -> k << endl;;
+   std::cout << "Cube polygonize: " << cube -> i << " " << cube -> j << " " << cube -> k << std::endl;;
    #endif
    int index = 0;
    // this is a index of cube in cube_table, it will be count by
@@ -305,7 +298,7 @@ int POLYGONIZER :: Check_Edge( CORNER* c1, CORNER* c2, VERTEX*& vertex )
 CORNER* POLYGONIZER :: Set_Corner( int i, int j, int k )
 {
    #ifdef DBG_POLYGONIZER
-      cout << "Set Corner index: " << i << " " << j << " " << k << endl;
+      std::cout << "Set Corner index: " << i << " " << j << " " << k << std::endl;
    #endif
    int index = hash_index( i, j, k );
    list< CORNER* >*& cl = corner_hash[ index ];
@@ -321,7 +314,7 @@ CORNER* POLYGONIZER :: Set_Corner( int i, int j, int k )
    VECTOR p = position + cube_size * tmp;
    double val = solid -> Continuous_Function( p );
    #ifdef DBG_POLYGONIZER
-   cout << "Set Corer: value " << val << endl;
+   std::cout << "Set Corer: value " << val << std::endl;
    #endif
    cr = new CORNER( i, j, k, p, val );
    cl -> push_back( cr );
@@ -331,7 +324,7 @@ CORNER* POLYGONIZER :: Set_Corner( int i, int j, int k )
 int POLYGONIZER :: Set_Center( int i, int j, int k )
 {
    #ifdef DBG_POLYGONIZER
-   cout << "Set Center: " << i << " " << j << " " << k << endl;
+   std::cout << "Set Center: " << i << " " << j << " " << k << std::endl;
    #endif
    list< CENTER* >*& cl = center_hash[ hash_index( i, j, k ) ];
    if( ! cl ) cl = new list< CENTER* >;
@@ -437,7 +430,7 @@ void POLYGONIZER :: Test_Face( int i, int j, int k, CUBE* old, int face,
    new_cube -> corners[ flip_bit( c3, bit ) ] = old -> corners[ c3 ];
    new_cube -> corners[ flip_bit( c4, bit ) ] = old -> corners[ c4 ];
    #ifdef DBG_POLYGONIZER
-   cout << "Test Face indexes: " << i << " " << j << " " << k << endl;
+   std::cout << "Test Face indexes: " << i << " " << j << " " << k << std::endl;
    #endif
    for( int n = 0; n < 8; n ++ )
       if( ! new_cube -> corners[ n ] )
@@ -455,7 +448,7 @@ int POLYGONIZER :: Find_Point( int sign, VECTOR& point, double size, const SOLID
    for( int i = 0; i < 10000; i ++ )
    {
       point = init + size * Random_Vector( ps, cr );
-      //cout << point << " - " << sld -> Continuous_Function( point ) << endl;
+      //cout << point << " - " << sld -> Continuous_Function( point ) << std::endl;
       if( sign == ( sld -> Sign_Function( point ) == 1 ) )
          return 1;
       size *= 1.005;

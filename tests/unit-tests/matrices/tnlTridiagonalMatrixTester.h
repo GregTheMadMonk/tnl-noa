@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLTRIDIAGONALMATRIXTESTER_H_
 #define TNLTRIDIAGONALMATRIXTESTER_H_
@@ -24,16 +17,18 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <matrices/tnlTridiagonalMatrix.h>
-#include <core/tnlFile.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/matrices/tnlTridiagonalMatrix.h>
+#include <TNL/File.h>
+#include <TNL/Vectors/Vector.h>
+
+using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
 class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
 {
    public:
    typedef tnlTridiagonalMatrix< RealType, Device, IndexType > MatrixType;
-   typedef tnlVector< RealType, Device, IndexType > VectorType;
+   typedef Vectors::Vector< RealType, Device, IndexType > VectorType;
    typedef tnlTridiagonalMatrixTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
@@ -83,7 +78,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       m.setValue( 1.0 );
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
-            if( abs( i - j ) <= 1 )
+            if( std::abs( i - j ) <= 1 )
                CPPUNIT_ASSERT( m.getElement( i, j ) == 1.0 );
             else
                CPPUNIT_ASSERT( m.getElement( i, j ) == 0.0 );
@@ -112,7 +107,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
          for( int j = 0; j < 10; j++ )
-            if( abs( i - j ) <= 1 )
+            if( std::abs( i - j ) <= 1 )
                m.addElement( i, j, 1 );
 
       for( int i = 0; i < 10; i++ )
@@ -120,7 +115,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
             if( i == j )
                CPPUNIT_ASSERT( m.getElement( i, i ) == i + 1 );
             else
-               if( abs( i - j ) == 1 )
+               if( std::abs( i - j ) == 1 )
                   CPPUNIT_ASSERT( m.getElement( i, j ) == 1 );
                else
                   CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
@@ -134,8 +129,8 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
 
-      tnlVector< IndexType, tnlHost, IndexType > columns;
-      tnlVector< RealType, tnlHost, IndexType > values;
+      Vectors::Vector< IndexType, Devices::Host, IndexType > columns;
+      Vectors::Vector< RealType, Devices::Host, IndexType > values;
       columns.setSize( 3 );
       values.setSize( 3 );
       for( IndexType i = 4; i <= 6; i++ )
@@ -183,7 +178,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       m.setDimensions( 10, 10 );
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
-            if( abs( i - j ) <= 1 )
+            if( std::abs( i - j ) <= 1 )
                m.setElement( i, j, i*size + j );
 
       MatrixType m2;
@@ -193,7 +188,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
 
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
-            if( abs( i - j ) <= 1 )
+            if( std::abs( i - j ) <= 1 )
                CPPUNIT_ASSERT( m2.getElement( i, j ) == m.getElement( i, j ) + 3.0 );
             else
                CPPUNIT_ASSERT( m2.getElement( i, j ) == 0.0 );
@@ -202,7 +197,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
 
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
-            if( abs( i - j ) <= 1 )
+            if( std::abs( i - j ) <= 1 )
                CPPUNIT_ASSERT( m2.getElement( i, j ) == 0.5*m.getElement( i, j ) );
             else
                CPPUNIT_ASSERT( m2.getElement( i, j ) == 0.0 );
@@ -215,7 +210,7 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
       m.setDimensions( 10, 10 );
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
-            if( abs( i - j ) <= 1 )
+            if( std::abs( i - j ) <= 1 )
                m.setElement( i, j, i*size + j );
 
       MatrixType mTransposed;

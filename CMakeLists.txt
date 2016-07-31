@@ -118,11 +118,19 @@ if( WITH_CUDA STREQUAL "yes" )
         ####
         # Check for cuBLAS
         #
-        if( WITH_CUBLAS STREQUAL "yes" ) 
-            message( "Enabling CUBLAS." )
-            set( HAVE_CUBLAS TRUE)
-            set( HAVE_CUBLAS "#define HAVE_CUBLAS 1" )
-        endif( WITH_CUBLAS STREQUAL "yes" )       
+        if( NOT WITH_CUBLAS STREQUAL "no" )
+            find_path( CUBLAS_INCLUDE_DIR cublas_v2.h
+                       /usr/local/cuda/include
+                       ${CUDA_INCLUDE_DIR}
+                       DOC "CUBLAS headers." )
+            if( ${CUBLAS_INCLUDE_DIR} STREQUAL "CUBLAS_INCLUDE_DIR-NOTFOUND" )
+                message( "CUBLAS not found." )
+                set( HAVE_CUBLAS "//#define HAVE_CUBLAS 1" )
+            else()
+                message( "CUBLAS found. -- ${CUBLAS_INCLUDE_DIR}" )
+                set( HAVE_CUBLAS "#define HAVE_CUBLAS 1" )
+            endif()
+        endif( NOT WITH_CUBLAS STREQUAL "no" )
 
         ####
         # Check for CUSP
@@ -142,7 +150,6 @@ if( WITH_CUDA STREQUAL "yes" )
         # Check for CUSPARSE
         #
         if( NOT WITH_CUSPARSE STREQUAL "no" )
-        
            find_path( CUSPARSE_INCLUDE_DIR cusparse.h
                       /usr/local/cuda/include                   
                       ${CUDA_INCLUDE_DIR}  
@@ -348,8 +355,8 @@ set( LD_TEST_FLAGS "-lgcov -coverage" )
 set( configDirectory \"${CMAKE_INSTALL_PREFIX}/share/tnl-${tnlVersion}/\")
 set( sourceDirectory \"${PROJECT_SOURCE_DIR}/\" )
 set( testsDirectory \"${PROJECT_TESTS_PATH}/\" )
-CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/tnlConfig.h" )
-INSTALL( FILES ${PROJECT_BUILD_PATH}/tnlConfig.h DESTINATION include/tnl-${tnlVersion} )
+CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/TNL/tnlConfig.h" )
+INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/tnlConfig.h DESTINATION include/tnl-${tnlVersion} )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )

@@ -6,31 +6,24 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNL_BENCHMARK_SIMPLE_HEAT_EQUATION_H
 #define	TNL_BENCHMARK_SIMPLE_HEAT_EQUATION_H
 
 #include <iostream>
 #include <stdio.h>
-#include <config/tnlConfigDescription.h>
-#include <config/tnlParameterContainer.h>
-#include <core/tnlTimer.h>
-#include <core/tnlTimerRT.h>
-#include <core/tnlCuda.h>
-#include <core/vectors/tnlStaticVector.h>
-#include <mesh/tnlGrid.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Timer.h>
+#include <TNL/Devices/Cuda.h>
+#include <TNL/Vectors/StaticVector.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Functions/tnlMeshFunction.h>
 #include "pure-c-rhs.h"
 
 using namespace std;
+using namespace TNL;
 
 
 
@@ -201,10 +194,10 @@ __global__ void updateKernel( Real* u,
 {
    const Index blockOffset = blockIdx.x * blockDim.x;
    Index idx = blockOffset + threadIdx.x;
-   
+ 
    if( idx < dofs )
       u[ idx ] += aux[ idx ];
-   
+ 
    __syncthreads();
 
    const Index rest = dofs - blockOffset;
@@ -226,11 +219,11 @@ bool writeFunction(
    const Real& originX,
    const Real& originY )
 {
-   fstream file;
-   file.open( fileName, ios::out );
+   std::fstream file;
+   file.open( fileName, std::ios::out );
    if( ! file )
    {
-      cerr << "Unable to open file " << fileName << "." << endl;
+      std::cerr << "Unable to open file " << fileName << "." << std::endl;
       return false;
    }
    for( Index i = 0; i < xSize; i++ )
@@ -242,7 +235,7 @@ bool writeFunction(
 }
 
 template< typename Real, typename Index >
-bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
+bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
                             tnlTimer& timer,
                             tnlTimer& computationTimer,
                             tnlTimer& updateTimer )
@@ -258,19 +251,19 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
    const Index dofsCount = gridXSize * gridYSize;
    dim3 cudaUpdateBlocks( dofsCount / 256 + ( dofsCount % 256 != 0 ) );
    dim3 cudaUpdateBlockSize( 256 );
-   
+ 
    /****
     * Initiation
-    */   
+    */
    Real* u = new Real[ dofsCount ];
    Real* aux = new Real[ dofsCount ];
    Real* max_du = new Real[ cudaUpdateBlocks.x ];
    if( ! u || ! aux )
    {
-      cerr << "I am not able to allocate grid function for grid size " << gridXSize << "x" << gridYSize << "." << endl;
+      std::cerr << "I am not able to allocate grid function for grid size " << gridXSize << "x" << gridYSize << "." << std::endl;
       return false;
    }
-   
+ 
    const Real hx = domainXSize / ( Real ) gridXSize;
    const Real hy = domainYSize / ( Real ) gridYSize;
    const Real hx_inv = 1.0 / ( hx * hx );
@@ -279,19 +272,19 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
    {
       tau = hx < hy ? hx * hx : hy * hy;
       if( verbose )
-         cout << "Setting tau to " << tau << "." << endl;
+        std::cout << "Setting tau to " << tau << "." << std::endl;
    }
-   
+ 
    /****
     * Initial condition
     */
    if( verbose )
-      cout << "Setting the initial condition ... " << endl;
+     std::cout << "Setting the initial condition ... " << std::endl;
    for( Index j = 0; j < gridYSize; j++ )
       for( Index i = 0; i < gridXSize; i++ )
       {
-         const Real x = i * hx - domainXSize / 2.0;      
-         const Real y = j * hy - domainYSize / 2.0;      
+         const Real x = i * hx - domainXSize / 2.0;
+         const Real y = j * hy - domainYSize / 2.0;
          u[ j * gridXSize + i ] = exp( - sigma * ( x * x + y * y ) );
       }
    
@@ -307,10 +300,10 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
    cudaMalloc( &cuda_max_du, cudaUpdateBlocks.x * sizeof( Real ) );
    if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
    {
-      cerr << "Allocation failed. " << cudaErr << endl;
+      std::cerr << "Allocation failed. " << cudaErr << std::endl;
       return false;
    }
-   tnlVector< Real, tnlCuda, Index > vecAux;
+   Vectors::Vector< Real, Devices::Cuda, Index > vecAux;
    vecAux.bind( cuda_aux, gridXSize * gridYSize );
    vecAux.setValue( 0.0 );   
    cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
@@ -323,8 +316,8 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
    dim3 cudaBlockSize( 16, 16 );
    dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
                       gridYSize / 16 + ( gridYSize % 16 != 0 ) );
-   cout << "Setting grid size to " << cudaGridSize.x << "," << cudaGridSize.y << "," << cudaGridSize.z << endl;
-   cout << "Setting block size to " << cudaBlockSize.x << "," << cudaBlockSize.y << "," << cudaBlockSize.z << endl;
+   std::cout << "Setting grid size to " << cudaGridSize.x << "," << cudaGridSize.y << "," << cudaGridSize.z << std::endl;
+   std::cout << "Setting block size to " << cudaBlockSize.x << "," << cudaBlockSize.y << "," << cudaBlockSize.z << std::endl;
 
    if( verbose )
       cout << "Starting the solver main loop..." << endl;   
@@ -333,7 +326,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
    computationTimer.reset();
    updateTimer.reset();
    timer.start();
-   Real time( 0.0 );   
+   Real time( 0.0 );
    Index iteration( 0 );
    while( time < finalTime )
    {
@@ -352,12 +345,12 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
       updateTimer.start();
       /****
        * Update
-       */            
-      //cout << "Update ... " << endl;
+       */
+      //cout << "Update ... " << std::endl;
       updateKernel<<< cudaUpdateBlocks, cudaUpdateBlockSize >>>( cuda_u, cuda_aux, cuda_max_du, dofsCount );
       if( cudaGetLastError() != cudaSuccess )
       {
-         cerr << "Update failed." << endl;
+         std::cerr << "Update failed." << std::endl;
          return false;
       }
       /*cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
@@ -369,7 +362,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
       cudaMemcpy( max_du, cuda_max_du, cudaUpdateBlocks.x * sizeof( Real ), cudaMemcpyDeviceToHost );
       if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
       {
-         cerr << "Copying max_du failed. " << cudaErr << endl;
+         std::cerr << "Copying max_du failed. " << cudaErr << std::endl;
          return false;
       }
       Real absMax( 0.0 );
@@ -392,15 +385,15 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
    /****
     * Saving the result
     */
-   typedef tnlGrid< 2, Real, tnlCuda, Index > GridType;
+   typedef tnlGrid< 2, Real, Devices::Cuda, Index > GridType;
    typedef typename GridType::VertexType VertexType;
    typedef tnlSharedPointer< GridType > GridPointer;
    GridPointer gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
    gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
-   tnlVector< Real, tnlCuda, Index > vecU;
+   Vectors::Vector< Real, Devices::Cuda, Index > vecU;
    vecU.bind( cuda_u, gridXSize * gridYSize );
-   tnlMeshFunction< GridType > meshFunction;
+   Functions::tnlMeshFunction< GridType > meshFunction;
    meshFunction.bind( gridPointer, vecU );
    meshFunction.save( "simple-heat-equation-result.tnl" );
    
@@ -408,7 +401,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
     * Freeing allocated memory
     */
    if( verbose )
-      cout << "Freeing allocated memory..." << endl;
+     std::cout << "Freeing allocated memory..." << std::endl;
    delete[] u;
    delete[] aux;
    delete[] max_du;
@@ -420,7 +413,7 @@ bool solveHeatEquationCuda( const tnlParameterContainer& parameters,
 #endif
 
 template< typename Real, typename Index >
-bool solveHeatEquationHost( const tnlParameterContainer& parameters,
+bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
                             tnlTimer& timer,
                             tnlTimer& computationTimer,
                             tnlTimer& updateTimer )
@@ -433,15 +426,15 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters,
    Real tau = parameters.getParameter< double >( "time-step" );
    const Real finalTime = parameters.getParameter< double >( "final-time" );
    const bool verbose = parameters.getParameter< bool >( "verbose" );
-   
+ 
    /****
     * Initiation
-    */   
+    */
    Real* __restrict__ u = new Real[ gridXSize * gridYSize ];
    Real* __restrict__ aux = new Real[ gridXSize * gridYSize ];
    if( ! u || ! aux )
    {
-      cerr << "I am not able to allocate grid function for grid size " << gridXSize << "x" << gridYSize << "." << endl;
+      std::cerr << "I am not able to allocate grid function for grid size " << gridXSize << "x" << gridYSize << "." << std::endl;
       return false;
    }
    const Index dofsCount = gridXSize * gridYSize;
@@ -453,22 +446,22 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters,
    {
       tau = hx < hy ? hx * hx : hy * hy;
       if( verbose )
-         cout << "Setting tau to " << tau << "." << endl;
+        std::cout << "Setting tau to " << tau << "." << std::endl;
    }
-   
+ 
    /****
     * Initial condition
     */
    if( verbose )
-      cout << "Setting the initial condition ... " << endl;
+     std::cout << "Setting the initial condition ... " << std::endl;
    for( Index j = 0; j < gridYSize; j++ )
       for( Index i = 0; i < gridXSize; i++ )
       {
-         const Real x = i * hx - domainXSize / 2.0;      
-         const Real y = j * hy - domainYSize / 2.0;      
+         const Real x = i * hx - domainXSize / 2.0;
+         const Real y = j * hy - domainYSize / 2.0;
          u[ j * gridXSize + i ] = exp( - sigma * ( x * x + y * y ) );
       }
-   
+ 
    /****
     * Explicit Euler solver
     */
@@ -479,7 +472,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters,
    computationTimer.reset();
    updateTimer.reset();
    timer.start();
-   Real time( 0.0 );   
+   Real time( 0.0 );
    Index iteration( 0 );
    while( time < finalTime )
    {
@@ -500,7 +493,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters,
          aux[ i ] = 0.0; //u[ gridXSize + i ];
          aux[ ( gridYSize - 1 ) * gridXSize + i ] = 0.0; //u[ ( gridYSize - 2 ) * gridXSize + i ];
       }
-      
+ 
       /*for( Index j = 1; j < gridYSize - 1; j++ )
          for( Index i = 1; i < gridXSize - 1; i++ )
          {
@@ -521,7 +514,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters,
                                      ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
          }
       computationTimer.stop();
-      
+ 
       updateTimer.start();
       Real absMax( 0.0 ), residue( 0.0 );
       for( Index i = 0; i < dofsCount; i++ )
@@ -529,29 +522,29 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters,
          const Real add = currentTau * aux[ i ];
          u[ i ] += add;
          residue += fabs( add );
-         /*const Real a = fabs( aux[ i ] );         
+         /*const Real a = fabs( aux[ i ] );
          absMax = a > absMax ? a : absMax;*/
       }
       updateTimer.stop();
-      
+ 
       time += currentTau;
       iteration++;
       if( verbose && iteration % 10000 == 0 )
-         cout << "Iteration: " << iteration << "\t \t Time:" << time << "    \r" << flush;
+        std::cout << "Iteration: " << iteration << "\t \t Time:" << time << "    \r" << std::flush;
    }
    timer.stop();
    
    /****
     * Saving the result
     */
-   typedef tnlGrid< 2, Real, tnlHost, Index > GridType;
+   typedef tnlGrid< 2, Real, Devices::Host, Index > GridType;
    typedef typename GridType::VertexType VertexType;
    tnlSharedPointer< GridType > gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
    gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
-   tnlVector< Real, tnlHost, Index > vecU;
+   Vectors::Vector< Real, Devices::Host, Index > vecU;
    vecU.bind( u, gridXSize * gridYSize );
-   tnlMeshFunction< GridType > meshFunction;
+   Functions::tnlMeshFunction< GridType > meshFunction;
    meshFunction.bind( gridPointer, vecU );
    meshFunction.save( "simple-heat-equation-result.tnl" );
    
@@ -559,7 +552,7 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters,
     * Freeing allocated memory
     */
    if( verbose )
-      cout << "Freeing allocated memory..." << endl;
+     std::cout << "Freeing allocated memory..." << std::endl;
    delete[] u;
    delete[] aux;
    return true;
@@ -567,12 +560,12 @@ bool solveHeatEquationHost( const tnlParameterContainer& parameters,
 
 int main( int argc, char* argv[] )
 {
-   tnlConfigDescription config;
-   config.addEntry< tnlString >( "device", "Device the computation will run on.", "host" );
-      config.addEntryEnum< tnlString >( "host" );
-#ifdef HAVE_CUDA      
-      config.addEntryEnum< tnlString >( "cuda" );
-#endif      
+   Config::ConfigDescription config;
+   config.addEntry< String >( "device", "Device the computation will run on.", "host" );
+      config.addEntryEnum< String >( "host" );
+#ifdef HAVE_CUDA
+      config.addEntryEnum< String >( "cuda" );
+#endif
    config.addEntry< int >( "grid-x-size", "Grid size along x-axis.", 100 );
    config.addEntry< int >( "grid-y-size", "Grid size along y-axis.", 100 );
    config.addEntry< double >( "domain-x-size", "Domain size along x-axis.", 2.0 );
@@ -581,14 +574,14 @@ int main( int argc, char* argv[] )
    config.addEntry< double >( "time-step", "Time step. By default it is proportional to one over space step square.", 0.0 );
    config.addEntry< double >( "final-time", "Final time of the simulation.", 1.0 );
    config.addEntry< bool >( "verbose", "Verbose mode.", true );
-   
-   tnlParameterContainer parameters;
+ 
+   Config::ParameterContainer parameters;
    if( ! parseCommandLine( argc, argv, config, parameters ) )
       return EXIT_FAILURE;
    
    tnlTimer timer, computationTimer, updateTimer;
    
-   tnlString device = parameters.getParameter< tnlString >( "device" );
+   String device = parameters.getParameter< String >( "device" );
    if( device == "host" &&
        ! solveHeatEquationHost< double, int >( parameters, timer, computationTimer, updateTimer  ) )
       return EXIT_FAILURE;
@@ -601,7 +594,7 @@ int main( int argc, char* argv[] )
    const bool verbose = parameters.getParameter< bool >( "verbose" );
    if( verbose )      
       cout << endl << "Finished..." << endl;
-   tnlLogger logger( 72, std::cout );
+   Logger logger( 72, std::cout );
    logger.writeSeparator();
    logger.writeParameter< const char* >( "Compute time:", "" );
    timer.writeLog( logger, 1 );

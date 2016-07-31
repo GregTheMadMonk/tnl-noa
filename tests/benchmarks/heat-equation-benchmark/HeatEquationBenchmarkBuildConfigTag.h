@@ -1,7 +1,8 @@
-#ifndef HeatEquationBenchmarkBUILDCONFIGTAG_H_
-#define HeatEquationBenchmarkBUILDCONFIGTAG_H_
+#pragma once
 
-#include <solvers/tnlBuildConfigTags.h>
+#include <TNL/solvers/tnlBuildConfigTags.h>
+
+namespace TNL {
 
 class HeatEquationBenchmarkBuildConfigTag{};
 
@@ -40,4 +41,5 @@ template<> struct tnlConfigTagTimeDiscretisation< HeatEquationBenchmarkBuildConf
 template<> struct tnlConfigTagExplicitSolver< HeatEquationBenchmarkBuildConfigTag, tnlExplicitEulerSolverTag >{ enum { enabled = true }; };
 template<> struct tnlConfigTagExplicitSolver< HeatEquationBenchmarkBuildConfigTag, tnlExplicitMersonSolverTag >{ enum { enabled = false }; };
 
-#endif /* HeatEquationBenchmarkBUILDCONFIGTAG_H_ */
+} // namespace TNL
+

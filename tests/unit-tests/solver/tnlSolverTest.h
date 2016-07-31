@@ -6,22 +6,13 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLSOLVERTEST_H_
 #define TNLSOLVERTEST_H_
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 #include <iostream>
-
-using namespace std;
 
 #ifdef HAVE_CPPUNIT
 
@@ -30,6 +21,7 @@ using namespace std;
 #include "tnlSolverTester.h"
 
 using namespace std;
+using namespace TNL;
 
 int main( int argc, char* argv[] )
 {
@@ -40,7 +32,7 @@ int main( int argc, char* argv[] )
 #else
 int main( int argc, char* argv[] )
 {
-   cerr << "UNIT TESTS ARE DISABLED." << endl;
+   std::cerr << "UNIT TESTS ARE DISABLED." << std::endl;
    return 0;
 }
 #endif

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMULTIARRAYTESTER_H_
 #define TNLMULTIARRAYTESTER_H_
@@ -25,19 +18,21 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/arrays/tnlMultiArray.h>
-#include <core/tnlFile.h>
+#include <TNL/Arrays/MultiArray.h>
+#include <TNL/File.h>
+
+using namespace TNL;
 
 #ifdef HAVE_CUDA
 template< typename ElementType, typename IndexType >
-__global__ void testSetGetElementKernel( tnlMultiArray< 1, ElementType, tnlCuda, IndexType >* u )
+__global__ void testSetGetElementKernel( tnlMultiArray< 1, ElementType, Devices::Cuda, IndexType >* u )
 {
    if( threadIdx.x < ( *u ).getDimensions().x() )
       ( *u )( threadIdx.x ) = threadIdx.x;
 }
 
 template< typename ElementType, typename IndexType >
-__global__ void testSetGetElementKernel( tnlMultiArray< 2, ElementType, tnlCuda, IndexType >* u )
+__global__ void testSetGetElementKernel( tnlMultiArray< 2, ElementType, Devices::Cuda, IndexType >* u )
 {
    if( threadIdx.x < ( *u ).getDimensions().x() &&
        threadIdx.x < ( *u ).getDimensions().y() )
@@ -45,7 +40,7 @@ __global__ void testSetGetElementKernel( tnlMultiArray< 2, ElementType, tnlCuda,
 }
 
 template< typename ElementType, typename IndexType >
-__global__ void testSetGetElementKernel( tnlMultiArray< 3, ElementType, tnlCuda, IndexType >* u )
+__global__ void testSetGetElementKernel( tnlMultiArray< 3, ElementType, Devices::Cuda, IndexType >* u )
 {
    if( threadIdx.x < ( *u ).getDimensions().x() &&
        threadIdx.x < ( *u ).getDimensions().y() &&
@@ -86,50 +81,52 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testConstructorDestructor()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
    }
 
    void testSetSize()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u, v;
       u. setDimensions( 10 );
       v. setDimensions( 10 );
    }
 
-   void setDiagonalElement( tnlMultiArray< 1, ElementType, Device, IndexType >& u,
+   void setDiagonalElement( Arrays::tnlMultiArray< 1, ElementType, Device, IndexType >& u,
                             const IndexType& i,
                             const ElementType& v )
    {
       u.setElement( i, v );
    }
 
-   void setDiagonalElement( tnlMultiArray< 2, ElementType, Device, IndexType >& u,
+   void setDiagonalElement( Arrays::tnlMultiArray< 2, ElementType, Device, IndexType >& u,
                             const IndexType& i,
                             const ElementType& v )
    {
       u.setElement( i, i, v );
    }
 
-   void setDiagonalElement( tnlMultiArray< 3, ElementType, Device, IndexType >& u,
+   void setDiagonalElement( Arrays::tnlMultiArray< 3, ElementType, Device, IndexType >& u,
                             const IndexType& i,
                             const ElementType& v )
    {
       u.setElement( i, i, i, v );
    }
-   
-   IndexType getDiagonalElement( tnlMultiArray< 1, ElementType, Device, IndexType >& u,
+ 
+   IndexType getDiagonalElement( Arrays::tnlMultiArray< 1, ElementType, Device, IndexType >& u,
                                  const IndexType& i )
    {
       return u.getElement( i );
    }
-   
-   IndexType getDiagonalElement( tnlMultiArray< 2, ElementType, Device, IndexType >& u,
+ 
+   IndexType getDiagonalElement( Arrays::tnlMultiArray< 2, ElementType, Device, IndexType >& u,
                                  const IndexType& i )
    {
       return u.getElement( i, i );
    }
-   
-   IndexType getDiagonalElement( tnlMultiArray< 3, ElementType, Device, IndexType >& u,
+ 
+   IndexType getDiagonalElement( Arrays::tnlMultiArray< 3, ElementType, Device, IndexType >& u,
                                  const IndexType& i )
    {
       return u.getElement( i, i, i );
@@ -138,20 +135,21 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testSetGetElement()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
       u. setDimensions( 10 );
-      if( Device::getDevice() == tnlHostDevice )
+      if( std::is_same< Device, Devices::Host >::value )
       {
          for( int i = 0; i < 10; i ++ )
             this->setDiagonalElement( u, i, i  );
       }
-      if( Device::getDevice() == tnlCudaDevice )
+      if( std::is_same< Device, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
          tnlMultiArray< Dimensions, ElementType, Device, IndexType >* kernel_u =
-                  tnlCuda::passToDevice( u );
+                  Devices::Cuda::passToDevice( u );
          testSetGetElementKernel<<< 1, 16 >>>( kernel_u );
-         tnlCuda::freeFromDevice( kernel_u );
+         Devices::Cuda::freeFromDevice( kernel_u );
          CPPUNIT_ASSERT( checkCudaDevice );
 #endif
       }
@@ -161,6 +159,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testComparisonOperator()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u, v, w;
       u.setDimensions( 10 );
       v.setDimensions( 10 );
@@ -182,6 +181,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testEquivalenceOperator()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > v;
       u. setDimensions( 10 );
@@ -195,6 +195,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testGetSize()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
       const int maxSize = 10;
       for( int i = 1; i < maxSize; i ++ )
@@ -205,6 +206,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testReset()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
       u.setDimensions( 100 );
       CPPUNIT_ASSERT( u. getDimensions().x() == 100 );
@@ -219,6 +221,7 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testSetSizeAndDestructor()
    {
+      using namespace TNL::Arrays;
       for( int i = 1; i < 100; i ++ )
       {
          tnlMultiArray< Dimensions, ElementType, Device, IndexType > u;
@@ -228,12 +231,13 @@ class tnlMultiArrayTester : public CppUnit :: TestCase
 
    void testSaveAndLoad()
    {
+      using namespace TNL::Arrays;
       tnlMultiArray< Dimensions, ElementType, Device, IndexType > v;
       const int size( 10 );
       CPPUNIT_ASSERT( v. setDimensions( size ) );
       for( int i = 0; i < size; i ++ )
          setDiagonalElement( v, i, 3.14147 );
-      tnlFile file;
+      File file;
       file. open( "test-file.tnl", tnlWriteMode );
       CPPUNIT_ASSERT( v. save( file ) );
       file. close();

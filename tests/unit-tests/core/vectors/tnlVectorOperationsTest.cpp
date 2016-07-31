@@ -1,27 +1,22 @@
 /***************************************************************************
-                          tnlVectorOperationsTest.cpp  -  description
+                          VectorOperationsTest.cpp  -  description
                              -------------------
     begin                : Jul 15, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #include "tnlVectorOperationsTester.h"
 #include "../../tnlUnitTestStarter.h"
-#include <core/tnlHost.h>
+#include <TNL/Devices/Host.h>
+
+using namespace TNL;
 
 int main( int argc, char* argv[] )
 {
-   if( ! tnlUnitTestStarter :: run< tnlVectorOperationsTester< double, tnlHost > >() )
+   if( ! tnlUnitTestStarter :: run< VectorOperationsTester< double, Devices::Host > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

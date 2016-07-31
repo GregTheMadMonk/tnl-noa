@@ -53,4 +53,4 @@ double& operator *=(const QuadDouble&);
 double& operator /=(const QuadDouble&);*/
 
 QuadDouble abs(const QuadDouble&);
-QuadDouble sqrt(const QuadDouble&);
+QuadDouble ::sqrt(const QuadDouble&);

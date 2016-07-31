@@ -3,7 +3,7 @@ ADD_SUBDIRECTORY( heat-equation-benchmark )
 
 IF( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( tnl-cuda-benchmarks${debugExt} tnl-cuda-benchmarks.cu )
-    if( WITH_CUBLAS STREQUAL "yes" )
+    if( HAVE_CUBLAS STREQUAL "yes" )
         CUDA_ADD_CUBLAS_TO_TARGET( tnl-cuda-benchmarks${debugExt} )
     endif()
     TARGET_LINK_LIBRARIES( tnl-cuda-benchmarks${debugExt} tnl${debugExt}-${tnlVersion} ${CUSPARSE_LIBRARY} )                        

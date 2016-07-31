@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLSHAREDMEMORYTESTER_H_
 #define TNLSHAREDMEMORYTESTER_H_
@@ -23,8 +16,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlSharedMemory.h>
-#include <core/tnlFile.h>
+#include <TNL/core/tnlSharedMemory.h>
+#include <TNL/File.h>
 
 template< typename Device > class tnlSharedMemoryTester : public CppUnit :: TestCase
 {
@@ -52,7 +45,7 @@ template< typename Device > class tnlSharedMemoryTester : public CppUnit :: Test
    {
       tnlSharedMemory< double > sharedMemory( 1234567, 100, true );
       sharedMemory. setReadingCounter( 0 );
-      sharedMemory. setWritingCounter( 0 );
+      sharedMemory. std::setwritingCounter( 0 );
       double* data = sharedMemory. getData();
       for( int i = 0; i < 100; i ++ )
          data[ i ] = 3.14567;
@@ -67,7 +60,7 @@ template< typename Device > class tnlSharedMemoryTester : public CppUnit :: Test
       CPPUNIT_ASSERT( sharedMemory. getReadingCounter() == 1 );
       CPPUNIT_ASSERT( sharedMemory. getWritingCounter() == 1 );
       sharedMemory. setReadingCounter( 2 );
-      sharedMemory. setWritingCounter( 2 );
+      sharedMemory. std::setwritingCounter( 2 );
       for( int i = 0; i < 100; i ++ )
          data[ i ] = 3.14567;
       CPPUNIT_ASSERT( sharedMemory. getReadingCounter() == 2 );

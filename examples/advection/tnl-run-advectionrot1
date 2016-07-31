@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+tnl-grid-setup --dimensions 2 \
+               --origin-x 0.0 \
+               --origin-y 0.0 \
+               --proportions-x 10.0 \
+               --proportions-y 10.0 \
+               --size-x 100 \
+               --size-y 100 \
+ 
+#tnl-init --test-function sin-wave \
+#         --output-file init.tnl
+./advection --time-discretisation explicit \
+	      --time-step 1.0e-2 \
+              --boundary-conditions-constant 0 \
+              --discrete-solver euler \
+              --snapshot-period 0.1 \
+              --final-time 1.0 \
+	      --artifical-viscosity 5.0 \
+	      --begin sin_square \
+	      --advection-speedX 2.0 \
+	      --advection-speedY 2.0 \
+              --move rotation \
+
+tnl-view --mesh mesh.tnl --input-files *tnl     

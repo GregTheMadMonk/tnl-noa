@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLRgCSRMATRIXTESTER_H_
 #define TNLRgCSRMATRIXTESTER_H_
@@ -22,9 +15,9 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <matrices/tnlCSRMatrix.h>
+#include <TNL/matrices/tnlCSRMatrix.h>
 #include "tnlMatrixTester.h"
-#include <legacy/matrices/tnlRgCSRMatrix.h>
+#include <TNL/legacy/matrices/tnlRgCSRMatrix.h>
 
 template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
                                                  public tnlMatrixTester< T >
@@ -198,7 +191,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       this->setEmptyMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x, b1, b2;
+      Vector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -217,7 +210,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       this->setDiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x, b1, b2;
+      Vector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -236,7 +229,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       this->setTridiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x, b1, b2;
+      Vector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -255,7 +248,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       this->setUpperTriangularMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x, b1, b2;
+      Vector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -274,7 +267,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       this->setFullMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
 
-      tnlVector< T > x, b1, b2;
+      Vector< T > x, b1, b2;
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );
@@ -293,7 +286,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
       argcsrMatrix. copyFrom( csrMatrix );
       const int size = csrMatrix. getRows();
 
-      tnlVector< T > x( "x" ), b1( "b1" ), b2( "b2" );
+      Vector< T > x( "x" ), b1( "b1" ), b2( "b2" );
       x. setSize( size );
       b1. setSize( size );
       b2. setSize( size );

@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLCOMMUNICATORTESTER_H_
 #define TNLCOMMUNICATORTESTER_H_
@@ -23,8 +16,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlCommunicator.h>
-#include <core/tnlFile.h>
+#include <TNL/core/tnlCommunicator.h>
+#include <TNL/File.h>
 
 template< typename Device > class tnlCommunicatorTester : public CppUnit :: TestCase
 {
@@ -80,14 +73,14 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
 
    void testCommunicatorInitiation()
    {
-      /*tnlCommunicator< tnlHost > com;
+      /*tnlCommunicator< Devices::Host > com;
       com. setCommunicationGroupSize( 8 );
       com. start();*/
    };
 
    void testCommunicatorSendReceive()
    {
-      tnlCommunicator< 1, tnlHost > com;
+      tnlCommunicator< 1, Devices::Host > com;
       com. setCommunicationGroupSize( 2 );
       com. start();
       int dataSend, dataReceive;
@@ -101,7 +94,7 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
       if( com. getDeviceId() == 1 )
       {
          com. receive( &dataReceive, 0 );
-         cerr << "Received data = " << dataReceive << endl;
+         std::cerr << "Received data = " << dataReceive << std::endl;
          CPPUNIT_ASSERT( dataReceive == 721 );
          com. send( &dataReceive, 0 );
       }
@@ -109,10 +102,10 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
 
    void testCommunicatorSendReceiveOnLongVector()
    {
-      tnlCommunicator< 1, tnlHost > com;
+      tnlCommunicator< 1, Devices::Host > com;
       com. setCommunicationGroupSize( 2 );
       com. start();
-      tnlVector< double > sendingLongVector( "sendingLongVector" ), receivingLongVector( "receivingLongVector" );
+      Vector< double > sendingLongVector( "sendingLongVector" ), receivingLongVector( "receivingLongVector" );
       sendingLongVector. setSize( 100 );
       receivingLongVector. setSize( 100 );
       if( com. getDeviceId() == 0 )
@@ -131,7 +124,7 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
 
    void testCommunicatorBroadcast()
    {
-      tnlCommunicator< 1, tnlHost > com;
+      tnlCommunicator< 1, Devices::Host > com;
       com. setCommunicationGroupSize( 16 );
       com. start();
       double d( 3.14 );
@@ -144,10 +137,10 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
 
    void testCommunicatorBroadcastLongVector()
    {
-      tnlCommunicator< 1, tnlHost > com;
+      tnlCommunicator< 1, Devices::Host > com;
       com. setCommunicationGroupSize( 4 );
       com. start();
-      tnlVector< double, tnlHost > v( "broadcast-vector", 100 );
+      Vector< double, Devices::Host > v( "broadcast-vector", 100 );
       v. setValue( 3.14 );
       if( com. getDeviceId() == 0 )
          v. setValue( 2.73 );
@@ -158,7 +151,7 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
 
    void testCommunicatorReduction()
    {
-      tnlCommunicator< 1, tnlHost > com;
+      tnlCommunicator< 1, Devices::Host > com;
       const int groupSize = 16;
       com. setCommunicationGroupSize( groupSize );
       com. start();
@@ -171,18 +164,18 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
 
    void testCommunicatorScatter()
    {
-      tnlCommunicator< 1, tnlHost > com;
+      tnlCommunicator< 1, Devices::Host > com;
       const int groupSize = 4;
       com. setCommunicationGroupSize( groupSize );
       com. start();
-      tnlVector< double, tnlHost > originalData( "originalData" );
+      Vector< double, Devices::Host > originalData( "originalData" );
       if( com. getDeviceId() == 0 )
       {
          originalData. setSize( groupSize );
          for( int i = 0; i < groupSize; i ++ )
             originalData[ i ] = i;
       }
-      tnlVector< double, tnlHost > scatteredData( "scatteredData" );
+      Vector< double, Devices::Host > scatteredData( "scatteredData" );
       scatteredData. setSize( 1 );
       com. scatter( originalData,
                     scatteredData,
@@ -193,14 +186,14 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
 
    void testCommunicatorGather()
    {
-      tnlCommunicator< 1, tnlHost > com;
+      tnlCommunicator< 1, Devices::Host > com;
       const int groupSize = 16;
       com. setCommunicationGroupSize( groupSize );
       com. start();
-      tnlVector< double, tnlHost > originalData( "originalData" );
+      Vector< double, Devices::Host > originalData( "originalData" );
       originalData. setSize( 1 );
       originalData. setValue( com. getDeviceId() );
-      tnlVector< double, tnlHost > gatheredData( "gatheredData" );
+      Vector< double, Devices::Host > gatheredData( "gatheredData" );
       if( com. getDeviceId() == 0 )
          gatheredData. setSize( com. getCommunicationGroupSize() );
       com. gather( originalData,
@@ -209,7 +202,7 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
 
       if( com. getDeviceId() == 0 )
       {
-         cerr << gatheredData << endl;
+         std::cerr << gatheredData << std::endl;
          for( int i = 0; i < groupSize; i ++ )
             CPPUNIT_ASSERT( gatheredData[ i ] == i );
       }
@@ -217,7 +210,7 @@ template< typename Device > class tnlCommunicatorTester : public CppUnit :: Test
 
    void testCommunicatorBarrier()
    {
-      tnlCommunicator< 1, tnlHost > com;
+      tnlCommunicator< 1, Devices::Host > com;
       const int groupSize = 16;
       com. setCommunicationGroupSize( groupSize );
       com. start();

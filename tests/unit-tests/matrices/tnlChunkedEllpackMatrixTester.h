@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLCHUNKEDELLPACKMATRIXTESTER_H_
 #define TNLCHUNKEDELLPACKMATRIXTESTER_H_
@@ -24,9 +17,11 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <matrices/tnlChunkedEllpackMatrix.h>
-#include <core/tnlFile.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
+#include <TNL/File.h>
+#include <TNL/Vectors/Vector.h>
+
+using namespace TNL;
 
 template< typename RealType,
           typename Device,
@@ -37,8 +32,8 @@ class tnlChunkedEllpackMatrixTester : public CppUnit :: TestCase
 {
    public:
    typedef tnlChunkedEllpackMatrix< RealType, Device, IndexType > MatrixType;
-   typedef tnlVector< RealType, Device, IndexType > VectorType;
-   typedef tnlVector< IndexType, Device, IndexType > IndexVector;
+   typedef Vector< RealType, Device, IndexType > VectorType;
+   typedef Vector< IndexType, Device, IndexType > IndexVector;
    typedef tnlChunkedEllpackMatrixTester< RealType, Device, IndexType, SliceSize, ChunkSize > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 

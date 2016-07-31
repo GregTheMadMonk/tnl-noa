@@ -1,22 +1,22 @@
 #ifndef HeatEquationBenchmarkPROBLEM_IMPL_H_
 #define HeatEquationBenchmarkPROBLEM_IMPL_H_
 
-#include <core/mfilename.h>
-#include <matrices/tnlMatrixSetter.h>
-#include <solvers/pde/tnlExplicitUpdater.h>
-#include <solvers/pde/tnlLinearSystemAssembler.h>
-#include <solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/core/mfilename.h>
+#include <TNL/matrices/tnlMatrixSetter.h>
+#include <TNL/solvers/pde/tnlExplicitUpdater.h>
+#include <TNL/solvers/pde/tnlLinearSystemAssembler.h>
+#include <TNL/solvers/pde/tnlBackwardTimeDiscretisation.h>
 #include "TestGridEntity.h"
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return tnlString( "HeatEquationBenchmarkProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "HeatEquationBenchmarkProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
@@ -36,11 +36,11 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-tnlString
+String
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
-   return tnlString( "Heat Equation Benchmark" );
+   return String( "Heat Equation Benchmark" );
 }
 
 template< typename Mesh,
@@ -49,7 +49,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 void
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-writeProlog( tnlLogger& logger, const tnlParameterContainer& parameters ) const
+writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
    /****
     * Add data you want to have in the computation report (log) as follows:
@@ -63,18 +63,18 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setup( const tnlParameterContainer& parameters )
+setup( const Config::ParameterContainer& parameters )
 {
    if( ! this->boundaryConditionPointer->setup( parameters, "boundary-conditions-" ) ||
        ! this->rightHandSidePointer->setup( parameters, "right-hand-side-" ) )
       return false;
-   this->cudaKernelType = parameters.getParameter< tnlString >( "cuda-kernel-type" );
+   this->cudaKernelType = parameters.getParameter< String >( "cuda-kernel-type" );
 
-   if( std::is_same< DeviceType, tnlCuda >::value )
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
-      this->cudaBoundaryConditions = tnlCuda::passToDevice( *this->boundaryConditionPointer );
-      this->cudaRightHandSide = tnlCuda::passToDevice( *this->rightHandSidePointer );
-      this->cudaDifferentialOperator = tnlCuda::passToDevice( *this->differentialOperatorPointer );
+      this->cudaBoundaryConditions = Devices::Cuda::passToDevice( *this->boundaryConditionPointer );
+      this->cudaRightHandSide = Devices::Cuda::passToDevice( *this->rightHandSidePointer );
+      this->cudaDifferentialOperator = Devices::Cuda::passToDevice( *this->differentialOperatorPointer );
    }
    
    return true;
@@ -112,16 +112,16 @@ template< typename Mesh,
           typename DifferentialOperator >
 bool
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-setInitialCondition( const tnlParameterContainer& parameters,
+setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshPointer& meshPointer,
                      DofVectorPointer& dofsPointer,
                      MeshDependentDataType& meshDependentData )
 {
-   const tnlString& initialConditionFile = parameters.getParameter< tnlString >( "initial-condition" );
-   tnlMeshFunction< Mesh > u( meshPointer, dofsPointer );
+   const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
+   Functions::tnlMeshFunction< Mesh > u( meshPointer, dofsPointer );
    if( ! u.boundLoad( initialConditionFile ) )
    {
-      cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << endl;
+      std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
    }
    return true; 
@@ -165,11 +165,11 @@ makeSnapshot( const RealType& time,
               DofVectorPointer& dofsPointer,
               MeshDependentDataType& meshDependentData )
 {
-   cout << endl << "Writing output at time " << time << " step " << step << "." << endl;
+   std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
    this->bindDofs( meshPointer, dofsPointer );
    MeshFunctionType u;
    u.bind( meshPointer, *dofsPointer );
-   tnlString fileName;
+   String fileName;
    FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
    if( ! u.save( fileName ) )
       return false;
@@ -246,8 +246,8 @@ boundaryConditionsTemplatedCompact( const GridType* grid,
 {
    typename GridType::CoordinatesType coordinates;
 
-   coordinates.x() = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
+   coordinates.x() = begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
    
    GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
 
@@ -353,8 +353,8 @@ heatEquationTemplatedCompact( const GridType* grid,
    //TestEntity< GridType >& entity = entities[ threadIdx.y * 16 + threadIdx.x ];
    //new ( &entity ) TestEntity< GridType >( *grid, coordinates, entityOrientation, entityBasis );
    
-   coordinates.x() = begin.x() + ( gridXIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = begin.y() + ( gridYIdx * tnlCuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
+   coordinates.x() = begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;  
    
    //TestEntity< GridType > entity( *grid, coordinates, entityOrientation, entityBasis );
    GridEntity entity( *grid, coordinates, entityOrientation, entityBasis );
@@ -375,7 +375,7 @@ heatEquationTemplatedCompact( const GridType* grid,
          fu( entity ) = 
             ( *differentialOperator )( u, entity, time );
 
-         typedef tnlFunctionAdapter< GridType, RightHandSide > FunctionAdapter;
+         typedef Functions::tnlFunctionAdapter< GridType, RightHandSide > FunctionAdapter;
          fu( entity ) +=  FunctionAdapter::getValue( *rightHandSide, entity, time );
       }
    }
@@ -425,7 +425,7 @@ getExplicitRHS( const RealType& time,
     * You may use supporting mesh dependent data if you need.
     */
 
-   if( std::is_same< DeviceType, tnlHost >::value )
+   if( std::is_same< DeviceType, Devices::Host >::value )
    {
       const IndexType gridXSize = mesh->getDimensions().x();
       const IndexType gridYSize = mesh->getDimensions().y();
@@ -458,7 +458,7 @@ getExplicitRHS( const RealType& time,
                               ( u[ c - gridXSize ] - 2.0 * u[ c ] + u[ c + gridXSize ] ) * hy_inv );
          }
    }
-   if( std::is_same< DeviceType, tnlCuda >::value )
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
       #ifdef HAVE_CUDA         
       if( this->cudaKernelType == "pure-c" )
@@ -476,7 +476,7 @@ getExplicitRHS( const RealType& time,
          boundaryConditionsKernel<<< cudaGridSize, cudaBlockSize >>>( uDofs->getData(), fuDofs->getData(), gridXSize, gridYSize );
          if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
          {
-            cerr << "Setting of boundary conditions failed. " << cudaErr << endl;
+            std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
             return;
          }
 
@@ -488,7 +488,7 @@ getExplicitRHS( const RealType& time,
             ( uDofs->getData(), fuDofs->getData(), tau, hx_inv, hy_inv, gridXSize, gridYSize );
          if( cudaGetLastError() != cudaSuccess )
          {
-            cerr << "Laplace operator failed." << endl;
+            std::cerr << "Laplace operator failed." << std::endl;
             return;
          }
       }
@@ -506,21 +506,21 @@ getExplicitRHS( const RealType& time,
          CellType cell( mesh.template getData< DeviceType >() );
          dim3 cudaBlockSize( 16, 16 );
          dim3 cudaBlocks;
-         cudaBlocks.x = tnlCuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
-         cudaBlocks.y = tnlCuda::getNumberOfBlocks( end.y() - begin.y() + 1, cudaBlockSize.y );
-         const IndexType cudaXGrids = tnlCuda::getNumberOfGrids( cudaBlocks.x );
-         const IndexType cudaYGrids = tnlCuda::getNumberOfGrids( cudaBlocks.y );
+         cudaBlocks.x = Devices::Cuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
+         cudaBlocks.y = Devices::Cuda::getNumberOfBlocks( end.y() - begin.y() + 1, cudaBlockSize.y );
+         const IndexType cudaXGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.x );
+         const IndexType cudaYGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.y );
          
          //std::cerr << "Setting boundary conditions..." << std::endl;
 
-         tnlCuda::synchronizeDevice();
+         Devices::Cuda::synchronizeDevice();
          for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
             for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
                boundaryConditionsTemplatedCompact< MeshType, CellType, BoundaryCondition, MeshFunctionType >
                   <<< cudaBlocks, cudaBlockSize >>>
-                  ( &mesh.template getData< tnlCuda >(),
-                    &boundaryConditionPointer.template getData< tnlCuda >(),
-                    &u.template modifyData< tnlCuda >(),
+                  ( &mesh.template getData< Devices::Cuda >(),
+                    &boundaryConditionPointer.template getData< Devices::Cuda >(),
+                    &u.template modifyData< Devices::Cuda >(),
                     time,
                     begin,
                     end,
@@ -595,7 +595,7 @@ assemblyLinearSystem( const RealType& time,
                              typename MatrixPointer::ObjectType,
                              typename DofVectorPointer::ObjectType > systemAssembler;
 
-   typedef tnlMeshFunction< Mesh > MeshFunctionType;
+   typedef Functions::tnlMeshFunction< Mesh > MeshFunctionType;
    typedef tnlSharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
    MeshFunctionPointer u( mesh, *_u );
    systemAssembler.template assembly< typename Mesh::Cell >( time,
@@ -616,10 +616,10 @@ template< typename Mesh,
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 ~HeatEquationBenchmarkProblem()
 {
-   if( this->cudaMesh ) tnlCuda::freeFromDevice( this->cudaMesh );
-   if( this->cudaBoundaryConditions )  tnlCuda::freeFromDevice( this->cudaBoundaryConditions );
-   if( this->cudaRightHandSide ) tnlCuda::freeFromDevice( this->cudaRightHandSide );
-   if( this->cudaDifferentialOperator ) tnlCuda::freeFromDevice( this->cudaDifferentialOperator );
+   if( this->cudaMesh ) Devices::Cuda::freeFromDevice( this->cudaMesh );
+   if( this->cudaBoundaryConditions )  Devices::Cuda::freeFromDevice( this->cudaBoundaryConditions );
+   if( this->cudaRightHandSide ) Devices::Cuda::freeFromDevice( this->cudaRightHandSide );
+   if( this->cudaDifferentialOperator ) Devices::Cuda::freeFromDevice( this->cudaDifferentialOperator );
 }
 
 

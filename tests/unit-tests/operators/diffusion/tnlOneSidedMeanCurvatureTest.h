@@ -6,59 +6,54 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLMEANCURVATURETEST_H
 #define	TNLMEANCURVATURETEST_H
 
-#include <operators/diffusion/tnlOneSidedMeanCurvature.h>
-#include <operators/diffusion/tnlExactLinearDiffusion.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/operators/diffusion/tnlOneSidedMeanCurvature.h>
+#include <TNL/operators/diffusion/tnlExactLinearDiffusion.h>
+#include <TNL/mesh/tnlGrid.h>
 #include "../tnlPDEOperatorEocUnitTest.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../../tnlUnitTestStarter.h"
+
+using namespace TNL;
 
 template< typename ApproximateOperator,
           typename TestFunction,
           bool write = false,
           bool verbose = false >
 class tnlOneSidedMeanCurvatureTest
-   : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction > 
+   : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction >
 {
    public:
-      
+ 
       typedef ApproximateOperator ApproximateOperatorType;
       typedef typename ApproximateOperatorType::ExactOperatorType ExactOperatorType;
       typedef typename ApproximateOperator::MeshType MeshType;
       typedef typename ApproximateOperator::RealType RealType;
-      typedef typename ApproximateOperator::IndexType IndexType;   
-      
+      typedef typename ApproximateOperator::IndexType IndexType;
+ 
       const IndexType coarseMeshSize[ 3 ] = { 128, 256, 64 };
-      
+ 
       const RealType  eoc[ 3 ] =       { 2.0,  2.0,  2.0 };
       const RealType  tolerance[ 3 ] = { 0.05, 0.05, 0.05 };
-      
+ 
       tnlOneSidedMeanCurvatureTest(){};
-   
-      static tnlString getType()
-      { 
-         return tnlString( "tnlOneSidedMeanCurvatureTest< " ) + 
+ 
+      static String getType()
+      {
+         return String( "tnlOneSidedMeanCurvatureTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }
-      
+ 
       void setupTest()
       {
          this->setupFunction();
       }
-            
+ 
       void getApproximationError( const IndexType meshSize,
                                   RealType errors[ 3 ] )
       {
@@ -66,7 +61,7 @@ class tnlOneSidedMeanCurvatureTest
          ApproximateOperator approximateOperator( this->mesh );
          ExactOperatorType exactOperator;
          approximateOperator.setRegularizationEpsilon( 1.0 );
-         exactOperator.setRegularizationEpsilon( 1.0 );         
+         exactOperator.setRegularizationEpsilon( 1.0 );
          this->performTest( approximateOperator,
                             exactOperator,
                             errors,
@@ -74,18 +69,18 @@ class tnlOneSidedMeanCurvatureTest
                             verbose );
 
       }
-      
+ 
       void runUnitTest()
-      {  
+      {
          RealType coarseErrors[ 3 ], fineErrors[ 3 ];
          this->getApproximationError( coarseMeshSize[ MeshType::getMeshDimensions() - 1 ], coarseErrors );
          this->getApproximationError( 2 * coarseMeshSize[ MeshType::getMeshDimensions() - 1 ], fineErrors );
-         this->checkEoc( coarseErrors, fineErrors, eoc, tolerance, verbose );                            
+         this->checkEoc( coarseErrors, fineErrors, eoc, tolerance, verbose );
       }
-      
+ 
    protected:
 
-      
+ 
 
 };
 
@@ -100,13 +95,13 @@ bool runTest()
    typedef tnlOneSidedMeanCurvatureTest< ApproximateOperator, Function, write, verbose > OperatorTest;
    OperatorTest test;
    test.runUnitTest();
-#ifdef HAVE_CPPUNIT   
+#ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter::run< tnlPDEOperatorEocUnitTest< OperatorTest > >() )
       return false;
    return true;
 #else
-   return false;   
-#endif      
+   return false;
+#endif
 }
 
 template< typename Mesh,
@@ -114,7 +109,7 @@ template< typename Mesh,
           bool verbose >
 bool setTestFunction()
 {
-   return runTest< Mesh, tnlExpBumpFunction< Mesh::getMeshDimensions(), double >, write, verbose >();
+   return runTest< Mesh, Functions::tnlExpBumpFunction< Mesh::getMeshDimensions(), double >, write, verbose >();
 }
 
 template< typename Device,
@@ -131,13 +126,13 @@ int main( int argc, char* argv[] )
 {
    const bool verbose( true );
    const bool write( true );
-   
-   if( ! setMesh< tnlHost, write, verbose  >() )
+ 
+   if( ! setMesh< Devices::Host, write, verbose  >() )
       return EXIT_FAILURE;
 #ifdef HAVE_CUDA
-   if( ! setMesh< tnlCuda, write, verbose >() )
+   if( ! setMesh< Devices::Cuda, write, verbose >() )
       return EXIT_FAILURE;
-#endif   
+#endif
    return EXIT_SUCCESS;
 }
 

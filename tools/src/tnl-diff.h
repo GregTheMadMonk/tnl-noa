@@ -6,40 +6,35 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNL_DIFF_H_
 #define TNL_DIFF_H_
 
 #include <iomanip>
-#include <config/tnlParameterContainer.h>
-#include <core/mfilename.h>
-#include <core/vectors/tnlVector.h>
-#include <core/vectors/tnlStaticVector.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/core/mfilename.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Functions/tnlMeshFunction.h>
+
+using namespace TNL;
 
 template< typename MeshPointer, typename Element, typename Real, typename Index >
-bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const tnlParameterContainer& parameters )
+bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Config::ParameterContainer& parameters )
 {
    bool verbose = parameters. getParameter< bool >( "verbose" );
-   tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
-   tnlString mode = parameters. getParameter< tnlString >( "mode" );
-   tnlString outputFileName = parameters. getParameter< tnlString >( "output-file" );
+   List< String > inputFiles = parameters. getParameter< List< String > >( "input-files" );
+   String mode = parameters. getParameter< String >( "mode" );
+   String outputFileName = parameters. getParameter< String >( "output-file" );
    double snapshotPeriod = parameters. getParameter< double >( "snapshot-period" );
    bool writeDifference = parameters. getParameter< bool >( "write-difference" );
 
-   fstream outputFile;
+   std::fstream outputFile;
    outputFile.open( outputFileName.getString(), std::fstream::out );
    if( ! outputFile )
    {
-      cerr << "Unable to open the file " << outputFileName << "." << endl;
+      std::cerr << "Unable to open the file " << outputFileName << "." << std::endl;
       return false;
    }
    outputFile << "#";
@@ -50,12 +45,12 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const tnl
               << std::setw( 18 ) << "Total L1 diff."
               << std::setw( 18 ) << "Total L2 diff."
               << std::setw( 18 ) << "Total Max. diff."
-              << endl;
+              << std::endl;
    if( verbose )
-      cout << endl;
+      std::cout << std::endl;
    
    typedef typename MeshPointer::ObjectType Mesh;
-   tnlMeshFunction< Mesh, Mesh::getMeshDimensions(), Real > v1( meshPointer ), v2( meshPointer ), diff( meshPointer );
+   Functions::tnlMeshFunction< Mesh, Mesh::getMeshDimensions(), Real > v1( meshPointer ), v2( meshPointer ), diff( meshPointer );
    Real totalL1Diff( 0.0 ), totalL2Diff( 0.0 ), totalMaxDiff( 0.0 );
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {
@@ -63,16 +58,16 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const tnl
       {
          if( i + 1 == inputFiles.getSize() )
          {
-            cerr << endl << "Skipping the file " << inputFiles[ i ] << " since there is no file to couple it with." << endl;
+            std::cerr << std::endl << "Skipping the file " << inputFiles[ i ] << " since there is no file to couple it with." << std::endl;
             outputFile.close();
             return false;
          }
          if( verbose )
-            cout << "Processing files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "...           \r" << flush;
+           std::cout << "Processing files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "...           \r" << std::flush;
          if( ! v1.load( inputFiles[ i ] ) ||
              ! v2.load( inputFiles[ i + 1 ] ) )
          {
-            cerr << "Unable to read the files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "." << endl;
+            std::cerr << "Unable to read the files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "." << std::endl;
             outputFile.close();
             return false;
          }
@@ -84,19 +79,19 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const tnl
          if( i == 0 )
          {
             if( verbose )
-               cout << "Reading the file " << inputFiles[ 0 ] << "...               \r" << flush;
+              std::cout << "Reading the file " << inputFiles[ 0 ] << "...               \r" << std::flush;
             if( ! v1.load( inputFiles[ 0 ] ) )
             {
-               cerr << "Unable to read the file " << inputFiles[ 0 ] << endl;
+               std::cerr << "Unable to read the file " << inputFiles[ 0 ] << std::endl;
                outputFile.close();
                return false;
             }
          }
          if( verbose )
-            cout << "Processing the files " << inputFiles[ 0 ] << " and " << inputFiles[ i ] << "...             \r" << flush;
+           std::cout << "Processing the files " << inputFiles[ 0 ] << " and " << inputFiles[ i ] << "...             \r" << std::flush;
          if( ! v2.load( inputFiles[ i ] ) )
          {
-            cerr << "Unable to read the file " << inputFiles[ 1 ] << endl;
+            std::cerr << "Unable to read the file " << inputFiles[ 1 ] << std::endl;
             outputFile.close();
             return false;
          }
@@ -108,11 +103,11 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const tnl
          if( i == 0 )
             i = half;
          if( verbose )
-            cout << "Processing files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "...                 \r" << flush;
+           std::cout << "Processing files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "...                 \r" << std::flush;
          if( ! v1.load( inputFiles[ i - half ] ) ||
              ! v2.load( inputFiles[ i ] ) )
          {
-            cerr << "Unable to read the files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "." << endl;
+            std::cerr << "Unable to read the files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "." << std::endl;
             outputFile.close();
             return false;
          }
@@ -120,7 +115,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const tnl
          outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
       }
       diff = v1;
-      diff -= v2;      
+      diff -= v2;
       Real l1Diff = diff.getLpNorm( 1.0 );
       Real l2Diff = diff.getLpNorm( 2.0 );
       Real maxDiff = diff.getMaxNorm();
@@ -134,17 +129,17 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const tnl
          totalL1Diff += l1Diff;
          totalL2Diff += l2Diff * l2Diff;
       }
-      totalMaxDiff = Max( totalMaxDiff, maxDiff );
+      totalMaxDiff = max( totalMaxDiff, maxDiff );
       outputFile << std::setw( 18 ) << l1Diff
                  << std::setw( 18 ) << l2Diff
                  << std::setw( 18 ) << maxDiff
                  << std::setw( 18 ) << totalL1Diff
-                 << std::setw( 18 ) << sqrt( totalL2Diff )
-                 << std::setw( 18 ) << totalMaxDiff << endl;
+                 << std::setw( 18 ) << ::sqrt( totalL2Diff )
+                 << std::setw( 18 ) << totalMaxDiff << std::endl;
 
       if( writeDifference )
       {
-         tnlString differenceFileName;
+         String differenceFileName;
          differenceFileName = inputFiles[ i ];
          RemoveFileExtension( differenceFileName );
          differenceFileName += ".diff.tnl";
@@ -157,26 +152,26 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const tnl
    outputFile.close();
 
    if( verbose )
-      cout << endl;
+     std::cout << std::endl;
    return true;
 }
 
 
 template< typename MeshPointer, typename Element, typename Real, typename Index >
-bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const tnlParameterContainer& parameters )
+bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::ParameterContainer& parameters )
 {
    bool verbose = parameters. getParameter< bool >( "verbose" );
-   tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
-   tnlString mode = parameters. getParameter< tnlString >( "mode" );
-   tnlString outputFileName = parameters. getParameter< tnlString >( "output-file" );
+   List< String > inputFiles = parameters. getParameter< List< String > >( "input-files" );
+   String mode = parameters. getParameter< String >( "mode" );
+   String outputFileName = parameters. getParameter< String >( "output-file" );
    double snapshotPeriod = parameters. getParameter< double >( "snapshot-period" );
    bool writeDifference = parameters. getParameter< bool >( "write-difference" );
 
-   fstream outputFile;
+   std::fstream outputFile;
    outputFile.open( outputFileName.getString(), std::fstream::out );
    if( ! outputFile )
    {
-      cerr << "Unable to open the file " << outputFileName << "." << endl;
+      std::cerr << "Unable to open the file " << outputFileName << "." << std::endl;
       return false;
    }
    outputFile << "#";
@@ -187,11 +182,11 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const tnlParame
               << std::setw( 18 ) << "Total L1 diff."
               << std::setw( 18 ) << "Total L2 diff."
               << std::setw( 18 ) << "Total Max. diff."
-              << endl;
+              << std::endl;
    if( verbose )
-      cout << endl;
+     std::cout << std::endl;
 
-   tnlVector< Real, tnlHost, Index > v1, v2;
+   Vectors::Vector< Real, Devices::Host, Index > v1, v2;
    Real totalL1Diff( 0.0 ), totalL2Diff( 0.0 ), totalMaxDiff( 0.0 );
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {
@@ -199,16 +194,16 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const tnlParame
       {
          if( i + 1 == inputFiles.getSize() )
          {
-            cerr << endl << "Skipping the file " << inputFiles[ i ] << " since there is no file to couple it with." << endl;
+            std::cerr << std::endl << "Skipping the file " << inputFiles[ i ] << " since there is no file to couple it with." << std::endl;
             outputFile.close();
             return false;
          }
          if( verbose )
-            cout << "Processing files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "...           \r" << flush;
+           std::cout << "Processing files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "...           \r" << std::flush;
          if( ! v1.load( inputFiles[ i ] ) ||
              ! v2.load( inputFiles[ i + 1 ] ) )
          {
-            cerr << "Unable to read the files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "." << endl;
+            std::cerr << "Unable to read the files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "." << std::endl;
             outputFile.close();
             return false;
          }
@@ -220,19 +215,19 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const tnlParame
          if( i == 0 )
          {
             if( verbose )
-               cout << "Reading the file " << inputFiles[ 0 ] << "...               \r" << flush;
+              std::cout << "Reading the file " << inputFiles[ 0 ] << "...               \r" << std::flush;
             if( ! v1.load( inputFiles[ 0 ] ) )
             {
-               cerr << "Unable to read the file " << inputFiles[ 0 ] << endl;
+               std::cerr << "Unable to read the file " << inputFiles[ 0 ] << std::endl;
                outputFile.close();
                return false;
             }
          }
          if( verbose )
-            cout << "Processing the files " << inputFiles[ 0 ] << " and " << inputFiles[ i ] << "...             \r" << flush;
+           std::cout << "Processing the files " << inputFiles[ 0 ] << " and " << inputFiles[ i ] << "...             \r" << std::flush;
          if( ! v2.load( inputFiles[ i ] ) )
          {
-            cerr << "Unable to read the file " << inputFiles[ 1 ] << endl;
+            std::cerr << "Unable to read the file " << inputFiles[ 1 ] << std::endl;
             outputFile.close();
             return false;
          }
@@ -244,11 +239,11 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const tnlParame
          if( i == 0 )
             i = half;
          if( verbose )
-            cout << "Processing files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "...                 \r" << flush;
+           std::cout << "Processing files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "...                 \r" << std::flush;
          if( ! v1.load( inputFiles[ i - half ] ) ||
              ! v2.load( inputFiles[ i ] ) )
          {
-            cerr << "Unable to read the files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "." << endl;
+            std::cerr << "Unable to read the files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "." << std::endl;
             outputFile.close();
             return false;
          }
@@ -268,21 +263,21 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const tnlParame
          totalL1Diff += l1Diff;
          totalL2Diff += l2Diff * l2Diff;
       }
-      totalMaxDiff = Max( totalMaxDiff, maxDiff );
+      totalMaxDiff = max( totalMaxDiff, maxDiff );
       outputFile << std::setw( 18 ) << l1Diff
                  << std::setw( 18 ) << l2Diff
                  << std::setw( 18 ) << maxDiff
                  << std::setw( 18 ) << totalL1Diff
-                 << std::setw( 18 ) << sqrt( totalL2Diff )
-                 << std::setw( 18 ) << totalMaxDiff << endl;
+                 << std::setw( 18 ) << ::sqrt( totalL2Diff )
+                 << std::setw( 18 ) << totalMaxDiff << std::endl;
 
       if( writeDifference )
       {
-         tnlString differenceFileName;
+         String differenceFileName;
          differenceFileName = inputFiles[ i ];
          RemoveFileExtension( differenceFileName );
          differenceFileName += ".diff.tnl";
-         tnlVector< Real, tnlHost, Index > diff;
+         Vectors::Vector< Real, Devices::Host, Index > diff;
          diff.setLike( v1 );
          diff = v1;
          diff -= v2;
@@ -292,12 +287,12 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const tnlParame
    outputFile.close();
 
    if( verbose )
-      cout << endl;
+     std::cout << std::endl;
    return true;
 }
 
 template< typename MeshPointer, typename Element, typename Real, typename Index >
-bool computeDifference( const MeshPointer& meshPointer, const tnlString& objectType, const tnlParameterContainer& parameters )
+bool computeDifference( const MeshPointer& meshPointer, const String& objectType, const Config::ParameterContainer& parameters )
 {
    if( objectType == "tnlMeshFunction" )
       return computeDifferenceOfMeshFunctions< MeshPointer, Element, Real, Index >( meshPointer, parameters );
@@ -308,16 +303,16 @@ bool computeDifference( const MeshPointer& meshPointer, const tnlString& objectT
 
 template< typename MeshPointer, typename Element, typename Real >
 bool setIndexType( const MeshPointer& meshPointer,
-                   const tnlString& inputFileName,
-                   const tnlList< tnlString >& parsedObjectType,
-                   const tnlParameterContainer& parameters )
+                   const String& inputFileName,
+                   const List< String >& parsedObjectType,
+                   const Config::ParameterContainer& parameters )
 {
-   tnlString indexType;
-   if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
+   String indexType;
+   if( parsedObjectType[ 0 ] == "MultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector"   )
       indexType = parsedObjectType[ 4 ];
-   if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
-       parsedObjectType[ 0 ] == "tnlVector" )
+   if( parsedObjectType[ 0 ] == "SharedVector" ||
+       parsedObjectType[ 0 ] == "Vector" )
       indexType = parsedObjectType[ 3 ];
 
    if(parsedObjectType[ 0 ] == "tnlMeshFunction" )
@@ -327,75 +322,75 @@ bool setIndexType( const MeshPointer& meshPointer,
       return computeDifference< MeshPointer, Element, Real, int >( meshPointer, parsedObjectType[ 0 ], parameters );
    if( indexType == "long-int" )
       return computeDifference< MeshPointer, Element, Real, long int >( meshPointer, parsedObjectType[ 0 ], parameters );
-   cerr << "Unknown index type " << indexType << "." << endl;
+   std::cerr << "Unknown index type " << indexType << "." << std::endl;
    return false;
 }
 
 template< typename MeshPointer >
 bool setTupleType( const MeshPointer& meshPointer,
-                   const tnlString& inputFileName,
-                   const tnlList< tnlString >& parsedObjectType,
-                   const tnlList< tnlString >& parsedElementType,
-                   const tnlParameterContainer& parameters )
+                   const String& inputFileName,
+                   const List< String >& parsedObjectType,
+                   const List< String >& parsedElementType,
+                   const Config::ParameterContainer& parameters )
 {
    int dimensions = atoi( parsedElementType[ 1 ].getString() );
-   tnlString dataType = parsedElementType[ 2 ];
+   String dataType = parsedElementType[ 2 ];
    if( dataType == "float" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< MeshPointer, tnlStaticVector< 1, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Vectors::StaticVector< 1, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< MeshPointer, tnlStaticVector< 2, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Vectors::StaticVector< 2, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< MeshPointer, tnlStaticVector< 3, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Vectors::StaticVector< 3, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
    if( dataType == "double" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< MeshPointer, tnlStaticVector< 1, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Vectors::StaticVector< 1, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< MeshPointer, tnlStaticVector< 2, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Vectors::StaticVector< 2, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< MeshPointer, tnlStaticVector< 3, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Vectors::StaticVector< 3, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
    if( dataType == "long double" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< MeshPointer, tnlStaticVector< 1, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Vectors::StaticVector< 1, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< MeshPointer, tnlStaticVector< 2, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Vectors::StaticVector< 2, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< MeshPointer, tnlStaticVector< 3, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Vectors::StaticVector< 3, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
 }
 
 template< typename MeshPointer >
 bool setElementType( const MeshPointer& meshPointer,
-                     const tnlString& inputFileName,
-                     const tnlList< tnlString >& parsedObjectType,
-                     const tnlParameterContainer& parameters )
+                     const String& inputFileName,
+                     const List< String >& parsedObjectType,
+                     const Config::ParameterContainer& parameters )
 {
-   tnlString elementType;
+   String elementType;
 
-   if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
+   if( parsedObjectType[ 0 ] == "MultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
       elementType = parsedObjectType[ 2 ];
    if( parsedObjectType[ 0 ] == "tnlMeshFunction" )
       elementType = parsedObjectType[ 3 ];
-   if( parsedObjectType[ 0 ] == "tnlSharedVector" ||
-       parsedObjectType[ 0 ] == "tnlVector" )
+   if( parsedObjectType[ 0 ] == "SharedVector" ||
+       parsedObjectType[ 0 ] == "Vector" )
       elementType = parsedObjectType[ 1 ];
 
 
@@ -405,30 +400,30 @@ bool setElementType( const MeshPointer& meshPointer,
       return setIndexType< MeshPointer, double, double >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "long double" )
       return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-   tnlList< tnlString > parsedElementType;
+   List< String > parsedElementType;
    if( ! parseObjectType( elementType, parsedElementType ) )
    {
-      cerr << "Unable to parse object type " << elementType << "." << endl;
+      std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
       return false;
    }
    if( parsedElementType[ 0 ] == "tnlStaticVector" )
       return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedElementType, parameters );
 
-   cerr << "Unknown element type " << elementType << "." << endl;
+   std::cerr << "Unknown element type " << elementType << "." << std::endl;
    return false;
 }
 
 template< typename Mesh >
-bool processFiles( const tnlParameterContainer& parameters )
+bool processFiles( const Config::ParameterContainer& parameters )
 {
    int verbose = parameters. getParameter< int >( "verbose");
-   tnlList< tnlString > inputFiles = parameters. getParameter< tnlList< tnlString > >( "input-files" );
-   tnlString& inputFile = inputFiles[ 0 ];
+   List< String > inputFiles = parameters. getParameter< List< String > >( "input-files" );
+   String& inputFile = inputFiles[ 0 ];
 
    /****
     * Reading the mesh
     */
-   tnlString meshFile = parameters. getParameter< tnlString >( "mesh" );
+   String meshFile = parameters. getParameter< String >( "mesh" );
    
    typedef tnlSharedPointer< Mesh > MeshPointer;
 
@@ -436,22 +431,22 @@ bool processFiles( const tnlParameterContainer& parameters )
    if( meshFile != "" )
       if( ! meshPointer->load( meshFile ) )
       {
-         cerr << "I am not able to load mesh from the file " << meshFile << "." << endl;
+         std::cerr << "I am not able to load mesh from the file " << meshFile << "." << std::endl;
          return false;
       }
 
-   tnlString objectType;
+   String objectType;
    if( ! getObjectType( inputFiles[ 0 ], objectType ) )
-       cerr << "unknown object ... SKIPPING!" << endl;
+       std::cerr << "unknown object ... SKIPPING!" << std::endl;
    else
    {
       if( verbose )
-         cout << objectType << " detected ... ";
+        std::cout << objectType << " detected ... ";
 
-      tnlList< tnlString > parsedObjectType;
+      List< String > parsedObjectType;
       if( ! parseObjectType( objectType, parsedObjectType ) )
       {
-         cerr << "Unable to parse object type " << objectType << "." << endl;
+         std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
          return false;
       }
       setElementType< MeshPointer >( meshPointer, inputFiles[ 0 ], parsedObjectType, parameters );

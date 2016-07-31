@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLPDEOPERATOREOSTEST_H
 #define	TNLPDEOPERATOREOSTEST_H
@@ -29,14 +22,15 @@
 #include <cppunit/TestCase.h>
 #endif
 
+using namespace TNL;
 
 template< typename ApproximateOperator,
           typename TestFunction,
           typename ExactOperator = typename ApproximateOperator::ExactOperatorType >
 class tnlPDEOperatorEocTest
 {
-   public:      
-      
+   public:
+ 
       typedef ApproximateOperator ApproximateOperatorType;
       typedef TestFunction TestFunctionType;
       typedef ExactOperator ExactOperatorType;
@@ -44,7 +38,7 @@ class tnlPDEOperatorEocTest
       typedef tnlSharedPointer< MeshType > MeshPointer;
       typedef typename ApproximateOperator::RealType RealType;
       typedef typename ApproximateOperator::IndexType IndexType;
-      
+ 
       //static_assert( std::is_same< ExactOperatorType, void >::value,
       //   "Exact operator type is not defined (it is void in fact)." );
 
@@ -55,13 +49,13 @@ class tnlPDEOperatorEocTest
       {
          tnlPDEOperatorEocTestMeshSetter< MeshType >::setup( *mesh, meshSize );
       }
-      
+ 
       void setupFunction()
       {
          tnlPDEOperatorEocTestFunctionSetter< TestFunction >::setup( function );
       }
-     
-      template< typename MeshEntityType = typename MeshType::Cell > 
+ 
+      template< typename MeshEntityType = typename MeshType::Cell >
       void performTest( ApproximateOperator& approximateOperator,
                         ExactOperatorType& exactOperator,
                         RealType errors[ 3 ],
@@ -83,7 +77,7 @@ class tnlPDEOperatorEocTest
          if( verbose )
             std::cout << "L1 err. " << errors[ 1 ] << " L2 err. " << errors[ 2 ] << " Max. err. " << errors[ 0 ] << std::endl;
       }
-      
+ 
       void checkEoc( const RealType coarse[ 3 ],
                      const RealType fine[ 3 ],
                      const RealType eoc[ 3 ],
@@ -99,28 +93,28 @@ class tnlPDEOperatorEocTest
 #ifdef HAVE_CPPUNIT
          CPPUNIT_ASSERT( fabs( maxEoc - eoc[ 0 ] ) < tolerance[ 0 ] );
 #endif
-         
+ 
          /****
           * Max error
           */
          RealType l1Eoc = log( coarse[ 1 ] / fine[ 1 ] ) / log( 2.0 );
          if( verbose )
-            std::cout << "L1 error EOC = " << l1Eoc << " expected " << eoc[ 1 ]  << std::endl;         
+            std::cout << "L1 error EOC = " << l1Eoc << " expected " << eoc[ 1 ]  << std::endl;
 #ifdef HAVE_CPPUNIT
          CPPUNIT_ASSERT( fabs( l1Eoc - eoc[ 1 ] ) < tolerance[ 1 ] );
-#endif         
-         
+#endif
+ 
          /****
           * L2 error
           */
          RealType l2Eoc = log( coarse[ 2 ] / fine[ 2 ] ) / log( 2.0 );
          if( verbose )
             std::cout << "L2 error EOC = " << l2Eoc << " expected " << eoc[ 2 ] << std::endl;
-#ifdef HAVE_CPPUNIT         
+#ifdef HAVE_CPPUNIT
          CPPUNIT_ASSERT( fabs( l2Eoc - eoc[ 2 ] ) < tolerance[ 2 ] );
-#endif         
+#endif
       }
-      
+ 
    protected:
       
       MeshPointer mesh;

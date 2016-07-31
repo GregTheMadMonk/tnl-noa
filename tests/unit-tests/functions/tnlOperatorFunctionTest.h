@@ -6,23 +6,16 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLOPERATORFUNCTIONTEST_H
 #define	TNLOPERATORFUNCTIONTEST_H
 
-#include <functions/tnlOperatorFunction.h>
-#include <mesh/tnlGrid.h>
-#include <functions/tnlExpBumpFunction.h>
-#include <operators/diffusion/tnlLinearDiffusion.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
+#include <TNL/Functions/tnlOperatorFunction.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Functions/Analytic/tnlExpBumpFunction.h>
+#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
+#include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include "../tnlUnitTestStarter.h"
 
 #ifdef HAVE_CPPUNIT
@@ -32,6 +25,7 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 
+using namespace TNL;
 
 template< typename Operator,
           bool EvaluateOnFly >
@@ -65,7 +59,7 @@ class tnlOperatorFunctionTest
       suiteOfTests -> addTest( new TestCallerType( "testWithBoundaryConditions", &TesterType::testWithBoundaryConditions ) );
       return suiteOfTests;
    }
-   
+ 
    void testWithNoBoundaryConditions()
    {
       MeshPointer meshPointer;
@@ -85,15 +79,15 @@ class tnlOperatorFunctionTest
       {
          auto entity = meshPointer->template getEntity< typename MeshType::Cell >( i );
          entity.refresh();
-         
+ 
          if( ! entity.isBoundaryEntity() )
          {
-            //cerr << entity.getIndex() << " " << operator_( f1, entity ) << " " << operatorFunction( entity ) << endl;
+            //cerr << entity.getIndex() << " " << operator_( f1, entity ) << " " << operatorFunction( entity ) << std::endl;
             CPPUNIT_ASSERT( operator_( f1, entity ) == operatorFunction( entity ) );
          }
-      }            
+      }
    }
-   
+ 
    void testWithBoundaryConditions()
    {
       tnlSharedPointer< MeshType > mesh;
@@ -103,11 +97,11 @@ class tnlOperatorFunctionTest
       mesh->setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
       TestFunctionType testFunction;
       testFunction.setAmplitude( 1.0 );
-      testFunction.setSigma( 1.0 );      
+      testFunction.setSigma( 1.0 );
       MeshFunctionType f1( mesh );
       f1 = testFunction;
       OperatorType operator_;
-      BoundaryConditionsType boundaryConditions;      
+      BoundaryConditionsType boundaryConditions;
       OperatorFunctionType operatorFunction( operator_, boundaryConditions, f1 );
       operatorFunction.refresh();
       //cerr << f1.getData() << endl;
@@ -119,14 +113,14 @@ class tnlOperatorFunctionTest
             CPPUNIT_ASSERT( boundaryConditions( f1, entity ) == operatorFunction( entity ) );
          else
          {
-            //cerr << entity.getIndex() << " " << operator_( f1, entity ) << " " << operatorFunction( entity ) << endl;
+            //cerr << entity.getIndex() << " " << operator_( f1, entity ) << " " << operatorFunction( entity ) << std::endl;
             CPPUNIT_ASSERT( operator_( f1, entity ) == operatorFunction( entity ) );
          }
-      }            
-   }   
+      }
+   }
 };
 #endif
-   
+ 
 template< typename MeshType >
 bool runTest()
 {
@@ -140,14 +134,15 @@ bool runTest()
    return true;
 #else
    return false;
-#endif        
+#endif
 }
 
 int main( int argc, char* argv[] )
 {
-   if( ! runTest< tnlGrid< 1, double, tnlHost, int > >() ||
-       ! runTest< tnlGrid< 2, double, tnlHost, int > >() ||
-       ! runTest< tnlGrid< 3, double, tnlHost, int > >() )
+   using namespace TNL;
+   if( ! runTest< tnlGrid< 1, double, Devices::Host, int > >() ||
+       ! runTest< tnlGrid< 2, double, Devices::Host, int > >() ||
+       ! runTest< tnlGrid< 3, double, Devices::Host, int > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

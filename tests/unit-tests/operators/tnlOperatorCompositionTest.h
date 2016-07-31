@@ -6,24 +6,17 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLOPERATORFUNCTIONTEST_H
 #define	TNLOPERATORFUNCTIONTEST_H
 
-#include <operators/tnlOperatorComposition.h>
-#include <mesh/tnlGrid.h>
-#include <functions/tnlExpBumpFunction.h>
-#include <functions/tnlConstantFunction.h>
-#include <operators/diffusion/tnlLinearDiffusion.h>
-#include <operators/tnlNeumannBoundaryConditions.h>
+#include <TNL/operators/tnlOperatorComposition.h>
+#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Functions/Analytic/tnlExpBumpFunction.h>
+#include <TNL/Functions/Analytic/tnlConstantFunction.h>
+#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
+#include <TNL/operators/tnlNeumannBoundaryConditions.h>
 #include "../tnlUnitTestStarter.h"
 
 #ifdef HAVE_CPPUNIT
@@ -33,6 +26,7 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 
+using namespace TNL;
 
 template< typename Operator >
 class tnlOperatorCompositionTest
@@ -47,13 +41,13 @@ class tnlOperatorCompositionTest
    typedef typename OperatorType::IndexType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef typename MeshType::VertexType VertexType;
-   typedef tnlExpBumpFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > TestFunctionType;
-   typedef tnlConstantFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > ConstantFunction;
+   typedef Functions::tnlExpBumpFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > TestFunctionType;
+   typedef Functions::tnlConstantFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > ConstantFunction;
    typedef tnlNeumannBoundaryConditions< MeshType, ConstantFunction > BoundaryConditions;
-   typedef tnlOperatorComposition< OperatorType, OperatorType, BoundaryConditions > OperatorComposition;   
-   typedef tnlMeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
-   typedef tnlOperatorFunction< OperatorType, MeshFunctionType, BoundaryConditions > OperatorFunction;
-   typedef tnlOperatorFunction< OperatorType, OperatorFunction, BoundaryConditions > OperatorFunction2;
+   typedef tnlOperatorComposition< OperatorType, OperatorType, BoundaryConditions > OperatorComposition;
+   typedef Functions::tnlMeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
+   typedef Functions::tnlOperatorFunction< OperatorType, MeshFunctionType, BoundaryConditions > OperatorFunction;
+   typedef Functions::tnlOperatorFunction< OperatorType, OperatorFunction, BoundaryConditions > OperatorFunction2;
 
    tnlOperatorCompositionTest(){};
 
@@ -68,7 +62,7 @@ class tnlOperatorCompositionTest
       suiteOfTests -> addTest( new TestCallerType( "test", &TesterType::test ) );
       return suiteOfTests;
    }
-   
+ 
    void test()
    {      
       tnlSharedPointer< MeshType > mesh;
@@ -85,42 +79,42 @@ class tnlOperatorCompositionTest
       operatorFunction1.refresh();
       OperatorFunction2 operatorFunction2( operator_, boundaryConditions, operatorFunction1 );
       operatorFunction2.refresh();
-      
+ 
       //f1 = testFunction;
       OperatorComposition operatorComposition( operator_, operator_, boundaryConditions, mesh );
       //operatorComposition.refresh();
-      tnlOperatorFunction< OperatorComposition, MeshFunctionType, BoundaryConditions > operatorFunction3( operatorComposition, boundaryConditions, f1 );
+      Functions::tnlOperatorFunction< OperatorComposition, MeshFunctionType, BoundaryConditions > operatorFunction3( operatorComposition, boundaryConditions, f1 );
       operatorFunction3.refresh();
-      
+ 
       /*f1 = testFunction;
       f1.write( "testFunction", "gnuplot" );
       f1 = operatorFunction1;
       f1.write( "operator1", "gnuplot" );
       f1 = operatorFunction2;
       f1.write( "operator2", "gnuplot" );
-      
+ 
       f1 = operatorFunction3;
       f1.write( "operatorComposition", "gnuplot" );      */
-      
+ 
       //CPPUNIT_ASSERT( operatorFunction2 == operatorFunction3 );
       for( IndexType i = 0; i < mesh->template getEntitiesCount< typename MeshType::Cell >(); i++ )
       {
          auto entity = mesh->template getEntity< typename MeshType::Cell >( i );
          entity.refresh();
-         //cerr << entity.getIndex() << " " << operatorFunction2( entity ) << " " << operatorFunction3( entity ) << endl;
+         //cerr << entity.getIndex() << " " << operatorFunction2( entity ) << " " << operatorFunction3( entity ) << std::endl;
          CPPUNIT_ASSERT( operatorFunction2( entity ) == operatorFunction3( entity ) );
          /*if( entity.isBoundaryEntity() )
             CPPUNIT_ASSERT( boundaryConditions( f1, entity ) == operatorFunction( entity ) );
          else
          {
-            
-            
+ 
+ 
          }*/
-      }      
-   }   
+      }
+   }
 };
 #endif
-   
+ 
 template< typename Operator >
 bool runTest()
 {
@@ -131,8 +125,10 @@ bool runTest()
    return true;
 #else
    return false;
-#endif        
+#endif
 }
+
+using namespace TNL;
 
 template< typename MeshType >
 bool setOperator()
@@ -142,9 +138,9 @@ bool setOperator()
 
 int main( int argc, char* argv[] )
 {
-   if( ! setOperator< tnlGrid< 1, double, tnlHost, int > >() ||
-       ! setOperator< tnlGrid< 2, double, tnlHost, int > >() ||
-       ! setOperator< tnlGrid< 3, double, tnlHost, int > >() )
+   if( ! setOperator< tnlGrid< 1, double, Devices::Host, int > >() ||
+       ! setOperator< tnlGrid< 2, double, Devices::Host, int > >() ||
+       ! setOperator< tnlGrid< 3, double, Devices::Host, int > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

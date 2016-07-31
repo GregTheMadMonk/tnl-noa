@@ -1,8 +1,10 @@
 #ifndef HeatEquationBenchmarkPROBLEM_H_
 #define HeatEquationBenchmarkPROBLEM_H_
 
-#include <problems/tnlPDEProblem.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/problems/tnlPDEProblem.h>
+#include <TNL/Functions/tnlMeshFunction.h>
+
+using namespace TNL;
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -19,7 +21,7 @@ class HeatEquationBenchmarkProblem:
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
-      typedef tnlMeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::tnlMeshFunction< Mesh > MeshFunctionType;
       typedef tnlSharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef tnlSharedPointer< DifferentialOperator > DifferentialOperatorPointer;
@@ -34,16 +36,16 @@ class HeatEquationBenchmarkProblem:
 
       HeatEquationBenchmarkProblem();
       
-      static tnlString getTypeStatic();
+      static String getTypeStatic();
 
-      tnlString getPrologHeader() const;
+      String getPrologHeader() const;
 
-      void writeProlog( tnlLogger& logger,
-                        const tnlParameterContainer& parameters ) const;
+      void writeProlog( Logger& logger,
+                        const Config::ParameterContainer& parameters ) const;
 
-      bool setup( const tnlParameterContainer& parameters );
+      bool setup( const Config::ParameterContainer& parameters );
 
-      bool setInitialCondition( const tnlParameterContainer& parameters,
+      bool setInitialCondition( const Config::ParameterContainer& parameters,
                                 const MeshPointer& meshPointer,
                                 DofVectorPointer& dofsPointer,
                                 MeshDependentDataType& meshDependentData );
@@ -89,7 +91,7 @@ class HeatEquationBenchmarkProblem:
       
       MeshFunctionPointer fu, u;
       
-      tnlString cudaKernelType;
+      String cudaKernelType;
       
       MeshType* cudaMesh;
       BoundaryCondition* cudaBoundaryConditions;

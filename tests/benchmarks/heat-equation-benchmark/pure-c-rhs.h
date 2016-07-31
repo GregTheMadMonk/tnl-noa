@@ -29,8 +29,8 @@
 struct Data
 {
    double time, tau;
-   tnlStaticVector< 2, double > c1, c2, c3, c4;
-   tnlGrid< 2, double > grid;
+   TNL::Vectors::StaticVector< 2, double > c1, c2, c3, c4;
+   TNL::tnlGrid< 2, double > grid;
 };
 
 #ifdef HAVE_CUDA
@@ -120,7 +120,7 @@ bool pureCRhsCuda( dim3 cudaGridSize,
    boundaryConditionsKernel<<< cudaGridSize, cudaBlockSize >>>( cuda_u, cuda_aux, gridXSize, gridYSize );
    if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
    {
-      cerr << "Setting of boundary conditions failed. " << cudaErr << endl;
+      std::cerr << "Setting of boundary conditions failed. " << cudaErr << std::endl;
       return false;
    }
 
@@ -132,7 +132,7 @@ bool pureCRhsCuda( dim3 cudaGridSize,
       ( cuda_u, cuda_aux, tau, hx_inv, hy_inv, gridXSize, gridYSize, d, d2 );
    if( cudaGetLastError() != cudaSuccess )
    {
-      cerr << "Laplace operator failed." << endl;
+      std::cerr << "Laplace operator failed." << std::endl;
       return false;
    }
 

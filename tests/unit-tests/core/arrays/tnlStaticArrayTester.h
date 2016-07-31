@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLSTATICARRAYTESTER_H_
 #define TNLSTATICARRAYTESTER_H_
@@ -25,24 +18,26 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/arrays/tnlStaticArray.h>
-#include <core/arrays/tnlSharedArray.h>
-#include <core/arrays/tnlConstSharedArray.h>
+#include <TNL/Arrays/StaticArray.h>
+#include <TNL/Arrays/SharedArray.h>
+#include <TNL/Arrays/ConstSharedArray.h>
 
+using namespace TNL;
+using namespace TNL::Arrays;
 
 class testingClassForStaticArrayTester
 {
    public:
 
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "testingClassForStaticArrayTester" );
+         return String( "testingClassForStaticArrayTester" );
       };
 };
 
-tnlString getType( const testingClassForStaticArrayTester& c )
+String getType( const testingClassForStaticArrayTester& c )
 {
-   return tnlString( "testingClassForStaticArrayTester" );
+   return String( "testingClassForStaticArrayTester" );
 };
 
 template< int Size, typename ElementType >
@@ -60,7 +55,7 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlArrayTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "ArrayTester" );
       CppUnit :: TestResult result;
       suiteOfTests -> addTest( new TestCaller( "testConstructors", &StaticArrayTester::testConstructors ) );
       suiteOfTests -> addTest( new TestCaller( "testCoordinatesGetter", &StaticArrayTester::testCoordinatesGetter ) );
@@ -112,7 +107,7 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( u.y() == 1 );
       CPPUNIT_ASSERT( u.z() == 2 );
    }
-   
+ 
    template< int _Size, typename Element >
    void checkCoordinates( const tnlStaticArray< _Size, Element >& u )
    {
@@ -165,7 +160,7 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
    void testLoadAndSave()
    {
       tnlStaticArray< Size, ElementType > u1( 7 ), u2( 0 );
-      tnlFile file;
+      File file;
       file.open( "tnl-static-array-test.tnl", tnlWriteMode );
       u1.save( file );
       file.close();
@@ -190,7 +185,7 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
    void testStreamOperator()
    {
       tnlStaticArray< Size, ElementType > u;
-      stringstream testStream;
+      std::stringstream testStream;
       testStream << u;
    }
 
@@ -200,12 +195,12 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
       for( int i = 0; i < Size; i++ )
          a[ i ] = i+1;
 
-      tnlSharedArray< ElementType, tnlHost > sharedArray;
+      tnlSharedArray< ElementType, Devices::Host > sharedArray;
       sharedArray.bind( a );
       for( int i = 0; i < Size; i++ )
          CPPUNIT_ASSERT( a[ i ] == sharedArray[ i ] );
 
-      tnlConstSharedArray< ElementType, tnlHost > constSharedArray;
+      tnlConstSharedArray< ElementType, Devices::Host > constSharedArray;
       constSharedArray.bind( a );
       for( int i = 0; i < Size; i++ )
          CPPUNIT_ASSERT( a[ i ] == constSharedArray[ i ] );

@@ -13,13 +13,13 @@
 //#include <mesh/grids/tnlGrid2D.h>
 
 #include <core/tnlObject.h>
-#include <core/tnlHost.h>
+#include <core/Devices::Host.h>
 #include <core/vectors/tnlStaticVector.h>
 #include <core/vectors/tnlVector.h>
 
 template< int Dimensions,
           typename Real = double,
-          typename Device = tnlHost,
+          typename Device = Devices::Host,
           typename Index = int >
 class tnlGrid : public tnlObject
 {
@@ -52,7 +52,7 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    typedef Index IndexType;
    typedef tnlStaticVector< 2, Real > VertexType;
    typedef tnlStaticVector< 2, Index > CoordinatesType;
-   typedef tnlGrid< 2, Real, tnlHost, Index > HostType;
+   typedef tnlGrid< 2, Real, Devices::Host, Index > HostType;
    typedef tnlGrid< 2, Real, tnlCuda, Index > CudaType;   
    typedef tnlGrid< 2, Real, Device, Index > ThisType;
    
@@ -803,7 +803,7 @@ writeProlog( tnlLogger& logger )
 
 template< int Dimensions,
           typename Real = double,
-          typename Device = tnlHost,
+          typename Device = Devices::Host,
           typename Index = int >
 class tnlGrid : public tnlObject
 {
@@ -828,7 +828,7 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    typedef Index IndexType;
    typedef tnlStaticVector< 2, Real > VertexType;
    typedef tnlStaticVector< 2, Index > CoordinatesType;
-   typedef tnlGrid< 2, Real, tnlHost, Index > HostType;
+   typedef tnlGrid< 2, Real, Devices::Host, Index > HostType;
    typedef tnlGrid< 2, Real, tnlCuda, Index > CudaType;   
    typedef tnlGrid< 2, Real, Device, Index > ThisType;
    

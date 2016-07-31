@@ -6,18 +6,11 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <core/tnlHost.h>
-#include <matrices/tnlCSRMatrix.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/Devices/Host.h>
+#include <TNL/matrices/tnlCSRMatrix.h>
 #include <cstdlib>
 
 #include "tnlSparseMatrixTester.h"
@@ -26,8 +19,8 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlCSRMatrix< float, tnlCuda, int > > >() ||
-       ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlCSRMatrix< double, tnlCuda, int > > >()
+   if( ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlCSRMatrix< float, Devices::Cuda, int > > >() ||
+       ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlCSRMatrix< double, Devices::Cuda, int > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

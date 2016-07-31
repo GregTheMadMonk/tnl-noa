@@ -6,14 +6,7 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
 #ifndef TNLDENSEMATRIXTESTER_H_
 #define TNLDENSEMATRIXTESTER_H_
@@ -24,29 +17,30 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <matrices/tnlDenseMatrix.h>
-#include <core/tnlFile.h>
-#include <core/vectors/tnlVector.h>
+#include <TNL/matrices/tnlDenseMatrix.h>
+#include <TNL/File.h>
+#include <TNL/Vectors/Vector.h>
 
 #ifdef HAVE_CUDA
 template< typename RealType, typename IndexType >
-__global__ void setElementFastTestKernel( tnlDenseMatrix< RealType, tnlCuda, IndexType >* matrix );
+__global__ void setElementFastTestKernel( tnlDenseMatrix< RealType, Devices::Cuda, IndexType >* matrix );
 template< typename RealType, typename IndexType >
-__global__ void addElementFastTestKernel( tnlDenseMatrix< RealType, tnlCuda, IndexType >* matrix );
+__global__ void addElementFastTestKernel( tnlDenseMatrix< RealType, Devices::Cuda, IndexType >* matrix );
 template< typename RealType, typename IndexType >
-__global__ void setRowFastTestKernel( tnlDenseMatrix< RealType, tnlCuda, IndexType >* matrix,
+__global__ void setRowFastTestKernel( tnlDenseMatrix< RealType, Devices::Cuda, IndexType >* matrix,
                                       const IndexType* columns,
                                       const RealType* values,
                                       const IndexType numberOfElements );
 #endif
 
+using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
 class tnlDenseMatrixTester : public CppUnit :: TestCase
 {
    public:
    typedef tnlDenseMatrix< RealType, Device, IndexType > MatrixType;
-   typedef tnlVector< RealType, Device, IndexType > VectorType;
+   typedef Vectors::Vector< RealType, Device, IndexType > VectorType;
    typedef tnlDenseMatrixTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
@@ -97,19 +91,19 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
-      if( Device::getDevice() == tnlHostDevice )
+      if( std::is_same< Device, Devices::Host >::value )
       {
          for( int i = 0; i < 10; i++ )
             m.setElementFast( i, i,  i );
       }
-      if( Device::getDevice() == tnlCudaDevice )
+      if( std::is_same< Device, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
-         MatrixType* kernel_m = tnlCuda::passToDevice( m );
+         MatrixType* kernel_m = Devices::Cuda::passToDevice( m );
          CPPUNIT_ASSERT( checkCudaDevice );
          setElementFastTestKernel<<< 1, 16 >>>( kernel_m );
          CPPUNIT_ASSERT( checkCudaDevice );
-         tnlCuda::freeFromDevice( kernel_m );
+         Devices::Cuda::freeFromDevice( kernel_m );
          CPPUNIT_ASSERT( checkCudaDevice );
 #endif
       }
@@ -141,20 +135,20 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
       m.setDimensions( 10, 10 );
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
-      if( Device::getDevice() == tnlHostDevice )
+      if( std::is_same< Device, Devices::Host >::value )
       {
          for( int i = 0; i < 10; i++ )
             for( int j = 0; j < 10; j++ )
                m.addElementFast( i, j, 1 );
       }
-      if( Device::getDevice() == tnlCudaDevice )
+      if( std::is_same< Device, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
-         MatrixType* kernel_m = tnlCuda::passToDevice( m );
+         MatrixType* kernel_m = Devices::Cuda::passToDevice( m );
          CPPUNIT_ASSERT( checkCudaDevice );
          addElementFastTestKernel<<< 1, 128 >>>( kernel_m );
          CPPUNIT_ASSERT( checkCudaDevice );
-         tnlCuda::freeFromDevice( kernel_m );
+         Devices::Cuda::freeFromDevice( kernel_m );
          CPPUNIT_ASSERT( checkCudaDevice );
 #endif
       }
@@ -175,8 +169,8 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
 
-      tnlVector< IndexType, tnlHost, IndexType > columns;
-      tnlVector< RealType, tnlHost, IndexType > values;
+      Vectors::Vector< IndexType, Devices::Host, IndexType > columns;
+      Vectors::Vector< RealType, Devices::Host, IndexType > values;
       columns.setSize( 10 );
       values.setSize( 10 );
       for( IndexType i = 0; i < 10; i++ )
@@ -207,8 +201,8 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
 
-      tnlVector< IndexType, Device, IndexType > columns;
-      tnlVector< RealType, Device, IndexType > values;
+      Vectors::Vector< IndexType, Device, IndexType > columns;
+      Vectors::Vector< RealType, Device, IndexType > values;
       columns.setSize( 10 );
       values.setSize( 10 );
       for( IndexType i = 0; i < 10; i++ )
@@ -216,16 +210,16 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
          columns.setElement( i,  i );
          values.setElement( i, i );
       }
-      if( Device::getDevice() == tnlHostDevice)
+      if( std::is_same< Device, Devices::Host >::value )
          m.setRowFast( 5, columns.getData(), values.getData(), 10 );
-      if( Device::getDevice() == tnlCudaDevice)
+      if( std::is_same< Device, Devices::Cuda >::value )
       {
 #ifdef HAVE_CUDA
-         MatrixType* kernel_m = tnlCuda::passToDevice( m );
+         MatrixType* kernel_m = Devices::Cuda::passToDevice( m );
          CPPUNIT_ASSERT( checkCudaDevice );
          setRowFastTestKernel<<< 1, 128 >>>( kernel_m, columns.getData(), values.getData(), ( IndexType ) 10 );
          CPPUNIT_ASSERT( checkCudaDevice );
-         tnlCuda::freeFromDevice( kernel_m );
+         Devices::Cuda::freeFromDevice( kernel_m );
          CPPUNIT_ASSERT( checkCudaDevice );
 #endif
       }
@@ -344,13 +338,13 @@ class tnlDenseMatrixTester : public CppUnit :: TestCase
 
 #ifdef HAVE_CUDA
 template< typename RealType, typename IndexType >
-__global__ void setElementFastTestKernel( tnlDenseMatrix< RealType, tnlCuda, IndexType >* matrix )
+__global__ void setElementFastTestKernel( tnlDenseMatrix< RealType, Devices::Cuda, IndexType >* matrix )
 {
    if( threadIdx.x < matrix->getRows() )
       matrix->setElementFast( threadIdx.x, threadIdx.x, threadIdx.x );
 }
 template< typename RealType, typename IndexType >
-__global__ void addElementFastTestKernel( tnlDenseMatrix< RealType, tnlCuda, IndexType >* matrix )
+__global__ void addElementFastTestKernel( tnlDenseMatrix< RealType, Devices::Cuda, IndexType >* matrix )
 {
 
    const IndexType column = threadIdx.x;
@@ -359,7 +353,7 @@ __global__ void addElementFastTestKernel( tnlDenseMatrix< RealType, tnlCuda, Ind
 }
 
 template< typename RealType, typename IndexType >
-__global__ void setRowFastTestKernel( tnlDenseMatrix< RealType, tnlCuda, IndexType >* matrix,
+__global__ void setRowFastTestKernel( tnlDenseMatrix< RealType, Devices::Cuda, IndexType >* matrix,
                                       const IndexType* columns,
                                       const RealType* values,
                                       const IndexType numberOfElements )

@@ -65,7 +65,7 @@ Element tnlArrayOperations< tnlCuda >::getMemoryElement( const Element* data )
 {
    tnlAssert( data, );
    Element result;
-   tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< Element, Element, int >( &result, data, 1 );
+   tnlArrayOperations< Devices::Host, tnlCuda >::copyMemory< Element, Element, int >( &result, data, 1 );
    return result;
 }
 
@@ -193,7 +193,7 @@ bool tnlArrayOperations< tnlCuda >::compareMemory( const Element1* destination,
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >
-bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory( DestinationElement* destination,
+bool tnlArrayOperations< Devices::Host, tnlCuda >::copyMemory( DestinationElement* destination,
                                                          const SourceElement* source,
                                                          const Index size )
 {
@@ -252,7 +252,7 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory( DestinationElement* des
 template< typename Element1,
           typename Element2,
           typename Index >
-bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( const Element1* destination,
+bool tnlArrayOperations< Devices::Host, tnlCuda >::compareMemory( const Element1* destination,
                                                             const Element2* source,
                                                             const Index size )
 {
@@ -283,7 +283,7 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( const Element1* dest
          delete[] host_buffer;
          return false;
       }
-      if( ! tnlArrayOperations< tnlHost >::compareMemory( &destination[ compared ], host_buffer, transfer ) )
+      if( ! tnlArrayOperations< Devices::Host >::compareMemory( &destination[ compared ], host_buffer, transfer ) )
       {
          delete[] host_buffer;
          return false;
@@ -304,7 +304,7 @@ bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( const Element1* dest
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >
-bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory( DestinationElement* destination,
+bool tnlArrayOperations< tnlCuda, Devices::Host >::copyMemory( DestinationElement* destination,
                                                          const SourceElement* source,
                                                          const Index size )
 {
@@ -362,14 +362,14 @@ bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory( DestinationElement* des
 template< typename Element1,
           typename Element2,
           typename Index >
-bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory( const Element1* hostData,
+bool tnlArrayOperations< tnlCuda, Devices::Host >::compareMemory( const Element1* hostData,
                                                             const Element2* deviceData,
                                                             const Index size )
 {
    tnlAssert( hostData, );
    tnlAssert( deviceData, );
    tnlAssert( size >= 0, cerr << "size = " << size );
-   return tnlArrayOperations< tnlHost, tnlCuda >::compareMemory( deviceData, hostData, size );
+   return tnlArrayOperations< Devices::Host, tnlCuda >::compareMemory( deviceData, hostData, size );
 }
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
@@ -503,51 +503,51 @@ extern template bool tnlArrayOperations< tnlCuda >::copyMemory< long double, lon
 #endif
 #endif
 
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< char,               char, int >( char* destination, const char* source, const int size );
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< int,                 int, int >( int* destination, const int* source, const int size );
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< long int,       long int, int >( long int* destination, const long int* source, const int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::copyMemory< char,               char, int >( char* destination, const char* source, const int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::copyMemory< int,                 int, int >( int* destination, const int* source, const int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::copyMemory< long int,       long int, int >( long int* destination, const long int* source, const int size );
 #ifdef INSTANTIATE_FLOAT
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< float,             float, int >( float* destination, const float* source, const int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::copyMemory< float,             float, int >( float* destination, const float* source, const int size );
 #endif
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< double,           double, int >( double* destination, const double* source, const int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::copyMemory< double,           double, int >( double* destination, const double* source, const int size );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< long double, long double, int >( long double* destination, const long double* source, const int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::copyMemory< long double, long double, int >( long double* destination, const long double* source, const int size );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< char,               char, long int >( char* destination, const char* source, const long int size );
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< int,                 int, long int >( int* destination, const int* source, const long int size );
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< long int,       long int, long int >( long int* destination, const long int* source, const long int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::copyMemory< char,               char, long int >( char* destination, const char* source, const long int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::copyMemory< int,                 int, long int >( int* destination, const int* source, const long int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::copyMemory< long int,       long int, long int >( long int* destination, const long int* source, const long int size );
 #ifdef INSTANTIATE_FLOAT
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< float,             float, long int >( float* destination, const float* source, const long int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::copyMemory< float,             float, long int >( float* destination, const float* source, const long int size );
 #endif
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< double,           double, long int >( double* destination, const double* source, const long int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::copyMemory< double,           double, long int >( double* destination, const double* source, const long int size );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< long double, long double, long int >( long double* destination, const long double* source, const long int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::copyMemory< long double, long double, long int >( long double* destination, const long double* source, const long int size );
 #endif
 #endif
 
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< char,               char, int >( char* destination, const char* source, const int size );
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< int,                 int, int >( int* destination, const int* source, const int size );
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< long int,       long int, int >( long int* destination, const long int* source, const int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::copyMemory< char,               char, int >( char* destination, const char* source, const int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::copyMemory< int,                 int, int >( int* destination, const int* source, const int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::copyMemory< long int,       long int, int >( long int* destination, const long int* source, const int size );
 #ifdef INSTANTIATE_FLOAT
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< float,             float, int >( float* destination, const float* source, const int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::copyMemory< float,             float, int >( float* destination, const float* source, const int size );
 #endif
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< double,           double, int >( double* destination, const double* source, const int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::copyMemory< double,           double, int >( double* destination, const double* source, const int size );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< long double, long double, int >( long double* destination, const long double* source, const int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::copyMemory< long double, long double, int >( long double* destination, const long double* source, const int size );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< char,               char, long int >( char* destination, const char* source, const long int size );
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< int,                 int, long int >( int* destination, const int* source, const long int size );
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< long int,       long int, long int >( long int* destination, const long int* source, const long int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::copyMemory< char,               char, long int >( char* destination, const char* source, const long int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::copyMemory< int,                 int, long int >( int* destination, const int* source, const long int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::copyMemory< long int,       long int, long int >( long int* destination, const long int* source, const long int size );
 #ifdef INSTANTIATE_FLOAT
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< float,             float, long int >( float* destination, const float* source, const long int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::copyMemory< float,             float, long int >( float* destination, const float* source, const long int size );
 #endif
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< double,           double, long int >( double* destination, const double* source, const long int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::copyMemory< double,           double, long int >( double* destination, const double* source, const long int size );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::copyMemory< long double, long double, long int >( long double* destination, const long double* source, const long int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::copyMemory< long double, long double, long int >( long double* destination, const long double* source, const long int size );
 #endif
 #endif
 
@@ -575,51 +575,51 @@ extern template bool tnlArrayOperations< tnlCuda >::compareMemory< long double, 
 #endif
 #endif
 
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory< char,               char, int >( const char* data1, const char* data2, const int size );
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory< int,                 int, int >( const int* data1, const int* data2, const int size );
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory< long int,       long int, int >( const long int* data1, const long int* data2, const int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::compareMemory< char,               char, int >( const char* data1, const char* data2, const int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::compareMemory< int,                 int, int >( const int* data1, const int* data2, const int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::compareMemory< long int,       long int, int >( const long int* data1, const long int* data2, const int size );
 #ifdef INSTANTIATE_FLOAT
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory< float,             float, int >( const float* data1, const float* data2, const int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::compareMemory< float,             float, int >( const float* data1, const float* data2, const int size );
 #endif
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory< double,           double, int >( const double* data1, const double* data2, const int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::compareMemory< double,           double, int >( const double* data1, const double* data2, const int size );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory< long double, long double, int >( const long double* data1, const long double* data2, const int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::compareMemory< long double, long double, int >( const long double* data1, const long double* data2, const int size );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory< char,               char, long int >( const char* data1, const char* data2, const long int size );
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory< int,                 int, long int >( const int* data1, const int* data2, const long int size );
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory< long int,       long int, long int >( const long int* data1, const long int* data2, const long int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::compareMemory< char,               char, long int >( const char* data1, const char* data2, const long int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::compareMemory< int,                 int, long int >( const int* data1, const int* data2, const long int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::compareMemory< long int,       long int, long int >( const long int* data1, const long int* data2, const long int size );
 #ifdef INSTANTIATE_FLOAT
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory< float,             float, long int >( const float* data1, const float* data2, const long int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::compareMemory< float,             float, long int >( const float* data1, const float* data2, const long int size );
 #endif
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory< double,           double, long int >( const double* data1, const double* data2, const long int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::compareMemory< double,           double, long int >( const double* data1, const double* data2, const long int size );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template bool tnlArrayOperations< tnlCuda, tnlHost >::compareMemory< long double, long double, long int >( const long double* data1, const long double* data2, const long int size );
+extern template bool tnlArrayOperations< tnlCuda, Devices::Host >::compareMemory< long double, long double, long int >( const long double* data1, const long double* data2, const long int size );
 #endif
 #endif
 
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< char,               char, int >( const char* data1, const char* data2, const int size );
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< int,                 int, int >( const int* data1, const int* data2, const int size );
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< long int,       long int, int >( const long int* data1, const long int* data2, const int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::compareMemory< char,               char, int >( const char* data1, const char* data2, const int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::compareMemory< int,                 int, int >( const int* data1, const int* data2, const int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::compareMemory< long int,       long int, int >( const long int* data1, const long int* data2, const int size );
 #ifdef INSTANTIATE_FLOAT
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< float,             float, int >( const float* data1, const float* data2, const int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::compareMemory< float,             float, int >( const float* data1, const float* data2, const int size );
 #endif
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< double,           double, int >( const double* data1, const double* data2, const int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::compareMemory< double,           double, int >( const double* data1, const double* data2, const int size );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< long double, long double, int >( const long double* data1, const long double* data2, const int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::compareMemory< long double, long double, int >( const long double* data1, const long double* data2, const int size );
 #endif
 
 #ifdef INSTANTIATE_LONG_INT
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< char,               char, long int >( const char* data1, const char* data2, const long int size );
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< int,                 int, long int >( const int* data1, const int* data2, const long int size );
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< long int,       long int, long int >( const long int* data1, const long int* data2, const long int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::compareMemory< char,               char, long int >( const char* data1, const char* data2, const long int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::compareMemory< int,                 int, long int >( const int* data1, const int* data2, const long int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::compareMemory< long int,       long int, long int >( const long int* data1, const long int* data2, const long int size );
 #ifdef INSTANTIATE_FLOAT
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< float,             float, long int >( const float* data1, const float* data2, const long int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::compareMemory< float,             float, long int >( const float* data1, const float* data2, const long int size );
 #endif
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< double,           double, long int >( const double* data1, const double* data2, const long int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::compareMemory< double,           double, long int >( const double* data1, const double* data2, const long int size );
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template bool tnlArrayOperations< tnlHost, tnlCuda >::compareMemory< long double, long double, long int >( const long double* data1, const long double* data2, const long int size );
+extern template bool tnlArrayOperations< Devices::Host, tnlCuda >::compareMemory< long double, long double, long int >( const long double* data1, const long double* data2, const long int size );
 #endif
 #endif
 

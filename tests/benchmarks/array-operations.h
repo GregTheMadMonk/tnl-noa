@@ -2,9 +2,9 @@
 
 #include "benchmarks.h"
 
-#include <core/arrays/tnlArray.h>
+#include <TNL/Arrays/Array.h>
 
-namespace tnl
+namespace TNL
 {
 namespace benchmarks
 {
@@ -16,20 +16,24 @@ benchmarkArrayOperations( Benchmark & benchmark,
                           const int & loops,
                           const int & size )
 {
-    typedef tnlArray< Real, tnlHost, Index > HostArray;
-    typedef tnlArray< Real, tnlCuda, Index > CudaArray;
+    typedef Arrays::Array< Real, Devices::Host, Index > HostArray;
+    typedef Arrays::Array< Real, Devices::Cuda, Index > CudaArray;
     using namespace std;
 
     double datasetSize = ( double ) ( loops * size ) * sizeof( Real ) / oneGB;
 
     HostArray hostArray, hostArray2;
     CudaArray deviceArray, deviceArray2;
-    hostArray.setSize( size );
-    if( ! deviceArray.setSize( size ) )
+    if( ! hostArray.setSize( size ) ||
+        ! hostArray2.setSize( size ) ||
+        ! deviceArray.setSize( size ) ||
+        ! deviceArray2.setSize( size ) )
+    {
+        const char* msg = "error: allocation of arrays failed";
+        std::cerr << msg << std::endl;
+        benchmark.addErrorMessage( msg );
         return false;
-    hostArray2.setLike( hostArray );
-    if( ! deviceArray2.setLike( deviceArray ) )
-        return false;
+    }
 
     Real resultHost, resultDevice;
 
@@ -86,6 +90,52 @@ benchmarkArrayOperations( Benchmark & benchmark,
     benchmark.time( reset1,
                     "CPU->GPU", copyAssignHostCuda,
                     "GPU->CPU", copyAssignCudaHost );
+
+
+    auto setValueHost = [&]() {
+        hostArray.setValue( 3.0 );
+    };
+    auto setValueCuda = [&]() {
+        deviceArray.setValue( 3.0 );
+    };
+    benchmark.setOperation( "setValue", datasetSize );
+    benchmark.time( reset1,
+                    "CPU", setValueHost,
+                    "GPU", setValueCuda );
+
+
+    auto setSizeHost = [&]() {
+        hostArray.setSize( size );
+    };
+    auto setSizeCuda = [&]() {
+        deviceArray.setSize( size );
+    };
+    auto resetSize1 = [&]() {
+        hostArray.reset();
+        deviceArray.reset();
+    };
+    benchmark.setOperation( "allocation (setSize)", datasetSize );
+    benchmark.time( resetSize1,
+                    "CPU", setSizeHost,
+                    "GPU", setSizeCuda );
+
+
+    auto resetSizeHost = [&]() {
+        hostArray.reset();
+    };
+    auto resetSizeCuda = [&]() {
+        deviceArray.reset();
+    };
+    auto setSize1 = [&]() {
+        hostArray.setSize( size );
+        deviceArray.setSize( size );
+    };
+    benchmark.setOperation( "deallocation (reset)", datasetSize );
+    benchmark.time( setSize1,
+                    "CPU", resetSizeHost,
+                    "GPU", resetSizeCuda );
+
+    return true;
 }
 
 } // namespace benchmarks

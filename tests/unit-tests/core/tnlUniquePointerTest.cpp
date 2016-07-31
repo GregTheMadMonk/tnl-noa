@@ -16,7 +16,7 @@
  ***************************************************************************/
 
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 #include <cstdlib>
 
 #include "tnlUniquePointerTester.h"

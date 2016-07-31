@@ -1,24 +1,17 @@
 /***************************************************************************
-                          tnlCudaTester.h  -  description
+                          Devices::CudaTester.h  -  description
                              -------------------
     begin                : Mar 20, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+/* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUDATESTER_H_
-#define TNLCUDATESTER_H_
+#ifndef tnlCudaTESTER_H_
+#define tnlCudaTESTER_H_
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -26,7 +19,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlCuda.h>
+#include <TNL/Devices/Cuda.h>
 
 
 #ifdef HAVE_CUDA
@@ -37,23 +30,24 @@ __global__ void simpleKernel()
 }
 #endif
 
+using namespace TNL;
 
-class tnlCudaTester : public CppUnit :: TestCase
+class Devices::CudaTester : public CppUnit :: TestCase
 {
    public:
-   tnlCudaTester(){};
+   Devices::CudaTester(){};
 
    virtual
-   ~tnlCudaTester(){};
+   ~Devices::CudaTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlCudaTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "Devices::CudaTester" );
       CppUnit :: TestResult result;
 
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlCudaTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< Devices::CudaTester >(
                                 "deviceTest",
-                                &tnlCudaTester :: deviceTest )
+                                &Devices::CudaTester :: deviceTest )
                                );
       return suiteOfTests;
    };
@@ -67,7 +61,7 @@ class tnlCudaTester : public CppUnit :: TestCase
       simpleKernel<<< gridSize, blockSize >>>();
       if( ! checkCudaDevice )
       {
-         cerr << "Test with simple kernel failed. It seems that the CUDA device does not work properly." << endl;
+         std::cerr << "Test with simple kernel failed. It seems that the CUDA device does not work properly." << std::endl;
          CPPUNIT_ASSERT( false );
       }
 #endif
@@ -80,4 +74,4 @@ class tnlCudaTester
 {};
 #endif /* HAVE_CPPUNIT */
 
-#endif /* TNLCUDATESTER_H_ */
+#endif /* Devices::CudaTESTER_H_ */

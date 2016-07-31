@@ -18,22 +18,22 @@
 #ifndef TNL_MEAN_CURVATURE_FLOW_EOC_H_
 #define TNL_MEAN_CURVATURE_FLOW_EOC_H_
 
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlFastBuildConfigTag.h>
-#include <solvers/tnlBuildConfigTags.h>
-#include <functions/tnlTestFunction.h>
-#include <operators/tnlDirichletBoundaryConditions.h>
-#include <operators/tnlNeumannBoundaryConditions.h>
-#include <problems/tnlMeanCurvatureFlowEocRhs.h>
-#include <problems/tnlMeanCurvatureFlowEocProblem.h>
-#include <operators/diffusion/tnlExactNonlinearDiffusion.h>
-#include <operators/diffusion/tnlNonlinearDiffusion.h>
-#include <operators/operator-Q/tnlOneSideDiffOperatorQ.h>
-#include <operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
-#include <operators/diffusion/tnlExactNonlinearDiffusion.h>
-#include <operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
-#include <operators/diffusion/nonlinear-diffusion-operators/tnlFiniteVolumeNonlinearOperator.h>
-#include <operators/geometric/tnlExactGradientNorm.h>
+#include <TNL/solvers/tnlSolver.h>
+#include <TNL/solvers/tnlFastBuildConfigTag.h>
+#include <TNL/solvers/tnlBuildConfigTags.h>
+#include <TNL/Functions/tnlTestFunction.h>
+#include <TNL/operators/tnlDirichletBoundaryConditions.h>
+#include <TNL/operators/tnlNeumannBoundaryConditions.h>
+#include <TNL/problems/tnlMeanCurvatureFlowEocRhs.h>
+#include <TNL/problems/tnlMeanCurvatureFlowEocProblem.h>
+#include <TNL/operators/diffusion/tnlExactNonlinearDiffusion.h>
+#include <TNL/operators/diffusion/tnlNonlinearDiffusion.h>
+#include <TNL/operators/operator-Q/tnlOneSideDiffOperatorQ.h>
+#include <TNL/operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
+#include <TNL/operators/diffusion/tnlExactNonlinearDiffusion.h>
+#include <TNL/operators/diffusion/nonlinear-diffusion-operators/tnlOneSideDiffNonlinearOperator.h>
+#include <TNL/operators/diffusion/nonlinear-diffusion-operators/tnlFiniteVolumeNonlinearOperator.h>
+#include <TNL/operators/geometric/tnlExactGradientNorm.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
@@ -42,12 +42,12 @@ template< typename ConfigTag >
 class meanCurvatureFlowEocConfig
 {
    public:
-      static void configSetup( tnlConfigDescription& config )
+      static void configSetup( Config::ConfigDescription& config )
       {
          config.addDelimiter( "Mean Curvature Flow EOC settings:" );         
-         config.addEntry< tnlString >( "numerical-scheme", "Numerical scheme for the solution approximation.", "fvm" );
-            config.addEntryEnum< tnlString >( "fdm" );
-            config.addEntryEnum< tnlString >( "fvm" );
+         config.addEntry< String >( "numerical-scheme", "Numerical scheme for the solution approximation.", "fvm" );
+            config.addEntryEnum< String >( "fdm" );
+            config.addEntryEnum< String >( "fvm" );
 
          config.addEntry< double >( "eps", "This sets a eps in operator Q.", 1.0 );
          config.addDelimiter( "Tests setting::" );         
@@ -72,7 +72,7 @@ class meanCurvatureFlowEocSetter
    typedef typename MeshType::VertexType Vertex;
    enum { Dimensions = MeshType::meshDimensions };
 
-   static bool run( const tnlParameterContainer& parameters )
+   static bool run( const Config::ParameterContainer& parameters )
    {
 
       typedef tnlFiniteVolumeOperatorQ<MeshType, Real, Index, 0> OperatorQ;
@@ -81,7 +81,7 @@ class meanCurvatureFlowEocSetter
       typedef tnlExactNonlinearDiffusion< tnlExactGradientNorm< Dimensions >, Dimensions > ExactOperator;
       typedef tnlTestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
       typedef tnlMeanCurvatureFlowEocRhs< ExactOperator, TestFunction, Dimensions > RightHandSide;
-      typedef tnlStaticVector < MeshType::meshDimensions, Real > Vertex;
+      typedef StaticVector < MeshType::meshDimensions, Real > Vertex;
       typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Dimensions, Real, Index > BoundaryConditions;
       typedef tnlMeanCurvatureFlowEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;

@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <core/tnlHost.h>
+#include <core/Devices::Host.h>
 #include <core/tnlCuda.h>
 #include <core/tnlDeviceObjectBase.h>
 
@@ -28,7 +28,7 @@ class tnlDeviceObject
 };
 
 template< typename Object >
-class tnlDeviceObject< Object, tnlHost > : public tnlDeviceObjectBase
+class tnlDeviceObject< Object, Devices::Host > : public tnlDeviceObjectBase
 {   
    public:
       
@@ -118,10 +118,10 @@ class tnlDeviceObject< Object, tnlCuda > : public tnlDeviceObjectBase
       template< typename Device >
       const Object& object() const
       {
-         tnlAssert( std::is_same< Device, tnlHost >::value ||
+         tnlAssert( std::is_same< Device, Devices::Host >::value ||
                     std::is_same< Device, tnlCuda >::value, );
 
-         if( std::is_same< Device, tnlHost >::value )
+         if( std::is_same< Device, Devices::Host >::value )
             return *this->pointer;
          return *this->device_pointer;
       }            

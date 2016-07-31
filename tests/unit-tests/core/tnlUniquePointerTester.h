@@ -52,14 +52,14 @@ class tnlUniquePointerTester : public CppUnit :: TestCase
    {
       typedef tnlStaticArray< 2, int  > TestType;
       
-      tnlUniquePointer< TestType, tnlHost > ptr1;
+      tnlUniquePointer< TestType, Devices::Host > ptr1;
       
       ptr1->x() = 0;
       ptr1->y() = 0;
       
       CPPUNIT_ASSERT( ptr1->x() == 0 && ptr1->y() == 0 );
       
-      tnlUniquePointer< TestType, tnlHost > ptr2( 1, 2 );
+      tnlUniquePointer< TestType, Devices::Host > ptr2( 1, 2 );
       
       CPPUNIT_ASSERT( ptr2->x() == 1 && ptr2->y() == 2 );
       
