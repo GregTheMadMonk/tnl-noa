@@ -268,7 +268,8 @@ bool tnlMatrixReader< Matrix >::computeRowLengthsFromMtxFile( std::istream& file
                                                               const int columns,
                                                               const int rows,
                                                               bool symmetricMatrix,
-                                                              bool verbose )
+                                                              bool verbose,
+                                                              bool symReader )
 {
    file.clear();
    file.seekg( 0,  ios::beg );
@@ -303,9 +304,13 @@ bool tnlMatrixReader< Matrix >::computeRowLengthsFromMtxFile( std::istream& file
          cerr << "There are more elements than the matrix columns at the row " << row << "." << endl;
          return false;
       }
-      if( symmetricMatrix && row != column )
+      if( symmetricMatrix && row != column && symReader )
       {
          continue;
+      }
+      else if( symmetricMatrix && row != column )
+      {
+          rowLengths[ column - 1 ]++;
       }
    }
    file.clear();

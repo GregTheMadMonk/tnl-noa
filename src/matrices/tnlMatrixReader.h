@@ -76,7 +76,8 @@ class tnlMatrixReader
                                              const int columns,
                                              const int rows,
                                              bool symmetricMatrix,
-                                             bool verbose );
+                                             bool verbose,
+                                             bool symReader = false );
 
    static bool readMatrixElementsFromMtxFile( std::istream& file,
                                               Matrix& matrix,
