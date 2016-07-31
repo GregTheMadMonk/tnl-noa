@@ -145,11 +145,11 @@ endif()
 ####
 # Check for cppunit
 #
-FIND_PATH(CPPUNIT_INCLUDE_DIR cppunit/TestCase.h
-  /usr/local/include
-  /usr/include
-  DOC "CppUnit headers."
-)
+#FIND_PATH(CPPUNIT_INCLUDE_DIR cppunit/TestCase.h
+#  /usr/local/include
+#  /usr/include
+#  DOC "CppUnit headers."
+#)
 
 ####
 # With Win32, important to have both
@@ -175,21 +175,6 @@ else(WIN32)
                /usr/lib)
 endif(WIN32)
 
-
-if( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
-      message( "CPPUNIT not found." )
-      set( HAVE_CPPUNIT "//#define HAVE_CPPUNIT" )
-else( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
-  message( "CPPUNIT headers found -- ${CPPUNIT_INCLUDE_DIR}" )
-  if(CPPUNIT_LIBRARY)
-    message( "CPPUNIT library found -- ${CPPUNIT_LIBRARY}" )
-    set(CPPUNIT_FOUND "YES")
-    set(CPPUNIT_LIBRARIES ${CPPUNIT_LIBRARY} ${CMAKE_DL_LIBS})
-    set(CPPUNIT_DEBUG_LIBRARIES ${CPPUNIT_DEBUG_LIBRARY}
-                                ${CMAKE_DL_LIBS})
-   set( HAVE_CPPUNIT "#define HAVE_CPPUNIT" )
-  endif(CPPUNIT_LIBRARY)
-endif( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
 
 #if( BUILD_MPI )
 #   FIND_PATH( PETSC_INCLUDE_DIR petsc.h

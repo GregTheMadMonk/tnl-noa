@@ -33,7 +33,7 @@
 #include <matrices/tnlChunkedEllpackMatrix.h>
 #include <matrices/tnlMatrixReader.h>
 #include <matrices/tnlBiEllpackMatrix.h>
-#include <matrices/tnlAdEllpackMatrix.h>
+//#include <matrices/tnlAdEllpackMatrix.h>
 #include <core/tnlTimerRT.h>
 #include "tnlCusparseCSRMatrix.h"
 
@@ -744,6 +744,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
   //                        baseline,
   //                        verbose,
   //                        logFile );
+/*
 #ifdef HAVE_CUDA
          typedef tnlAdEllpackMatrix< Real, tnlCuda, int > AdEllpackMatrixCudaType;
          AdEllpackMatrixCudaType cudaAdEllpackMatrix;
@@ -771,6 +772,7 @@ bool setupBenchmark( const tnlParameterContainer& parameters )
          cudaAdEllpackMatrix.reset();
 	}
 #endif
+*/
 //         adEllpackMatrix.reset();
 //      }
    }

@@ -47,7 +47,7 @@ class tnlMatrixReader
    static bool readMtxFileHostMatrix( std::istream& file,
                                       Matrix& matrix,
                                       typename Matrix::RowLengthsVector& rowLengths,
-                                      bool verbose
+                                      bool verbose,
                                       bool symReader );
 
 
