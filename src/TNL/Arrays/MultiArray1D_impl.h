@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMultiArray1D_impl.h  -  description
+                          MultiArray1D_impl.h  -  description
                              -------------------
     begin                : Nov 13, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -14,14 +14,14 @@ namespace TNL {
 namespace Arrays {   
 
 template< typename Element, typename Device, typename Index >
-tnlMultiArray< 1, Element, Device, Index > :: tnlMultiArray()
+MultiArray< 1, Element, Device, Index > :: MultiArray()
 {
 }
 
 template< typename Element, typename Device, typename Index >
-String tnlMultiArray< 1, Element, Device, Index > :: getType()
+String MultiArray< 1, Element, Device, Index > :: getType()
 {
-   return String( "tnlMultiArray< ") +
+   return String( "MultiArray< ") +
           String( Dimensions ) +
           String( ", " ) +
           String( TNL::getType< Element >() ) +
@@ -35,7 +35,7 @@ String tnlMultiArray< 1, Element, Device, Index > :: getType()
 template< typename Element,
           typename Device,
           typename Index >
-String tnlMultiArray< 1, Element, Device, Index > :: getTypeVirtual() const
+String MultiArray< 1, Element, Device, Index > :: getTypeVirtual() const
 {
    return this->getType();
 };
@@ -43,7 +43,7 @@ String tnlMultiArray< 1, Element, Device, Index > :: getTypeVirtual() const
 template< typename Element,
           typename Device,
           typename Index >
-String tnlMultiArray< 1, Element, Device, Index > :: getSerializationType()
+String MultiArray< 1, Element, Device, Index > :: getSerializationType()
 {
    return HostType::getType();
 };
@@ -51,13 +51,13 @@ String tnlMultiArray< 1, Element, Device, Index > :: getSerializationType()
 template< typename Element,
           typename Device,
           typename Index >
-String tnlMultiArray< 1, Element, Device, Index > :: getSerializationTypeVirtual() const
+String MultiArray< 1, Element, Device, Index > :: getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 };
 
 template< typename Element, typename Device, typename Index >
-bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const Index iSize )
+bool MultiArray< 1, Element, Device, Index > :: setDimensions( const Index iSize )
 {
    Assert( iSize > 0,
               std::cerr << "iSize = " << iSize );
@@ -66,7 +66,7 @@ bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const Index iS
 }
 
 template< typename Element, typename Device, typename Index >
-bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const Vectors::StaticVector< 1, Index >& dimensions )
+bool MultiArray< 1, Element, Device, Index > :: setDimensions( const Vectors::StaticVector< 1, Index >& dimensions )
 {
    Assert( dimensions[ 0 ] > 0,
               std::cerr << " dimensions[ 0 ] = " << dimensions[ 0 ] );
@@ -75,14 +75,14 @@ bool tnlMultiArray< 1, Element, Device, Index > :: setDimensions( const Vectors:
 }
 
 template< typename Element, typename Device, typename Index >
-   template< typename MultiArray >
-bool tnlMultiArray< 1, Element, Device, Index > :: setLike( const MultiArray& multiArray )
+   template< typename MultiArrayT >
+bool MultiArray< 1, Element, Device, Index > :: setLike( const MultiArrayT& multiArray )
 {
    return setDimensions( multiArray. getDimensions() );
 }
 
 template< typename Element, typename Device, typename Index >
-void tnlMultiArray< 1, Element, Device, Index >::reset()
+void MultiArray< 1, Element, Device, Index >::reset()
 {
    this->dimensions = Vectors::StaticVector< 1, Index >( ( Index ) 0 );
    Array< Element, Device, Index >::reset();
@@ -90,21 +90,21 @@ void tnlMultiArray< 1, Element, Device, Index >::reset()
 
 template< typename Element, typename Device, typename Index >
 __cuda_callable__
-void tnlMultiArray< 1, Element, Device, Index > :: getDimensions( Index& xSize ) const
+void MultiArray< 1, Element, Device, Index > :: getDimensions( Index& xSize ) const
 {
    xSize = this->dimensions[ 0 ];
 }
 
 template< typename Element, typename Device, typename Index >
 __cuda_callable__
-const Vectors::StaticVector< 1, Index >& tnlMultiArray< 1, Element, Device, Index > :: getDimensions() const
+const Vectors::StaticVector< 1, Index >& MultiArray< 1, Element, Device, Index > :: getDimensions() const
 {
    return this->dimensions;
 }
 
 template< typename Element, typename Device, typename Index >
 __cuda_callable__
-Index tnlMultiArray< 1, Element, Device, Index > :: getElementIndex( const Index i ) const
+Index MultiArray< 1, Element, Device, Index > :: getElementIndex( const Index i ) const
 {
    Assert( i >= 0 && i < this->dimensions[ 0 ],
               std::cerr << "i = " << i << " this->dimensions[ 0 ] = " <<  this->dimensions[ 0 ] );
@@ -112,34 +112,34 @@ Index tnlMultiArray< 1, Element, Device, Index > :: getElementIndex( const Index
 }
 
 template< typename Element, typename Device, typename Index >
-Element tnlMultiArray< 1, Element, Device, Index > :: getElement( const Index i ) const
+Element MultiArray< 1, Element, Device, Index > :: getElement( const Index i ) const
 {
    return Array< Element, Device, Index > :: getElement( getElementIndex( i ) );
 }
 
 template< typename Element, typename Device, typename Index >
-void tnlMultiArray< 1, Element, Device, Index > :: setElement( const Index i, Element value )
+void MultiArray< 1, Element, Device, Index > :: setElement( const Index i, Element value )
 {
    Array< Element, Device, Index > :: setElement( getElementIndex( i ), value );
 }
 
 template< typename Element, typename Device, typename Index >
 __cuda_callable__
-Element& tnlMultiArray< 1, Element, Device, Index > :: operator()( const Index element )
+Element& MultiArray< 1, Element, Device, Index > :: operator()( const Index element )
 {
    return Array< Element, Device, Index > :: operator[]( getElementIndex( element ) );
 }
 
 template< typename Element, typename Device, typename Index >
 __cuda_callable__
-const Element& tnlMultiArray< 1, Element, Device, Index > :: operator()( const Index element ) const
+const Element& MultiArray< 1, Element, Device, Index > :: operator()( const Index element ) const
 {
    return Array< Element, Device, Index > :: operator[]( getElementIndex( element ) );
 }
 
 template< typename Element, typename Device, typename Index >
-   template< typename MultiArray >
-bool tnlMultiArray< 1, Element, Device, Index > :: operator == ( const MultiArray& array ) const
+   template< typename MultiArrayT >
+bool MultiArray< 1, Element, Device, Index > :: operator == ( const MultiArrayT& array ) const
 {
    // TODO: Static assert on dimensions
    Assert( this->getDimensions() == array. getDimensions(),
@@ -150,15 +150,15 @@ bool tnlMultiArray< 1, Element, Device, Index > :: operator == ( const MultiArra
 }
 
 template< typename Element, typename Device, typename Index >
-   template< typename MultiArray >
-bool tnlMultiArray< 1, Element, Device, Index > :: operator != ( const MultiArray& array ) const
+   template< typename MultiArrayT >
+bool MultiArray< 1, Element, Device, Index > :: operator != ( const MultiArrayT& array ) const
 {
    return ! ( (* this ) == array );
 }
 
 template< typename Element, typename Device, typename Index >
-tnlMultiArray< 1, Element, Device, Index >&
-   tnlMultiArray< 1, Element, Device, Index > :: operator = ( const tnlMultiArray< 1, Element, Device, Index >& array )
+MultiArray< 1, Element, Device, Index >&
+   MultiArray< 1, Element, Device, Index > :: operator = ( const MultiArray< 1, Element, Device, Index >& array )
 {
    // TODO: Static assert on dimensions
    Assert( this->getDimensions() == array. getDimensions(),
@@ -170,9 +170,9 @@ tnlMultiArray< 1, Element, Device, Index >&
 }
 
 template< typename Element, typename Device, typename Index >
-   template< typename MultiArray >
-tnlMultiArray< 1, Element, Device, Index >&
-   tnlMultiArray< 1, Element, Device, Index > :: operator = ( const MultiArray& array )
+   template< typename MultiArrayT >
+MultiArray< 1, Element, Device, Index >&
+   MultiArray< 1, Element, Device, Index > :: operator = ( const MultiArrayT& array )
 {
    // TODO: Static assert on dimensions
    Assert( this->getDimensions() == array. getDimensions(),
@@ -184,51 +184,51 @@ tnlMultiArray< 1, Element, Device, Index >&
 }
 
 template< typename Element, typename Device, typename Index >
-bool tnlMultiArray< 1, Element, Device, Index > :: save( File& file ) const
+bool MultiArray< 1, Element, Device, Index > :: save( File& file ) const
 {
    if( ! Array< Element, Device, Index > :: save( file ) )
    {
-      std::cerr << "I was not able to write the Array of tnlMultiArray." << std::endl;
+      std::cerr << "I was not able to write the Array of MultiArray." << std::endl;
       return false;
    }
    if( ! dimensions. save( file ) )
    {
-      std::cerr << "I was not able to write the dimensions of tnlMultiArray." << std::endl;
+      std::cerr << "I was not able to write the dimensions of MultiArray." << std::endl;
       return false;
    }
    return true;
 }
 
 template< typename Element, typename Device, typename Index >
-bool tnlMultiArray< 1, Element, Device, Index > :: load( File& file )
+bool MultiArray< 1, Element, Device, Index > :: load( File& file )
 {
    if( ! Array< Element, Device, Index > :: load( file ) )
    {
-      std::cerr << "I was not able to read the Array of tnlMultiArray." << std::endl;
+      std::cerr << "I was not able to read the Array of MultiArray." << std::endl;
       return false;
    }
    if( ! dimensions. load( file ) )
    {
-      std::cerr << "I was not able to read the dimensions of tnlMultiArray." << std::endl;
+      std::cerr << "I was not able to read the dimensions of MultiArray." << std::endl;
       return false;
    }
    return true;
 }
 
 template< typename Element, typename Device, typename Index >
-bool tnlMultiArray< 1, Element, Device, Index > :: save( const String& fileName ) const
+bool MultiArray< 1, Element, Device, Index > :: save( const String& fileName ) const
 {
    return Object :: save( fileName );
 }
 
 template< typename Element, typename Device, typename Index >
-bool tnlMultiArray< 1, Element, Device, Index > :: load( const String& fileName )
+bool MultiArray< 1, Element, Device, Index > :: load( const String& fileName )
 {
    return Object :: load( fileName );
 }
 
 template< typename Element, typename Device, typename Index >
-std::ostream& operator << ( std::ostream& str, const tnlMultiArray< 1, Element, Device, Index >& array )
+std::ostream& operator << ( std::ostream& str, const MultiArray< 1, Element, Device, Index >& array )
 {
    for( Index i = 0; i < array. getDimensions()[ 0 ]; i ++ )
    {

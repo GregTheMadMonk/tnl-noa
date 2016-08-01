@@ -23,9 +23,10 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlUniquePointer.h>
-#include <core/arrays/tnlStaticArray.h>
+#include <TNL/tnlUniquePointer.h>
+#include <TNL/Arrays/StaticArray.h>
 
+using namespace TNL;
 
 class tnlUniquePointerTester : public CppUnit :: TestCase
 {
@@ -50,7 +51,7 @@ class tnlUniquePointerTester : public CppUnit :: TestCase
 
    void testConstructor()
    {
-      typedef tnlStaticArray< 2, int  > TestType;
+      typedef TNL::Arrays::StaticArray< 2, int  > TestType;
       
       tnlUniquePointer< TestType, Devices::Host > ptr1;
       

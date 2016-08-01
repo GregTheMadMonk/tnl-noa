@@ -11,8 +11,8 @@
 #pragma once
 
 #include <TNL/operators/tnlOperator.h>
-#include <TNL/Functions/Analytic/tnlConstantFunction.h>
-#include <TNL/Functions/tnlFunctionAdapter.h>
+#include <TNL/Functions/Analytic/ConstantFunction.h>
+#include <TNL/Functions/FunctionAdapter.h>
 
 namespace TNL {
 
@@ -77,7 +77,7 @@ class tnlDirichletBoundaryConditions
                                  const RealType& time = 0 ) const
       {
          //static_assert( EntityType::getDimensions() == MeshEntitiesDimensions, "Wrong mesh entity dimensions." );
-         return Functions::tnlFunctionAdapter< MeshType, Function >::template getValue( this->function, entity, time );
+         return Functions::FunctionAdapter< MeshType, Function >::template getValue( this->function, entity, time );
       }
 
       template< typename EntityType >
@@ -104,7 +104,7 @@ class tnlDirichletBoundaryConditions
          typename Matrix::MatrixRow matrixRow = matrix.getRow( entity.getIndex() );
          const IndexType& index = entity.getIndex();
          matrixRow.setElement( 0, index, 1.0 );
-         b[ index ] = Functions::tnlFunctionAdapter< MeshType, Function >::getValue( this->function, entity, time );
+         b[ index ] = Functions::FunctionAdapter< MeshType, Function >::getValue( this->function, entity, time );
       }
  
 

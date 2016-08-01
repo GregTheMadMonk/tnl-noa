@@ -54,7 +54,7 @@ class tnlMeshSuperentityTraits
     * method. We introduce it because of the compatibility with the subentities
     * which are usually stored in static array.
     */
-   typedef Arrays::tnlSharedArray< GlobalIndexType, Devices::Host, LocalIndexType >       AccessArrayType;
+   typedef Arrays::SharedArray< GlobalIndexType, Devices::Host, LocalIndexType >       AccessArrayType;
 
    /****
     * This is used by the mesh initializer.

@@ -58,7 +58,7 @@ class tnlCoFVMGradientNormTest
       {
          this->setupMesh( meshSize );
  
-         Functions::tnlMeshFunction< MeshType > u;
+         Functions::MeshFunction< MeshType > u;
  
          typename ApproximateOperator::InnerOperator gradientNorm;
          typename ApproximateOperator::OuterOperator interpolant;
@@ -115,7 +115,7 @@ template< typename Mesh,
           bool verbose >
 bool setTestFunction()
 {
-   return setDifferenceOperator< Mesh, Functions::tnlExpBumpFunction< Mesh::getMeshDimensions(), double >, write, verbose >();
+   return setDifferenceOperator< Mesh, Functions::ExpBumpFunction< Mesh::getMeshDimensions(), double >, write, verbose >();
 }
 
 template< typename Device,

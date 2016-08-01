@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlStaticArray.h  -  description
+                          StaticArray.h  -  description
                              -------------------
     begin                : Feb 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -21,7 +21,7 @@ namespace Arrays {
 enum { tnlX = 0, tnlY, tnlZ };
 
 template< int Size, typename Element >
-class tnlStaticArray
+class StaticArray
 {
    public:
    typedef Element ElementType;
@@ -29,18 +29,18 @@ class tnlStaticArray
    enum { size = Size };
 
    __cuda_callable__
-   inline tnlStaticArray();
+   inline StaticArray();
 
    __cuda_callable__
-   inline tnlStaticArray( const Element v[ Size ] );
+   inline StaticArray( const Element v[ Size ] );
 
    //! This sets all vector components to v
    __cuda_callable__
-   inline tnlStaticArray( const Element& v );
+   inline StaticArray( const Element& v );
 
    //! Copy constructor
    __cuda_callable__
-   inline tnlStaticArray( const tnlStaticArray< Size, Element >& v );
+   inline StaticArray( const StaticArray< Size, Element >& v );
 
    static String getType();
 
@@ -60,11 +60,11 @@ class tnlStaticArray
    inline Element& operator[]( int i );
 
    __cuda_callable__
-   inline tnlStaticArray< Size, Element >& operator = ( const tnlStaticArray< Size, Element >& array );
+   inline StaticArray< Size, Element >& operator = ( const StaticArray< Size, Element >& array );
 
    template< typename Array >
    __cuda_callable__
-   inline tnlStaticArray< Size, Element >& operator = ( const Array& array );
+   inline StaticArray< Size, Element >& operator = ( const Array& array );
 
    template< typename Array >
    __cuda_callable__
@@ -76,7 +76,7 @@ class tnlStaticArray
  
    template< typename OtherElement >
    __cuda_callable__
-   operator tnlStaticArray< Size, OtherElement >() const;
+   operator StaticArray< Size, OtherElement >() const;
 
    __cuda_callable__
    inline void setValue( const ElementType& val );
@@ -95,7 +95,7 @@ class tnlStaticArray
 };
 
 template< typename Element >
-class tnlStaticArray< 1, Element >
+class StaticArray< 1, Element >
 {
    public:
    typedef Element ElementType;
@@ -103,17 +103,17 @@ class tnlStaticArray< 1, Element >
    enum { size = 1 };
 
    __cuda_callable__
-   inline tnlStaticArray();
+   inline StaticArray();
 
    __cuda_callable__
-   inline tnlStaticArray( const Element v[ size ] );
+   inline StaticArray( const Element v[ size ] );
 
    __cuda_callable__
-   inline tnlStaticArray( const Element& v );
+   inline StaticArray( const Element& v );
 
    //! Copy constructor
    __cuda_callable__
-   inline tnlStaticArray( const tnlStaticArray< size, Element >& v );
+   inline StaticArray( const StaticArray< size, Element >& v );
 
    static String getType();
 
@@ -141,11 +141,11 @@ class tnlStaticArray< 1, Element >
    inline const Element& x() const;
 
    __cuda_callable__
-   inline tnlStaticArray< 1, Element >& operator = ( const tnlStaticArray< 1, Element >& array );
+   inline StaticArray< 1, Element >& operator = ( const StaticArray< 1, Element >& array );
 
    template< typename Array >
    __cuda_callable__
-   inline tnlStaticArray< 1, Element >& operator = ( const Array& array );
+   inline StaticArray< 1, Element >& operator = ( const Array& array );
 
    template< typename Array >
    __cuda_callable__
@@ -157,7 +157,7 @@ class tnlStaticArray< 1, Element >
  
    template< typename OtherElement >
    __cuda_callable__
-   operator tnlStaticArray< 1, OtherElement >() const;
+   operator StaticArray< 1, OtherElement >() const;
 
    __cuda_callable__
    inline
@@ -176,7 +176,7 @@ class tnlStaticArray< 1, Element >
 };
 
 template< typename Element >
-class tnlStaticArray< 2, Element >
+class StaticArray< 2, Element >
 {
    public:
    typedef Element ElementType;
@@ -184,21 +184,21 @@ class tnlStaticArray< 2, Element >
    enum { size = 2 };
 
    __cuda_callable__
-   inline tnlStaticArray();
+   inline StaticArray();
 
    __cuda_callable__
-   inline tnlStaticArray( const Element v[ size ] );
+   inline StaticArray( const Element v[ size ] );
 
    //! This sets all vector components to v
    __cuda_callable__
-   inline tnlStaticArray( const Element& v );
+   inline StaticArray( const Element& v );
 
    __cuda_callable__
-   inline tnlStaticArray( const Element& v1, const Element& v2 );
+   inline StaticArray( const Element& v1, const Element& v2 );
 
    //! Copy constructor
    __cuda_callable__
-   inline tnlStaticArray( const tnlStaticArray< size, Element >& v );
+   inline StaticArray( const StaticArray< size, Element >& v );
 
    static String getType();
 
@@ -234,11 +234,11 @@ class tnlStaticArray< 2, Element >
    inline const Element& y() const;
 
    __cuda_callable__
-   inline tnlStaticArray< 2, Element >& operator = ( const tnlStaticArray< 2, Element >& array );
+   inline StaticArray< 2, Element >& operator = ( const StaticArray< 2, Element >& array );
 
    template< typename Array >
    __cuda_callable__
-   inline tnlStaticArray< 2, Element >& operator = ( const Array& array );
+   inline StaticArray< 2, Element >& operator = ( const Array& array );
 
    template< typename Array >
    __cuda_callable__
@@ -250,7 +250,7 @@ class tnlStaticArray< 2, Element >
  
    template< typename OtherElement >
    __cuda_callable__
-   operator tnlStaticArray< 2, OtherElement >() const;
+   operator StaticArray< 2, OtherElement >() const;
  
    __cuda_callable__
    inline void setValue( const ElementType& val );
@@ -268,7 +268,7 @@ class tnlStaticArray< 2, Element >
 };
 
 template< typename Element >
-class tnlStaticArray< 3, Element >
+class StaticArray< 3, Element >
 {
    public:
    typedef Element ElementType;
@@ -276,21 +276,21 @@ class tnlStaticArray< 3, Element >
    enum { size = 3 };
 
    __cuda_callable__
-   inline tnlStaticArray();
+   inline StaticArray();
 
    __cuda_callable__
-   inline tnlStaticArray( const Element v[ size ] );
+   inline StaticArray( const Element v[ size ] );
 
    //! This sets all vector components to v
    __cuda_callable__
-   inline tnlStaticArray( const Element& v );
+   inline StaticArray( const Element& v );
 
    __cuda_callable__
-   inline tnlStaticArray( const Element& v1, const Element& v2, const Element& v3 );
+   inline StaticArray( const Element& v1, const Element& v2, const Element& v3 );
 
    //! Copy constructor
    __cuda_callable__
-   inline tnlStaticArray( const tnlStaticArray< size, Element >& v );
+   inline StaticArray( const StaticArray< size, Element >& v );
 
    static String getType();
 
@@ -334,11 +334,11 @@ class tnlStaticArray< 3, Element >
    inline const Element& z() const;
 
    __cuda_callable__
-   inline tnlStaticArray< 3, Element >& operator = ( const tnlStaticArray< 3, Element >& array );
+   inline StaticArray< 3, Element >& operator = ( const StaticArray< 3, Element >& array );
 
    template< typename Array >
    __cuda_callable__
-   inline tnlStaticArray< 3, Element >& operator = ( const Array& array );
+   inline StaticArray< 3, Element >& operator = ( const Array& array );
 
    template< typename Array >
    __cuda_callable__
@@ -350,7 +350,7 @@ class tnlStaticArray< 3, Element >
  
    template< typename OtherElement >
    __cuda_callable__
-   operator tnlStaticArray< 3, OtherElement >() const;
+   operator StaticArray< 3, OtherElement >() const;
 
    __cuda_callable__
    inline void setValue( const ElementType& val );
@@ -369,7 +369,7 @@ class tnlStaticArray< 3, Element >
 };
 
 template< int Size, typename Element >
-std::ostream& operator << ( std::ostream& str, const tnlStaticArray< Size, Element >& a );
+std::ostream& operator << ( std::ostream& str, const StaticArray< Size, Element >& a );
 
 } // namespace Arrays
 } // namespace TNL

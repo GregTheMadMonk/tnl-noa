@@ -358,7 +358,7 @@ assemblyLinearSystem( const RealType& time,
                              Matrix,
                              DofVectorType > systemAssembler;
 
-   tnlMeshFunction< Mesh > u( mesh, _u );
+   MeshFunction< Mesh > u( mesh, _u );
    systemAssembler.template assembly< typename Mesh::Cell >( time,
                                                              tau,
                                                              mesh,
@@ -407,19 +407,19 @@ postIterate( const RealType& time,
    //velocityX
    euler2DVelocityX.setRhoVelX(uRhoVelocityX);
    euler2DVelocityX.setRho(uRho);
-//   tnlOperatorFunction< VelocityX, MeshFunction, void, true > OFVelocityX;
+//   OperatorFunction< VelocityX, MeshFunction, void, true > OFVelocityX;
 //   velocityX = OFVelocityX;
 
    //velocityY
    euler2DVelocityY.setRhoVelY(uRhoVelocityY);
    euler2DVelocityY.setRho(uRho);
-//   tnlOperatorFunction< VelocityY, MeshFunction, void, time > OFVelocityY;
+//   OperatorFunction< VelocityY, MeshFunction, void, time > OFVelocityY;
 //   velocityY = OFVelocityY;
 
    //velocity
    euler2DVelocity.setVelX(velocityX);
    euler2DVelocity.setVelY(velocityY);
-//   tnlOperatorFunction< Velocity, MeshFunction, void, time > OFVelocity;
+//   OperatorFunction< Velocity, MeshFunction, void, time > OFVelocity;
 //   velocity = OFVelocity;
 
    //pressure
@@ -427,7 +427,7 @@ postIterate( const RealType& time,
    euler2DPressure.setVelocity(velocity);
    euler2DPressure.setEnergy(uEnergy);
    euler2DPressure.setRho(uRho);
-//   tnlOperatorFunction< euler2DPressure, MeshFunction, void, time > OFPressure;
+//   OperatorFunction< euler2DPressure, MeshFunction, void, time > OFPressure;
 //   pressure = OFPressure;
 
 }

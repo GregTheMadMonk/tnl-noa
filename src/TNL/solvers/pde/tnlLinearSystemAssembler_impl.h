@@ -42,7 +42,7 @@ assembly( const RealType& time,
                                 Vectors::Vector< typename MeshFunction::RealType,
                                            typename MeshFunction::DeviceType,
                                            typename MeshFunction::IndexType > >::value != true,
-      "Error: I am getting Vector instead of tnlMeshFunction or similar object. You might forget to bind DofVector into tnlMeshFunction in you method getExplicitRHS."  );
+      "Error: I am getting Vector instead of MeshFunction or similar object. You might forget to bind DofVector into MeshFunction in you method getExplicitRHS."  );
 
    const IndexType maxRowLength = matrixPointer.template getData< Devices::Host >().getMaxRowLength();
    Assert( maxRowLength > 0, );

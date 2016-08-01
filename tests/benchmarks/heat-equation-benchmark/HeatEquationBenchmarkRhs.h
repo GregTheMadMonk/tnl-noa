@@ -1,8 +1,8 @@
 #ifndef HeatEquationBenchmarkRHS_H_
 #define HeatEquationBenchmarkRHS_H_
-#include <TNL/Functions/tnlDomain.h>
+#include <TNL/Functions/Domain.h>
 template< typename Mesh, typename Real >class HeatEquationBenchmarkRhs
-  : public Functions::tnlDomain< Mesh::meshDimensions, Functions::MeshDomain > 
+  : public Functions::Domain< Mesh::meshDimensions, Functions::MeshDomain > 
  {
    public:
 

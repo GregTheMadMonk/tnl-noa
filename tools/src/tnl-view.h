@@ -18,7 +18,7 @@
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Vectors/MultiVector.h>
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/Functions/tnlMeshFunction.h>
+#include <TNL/Functions/MeshFunction.h>
 
 using namespace std;
 using namespace TNL;
@@ -76,7 +76,7 @@ bool setMeshFunctionRealType( const MeshPointer& meshPointer,
                               const String& inputFileName,
                               const Config::ParameterContainer& parameters  )
 {
-   return writeMeshFunction< Functions::tnlMeshFunction< typename MeshPointer::ObjectType, EntityDimensions, Real > >( meshPointer, inputFileName, parameters );
+   return writeMeshFunction< Functions::MeshFunction< typename MeshPointer::ObjectType, EntityDimensions, Real > >( meshPointer, inputFileName, parameters );
 }
 
 template< typename MeshPointer,
@@ -436,7 +436,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
              parsedObjectType[ 0 ] == "tnlSharedVector" ||
              parsedObjectType[ 0 ] == "tnlVector" )
             setElementType< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-         if( parsedObjectType[ 0 ] == "tnlMeshFunction" )
+         if( parsedObjectType[ 0 ] == "MeshFunction" )
             setMeshFunction< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
          if( verbose )
            std::cout << "[ OK ].  " << std::endl;

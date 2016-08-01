@@ -12,7 +12,7 @@
 
 #include <TNL/Arrays/SharedArray.h>
 #include <TNL/Vectors/Vector.h>
-#include <TNL/Functions/tnlDomain.h>
+#include <TNL/Functions/Domain.h>
 
 namespace TNL {
 
@@ -28,7 +28,7 @@ namespace Vectors {
 template< typename Real = double,
            typename Device= Devices::Host,
            typename Index = int >
-class SharedVector : public Arrays::tnlSharedArray< Real, Device, Index >
+class SharedVector : public Arrays::SharedArray< Real, Device, Index >
 {
    public:
 

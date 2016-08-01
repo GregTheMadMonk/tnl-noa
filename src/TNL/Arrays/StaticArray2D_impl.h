@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlStaticArray2D_impl.h  -  description
+                          StaticArray2D_impl.h  -  description
                              -------------------
     begin                : Feb 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -18,13 +18,13 @@ namespace Arrays {
 
 template< typename Element >
 __cuda_callable__
-inline tnlStaticArray< 2, Element >::tnlStaticArray()
+inline StaticArray< 2, Element >::StaticArray()
 {
 }
 
 template< typename Element >
 __cuda_callable__
-inline tnlStaticArray< 2, Element >::tnlStaticArray( const Element v[ size ] )
+inline StaticArray< 2, Element >::StaticArray( const Element v[ size ] )
 {
    data[ 0 ] = v[ 0 ];
    data[ 1 ] = v[ 1 ];
@@ -32,7 +32,7 @@ inline tnlStaticArray< 2, Element >::tnlStaticArray( const Element v[ size ] )
 
 template< typename Element >
 __cuda_callable__
-inline tnlStaticArray< 2, Element >::tnlStaticArray( const Element& v )
+inline StaticArray< 2, Element >::StaticArray( const Element& v )
 {
    data[ 0 ] = v;
    data[ 1 ] = v;
@@ -40,7 +40,7 @@ inline tnlStaticArray< 2, Element >::tnlStaticArray( const Element& v )
 
 template< typename Element >
 __cuda_callable__
-inline tnlStaticArray< 2, Element >::tnlStaticArray( const Element& v1, const Element& v2 )
+inline StaticArray< 2, Element >::StaticArray( const Element& v1, const Element& v2 )
 {
    data[ 0 ] = v1;
    data[ 1 ] = v2;
@@ -48,16 +48,16 @@ inline tnlStaticArray< 2, Element >::tnlStaticArray( const Element& v1, const El
 
 template< typename Element >
 __cuda_callable__
-inline tnlStaticArray< 2, Element >::tnlStaticArray( const tnlStaticArray< size, Element >& v )
+inline StaticArray< 2, Element >::StaticArray( const StaticArray< size, Element >& v )
 {
    data[ 0 ] = v[ 0 ];
    data[ 1 ] = v[ 1 ];
 }
 
 template< typename Element >
-String tnlStaticArray< 2, Element >::getType()
+String StaticArray< 2, Element >::getType()
 {
-   return String( "tnlStaticArray< " ) +
+   return String( "StaticArray< " ) +
           String( size ) +
           String( ", " ) +
           TNL::getType< Element >() +
@@ -66,28 +66,28 @@ String tnlStaticArray< 2, Element >::getType()
 
 template< typename Element >
 __cuda_callable__
-inline int tnlStaticArray< 2, Element >::getSize() const
+inline int StaticArray< 2, Element >::getSize() const
 {
    return size;
 }
 
 template< typename Element >
 __cuda_callable__
-inline Element* tnlStaticArray< 2, Element >::getData()
+inline Element* StaticArray< 2, Element >::getData()
 {
    return data;
 }
 
 template< typename Element >
 __cuda_callable__
-inline const Element* tnlStaticArray< 2, Element >::getData() const
+inline const Element* StaticArray< 2, Element >::getData() const
 {
    return data;
 }
 
 template< typename Element >
 __cuda_callable__
-inline const Element& tnlStaticArray< 2, Element >::operator[]( int i ) const
+inline const Element& StaticArray< 2, Element >::operator[]( int i ) const
 {
    Assert( i >= 0 && i < size,
             std::cerr << "i = " << i << " size = " << size << std::endl; );
@@ -96,7 +96,7 @@ inline const Element& tnlStaticArray< 2, Element >::operator[]( int i ) const
 
 template< typename Element >
 __cuda_callable__
-inline Element& tnlStaticArray< 2, Element >::operator[]( int i )
+inline Element& StaticArray< 2, Element >::operator[]( int i )
 {
    Assert( i >= 0 && i < size,
             std::cerr << "i = " << i << " size = " << size << std::endl; );
@@ -105,35 +105,35 @@ inline Element& tnlStaticArray< 2, Element >::operator[]( int i )
 
 template< typename Element >
 __cuda_callable__
-inline Element& tnlStaticArray< 2, Element >::x()
+inline Element& StaticArray< 2, Element >::x()
 {
    return data[ 0 ];
 }
 
 template< typename Element >
 __cuda_callable__
-inline const Element& tnlStaticArray< 2, Element >::x() const
+inline const Element& StaticArray< 2, Element >::x() const
 {
    return data[ 0 ];
 }
 
 template< typename Element >
 __cuda_callable__
-inline Element& tnlStaticArray< 2, Element >::y()
+inline Element& StaticArray< 2, Element >::y()
 {
    return data[ 1 ];
 }
 
 template< typename Element >
 __cuda_callable__
-inline const Element& tnlStaticArray< 2, Element >::y() const
+inline const Element& StaticArray< 2, Element >::y() const
 {
    return data[ 1 ];
 }
 
 template< typename Element >
 __cuda_callable__
-inline tnlStaticArray< 2, Element >& tnlStaticArray< 2, Element >::operator = ( const tnlStaticArray< 2, Element >& array )
+inline StaticArray< 2, Element >& StaticArray< 2, Element >::operator = ( const StaticArray< 2, Element >& array )
 {
    data[ 0 ] = array[ 0 ];
    data[ 1 ] = array[ 1 ];
@@ -143,7 +143,7 @@ inline tnlStaticArray< 2, Element >& tnlStaticArray< 2, Element >::operator = ( 
 template< typename Element >
    template< typename Array >
 __cuda_callable__
-inline tnlStaticArray< 2, Element >& tnlStaticArray< 2, Element >::operator = ( const Array& array )
+inline StaticArray< 2, Element >& StaticArray< 2, Element >::operator = ( const Array& array )
 {
    data[ 0 ] = array[ 0 ];
    data[ 1 ] = array[ 1 ];
@@ -153,7 +153,7 @@ inline tnlStaticArray< 2, Element >& tnlStaticArray< 2, Element >::operator = ( 
 template< typename Element >
    template< typename Array >
 __cuda_callable__
-inline bool tnlStaticArray< 2, Element >::operator == ( const Array& array ) const
+inline bool StaticArray< 2, Element >::operator == ( const Array& array ) const
 {
    return( ( int ) size == ( int ) Array::size &&
            data[ 0 ] == array[ 0 ] &&
@@ -163,7 +163,7 @@ inline bool tnlStaticArray< 2, Element >::operator == ( const Array& array ) con
 template< typename Element >
    template< typename Array >
 __cuda_callable__
-inline bool tnlStaticArray< 2, Element >::operator != ( const Array& array ) const
+inline bool StaticArray< 2, Element >::operator != ( const Array& array ) const
 {
    return ! this->operator == ( array );
 }
@@ -171,10 +171,10 @@ inline bool tnlStaticArray< 2, Element >::operator != ( const Array& array ) con
 template< typename Element >
    template< typename OtherElement >
 __cuda_callable__
-tnlStaticArray< 2, Element >::
-operator tnlStaticArray< 2, OtherElement >() const
+StaticArray< 2, Element >::
+operator StaticArray< 2, OtherElement >() const
 {
-   tnlStaticArray< 2, OtherElement > aux;
+   StaticArray< 2, OtherElement > aux;
    aux[ 0 ] = data[ 0 ];
    aux[ 1 ] = data[ 1 ];
    return aux;
@@ -182,13 +182,13 @@ operator tnlStaticArray< 2, OtherElement >() const
 
 template< typename Element >
 __cuda_callable__
-inline void tnlStaticArray< 2, Element >::setValue( const ElementType& val )
+inline void StaticArray< 2, Element >::setValue( const ElementType& val )
 {
    data[ 1 ] = data[ 0 ] = val;
 }
 
 template< typename Element >
-bool tnlStaticArray< 2, Element >::save( File& file ) const
+bool StaticArray< 2, Element >::save( File& file ) const
 {
    if( ! file. write< Element, Devices::Host, int >( data, size ) )
    {
@@ -199,7 +199,7 @@ bool tnlStaticArray< 2, Element >::save( File& file ) const
 }
 
 template< typename Element >
-bool tnlStaticArray< 2, Element >::load( File& file)
+bool StaticArray< 2, Element >::load( File& file)
 {
    if( ! file.read< Element, Devices::Host, int >( data, size ) )
    {
@@ -210,14 +210,14 @@ bool tnlStaticArray< 2, Element >::load( File& file)
 }
 
 template< typename Element >
-void tnlStaticArray< 2, Element >::sort()
+void StaticArray< 2, Element >::sort()
 {
    if( data[ 0 ] > data[ 1 ] )
       swap( data[ 0 ], data[ 1 ] );
 }
 
 template< typename Element >
-std::ostream& tnlStaticArray< 2, Element >::write( std::ostream& str, const char* separator ) const
+std::ostream& StaticArray< 2, Element >::write( std::ostream& str, const char* separator ) const
 {
    str << data[ 0 ] << separator << data[ 1 ];
    return str;
@@ -228,17 +228,17 @@ std::ostream& tnlStaticArray< 2, Element >::write( std::ostream& str, const char
 // TODO: it does not work with CUDA
 
 #ifndef HAVE_CUDA
-extern template class tnlStaticArray< 2, char >;
-extern template class tnlStaticArray< 2, int >;
+extern template class StaticArray< 2, char >;
+extern template class StaticArray< 2, int >;
 #ifdef INSTANTIATE_LONG_INT
-extern template class tnlStaticArray< 2, long int >;
+extern template class StaticArray< 2, long int >;
 #endif
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlStaticArray< 2, float >;
+extern template class StaticArray< 2, float >;
 #endif
-extern template class tnlStaticArray< 2, double >;
+extern template class StaticArray< 2, double >;
 #ifdef INSTANTIATE_LONG_DOUBLE
-extern template class tnlStaticArray< 2, long double >;
+extern template class StaticArray< 2, long double >;
 #endif
 #endif
 

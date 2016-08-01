@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Arrays/Array.h>
-#include <TNL/Functions/tnlDomain.h>
+#include <TNL/Functions/Domain.h>
 
 namespace TNL {
 

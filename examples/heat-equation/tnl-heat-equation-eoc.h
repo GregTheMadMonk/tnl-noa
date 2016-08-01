@@ -14,7 +14,7 @@
 #include <TNL/solvers/tnlSolver.h>
 #include <TNL/solvers/tnlFastBuildConfigTag.h>
 #include <TNL/solvers/tnlBuildConfigTags.h>
-#include <TNL/Functions/tnlTestFunction.h>
+#include <TNL/Functions/TestFunction.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/operators/diffusion/tnlExactLinearDiffusion.h>
 #include <TNL/problems/tnlHeatEquationEocRhs.h>
@@ -34,7 +34,7 @@ class heatEquationEocConfig
       {
          config.addDelimiter( "Heat equation EOC settings:" );
          config.addDelimiter( "Tests setting::" );
-         Functions::tnlTestFunction< 3, double >::configSetup( config );
+         Functions::TestFunction< 3, double >::configSetup( config );
       }
 };
 
@@ -59,7 +59,7 @@ class heatEquationSetter
       enum { Dimensions = MeshType::meshDimensions };
       typedef tnlLinearDiffusion< MeshType, Real, Index > ApproximateOperator;
       typedef tnlExactLinearDiffusion< Dimensions > ExactOperator;
-      typedef Functions::tnlTestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
+      typedef Functions::TestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
       typedef tnlHeatEquationEocRhs< ExactOperator, TestFunction > RightHandSide;
       typedef Vectors::StaticVector < MeshType::meshDimensions, Real > Vertex;
       typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Dimensions, Real, Index > BoundaryConditions;

@@ -142,7 +142,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
                 point1( 1.0, 0.0 ),
                 point2( 0.0, 1.0 );
  
-      tnlStaticArray< 3, VertexMeshEntityType > vertexEntities;
+      StaticArray< 3, VertexMeshEntityType > vertexEntities;
       vertexEntities[ 0 ].setPoint( point0 );
       vertexEntities[ 1 ].setPoint( point1 );
       vertexEntities[ 2 ].setPoint( point2 );
@@ -151,7 +151,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( vertexEntities[ 1 ].getPoint() == point1 );
       CPPUNIT_ASSERT( vertexEntities[ 2 ].getPoint() == point2 );
 
-      tnlStaticArray< 3, EdgeMeshEntityType > edgeEntities;
+      StaticArray< 3, EdgeMeshEntityType > edgeEntities;
       edgeEntities[ 0 ].setVertexIndex( 0, 0 );
       edgeEntities[ 0 ].setVertexIndex( 1, 1 );
       edgeEntities[ 1 ].setVertexIndex( 0, 1 );
@@ -188,7 +188,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
                 point1( 1.0, 0.0 ),
                 point2( 0.0, 1.0 );
 
-      tnlStaticArray< 3, VertexMeshEntityType > vertexEntities;
+      StaticArray< 3, VertexMeshEntityType > vertexEntities;
       vertexEntities[ 0 ].setPoint( point0 );
       vertexEntities[ 1 ].setPoint( point1 );
       vertexEntities[ 2 ].setPoint( point2 );
@@ -197,7 +197,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( vertexEntities[ 1 ].getPoint() == point1 );
       CPPUNIT_ASSERT( vertexEntities[ 2 ].getPoint() == point2 );
 
-      tnlStaticArray< 3, EdgeMeshEntityType > edgeEntities;
+      StaticArray< 3, EdgeMeshEntityType > edgeEntities;
       edgeEntities[ 0 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 0, 0 >::index );
       edgeEntities[ 0 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 0, 1 >::index );
       edgeEntities[ 1 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTriangleTopology, tnlMeshEdgeTopology, 1, 0 >::index );
@@ -254,7 +254,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
                 point2( 0.0, 1.0, 0.0 ),
                 point3( 0.0, 0.0, 1.0 );
  
-      tnlStaticArray< tnlMeshSubtopology< tnlMeshTetrahedronTopology, 0 >::count,
+      StaticArray< tnlMeshSubtopology< tnlMeshTetrahedronTopology, 0 >::count,
                       VertexMeshEntityType > vertexEntities;
 
       vertexEntities[ 0 ].setPoint( point0 );
@@ -267,7 +267,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( vertexEntities[ 2 ].getPoint() == point2 );
       CPPUNIT_ASSERT( vertexEntities[ 3 ].getPoint() == point3 );
 
-      tnlStaticArray< tnlMeshSubtopology< tnlMeshTetrahedronTopology, 1 >::count,
+      StaticArray< tnlMeshSubtopology< tnlMeshTetrahedronTopology, 1 >::count,
                       EdgeMeshEntityType > edgeEntities;
       edgeEntities[ 0 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 0, 0 >::index );
       edgeEntities[ 0 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 0, 1 >::index );
@@ -295,7 +295,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( edgeEntities[ 5 ].getVertexIndex( 0 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 5, 0 >::index ) );
       CPPUNIT_ASSERT( edgeEntities[ 5 ].getVertexIndex( 1 ) == ( tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshEdgeTopology, 5, 1 >::index ) );
 
-      tnlStaticArray< tnlMeshSubtopology< tnlMeshTetrahedronTopology, 2 >::count,
+      StaticArray< tnlMeshSubtopology< tnlMeshTetrahedronTopology, 2 >::count,
                       TriangleMeshEntityType > triangleEntities;
       triangleEntities[ 0 ].setVertexIndex( 0, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 0, 0 >::index );
       triangleEntities[ 0 ].setVertexIndex( 1, tnlSubentityVertex< tnlMeshTetrahedronTopology, tnlMeshTriangleTopology, 0, 1 >::index );
@@ -389,7 +389,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
                  point2( 0.0, 1.0 ),
                  point3( 1.0, 1.0 );
 
-       tnlStaticArray< 4, VertexMeshEntityType > vertexEntities;
+       StaticArray< 4, VertexMeshEntityType > vertexEntities;
        vertexEntities[ 0 ].setPoint( point0 );
        vertexEntities[ 1 ].setPoint( point1 );
        vertexEntities[ 2 ].setPoint( point2 );
@@ -400,7 +400,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
        CPPUNIT_ASSERT( vertexEntities[ 2 ].getPoint() == point2 );
        CPPUNIT_ASSERT( vertexEntities[ 3 ].getPoint() == point3 );
 
-       tnlStaticArray< 5, EdgeMeshEntityType > edgeEntities;
+       StaticArray< 5, EdgeMeshEntityType > edgeEntities;
        edgeEntities[ 0 ].setVertexIndex( 0, 1 );
        edgeEntities[ 0 ].setVertexIndex( 1, 2 );
        edgeEntities[ 1 ].setVertexIndex( 0, 2 );
@@ -423,7 +423,7 @@ class tnlMeshEntityTester : public CppUnit :: TestCase
        CPPUNIT_ASSERT( edgeEntities[ 4 ].getVertexIndex( 0 ) == 3 );
        CPPUNIT_ASSERT( edgeEntities[ 4 ].getVertexIndex( 1 ) == 1 );
 
-       tnlStaticArray< 2, TriangleMeshEntityType > triangleEntities;
+       StaticArray< 2, TriangleMeshEntityType > triangleEntities;
 
        triangleEntities[ 0 ].template setSubentityIndex< 0 >( 0 , 0 );
        triangleEntities[ 0 ].template setSubentityIndex< 0 >( 1 , 1 );

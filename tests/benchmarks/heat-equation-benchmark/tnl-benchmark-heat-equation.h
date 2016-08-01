@@ -3,7 +3,7 @@
 #include <TNL/solvers/tnlBuildConfigTags.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>
-#include <TNL/Functions/Analytic/tnlConstantFunction.h>
+#include <TNL/Functions/Analytic/ConstantFunction.h>
 #include "HeatEquationBenchmarkProblem.h"
 #include "BenchmarkLaplace.h"
 #include "HeatEquationBenchmarkRhs.h"
@@ -85,7 +85,7 @@ class HeatEquationBenchmarkSetter
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }
-          typedef Functions::tnlMeshFunction< MeshType > MeshFunction;
+          typedef Functions::MeshFunction< MeshType > MeshFunction;
           if( boundaryConditionsType == "dirichlet" )
           {
              typedef tnlDirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;

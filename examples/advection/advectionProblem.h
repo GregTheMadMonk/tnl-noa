@@ -2,7 +2,7 @@
 #define advectionPROBLEM_H_
 
 #include <TNL/problems/tnlPDEProblem.h>
-#include <TNL/Functions/tnlMeshFunction.h>
+#include <TNL/Functions/MeshFunction.h>
 #include <TNL/tnlSharedPointer.h>
 
 namespace TNL {
@@ -22,7 +22,7 @@ class advectionProblem:
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
-      typedef Functions::tnlMeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef tnlSharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef tnlSharedPointer< DifferentialOperator > DifferentialOperatorPointer;

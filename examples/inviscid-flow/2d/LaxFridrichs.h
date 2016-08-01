@@ -24,7 +24,7 @@ class LaxFridrichs
       typedef Real RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef Index IndexType;
-      typedef Functions::tnlMeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
  
       typedef LaxFridrichsContinuity< Mesh, Real, Index > Continuity;
       typedef LaxFridrichsMomentumX< Mesh, Real, Index > MomentumX;

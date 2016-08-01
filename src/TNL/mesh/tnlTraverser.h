@@ -18,3 +18,7 @@ template< typename Mesh,
 class tnlTraverser{};
 
 } // namespace TNL
+
+#include <TNL/mesh/grids/tnlTraverser_Grid1D.h>
+#include <TNL/mesh/grids/tnlTraverser_Grid2D.h>
+#include <TNL/mesh/grids/tnlTraverser_Grid3D.h>

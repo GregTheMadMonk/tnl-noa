@@ -16,14 +16,14 @@
 
 #pragma once
 
-#include <TNL/Functions/tnlDomain.h>
+#include <TNL/Functions/Domain.h>
 
 namespace TNL {
 
 template< typename ExactOperator,
           typename TestFunction >
 class tnlHeatEquationEocRhs
- : public Functions::tnlDomain< TestFunction::Dimensions, Functions::SpaceDomain >
+ : public Functions::Domain< TestFunction::Dimensions, Functions::SpaceDomain >
 {
    public:
 

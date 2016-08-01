@@ -46,7 +46,7 @@ class tnlStaticContainer : public Object
 
    protected:
 
-   Arrays::tnlStaticArray< Size, Element > data;
+   Arrays::StaticArray< Size, Element > data;
 };
 
 } // namespace TNL

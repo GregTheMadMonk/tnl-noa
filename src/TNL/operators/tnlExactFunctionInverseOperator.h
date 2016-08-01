@@ -20,7 +20,7 @@ namespace TNL {
 template< int Dimensions,
           typename InnerOperator= tnlExactIdentityOperator< Dimensions > >
 class tnlExactFunctionInverseOperator
-   : public Functions::tnlDomain< Dimensions, Functions::SpaceDomain >
+   : public Functions::Domain< Dimensions, Functions::SpaceDomain >
 {
    public:
  

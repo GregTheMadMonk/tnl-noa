@@ -29,7 +29,7 @@
 #include <TNL/operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <TNL/operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
 #include <TNL/operators/diffusion/nonlinear-diffusion-operators/tnlFiniteVolumeNonlinearOperator.h>
-#include <TNL/Functions/tnlMeshFunction.h>
+#include <TNL/Functions/MeshFunction.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
 typedef tnlFastBuildConfig BuildConfig;
@@ -121,7 +121,7 @@ class meanCurvatureFlowSetter
          return solverStarter.template run< Solver >( parameters );
       }
       //typedef Vector< Real, Device, Index > VectorType;
-      typedef Functions::tnlMeshFunction< MeshType > MeshFunction;
+      typedef Functions::MeshFunction< MeshType > MeshFunction;
       if( boundaryConditionsType == "dirichlet" )
       {
          typedef tnlDirichletBoundaryConditions< MeshType, MeshFunction, Dimensions, Real, Index > BoundaryConditions;

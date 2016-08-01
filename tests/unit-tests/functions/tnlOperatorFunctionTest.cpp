@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlOperatorFunctionTest.cpp  -  description
+                          OperatorFunctionTest.cpp  -  description
                              -------------------
     begin                : Feb 11, 2016
     copyright            : (C) 2016 by Tomas Oberhuber

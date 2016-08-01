@@ -13,7 +13,7 @@
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Vectors/SharedVector.h>
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/Functions/tnlDomain.h>
+#include <TNL/Functions/Domain.h>
 
 namespace TNL {
 
@@ -27,7 +27,7 @@ class tnlExactGradientNorm
  */
 template< typename Real >
 class tnlExactGradientNorm< 1, Real >
-   : public Functions::tnlDomain< 1, Functions::SpaceDomain >
+   : public Functions::Domain< 1, Functions::SpaceDomain >
 {
    public:
 
@@ -95,7 +95,7 @@ class tnlExactGradientNorm< 1, Real >
  */
 template< typename Real >
 class tnlExactGradientNorm< 2, Real >
-   : public Functions::tnlDomain< 2, Functions::SpaceDomain >
+   : public Functions::Domain< 2, Functions::SpaceDomain >
 {
    public:
 
@@ -169,7 +169,7 @@ class tnlExactGradientNorm< 2, Real >
 
 template< typename Real >
 class tnlExactGradientNorm< 3, Real >
-   : public Functions::tnlDomain< 3, Functions::SpaceDomain >
+   : public Functions::Domain< 3, Functions::SpaceDomain >
 {
    public:
 

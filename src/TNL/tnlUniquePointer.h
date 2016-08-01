@@ -18,9 +18,11 @@
 #pragma once
 
 #include <utility>
-#include <core/Devices::Host.h>
-#include <core/tnlCuda.h>
-#include <core/tnlSmartPointer.h>
+#include <TNL/Devices/Host.h>
+#include <TNL/Devices/Cuda.h>
+#include <TNL/tnlSmartPointer.h>
+
+namespace TNL { 
 
 template< typename Object, typename Device = typename Object::DeviceType >
 class tnlUniquePointer
@@ -110,7 +112,7 @@ class tnlUniquePointer< Object, Devices::Host > : public tnlSmartPointer
 };
 
 template< typename Object >
-class tnlUniquePointer< Object, tnlCuda > : public tnlSmartPointer
+class tnlUniquePointer< Object, Devices::Cuda > : public tnlSmartPointer
 {
    public:
       
@@ -166,10 +168,10 @@ class tnlUniquePointer< Object, tnlCuda > : public tnlSmartPointer
       template< typename Device = Devices::Host >      
       const Object& getData() const
       {
-         static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, tnlCuda >::value, "Only Devices::Host or tnlCuda devices are accepted here." );
+         static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or tnlCuda devices are accepted here." );
          if( std::is_same< Device, Devices::Host >::value )
             return *( this->pointer );
-         if( std::is_same< Device, tnlCuda >::value )
+         if( std::is_same< Device, Devices::Cuda >::value )
             return *( this->cuda_pointer );            
       }
 
@@ -234,4 +236,5 @@ class tnlUniquePointer< Object, tnlCuda > : public tnlSmartPointer
       bool modified;      
 };
 
+} // namespace TNL
 

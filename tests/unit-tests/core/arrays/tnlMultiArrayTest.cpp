@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMultiArrayTest.cpp  -  description
+                          MultiArrayTest.cpp  -  description
                              -------------------
     begin                : Feb 3, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -18,36 +18,36 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, char, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, int, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, long int, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, float, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, double, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, char, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, int, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, long int, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, float, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 1, double, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, char, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, int, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, long int, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, float, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, double, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, char, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, int, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, long int, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, float, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 2, double, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, char, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, int, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, long int, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, float, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, double, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, char, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, int, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, long int, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, float, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultiArrayTester< 3, double, Devices::Host, long int > >()
+   if( ! tnlUnitTestStarter :: run< MultiArrayTester< 1, char, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 1, int, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 1, long int, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 1, float, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 1, double, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 1, char, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 1, int, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 1, long int, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 1, float, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 1, double, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 2, char, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 2, int, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 2, long int, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 2, float, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 2, double, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 2, char, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 2, int, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 2, long int, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 2, float, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 2, double, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 3, char, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 3, int, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 3, long int, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 3, float, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 3, double, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 3, char, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 3, int, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 3, long int, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 3, float, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultiArrayTester< 3, double, Devices::Host, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <type_traits>
-#include <TNL/Functions/tnlDomain.h>
+#include <TNL/Functions/Domain.h>
 
 namespace TNL {
 
@@ -29,7 +29,7 @@ template< typename Real,
           typename Device,
           typename Index >
 class tnlMeshEntitiesInterpolants< tnlGrid< 1, Real, Device, Index >, 1, 0 >
-   : public Functions::tnlDomain< 1, Functions::MeshInteriorDomain >
+   : public Functions::Domain< 1, Functions::MeshInteriorDomain >
 {
    public:
  
@@ -61,7 +61,7 @@ template< typename Real,
           typename Device,
           typename Index >
 class tnlMeshEntitiesInterpolants< tnlGrid< 1, Real, Device, Index >, 0, 1 >
-   : public Functions::tnlDomain< 1, Functions::MeshInteriorDomain >
+   : public Functions::Domain< 1, Functions::MeshInteriorDomain >
 {
    public:
  
@@ -93,7 +93,7 @@ template< typename Real,
           typename Device,
           typename Index >
 class tnlMeshEntitiesInterpolants< tnlGrid< 2, Real, Device, Index >, 2, 1 >
-   : public Functions::tnlDomain< 2, Functions::MeshInteriorDomain >
+   : public Functions::Domain< 2, Functions::MeshInteriorDomain >
 {
    public:
  
@@ -129,7 +129,7 @@ template< typename Real,
           typename Device,
           typename Index >
 class tnlMeshEntitiesInterpolants< tnlGrid< 2, Real, Device, Index >, 2, 0 >
-   : public Functions::tnlDomain< 2, Functions::MeshInteriorDomain >
+   : public Functions::Domain< 2, Functions::MeshInteriorDomain >
 {
    public:
  
@@ -163,7 +163,7 @@ template< typename Real,
           typename Device,
           typename Index >
 class tnlMeshEntitiesInterpolants< tnlGrid< 2, Real, Device, Index >, 1, 2 >
-   : public Functions::tnlDomain< 2, Functions::MeshInteriorDomain >
+   : public Functions::Domain< 2, Functions::MeshInteriorDomain >
 {
    public:
  
@@ -197,7 +197,7 @@ template< typename Real,
           typename Device,
           typename Index >
 class tnlMeshEntitiesInterpolants< tnlGrid< 2, Real, Device, Index >, 0, 2 >
-   : public Functions::tnlDomain< 2, Functions::MeshInteriorDomain >
+   : public Functions::Domain< 2, Functions::MeshInteriorDomain >
 {
    public:
  
@@ -231,7 +231,7 @@ template< typename Real,
           typename Device,
           typename Index >
 class tnlMeshEntitiesInterpolants< tnlGrid< 3, Real, Device, Index >, 3, 2 >
-   : public Functions::tnlDomain< 3, Functions::MeshInteriorDomain >
+   : public Functions::Domain< 3, Functions::MeshInteriorDomain >
 {
    public:
  
@@ -270,7 +270,7 @@ template< typename Real,
           typename Device,
           typename Index >
 class tnlMeshEntitiesInterpolants< tnlGrid< 3, Real, Device, Index >, 2, 3 >
-   : public Functions::tnlDomain< 3, Functions::MeshInteriorDomain >
+   : public Functions::Domain< 3, Functions::MeshInteriorDomain >
 {
    public:
  

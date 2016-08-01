@@ -316,4 +316,4 @@ class SharedVectorTester : public CppUnit :: TestCase
 };
 
 
-#endif /* TNLSHAREDARRAYTESTER_H_ */
+#endif /* SharedArrayTESTER_H_ */

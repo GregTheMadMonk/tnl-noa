@@ -19,7 +19,7 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Vectors/StaticVector.h>
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/Functions/tnlMeshFunction.h>
+#include <TNL/Functions/MeshFunction.h>
 #include "pure-c-rhs.h"
 
 using namespace std;
@@ -393,7 +393,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
    Vectors::Vector< Real, Devices::Cuda, Index > vecU;
    vecU.bind( cuda_u, gridXSize * gridYSize );
-   Functions::tnlMeshFunction< GridType > meshFunction;
+   Functions::MeshFunction< GridType > meshFunction;
    meshFunction.bind( gridPointer, vecU );
    meshFunction.save( "simple-heat-equation-result.tnl" );
    
@@ -544,7 +544,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
    gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
    Vectors::Vector< Real, Devices::Host, Index > vecU;
    vecU.bind( u, gridXSize * gridYSize );
-   Functions::tnlMeshFunction< GridType > meshFunction;
+   Functions::MeshFunction< GridType > meshFunction;
    meshFunction.bind( gridPointer, vecU );
    meshFunction.save( "simple-heat-equation-result.tnl" );
    

@@ -14,7 +14,7 @@
 #include <TNL/problems/tnlPDEProblem.h>
 #include <TNL/operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <TNL/matrices/tnlCSRMatrix.h>
-#include <TNL/Functions/tnlMeshFunction.h>
+#include <TNL/Functions/MeshFunction.h>
 
 namespace TNL {
 
@@ -36,7 +36,7 @@ class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
-      typedef Functions::tnlMeshFunction< Mesh > MeshFunctionType;
+      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef tnlCSRMatrix< RealType, DeviceType, IndexType> MatrixType;
 

@@ -14,10 +14,10 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/Functions/tnlTestFunction.h>
+#include <TNL/Functions/TestFunction.h>
 #include <TNL/operators/tnlFiniteDifferences.h>
 #include <TNL/core/mfilename.h>
-#include <TNL/Functions/tnlMeshFunction.h>
+#include <TNL/Functions/MeshFunction.h>
 
 using namespace TNL;
 
@@ -34,13 +34,13 @@ bool renderFunction( const Config::ParameterContainer& parameters )
    if( ! meshPointer->load( meshFile ) )
       return false;
 
-   typedef Functions::tnlTestFunction< MeshType::meshDimensions, RealType > FunctionType;
+   typedef Functions::TestFunction< MeshType::meshDimensions, RealType > FunctionType;
    FunctionType function;
    std::cout << "Setting up the function ... " << std::endl;
    if( ! function.setup( parameters, "" ) )
       return false;
    std::cout << "done." << std::endl;
-   typedef Functions::tnlMeshFunction< MeshType, MeshType::meshDimensions > MeshFunctionType;
+   typedef Functions::MeshFunction< MeshType, MeshType::meshDimensions > MeshFunctionType;
    MeshFunctionType meshFunction( meshPointer );
    //if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
    //   return false;
@@ -67,7 +67,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
       }
       else
       {
-         Functions::tnlMeshFunctionEvaluator< MeshFunctionType, FunctionType >::evaluate( meshFunction, function, time );
+         Functions::MeshFunctionEvaluator< MeshFunctionType, FunctionType >::evaluate( meshFunction, function, time );
       }
 
       String outputFile = parameters.getParameter< String >( "output-file" );

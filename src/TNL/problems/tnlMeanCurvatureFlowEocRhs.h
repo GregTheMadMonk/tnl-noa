@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include <TNL/Functions/tnlDomain.h>
+#include <TNL/Functions/Domain.h>
 
 namespace TNL {
 
 template< typename ExactOperator,
           typename TestFunction,
           int Dimensions >
-class tnlMeanCurvatureFlowEocRhs : public tnlDomain< Dimensions, SpaceDomain >
+class tnlMeanCurvatureFlowEocRhs : public Domain< Dimensions, SpaceDomain >
 {
    public:
 

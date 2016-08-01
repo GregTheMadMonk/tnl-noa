@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSharedArray.h  -  description
+                          SharedArray.h  -  description
                              -------------------
     begin                : Nov 7, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -29,33 +29,33 @@ template< typename Element, typename Device, typename Index >
 class Array;
 
 template< int Size, typename Element >
-class tnlStaticArray;
+class StaticArray;
 
 template< typename Element,
           typename Device = Devices::Host,
           typename Index = int >
-class tnlSharedArray : public Object
+class SharedArray : public Object
 {
    public:
 
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlSharedArray< Element, Devices::Host, Index > HostType;
-   typedef tnlSharedArray< Element, Devices::Cuda, Index > CudaType;
+   typedef SharedArray< Element, Devices::Host, Index > HostType;
+   typedef SharedArray< Element, Devices::Cuda, Index > CudaType;
 
    __cuda_callable__
-   tnlSharedArray();
+   SharedArray();
 
    __cuda_callable__
-   tnlSharedArray( Element* _data,
+   SharedArray( Element* _data,
                    const Index _size );
 
    __cuda_callable__
-   tnlSharedArray( Array< Element, Device, Index >& array );
+   SharedArray( Array< Element, Device, Index >& array );
 
    __cuda_callable__
-   tnlSharedArray( tnlSharedArray< Element, Device, Index >& array );
+   SharedArray( SharedArray< Element, Device, Index >& array );
 
    static String getType();
 
@@ -77,12 +77,12 @@ class tnlSharedArray : public Object
 
    template< int Size >
    __cuda_callable__
-   void bind( tnlStaticArray< Size, Element >& array );
+   void bind( StaticArray< Size, Element >& array );
 
    __cuda_callable__
-   void bind( tnlSharedArray< Element, Device, Index >& array );
+   void bind( SharedArray< Element, Device, Index >& array );
 
-   void swap( tnlSharedArray< Element, Device, Index >& array );
+   void swap( SharedArray< Element, Device, Index >& array );
 
    void reset();
 
@@ -96,10 +96,10 @@ class tnlSharedArray : public Object
 
    __cuda_callable__ const Element& operator[] ( const Index& i ) const;
 
-   tnlSharedArray< Element, Device, Index >& operator = ( const tnlSharedArray< Element, Device, Index >& array );
+   SharedArray< Element, Device, Index >& operator = ( const SharedArray< Element, Device, Index >& array );
 
    template< typename Array >
-   tnlSharedArray< Element, Device, Index >& operator = ( const Array& array );
+   SharedArray< Element, Device, Index >& operator = ( const Array& array );
 
    template< typename Array >
    bool operator == ( const Array& array ) const;
@@ -150,7 +150,7 @@ class tnlSharedArray : public Object
 };
 
 template< typename Element, typename Device, typename Index >
-std::ostream& operator << ( std::ostream& str, const tnlSharedArray< Element, Device, Index >& v );
+std::ostream& operator << ( std::ostream& str, const SharedArray< Element, Device, Index >& v );
 
 } // namespace Arrays
 } // namespace TNL

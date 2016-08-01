@@ -1,12 +1,12 @@
 #ifndef eulerRHS_H_
 #define eulerRHS_H_
 
-#include <TNL/Functions/tnlDomain.h>
+#include <TNL/Functions/Domain.h>
 
 namespace TNL {
 
 template< typename Mesh, typename Real >class eulerRhs
-  : public Functions::tnlDomain< Mesh::meshDimensions, Functions::MeshDomain > 
+  : public Functions::Domain< Mesh::meshDimensions, Functions::MeshDomain > 
  {
    public:
 

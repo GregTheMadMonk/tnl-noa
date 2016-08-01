@@ -21,7 +21,7 @@
 #include <TNL/solvers/tnlSolver.h>
 #include <TNL/solvers/tnlFastBuildConfigTag.h>
 #include <TNL/solvers/tnlBuildConfigTags.h>
-#include <TNL/Functions/tnlTestFunction.h>
+#include <TNL/Functions/TestFunction.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>
 #include <TNL/problems/tnlMeanCurvatureFlowEocRhs.h>
@@ -51,7 +51,7 @@ class meanCurvatureFlowEocConfig
 
          config.addEntry< double >( "eps", "This sets a eps in operator Q.", 1.0 );
          config.addDelimiter( "Tests setting::" );         
-         tnlTestFunction< 3, double >::configSetup( config );
+         TestFunction< 3, double >::configSetup( config );
       }
 };
 
@@ -79,7 +79,7 @@ class meanCurvatureFlowEocSetter
       typedef tnlFiniteVolumeNonlinearOperator<MeshType, OperatorQ, Real, Index > NonlinearOperator;
       typedef tnlNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
       typedef tnlExactNonlinearDiffusion< tnlExactGradientNorm< Dimensions >, Dimensions > ExactOperator;
-      typedef tnlTestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
+      typedef TestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
       typedef tnlMeanCurvatureFlowEocRhs< ExactOperator, TestFunction, Dimensions > RightHandSide;
       typedef StaticVector < MeshType::meshDimensions, Real > Vertex;
       typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Dimensions, Real, Index > BoundaryConditions;

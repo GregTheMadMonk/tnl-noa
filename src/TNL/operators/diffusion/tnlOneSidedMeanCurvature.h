@@ -15,8 +15,8 @@
 #include <TNL/operators/geometric/tnlFDMGradientNorm.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>
 #include <TNL/operators/diffusion/tnlOneSidedNonlinearDiffusion.h>
-#include <TNL/Functions/tnlOperatorFunction.h>
-#include <TNL/Functions/Analytic/tnlConstantFunction.h>
+#include <TNL/Functions/OperatorFunction.h>
+#include <TNL/Functions/Analytic/ConstantFunction.h>
 #include <TNL/operators/diffusion/tnlExactMeanCurvature.h>
 
 namespace TNL {
@@ -36,10 +36,10 @@ class tnlOneSidedMeanCurvature
       typedef Index IndexType;
       typedef tnlFDMGradientNorm< MeshType, tnlForwardFiniteDifference, RealType, IndexType > GradientNorm;
       typedef tnlFunctionInverseOperator< GradientNorm > NonlinearityOperator;
-      typedef Functions::tnlMeshFunction< MeshType, MeshType::getMeshDimensions(), RealType > NonlinearityMeshFunction;
+      typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimensions(), RealType > NonlinearityMeshFunction;
       typedef Functions::tnlConstantFunction< MeshType::getMeshDimensions(), RealType > NonlinearityBoundaryConditionsFunction;
       typedef tnlNeumannBoundaryConditions< MeshType, NonlinearityBoundaryConditionsFunction > NonlinearityBoundaryConditions;
-      typedef Functions::tnlOperatorFunction< NonlinearityOperator, NonlinearityMeshFunction, NonlinearityBoundaryConditions, EvaluateNonlinearityOnFly > Nonlinearity;
+      typedef Functions::OperatorFunction< NonlinearityOperator, NonlinearityMeshFunction, NonlinearityBoundaryConditions, EvaluateNonlinearityOnFly > Nonlinearity;
       typedef tnlOneSidedNonlinearDiffusion< Mesh, Nonlinearity, RealType, IndexType > NonlinearDiffusion;
       typedef tnlExactMeanCurvature< Mesh::getMeshDimensions(), RealType > ExactOperatorType;
       

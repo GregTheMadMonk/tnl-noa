@@ -73,7 +73,7 @@ class tnlMeshEntityTraits
 
 
       typedef Arrays::Array< EntityType, Devices::Host, GlobalIndexType >               StorageArrayType;
-      typedef Arrays::tnlSharedArray< EntityType, Devices::Host, GlobalIndexType >         AccessArrayType;
+      typedef Arrays::SharedArray< EntityType, Devices::Host, GlobalIndexType >         AccessArrayType;
       typedef tnlIndexedSet< EntityType, GlobalIndexType, Key >                      UniqueContainerType;
       typedef tnlIndexedSet< SeedType, GlobalIndexType, Key >                        SeedIndexedSetType;
       typedef Arrays::Array< SeedType, Devices::Host, GlobalIndexType >                 SeedArrayType;

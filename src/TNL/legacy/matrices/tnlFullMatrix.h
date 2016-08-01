@@ -18,7 +18,7 @@ const int tnlMaxFullMatrixSize = 65536;
 
 template< typename Real, typename Device = Devices::Host, typename Index = int >
 class tnlFullMatrix : public tnlMatrix< Real, Device, Index >,
-                      virtual public tnlMultiArray< 2, Real, Device, Index >
+                      virtual public MultiArray< 2, Real, Device, Index >
 {
 
    Index nonzero_elements;
@@ -74,7 +74,7 @@ class tnlFullMatrix : public tnlMatrix< Real, Device, Index >,
 
 template< typename Real, typename Device, typename Index >
 tnlFullMatrix< Real, Device, Index > :: tnlFullMatrix( const String& name )
-: tnlMultiArray< 2, Real, Device, Index >( name ),
+: MultiArray< 2, Real, Device, Index >( name ),
   tnlMatrix< Real, Device, Index >( name ),
   nonzero_elements( 0 )
 {
@@ -82,7 +82,7 @@ tnlFullMatrix< Real, Device, Index > :: tnlFullMatrix( const String& name )
 
 template< typename Real, typename Device, typename Index >
 tnlFullMatrix< Real, Device, Index > :: tnlFullMatrix( const Index size )
-: tnlMultiArray< 2, Real, Device, Index >( size, size )
+: MultiArray< 2, Real, Device, Index >( size, size )
 {
 };
 
@@ -109,10 +109,10 @@ bool tnlFullMatrix< Real, Device, Index > :: setSize( Index new_size )
       return false;
    }
    tnlMatrix< Real, Device, Index > :: size = 0;
-   if( ! tnlMultiArray< 2, Real, Device, Index > :: setDimensions( StaticVector< 2, Index >( new_size, new_size ) ) )
+   if( ! MultiArray< 2, Real, Device, Index > :: setDimensions( StaticVector< 2, Index >( new_size, new_size ) ) )
       return false;
    tnlMatrix< Real, Device, Index > :: size = new_size;
-   tnlMultiArray< 2, Real, Device, Index > :: setValue( 0.0 );
+   MultiArray< 2, Real, Device, Index > :: setValue( 0.0 );
    nonzero_elements = 0;
    return true;
 };
@@ -126,7 +126,7 @@ bool tnlFullMatrix< Real, Device, Index > :: setNonzeroElements( Index n )
 template< typename Real, typename Device, typename Index >
 void tnlFullMatrix< Real, Device, Index > :: reset()
 {
-   tnlMultiArray< 2, Real, Device, Index > :: reset();
+   MultiArray< 2, Real, Device, Index > :: reset();
 };
 
 template< typename Real, typename Device, typename Index >
@@ -144,32 +144,32 @@ Index tnlFullMatrix< Real, Device, Index > :: getSize() const
 template< typename Real, typename Device, typename Index >
 Real tnlFullMatrix< Real, Device, Index > :: getElement( Index i, Index j ) const
 {
-   return tnlMultiArray< 2, Real, Device, Index > :: getElement( i, j );
+   return MultiArray< 2, Real, Device, Index > :: getElement( i, j );
 };
 
 template< typename Real, typename Device, typename Index >
 bool tnlFullMatrix< Real, Device, Index > :: setElement( Index i, Index j, const Real& v )
 {
-   Real d = tnlMultiArray< 2, Real, Device, Index > :: getElement( i, j );
+   Real d = MultiArray< 2, Real, Device, Index > :: getElement( i, j );
    if( d == Real( 0.0 ) && v != Real( 0.0 ) )
       nonzero_elements ++;
    if( d != Real( 0.0 ) && v == Real( 0.0 ) )
       nonzero_elements --;
-   tnlMultiArray< 2, Real, Device, Index > :: setElement( i, j, v );
+   MultiArray< 2, Real, Device, Index > :: setElement( i, j, v );
     return true;
 };
 
 template< typename Real, typename Device, typename Index >
 bool tnlFullMatrix< Real, Device, Index > :: addToElement( Index i, Index j, const Real& v )
 {
-   Real d1 = tnlMultiArray< 2, Real, Device, Index > :: getElement( i, j );
+   Real d1 = MultiArray< 2, Real, Device, Index > :: getElement( i, j );
    Real d2 = d1;
    d1 += v;
    if( d2 == Real( 0.0 ) && d1 != Real( 0.0 ) )
       nonzero_elements ++;
    if( d2 != Real( 0.0 ) && d1 == Real( 0.0 ) )
       nonzero_elements --;
-        tnlMultiArray< 2, Real, Device, Index > :: setElement( i, j, d1 );
+        MultiArray< 2, Real, Device, Index > :: setElement( i, j, d1 );
    return true;
 };
 
@@ -186,7 +186,7 @@ Real tnlFullMatrix< Real, Device, Index > :: rowProduct( const Index row,
 
    const Index size = getSize();
    Index pos = row * size;
-   const Real* data = tnlMultiArray< 2, Real, Device, Index > :: getData();
+   const Real* data = MultiArray< 2, Real, Device, Index > :: getData();
    Real res( 0.0 );
    if( Device :: getDevice() == Devices::HostDevice )
    {
@@ -219,7 +219,7 @@ void tnlFullMatrix< Real, Device, Index > :: vectorProduct( const Vector< Real, 
 
    const Index size = getSize();
    Index pos( 0 );
-   const Real* data = tnlMultiArray< 2, Real, Device, Index > :: getData();
+   const Real* data = MultiArray< 2, Real, Device, Index > :: getData();
    Real res;
    for( Index i = 0; i < size; i ++ )
    {
@@ -238,7 +238,7 @@ template< typename Real, typename Device, typename Index >
 void tnlFullMatrix< Real, Device, Index > :: multiplyRow( const Index row, const Real& c )
 {
    const Index size = getSize();
-   Real* data = tnlMultiArray< 2, Real, Device, Index > :: getData();
+   Real* data = MultiArray< 2, Real, Device, Index > :: getData();
    Index pos = row * size;
    for( Index i = 0; i < size; i ++ )
    {
@@ -250,7 +250,7 @@ template< typename Real, typename Device, typename Index >
 Real tnlFullMatrix< Real, Device, Index > :: getRowL1Norm( const Index row ) const
 {
    const Index size = getSize();
-   const Real* data = tnlMultiArray< 2, Real, Device, Index > :: getData();
+   const Real* data = MultiArray< 2, Real, Device, Index > :: getData();
    Real res( 0.0 );
    Index pos = row * size;
    for( Index i = 0; i < size; i ++ )

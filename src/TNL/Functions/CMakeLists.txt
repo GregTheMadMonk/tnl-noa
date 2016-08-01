@@ -1,31 +1,29 @@
 ADD_SUBDIRECTORY( Analytic )
 
-SET( headers tnlDomain.h
-             tnlExactOperatorFunction.h
-             tnlFunctionAdapter.h
-             tnlFunctionEvaluator.h
-             tnlFunctionEvaluator_impl.h
-             tnlMeshFunction.h
-             tnlMeshFunction_impl.h
-             tnlMeshFunctionEvaluator.h
-             tnlMeshFunctionEvaluator_impl.h
-             tnlMeshFunctionGnuplotWriter.h
-             tnlMeshFunctionGnuplotWriter_impl.h
-             tnlMeshFunctionNormGetter.h
-             tnlMeshFunctionVTKWriter.h
-             tnlMeshFunctionVTKWriter_impl.h             
-             tnlOperatorFunction.h
-             tnlTestFunction.h             
-             tnlTestFunction_impl.h )
+SET( headers Domain.h
+             ExactOperatorFunction.h
+             FunctionAdapter.h
+             MeshFunction.h
+             MeshFunction_impl.h
+             MeshFunctionEvaluator.h
+             MeshFunctionEvaluator_impl.h
+             MeshFunctionGnuplotWriter.h
+             MeshFunctionGnuplotWriter_impl.h
+             MeshFunctionNormGetter.h
+             MeshFunctionVTKWriter.h
+             MeshFunctionVTKWriter_impl.h             
+             OperatorFunction.h
+             TestFunction.h             
+             TestFunction_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Functions )
 set( common_SOURCES
-     ${CURRENT_DIR}/tnlTestFunction_impl.cpp )       
+     ${CURRENT_DIR}/TestFunction_impl.cpp )       
 
 IF( BUILD_CUDA )
    set( tnl_functions_CUDA__SOURCES
         ${common_SOURCES} 
-        ${CURRENT_DIR}/tnlTestFunction_impl.cu
+        ${CURRENT_DIR}/TestFunction_impl.cu
         PARENT_SCOPE )
 ENDIF()    
 

@@ -3,7 +3,7 @@
 
 #include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/Functions/tnlDomain.h>
+#include <TNL/Functions/Domain.h>
 
 namespace TNL {
 
@@ -11,14 +11,14 @@ template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
 class EulerPressureGetter
-: public Functions::tnlDomain< Mesh::getMeshDimensions(), Functions::MeshDomain >
+: public Functions::Domain< Mesh::getMeshDimensions(), Functions::MeshDomain >
 {
    public:
       
       typedef Mesh MeshType;
       typedef Real RealType;
       typedef Index IndexType;
-      typedef Functions::tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
       static String getType();

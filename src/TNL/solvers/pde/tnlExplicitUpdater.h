@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Functions/tnlFunctionAdapter.h>
+#include <TNL/Functions/FunctionAdapter.h>
 #include <TNL/Timer.h>
 #include <TNL/tnlSharedPointer.h>
 
@@ -136,7 +136,7 @@ class tnlExplicitUpdater
                ( *userData.fu )( entity ) =                
                   ( *userData.differentialOperator )( *userData.u, entity, userData.time );
 
-               typedef Functions::tnlFunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
+               typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
                (  *userData.fu )( entity ) += 
                   FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
             }

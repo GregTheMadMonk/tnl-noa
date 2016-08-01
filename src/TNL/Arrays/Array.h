@@ -26,7 +26,7 @@ namespace Arrays {
 
 
 template< typename Element, typename Device, typename Index >
-class tnlSharedArray;
+class SharedArray;
 
 /****
  * Array handles memory allocation and sharing of the same data between more Arrays.
@@ -84,7 +84,7 @@ class Array : public virtual Object
                  const IndexType& size = 0 );
 
       template< int Size >
-      void bind( tnlStaticArray< Size, Element >& array );
+      void bind( StaticArray< Size, Element >& array );
 
       void swap( Array< Element, Device, Index >& array );
 

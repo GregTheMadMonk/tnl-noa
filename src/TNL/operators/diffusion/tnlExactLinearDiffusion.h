@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Functions/tnlDomain.h>
+#include <TNL/Functions/Domain.h>
 
 namespace TNL {
 
@@ -19,7 +19,7 @@ class tnlExactLinearDiffusion
 {};
 
 template<>
-class tnlExactLinearDiffusion< 1 > : public Functions::tnlDomain< 1, Functions::SpaceDomain >
+class tnlExactLinearDiffusion< 1 > : public Functions::Domain< 1, Functions::SpaceDomain >
 {
    public:
 
@@ -35,7 +35,7 @@ class tnlExactLinearDiffusion< 1 > : public Functions::tnlDomain< 1, Functions::
 };
 
 template<>
-class tnlExactLinearDiffusion< 2 > : public Functions::tnlDomain< 2, Functions::SpaceDomain >
+class tnlExactLinearDiffusion< 2 > : public Functions::Domain< 2, Functions::SpaceDomain >
 {
    public:
  
@@ -51,7 +51,7 @@ class tnlExactLinearDiffusion< 2 > : public Functions::tnlDomain< 2, Functions::
 };
 
 template<>
-class tnlExactLinearDiffusion< 3 > : public Functions::tnlDomain< 3 >
+class tnlExactLinearDiffusion< 3 > : public Functions::Domain< 3 >
 {
    public:
  

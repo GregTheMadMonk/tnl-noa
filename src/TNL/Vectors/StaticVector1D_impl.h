@@ -22,14 +22,14 @@ StaticVector< 1, Real >::StaticVector()
 template< typename Real >
 __cuda_callable__
 StaticVector< 1, Real >::StaticVector( const Real& v )
-: Arrays::tnlStaticArray< 1, Real >( v )
+: Arrays::StaticArray< 1, Real >( v )
 {
 }
 
 template< typename Real >
 __cuda_callable__
 StaticVector< 1, Real >::StaticVector( const StaticVector< 1, Real >& v )
-: Arrays::tnlStaticArray< 1, Real >( v )
+: Arrays::StaticArray< 1, Real >( v )
 {
 }
 

@@ -259,7 +259,7 @@ template< typename Element,
    template< int Size >
 void
 Array< Element, Device, Index >::
-bind( tnlStaticArray< Size, Element >& array )
+bind( StaticArray< Size, Element >& array )
 {
    this->releaseData();
    this->size = Size;

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Vectors/Vector.h>
-#include <TNL/Functions/tnlMeshFunction.h>
+#include <TNL/Functions/MeshFunction.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/operators/tnlOperator.h>
 #include <TNL/operators/diffusion/tnlExactLinearDiffusion.h>

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Functions/tnlFunctionAdapter.h>
+#include <TNL/Functions/FunctionAdapter.h>
 
 namespace TNL {
 
@@ -159,8 +159,8 @@ class tnlLinearSystemAssembler
                  userData.matrix.template modifyData< DeviceType >(), 
                  *userData.b );
  
-            typedef Functions::tnlFunctionAdapter< MeshType, RightHandSide > RhsFunctionAdapter;
-            typedef Functions::tnlFunctionAdapter< MeshType, MeshFunction > MeshFunctionAdapter;
+            typedef Functions::FunctionAdapter< MeshType, RightHandSide > RhsFunctionAdapter;
+            typedef Functions::FunctionAdapter< MeshType, MeshFunction > MeshFunctionAdapter;
             const RealType& rhs = RhsFunctionAdapter::getValue
                ( userData.rightHandSide.template getData< DeviceType >(),
                  entity,

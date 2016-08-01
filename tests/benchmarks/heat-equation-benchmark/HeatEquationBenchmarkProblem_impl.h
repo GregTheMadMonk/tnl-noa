@@ -118,7 +118,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                      MeshDependentDataType& meshDependentData )
 {
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-   Functions::tnlMeshFunction< Mesh > u( meshPointer, dofsPointer );
+   Functions::MeshFunction< Mesh > u( meshPointer, dofsPointer );
    if( ! u.boundLoad( initialConditionFile ) )
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
@@ -375,7 +375,7 @@ heatEquationTemplatedCompact( const GridType* grid,
          fu( entity ) = 
             ( *differentialOperator )( u, entity, time );
 
-         typedef Functions::tnlFunctionAdapter< GridType, RightHandSide > FunctionAdapter;
+         typedef Functions::FunctionAdapter< GridType, RightHandSide > FunctionAdapter;
          fu( entity ) +=  FunctionAdapter::getValue( *rightHandSide, entity, time );
       }
    }
@@ -595,7 +595,7 @@ assemblyLinearSystem( const RealType& time,
                              typename MatrixPointer::ObjectType,
                              typename DofVectorPointer::ObjectType > systemAssembler;
 
-   typedef Functions::tnlMeshFunction< Mesh > MeshFunctionType;
+   typedef Functions::MeshFunction< Mesh > MeshFunctionType;
    typedef tnlSharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
    MeshFunctionPointer u( mesh, *_u );
    systemAssembler.template assembly< typename Mesh::Cell >( time,

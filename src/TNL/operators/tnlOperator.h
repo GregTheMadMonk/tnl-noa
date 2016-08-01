@@ -10,17 +10,17 @@
 
 #pragma once
 
-#include <TNL/Functions/tnlDomain.h>
+#include <TNL/Functions/Domain.h>
 
 namespace TNL {
 
 template< typename Mesh,
-          Functions::tnlDomainType DomainType = Functions::MeshInteriorDomain,
+          Functions::DomainType DomainType = Functions::MeshInteriorDomain,
           int PreimageEntitiesDimensions = Mesh::getMeshDimensions(),
           int ImageEntitiesDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >
-class tnlOperator : public Functions::tnlDomain< Mesh::getMeshDimensions(), DomainType >
+class tnlOperator : public Functions::Domain< Mesh::getMeshDimensions(), DomainType >
 {
    public:
  

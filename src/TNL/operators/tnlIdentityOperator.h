@@ -10,13 +10,13 @@
 
 #pragma once
 
-#include <TNL/Functions/tnlMeshFunction.h>
+#include <TNL/Functions/MeshFunction.h>
 
 namespace TNL {
 
 template< typename MeshFunction >
 class tnlIdentityOperator
-   : public tnlDomain< MeshFunction::getDimensions(), MeshFunction::getDomainType() >
+   : public Domain< MeshFunction::getDimensions(), MeshFunction::getDomainType() >
 {
    public:
  

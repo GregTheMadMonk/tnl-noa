@@ -11,6 +11,7 @@
 #pragma once
 
 #include <type_traits>
+#include <TNL/mesh/tnlTraverser.h>
 
 namespace TNL {
 

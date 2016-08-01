@@ -29,7 +29,7 @@ template< typename Real,
 __cuda_callable__
 SharedVector< Real, Device, Index >::SharedVector( Real* data,
                                                          const Index size )
-: Arrays::tnlSharedArray< Real, Device, Index >( data, size )
+: Arrays::SharedArray< Real, Device, Index >( data, size )
 {
 }
 
@@ -38,7 +38,7 @@ template< typename Real,
           typename Index >
 __cuda_callable__
 SharedVector< Real, Device, Index >::SharedVector( Vector< Real, Device, Index >& vector )
-: Arrays::tnlSharedArray< Real, Device, Index >( vector )
+: Arrays::SharedArray< Real, Device, Index >( vector )
 {
 }
 
@@ -47,7 +47,7 @@ template< typename Real,
           typename Index >
 __cuda_callable__
 SharedVector< Real, Device, Index >::SharedVector( SharedVector< Real, Device, Index >& vector )
-: Arrays::tnlSharedArray< Real, Device, Index >( vector )
+: Arrays::SharedArray< Real, Device, Index >( vector )
 {
 }
 
@@ -111,7 +111,7 @@ template< typename Real,
 SharedVector< Real, Device, Index >&
    SharedVector< Real, Device, Index > :: operator = ( const SharedVector< Real, Device, Index >& vector )
 {
-   Arrays::tnlSharedArray< Real, Device, Index > :: operator = ( vector );
+   Arrays::SharedArray< Real, Device, Index > :: operator = ( vector );
    return ( *this );
 };
 
@@ -122,7 +122,7 @@ template< typename Real,
 SharedVector< Real, Device, Index >&
    SharedVector< Real, Device, Index > :: operator = ( const Vector& vector )
 {
-   Arrays::tnlSharedArray< Real, Device, Index > :: operator = ( vector );
+   Arrays::SharedArray< Real, Device, Index > :: operator = ( vector );
    return ( *this );
 };
 
@@ -132,7 +132,7 @@ template< typename Real,
    template< typename Vector >
 bool SharedVector< Real, Device, Index > :: operator == ( const Vector& vector ) const
 {
-   return Arrays::tnlSharedArray< Real, Device, Index > :: operator == ( vector );
+   return Arrays::SharedArray< Real, Device, Index > :: operator == ( vector );
 }
 
 template< typename Real,
@@ -141,7 +141,7 @@ template< typename Real,
    template< typename Vector >
 bool SharedVector< Real, Device, Index > :: operator != ( const Vector& vector ) const
 {
-   return Arrays::tnlSharedArray< Real, Device, Index > :: operator != ( vector );
+   return Arrays::SharedArray< Real, Device, Index > :: operator != ( vector );
 }
 
 template< typename Real,

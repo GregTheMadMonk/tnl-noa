@@ -16,7 +16,7 @@ namespace TNL {
 namespace Vectors {   
 
 template< int Size, typename Real = double >
-class StaticVector : public Arrays::tnlStaticArray< Size, Real >
+class StaticVector : public Arrays::StaticArray< Size, Real >
 {
    public:
    typedef Real RealType;
@@ -88,7 +88,7 @@ class StaticVector : public Arrays::tnlStaticArray< Size, Real >
 };
 
 template< typename Real >
-class StaticVector< 1, Real > : public Arrays::tnlStaticArray< 1, Real >
+class StaticVector< 1, Real > : public Arrays::StaticArray< 1, Real >
 {
    public:
    typedef Real RealType;
@@ -157,7 +157,7 @@ class StaticVector< 1, Real > : public Arrays::tnlStaticArray< 1, Real >
 };
 
 template< typename Real >
-class StaticVector< 2, Real > : public Arrays::tnlStaticArray< 2, Real >
+class StaticVector< 2, Real > : public Arrays::StaticArray< 2, Real >
 {
    public:
    typedef Real RealType;
@@ -232,7 +232,7 @@ class StaticVector< 2, Real > : public Arrays::tnlStaticArray< 2, Real >
 };
 
 template< typename Real >
-class StaticVector< 3, Real > : public Arrays::tnlStaticArray< 3, Real >
+class StaticVector< 3, Real > : public Arrays::StaticArray< 3, Real >
 {
    public:
    typedef Real RealType;

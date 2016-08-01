@@ -13,7 +13,7 @@
 #include <TNL/File.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Functions/tnlTestFunction.h>
+#include <TNL/Functions/TestFunction.h>
 #include <TNL/mesh/tnlDummyMesh.h>
 #include <TNL/mesh/tnlGrid.h>
 
@@ -40,7 +40,7 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntry< String >( "help", "Write help." );
  
    config.addDelimiter                            ( "Functions parameters:" );
-   Functions::tnlTestFunction< 1 >::configSetup( config );
+   Functions::TestFunction< 1 >::configSetup( config );
 }
 
 int main( int argc, char* argv[] )

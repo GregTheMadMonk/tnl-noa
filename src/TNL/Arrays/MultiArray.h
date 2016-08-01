@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMultiArray.h  -  description
+                          MultiArray.h  -  description
                              -------------------
     begin                : Nov 25, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -19,23 +19,23 @@ namespace TNL {
 namespace Arrays {   
 
 template< int Dimensions, typename Element = double, typename Device = Devices::Host, typename Index = int >
-class tnlMultiArray : public Array< Element, Device, Index >
+class MultiArray : public Array< Element, Device, Index >
 {
 };
 
 template< typename Element, typename Device, typename Index >
-class tnlMultiArray< 1, Element, Device, Index > : public Array< Element, Device, Index >
+class MultiArray< 1, Element, Device, Index > : public Array< Element, Device, Index >
 {
    public:
    enum { Dimensions = 1};
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlMultiArray< 1, Element, Devices::Host, Index > HostType;
-   typedef tnlMultiArray< 1, Element, Devices::Cuda, Index > CudaType;
+   typedef MultiArray< 1, Element, Devices::Host, Index > HostType;
+   typedef MultiArray< 1, Element, Devices::Cuda, Index > CudaType;
 
 
-   tnlMultiArray();
+   MultiArray();
 
    static String getType();
 
@@ -76,16 +76,16 @@ class tnlMultiArray< 1, Element, Device, Index > : public Array< Element, Device
    __cuda_callable__ const Element& operator()( const Index i ) const;
 
 
-   template< typename MultiArray >
-   bool operator == ( const MultiArray& array ) const;
+   template< typename MultiArrayT >
+   bool operator == ( const MultiArrayT& array ) const;
 
-   template< typename MultiArray >
-   bool operator != ( const MultiArray& array ) const;
+   template< typename MultiArrayT >
+   bool operator != ( const MultiArrayT& array ) const;
 
-   tnlMultiArray< 1, Element, Device, Index >& operator = ( const tnlMultiArray< 1, Element, Device, Index >& array );
+   MultiArray< 1, Element, Device, Index >& operator = ( const MultiArray< 1, Element, Device, Index >& array );
 
-   template< typename MultiArray >
-   tnlMultiArray< 1, Element, Device, Index >& operator = ( const MultiArray& array );
+   template< typename MultiArrayT >
+   MultiArray< 1, Element, Device, Index >& operator = ( const MultiArrayT& array );
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -103,18 +103,18 @@ class tnlMultiArray< 1, Element, Device, Index > : public Array< Element, Device
 };
 
 template< typename Element, typename Device, typename Index >
-class tnlMultiArray< 2, Element, Device, Index > : public Array< Element, Device, Index >
+class MultiArray< 2, Element, Device, Index > : public Array< Element, Device, Index >
 {
    public:
    enum { Dimensions = 2 };
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlMultiArray< 2, Element, Devices::Host, Index > HostType;
-   typedef tnlMultiArray< 2, Element, Devices::Cuda, Index > CudaType;
+   typedef MultiArray< 2, Element, Devices::Host, Index > HostType;
+   typedef MultiArray< 2, Element, Devices::Cuda, Index > CudaType;
 
 
-   tnlMultiArray();
+   MultiArray();
 
    static String getType();
 
@@ -158,16 +158,16 @@ class tnlMultiArray< 2, Element, Device, Index > : public Array< Element, Device
 
    __cuda_callable__ const Element& operator()( const Index j, const Index i ) const;
 
-   template< typename MultiArray >
-   bool operator == ( const MultiArray& array ) const;
+   template< typename MultiArrayT >
+   bool operator == ( const MultiArrayT& array ) const;
 
-   template< typename MultiArray >
-   bool operator != ( const MultiArray& array ) const;
+   template< typename MultiArrayT >
+   bool operator != ( const MultiArrayT& array ) const;
 
-   tnlMultiArray< 2, Element, Device, Index >& operator = ( const tnlMultiArray< 2, Element, Device, Index >& array );
+   MultiArray< 2, Element, Device, Index >& operator = ( const MultiArray< 2, Element, Device, Index >& array );
 
-   template< typename MultiArray >
-   tnlMultiArray< 2, Element, Device, Index >& operator = ( const MultiArray& array );
+   template< typename MultiArrayT >
+   MultiArray< 2, Element, Device, Index >& operator = ( const MultiArrayT& array );
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -185,7 +185,7 @@ class tnlMultiArray< 2, Element, Device, Index > : public Array< Element, Device
 };
 
 template< typename Element, typename Device, typename Index >
-class tnlMultiArray< 3, Element, Device, Index > : public Array< Element, Device, Index >
+class MultiArray< 3, Element, Device, Index > : public Array< Element, Device, Index >
 {
    public:
 
@@ -193,11 +193,11 @@ class tnlMultiArray< 3, Element, Device, Index > : public Array< Element, Device
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlMultiArray< 3, Element, Devices::Host, Index > HostType;
-   typedef tnlMultiArray< 3, Element, Devices::Cuda, Index > CudaType;
+   typedef MultiArray< 3, Element, Devices::Host, Index > HostType;
+   typedef MultiArray< 3, Element, Devices::Cuda, Index > CudaType;
 
 
-   tnlMultiArray();
+   MultiArray();
 
    static String getType();
 
@@ -216,8 +216,8 @@ class tnlMultiArray< 3, Element, Device, Index > : public Array< Element, Device
    __cuda_callable__ const Vectors::StaticVector< 3, Index >& getDimensions() const;
 
    //! Set dimensions of the array using another array as a template
-   template< typename MultiArray >
-   bool setLike( const MultiArray& v );
+   template< typename MultiArrayT >
+   bool setLike( const MultiArrayT& v );
 
    void reset();
 
@@ -241,16 +241,16 @@ class tnlMultiArray< 3, Element, Device, Index > : public Array< Element, Device
 
    __cuda_callable__ const Element& operator()( const Index k, const Index j, const Index i ) const;
 
-   template< typename MultiArray >
-   bool operator == ( const MultiArray& array ) const;
+   template< typename MultiArrayT >
+   bool operator == ( const MultiArrayT& array ) const;
 
-   template< typename MultiArray >
-   bool operator != ( const MultiArray& array ) const;
+   template< typename MultiArrayT >
+   bool operator != ( const MultiArrayT& array ) const;
 
-   tnlMultiArray< 3, Element, Device, Index >& operator = ( const tnlMultiArray< 3, Element, Device, Index >& array );
+   MultiArray< 3, Element, Device, Index >& operator = ( const MultiArray< 3, Element, Device, Index >& array );
 
-   template< typename MultiArray >
-   tnlMultiArray< 3, Element, Device, Index >& operator = ( const MultiArray& array );
+   template< typename MultiArrayT >
+   MultiArray< 3, Element, Device, Index >& operator = ( const MultiArrayT& array );
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -268,7 +268,7 @@ class tnlMultiArray< 3, Element, Device, Index > : public Array< Element, Device
 };
 
 template< typename Element, typename Device, typename Index >
-class tnlMultiArray< 4, Element, Device, Index > : public Array< Element, Device, Index >
+class MultiArray< 4, Element, Device, Index > : public Array< Element, Device, Index >
 {
    public:
 
@@ -276,11 +276,11 @@ class tnlMultiArray< 4, Element, Device, Index > : public Array< Element, Device
    typedef Element ElementType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlMultiArray< 4, Element, Devices::Host, Index > HostType;
-   typedef tnlMultiArray< 4, Element, Devices::Cuda, Index > CudaType;
+   typedef MultiArray< 4, Element, Devices::Host, Index > HostType;
+   typedef MultiArray< 4, Element, Devices::Cuda, Index > CudaType;
 
 
-   tnlMultiArray();
+   MultiArray();
 
    static String getType();
 
@@ -299,8 +299,8 @@ class tnlMultiArray< 4, Element, Device, Index > : public Array< Element, Device
    __cuda_callable__ const Vectors::StaticVector< 4, Index >& getDimensions() const;
 
    //! Set dimensions of the array using another array as a template
-   template< typename MultiArray >
-   bool setLike( const MultiArray& v );
+   template< typename MultiArrayT >
+   bool setLike( const MultiArrayT& v );
 
    void reset();
 
@@ -324,16 +324,16 @@ class tnlMultiArray< 4, Element, Device, Index > : public Array< Element, Device
 
    __cuda_callable__ const Element& operator()( const Index l, const Index k, const Index j, const Index i ) const;
 
-   template< typename MultiArray >
-   bool operator == ( const MultiArray& array ) const;
+   template< typename MultiArrayT >
+   bool operator == ( const MultiArrayT& array ) const;
 
-   template< typename MultiArray >
-   bool operator != ( const MultiArray& array ) const;
+   template< typename MultiArrayT >
+   bool operator != ( const MultiArrayT& array ) const;
 
-   tnlMultiArray< 4, Element, Device, Index >& operator = ( const tnlMultiArray< 4, Element, Device, Index >& array );
+   MultiArray< 4, Element, Device, Index >& operator = ( const MultiArray< 4, Element, Device, Index >& array );
 
-   template< typename MultiArray >
-   tnlMultiArray< 4, Element, Device, Index >& operator = ( const MultiArray& array );
+   template< typename MultiArrayT >
+   MultiArray< 4, Element, Device, Index >& operator = ( const MultiArrayT& array );
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -351,16 +351,16 @@ class tnlMultiArray< 4, Element, Device, Index > : public Array< Element, Device
 };
 
 template< typename Element, typename device, typename Index >
-std::ostream& operator << ( std::ostream& str, const tnlMultiArray< 1, Element, device, Index >& array );
+std::ostream& operator << ( std::ostream& str, const MultiArray< 1, Element, device, Index >& array );
 
 template< typename Element, typename device, typename Index >
-std::ostream& operator << ( std::ostream& str, const tnlMultiArray< 2, Element, device, Index >& array );
+std::ostream& operator << ( std::ostream& str, const MultiArray< 2, Element, device, Index >& array );
 
 template< typename Element, typename device, typename Index >
-std::ostream& operator << ( std::ostream& str, const tnlMultiArray< 3, Element, device, Index >& array );
+std::ostream& operator << ( std::ostream& str, const MultiArray< 3, Element, device, Index >& array );
 
 template< typename Element, typename device, typename Index >
-std::ostream& operator << ( std::ostream& str, const tnlMultiArray< 4, Element, device, Index >& array );
+std::ostream& operator << ( std::ostream& str, const MultiArray< 4, Element, device, Index >& array );
 
 } // namespace Arrays
 } // namespace TNL
@@ -376,83 +376,83 @@ namespace Arrays {
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 1, float,  Devices::Host, int >;
+extern template class MultiArray< 1, float,  Devices::Host, int >;
 #endif
-extern template class tnlMultiArray< 1, double, Devices::Host, int >;
+extern template class MultiArray< 1, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 1, float,  Devices::Host, long int >;
+extern template class MultiArray< 1, float,  Devices::Host, long int >;
 #endif
-extern template class tnlMultiArray< 1, double, Devices::Host, long int >;
+extern template class MultiArray< 1, double, Devices::Host, long int >;
 #endif
 
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 2, float,  Devices::Host, int >;
+extern template class MultiArray< 2, float,  Devices::Host, int >;
 #endif
-extern template class tnlMultiArray< 2, double, Devices::Host, int >;
+extern template class MultiArray< 2, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 2, float,  Devices::Host, long int >;
+extern template class MultiArray< 2, float,  Devices::Host, long int >;
 #endif
-extern template class tnlMultiArray< 2, double, Devices::Host, long int >;
+extern template class MultiArray< 2, double, Devices::Host, long int >;
 #endif
 
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 3, float,  Devices::Host, int >;
+extern template class MultiArray< 3, float,  Devices::Host, int >;
 #endif
-extern template class tnlMultiArray< 3, double, Devices::Host, int >;
+extern template class MultiArray< 3, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 3, float,  Devices::Host, long int >;
+extern template class MultiArray< 3, float,  Devices::Host, long int >;
 #endif
-extern template class tnlMultiArray< 3, double, Devices::Host, long int >;
+extern template class MultiArray< 3, double, Devices::Host, long int >;
 #endif
 
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 4, float,  Devices::Host, int >;
+extern template class MultiArray< 4, float,  Devices::Host, int >;
 #endif
-extern template class tnlMultiArray< 4, double, Devices::Host, int >;
+extern template class MultiArray< 4, double, Devices::Host, int >;
 #ifdef INSTANTIATE_LONG_INT
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 4, float,  Devices::Host, long int >;
+extern template class MultiArray< 4, float,  Devices::Host, long int >;
 #endif
-extern template class tnlMultiArray< 4, double, Devices::Host, long int >;
+extern template class MultiArray< 4, double, Devices::Host, long int >;
 #endif
 
 // TODO: There are problems with nvlink - it might be better in later versions
 /*
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 1, float,  Devices::Cuda, int >;
+extern template class MultiArray< 1, float,  Devices::Cuda, int >;
 #endif
-extern template class tnlMultiArray< 1, double, Devices::Cuda, int >;
+extern template class MultiArray< 1, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 1, float,  Devices::Cuda, long int >;
+extern template class MultiArray< 1, float,  Devices::Cuda, long int >;
 #endif
-extern template class tnlMultiArray< 1, double, Devices::Cuda, long int >;
+extern template class MultiArray< 1, double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 2, float,  Devices::Cuda, int >;
+extern template class MultiArray< 2, float,  Devices::Cuda, int >;
 #endif
-extern template class tnlMultiArray< 2, double, Devices::Cuda, int >;
+extern template class MultiArray< 2, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 2, float,  Devices::Cuda, long int >;
+extern template class MultiArray< 2, float,  Devices::Cuda, long int >;
 #endif
-extern template class tnlMultiArray< 2, double, Devices::Cuda, long int >;
+extern template class MultiArray< 2, double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 3, float,  Devices::Cuda, int >;
+extern template class MultiArray< 3, float,  Devices::Cuda, int >;
 #endif
-extern template class tnlMultiArray< 3, double, Devices::Cuda, int >;
+extern template class MultiArray< 3, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 3, float,  Devices::Cuda, long int >;
+extern template class MultiArray< 3, float,  Devices::Cuda, long int >;
 #endif
-extern template class tnlMultiArray< 3, double, Devices::Cuda, long int >;
+extern template class MultiArray< 3, double, Devices::Cuda, long int >;
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 4, float,  Devices::Cuda, int >;
+extern template class MultiArray< 4, float,  Devices::Cuda, int >;
 #endif
-extern template class tnlMultiArray< 4, double, Devices::Cuda, int >;
+extern template class MultiArray< 4, double, Devices::Cuda, int >;
 #ifdef INSTANTIATE_FLOAT
-extern template class tnlMultiArray< 4, float,  Devices::Cuda, long int >;
+extern template class MultiArray< 4, float,  Devices::Cuda, long int >;
 #endif
-extern template class tnlMultiArray< 4, double, Devices::Cuda, long int >;*/
+extern template class MultiArray< 4, double, Devices::Cuda, long int >;*/
 
 #endif
 

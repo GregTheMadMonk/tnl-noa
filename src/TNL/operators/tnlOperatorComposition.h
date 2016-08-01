@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/Functions/tnlOperatorFunction.h>
-#include <TNL/Functions/tnlMeshFunction.h>
+#include <TNL/Functions/OperatorFunction.h>
+#include <TNL/Functions/MeshFunction.h>
 #include <TNL/operators/tnlOperator.h>
 #include <TNL/operators/tnlExactOperatorComposition.h>
 
@@ -41,10 +41,10 @@ class tnlOperatorComposition
    public:
  
       typedef typename InnerOperator::MeshType MeshType;
-      typedef Functions::tnlMeshFunction< MeshType, InnerOperator::getPreimageEntitiesDimensions() > PreimageFunctionType;
-      typedef Functions::tnlMeshFunction< MeshType, InnerOperator::getImageEntitiesDimensions() > ImageFunctionType;
-      typedef Functions::tnlOperatorFunction< InnerOperator, PreimageFunctionType, InnerBoundaryConditions > InnerOperatorFunction;
-      typedef Functions::tnlOperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
+      typedef Functions::MeshFunction< MeshType, InnerOperator::getPreimageEntitiesDimensions() > PreimageFunctionType;
+      typedef Functions::MeshFunction< MeshType, InnerOperator::getImageEntitiesDimensions() > ImageFunctionType;
+      typedef Functions::OperatorFunction< InnerOperator, PreimageFunctionType, InnerBoundaryConditions > InnerOperatorFunction;
+      typedef Functions::OperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
       typedef typename InnerOperator::RealType RealType;
       typedef typename InnerOperator::IndexType IndexType;
       typedef tnlExactOperatorComposition< typename OuterOperator::ExactOperatorType,
@@ -117,17 +117,17 @@ class tnlOperatorComposition
 template< typename OuterOperator,
           typename InnerOperator >
 class tnlOperatorComposition< OuterOperator, InnerOperator, void >
-   : public Functions::tnlDomain< InnerOperator::getDimensions(), InnerOperator::getDomainType() >
+   : public Functions::Domain< InnerOperator::getDimensions(), InnerOperator::getDomainType() >
 {
       static_assert( std::is_same< typename OuterOperator::MeshType, typename InnerOperator::MeshType >::value,
          "Both operators have different mesh types." );
    public:
  
       typedef typename InnerOperator::MeshType MeshType;
-      typedef Functions::tnlMeshFunction< MeshType, InnerOperator::getPreimageEntitiesDimensions() > PreimageFunctionType;
-      typedef Functions::tnlMeshFunction< MeshType, InnerOperator::getImageEntitiesDimensions() > ImageFunctionType;
-      typedef Functions::tnlOperatorFunction< InnerOperator, PreimageFunctionType, void > InnerOperatorFunction;
-      typedef Functions::tnlOperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
+      typedef Functions::MeshFunction< MeshType, InnerOperator::getPreimageEntitiesDimensions() > PreimageFunctionType;
+      typedef Functions::MeshFunction< MeshType, InnerOperator::getImageEntitiesDimensions() > ImageFunctionType;
+      typedef Functions::OperatorFunction< InnerOperator, PreimageFunctionType, void > InnerOperatorFunction;
+      typedef Functions::OperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
       typedef typename InnerOperator::RealType RealType;
       typedef typename InnerOperator::IndexType IndexType;
       typedef tnlSharedPointer< MeshType > MeshPointer;
@@ -156,7 +156,7 @@ class tnlOperatorComposition< OuterOperator, InnerOperator, void >
       bool refresh( const RealType& time = 0.0 )
       {
          return this->innerOperatorFunction.refresh( time );
-         /*tnlMeshFunction< MeshType, MeshType::getMeshDimensions() - 1 > f( this->innerOperatorFunction.getMesh() );
+         /*MeshFunction< MeshType, MeshType::getMeshDimensions() - 1 > f( this->innerOperatorFunction.getMesh() );
          f = this->innerOperatorFunction;
          this->innerOperatorFunction.getPreimageFunction().write( "preimageFunction", "gnuplot" );
          f.write( "innerFunction", "gnuplot" );

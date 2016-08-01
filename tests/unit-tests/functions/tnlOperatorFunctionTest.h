@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlOperatorFunctionTest.h  -  description
+                          OperatorFunctionTest.h  -  description
                              -------------------
     begin                : Feb 11, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -8,12 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLOPERATORFUNCTIONTEST_H
-#define	TNLOPERATORFUNCTIONTEST_H
+#ifndef OperatorFunctionTEST_H
+#define	OperatorFunctionTEST_H
 
-#include <TNL/Functions/tnlOperatorFunction.h>
+#include <TNL/Functions/OperatorFunction.h>
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/Functions/Analytic/tnlExpBumpFunction.h>
+#include <TNL/Functions/Analytic/ExpBumpFunction.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include "../tnlUnitTestStarter.h"
@@ -29,11 +29,11 @@ using namespace TNL;
 
 template< typename Operator,
           bool EvaluateOnFly >
-class tnlOperatorFunctionTest
+class OperatorFunctionTest
    : public CppUnit::TestCase
 {
    public:
-   typedef tnlOperatorFunctionTest< Operator, EvaluateOnFly > TesterType;
+   typedef OperatorFunctionTest< Operator, EvaluateOnFly > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
    typedef Operator OperatorType;
    typedef typename OperatorType::MeshType MeshType;
@@ -41,18 +41,18 @@ class tnlOperatorFunctionTest
    typedef typename OperatorType::IndexType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef typename MeshType::VertexType VertexType;
-   typedef tnlExpBumpFunction< MeshType::getMeshDimensions(), RealType > TestFunctionType;
-   typedef tnlMeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
+   typedef Functions::ExpBumpFunction< MeshType::getMeshDimensions(), RealType > TestFunctionType;
+   typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
    typedef tnlSharedPointer< MeshType > MeshPointer;
 
-   tnlOperatorFunctionTest(){};
+   OperatorFunctionTest(){};
 
    virtual
-   ~tnlOperatorFunctionTest(){};
+   ~OperatorFunctionTest(){};
 
    static CppUnit::Test* suite()
    {
-      CppUnit::TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlOperatorFunctionTest" );
+      CppUnit::TestSuite* suiteOfTests = new CppUnit :: TestSuite( "OperatorFunctionTest" );
       CppUnit::TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "testWithNoBoundaryConditions", &TesterType::testWithNoBoundaryConditions ) );
@@ -63,7 +63,7 @@ class tnlOperatorFunctionTest
    void testWithNoBoundaryConditions()
    {
       MeshPointer meshPointer;
-      typedef tnlOperatorFunction< Operator, MeshFunctionType, void, EvaluateOnFly > OperatorFunctionType;
+      typedef Functions::OperatorFunction< Operator, MeshFunctionType, void, EvaluateOnFly > OperatorFunctionType;
       meshPointer->setDimensions( CoordinatesType( 25 ) );
       meshPointer->setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
       TestFunctionType testFunction;
@@ -92,7 +92,7 @@ class tnlOperatorFunctionTest
    {
       tnlSharedPointer< MeshType > mesh;
       typedef tnlDirichletBoundaryConditions< MeshType > BoundaryConditionsType;
-      typedef tnlOperatorFunction< Operator, MeshFunctionType, BoundaryConditionsType, EvaluateOnFly > OperatorFunctionType;
+      typedef Functions::OperatorFunction< Operator, MeshFunctionType, BoundaryConditionsType, EvaluateOnFly > OperatorFunctionType;
       mesh->setDimensions( CoordinatesType( 25 ) );
       mesh->setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
       TestFunctionType testFunction;
@@ -126,10 +126,10 @@ bool runTest()
 {
 #ifdef HAVE_CPPUNIT
    typedef tnlLinearDiffusion< MeshType > OperatorType;
-   tnlOperatorFunctionTest< OperatorType, false > test;
+   OperatorFunctionTest< OperatorType, false > test;
    //test.testWithBoundaryConditions();
-   if( //! tnlUnitTestStarter::run< tnlOperatorFunctionTest< OperatorType, true > >() ||
-       ! tnlUnitTestStarter::run< tnlOperatorFunctionTest< OperatorType, false > >() )
+   if( //! tnlUnitTestStarter::run< OperatorFunctionTest< OperatorType, true > >() ||
+       ! tnlUnitTestStarter::run< OperatorFunctionTest< OperatorType, false > >() )
      return false;
    return true;
 #else
@@ -147,5 +147,5 @@ int main( int argc, char* argv[] )
    return EXIT_SUCCESS;
 }
 
-#endif	/* TNLOPERATORFUNCTIONTEST_H */
+#endif	/* OperatorFunctionTEST_H */
 

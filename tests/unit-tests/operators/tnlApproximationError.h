@@ -12,11 +12,11 @@
 #define TNLAPPROXIMATIONERROR_H_
 
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/Functions/Analytic/tnlConstantFunction.h>
+#include <TNL/Functions/Analytic/ConstantFunction.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include <TNL/solvers/pde/tnlExplicitUpdater.h>
-#include <TNL/Functions/tnlExactOperatorFunction.h>
-#include <TNL/Functions/tnlMeshFunction.h>
+#include <TNL/Functions/ExactOperatorFunction.h>
+#include <TNL/Functions/MeshFunction.h>
 #include <TNL/solvers/pde/tnlBoundaryConditionsSetter.h>
 
 using namespace TNL;
@@ -47,13 +47,13 @@ class tnlApproximationError
                             RealType& maxError,
                             bool writeFunctions )
       {
-         typedef Functions::tnlMeshFunction< MeshType, MeshEntity::getDimensions() > MeshFunction;
+         typedef Functions::MeshFunction< MeshType, MeshEntity::getDimensions() > MeshFunction;
          typedef tnlDirichletBoundaryConditions< MeshType, Functions::tnlConstantFunction< MeshType::meshDimensions > > DirichletBoundaryConditions;
-         typedef Functions::tnlOperatorFunction< DirichletBoundaryConditions, MeshFunction > BoundaryOperatorFunction;
-         typedef Functions::tnlOperatorFunction< ApproximateOperator, MeshFunction > OperatorFunction;
-         typedef Functions::tnlExactOperatorFunction< ExactOperator, Function > ExactOperatorFunction;
+         typedef Functions::OperatorFunction< DirichletBoundaryConditions, MeshFunction > BoundaryOperatorFunction;
+         typedef Functions::OperatorFunction< ApproximateOperator, MeshFunction > OperatorFunction;
+         typedef Functions::ExactOperatorFunction< ExactOperator, Function > ExactOperatorFunction;
 
-         Functions::tnlMeshFunction< MeshType, MeshEntity::getDimensions() > exactU( meshPointer ), u( meshPointer ), v( meshPointer );
+         Functions::MeshFunction< MeshType, MeshEntity::getDimensions() > exactU( meshPointer ), u( meshPointer ), v( meshPointer );
          OperatorFunction operatorFunction( approximateOperator, v );
          ExactOperatorFunction exactOperatorFunction( exactOperator, function );
          DirichletBoundaryConditions boundaryConditions;

@@ -16,7 +16,7 @@
 #include <TNL/core/mfilename.h>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Vectors/StaticVector.h>
-#include <TNL/Functions/tnlMeshFunction.h>
+#include <TNL/Functions/MeshFunction.h>
 
 using namespace TNL;
 
@@ -50,7 +50,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
       std::cout << std::endl;
    
    typedef typename MeshPointer::ObjectType Mesh;
-   Functions::tnlMeshFunction< Mesh, Mesh::getMeshDimensions(), Real > v1( meshPointer ), v2( meshPointer ), diff( meshPointer );
+   Functions::MeshFunction< Mesh, Mesh::getMeshDimensions(), Real > v1( meshPointer ), v2( meshPointer ), diff( meshPointer );
    Real totalL1Diff( 0.0 ), totalL2Diff( 0.0 ), totalMaxDiff( 0.0 );
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {
@@ -294,7 +294,7 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
 template< typename MeshPointer, typename Element, typename Real, typename Index >
 bool computeDifference( const MeshPointer& meshPointer, const String& objectType, const Config::ParameterContainer& parameters )
 {
-   if( objectType == "tnlMeshFunction" )
+   if( objectType == "MeshFunction" )
       return computeDifferenceOfMeshFunctions< MeshPointer, Element, Real, Index >( meshPointer, parameters );
    if( objectType == "tnlVector" || objectType == "tnlSharedVector" )
       return computeDifferenceOfVectors< MeshPointer, Element, Real, Index >( meshPointer, parameters );
@@ -315,7 +315,7 @@ bool setIndexType( const MeshPointer& meshPointer,
        parsedObjectType[ 0 ] == "Vector" )
       indexType = parsedObjectType[ 3 ];
 
-   if(parsedObjectType[ 0 ] == "tnlMeshFunction" )
+   if(parsedObjectType[ 0 ] == "MeshFunction" )
       return computeDifference< MeshPointer, Element, Real, typename MeshPointer::ObjectType::IndexType >( meshPointer, parsedObjectType[ 0 ], parameters );
    
    if( indexType == "int" )
@@ -387,7 +387,7 @@ bool setElementType( const MeshPointer& meshPointer,
    if( parsedObjectType[ 0 ] == "MultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
       elementType = parsedObjectType[ 2 ];
-   if( parsedObjectType[ 0 ] == "tnlMeshFunction" )
+   if( parsedObjectType[ 0 ] == "MeshFunction" )
       elementType = parsedObjectType[ 3 ];
    if( parsedObjectType[ 0 ] == "SharedVector" ||
        parsedObjectType[ 0 ] == "Vector" )
