@@ -19,14 +19,14 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Timer.h>
 #include <TNL/tnlSharedPointer.h>
-#include <TNL/matrices/tnlDenseMatrix.h>
-#include <TNL/matrices/tnlTridiagonalMatrix.h>
-#include <TNL/matrices/tnlMultidiagonalMatrix.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
-#include <TNL/matrices/tnlEllpackMatrix.h>
-#include <TNL/matrices/tnlSlicedEllpackMatrix.h>
-#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
-#include <TNL/matrices/tnlMatrixReader.h>
+#include <TNL/Matrices/DenseMatrix.h>
+#include <TNL/Matrices/TridiagonalMatrix.h>
+#include <TNL/Matrices/MultidiagonalMatrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
+#include <TNL/Matrices/EllpackMatrix.h>
+#include <TNL/Matrices/SlicedEllpackMatrix.h>
+#include <TNL/Matrices/ChunkedEllpackMatrix.h>
+#include <TNL/Matrices/MatrixReader.h>
 #include <TNL/solvers/linear/krylov/tnlGMRESSolver.h>
 #include <TNL/solvers/linear/krylov/tnlCGSolver.h>
 #include <TNL/solvers/linear/krylov/tnlBICGStabSolver.h>
@@ -36,6 +36,7 @@
 
 using namespace std;
 using namespace TNL;
+using namespace TNL::Matrices;
 
 void configSetup( Config::ConfigDescription& config )
 {
@@ -110,7 +111,7 @@ bool readMatrix( const Config::ParameterContainer& parameters,
       hostMatrix = &matrix;
       try
       {
-         if( ! tnlMatrixReader< Matrix >::readMtxFile( fileName, *hostMatrix ) )
+         if( ! MatrixReader< Matrix >::readMtxFile( fileName, *hostMatrix ) )
          {
             std::cerr << "I am not able to read the matrix file " << fileName << "." << std::endl;
             /*logFile << std::endl;
@@ -164,25 +165,25 @@ bool resolveMatrixFormat( const Config::ParameterContainer& parameters )
    const String& matrixFormat = parameters.getParameter< String >( "matrix-format" );
 
    if( matrixFormat == "dense" )
-      return resolveLinearSolver< tnlDenseMatrix< Real, Device, int > >( parameters );
+      return resolveLinearSolver< DenseMatrix< Real, Device, int > >( parameters );
 
    if( matrixFormat == "tridiagonal" )
-      return resolveLinearSolver< tnlTridiagonalMatrix< Real, Device, int > >( parameters );
+      return resolveLinearSolver< TridiagonalMatrix< Real, Device, int > >( parameters );
 
    if( matrixFormat == "multidiagonal" )
-      return resolveLinearSolver< tnlMultidiagonalMatrix< Real, Device, int > >( parameters );
+      return resolveLinearSolver< MultidiagonalMatrix< Real, Device, int > >( parameters );
 
    if( matrixFormat == "ellpack" )
-      return resolveLinearSolver< tnlEllpackMatrix< Real, Device, int > >( parameters );
+      return resolveLinearSolver< EllpackMatrix< Real, Device, int > >( parameters );
 
    if( matrixFormat == "sliced-ellpack" )
-      return resolveLinearSolver< tnlSlicedEllpackMatrix< Real, Device, int > >( parameters );
+      return resolveLinearSolver< SlicedEllpackMatrix< Real, Device, int > >( parameters );
 
    if( matrixFormat == "chunked-ellpack" )
-      return resolveLinearSolver< tnlChunkedEllpackMatrix< Real, Device, int > >( parameters );
+      return resolveLinearSolver< ChunkedEllpackMatrix< Real, Device, int > >( parameters );
 
    if( matrixFormat == "csr" )
-      return resolveLinearSolver< tnlCSRMatrix< Real, Device, int > >( parameters );
+      return resolveLinearSolver< CSRMatrix< Real, Device, int > >( parameters );
 
    std::cerr << "Unknown matrix format " << matrixFormat << "." << std::endl;
    return false;

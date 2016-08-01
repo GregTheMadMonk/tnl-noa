@@ -9,43 +9,43 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/solvers/linear/stationary/tnlSORSolver.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
-#include <TNL/matrices/tnlEllpackMatrix.h>
-#include <TNL/matrices/tnlMultidiagonalMatrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
+#include <TNL/Matrices/EllpackMatrix.h>
+#include <TNL/Matrices/MultidiagonalMatrix.h>
 
 namespace TNL {
 
-template class tnlSORSolver< tnlCSRMatrix< float,  Devices::Host, int > >;
-template class tnlSORSolver< tnlCSRMatrix< double, Devices::Host, int > >;
-template class tnlSORSolver< tnlCSRMatrix< float,  Devices::Host, long int > >;
-template class tnlSORSolver< tnlCSRMatrix< double, Devices::Host, long int > >;
+template class tnlSORSolver< Matrices::CSRMatrix< float,  Devices::Host, int > >;
+template class tnlSORSolver< Matrices::CSRMatrix< double, Devices::Host, int > >;
+template class tnlSORSolver< Matrices::CSRMatrix< float,  Devices::Host, long int > >;
+template class tnlSORSolver< Matrices::CSRMatrix< double, Devices::Host, long int > >;
 
-template class tnlSORSolver< tnlEllpackMatrix< float,  Devices::Host, int > >;
-template class tnlSORSolver< tnlEllpackMatrix< double, Devices::Host, int > >;
-template class tnlSORSolver< tnlEllpackMatrix< float,  Devices::Host, long int > >;
-template class tnlSORSolver< tnlEllpackMatrix< double, Devices::Host, long int > >;
+template class tnlSORSolver< Matrices::EllpackMatrix< float,  Devices::Host, int > >;
+template class tnlSORSolver< Matrices::EllpackMatrix< double, Devices::Host, int > >;
+template class tnlSORSolver< Matrices::EllpackMatrix< float,  Devices::Host, long int > >;
+template class tnlSORSolver< Matrices::EllpackMatrix< double, Devices::Host, long int > >;
 
-template class tnlSORSolver< tnlMultidiagonalMatrix< float,  Devices::Host, int > >;
-template class tnlSORSolver< tnlMultidiagonalMatrix< double, Devices::Host, int > >;
-template class tnlSORSolver< tnlMultidiagonalMatrix< float,  Devices::Host, long int > >;
-template class tnlSORSolver< tnlMultidiagonalMatrix< double, Devices::Host, long int > >;
+template class tnlSORSolver< Matrices::MultidiagonalMatrix< float,  Devices::Host, int > >;
+template class tnlSORSolver< Matrices::MultidiagonalMatrix< double, Devices::Host, int > >;
+template class tnlSORSolver< Matrices::MultidiagonalMatrix< float,  Devices::Host, long int > >;
+template class tnlSORSolver< Matrices::MultidiagonalMatrix< double, Devices::Host, long int > >;
 
 
 #ifdef HAVE_CUDA
-template class tnlSORSolver< tnlCSRMatrix< float,  Devices::Cuda, int > >;
-template class tnlSORSolver< tnlCSRMatrix< double, Devices::Cuda, int > >;
-template class tnlSORSolver< tnlCSRMatrix< float,  Devices::Cuda, long int > >;
-template class tnlSORSolver< tnlCSRMatrix< double, Devices::Cuda, long int > >;
+template class tnlSORSolver< Matrices::CSRMatrix< float,  Devices::Cuda, int > >;
+template class tnlSORSolver< Matrices::CSRMatrix< double, Devices::Cuda, int > >;
+template class tnlSORSolver< Matrices::CSRMatrix< float,  Devices::Cuda, long int > >;
+template class tnlSORSolver< Matrices::CSRMatrix< double, Devices::Cuda, long int > >;
 
-template class tnlSORSolver< tnlEllpackMatrix< float,  Devices::Cuda, int > >;
-template class tnlSORSolver< tnlEllpackMatrix< double, Devices::Cuda, int > >;
-template class tnlSORSolver< tnlEllpackMatrix< float,  Devices::Cuda, long int > >;
-template class tnlSORSolver< tnlEllpackMatrix< double, Devices::Cuda, long int > >;
+template class tnlSORSolver< Matrices::EllpackMatrix< float,  Devices::Cuda, int > >;
+template class tnlSORSolver< Matrices::EllpackMatrix< double, Devices::Cuda, int > >;
+template class tnlSORSolver< Matrices::EllpackMatrix< float,  Devices::Cuda, long int > >;
+template class tnlSORSolver< Matrices::EllpackMatrix< double, Devices::Cuda, long int > >;
 
-template class tnlSORSolver< tnlMultidiagonalMatrix< float,  Devices::Cuda, int > >;
-template class tnlSORSolver< tnlMultidiagonalMatrix< double, Devices::Cuda, int > >;
-template class tnlSORSolver< tnlMultidiagonalMatrix< float,  Devices::Cuda, long int > >;
-template class tnlSORSolver< tnlMultidiagonalMatrix< double, Devices::Cuda, long int > >;
+template class tnlSORSolver< Matrices::MultidiagonalMatrix< float,  Devices::Cuda, int > >;
+template class tnlSORSolver< Matrices::MultidiagonalMatrix< double, Devices::Cuda, int > >;
+template class tnlSORSolver< Matrices::MultidiagonalMatrix< float,  Devices::Cuda, long int > >;
+template class tnlSORSolver< Matrices::MultidiagonalMatrix< double, Devices::Cuda, long int > >;
 #endif
 
 } // namespace TNL

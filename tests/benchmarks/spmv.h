@@ -3,10 +3,10 @@
 #include "benchmarks.h"
 
 #include <TNL/List.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
-#include <TNL/matrices/tnlEllpackMatrix.h>
-#include <TNL/matrices/tnlSlicedEllpackMatrix.h>
-#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
+#include <TNL/Matrices/EllpackMatrix.h>
+#include <TNL/Matrices/SlicedEllpackMatrix.h>
+#include <TNL/Matrices/ChunkedEllpackMatrix.h>
 
 namespace TNL
 {
@@ -15,7 +15,7 @@ namespace benchmarks
 
 // silly alias to match the number of template parameters with other formats
 template< typename Real, typename Device, typename Index >
-using SlicedEllpackMatrix = tnlSlicedEllpackMatrix< Real, Device, Index >;
+using SlicedEllpackMatrix = Matrices::SlicedEllpackMatrix< Real, Device, Index >;
 
 template< typename Matrix >
 int setHostTestMatrix( Matrix& matrix,
@@ -174,10 +174,10 @@ benchmarkSpmvSynthetic( Benchmark & benchmark,
                         const int & elementsPerRow )
 {
     // TODO: benchmark all formats from tnl-benchmark-spmv (different parameters of the base formats)
-    benchmarkSpMV< Real, tnlCSRMatrix >( benchmark, loops, size, elementsPerRow );
-    benchmarkSpMV< Real, tnlEllpackMatrix >( benchmark, loops, size, elementsPerRow );
+    benchmarkSpMV< Real, Matrices::CSRMatrix >( benchmark, loops, size, elementsPerRow );
+    benchmarkSpMV< Real, Matrices::EllpackMatrix >( benchmark, loops, size, elementsPerRow );
     benchmarkSpMV< Real, SlicedEllpackMatrix >( benchmark, loops, size, elementsPerRow );
-    benchmarkSpMV< Real, tnlChunkedEllpackMatrix >( benchmark, loops, size, elementsPerRow );
+    benchmarkSpMV< Real, Matrices::ChunkedEllpackMatrix >( benchmark, loops, size, elementsPerRow );
 }
 
 } // namespace benchmarks

@@ -12,7 +12,7 @@
 #define TNLSPMVBENCHMARK_H_
 
 #include "tnlSpmvBenchmarkBase.h"
-#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
 
 
 template< typename Matrix >
@@ -21,7 +21,7 @@ class tnlSpmvBenchmark
 };
 
 template< typename Real, typename Device, typename Index >
-class tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > > : public tnlSpmvBenchmarkBase< tnlCSRMatrix< Real, Device, Index > >
+class tnlSpmvBenchmark< CSRMatrix< Real, Device, Index > > : public tnlSpmvBenchmarkBase< CSRMatrix< Real, Device, Index > >
 {
    public:
 
@@ -29,7 +29,7 @@ class tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > > : public tnlSpmvBe
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   bool setup( const tnlCSRMatrix< RealType, Devices::Host, IndexType >& matrix );
+   bool setup( const CSRMatrix< RealType, Devices::Host, IndexType >& matrix );
 
    void tearDown();
 
@@ -38,7 +38,7 @@ class tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > > : public tnlSpmvBe
    void writeToLogTable( std::ostream& logFile,
                                     const double& csrGflops,
                                     const String& inputMtxFile,
-                                    const tnlCSRMatrix< RealType, Devices::Host, IndexType >& csrMatrix,
+                                    const CSRMatrix< RealType, Devices::Host, IndexType >& csrMatrix,
                                     bool writeMatrixInfo  ) const;
 };
 

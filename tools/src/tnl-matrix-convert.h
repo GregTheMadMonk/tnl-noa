@@ -8,14 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMATRIXCONVERT_H_
-#define TNLMATRIXCONVERT_H_
+#ifndef MatrixCONVERT_H_
+#define MatrixCONVERT_H_
 
 #include <fstream>
 #include <TNL/String.h>
 #include <TNL/File.h>
-#include <TNL/matrices/tnlMatrix.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/Matrices/Matrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
 
 using namespace std;
 
@@ -26,12 +26,12 @@ bool convertMatrix( const String& input_file,
                     int verbose,
                     bool verify )
 {
-   /*tnlMatrix< REAL >* matrix( NULL ), *verify_matrix( NULL );
+   /*Matrix< REAL >* matrix( NULL ), *verify_matrix( NULL );
    if( output_matrix_format == "csr" )
    {
-      matrix = new tnlCSRMatrix< REAL, Devices::Host >( input_file. getString() );
+      matrix = new CSRMatrix< REAL, Devices::Host >( input_file. getString() );
       if( verify )
-         verify_matrix = new tnlCSRMatrix< REAL, Devices::Host >( "verify-matrix" );
+         verify_matrix = new CSRMatrix< REAL, Devices::Host >( "verify-matrix" );
    }
    if( ! matrix )
    {
@@ -122,4 +122,4 @@ bool convertMatrix( const String& input_file,
    //delete matrix;
    return true;
 }
-#endif /* TNLMATRIXCONVERT_H_ */
+#endif /* MatrixCONVERT_H_ */

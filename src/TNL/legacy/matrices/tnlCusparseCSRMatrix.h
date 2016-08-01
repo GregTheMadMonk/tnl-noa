@@ -18,7 +18,7 @@
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/debug/tnlDebug.h>
 
 #ifdef HAVE_CUSPARSE
@@ -29,7 +29,7 @@
 /*!
  */
 template< typename Real, typename Device = Devices::Host, typename Index = int  >
-class tnlCusparseCSRMatrix : public tnlMatrix< Real, Device, Index >
+class tnlCusparseCSRMatrix : public Matrix< Real, Device, Index >
 {
    public:
    //! Basic constructor
@@ -74,7 +74,7 @@ class tnlCusparseCSRMatrix : public tnlMatrix< Real, Device, Index >
                       const Real& value );
 
 
-   bool copyFrom( const tnlCSRMatrix< Real, Devices::Host, Index >& csr_matrix );
+   bool copyFrom( const CSRMatrix< Real, Devices::Host, Index >& csr_matrix );
 
    template< typename Device2 >
    bool copyFrom( const tnlRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix );
@@ -96,7 +96,7 @@ class tnlCusparseCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    bool draw( std::ostream& str,
               const String& format,
-              tnlCSRMatrix< Real, Device, Index >* csrMatrix = 0,
+              CSRMatrix< Real, Device, Index >* csrMatrix = 0,
               int verbose = 0 );
 
    protected:
@@ -167,7 +167,7 @@ inline void cusparseSpmv( cusparseHandle_t cusparseHandle,
 
 template< typename Real, typename Device, typename Index >
 tnlCusparseCSRMatrix< Real, Device, Index > :: tnlCusparseCSRMatrix( const String& name )
-   : tnlMatrix< Real, Device, Index >( name ),
+   : Matrix< Real, Device, Index >( name ),
      nonzero_elements( name + " : nonzero-elements" ),
      columns( name + " : columns" ),
      row_offsets( name + " : row_offsets" )
@@ -183,7 +183,7 @@ tnlCusparseCSRMatrix< Real, Device, Index > :: tnlCusparseCSRMatrix( const Strin
 template< typename Real, typename Device, typename Index >
 const String& tnlCusparseCSRMatrix< Real, Device, Index > :: getMatrixClass() const
 {
-   return tnlMatrixClass :: cusparse;
+   return MatrixClass :: cusparse;
 };
 
 template< typename Real, typename Device, typename Index >
@@ -272,7 +272,7 @@ bool tnlCusparseCSRMatrix< Real, Device, Index > :: addToElement( Index row, Ind
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlCusparseCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, Devices::Host, Index >& csr_matrix )
+bool tnlCusparseCSRMatrix< Real, Device, Index > :: copyFrom( const CSRMatrix< Real, Devices::Host, Index >& csr_matrix )
 {
    if( ! this->setSize( csr_matrix. getSize() ) ||
        ! this->setNonzeroElements( csr_matrix. getNonzeroElements() ) )
@@ -325,7 +325,7 @@ void tnlCusparseCSRMatrix< Real, Device, Index > :: multiplyRow( Index row, cons
 template< typename Real, typename Device, typename Index >
 bool tnlCusparseCSRMatrix< Real, Device, Index > :: draw( std::ostream& str,
                                                           const String& format,
-                                                          tnlCSRMatrix< Real, Device, Index >* csrMatrix,
+                                                          CSRMatrix< Real, Device, Index >* csrMatrix,
                                                           int verbose )
 {
    Assert( false, );

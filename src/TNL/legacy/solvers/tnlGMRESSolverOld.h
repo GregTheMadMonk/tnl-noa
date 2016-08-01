@@ -14,10 +14,10 @@
 
 #include <math.h>
 #include <TNL/Vectors/SharedVector.h>
-#include <TNL/legacy/solvers/tnlMatrixSolver.h>
+#include <TNL/legacy/solvers/MatrixSolver.h>
 
 template< typename Real, typename Device = Devices::Host, typename Index = int >
-class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >
+class tnlGMRESSolverOld : public MatrixSolver< Real, Device, Index >
 {
    public:
 
@@ -27,7 +27,7 @@ class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >
 
    void setRestarting( Index rest );
 
-   bool solve( const tnlMatrix< Real, Device, Index >& A,
+   bool solve( const Matrix< Real, Device, Index >& A,
                const Vector< Real, Device, Index >& b,
                Vector< Real, Device, Index >& x,
                const Real& max_residue,
@@ -70,7 +70,7 @@ class tnlGMRESSolverOld : public tnlMatrixSolver< Real, Device, Index >
 
 template< typename Real, typename Device, typename Index >
 tnlGMRESSolverOld< Real, Device, Index > :: tnlGMRESSolverOld( const String& name )
-: tnlMatrixSolver< Real, Device, Index >( name ),
+: MatrixSolver< Real, Device, Index >( name ),
   _r( "tnlGMRESSolverOld::_r" ),
   _w( "tnlGMRESSolverOld::_w" ),
   _v( "tnlGMRESSolverOld::_v" ),
@@ -105,7 +105,7 @@ void tnlGMRESSolverOld< Real, Device, Index > :: setRestarting( Index rest )
 };
 
 template< typename Real, typename Device, typename Index >
-bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, Device, Index >& A,
+bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const Matrix< Real, Device, Index >& A,
                                                      const Vector< Real, Device, Index >& b,
                                                      Vector< Real, Device, Index >& x,
                                                      const Real& max_residue,

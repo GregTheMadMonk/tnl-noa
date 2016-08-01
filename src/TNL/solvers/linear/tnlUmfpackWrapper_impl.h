@@ -9,13 +9,13 @@
 namespace TNL {
 
 template< typename Preconditioner >
-tnlUmfpackWrapper< tnlCSRMatrix< double, Devices::Host, int >, Preconditioner >::
+tnlUmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >::
 tnlUmfpackWrapper()
 {}
 
 template< typename Preconditioner >
 void
-tnlUmfpackWrapper< tnlCSRMatrix< double, Devices::Host, int >, Preconditioner >::
+tnlUmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
@@ -23,7 +23,7 @@ configSetup( Config::ConfigDescription& config,
 
 template< typename Preconditioner >
 bool
-tnlUmfpackWrapper< tnlCSRMatrix< double, Devices::Host, int >, Preconditioner >::
+tnlUmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -31,14 +31,14 @@ setup( const Config::ParameterContainer& parameters,
 }
 
 template< typename Preconditioner >
-void tnlUmfpackWrapper< tnlCSRMatrix< double, Devices::Host, int >, Preconditioner >::
+void tnlUmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >::
 setMatrix( const MatrixType& matrix )
 {
     this -> matrix = &matrix;
 }
 
 template< typename Preconditioner >
-void tnlUmfpackWrapper< tnlCSRMatrix< double, Devices::Host, int >, Preconditioner >::
+void tnlUmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >::
 setPreconditioner( const Preconditioner& preconditioner )
 {
     this -> preconditioner = &preconditioner;
@@ -47,7 +47,7 @@ setPreconditioner( const Preconditioner& preconditioner )
 
 template< typename Preconditioner >
     template< typename Vector, typename ResidueGetter >
-bool tnlUmfpackWrapper< tnlCSRMatrix< double, Devices::Host, int >, Preconditioner >::
+bool tnlUmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >::
 solve( const Vector& b,
        Vector& x )
 {

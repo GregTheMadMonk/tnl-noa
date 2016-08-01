@@ -188,7 +188,7 @@ String tnlSpmvBenchmarkBase< Matrix > :: getBgColorBySpeedUp( const double& spee
 
 template< typename Matrix >
 bool tnlSpmvBenchmarkBase< Matrix > :: printMatrixInHtml( const String& fileName,
-                                                          tnlMatrix< RealType, Devices::Host, IndexType >& matrix ) const
+                                                          Matrix< RealType, Devices::Host, IndexType >& matrix ) const
 {
    //cout << "Writing to file " << fileName << std::endl;
    std::fstream file;

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSlicedEllpackMatrixTester.h  -  description
+                          SlicedEllpackMatrixTester.h  -  description
                              -------------------
     begin                : Dec 9, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSLICEDELLPACKMATRIXTESTER_H_
-#define TNLSLICEDELLPACKMATRIXTESTER_H_
+#ifndef SlicedEllpackMatrixTESTER_H_
+#define SlicedEllpackMatrixTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -17,30 +17,30 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/matrices/tnlSlicedEllpackMatrix.h>
+#include <TNL/Matrices/SlicedEllpackMatrix.h>
 #include <TNL/File.h>
 #include <TNL/Vectors/Vector.h>
 
 using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType, int SliceSize >
-class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
+class SlicedEllpackMatrixTester : public CppUnit :: TestCase
 {
    public:
-   typedef tnlSlicedEllpackMatrix< RealType, Device, IndexType, SliceSize > MatrixType;
+   typedef SlicedEllpackMatrix< RealType, Device, IndexType, SliceSize > MatrixType;
    typedef Vector< RealType, Device, IndexType > VectorType;
    typedef Vector< IndexType, Device, IndexType > IndexVector;
-   typedef tnlSlicedEllpackMatrixTester< RealType, Device, IndexType, SliceSize > TesterType;
+   typedef SlicedEllpackMatrixTester< RealType, Device, IndexType, SliceSize > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   tnlSlicedEllpackMatrixTester(){};
+   SlicedEllpackMatrixTester(){};
 
    virtual
-   ~tnlSlicedEllpackMatrixTester(){};
+   ~SlicedEllpackMatrixTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlTridiagonalMatrixTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "TridiagonalMatrixTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
@@ -245,4 +245,4 @@ class tnlSlicedEllpackMatrixTester : public CppUnit :: TestCase
 
 #endif /* HAVE_CPPUNIT */
 
-#endif /* TNLSLICEDELLPACKMATRIXTESTER_H_ */
+#endif /* SlicedEllpackMatrixTESTER_H_ */

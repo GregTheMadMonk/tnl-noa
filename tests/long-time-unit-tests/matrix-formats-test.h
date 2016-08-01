@@ -11,19 +11,20 @@
 #ifndef MATRIX_FORMATS_TEST_H_
 #define MATRIX_FORMATS_TEST_H_
 
-#include <TNL/matrices/tnlMatrixReader.h>
+#include <TNL/Matrices/MatrixReader.h>
 
 #include <cstdlib>
 #include <TNL/File.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/matrices/tnlDenseMatrix.h>
-#include <TNL/matrices/tnlEllpackMatrix.h>
-#include <TNL/matrices/tnlSlicedEllpackMatrix.h>
-#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/Matrices/DenseMatrix.h>
+#include <TNL/Matrices/EllpackMatrix.h>
+#include <TNL/Matrices/SlicedEllpackMatrix.h>
+#include <TNL/Matrices/ChunkedEllpackMatrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
 
 using namespace TNL;
+using namespace TNL::Matrices;
 
 void setupConfig( Config::ConfigDescription& config )
 {
@@ -58,17 +59,17 @@ bool testMatrix( const Config::ParameterContainer& parameters )
       std::cerr << "Cannot open the file " << fileName << std::endl;
       return false;
    }
-   if( ! tnlMatrixReader< Matrix >::readMtxFile( file, matrix, verbose ) )
+   if( ! Matrices::MatrixReader< Matrix >::readMtxFile( file, matrix, verbose ) )
       return false;
-   if( ! tnlMatrixReader< Matrix >::verifyMtxFile( file, matrix, verbose ) )
+   if( ! Matrices::MatrixReader< Matrix >::verifyMtxFile( file, matrix, verbose ) )
       return false;
    if( parameters.getParameter< bool >( "hard-test" ) )
    {
-      typedef tnlDenseMatrix< RealType, DeviceType, IndexType > DenseMatrix;
+      typedef DenseMatrix< RealType, DeviceType, IndexType > DenseMatrix;
       DenseMatrix denseMatrix;
-      if( ! tnlMatrixReader< DenseMatrix >::readMtxFile( file, denseMatrix, verbose ) )
+      if( ! MatrixReader< DenseMatrix >::readMtxFile( file, denseMatrix, verbose ) )
          return false;
-      if( ! tnlMatrixReader< DenseMatrix >::verifyMtxFile( file, denseMatrix, verbose ) )
+      if( ! MatrixReader< DenseMatrix >::verifyMtxFile( file, denseMatrix, verbose ) )
          return false;
       //matrix.print(std::cout );
       //denseMatrix.print(std::cout );
@@ -82,7 +83,7 @@ bool testMatrix( const Config::ParameterContainer& parameters )
                     << denseMatrix.getElement( i, j ) << " (dense)." << std::endl;
                String line;
                IndexType lineNumber;
-               if( tnlMatrixReader< Matrix >::findLineByElement( file, i, j, line, lineNumber ) )
+               if( MatrixReader< Matrix >::findLineByElement( file, i, j, line, lineNumber ) )
                   std::cerr << "The mtx file says ( line " << lineNumber << " ): " << line << std::endl;
                else
                   std::cerr << "The element is missing in the file. Should be zero therefore." << std::endl;
@@ -137,31 +138,31 @@ int main( int argc, char* argv[] )
    const String& matrixFormat = parameters.getParameter< String >( "matrix-format" );
    if( matrixFormat == "dense" )
    {
-       if( !testMatrix< tnlDenseMatrix< double, Devices::Host, int > >( parameters ) )
+       if( !testMatrix< DenseMatrix< double, Devices::Host, int > >( parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "ellpack" )
    {
-       if( !testMatrix< tnlEllpackMatrix< double, Devices::Host, int > >( parameters ) )
+       if( !testMatrix< EllpackMatrix< double, Devices::Host, int > >( parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "sliced-ellpack" )
    {
-       if( !testMatrix< tnlSlicedEllpackMatrix< double, Devices::Host, int > >( parameters ) )
+       if( !testMatrix< SlicedEllpackMatrix< double, Devices::Host, int > >( parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "chunked-ellpack" )
    {
-       if( !testMatrix< tnlChunkedEllpackMatrix< double, Devices::Host, int > >( parameters ) )
+       if( !testMatrix< ChunkedEllpackMatrix< double, Devices::Host, int > >( parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }
    if( matrixFormat == "csr" )
    {
-       if( !testMatrix< tnlCSRMatrix< double, Devices::Host, int > >( parameters ) )
+       if( !testMatrix< CSRMatrix< double, Devices::Host, int > >( parameters ) )
           return EXIT_FAILURE;
        return EXIT_SUCCESS;
    }

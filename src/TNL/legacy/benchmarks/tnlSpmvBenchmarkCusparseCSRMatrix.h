@@ -21,7 +21,7 @@ class tnlSpmvBenchmarkCusparseCSRMatrix : public tnlSpmvBenchmark< Real, Devices
    public:
    tnlSpmvBenchmarkCusparseCSRMatrix();
 
-   bool setup( const tnlCSRMatrix< Real, Devices::Host, Index >& matrix );
+   bool setup( const CSRMatrix< Real, Devices::Host, Index >& matrix );
 
    void tearDown();
 
@@ -32,14 +32,14 @@ class tnlSpmvBenchmarkCusparseCSRMatrix : public tnlSpmvBenchmark< Real, Devices
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
                          const String& inputMtxFile,
-                         const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
+                         const CSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                          bool writeMatrixInfo  ) const;
 
    void setNonzeroElements( const Index nonzeroElements );
 };
 
 template< typename Real, typename Index>
-bool tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real, Devices::Host, Index >& matrix )
+bool tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: setup( const CSRMatrix< Real, Devices::Host, Index >& matrix )
 {
    if( ! this->matrix. copyFrom( matrix ) )
       return false;
@@ -92,7 +92,7 @@ template< typename Real,
 void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: writeToLogTable( std::ostream& logFile,
                                                                        const double& csrGflops,
                                                                        const String& inputMtxFile,
-                                                                       const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
+                                                                       const CSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                                                                        bool writeMatrixInfo  ) const
 {
    if( this->getBenchmarkWasSuccesful() )

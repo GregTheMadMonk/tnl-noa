@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMatrix.cpp  -  description
+                          Matrix.cpp  -  description
                              -------------------
     begin                : 2008/05/10
     copyright            : (C) 2008 by Tomas Oberhuber
@@ -8,9 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "tnlMatrix.h"
+#include "Matrix.h"
 
-const String tnlMatrixClass :: main( "main" );
-const String tnlMatrixClass :: petsc( "petsc" );
-const String tnlMatrixClass :: cusparse( "cusparse" );
+const String MatrixClass :: main( "main" );
+const String MatrixClass :: petsc( "petsc" );
+const String MatrixClass :: cusparse( "cusparse" );
 

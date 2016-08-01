@@ -20,7 +20,7 @@ class tnlSpmvBenchmarkRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index
 
    tnlSpmvBenchmarkRgCSRMatrix();
 
-   bool setup( const tnlCSRMatrix< Real, Devices::Host, Index >& matrix );
+   bool setup( const CSRMatrix< Real, Devices::Host, Index >& matrix );
 
    void tearDown();
 
@@ -29,7 +29,7 @@ class tnlSpmvBenchmarkRgCSRMatrix : public tnlSpmvBenchmark< Real, Device, Index
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
                          const String& inputMtxFile,
-                         const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
+                         const CSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                          bool writeMatrixInfo ) const;
 
    void setGroupSize( const Index groupSize );
@@ -67,7 +67,7 @@ tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: tnlSpmvBenchmarkRgCSRMatri
 template< typename Real,
           typename Device,
           typename Index>
-bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix )
+bool tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: setup( const CSRMatrix< Real, Devices::Host, Index >& csrMatrix )
 {
    Assert( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
    if( Device :: getDevice() == Devices::HostDevice )
@@ -186,7 +186,7 @@ template< typename Real,
 void tnlSpmvBenchmarkRgCSRMatrix< Real, Device, Index > :: writeToLogTable( std::ostream& logFile,
                                                                             const double& csrGflops,
                                                                             const String& inputMtxFile,
-                                                                            const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
+                                                                            const CSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                                                                             bool writeMatrixInfo ) const
 {
    String bgColor;

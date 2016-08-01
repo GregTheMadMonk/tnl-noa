@@ -17,8 +17,8 @@
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
-#include <TNL/matrices/tnlMatrix.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/Matrices/Matrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/debug/tnlDebug.h>
 
 using namespace std;
@@ -30,7 +30,7 @@ enum tnlAdaptiveGroupSizeStrategy { tnlAdaptiveGroupSizeStrategyByAverageRowSize
 /*!
  */
 template< typename Real, typename Device = Devices::Host, typename Index = int  >
-class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
+class tnlRgCSRMatrix : public Matrix< Real, Device, Index >
 {
    public:
 
@@ -81,7 +81,7 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
                     const bool useAdaptiveGroupSize = false,
                     const tnlAdaptiveGroupSizeStrategy adaptiveGroupSizeStrategy = tnlAdaptiveGroupSizeStrategyByAverageRowSize );
 
-   bool copyFrom( const tnlCSRMatrix< Real, Devices::Host, Index >& csr_matrix );
+   bool copyFrom( const CSRMatrix< Real, Devices::Host, Index >& csr_matrix );
 
 
    template< typename Device2 >
@@ -109,7 +109,7 @@ class tnlRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    bool draw( std::ostream& str,
               const String& format,
-              tnlCSRMatrix< Real, Device, Index >* csrMatrix = 0,
+              CSRMatrix< Real, Device, Index >* csrMatrix = 0,
               int verbose = 0 );
 
    protected:
@@ -216,7 +216,7 @@ __global__ void tnlRgCSRMatrixAdpativeGroupSizeVectorProductKernel( const Index 
 
 template< typename Real, typename Device, typename Index >
 tnlRgCSRMatrix< Real, Device, Index > :: tnlRgCSRMatrix( const String& name )
-: tnlMatrix< Real, Device, Index >( name ),
+: Matrix< Real, Device, Index >( name ),
   useAdaptiveGroupSize( false ),
   adaptiveGroupSizeStrategy( tnlAdaptiveGroupSizeStrategyByAverageRowSize ),
   nonzeroElements( String( name ) + ":nonzeroElements" ),
@@ -242,7 +242,7 @@ tnlRgCSRMatrix< Real, Device, Index > :: tnlRgCSRMatrix( const String& name )
 template< typename Real, typename Device, typename Index >
 const String& tnlRgCSRMatrix< Real, Device, Index > :: getMatrixClass() const
 {
-   return tnlMatrixClass :: main;
+   return MatrixClass :: main;
 };
 
 template< typename Real, typename Device, typename Index >
@@ -337,14 +337,14 @@ void tnlRgCSRMatrix< Real, Device, Index > :: tuneFormat( const Index groupSize,
 
 
 template< typename Real, typename Device, typename Index >
-bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, Devices::Host, Index >& csr_matrix )
+bool tnlRgCSRMatrix< Real, Device, Index > :: copyFrom( const CSRMatrix< Real, Devices::Host, Index >& csr_matrix )
 {
 	dbgFunctionName( "tnlRgCSRMatrix< Real, Devices::Host >", "copyFrom" );
 
    if( Device :: getDevice() == Devices::CudaDevice )
    {
       Assert( false,
-                 std::cerr << "Conversion from tnlCSRMatrix on the host to the tnlRgCSRMatrix on the CUDA device is not implemented yet."; );
+                 std::cerr << "Conversion from CSRMatrix on the host to the tnlRgCSRMatrix on the CUDA device is not implemented yet."; );
       //TODO: implement this
       return false;
    }
@@ -873,7 +873,7 @@ void tnlRgCSRMatrix< Real, Device, Index > :: printOut( std::ostream& str,
 template< typename Real, typename Device, typename Index >
 bool tnlRgCSRMatrix< Real, Device, Index > :: draw( std::ostream& str,
                                                     const String& format,
-                                                    tnlCSRMatrix< Real, Device, Index >* csrMatrix,
+                                                    CSRMatrix< Real, Device, Index >* csrMatrix,
                                                     int verbose )
 {
    if( Device :: getDevice() == Devices::CudaDevice )
@@ -882,7 +882,7 @@ bool tnlRgCSRMatrix< Real, Device, Index > :: draw( std::ostream& str,
       return false;
    }
    if( format == "gnuplot" )
-      return tnlMatrix< Real, Device, Index > ::  draw( str, format, csrMatrix, verbose );
+      return Matrix< Real, Device, Index > ::  draw( str, format, csrMatrix, verbose );
    if( format == "eps" )
    {
       const int elementSize = 10;

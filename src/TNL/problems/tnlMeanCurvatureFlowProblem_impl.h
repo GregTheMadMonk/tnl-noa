@@ -11,8 +11,8 @@
 #pragma once
 
 #include <TNL/core/mfilename.h>
-#include <TNL/matrices/tnlMatrixSetter.h>
-#include <TNL/matrices/tnlMultidiagonalMatrixSetter.h>
+#include <TNL/Matrices/MatrixSetter.h>
+#include <TNL/Matrices/MultidiagonalMatrixSetter.h>
 #include <TNL/Logger.h>
 #include <TNL/solvers/pde/tnlExplicitUpdater.h>
 #include <TNL/solvers/pde/tnlBoundaryConditionsSetter.h>
@@ -135,7 +135,7 @@ setupLinearSystem( const MeshType& mesh,
    CompressedRowsLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
-   tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
+   MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >(
       mesh,
       differentialOperator,

@@ -22,13 +22,13 @@
 
 
 template< typename Real, typename Index>
-class tnlSpmvBenchmarkHybridMatrix : public tnlSpmvBenchmark< Real, Devices::Host, Index, tnlCSRMatrix >
+class tnlSpmvBenchmarkHybridMatrix : public tnlSpmvBenchmark< Real, Devices::Host, Index, CSRMatrix >
 {
    public:
 
    void setFileName( const String& fileName );
 
-   bool setup( const tnlCSRMatrix< Real, Devices::Host, Index >& matrix );
+   bool setup( const CSRMatrix< Real, Devices::Host, Index >& matrix );
 
    void tearDown();
 
@@ -41,7 +41,7 @@ class tnlSpmvBenchmarkHybridMatrix : public tnlSpmvBenchmark< Real, Devices::Hos
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
                          const String& inputMtxFile,
-                         const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
+                         const CSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                          bool writeMatrixInfo  ) const;
 
    void setNonzeroElements( const Index nonzeroElements );
@@ -60,7 +60,7 @@ void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: setFileName( const String& f
 }
 
 template< typename Real, typename Index>
-bool tnlSpmvBenchmarkHybridMatrix< Real, Index > :: setup( const tnlCSRMatrix< Real, Devices::Host, Index >& matrix )
+bool tnlSpmvBenchmarkHybridMatrix< Real, Index > :: setup( const CSRMatrix< Real, Devices::Host, Index >& matrix )
 {
    return true;
 }
@@ -169,7 +169,7 @@ template< typename Real,
 void tnlSpmvBenchmarkHybridMatrix< Real, Index > :: writeToLogTable( std::ostream& logFile,
                                                                      const double& csrGflops,
                                                                      const String& inputMtxFile,
-                                                                     const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
+                                                                     const CSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                                                                      bool writeMatrixInfo  ) const
 {
    if( this->getBenchmarkWasSuccesful() )

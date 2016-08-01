@@ -12,10 +12,10 @@
 #define tnlSORSolverOldH
 
 #include <math.h>
-#include <TNL/legacy/solvers/tnlMatrixSolver.h>
+#include <TNL/legacy/solvers/MatrixSolver.h>
 
 template< typename Real, typename Device = Devices::Host, typename Index = int >
-class tnlSORSolverOld : public tnlMatrixSolver< Real, Device, Index >
+class tnlSORSolverOld : public MatrixSolver< Real, Device, Index >
 {
    public:
  
@@ -27,7 +27,7 @@ class tnlSORSolverOld : public tnlMatrixSolver< Real, Device, Index >
 
    Real getSOROmega( ) const;
 
-   bool solve( const tnlMatrix< Real, Device, Index >& A,
+   bool solve( const Matrix< Real, Device, Index >& A,
                const Vector< Real, Device, Index >& b,
                Vector< Real, Device, Index >& x,
                const Real& max_residue,
@@ -41,7 +41,7 @@ class tnlSORSolverOld : public tnlMatrixSolver< Real, Device, Index >
 
 template< typename Real, typename Device, typename Index >
 tnlSORSolverOld< Real, Device, Index > :: tnlSORSolverOld( const String& name )
-: tnlMatrixSolver< Real, Device, Index >( name ),
+: MatrixSolver< Real, Device, Index >( name ),
   sorOmega( 1.0 )
   {
   }
@@ -72,7 +72,7 @@ Real tnlSORSolverOld< Real, Device, Index > :: getSOROmega( ) const
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlSORSolverOld< Real, Device, Index > :: solve( const tnlMatrix< Real, Device, Index >& A,
+bool tnlSORSolverOld< Real, Device, Index > :: solve( const Matrix< Real, Device, Index >& A,
                                                    const Vector< Real, Device, Index >& b,
                                                    Vector< Real, Device, Index >& x,
                                                    const Real& max_residue,

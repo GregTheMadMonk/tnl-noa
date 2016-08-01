@@ -1,7 +1,7 @@
 #pragma once
 
 #include <TNL/core/mfilename.h>
-#include <TNL/matrices/tnlMatrixSetter.h>
+#include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/solvers/pde/tnlExplicitUpdater.h>
 #include <TNL/solvers/pde/tnlLinearSystemAssembler.h>
 #include <TNL/solvers/pde/tnlBackwardTimeDiscretisation.h>
@@ -171,7 +171,7 @@ setupLinearSystem( const MeshPointer& mesh,
    CompressedRowsLengthsVectorType rowLengths;
    if( ! rowLengths.setSize( dofs ) )
       return false;
-   tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
+   MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >( mesh,
                                                                           differentialOperator,
                                                                           boundaryCondition,

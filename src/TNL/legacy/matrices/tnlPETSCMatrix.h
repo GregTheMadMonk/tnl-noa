@@ -18,12 +18,12 @@
 struct Mat;
 #endif
 
-#include <TNL/matrices/tnlMatrix.h>
+#include <TNL/Matrices/Matrix.h>
 
 #ifdef UNDEF
 
 //! Wrapper for the PETSC matrices
-template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
+template< typename T > class tnlPETSCMatrix : public Matrix< T >
 {
 
 #ifdef HAVE_PETSC
@@ -38,7 +38,7 @@ template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
 
    tnlPETSCMatrix( const int _size,
                  const int row_size )
-   : tnlMatrix< T >( "tnlPETSCMatrix" ),
+   : Matrix< T >( "tnlPETSCMatrix" ),
      size( _size )
    {
 #ifdef HAVE_PETSC
@@ -57,7 +57,7 @@ template< typename T > class tnlPETSCMatrix : public tnlMatrix< T >
 
    const String& getMatrixClass() const
    {
-      return tnlMatrixClass :: petsc;
+      return MatrixClass :: petsc;
    };
  
    void GetData( Mat& _matrix )

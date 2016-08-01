@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDenseMatrixTest.cpp  -  description
+                          DenseMatrixTest.cpp  -  description
                              -------------------
     begin                : Nov 30, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -18,10 +18,10 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< float, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< double, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< float, Devices::Host, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlDenseMatrixTester< double, Devices::Host, long int > >()
+   if( ! tnlUnitTestStarter :: run< DenseMatrixTester< float, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< DenseMatrixTester< double, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< DenseMatrixTester< float, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< DenseMatrixTester< double, Devices::Host, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

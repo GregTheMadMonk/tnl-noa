@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDenseMatrixTester.h  -  description
+                          DenseMatrixTester.h  -  description
                              -------------------
     begin                : Dec 2, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLTRIDIAGONALMATRIXTESTER_H_
-#define TNLTRIDIAGONALMATRIXTESTER_H_
+#ifndef TridiagonalMatrixTESTER_H_
+#define TridiagonalMatrixTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -17,29 +17,29 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/matrices/tnlTridiagonalMatrix.h>
+#include <TNL/Matrices/TridiagonalMatrix.h>
 #include <TNL/File.h>
 #include <TNL/Vectors/Vector.h>
 
 using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
-class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
+class TridiagonalMatrixTester : public CppUnit :: TestCase
 {
    public:
-   typedef tnlTridiagonalMatrix< RealType, Device, IndexType > MatrixType;
+   typedef Matrices::TridiagonalMatrix< RealType, Device, IndexType > MatrixType;
    typedef Vectors::Vector< RealType, Device, IndexType > VectorType;
-   typedef tnlTridiagonalMatrixTester< RealType, Device, IndexType > TesterType;
+   typedef TridiagonalMatrixTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   tnlTridiagonalMatrixTester(){};
+   TridiagonalMatrixTester(){};
 
    virtual
-   ~tnlTridiagonalMatrixTester(){};
+   ~TridiagonalMatrixTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlTridiagonalMatrixTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "TridiagonalMatrixTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
@@ -226,4 +226,4 @@ class tnlTridiagonalMatrixTester : public CppUnit :: TestCase
 
 #endif /* HAVE_CPPUNIT */
 
-#endif /* TNLTRIDIAGONALMATRIXTESTER_H_ */
+#endif /* TridiagonalMatrixTESTER_H_ */

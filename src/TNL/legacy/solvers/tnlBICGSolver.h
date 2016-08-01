@@ -12,9 +12,9 @@
 #define tnlBICGSolverH
 
 #include <math.h>
-#include <TNL/legacy/solvers/tnlMatrixSolver.h>
+#include <TNL/legacy/solvers/MatrixSolver.h>
 
-template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
+template< typename T > class tnlBICGSolver : public MatrixSolver< T >
 {
    public:
 
@@ -24,12 +24,12 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
    {
    };
 
-   void SetTransposeMatrix( tnlMatrix< T >* _A_T )
+   void SetTransposeMatrix( Matrix< T >* _A_T )
    {
       A_T = _A_T;
    };
  
-   bool Solve( const tnlMatrix< T >& A,
+   bool Solve( const Matrix< T >& A,
                const T* b,
                T* x,
                const double& max_residue,
@@ -43,8 +43,8 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
          return false;
       }
 
-      tnlMatrixSolver< T > :: residue =  max_residue + 1.0;
-      tnlMatrixSolver< T > :: iteration = 0;
+      MatrixSolver< T > :: residue =  max_residue + 1.0;
+      MatrixSolver< T > :: iteration = 0;
       T alpha, beta, s1, s2;
       T b_norm( 0.0 );
       int i;
@@ -63,8 +63,8 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
          p[ i ] = p_ast[ i ] = b[ i ] - r[ i ];
  
 
-      while( tnlMatrixSolver< T > :: iteration < max_iterations &&
-             tnlMatrixSolver< T > :: residue > max_residue )
+      while( MatrixSolver< T > :: iteration < max_iterations &&
+             MatrixSolver< T > :: residue > max_residue )
       {
          //dbgCout( "Starting BiCG iteration " << iter + 1 );
 
@@ -123,17 +123,17 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
          r_ast_new = r_ast;
          r_ast = q;
  
-         if( tnlMatrixSolver< T > :: iteration % 10 == 0 )
+         if( MatrixSolver< T > :: iteration % 10 == 0 )
          {
-            tnlMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm, tmp );
-            if( tnlMatrixSolver< T > :: verbosity > 1 )
-               tnlMatrixSolver< T > :: PrintOut();
+            MatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm, tmp );
+            if( MatrixSolver< T > :: verbosity > 1 )
+               MatrixSolver< T > :: PrintOut();
          }
-         tnlMatrixSolver< T > :: iteration ++;
+         MatrixSolver< T > :: iteration ++;
       }
-      tnlMatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm, r );
-      if( tnlMatrixSolver< T > :: verbosity > 0 )
-         tnlMatrixSolver< T > :: PrintOut();
+      MatrixSolver< T > :: residue = GetResidue( A, b, x, b_norm, r );
+      if( MatrixSolver< T > :: verbosity > 0 )
+         MatrixSolver< T > :: PrintOut();
    };
 
    ~tnlBICGSolver()
@@ -143,7 +143,7 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
 
    protected:
 
-   double GetResidue( const tnlMatrix< T >& A,
+   double GetResidue( const Matrix< T >& A,
                       const T* b,
                       const T* x,
                       const T& b_norm,
@@ -198,7 +198,7 @@ template< typename T > class tnlBICGSolver : public tnlMatrixSolver< T >
 
    T *r, *r_ast, *r_new, *r_ast_new, *p, *p_ast, *tmp;
 
-   tnlMatrix< T >* A_T;
+   Matrix< T >* A_T;
 
    int size;
 };

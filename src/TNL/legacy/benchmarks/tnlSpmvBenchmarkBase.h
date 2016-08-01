@@ -11,7 +11,7 @@
 #ifndef TNLSPMVBENCHMARKBASE_H_
 #define TNLSPMVBENCHMARKBASE_H_
 
-#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/TimerRT.h>
 #include <TNL/core/mfuncs.h>
 
@@ -46,7 +46,7 @@ class tnlSpmvBenchmarkBase
 
    void writeProgressTableHeader();
 
-   virtual bool setup( const tnlCSRMatrix< RealType, Devices::Host, IndexType >& matrix ) = 0;
+   virtual bool setup( const CSRMatrix< RealType, Devices::Host, IndexType >& matrix ) = 0;
 
    virtual void tearDown() = 0;
 
@@ -55,7 +55,7 @@ class tnlSpmvBenchmarkBase
    /****
     * This is virtual only the purpose of testing external formats like
     * the Hybrid format from the CUSP library. This format is not wrapped
-    * in tnlMatrix.
+    * in Matrix.
     */
    virtual void runBenchmark( const Vector< RealType, DeviceType, IndexType >& x,
                               const Vector< RealType, Devices::Host, IndexType >& refB,
@@ -64,7 +64,7 @@ class tnlSpmvBenchmarkBase
    virtual void writeToLogTable( std::ostream& logFile,
                                  const double& csrGflops,
                                  const String& inputMtxFile,
-                                 const tnlCSRMatrix< RealType, Devices::Host, IndexType >& csrMatrix,
+                                 const CSRMatrix< RealType, Devices::Host, IndexType >& csrMatrix,
                                  bool writeMatrixInfo  ) const = 0;
 
    protected:
@@ -78,7 +78,7 @@ class tnlSpmvBenchmarkBase
     * Helper method for writing matrix statistics and information to HTML
     */
    bool printMatrixInHtml( const String& fileName,
-                           tnlMatrix< RealType, Devices::Host, IndexType >& matrix ) const;
+                           Matrix< RealType, Devices::Host, IndexType >& matrix ) const;
 
 
    bool benchmarkWasSuccesful;

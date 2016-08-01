@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlEllpackMatrix.h  -  description
+                          EllpackMatrix.h  -  description
                              -------------------
     begin                : Jul 28, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -8,26 +8,26 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLELLPACKMATRIX_H_
-#define TNLELLPACKMATRIX_H_
+#ifndef EllpackMatrix_H_
+#define EllpackMatrix_H_
 
 #include <iostream>
 #include <iomanip>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/debug/tnlDebug.h>
 
 
 //! Implementation of the ELLPACK format
 template< typename Real, typename Device = Devices::Host, typename Index = int >
-class tnlEllpackMatrix
+class EllpackMatrix
 {
 };
 
 template< typename Real, typename Index >
-class tnlEllpackMatrix< Real, Devices::Host, Index > : public tnlMatrix< Real, Devices::Host, Index >
+class EllpackMatrix< Real, Devices::Host, Index > : public Matrix< Real, Devices::Host, Index >
 {
    public:
 
@@ -36,7 +36,7 @@ class tnlEllpackMatrix< Real, Devices::Host, Index > : public tnlMatrix< Real, D
    typedef Index IndexType;
 
    //! Basic constructor
-   tnlEllpackMatrix( const String& name, Index _row );
+   EllpackMatrix( const String& name, Index _row );
 
    const String& getMatrixClass() const;
 
@@ -65,7 +65,7 @@ class tnlEllpackMatrix< Real, Devices::Host, Index > : public tnlMatrix< Real, D
                       const Real& value )
    { abort(); };
 
-   bool copyFrom( const tnlCSRMatrix< Real, Devices::Host >& csr_matrix );
+   bool copyFrom( const CSRMatrix< Real, Devices::Host >& csr_matrix );
 
    Real getElement( Index row,
                     Index column ) const;
@@ -95,12 +95,12 @@ class tnlEllpackMatrix< Real, Devices::Host, Index > : public tnlMatrix< Real, D
 
    Index artificial_zeros;
 
-   friend class tnlEllpackMatrix< Real, Devices::Cuda >;
+   friend class EllpackMatrix< Real, Devices::Cuda >;
 };
 
 template< typename Real, typename Index >
-tnlEllpackMatrix< Real, Devices::Host, Index > :: tnlEllpackMatrix( const String& name, Index _row_length )
-: tnlMatrix< Real >( name ),
+EllpackMatrix< Real, Devices::Host, Index > :: EllpackMatrix( const String& name, Index _row_length )
+: Matrix< Real >( name ),
   ellpack_nonzero_elements( "ellpack-nonzero-elements" ),
   ellpack_columns( "ellpack-columns" ),
   row_length( _row_length ),
@@ -110,19 +110,19 @@ tnlEllpackMatrix< Real, Devices::Host, Index > :: tnlEllpackMatrix( const String
 };
 
 template< typename Real, typename Index >
-const String& tnlEllpackMatrix< Real, Devices::Host, Index > :: getMatrixClass() const
+const String& EllpackMatrix< Real, Devices::Host, Index > :: getMatrixClass() const
 {
-   return tnlMatrixClass :: main;
+   return MatrixClass :: main;
 };
 
 template< typename Real, typename Index >
-String tnlEllpackMatrix< Real, Devices::Host, Index > :: getType() const
+String EllpackMatrix< Real, Devices::Host, Index > :: getType() const
 {
-   return String( "tnlEllpackMatrix< ") + String( getType( Real( 0.0 ) ) ) + String( ", Devices::Host >" );
+   return String( "EllpackMatrix< ") + String( getType( Real( 0.0 ) ) ) + String( ", Devices::Host >" );
 };
 
 template< typename Real, typename Index >
-bool tnlEllpackMatrix< Real, Devices::Host, Index > :: setSize( Index new_size )
+bool EllpackMatrix< Real, Devices::Host, Index > :: setSize( Index new_size )
 {
    this->size = new_size;
    if( ! ellpack_nonzero_elements. setSize( new_size * row_length ) )
@@ -135,7 +135,7 @@ bool tnlEllpackMatrix< Real, Devices::Host, Index > :: setSize( Index new_size )
 };
 
 template< typename Real, typename Index >
-void tnlEllpackMatrix< Real, Devices::Host, Index > :: reset()
+void EllpackMatrix< Real, Devices::Host, Index > :: reset()
 {
    ellpack_nonzero_elements. reset();
    ellpack_columns. reset();
@@ -144,33 +144,33 @@ void tnlEllpackMatrix< Real, Devices::Host, Index > :: reset()
 }
 
 template< typename Real, typename Index >
-Index tnlEllpackMatrix< Real, Devices::Host, Index > :: getRowLength() const
+Index EllpackMatrix< Real, Devices::Host, Index > :: getRowLength() const
 {
    return row_length;
 }
 
 template< typename Real, typename Index >
-bool tnlEllpackMatrix< Real, Devices::Host, Index > :: setNonzeroElements( Index elements )
+bool EllpackMatrix< Real, Devices::Host, Index > :: setNonzeroElements( Index elements )
 {
 	return true;
 }
 
 template< typename Real, typename Index >
-Index tnlEllpackMatrix< Real, Devices::Host, Index > :: getNonzeroElements() const
+Index EllpackMatrix< Real, Devices::Host, Index > :: getNonzeroElements() const
 {
    return ellpack_nonzero_elements. getSize() - artificial_zeros;
 }
 
 template< typename Real, typename Index >
-Index tnlEllpackMatrix< Real, Devices::Host, Index > :: getArtificialZeroElements() const
+Index EllpackMatrix< Real, Devices::Host, Index > :: getArtificialZeroElements() const
 {
    return artificial_zeros;
 }
 
 template< typename Real, typename Index >
-bool tnlEllpackMatrix< Real, Devices::Host, Index > :: copyFrom( const tnlCSRMatrix< Real, Devices::Host >& csr_matrix )
+bool EllpackMatrix< Real, Devices::Host, Index > :: copyFrom( const CSRMatrix< Real, Devices::Host >& csr_matrix )
 {
-   dbgFunctionName( "tnlEllpackMatrix< Real, Devices::Host >", "copyFrom" );
+   dbgFunctionName( "EllpackMatrix< Real, Devices::Host >", "copyFrom" );
    /*if( ! row_length )
    {
       Index min_row_length, max_row_length;
@@ -228,10 +228,10 @@ bool tnlEllpackMatrix< Real, Devices::Host, Index > :: copyFrom( const tnlCSRMat
 }
 
 template< typename Real, typename Index >
-Real tnlEllpackMatrix< Real, Devices::Host, Index > :: getElement( Index row,
+Real EllpackMatrix< Real, Devices::Host, Index > :: getElement( Index row,
                                                              Index column ) const
 {
-   dbgFunctionName( "tnlEllpackMatrix< Real, Devices::Host >", "getElement" );
+   dbgFunctionName( "EllpackMatrix< Real, Devices::Host >", "getElement" );
    //cout << "Ellpack getElement: " << row << " " << column << " \r" << std::flush;
    /*
     * We first search in the ELLPACK data arrays.
@@ -252,7 +252,7 @@ Real tnlEllpackMatrix< Real, Devices::Host, Index > :: getElement( Index row,
 };
 
 template< typename Real, typename Index >
-Real tnlEllpackMatrix< Real, Devices::Host, Index > :: rowProduct( Index row,
+Real EllpackMatrix< Real, Devices::Host, Index > :: rowProduct( Index row,
                                                              const Vector< Real, Devices::Host, Index >& vector ) const
 {
    Assert( 0 <= row && row < this->getSize(),
@@ -283,7 +283,7 @@ Real tnlEllpackMatrix< Real, Devices::Host, Index > :: rowProduct( Index row,
 };
 
 template< typename Real, typename Index >
-void tnlEllpackMatrix< Real, Devices::Host, Index > :: vectorProduct( const Vector< Real, Devices::Host, Index >& x,
+void EllpackMatrix< Real, Devices::Host, Index > :: vectorProduct( const Vector< Real, Devices::Host, Index >& x,
                                                                 Vector< Real, Devices::Host, Index >& b ) const
 {
    Assert( x. getSize() == this->getSize(),
@@ -300,10 +300,10 @@ void tnlEllpackMatrix< Real, Devices::Host, Index > :: vectorProduct( const Vect
 };
 
 template< typename Real, typename Index >
-void tnlEllpackMatrix< Real, Devices::Host, Index > :: printOut( std::ostream& str,
+void EllpackMatrix< Real, Devices::Host, Index > :: printOut( std::ostream& str,
                                                            const String& name ) const
 {
-   str << "Structure of tnlEllpackMatrix" << std::endl;
+   str << "Structure of EllpackMatrix" << std::endl;
    str << "Matrix name:" << name << std::endl;
    str << "Matrix size:" << this->getSize() << std::endl;
    str << "Allocated elements:" << ellpack_nonzero_elements. getSize() << std::endl;
@@ -321,4 +321,4 @@ void tnlEllpackMatrix< Real, Devices::Host, Index > :: printOut( std::ostream& s
    }
 }
 
-#endif /* TNLELLPACKMATRIX_H_ */
+#endif /* EllpackMatrix_H_ */

@@ -17,8 +17,8 @@
 #pragma once
 
 #include <TNL/core/mfilename.h>
-#include <TNL/matrices/tnlMatrixSetter.h>
-#include <TNL/matrices/tnlMultidiagonalMatrixSetter.h>
+#include <TNL/Matrices/MatrixSetter.h>
+#include <TNL/Matrices/MultidiagonalMatrixSetter.h>
 #include <TNL/Logger.h>
 #include <TNL/solvers/pde/tnlBoundaryConditionsSetter.h>
 #include <TNL/solvers/pde/tnlExplicitUpdater.h>
@@ -151,7 +151,7 @@ setupLinearSystem( const MeshPointer& meshPointer,
    tnlSharedPointer< CompressedRowsLengthsVectorType > rowLengthsPointer;
    if( ! rowLengthsPointer->setSize( dofs ) )
       return false;
-   tnlMatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
+   Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowsLengths< typename Mesh::Cell >(
       meshPointer,
       differentialOperatorPointer,
@@ -161,7 +161,7 @@ setupLinearSystem( const MeshPointer& meshPointer,
    if( ! matrixPointer->setCompressedRowsLengths( *rowLengthsPointer ) )
       return false;
    return true;
-   //return tnlMultidiagonalMatrixSetter< Mesh >::setupMatrix( mesh, matrix );
+   //return MultidiagonalMatrixSetter< Mesh >::setupMatrix( mesh, matrix );
 }
 
 template< typename Mesh,

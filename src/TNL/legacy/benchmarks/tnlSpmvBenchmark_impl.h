@@ -14,7 +14,7 @@
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::setup( const tnlCSRMatrix< RealType, Devices::Host, IndexType >& matrix )
+bool tnlSpmvBenchmark< CSRMatrix< Real, Device, Index > >::setup( const CSRMatrix< RealType, Devices::Host, IndexType >& matrix )
 {
    this->matrix = matrix;
 }
@@ -22,7 +22,7 @@ bool tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::setup( const tnlCS
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::tearDown()
+void tnlSpmvBenchmark< CSRMatrix< Real, Device, Index > >::tearDown()
 {
    this->matrix.reset();
 }
@@ -30,17 +30,17 @@ void tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::tearDown()
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::writeProgress() const
+void tnlSpmvBenchmark< CSRMatrix< Real, Device, Index > >::writeProgress() const
 {
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-void tnlSpmvBenchmark< tnlCSRMatrix< Real, Device, Index > >::writeToLogTable( std::ostream& logFile,
+void tnlSpmvBenchmark< CSRMatrix< Real, Device, Index > >::writeToLogTable( std::ostream& logFile,
                                                                                const double& csrGflops,
                                                                                const String& inputMtxFile,
-                                                                               const tnlCSRMatrix< RealType, Devices::Host, IndexType >& csrMatrix,
+                                                                               const CSRMatrix< RealType, Devices::Host, IndexType >& csrMatrix,
                                                                                bool writeMatrixInfo  ) const
 {
 

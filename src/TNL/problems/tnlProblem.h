@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/matrices/tnlSlicedEllpackMatrix.h>
+#include <TNL/Matrices/SlicedEllpackMatrix.h>
 
 namespace TNL {
 

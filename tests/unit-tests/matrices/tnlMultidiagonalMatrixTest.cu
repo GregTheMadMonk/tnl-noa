@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMultidiagonalMatrixTest.cu  -  description
+                          MultidiagonalMatrixTest.cu  -  description
                              -------------------
     begin                : Jan 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -18,10 +18,10 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlMultidiagonalMatrixTester< float, Devices::Cuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultidiagonalMatrixTester< double, Devices::Cuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultidiagonalMatrixTester< float, Devices::Cuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlMultidiagonalMatrixTester< double, Devices::Cuda, long int > >()
+   if( ! tnlUnitTestStarter :: run< MultidiagonalMatrixTester< float, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< MultidiagonalMatrixTester< double, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< MultidiagonalMatrixTester< float, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< MultidiagonalMatrixTester< double, Devices::Cuda, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

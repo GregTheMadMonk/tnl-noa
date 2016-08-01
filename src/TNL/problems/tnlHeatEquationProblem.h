@@ -18,7 +18,7 @@
 
 #include <TNL/problems/tnlPDEProblem.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
-#include <TNL/matrices/tnlEllpackMatrix.h>
+#include <TNL/Matrices/EllpackMatrix.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Timer.h>
 
@@ -42,7 +42,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef tnlSharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
-      typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
+      typedef Matrices::CSRMatrix< RealType, DeviceType, IndexType > MatrixType;
       typedef tnlSharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef tnlSharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;

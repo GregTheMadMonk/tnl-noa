@@ -22,7 +22,7 @@ class tnlCusparseCSRMatrixBase
    public:
       typedef Real RealType;
       typedef Devices::Cuda DeviceType;
-      typedef tnlCSRMatrix< RealType, Devices::Cuda, int > MatrixType;
+      typedef Matrices::CSRMatrix< RealType, Devices::Cuda, int > MatrixType;
 
       tnlCusparseCSRMatrixBase()
       : matrix( 0 )

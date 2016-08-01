@@ -21,7 +21,7 @@ class tnlSpmvBenchmarkAdaptiveRgCSRMatrix : public tnlSpmvBenchmark< Real, Devic
 
    tnlSpmvBenchmarkAdaptiveRgCSRMatrix();
 
-   bool setup( const tnlCSRMatrix< Real, Devices::Host, Index >& matrix );
+   bool setup( const CSRMatrix< Real, Devices::Host, Index >& matrix );
 
    void tearDown();
 
@@ -30,7 +30,7 @@ class tnlSpmvBenchmarkAdaptiveRgCSRMatrix : public tnlSpmvBenchmark< Real, Devic
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
                          const String& inputMtxFile,
-                         const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
+                         const CSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                          bool writeMatrixInfo  ) const;
 
    void setDesiredChunkSize( const Index desiredChunkSize );
@@ -75,7 +75,7 @@ tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlSpmvBenchmarkAd
 template< typename Real,
           typename Device,
           typename Index>
-bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const tnlCSRMatrix< Real, Devices::Host, Index >& matrix )
+bool tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: setup( const CSRMatrix< Real, Devices::Host, Index >& matrix )
 {
    //Assert( this->groupSize > 0, std::cerr << "groupSize = " << this->groupSize );
    if( Device :: getDevice() == Devices::HostDevice )
@@ -142,7 +142,7 @@ template< typename Real,
 void tnlSpmvBenchmarkAdaptiveRgCSRMatrix< Real, Device, Index > :: writeToLogTable( std::ostream& logFile,
                                                                                     const double& csrGflops,
                                                                                     const String& inputMtxFile,
-                                                                                    const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix,
+                                                                                    const CSRMatrix< Real, Devices::Host, Index >& csrMatrix,
                                                                                     bool writeMatrixInfo  ) const
 {
    if( this->getBenchmarkWasSuccesful() )

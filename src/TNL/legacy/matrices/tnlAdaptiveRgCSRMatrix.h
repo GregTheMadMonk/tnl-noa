@@ -17,7 +17,7 @@
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/debug/tnlDebug.h>
 #include <TNL/core/tnlDevice.h>
 
@@ -47,7 +47,7 @@ inline String getType( const tnlARGCSRGroupProperties& a )
 /*!
  */
 template< typename Real, typename Device = Devices::Host, typename Index = int >
-class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
+class tnlAdaptiveRgCSRMatrix : public Matrix< Real, Device, Index >
 {
    public:
    //! Basic constructor
@@ -100,7 +100,7 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
    void tuneFormat( const Index desiredChunkSize,
                     const Index cudaBlockSize );
 
-   bool copyFrom( const tnlCSRMatrix< Real, Devices::Host,Index >& csr_matrix );
+   bool copyFrom( const CSRMatrix< Real, Devices::Host,Index >& csr_matrix );
 
    template< typename Device2 >
    bool copyFrom( const tnlAdaptiveRgCSRMatrix< Real, Device2, Index >& rgCSRMatrix );
@@ -118,7 +118,7 @@ class tnlAdaptiveRgCSRMatrix : public tnlMatrix< Real, Device, Index >
 
    bool draw( std::ostream& str,
               const String& format,
-              tnlCSRMatrix< Real, Device, Index >* csrMatrix,
+              CSRMatrix< Real, Device, Index >* csrMatrix,
               int verbose = 0 );
 
 
@@ -192,7 +192,7 @@ __global__ void AdaptiveRgCSRMatrixVectorProductKernel( Real* target,
 
 template< typename Real, typename Device, typename Index >
 tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlAdaptiveRgCSRMatrix( const String& name )
-: tnlMatrix< Real, Device, Index >( name ),
+: Matrix< Real, Device, Index >( name ),
   nonzeroElements( name + " : nonzeroElements" ),
   columns( name + " : columns" ),
   threads( name + " : threads" ),
@@ -212,7 +212,7 @@ tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: tnlAdaptiveRgCSRMatrix( const S
 template< typename Real, typename Device, typename Index >
 const String& tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getMatrixClass() const
 {
-   return tnlMatrixClass :: main;
+   return MatrixClass :: main;
 };
 
 template< typename Real, typename Device, typename Index >
@@ -325,7 +325,7 @@ Index tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: getLastThreadInRow( const
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatrix< Real, Devices::Host, Index >& csrMatrix )
+bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const CSRMatrix< Real, Devices::Host, Index >& csrMatrix )
 {
   dbgFunctionName( "tnlAdaptiveRgCSRMatrix< Real, Devices::Host >", "copyFrom" );
   if( ! this->setSize( csrMatrix. getSize() ) )
@@ -570,7 +570,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: copyFrom( const tnlCSRMatr
 	if( Device :: getDevice() == Devices::CudaDevice )
 	{
 		Assert( false,
-			cerr << "Conversion from tnlCSRMatrix on the host to the tnlAdaptiveRgCSRMatrix on the CUDA device is not implemented yet."; );
+			cerr << "Conversion from CSRMatrix on the host to the tnlAdaptiveRgCSRMatrix on the CUDA device is not implemented yet."; );
 		//TODO: implement this
 	}
 	return true;
@@ -985,7 +985,7 @@ void tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: printOut( std::ostream& st
 template< typename Real, typename Device, typename Index >
 bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: draw( std::ostream& str,
                                                             const String& format,
-                                                            tnlCSRMatrix< Real, Device, Index >* csrMatrix,
+                                                            CSRMatrix< Real, Device, Index >* csrMatrix,
                                                             int verbose )
 {
    if( Device :: getDevice() == Devices::CudaDevice )
@@ -994,7 +994,7 @@ bool tnlAdaptiveRgCSRMatrix< Real, Device, Index > :: draw( std::ostream& str,
       return false;
    }
    if( format == "gnuplot" )
-      return tnlMatrix< Real, Device, Index > ::  draw( str, format, csrMatrix, verbose );
+      return Matrix< Real, Device, Index > ::  draw( str, format, csrMatrix, verbose );
    if( format == "eps" )
    {
       const int elementSize = 10;

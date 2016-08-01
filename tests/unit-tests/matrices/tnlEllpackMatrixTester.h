@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlEllpackMatrixTester.h  -  description
+                          EllpackMatrixTester.h  -  description
                              -------------------
     begin                : Jul 31, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLELLPACKMATRIXTESTER_H_
-#define TNLELLPACKMATRIXTESTER_H_
+#ifndef EllpackMatrixTESTER_H_
+#define EllpackMatrixTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -17,29 +17,29 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/matrices/tnlEllpackMatrix.h>
+#include <TNL/Matrices/EllpackMatrix.h>
 #include <TNL/File.h>
 #include <TNL/Vectors/Vector.h>
 
 using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
-class tnlEllpackMatrixTester : public CppUnit :: TestCase
+class EllpackMatrixTester : public CppUnit :: TestCase
 {
    public:
-   typedef tnlEllpackMatrix< RealType, Device, IndexType > MatrixType;
+   typedef EllpackMatrix< RealType, Device, IndexType > MatrixType;
    typedef Vector< RealType, Device, IndexType > VectorType;
-   typedef tnlEllpackMatrixTester< RealType, Device, IndexType > TesterType;
+   typedef EllpackMatrixTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   tnlEllpackMatrixTester(){};
+   EllpackMatrixTester(){};
 
    virtual
-   ~tnlEllpackMatrixTester(){};
+   ~EllpackMatrixTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlTridiagonalMatrixTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "TridiagonalMatrixTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
@@ -186,4 +186,4 @@ class tnlEllpackMatrixTester : public CppUnit :: TestCase
 
 
 
-#endif /* TNLELLPACKMATRIXTESTER_H_ */
+#endif /* EllpackMatrixTESTER_H_ */

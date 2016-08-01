@@ -16,7 +16,7 @@
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
-#include <TNL/matrices/tnlMatrix.h>
+#include <TNL/Matrices/Matrix.h>
 #include <TNL/debug/tnlDebug.h>
 
 //! Matrix storing the non-zero elements in the Row-Grouped CSR (Compressed Sparse Row) format
@@ -28,7 +28,7 @@ class tnlFastRgCSRMatrix
 };
 
 template< typename Real, typename Index >
-class tnlFastRgCSRMatrix< Real, Devices::Host, Index > : public tnlMatrix< Real, Devices::Host, Index >
+class tnlFastRgCSRMatrix< Real, Devices::Host, Index > : public Matrix< Real, Devices::Host, Index >
 {
    public:
    //! Basic constructor
@@ -147,7 +147,7 @@ class tnlFastRgCSRMatrix< Real, Devices::Host, Index > : public tnlMatrix< Real,
 
 template< typename Real, typename Index >
 tnlFastRgCSRMatrix< Real, Devices::Host, Index > :: tnlFastRgCSRMatrix( const String& name, Index _block_size )
-   : tnlMatrix< Real, Devices::Host, Index >( name ),
+   : Matrix< Real, Devices::Host, Index >( name ),
      nonzero_elements( "tnlFastRgCSRMatrix< Real, Devices::Host, Index > :: nonzero-elements" ),
      block_offsets( "tnlFastRgCSRMatrix< Real, Devices::Host, Index > :: block-offsets" ),
      column_sequences( "tnlFastRgCSRMatrix< Real, Devices::Host, Index > :: column-sequences" ),
@@ -164,7 +164,7 @@ tnlFastRgCSRMatrix< Real, Devices::Host, Index > :: tnlFastRgCSRMatrix( const St
 template< typename Real, typename Index >
 const String& tnlFastRgCSRMatrix< Real, Devices::Host, Index > :: getMatrixClass() const
 {
-   return tnlMatrixClass :: main;
+   return MatrixClass :: main;
 };
 
 template< typename Real, typename Index >

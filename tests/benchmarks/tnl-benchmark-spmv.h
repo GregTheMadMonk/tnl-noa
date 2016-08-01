@@ -20,16 +20,17 @@
 
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
-#include <TNL/matrices/tnlEllpackMatrix.h>
-#include <TNL/matrices/tnlSlicedEllpackMatrix.h>
-#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
-#include <TNL/matrices/tnlMatrixReader.h>
+#include <TNL/Matrices/CSRMatrix.h>
+#include <TNL/Matrices/EllpackMatrix.h>
+#include <TNL/Matrices/SlicedEllpackMatrix.h>
+#include <TNL/Matrices/ChunkedEllpackMatrix.h>
+#include <TNL/Matrices/MatrixReader.h>
 #include <TNL/TimerRT.h>
 #include "tnlCusparseCSRMatrix.h"
 
 using namespace std;
 using namespace TNL;
+using namespace TNL::Matrices;
 
 void setupConfig( Config::ConfigDescription& config )
 {
@@ -296,11 +297,11 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
    }
    if( test == "mtx" )
    {
-      typedef tnlCSRMatrix< Real, Devices::Host, int > CSRMatrixType;
+      typedef Matrices::CSRMatrix< Real, Devices::Host, int > CSRMatrixType;
       CSRMatrixType csrMatrix;
       try
       {
-         if( ! tnlMatrixReader< CSRMatrixType >::readMtxFile( inputFileName, csrMatrix ) )
+         if( ! MatrixReader< CSRMatrixType >::readMtxFile( inputFileName, csrMatrix ) )
          {
             std::cerr << "I am not able to read the matrix file " << inputFileName << "." << std::endl;
             logFile << std::endl;
@@ -359,7 +360,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                                                verbose,
                                                logFile );
 #ifdef HAVE_CUDA
-      typedef tnlCSRMatrix< Real, Devices::Cuda, int > CSRMatrixCudaType;
+      typedef CSRMatrix< Real, Devices::Cuda, int > CSRMatrixCudaType;
       CSRMatrixCudaType cudaCSRMatrix;
       //cout << "Copying matrix to GPU... ";
       if( ! cudaCSRMatrix.copyFrom( csrMatrix, rowLengthsCuda ) )
@@ -369,7 +370,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
       }
       else
       {
-         tnlCusparseCSRMatrix< Real > cusparseCSRMatrix;
+         ::tnlCusparseCSRMatrix< Real > cusparseCSRMatrix;
          cusparseCSRMatrix.init( cudaCSRMatrix, &cusparseHandle );
          benchmarkMatrix( cusparseCSRMatrix,
                           cudaX,
@@ -521,7 +522,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
 
       long int allocatedElements;
       double padding;
-      typedef tnlEllpackMatrix< Real, Devices::Host, int > EllpackMatrixType;
+      typedef EllpackMatrix< Real, Devices::Host, int > EllpackMatrixType;
       EllpackMatrixType ellpackMatrix;
       if( ! ellpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
          writeTestFailed( logFile, 7 );
@@ -540,7 +541,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           verbose,
                           logFile );
 #ifdef HAVE_CUDA
-         typedef tnlEllpackMatrix< Real, Devices::Cuda, int > EllpackMatrixCudaType;
+         typedef EllpackMatrix< Real, Devices::Cuda, int > EllpackMatrixCudaType;
          EllpackMatrixCudaType cudaEllpackMatrix;
         std::cout << "Copying matrix to GPU... ";
          if( ! cudaEllpackMatrix.copyFrom( ellpackMatrix, rowLengthsCuda ) )
@@ -566,7 +567,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
          ellpackMatrix.reset();
       }
 
-      typedef tnlSlicedEllpackMatrix< Real, Devices::Host, int > SlicedEllpackMatrixType;
+      typedef SlicedEllpackMatrix< Real, Devices::Host, int > SlicedEllpackMatrixType;
       SlicedEllpackMatrixType slicedEllpackMatrix;
       if( ! slicedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
          writeTestFailed( logFile, 7 );
@@ -585,7 +586,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           verbose,
                           logFile );
 #ifdef HAVE_CUDA
-         typedef tnlSlicedEllpackMatrix< Real, Devices::Cuda, int > SlicedEllpackMatrixCudaType;
+         typedef SlicedEllpackMatrix< Real, Devices::Cuda, int > SlicedEllpackMatrixCudaType;
          SlicedEllpackMatrixCudaType cudaSlicedEllpackMatrix;
         std::cout << "Copying matrix to GPU... ";
          if( ! cudaSlicedEllpackMatrix.copyFrom( slicedEllpackMatrix, rowLengthsCuda ) )
@@ -611,7 +612,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
          slicedEllpackMatrix.reset();
       }
 
-      typedef tnlChunkedEllpackMatrix< Real, Devices::Host, int > ChunkedEllpackMatrixType;
+      typedef ChunkedEllpackMatrix< Real, Devices::Host, int > ChunkedEllpackMatrixType;
       ChunkedEllpackMatrixType chunkedEllpackMatrix;
       if( ! chunkedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
          writeTestFailed( logFile, 7 );
@@ -630,7 +631,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           verbose,
                           logFile );
 #ifdef HAVE_CUDA
-         typedef tnlChunkedEllpackMatrix< Real, Devices::Cuda, int > ChunkedEllpackMatrixCudaType;
+         typedef ChunkedEllpackMatrix< Real, Devices::Cuda, int > ChunkedEllpackMatrixCudaType;
          ChunkedEllpackMatrixCudaType cudaChunkedEllpackMatrix;
         std::cout << "Copying matrix to GPU... ";
          if( ! cudaChunkedEllpackMatrix.copyFrom( chunkedEllpackMatrix, rowLengthsCuda ) )

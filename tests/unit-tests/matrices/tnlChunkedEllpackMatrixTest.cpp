@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlChunkedEllpackMatrixTest.cpp  -  description
+                          ChunkedEllpackMatrixTest.cpp  -  description
                              -------------------
     begin                : Dec 13, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -10,7 +10,7 @@
 
 #include <TNL/tnlConfig.h>
 #include <TNL/Devices/Host.h>
-#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
+#include <TNL/Matrices/ChunkedEllpackMatrix.h>
 #include <cstdlib>
 
 #include "tnlSparseMatrixTester.h"
@@ -20,18 +20,18 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, Devices::Host, int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, Devices::Host, int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, Devices::Host, long int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, Devices::Host, long int >, tnlChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, Devices::Host, int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, Devices::Host, int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, Devices::Host, long int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, Devices::Host, long int >, tnlChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, Devices::Host, int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, Devices::Host, int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< float, Devices::Host, long int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlChunkedEllpackMatrix< double, Devices::Host, long int >, tnlChunkedEllpackMatrixTestSetup< 2, 16 > > >()
+   if( ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::ChunkedEllpackMatrix< float, Devices::Host, int >, ChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::ChunkedEllpackMatrix< double, Devices::Host, int >, ChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::ChunkedEllpackMatrix< float, Devices::Host, long int >, ChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::ChunkedEllpackMatrix< double, Devices::Host, long int >, ChunkedEllpackMatrixTestSetup< 4, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::ChunkedEllpackMatrix< float, Devices::Host, int >, ChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::ChunkedEllpackMatrix< double, Devices::Host, int >, ChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::ChunkedEllpackMatrix< float, Devices::Host, long int >, ChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::ChunkedEllpackMatrix< double, Devices::Host, long int >, ChunkedEllpackMatrixTestSetup< 16, 2 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::ChunkedEllpackMatrix< float, Devices::Host, int >, ChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::ChunkedEllpackMatrix< double, Devices::Host, int >, ChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::ChunkedEllpackMatrix< float, Devices::Host, long int >, ChunkedEllpackMatrixTestSetup< 2, 16 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::ChunkedEllpackMatrix< double, Devices::Host, long int >, ChunkedEllpackMatrixTestSetup< 2, 16 > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

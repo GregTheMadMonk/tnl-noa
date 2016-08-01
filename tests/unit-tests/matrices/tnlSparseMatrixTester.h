@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSparseMatrixTester.h  -  description
+                          SparseMatrixTester.h  -  description
                              -------------------
     begin                : Jul 11, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSPARSEMATRIXTESTER_H_
-#define TNLSPARSEMATRIXTESTER_H_
+#ifndef SparseMatrixTESTER_H_
+#define SparseMatrixTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -25,7 +25,7 @@ using namespace TNL;
 
 template< typename Matrix,
           typename TestSetup >
-class tnlSparseMatrixTesterMatrixSetter
+class SparseMatrixTesterMatrixSetter
 {
    public:
 
@@ -38,54 +38,54 @@ class tnlSparseMatrixTesterMatrixSetter
 
 #ifdef HAVE_CUDA
 template< typename MatrixType >
-__global__ void tnlSparseMatrixTester__setElementFastTestCudaKernel( MatrixType* matrix,
+__global__ void SparseMatrixTester__setElementFastTestCudaKernel( MatrixType* matrix,
                                                                      bool* testResult );
 template< typename MatrixType >
-__global__ void tnlSparseMatrixTester__setElementFast_DiagonalMatrixTestCudaKernel( MatrixType* matrix,
+__global__ void SparseMatrixTester__setElementFast_DiagonalMatrixTestCudaKernel( MatrixType* matrix,
                                                                                     bool* testResult );
 
 template< typename MatrixType >
-__global__ void tnlSparseMatrixTester__setElementFast_DenseMatrixTestCudaKernel1( MatrixType* matrix,
+__global__ void SparseMatrixTester__setElementFast_DenseMatrixTestCudaKernel1( MatrixType* matrix,
                                                                                   bool* testResult );
 
 template< typename MatrixType >
-__global__ void tnlSparseMatrixTester__setElementFast_DenseMatrixTestCudaKernel2( MatrixType* matrix,
+__global__ void SparseMatrixTester__setElementFast_DenseMatrixTestCudaKernel2( MatrixType* matrix,
                                                                                   bool* testResult );
 
 template< typename MatrixType >
-__global__ void tnlSparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel1( MatrixType* matrix,
+__global__ void SparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel1( MatrixType* matrix,
                                                                                             bool* testResult );
 
 template< typename MatrixType >
-__global__ void tnlSparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel2( MatrixType* matrix,
+__global__ void SparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel2( MatrixType* matrix,
                                                                                             bool* testResult );
 
 template< typename MatrixType >
-__global__ void tnlSparseMatrixTester__setRowFast_DiagonalMatrixTestCudaKernel( MatrixType* matrix,
+__global__ void SparseMatrixTester__setRowFast_DiagonalMatrixTestCudaKernel( MatrixType* matrix,
                                                                                 bool* testResult );
 
 template< typename MatrixType >
-__global__ void tnlSparseMatrixTester__setRowFast_DenseMatrixTestCudaKernel1( MatrixType* matrix,
+__global__ void SparseMatrixTester__setRowFast_DenseMatrixTestCudaKernel1( MatrixType* matrix,
                                                                               bool* testResult );
 
 template< typename MatrixType >
-__global__ void tnlSparseMatrixTester__setRowFast_DenseMatrixTestCudaKernel2( MatrixType* matrix,
+__global__ void SparseMatrixTester__setRowFast_DenseMatrixTestCudaKernel2( MatrixType* matrix,
                                                                               bool* testResult );
 
 template< typename MatrixType >
-__global__ void tnlSparseMatrixTester__setRowFast_LowerTriangularMatrixTestCudaKernel( MatrixType* matrix,
+__global__ void SparseMatrixTester__setRowFast_LowerTriangularMatrixTestCudaKernel( MatrixType* matrix,
                                                                                        bool* testResult );
 
 #endif
 
 #ifdef HAVE_CPPUNIT
 
-class tnlSparseMatrixTestDefaultSetup
+class SparseMatrixTestDefaultSetup
 {};
 
 template< typename Matrix,
-          typename MatrixSetup = tnlSparseMatrixTestDefaultSetup >
-class tnlSparseMatrixTester : public CppUnit :: TestCase
+          typename MatrixSetup = SparseMatrixTestDefaultSetup >
+class SparseMatrixTester : public CppUnit :: TestCase
 {
    public:
    typedef Matrix MatrixType;
@@ -94,18 +94,18 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    typedef typename Matrix::IndexType IndexType;
    typedef Vectors::Vector< RealType, DeviceType, IndexType > VectorType;
    typedef Vectors::Vector< IndexType, DeviceType, IndexType > IndexVector;
-   typedef tnlSparseMatrixTester< MatrixType, MatrixSetup > TesterType;
-   typedef tnlSparseMatrixTesterMatrixSetter< MatrixType, MatrixSetup > MatrixSetter;
+   typedef SparseMatrixTester< MatrixType, MatrixSetup > TesterType;
+   typedef SparseMatrixTesterMatrixSetter< MatrixType, MatrixSetup > MatrixSetter;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   tnlSparseMatrixTester(){};
+   SparseMatrixTester(){};
 
    virtual
-   ~tnlSparseMatrixTester(){};
+   ~SparseMatrixTester(){};
 
    static CppUnit :: Test* suite()
    {
-      String testSuiteName( "tnlSparseMatrixTester< " );
+      String testSuiteName( "SparseMatrixTester< " );
       testSuiteName += MatrixType::getType() + " >";
 
       CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( testSuiteName.getString() );
@@ -208,7 +208,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
-         tnlSparseMatrixTester__setElementFastTestCudaKernel< MatrixType >
+         SparseMatrixTester__setElementFastTestCudaKernel< MatrixType >
                                                             <<< cudaGridSize, cudaBlockSize >>>
                                                             ( kernel_matrix,
                                                               kernel_testResult );
@@ -271,7 +271,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
-         tnlSparseMatrixTester__setElementFast_DiagonalMatrixTestCudaKernel< MatrixType >
+         SparseMatrixTester__setElementFast_DiagonalMatrixTestCudaKernel< MatrixType >
                                                                            <<< cudaGridSize, cudaBlockSize >>>
                                                                            ( kernel_matrix,
                                                                              kernel_testResult );
@@ -355,7 +355,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
-         tnlSparseMatrixTester__setElementFast_DenseMatrixTestCudaKernel1< MatrixType >
+         SparseMatrixTester__setElementFast_DenseMatrixTestCudaKernel1< MatrixType >
                                                                          <<< cudaGridSize, cudaBlockSize >>>
                                                                          ( kernel_matrix,
                                                                            kernel_testResult );
@@ -390,7 +390,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
-         tnlSparseMatrixTester__setElementFast_DenseMatrixTestCudaKernel2< MatrixType >
+         SparseMatrixTester__setElementFast_DenseMatrixTestCudaKernel2< MatrixType >
                                                                          <<< cudaGridSize, cudaBlockSize >>>
                                                                          ( kernel_matrix,
                                                                            kernel_testResult );
@@ -469,7 +469,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
-         tnlSparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel1< MatrixType >
+         SparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel1< MatrixType >
                                                                                    <<< cudaGridSize, cudaBlockSize >>>
                                                                                    ( kernel_matrix,
                                                                                      kernel_testResult );
@@ -504,7 +504,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          bool* kernel_testResult = Devices::Cuda::passToDevice( testResult );
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
-         tnlSparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel2< MatrixType >
+         SparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel2< MatrixType >
                                                                                    <<< cudaGridSize, cudaBlockSize >>>
                                                                                    ( kernel_matrix,
                                                                                      kernel_testResult );
@@ -616,7 +616,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
-         tnlSparseMatrixTester__setRowFast_DiagonalMatrixTestCudaKernel< MatrixType >
+         SparseMatrixTester__setRowFast_DiagonalMatrixTestCudaKernel< MatrixType >
                                                                        <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                        ( kernel_matrix,
                                                                          kernel_testResult );
@@ -723,7 +723,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
-         tnlSparseMatrixTester__setRowFast_DenseMatrixTestCudaKernel1< MatrixType >
+         SparseMatrixTester__setRowFast_DenseMatrixTestCudaKernel1< MatrixType >
                                                                         <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                         ( kernel_matrix,
                                                                           kernel_testResult );
@@ -763,7 +763,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
-         tnlSparseMatrixTester__setRowFast_DenseMatrixTestCudaKernel2< MatrixType >
+         SparseMatrixTester__setRowFast_DenseMatrixTestCudaKernel2< MatrixType >
                                                                      <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                      ( kernel_matrix,
                                                                        kernel_testResult );
@@ -864,7 +864,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
-         tnlSparseMatrixTester__setRowFast_LowerTriangularMatrixTestCudaKernel< MatrixType >
+         SparseMatrixTester__setRowFast_LowerTriangularMatrixTestCudaKernel< MatrixType >
                                                                               <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                               ( kernel_matrix,
                                                                                 kernel_testResult );
@@ -904,7 +904,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
          checkCudaDevice;
          dim3 cudaBlockSize( 256 ), cudaGridSize( 1 );
          int sharedMemory = 100 * ( sizeof( IndexType ) + sizeof( RealType ) );
-         tnlSparseMatrixTester__setRowFast_LowerTriangularMatrixTestCudaKernel< MatrixType >
+         SparseMatrixTester__setRowFast_LowerTriangularMatrixTestCudaKernel< MatrixType >
                                                                               <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                                                               ( kernel_matrix,
                                                                                 kernel_testResult );
@@ -1010,7 +1010,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
 
 #ifdef HAVE_CUDA
    template< typename MatrixType >
-   __global__ void tnlSparseMatrixTester__setElementFastTestCudaKernel( MatrixType* matrix,
+   __global__ void SparseMatrixTester__setElementFastTestCudaKernel( MatrixType* matrix,
                                                                         bool* testResult )
    {
       if( threadIdx.x == 0 )
@@ -1024,7 +1024,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    }
 
    template< typename MatrixType >
-   __global__ void tnlSparseMatrixTester__setElementFast_DiagonalMatrixTestCudaKernel( MatrixType* matrix,
+   __global__ void SparseMatrixTester__setElementFast_DiagonalMatrixTestCudaKernel( MatrixType* matrix,
                                                                                        bool* testResult )
    {
       if( threadIdx.x < matrix->getRows() )
@@ -1032,7 +1032,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    }
 
    template< typename MatrixType >
-   __global__ void tnlSparseMatrixTester__setElementFast_DenseMatrixTestCudaKernel1( MatrixType* matrix,
+   __global__ void SparseMatrixTester__setElementFast_DenseMatrixTestCudaKernel1( MatrixType* matrix,
                                                                                      bool* testResult )
    {
       const typename MatrixType::IndexType i = threadIdx.x;
@@ -1045,7 +1045,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    }
 
    template< typename MatrixType >
-   __global__ void tnlSparseMatrixTester__setElementFast_DenseMatrixTestCudaKernel2( MatrixType* matrix,
+   __global__ void SparseMatrixTester__setElementFast_DenseMatrixTestCudaKernel2( MatrixType* matrix,
                                                                                      bool* testResult )
    {
       const typename MatrixType::IndexType i = threadIdx.x;
@@ -1057,7 +1057,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    }
 
    template< typename MatrixType >
-   __global__ void tnlSparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel1( MatrixType* matrix,
+   __global__ void SparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel1( MatrixType* matrix,
                                                                                                bool* testResult )
    {
       const typename MatrixType::IndexType i = threadIdx.x;
@@ -1069,7 +1069,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    }
 
    template< typename MatrixType >
-   __global__ void tnlSparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel2( MatrixType* matrix,
+   __global__ void SparseMatrixTester__setElementFast_LowerTriangularMatrixTestCudaKernel2( MatrixType* matrix,
                                                                                                bool* testResult )
    {
       const typename MatrixType::IndexType i = threadIdx.x;
@@ -1084,7 +1084,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
     * Set row tests kernels
     */
    template< typename MatrixType >
-   __global__ void tnlSparseMatrixTester__setRowFast_DiagonalMatrixTestCudaKernel( MatrixType* matrix,
+   __global__ void SparseMatrixTester__setRowFast_DiagonalMatrixTestCudaKernel( MatrixType* matrix,
                                                                                    bool* testResult )
    {
       typedef typename MatrixType::RealType RealType;
@@ -1105,7 +1105,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    }
 
    template< typename MatrixType >
-   __global__ void tnlSparseMatrixTester__setRowFast_DenseMatrixTestCudaKernel1( MatrixType* matrix,
+   __global__ void SparseMatrixTester__setRowFast_DenseMatrixTestCudaKernel1( MatrixType* matrix,
                                                                                  bool* testResult )
    {
       typedef typename MatrixType::RealType RealType;
@@ -1132,7 +1132,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    }
 
    template< typename MatrixType >
-   __global__ void tnlSparseMatrixTester__setRowFast_DenseMatrixTestCudaKernel2( MatrixType* matrix,
+   __global__ void SparseMatrixTester__setRowFast_DenseMatrixTestCudaKernel2( MatrixType* matrix,
                                                                                  bool* testResult )
    {
       typedef typename MatrixType::RealType RealType;
@@ -1156,7 +1156,7 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
    }
 
    template< typename MatrixType >
-   __global__ void tnlSparseMatrixTester__setRowFast_LowerTriangularMatrixTestCudaKernel( MatrixType* matrix,
+   __global__ void SparseMatrixTester__setRowFast_LowerTriangularMatrixTestCudaKernel( MatrixType* matrix,
                                                                                           bool* testResult )
    {
       typedef typename MatrixType::RealType RealType;
@@ -1184,4 +1184,4 @@ class tnlSparseMatrixTester : public CppUnit :: TestCase
 
 #endif
 
-#endif /* TNLSPARSEMATRIXTESTER_H_ */
+#endif /* SparseMatrixTESTER_H_ */

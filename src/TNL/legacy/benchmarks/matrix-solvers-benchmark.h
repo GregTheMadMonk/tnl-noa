@@ -17,7 +17,7 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/legacy/matrices/tnlRgCSRMatrix.h>
 #include <TNL/solvers/tnlIterativeSolverMonitor.h>
 #include <TNL/solvers/linear/stationary/tnlSORSolver.h>
@@ -246,7 +246,7 @@ bool benchmarkMatrix( const Config::ParameterContainer&  parameters )
    /****
     * Loading the matrix from the input file
     */
-   typedef tnlCSRMatrix< Real, Devices::Host, Index > csrMatrixType;
+   typedef CSRMatrix< Real, Devices::Host, Index > csrMatrixType;
    String inputFile = parameters. getParameter< String >( "input-file" );
    csrMatrixType csrMatrix;
    if( ! csrMatrix. load( inputFile ) )
@@ -361,9 +361,9 @@ int main( int argc, char* argv[] )
    parseObjectType( objectType,
                     parsedObjectType );
    String objectClass = parsedObjectType[ 0 ];
-   if( objectClass != "tnlCSRMatrix" )
+   if( objectClass != "CSRMatrix" )
    {
-      std::cerr << "I am sorry, I am expecting tnlCSRMatrix in the input file but I found " << objectClass << "." << std::endl;
+      std::cerr << "I am sorry, I am expecting CSRMatrix in the input file but I found " << objectClass << "." << std::endl;
       return EXIT_FAILURE;
    }
 

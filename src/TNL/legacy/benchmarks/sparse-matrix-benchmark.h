@@ -15,12 +15,12 @@
 #include <iomanip>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/matrices/tnlDenseMatrix.h>
-#include <TNL/matrices/tnlEllpackMatrix.h>
-#include <TNL/matrices/tnlSlicedEllpackMatrix.h>
-#include <TNL/matrices/tnlChunkedEllpackMatrix.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
-#include <TNL/matrices/tnlMatrixReader.h>
+#include <TNL/Matrices/DenseMatrix.h>
+#include <TNL/Matrices/EllpackMatrix.h>
+#include <TNL/Matrices/SlicedEllpackMatrix.h>
+#include <TNL/Matrices/ChunkedEllpackMatrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
+#include <TNL/Matrices/MatrixReader.h>
 #include <TNL/core/mfuncs.h>
 #include "tnlSpmvBenchmark.h"
 
@@ -32,7 +32,7 @@ const char configFile[] = TNL_CONFIG_DIRECTORY "tnl-sparse-matrix-benchmark.cfg.
 double bestCudaRgCSRGflops( 0 );
 
 template< typename Real >
-void benchmarkRgCSRFormat( const tnlCSRMatrix< Real, Devices::Host, int >& csrMatrix,
+void benchmarkRgCSRFormat( const CSRMatrix< Real, Devices::Host, int >& csrMatrix,
                            const Vector< Real, Devices::Host >& refX,
                            const Vector< Real, Devices::Cuda >& cudaX,
                            Vector< Real, Devices::Host >& refB,
@@ -96,7 +96,7 @@ bool benchmarkMatrix( const Config::ParameterContainer& parameters )
    /****
     * Read the CSR matrix ...
     */
-   typedef tnlCSRMatrix< RealType, Devices::Host, int > CsrMatrix;
+   typedef CSRMatrix< RealType, Devices::Host, int > CsrMatrix;
    CsrMatrix csrMatrix;
 
    const String& inputFileName = parameters.getParameter< String >( "input-file" );
@@ -113,7 +113,7 @@ bool benchmarkMatrix( const Config::ParameterContainer& parameters )
       std::cerr << "I am not able to open the file " << inputMtxFileName << "." << std::endl;
       return false;
    }
-   if( ! tnlMatrixReader< CsrMatrix >::readMtxFile( inputFile, csrMatrix ) )
+   if( ! MatrixReader< CsrMatrix >::readMtxFile( inputFile, csrMatrix ) )
       return false;
 
    /****
@@ -138,7 +138,7 @@ bool benchmarkMatrix( const Config::ParameterContainer& parameters )
    /****
     * CSR format benchmark
     */
-   tnlSpmvBenchmark< tnlCSRMatrix< RealType, Devices::Host, int > > csrMatrixBenchmark;
+   tnlSpmvBenchmark< CSRMatrix< RealType, Devices::Host, int > > csrMatrixBenchmark;
 
    /****
     * Use the first instance of tnlSpmvBenchmark which we have
@@ -281,7 +281,7 @@ bool benchmarkMatrix( const Config::ParameterContainer& parameters )
 
    Vector< int, Devices::Host > rowPermutation( "rowPermutation" );
    {
-      tnlCSRMatrix< Real, Devices::Host > orderedCsrMatrix( "orderedCsrMatrix" );
+      CSRMatrix< Real, Devices::Host > orderedCsrMatrix( "orderedCsrMatrix" );
       csrMatrix. sortRowsDecreasingly( rowPermutation );
 
       /****

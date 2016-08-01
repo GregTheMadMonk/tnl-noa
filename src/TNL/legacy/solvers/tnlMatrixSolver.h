@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMatrixSolver.h  -  description
+                          MatrixSolver.h  -  description
                              -------------------
     begin                : 2007/07/30
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -8,22 +8,22 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlMatrixSolverH
-#define tnlMatrixSolverH
+#ifndef MatrixSolverH
+#define MatrixSolverH
 
 #include <TNL/TimerCPU.h>
 #include <TNL/TimerRT.h>
 #include <TNL/core/mpi-supp.h>
 #include <TNL/Object.h>
-#include <TNL/matrices/tnlMatrix.h>
+#include <TNL/Matrices/Matrix.h>
 #include <TNL/legacy/solvers/tnlPreconditioner.h>
 
 template< typename Real, typename Device = Devices::Host, typename Index = int >
-class tnlMatrixSolver : public Object
+class MatrixSolver : public Object
 {
    public:
 
-   tnlMatrixSolver( const String& name );
+   MatrixSolver( const String& name );
 
    Index getIterationNumber() const;
 
@@ -37,19 +37,19 @@ class tnlMatrixSolver : public Object
  
    virtual void printOut();
 
-   virtual bool solve( const tnlMatrix< Real, Device, Index >& A,
+   virtual bool solve( const Matrix< Real, Device, Index >& A,
                        const Vector< Real, Device, Index >& b,
                        Vector< Real, Device, Index >& x,
                        const Real& max_residue,
                        const Index max_iterations,
                        tnlPreconditioner< Real >* precond = 0 ) = 0;
 
-   Real getResidue( const tnlMatrix< Real, Device, Index >& A,
+   Real getResidue( const Matrix< Real, Device, Index >& A,
                     const Vector< Real, Device, Index >& b,
                     const Vector< Real, Device, Index >& x,
                     const Real b_norm = 1.0 );
 
-   virtual ~tnlMatrixSolver();
+   virtual ~MatrixSolver();
 
    protected:
 
@@ -68,7 +68,7 @@ class tnlMatrixSolver : public Object
 };
 
 template< typename Real, typename Device, typename Index >
-tnlMatrixSolver< Real, Device, Index > :: tnlMatrixSolver( const String& name )
+MatrixSolver< Real, Device, Index > :: MatrixSolver( const String& name )
 : Object( name ),
   iteration( 0 ),
   residue( 0.0 ),
@@ -80,37 +80,37 @@ tnlMatrixSolver< Real, Device, Index > :: tnlMatrixSolver( const String& name )
 };
 
 template< typename Real, typename Device, typename Index >
-Index tnlMatrixSolver< Real, Device, Index > :: getIterationNumber() const
+Index MatrixSolver< Real, Device, Index > :: getIterationNumber() const
 {
    return this->iteration;
 };
 
 template< typename Real, typename Device, typename Index >
-const Real& tnlMatrixSolver< Real, Device, Index > :: getResidue() const
+const Real& MatrixSolver< Real, Device, Index > :: getResidue() const
 {
    return this->residue;
 };
 
 template< typename Real, typename Device, typename Index >
-void tnlMatrixSolver< Real, Device, Index > :: setVerbosity( int verbose )
+void MatrixSolver< Real, Device, Index > :: setVerbosity( int verbose )
 {
    this->verbosity = verbose;
 };
 
 template< typename Real, typename Device, typename Index >
-void tnlMatrixSolver< Real, Device, Index > :: setTimerCPU( TimerCPU* timer )
+void MatrixSolver< Real, Device, Index > :: setTimerCPU( TimerCPU* timer )
 {
    this->cpu_timer = timer;
 };
 
 template< typename Real, typename Device, typename Index >
-void tnlMatrixSolver< Real, Device, Index > :: setTimerRT( TimerRT* timer )
+void MatrixSolver< Real, Device, Index > :: setTimerRT( TimerRT* timer )
 {
    this->rt_timer = timer;
 };
 
 template< typename Real, typename Device, typename Index >
-void tnlMatrixSolver< Real, Device, Index > :: printOut()
+void MatrixSolver< Real, Device, Index > :: printOut()
 {
    if( this->verbosity > 0 )
    {
@@ -130,7 +130,7 @@ void tnlMatrixSolver< Real, Device, Index > :: printOut()
 };
 
 template< typename Real, typename Device, typename Index >
-Real tnlMatrixSolver< Real, Device, Index > :: getResidue( const tnlMatrix< Real, Device, Index >& A,
+Real MatrixSolver< Real, Device, Index > :: getResidue( const Matrix< Real, Device, Index >& A,
                                                            const Vector< Real, Device, Index >& b,
                                                            const Vector< Real, Device, Index >& x,
                                                            const Real b_norm )
@@ -148,7 +148,7 @@ Real tnlMatrixSolver< Real, Device, Index > :: getResidue( const tnlMatrix< Real
 
 
 template< typename Real, typename Device, typename Index >
-tnlMatrixSolver< Real, Device, Index > :: ~tnlMatrixSolver()
+MatrixSolver< Real, Device, Index > :: ~MatrixSolver()
 {
 };
 

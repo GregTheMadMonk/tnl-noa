@@ -8,7 +8,7 @@
 
 #include <TNL/Object.h>
 #include <TNL/Config/ConfigDescription.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <TNL/solvers/tnlIterativeSolver.h>
 #include <TNL/solvers/linear/tnlLinearResidueGetter.h>
@@ -23,7 +23,7 @@ struct is_csr_matrix
 };
 
 template< typename Real, typename Device, typename Index >
-struct is_csr_matrix< tnlCSRMatrix< Real, Device, Index > >
+struct is_csr_matrix< CSRMatrix< Real, Device, Index > >
 {
     static const bool value = true;
 };
@@ -85,7 +85,7 @@ public:
 
 
 template< typename Preconditioner >
-class tnlUmfpackWrapper< tnlCSRMatrix< double, Devices::Host, int >, Preconditioner >
+class tnlUmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >
     : public Object,
       // just to ensure the same interface as other linear solvers
       public tnlIterativeSolver< double, int >
@@ -94,7 +94,7 @@ public:
     typedef double RealType;
     typedef int IndexType;
     typedef Devices::Host DeviceType;
-    typedef tnlCSRMatrix< double, Devices::Host, int > MatrixType;
+    typedef CSRMatrix< double, Devices::Host, int > MatrixType;
     typedef Preconditioner PreconditionerType;
 
     tnlUmfpackWrapper();

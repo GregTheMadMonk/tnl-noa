@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/problems/tnlProblem.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
+#include <TNL/Matrices/CSRMatrix.h>
 
 namespace TNL {
 
@@ -32,7 +32,7 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
       typedef tnlSharedPointer< MeshType, DeviceType > MeshPointer;
       typedef Vectors::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef tnlSharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-      typedef tnlCSRMatrix< RealType, DeviceType, IndexType > MatrixType;
+      typedef Matrices::CSRMatrix< RealType, DeviceType, IndexType > MatrixType;
       typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
       typedef Vectors::Vector< RealType, DeviceType, IndexType > MeshDependentDataType;
 

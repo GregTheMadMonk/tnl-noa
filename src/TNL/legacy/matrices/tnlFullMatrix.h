@@ -12,12 +12,12 @@
 #define tnlFullMatrixH
 
 #include <TNL/Arrays/MultiArray.h>
-#include <TNL/matrices/tnlMatrix.h>
+#include <TNL/Matrices/Matrix.h>
 
 const int tnlMaxFullMatrixSize = 65536;
 
 template< typename Real, typename Device = Devices::Host, typename Index = int >
-class tnlFullMatrix : public tnlMatrix< Real, Device, Index >,
+class tnlFullMatrix : public Matrix< Real, Device, Index >,
                       virtual public MultiArray< 2, Real, Device, Index >
 {
 
@@ -64,9 +64,9 @@ class tnlFullMatrix : public tnlMatrix< Real, Device, Index >,
    //! Get row L1 norm
    Real getRowL1Norm( const Index row ) const;
 
-   bool operator == ( const tnlMatrix< Real, Device, Index >& m ) const;
+   bool operator == ( const Matrix< Real, Device, Index >& m ) const;
 
-   bool operator != ( const tnlMatrix< Real, Device, Index >& m ) const;
+   bool operator != ( const Matrix< Real, Device, Index >& m ) const;
 
    //! Destructor
    ~tnlFullMatrix();
@@ -75,7 +75,7 @@ class tnlFullMatrix : public tnlMatrix< Real, Device, Index >,
 template< typename Real, typename Device, typename Index >
 tnlFullMatrix< Real, Device, Index > :: tnlFullMatrix( const String& name )
 : MultiArray< 2, Real, Device, Index >( name ),
-  tnlMatrix< Real, Device, Index >( name ),
+  Matrix< Real, Device, Index >( name ),
   nonzero_elements( 0 )
 {
 };
@@ -96,7 +96,7 @@ String tnlFullMatrix< Real, Device, Index > :: getType() const
 template< typename Real, typename Device, typename Index >
 const String& tnlFullMatrix< Real, Device, Index > :: getMatrixClass() const
 {
-   return tnlMatrixClass :: main;
+   return MatrixClass :: main;
 };
 
 template< typename Real, typename Device, typename Index >
@@ -108,10 +108,10 @@ bool tnlFullMatrix< Real, Device, Index > :: setSize( Index new_size )
       std::cerr << "If you really need to allocate such matrix increase the limit constant in the file " << __FILE__ << std::endl;
       return false;
    }
-   tnlMatrix< Real, Device, Index > :: size = 0;
+   Matrix< Real, Device, Index > :: size = 0;
    if( ! MultiArray< 2, Real, Device, Index > :: setDimensions( StaticVector< 2, Index >( new_size, new_size ) ) )
       return false;
-   tnlMatrix< Real, Device, Index > :: size = new_size;
+   Matrix< Real, Device, Index > :: size = new_size;
    MultiArray< 2, Real, Device, Index > :: setValue( 0.0 );
    nonzero_elements = 0;
    return true;
@@ -138,7 +138,7 @@ Index tnlFullMatrix< Real, Device, Index > :: getNonzeroElements() const
 template< typename Real, typename Device, typename Index >
 Index tnlFullMatrix< Real, Device, Index > :: getSize() const
 {
-   return tnlMatrix< Real, Device, Index > :: getSize(); // it is the same as GetYSize()
+   return Matrix< Real, Device, Index > :: getSize(); // it is the same as GetYSize()
 };
 
 template< typename Real, typename Device, typename Index >
@@ -259,15 +259,15 @@ Real tnlFullMatrix< Real, Device, Index > :: getRowL1Norm( const Index row ) con
 };
 
 template< typename Real, typename Device, typename Index >
-bool tnlFullMatrix< Real, Device, Index > :: operator == ( const tnlMatrix< Real, Device, Index >& m ) const
+bool tnlFullMatrix< Real, Device, Index > :: operator == ( const Matrix< Real, Device, Index >& m ) const
 {
-   return tnlMatrix< Real, Device, Index > :: operator == ( m );
+   return Matrix< Real, Device, Index > :: operator == ( m );
 };
 
 template< typename Real, typename Device, typename Index >
-bool tnlFullMatrix< Real, Device, Index > :: operator != ( const tnlMatrix< Real, Device, Index >& m ) const
+bool tnlFullMatrix< Real, Device, Index > :: operator != ( const Matrix< Real, Device, Index >& m ) const
 {
-   return tnlMatrix< Real, Device, Index > :: operator != ( m );
+   return Matrix< Real, Device, Index > :: operator != ( m );
 }
 
 template< typename Real, typename Device, typename Index >
@@ -311,7 +311,7 @@ void MatrixSum( const tnlFullMatrix< Real, Devices::Host, Index >& m1,
 template< typename Real, typename Device, typename Index >
 ostream& operator << ( std::ostream& o_str, const tnlFullMatrix< Real, Device, Index >& A )
 {
-   return operator << ( o_str, ( const tnlMatrix< Real, Device, Index >& ) A );
+   return operator << ( o_str, ( const Matrix< Real, Device, Index >& ) A );
 };
 
 #endif

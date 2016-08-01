@@ -16,14 +16,14 @@
 #include <petsc.h>
 #endif
 
-#include <TNL/legacy/solvers/tnlMatrixSolver.h>
+#include <TNL/legacy/solvers/MatrixSolver.h>
 
 #ifdef HAVE_PETSC
 template< typename T > inline PetscErrorCode PETSCSolverMonitorCallback( KSP petsc_solver, PetscInt iter, PetscReal rnorm, void* ctx );
 #endif
 
 //! This class is a wrapper for the PETSc solvers.
-template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
+template< typename T > class tnlPETSCSolver : public MatrixSolver< T >
 {
 #ifdef HAVE_PETSC
    KSP petsc_solver;
@@ -67,15 +67,15 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
       KSPGetIterationNumber( petsc_solver, &it );
       PetscReal res;
       KSPGetResidualNorm( petsc_solver, &res );
-      tnlMatrixSolver< T > :: iteration = it;
-      tnlMatrixSolver< T > :: residue = res;
-      tnlMatrixSolver< T > :: PrintOut();
+      MatrixSolver< T > :: iteration = it;
+      MatrixSolver< T > :: residue = res;
+      MatrixSolver< T > :: PrintOut();
 #else
       std::cerr << "Missing support for PETSC at the file " << __FILE__ << " line " << __LINE__ << std::endl;
 #endif
    };
 
-   bool Solve( const tnlMatrix< T >& A,
+   bool Solve( const Matrix< T >& A,
                const T* b,
                T* x,
                const double& max_residue,
@@ -83,7 +83,7 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
                tnlPreconditioner< T >* precond = 0 )
    {
 #ifdef HAVE_PETSC
-      assert( A. getMatrixClass() == tnlMatrixClass :: petsc );
+      assert( A. getMatrixClass() == MatrixClass :: petsc );
       Vec petsc_x, petsc_b;
       tnlPETSCMatrix< T >* petsc_matrix = ( tnlPETSCMatrix< T >* ) & A;
       Mat matrix;
@@ -126,13 +126,13 @@ template< typename T > class tnlPETSCSolver : public tnlMatrixSolver< T >
 
       PetscInt its;
       KSPGetIterationNumber( petsc_solver, &its );
-      tnlMatrixSolver< T > :: iteration = its;
+      MatrixSolver< T > :: iteration = its;
  
-      if( tnlMatrixSolver< T > :: iteration < 0 ) return false;
+      if( MatrixSolver< T > :: iteration < 0 ) return false;
  
       PetscReal res;
       KSPGetResidualNorm( petsc_solver, &res );
-      tnlMatrixSolver< T > :: residue = res / normb;
+      MatrixSolver< T > :: residue = res / normb;
  
       //KSPDestroy( petsc_solver );
  

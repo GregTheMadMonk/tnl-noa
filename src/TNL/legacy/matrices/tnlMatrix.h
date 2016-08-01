@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMatrix.h  -  description
+                          Matrix.h  -  description
                              -------------------
     begin                : 2007/07/23
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlMatrixH
-#define tnlMatrixH
+#ifndef MatrixH
+#define MatrixH
 
 #include <ostream>
 #include <iomanip>
@@ -23,11 +23,11 @@
 
 using namespace std;
 
-class tnlMatrixClass
+class MatrixClass
 {
    private:
 
-   tnlMatrixClass() {};
+   MatrixClass() {};
 
    public:
    static const String main;
@@ -35,10 +35,10 @@ class tnlMatrixClass
    static const String cusparse;
 };
 
-template< typename Real, typename device, typename Index > class tnlCSRMatrix;
+template< typename Real, typename device, typename Index > class CSRMatrix;
 
 template< typename Real, typename Device = Devices::Host, typename Index = int >
-class tnlMatrix : public Object
+class Matrix : public Object
 {
    public:
 
@@ -47,7 +47,7 @@ class tnlMatrix : public Object
    typedef Index IndexType;
 
 
-   tnlMatrix( const String& name );
+   Matrix( const String& name );
 
    //! Matrix class tells what implementation of matrix we want.
    /*! Matrix class can be main, PETSC, CUDA etc.
@@ -100,15 +100,15 @@ class tnlMatrix : public Object
 
    virtual void multiplyRow( Index row, const Real& value ) = 0;
 
-   bool operator == ( const tnlMatrix< Real, Device, Index >& m ) const;
+   bool operator == ( const Matrix< Real, Device, Index >& m ) const;
 
-   bool operator != ( const tnlMatrix< Real, Device, Index >& m ) const;
+   bool operator != ( const Matrix< Real, Device, Index >& m ) const;
 
    /*!***
     * This method is the same as operator == but it can work in verbose mode
     * which is useful when comparing large matrices.
     */
-   bool compare( const tnlMatrix< Real, Device, Index >& m, bool verbose = true ) const;
+   bool compare( const Matrix< Real, Device, Index >& m, bool verbose = true ) const;
 
    //! Method for saving the matrix to a file as a binary data
    bool save( File& file ) const;
@@ -121,7 +121,7 @@ class tnlMatrix : public Object
    bool load( const String& fileName );
 
    template< typename Real2 >
-   tnlMatrix< Real, Device, Index >& operator = ( const tnlMatrix< Real2, Device, Index >& matrix );
+   Matrix< Real, Device, Index >& operator = ( const Matrix< Real2, Device, Index >& matrix );
 
    /*!
     * Computes permutation of the rows such that the rows would be
@@ -134,18 +134,18 @@ class tnlMatrix : public Object
 
    /****
     * If we draw sparse matrix it is much faster if we now positions of the non-zero elements.
-    * They are best accessible from the CSR format. Therefore we may pass pointer to tnlCSRMatrix.
+    * They are best accessible from the CSR format. Therefore we may pass pointer to CSRMatrix.
     */
    virtual bool draw( std::ostream& str,
 		                const String& format,
-		                tnlCSRMatrix< Real, Device, Index >* csrMatrix = 0,
+		                CSRMatrix< Real, Device, Index >* csrMatrix = 0,
 		                int verbose = 0 );
 
    virtual void printOut( std::ostream& stream,
                           const String& format = String( "" ),
                           const Index lines = 0 ) const {};
 
-   virtual ~tnlMatrix()
+   virtual ~Matrix()
    {};
 
    protected:
@@ -164,22 +164,22 @@ class tnlMatrix : public Object
 };
 
 template< typename Real, typename Device, typename Index >
-ostream& operator << ( std::ostream& o_str, const tnlMatrix< Real, Device, Index >& A );
+ostream& operator << ( std::ostream& o_str, const Matrix< Real, Device, Index >& A );
 
 template< typename Real, typename Device, typename Index >
-tnlMatrix< Real, Device, Index > :: tnlMatrix( const String& name )
+Matrix< Real, Device, Index > :: Matrix( const String& name )
 : Object( name )
 {
 };
 
 template< typename Real, typename Device, typename Index >
-Index tnlMatrix< Real, Device, Index > :: getArtificialZeroElements() const
+Index Matrix< Real, Device, Index > :: getArtificialZeroElements() const
 {
    return 0;
 };
 
 template< typename Real, typename Device, typename Index >
-Index tnlMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& row ) const
+Index Matrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& row ) const
 {
    Assert( false, std::cerr << "not implemented yet." );
    /*
@@ -189,7 +189,7 @@ Index tnlMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& 
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
+bool Matrix< Real, Device, Index > :: performSORIteration( const Real& omega,
                                                               const Vector< Real, Device, Index >& b,
                                                               Vector< Real, Device, Index >& x,
                                                               Index firstRow,
@@ -199,13 +199,13 @@ bool tnlMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: operator == ( const tnlMatrix< Real, Device, Index >& m ) const
+bool Matrix< Real, Device, Index > :: operator == ( const Matrix< Real, Device, Index >& m ) const
 {
    return compare( m, false );
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: compare( const tnlMatrix< Real, Device, Index >& m, bool verbose ) const
+bool Matrix< Real, Device, Index > :: compare( const Matrix< Real, Device, Index >& m, bool verbose ) const
 {
    if( this->getSize() != m. getSize() )
       return false;
@@ -222,13 +222,13 @@ bool tnlMatrix< Real, Device, Index > :: compare( const tnlMatrix< Real, Device,
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: operator != ( const tnlMatrix< Real, Device, Index >& m ) const
+bool Matrix< Real, Device, Index > :: operator != ( const Matrix< Real, Device, Index >& m ) const
 {
    return ! ( ( *this ) == m );
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: save( File& file ) const
+bool Matrix< Real, Device, Index > :: save( File& file ) const
 {
    if( ! Object :: save( file ) ) return false;
 #ifdef HAVE_NOT_CXX11
@@ -241,7 +241,7 @@ bool tnlMatrix< Real, Device, Index > :: save( File& file ) const
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: load( File& file )
+bool Matrix< Real, Device, Index > :: load( File& file )
 {
    if( ! Object :: load( file ) ) return false;
 #ifdef HAVE_NOT_CXX11
@@ -254,20 +254,20 @@ bool tnlMatrix< Real, Device, Index > :: load( File& file )
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: save( const String& fileName ) const
+bool Matrix< Real, Device, Index > :: save( const String& fileName ) const
 {
    return Object :: save( fileName );
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: load( const String& fileName )
+bool Matrix< Real, Device, Index > :: load( const String& fileName )
 {
    return Object :: load( fileName );
 }
 
 template< typename Real, typename Device, typename Index >
    template< typename Real2 >
-tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index > ::  operator = ( const tnlMatrix< Real2, Device, Index >& matrix )
+Matrix< Real, Device, Index >& Matrix< Real, Device, Index > ::  operator = ( const Matrix< Real2, Device, Index >& matrix )
 {
    this->size = matrix. getSize();
    /*if( ! rowsReorderingPermutation. setSize( matrix. rowsReorderingPermutation. getSize() ) )
@@ -280,7 +280,7 @@ tnlMatrix< Real, Device, Index >& tnlMatrix< Real, Device, Index > ::  operator 
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: checkMtxHeader( const String& header,
+bool Matrix< Real, Device, Index > :: checkMtxHeader( const String& header,
 		                                                   bool& symmetric )
 {
 	List< String > parsed_line;
@@ -320,7 +320,7 @@ bool tnlMatrix< Real, Device, Index > :: checkMtxHeader( const String& header,
 
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: read( std::istream& file,
+bool Matrix< Real, Device, Index > :: read( std::istream& file,
                                                int verbose )
 {
    String line;
@@ -408,13 +408,13 @@ bool tnlMatrix< Real, Device, Index > :: read( std::istream& file,
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( Vector< Index, Device, Index >& permutation )
+bool Matrix< Real, Device, Index > :: sortRowsDecreasingly( Vector< Index, Device, Index >& permutation )
 {
-   dbgFunctionName( "tnlMatrix< Real, Device, Index >", "sortRowsDecreasingly" );
+   dbgFunctionName( "Matrix< Real, Device, Index >", "sortRowsDecreasingly" );
    /****
     * We use bucketsort to sort the rows by the number of the non-zero elements.
     */
-   const Index matrixSize = tnlMatrix< Real, Device, Index > :: getSize();
+   const Index matrixSize = Matrix< Real, Device, Index > :: getSize();
    if( ! permutation. setSize( matrixSize + 1 ) )
       return false;
    permutation. setValue( 0 );
@@ -430,7 +430,7 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( Vector< Index, De
       permutation[ this->getNonzeroElementsInRow( i ) ] ++;
    }
 
-   Vector< Index, Devices::Host, Index > buckets( "tnlMatrix::reorderRowsDecreasingly:buckets" );
+   Vector< Index, Devices::Host, Index > buckets( "Matrix::reorderRowsDecreasingly:buckets" );
    buckets. setSize( matrixSize + 1 );
    buckets. setValue( 0 );
 
@@ -453,9 +453,9 @@ bool tnlMatrix< Real, Device, Index > :: sortRowsDecreasingly( Vector< Index, De
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlMatrix< Real, Device, Index > :: draw( std::ostream& str,
+bool Matrix< Real, Device, Index > :: draw( std::ostream& str,
 		                                         const String& format,
-		                                         tnlCSRMatrix< Real, Device, Index >* csrMatrix,
+		                                         CSRMatrix< Real, Device, Index >* csrMatrix,
 		                                         int verbose )
 {
 	if( format == "gnuplot" )
@@ -496,7 +496,7 @@ bool tnlMatrix< Real, Device, Index > :: draw( std::ostream& str,
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlMatrix< Real, Device, Index > :: writePostscriptHeader( std::ostream& str,
+void Matrix< Real, Device, Index > :: writePostscriptHeader( std::ostream& str,
                                                                 const int elementSize ) const
 {
    const int scale = elementSize * this->getSize();
@@ -509,7 +509,7 @@ void tnlMatrix< Real, Device, Index > :: writePostscriptHeader( std::ostream& st
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlMatrix< Real, Device, Index > :: writePostscriptBody( std::ostream& str,
+void Matrix< Real, Device, Index > :: writePostscriptBody( std::ostream& str,
                                                               const int elementSize,
                                                               bool verbose ) const
 {
@@ -538,7 +538,7 @@ void tnlMatrix< Real, Device, Index > :: writePostscriptBody( std::ostream& str,
 //! Operator <<
 template< typename Real, typename Device, typename Index >
 ostream& operator << ( std::ostream& o_str,
-		                 const tnlMatrix< Real, Device, Index >& A )
+		                 const Matrix< Real, Device, Index >& A )
 {
    Index size = A. getSize();
    o_str << std::endl;

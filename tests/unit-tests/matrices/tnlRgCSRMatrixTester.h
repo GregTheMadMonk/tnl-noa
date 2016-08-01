@@ -15,12 +15,12 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <TNL/matrices/tnlCSRMatrix.h>
-#include "tnlMatrixTester.h"
+#include <TNL/Matrices/CSRMatrix.h>
+#include "MatrixTester.h"
 #include <TNL/legacy/matrices/tnlRgCSRMatrix.h>
 
 template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
-                                                 public tnlMatrixTester< T >
+                                                 public MatrixTester< T >
 {
    public:
    tnlRgCSRMatrixTester(){};
@@ -86,7 +86,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    void ifEmptyMatrixIsStoredProperly()
    {
       const int size = 12;
-      tnlCSRMatrix< T > csrMatrix;
+      CSRMatrix< T > csrMatrix;
       tnlRgCSRMatrix< T > argcsrMatrix;
       this->setEmptyMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
@@ -102,7 +102,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    void ifDiagonalMatrixIsStoredProperly()
    {
       const int size = 12;
-      tnlCSRMatrix< T > csrMatrix;
+      CSRMatrix< T > csrMatrix;
       tnlRgCSRMatrix< T > argcsrMatrix;
       this->setDiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
@@ -117,7 +117,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
 
    void ifTriDiagonalMatrixIsStoredProperly()
    {
-      tnlCSRMatrix< T > csrMatrix;
+      CSRMatrix< T > csrMatrix;
       tnlRgCSRMatrix< T > argcsrMatrix;
       int size = 12;
       this->setTridiagonalMatrix( csrMatrix, size );
@@ -134,7 +134,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
 
    void ifUpperTriangularMatrixIsStoredProperly()
    {
-      tnlCSRMatrix< T > csrMatrix;
+      CSRMatrix< T > csrMatrix;
       tnlRgCSRMatrix< T > argcsrMatrix;
       const int size = 12;
       this->setUpperTriangularMatrix( csrMatrix, size );
@@ -151,7 +151,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
 
    void ifFullMatrixIsStoredProperly()
    {
-      tnlCSRMatrix< T > csrMatrix;
+      CSRMatrix< T > csrMatrix;
       tnlRgCSRMatrix< T > argcsrMatrix;
       const int size = 12;
       this->setUpperTriangularMatrix( csrMatrix, size );
@@ -168,7 +168,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
 
    void ifBcsstk20MatrixIsStoredProperly()
    {
-      tnlCSRMatrix< T > csrMatrix;
+      CSRMatrix< T > csrMatrix;
       tnlRgCSRMatrix< T > argcsrMatrix;
       const int size = 12;
       this->setBcsstk20Matrix( csrMatrix );
@@ -186,7 +186,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    void ifSpmvWithEmptyMatrixWorks()
    {
       const int size = 35;
-      tnlCSRMatrix< T > csrMatrix;
+      CSRMatrix< T > csrMatrix;
       tnlRgCSRMatrix< T > argcsrMatrix;
       this->setEmptyMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
@@ -205,7 +205,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    void ifSpmvWithDiagonalMatrixWorks()
    {
       const int size = 35;
-      tnlCSRMatrix< T > csrMatrix;
+      CSRMatrix< T > csrMatrix;
       tnlRgCSRMatrix< T > argcsrMatrix;
       this->setDiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
@@ -224,7 +224,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    void ifSpmvWithTriDiagonalMatrixWorks()
    {
       const int size = 12;
-      tnlCSRMatrix< T > csrMatrix;
+      CSRMatrix< T > csrMatrix;
       tnlRgCSRMatrix< T > argcsrMatrix;
       this->setTridiagonalMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
@@ -243,7 +243,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    void ifSpmvWithUpperTriangularMatrixWorks()
    {
       const int size = 12;
-      tnlCSRMatrix< T > csrMatrix;
+      CSRMatrix< T > csrMatrix;
       tnlRgCSRMatrix< T > argcsrMatrix;
       this->setUpperTriangularMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
@@ -262,7 +262,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
    void ifSpmvWithFullMatrixWorks()
    {
       const int size = 12;
-      tnlCSRMatrix< T > csrMatrix;
+      CSRMatrix< T > csrMatrix;
       tnlRgCSRMatrix< T > argcsrMatrix;
       this->setFullMatrix( csrMatrix, size );
       argcsrMatrix. copyFrom( csrMatrix );
@@ -280,7 +280,7 @@ template< class T > class tnlRgCSRMatrixTester : public CppUnit :: TestCase,
 
    void ifSpmvWithBcsstk20MatrixWorks()
    {
-      tnlCSRMatrix< T > csrMatrix;
+      CSRMatrix< T > csrMatrix;
       tnlRgCSRMatrix< T > argcsrMatrix;
       this->setBcsstk20Matrix( csrMatrix );
       argcsrMatrix. copyFrom( csrMatrix );

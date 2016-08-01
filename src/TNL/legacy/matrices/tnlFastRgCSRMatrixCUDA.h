@@ -16,7 +16,7 @@
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
-#include <TNL/matrices/tnlMatrix.h>
+#include <TNL/Matrices/Matrix.h>
 #include <TNL/legacy/matrices/tnlFastRgCSRMatrix.h>
 #include <TNL/debug/tnlDebug.h>
 
@@ -48,7 +48,7 @@ void sparseFastCSRMatrixVectorProductKernelCaller( int size,
 
 
 template< typename Real, typename Index >
-class tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > : public tnlMatrix< Real, Devices::Cuda, Index >
+class tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > : public Matrix< Real, Devices::Cuda, Index >
 {
    public:
    //! Basic constructor
@@ -165,7 +165,7 @@ class tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > : public tnlMatrix< Real,
 
 template< typename Real, typename Index >
 tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: tnlFastRgCSRMatrix( const char* name )
-   : tnlMatrix< Real, Devices::Cuda, Index >( name ),
+   : Matrix< Real, Devices::Cuda, Index >( name ),
      nonzero_elements( "tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: nonzero-elements" ),
      block_offsets( "tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: block-offsets" ),
      column_sequences( "tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: column-sequences" ),
@@ -182,7 +182,7 @@ tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: tnlFastRgCSRMatrix( const ch
 template< typename Real, typename Index >
 const String& tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: getMatrixClass() const
 {
-   return tnlMatrixClass :: main;
+   return MatrixClass :: main;
 };
 
 template< typename Real, typename Index >
