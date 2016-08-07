@@ -12,7 +12,7 @@
 #define TNLMERSONSOLVERTESTER_H_
 
 #include <TNL/legacy/mesh/tnlGridOld.h>
-#include <TNL/solvers/ode/tnlMersonSolver.h>
+#include <TNL/Solvers/ode/tnlMersonSolver.h>
 #include <TNL/core/mfilename.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>

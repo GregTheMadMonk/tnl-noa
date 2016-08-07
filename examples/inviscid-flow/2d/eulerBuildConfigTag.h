@@ -1,7 +1,7 @@
 #ifndef eulerBUILDCONFIGTAG_H_
 #define eulerBUILDCONFIGTAG_H_
 
-#include <TNL/solvers/tnlBuildConfigTags.h>
+#include <TNL/Solvers/tnlBuildConfigTags.h>
 
 namespace TNL {
 

@@ -15,8 +15,8 @@
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <TNL/solvers/tnlSolver.h>
-#include <TNL/solvers/tnlSolverMonitor.h>
+#include <TNL/Solvers/tnlSolver.h>
+#include <TNL/Solvers/tnlSolverMonitor.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/tnlConfig.h>
 

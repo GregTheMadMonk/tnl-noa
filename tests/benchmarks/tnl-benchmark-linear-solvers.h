@@ -27,12 +27,12 @@
 #include <TNL/Matrices/SlicedEllpackMatrix.h>
 #include <TNL/Matrices/ChunkedEllpackMatrix.h>
 #include <TNL/Matrices/MatrixReader.h>
-#include <TNL/solvers/linear/krylov/tnlGMRESSolver.h>
-#include <TNL/solvers/linear/krylov/tnlCGSolver.h>
-#include <TNL/solvers/linear/krylov/tnlBICGStabSolver.h>
-#include <TNL/solvers/linear/krylov/tnlTFQMRSolver.h>
-#include <TNL/solvers/linear/tnlLinearResidueGetter.h>
-#include <TNL/solvers/tnlIterativeSolverMonitor.h>
+#include <TNL/Solvers/linear/krylov/tnlGMRESSolver.h>
+#include <TNL/Solvers/linear/krylov/tnlCGSolver.h>
+#include <TNL/Solvers/linear/krylov/tnlBICGStabSolver.h>
+#include <TNL/Solvers/linear/krylov/tnlTFQMRSolver.h>
+#include <TNL/Solvers/linear/tnlLinearResidueGetter.h>
+#include <TNL/Solvers/tnlIterativeSolverMonitor.h>
 
 using namespace std;
 using namespace TNL;

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/solvers/cfd/navier-stokes/tnlNavierStokesSolver.h>
+#include <TNL/Solvers/cfd/navier-stokes/tnlNavierStokesSolver.h>
 
 namespace TNL {
 

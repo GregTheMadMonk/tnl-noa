@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TNL/solvers/tnlBuildConfigTags.h>
+#include <TNL/Solvers/tnlBuildConfigTags.h>
 
 namespace TNL {
 

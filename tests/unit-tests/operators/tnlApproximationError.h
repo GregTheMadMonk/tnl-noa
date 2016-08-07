@@ -14,10 +14,10 @@
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/Functions/Analytic/ConstantFunction.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
-#include <TNL/solvers/pde/tnlExplicitUpdater.h>
+#include <TNL/Solvers/pde/tnlExplicitUpdater.h>
 #include <TNL/Functions/ExactOperatorFunction.h>
 #include <TNL/Functions/MeshFunction.h>
-#include <TNL/solvers/pde/tnlBoundaryConditionsSetter.h>
+#include <TNL/Solvers/pde/tnlBoundaryConditionsSetter.h>
 
 using namespace TNL;
 

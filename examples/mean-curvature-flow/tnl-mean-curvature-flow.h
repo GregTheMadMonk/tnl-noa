@@ -18,8 +18,8 @@
 #ifndef TNL_MEAN_CURVATIVE_FLOW_H_
 #define TNL_MEAN_CURVATIVE_FLOW_H_
 
-#include <TNL/solvers/tnlSolver.h>
-#include <TNL/solvers/tnlFastBuildConfigTag.h>
+#include <TNL/Solvers/tnlSolver.h>
+#include <TNL/Solvers/tnlFastBuildConfigTag.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>

@@ -148,4 +148,4 @@ class tnlNavierStokesSolver
 
 } // namespace TNL
 
-#include <TNL/solvers/cfd/navier-stokes/tnlNavierStokesSolver_impl.h>
+#include <TNL/Solvers/cfd/navier-stokes/tnlNavierStokesSolver_impl.h>

@@ -20,10 +20,10 @@
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Matrices/MultidiagonalMatrixSetter.h>
 #include <TNL/Logger.h>
-#include <TNL/solvers/pde/tnlBoundaryConditionsSetter.h>
-#include <TNL/solvers/pde/tnlExplicitUpdater.h>
-#include <TNL/solvers/pde/tnlLinearSystemAssembler.h>
-#include <TNL/solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/Solvers/pde/tnlBoundaryConditionsSetter.h>
+#include <TNL/Solvers/pde/tnlExplicitUpdater.h>
+#include <TNL/Solvers/pde/tnlLinearSystemAssembler.h>
+#include <TNL/Solvers/pde/tnlBackwardTimeDiscretisation.h>
 
 #include "tnlHeatEquationProblem.h"
 

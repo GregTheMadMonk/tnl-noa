@@ -4,6 +4,7 @@ ADD_SUBDIRECTORY( Devices )
 ADD_SUBDIRECTORY( Functions )
 ADD_SUBDIRECTORY( Images )
 ADD_SUBDIRECTORY( Matrices )
+ADD_SUBDIRECTORY( Solvers )
 ADD_SUBDIRECTORY( Vectors )
 
 
@@ -12,7 +13,7 @@ ADD_SUBDIRECTORY( core )
 ADD_SUBDIRECTORY( mesh )
 ADD_SUBDIRECTORY( operators )
 ADD_SUBDIRECTORY( problems )
-ADD_SUBDIRECTORY( solvers )
+
 ADD_SUBDIRECTORY( legacy )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL )
@@ -49,15 +50,16 @@ set( tnl_SOURCES ${tnl_arrays_SOURCES}
                  ${tnl_devices_SOURCES}
                  ${tnl_functions_SOURCES}
                  ${tnl_images_SOURCES}
+                 ${tnl_matrices_SOURCES}
+                 ${tnl_solvers_SOURCES}
+                 ${tnl_vectors_SOURCES}
 
 
                  ${tnl_core_SOURCES}
-                 ${tnl_legacy_SOURCES}
-                 ${tnl_matrices_SOURCES}
-                 ${tnl_operators_SOURCES}
-                 ${tnl_solvers_SOURCES}
+                 ${tnl_legacy_SOURCES}                 
+                 ${tnl_operators_SOURCES}                 
                  ${tnl_problems_SOURCES}
-                 ${tnl_vectors_SOURCES}
+                 
                  ${common_SOURCES}
                   )
 

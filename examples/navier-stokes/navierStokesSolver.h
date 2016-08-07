@@ -23,13 +23,13 @@
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Matrices/CSRMatrix.h>
-#include <TNL/solvers/preconditioners/tnlDummyPreconditioner.h>
-#include <TNL/solvers/tnlSolverMonitor.h>
+#include <TNL/Solvers/preconditioners/tnlDummyPreconditioner.h>
+#include <TNL/Solvers/tnlSolverMonitor.h>
 #include <TNL/operators/euler/fvm/tnlLaxFridrichs.h>
 #include <TNL/operators/gradient/tnlCentralFDMGradient.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/mesh/tnlLinearGridGeometry.h>
-#include <TNL/solvers/cfd/navier-stokes/tnlNavierStokesSolver.h>
+#include <TNL/Solvers/cfd/navier-stokes/tnlNavierStokesSolver.h>
 
 #include "navierStokesSolverMonitor.h"
 #include "navierStokesBoundaryConditions.h"

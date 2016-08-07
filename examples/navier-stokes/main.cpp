@@ -11,7 +11,7 @@
 #include <cstdlib>
 #include "navier-stokes-conf.h"
 #include "navierStokesSetter.h"
-#include <TNL/solvers/tnlSolver.h>
+#include <TNL/Solvers/tnlSolver.h>
 
 int main( int argc, char* argv[] )
 {

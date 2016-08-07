@@ -11,9 +11,9 @@
 #ifndef TNL_HEAT_EQUATION_EOC_H_
 #define TNL_HEAT_EQUATION_EOC_H_
 
-#include <TNL/solvers/tnlSolver.h>
-#include <TNL/solvers/tnlFastBuildConfigTag.h>
-#include <TNL/solvers/tnlBuildConfigTags.h>
+#include <TNL/Solvers/tnlSolver.h>
+#include <TNL/Solvers/tnlFastBuildConfigTag.h>
+#include <TNL/Solvers/tnlBuildConfigTags.h>
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/operators/diffusion/tnlExactLinearDiffusion.h>

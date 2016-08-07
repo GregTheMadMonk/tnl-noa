@@ -2,9 +2,9 @@
 
 #include <TNL/core/mfilename.h>
 #include <TNL/Matrices/MatrixSetter.h>
-#include <TNL/solvers/pde/tnlExplicitUpdater.h>
-#include <TNL/solvers/pde/tnlLinearSystemAssembler.h>
-#include <TNL/solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/Solvers/pde/tnlExplicitUpdater.h>
+#include <TNL/Solvers/pde/tnlLinearSystemAssembler.h>
+#include <TNL/Solvers/pde/tnlBackwardTimeDiscretisation.h>
 
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsEnergy.h"

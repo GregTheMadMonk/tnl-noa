@@ -1,7 +1,7 @@
 SET( headers tnlNavierStokesSolver.h 
              tnlNavierStokesSolver_impl.h )
 
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/solvers/cfd/navier-stokes )
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Solvers/cfd/navier-stokes )
 
 if( BUILD_CUDA)
       set( tnl_solvers_cfd_navier_stokes_CUDA__SOURCES

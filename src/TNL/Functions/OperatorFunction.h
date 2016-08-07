@@ -13,7 +13,7 @@
 #include <type_traits>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Functions/MeshFunction.h>
-#include <TNL/solvers/pde/tnlBoundaryConditionsSetter.h>
+#include <TNL/Solvers/pde/tnlBoundaryConditionsSetter.h>
 
 namespace TNL {
 namespace Functions {   

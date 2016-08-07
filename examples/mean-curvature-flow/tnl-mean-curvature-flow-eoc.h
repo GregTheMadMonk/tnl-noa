@@ -18,9 +18,9 @@
 #ifndef TNL_MEAN_CURVATURE_FLOW_EOC_H_
 #define TNL_MEAN_CURVATURE_FLOW_EOC_H_
 
-#include <TNL/solvers/tnlSolver.h>
-#include <TNL/solvers/tnlFastBuildConfigTag.h>
-#include <TNL/solvers/tnlBuildConfigTags.h>
+#include <TNL/Solvers/tnlSolver.h>
+#include <TNL/Solvers/tnlFastBuildConfigTag.h>
+#include <TNL/Solvers/tnlBuildConfigTags.h>
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>

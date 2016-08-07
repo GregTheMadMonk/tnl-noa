@@ -19,12 +19,12 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/legacy/matrices/tnlRgCSRMatrix.h>
-#include <TNL/solvers/tnlIterativeSolverMonitor.h>
-#include <TNL/solvers/linear/stationary/tnlSORSolver.h>
-#include <TNL/solvers/linear/krylov/tnlCGSolver.h>
-#include <TNL/solvers/linear/krylov/tnlBICGStabSolver.h>
-#include <TNL/solvers/linear/krylov/tnlGMRESSolver.h>
-#include <TNL/solvers/linear/krylov/tnlTFQMRSolver.h>
+#include <TNL/Solvers/tnlIterativeSolverMonitor.h>
+#include <TNL/Solvers/linear/stationary/tnlSORSolver.h>
+#include <TNL/Solvers/linear/krylov/tnlCGSolver.h>
+#include <TNL/Solvers/linear/krylov/tnlBICGStabSolver.h>
+#include <TNL/Solvers/linear/krylov/tnlGMRESSolver.h>
+#include <TNL/Solvers/linear/krylov/tnlTFQMRSolver.h>
 #ifdef HAVE_PETSC
    #include <petsc.h>
 #endif
