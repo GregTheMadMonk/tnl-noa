@@ -83,7 +83,7 @@ class advectionSetter
           String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
           if( parameters.checkParameter( "boundary-conditions-constant" ) )
           {
-             typedef Functions::tnlConstantFunction< Dimensions, Real > ConstantFunction;
+             typedef Functions::Analytic::ConstantFunction< Dimensions, Real > ConstantFunction;
              if( boundaryConditionsType == "dirichlet" )
              {
                 typedef tnlDirichletBoundaryConditions< MeshType, ConstantFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;

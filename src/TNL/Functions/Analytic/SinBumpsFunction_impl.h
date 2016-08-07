@@ -13,7 +13,8 @@
 #include <TNL/Functions/Analytic/SinBumpsFunction.h>
 
 namespace TNL {
-namespace Functions {   
+namespace Functions {
+namespace Analytic {   
 
 template< typename Vertex >
 void SinBumpsFunctionBase< Vertex >::setWaveLength( const Vertex& waveLength )
@@ -240,6 +241,7 @@ operator()( const VertexType& v,
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
+} // namespace Analytic
 } // namespace Functions
 } // namespace TNL
 

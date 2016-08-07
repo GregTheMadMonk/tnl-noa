@@ -15,7 +15,8 @@
 #include <TNL/Functions/Domain.h>
 
 namespace TNL {
-namespace Functions {   
+namespace Functions {
+namespace Analytic {   
 
 template< int dimensions,
           typename Real = double >
@@ -143,6 +144,7 @@ std::ostream& operator << ( std::ostream& str, const SinWaveFunction< Dimensions
    return str;
 }
 
+} // namespace Analytic
 } // namespace Functions
 } // namespace TNL
 

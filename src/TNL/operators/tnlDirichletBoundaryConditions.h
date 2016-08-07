@@ -17,7 +17,7 @@
 namespace TNL {
 
 template< typename Mesh,
-          typename Function = Functions::tnlConstantFunction< Mesh::getMeshDimensions(), typename Mesh::RealType >,
+          typename Function = Functions::Analytic::ConstantFunction< Mesh::getMeshDimensions(), typename Mesh::RealType >,
           int MeshEntitiesDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >

@@ -23,7 +23,7 @@
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>
-#include <TNL/Functions/Analytic/tnlConstantFunction.h>
+#include <TNL/Functions/Analytic/ConstantFunction.h>
 #include <TNL/problems/tnlMeanCurvatureFlowProblem.h>
 #include <TNL/operators/diffusion/tnlOneSidedNonlinearDiffusion.h>
 #include <TNL/operators/operator-Q/tnlOneSideDiffOperatorQ.h>
@@ -101,13 +101,13 @@ class meanCurvatureFlowSetter
    static bool setBoundaryConditions( const Config::ParameterContainer& parameters )
    {
       typedef tnlOneSidedNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
-      typedef tnlConstantFunction< Dimensions, Real > RightHandSide;
+      typedef ConstantFunction< Dimensions, Real > RightHandSide;
       typedef StaticVector< MeshType::meshDimensions, Real > Vertex;
 
       String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
       if( parameters.checkParameter( "boundary-conditions-constant" ) )
       {
-         typedef tnlConstantFunction< Dimensions, Real > ConstantFunction;
+         typedef ConstantFunction< Dimensions, Real > ConstantFunction;
          if( boundaryConditionsType == "dirichlet" )
          {
             typedef tnlDirichletBoundaryConditions< MeshType, ConstantFunction, Dimensions, Real, Index > BoundaryConditions;

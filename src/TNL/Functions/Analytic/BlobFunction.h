@@ -17,7 +17,8 @@
 
 namespace TNL {
 namespace Functions {
-
+namespace Analytic {
+   
 template< typename Real,
           int Dimensions >
 class BlobFunctionBase : public Domain< Dimensions, SpaceDomain >
@@ -142,6 +143,7 @@ std::ostream& operator << ( std::ostream& str, const BlobFunction< Dimensions, R
    return str;
 }
 
+} // namespace Analytic
 } // namespace Functions
 } // namepsace TNL
 

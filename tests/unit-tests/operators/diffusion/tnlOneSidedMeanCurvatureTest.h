@@ -109,7 +109,7 @@ template< typename Mesh,
           bool verbose >
 bool setTestFunction()
 {
-   return runTest< Mesh, Functions::ExpBumpFunction< Mesh::getMeshDimensions(), double >, write, verbose >();
+   return runTest< Mesh, Functions::Analytic::ExpBumpFunction< Mesh::getMeshDimensions(), double >, write, verbose >();
 }
 
 template< typename Device,

@@ -37,7 +37,7 @@ class tnlOneSidedMeanCurvature
       typedef tnlFDMGradientNorm< MeshType, tnlForwardFiniteDifference, RealType, IndexType > GradientNorm;
       typedef tnlFunctionInverseOperator< GradientNorm > NonlinearityOperator;
       typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimensions(), RealType > NonlinearityMeshFunction;
-      typedef Functions::tnlConstantFunction< MeshType::getMeshDimensions(), RealType > NonlinearityBoundaryConditionsFunction;
+      typedef Functions::Analytic::ConstantFunction< MeshType::getMeshDimensions(), RealType > NonlinearityBoundaryConditionsFunction;
       typedef tnlNeumannBoundaryConditions< MeshType, NonlinearityBoundaryConditionsFunction > NonlinearityBoundaryConditions;
       typedef Functions::OperatorFunction< NonlinearityOperator, NonlinearityMeshFunction, NonlinearityBoundaryConditions, EvaluateNonlinearityOnFly > Nonlinearity;
       typedef tnlOneSidedNonlinearDiffusion< Mesh, Nonlinearity, RealType, IndexType > NonlinearDiffusion;

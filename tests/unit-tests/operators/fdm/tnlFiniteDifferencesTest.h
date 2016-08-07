@@ -161,7 +161,7 @@ template< typename Mesh,
 bool setFunction()
 {
     const int Dimensions = Mesh::meshDimensions;
-    typedef Functions::ExpBumpFunction< Dimensions, RealType >  Function;
+    typedef Functions::Analytic::ExpBumpFunction< Dimensions, RealType >  Function;
     return setFiniteDifferenceOperator< Mesh, Function, RealType, IndexType, XDifference, YDifference, ZDifference, MeshSize, WriteFunctions, Verbose  >();
 }
 

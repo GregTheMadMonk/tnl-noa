@@ -13,7 +13,8 @@
 #include <TNL/Functions/Analytic/PseudoSquareFunction.h>
 
 namespace TNL {
-namespace Functions {   
+namespace Functions {
+namespace Analytic {   
 
 template< typename Real,
           int Dimensions >
@@ -159,5 +160,6 @@ operator()( const VertexType& v,
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
+} // namespace Analytic
 } // namespace Functions
 } // namepsace TNL

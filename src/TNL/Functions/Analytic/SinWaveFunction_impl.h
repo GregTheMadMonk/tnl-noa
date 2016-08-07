@@ -13,7 +13,8 @@
 #include <TNL/Functions/Analytic/SinWaveFunction.h>
 
 namespace TNL {
-namespace Functions {   
+namespace Functions {
+namespace Analytic {   
 
 template< int dimensions, typename Real >
 SinWaveFunctionBase< dimensions, Real >::SinWaveFunctionBase()
@@ -210,5 +211,6 @@ operator()( const VertexType& v,
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
+} // namespace Analytic
 } // namespace Functions
 } // namespace TNL

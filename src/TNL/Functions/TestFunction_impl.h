@@ -121,7 +121,8 @@ TestFunction< FunctionDimensions, Real, Device >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-  std::cout << "Test function setup ... " << std::endl;
+   using namespace TNL::Functions::Analytic;
+   std::cout << "Test function setup ... " << std::endl;
    const String& timeDependence =
             parameters.getParameter< String >(
                      prefix +
@@ -142,7 +143,7 @@ setup( const Config::ParameterContainer& parameters,
   std::cout << "Test function ... " << testFunction << std::endl;
    if( testFunction == "constant" )
    {
-      typedef tnlConstantFunction< Dimensions, Real > FunctionType;
+      typedef ConstantFunction< Dimensions, Real > FunctionType;
       functionType = constant;
       return setupFunction< FunctionType >( parameters );
    }
@@ -209,6 +210,7 @@ operator = ( const TestFunction& function )
     * TODO: if the function is on the device we cannot do the following
     */
    abort();
+   using namespace TNL::Functions::Analytic;
    this->functionType   = function.functionType;
    this->timeDependence = function.timeDependence;
    this->timeScale      = function.timeScale;
@@ -218,7 +220,7 @@ operator = ( const TestFunction& function )
    switch( this->functionType )
    {
       case constant:
-         this->copyFunction< tnlConstantFunction< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< ConstantFunction< FunctionDimensions, Real > >( function.function );
          break;
       case expBump:
          this->copyFunction< ExpBumpFunction< FunctionDimensions, Real > >( function.function );
@@ -263,6 +265,7 @@ TestFunction< FunctionDimensions, Real, Device >::
 getPartialDerivative( const VertexType& vertex,
           const Real& time ) const
 {
+   using namespace TNL::Functions::Analytic;
    Real scale( 1.0 );
    switch( this->timeDependence )
    {
@@ -283,7 +286,7 @@ getPartialDerivative( const VertexType& vertex,
    switch( functionType )
    {
       case constant:
-         return scale * ( ( tnlConstantFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( ConstantFunction< Dimensions, Real >* ) function )->
                    template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case expBump:
          return scale * ( ( ExpBumpFunction< Dimensions, Real >* ) function )->
@@ -326,6 +329,7 @@ TestFunction< FunctionDimensions, Real, Device >::
 getTimeDerivative( const VertexType& vertex,
                    const Real& time ) const
 {
+   using namespace TNL::Functions::Analytic;
    Real scale( 0.0 );
    switch( timeDependence )
    {
@@ -344,7 +348,7 @@ getTimeDerivative( const VertexType& vertex,
    switch( functionType )
    {
       case constant:
-         return scale * ( ( tnlConstantFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( ConstantFunction< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case expBump:
          return scale * ( ( ExpBumpFunction< Dimensions, Real >* ) function )->
@@ -408,10 +412,11 @@ void
 TestFunction< FunctionDimensions, Real, Device >::
 deleteFunctions()
 {
+   using namespace TNL::Functions::Analytic;
    switch( functionType )
    {
       case constant:
-         deleteFunction< tnlConstantFunction< Dimensions, Real> >();
+         deleteFunction< ConstantFunction< Dimensions, Real> >();
          break;
       case expBump:
          deleteFunction< ExpBumpFunction< Dimensions, Real> >();
@@ -489,13 +494,14 @@ std::ostream&
 TestFunction< FunctionDimensions, Real, Device >::
 print( std::ostream& str ) const
 {
+   using namespace TNL::Functions::Analytic;
    str << " timeDependence = " << this->timeDependence;
    str << " functionType = " << this->functionType;
    str << " function = " << this->function << "; ";
    switch( functionType )
    {
       case constant:
-         return printFunction< tnlConstantFunction< Dimensions, Real> >( str );
+         return printFunction< ConstantFunction< Dimensions, Real> >( str );
       case expBump:
          return printFunction< ExpBumpFunction< Dimensions, Real> >( str );
       case sinBumps:

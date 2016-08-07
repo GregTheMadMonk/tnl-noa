@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlConstantFunction.h  -  description
+                          ConstantFunction.h  -  description
                              -------------------
     begin                : Aug 2, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,18 +15,19 @@
 #include <TNL/Functions/Domain.h>
 
 namespace TNL {
-namespace Functions {   
+namespace Functions {
+namespace Analytic {   
 
 template< int dimensions,
           typename Real = double >
-class tnlConstantFunction : public Domain< dimensions, NonspaceDomain >
+class ConstantFunction : public Domain< dimensions, NonspaceDomain >
 {
    public:
  
       typedef Real RealType;
       typedef Vectors::StaticVector< dimensions, RealType > VertexType;
  
-      tnlConstantFunction();
+      ConstantFunction();
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" );
@@ -71,12 +72,13 @@ class tnlConstantFunction : public Domain< dimensions, NonspaceDomain >
 
 template< int dimensions,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const tnlConstantFunction< dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const ConstantFunction< dimensions, Real >& f )
 {
    str << "Constant function: constant = " << f.getConstant();
    return str;
 }
 
+} // namespace Analytic
 } // namespace Functions
 } // namespace TNL
 

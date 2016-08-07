@@ -22,13 +22,13 @@ class tnlPDEOperatorEocTestFunctionSetter
 
 template< int Dimensions,
           typename Real >
-class tnlPDEOperatorEocTestFunctionSetter< Functions::ExpBumpFunction< Dimensions, Real > >
+class tnlPDEOperatorEocTestFunctionSetter< Functions::Analytic::ExpBumpFunction< Dimensions, Real > >
 {
    static_assert( Dimensions >= 0 && Dimensions <= 3,
       "Wrong parameter Dimensions." );
    public:
  
-      typedef Functions::ExpBumpFunction< Dimensions, Real > FunctionType;
+      typedef Functions::Analytic::ExpBumpFunction< Dimensions, Real > FunctionType;
  
       static void setup( FunctionType& function )
       {

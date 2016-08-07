@@ -15,7 +15,8 @@
 #include <TNL/Functions/Domain.h>
 
 namespace TNL {
-namespace Functions {   
+namespace Functions {
+namespace Analytic {   
 
 template< typename Vertex >
 class SinBumpsFunctionBase : public Domain< Vertex::size, SpaceDomain >
@@ -158,6 +159,7 @@ std::ostream& operator << ( std::ostream& str, const SinBumpsFunction< Dimension
    return str;
 }
 
+} // namespace Analytic
 } // namespace Functions
 } // namespace TNL
 

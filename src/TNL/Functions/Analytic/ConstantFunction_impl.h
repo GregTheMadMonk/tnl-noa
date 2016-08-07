@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlConstantFunction_impl.h  -  description
+                          ConstantFunction_impl.h  -  description
                              -------------------
     begin                : Aug 2, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -11,12 +11,13 @@
 #pragma once
 
 namespace TNL {
-namespace Functions {   
+namespace Functions {
+namespace Analytic {   
 
 template< int Dimensions,
           typename Real >
-tnlConstantFunction< Dimensions, Real >::
-tnlConstantFunction()
+ConstantFunction< Dimensions, Real >::
+ConstantFunction()
 : constant( 0.0 )
 {
 }
@@ -24,7 +25,7 @@ tnlConstantFunction()
 template< int Dimensions,
           typename Real >
 void
-tnlConstantFunction< Dimensions, Real >::
+ConstantFunction< Dimensions, Real >::
 setConstant( const RealType& constant )
 {
    this->constant = constant;
@@ -33,7 +34,7 @@ setConstant( const RealType& constant )
 template< int Dimensions,
           typename Real >
 const Real&
-tnlConstantFunction< Dimensions, Real >::
+ConstantFunction< Dimensions, Real >::
 getConstant() const
 {
    return this->constant;
@@ -42,7 +43,7 @@ getConstant() const
 template< int FunctionDimensions,
           typename Real >
 void
-tnlConstantFunction< FunctionDimensions, Real >::
+ConstantFunction< FunctionDimensions, Real >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
@@ -52,7 +53,7 @@ configSetup( Config::ConfigDescription& config,
 template< int Dimensions,
           typename Real >
 bool
-tnlConstantFunction< Dimensions, Real >::
+ConstantFunction< Dimensions, Real >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -66,7 +67,7 @@ template< int Dimensions,
              int YDiffOrder,
              int ZDiffOrder >
 Real
-tnlConstantFunction< Dimensions, Real >::
+ConstantFunction< Dimensions, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -75,5 +76,6 @@ getPartialDerivative( const VertexType& v,
    return constant;
 }
 
+} // namespace Analytic
 } // namespace Functions
 } // namespace TNL

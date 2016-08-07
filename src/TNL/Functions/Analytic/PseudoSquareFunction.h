@@ -16,7 +16,8 @@
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {
-namespace Functions {   
+namespace Functions {
+namespace Analytic {   
 
 template< typename Real,
           int Dimensions >
@@ -142,6 +143,7 @@ std::ostream& operator << ( std::ostream& str, const PseudoSquareFunction< Dimen
    return str;
 }
 
+} // namespace Analytic
 } // namespace Functions
 } // namepsace TNL
 
