@@ -13,6 +13,7 @@
 #include <iomanip>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Real, typename Index>
 tnlIterativeSolverMonitor< Real, Index > :: tnlIterativeSolverMonitor()
@@ -93,4 +94,5 @@ double tnlIterativeSolverMonitor< Real, Index > :: getRealTime()
    return rtTimer.getTime();
 }
 
+} // namespace Solvers
 } // namespace TNL

@@ -319,7 +319,7 @@ class OperatorFunction< Operator, PreimageFunction, BoundaryConditions, false >
              ! operatorFunction.refresh( time )  )
              return false;
          this->imageFunction = operatorFunction;
-         tnlBoundaryConditionsSetter< ImageFunctionType, BoundaryConditionsType >::apply( this->boundaryConditions, time, this->imageFunction );
+         Solvers::tnlBoundaryConditionsSetter< ImageFunctionType, BoundaryConditionsType >::apply( this->boundaryConditions, time, this->imageFunction );
          return true;
       };
  

@@ -15,6 +15,7 @@
 #include <TNL/Solvers/tnlBuildConfigTags.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
           typename MeshConfig >
@@ -26,6 +27,7 @@ class tnlSolverInitiator : public Object
 
 };
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/tnlSolverInitiator_impl.h>

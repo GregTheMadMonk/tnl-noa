@@ -13,6 +13,7 @@
 #include <TNL/Solvers/tnlBuildConfigTags.h>
 
 namespace TNL {
+namespace Solvers {   
 
 class tnlFastBuildConfig
 {
@@ -55,4 +56,5 @@ template<> struct tnlConfigTagTimeDiscretisation< tnlFastBuildConfig, tnlImplici
  */
 //template<> struct tnlConfigTagExplicitSolver< tnlFastBuildConfig, tnlExplicitEulerSolverTag >{ enum { enabled = false }; };
 
+} // namespace Solvers
 } // namespace TNL

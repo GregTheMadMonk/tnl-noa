@@ -11,14 +11,15 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Solvers/tnlMeshTypeResolver.h>
 #include <TNL/Solvers/tnlBuildConfigTags.h>
-#include <TNL/Solvers/linear/stationary/tnlSORSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlCGSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlBICGStabSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlGMRESSolver.h>
+#include <TNL/Solvers/Linear/stationary/tnlSORSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlCGSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlBICGStabSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlGMRESSolver.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
@@ -158,5 +159,6 @@ class tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, Confi
       }
 };
 
+} // namespace Solvers
 } // namespace TNL
 

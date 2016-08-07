@@ -11,6 +11,7 @@
 #include <TNL/Solvers/tnlIterativeSolver.h>
 
 namespace TNL {
+namespace Solvers {   
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -27,4 +28,5 @@ template class tnlIterativeSolver< double, long int >;
 #endif
 
 #endif
+} // namespace Solvers
 } // namespace TNL

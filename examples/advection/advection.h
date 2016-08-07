@@ -114,7 +114,7 @@ class advectionSetter
 
 int main( int argc, char* argv[] )
 {
-   tnlSolver< advectionSetter, advectionConfig, BuildConfig > solver;
+   Solvers::tnlSolver< advectionSetter, advectionConfig, BuildConfig > solver;
    if( ! solver. run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;

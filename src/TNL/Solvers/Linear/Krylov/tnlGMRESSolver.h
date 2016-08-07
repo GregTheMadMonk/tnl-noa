@@ -14,12 +14,15 @@
 #include <TNL/Object.h>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Vectors/SharedVector.h>
-#include <TNL/Solvers/preconditioners/tnlDummyPreconditioner.h>
+#include <TNL/Solvers/Linear/preconditioners/tnlDummyPreconditioner.h>
 #include <TNL/Solvers/tnlIterativeSolver.h>
-#include <TNL/Solvers/linear/tnlLinearResidueGetter.h>
+#include <TNL/Solvers/Linear/tnlLinearResidueGetter.h>
 #include <TNL/tnlSharedPointer.h>
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {
+namespace Krylov {   
 
 template< typename Matrix,
           typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
@@ -99,16 +102,22 @@ class tnlGMRESSolver : public Object,
    const PreconditionerType* preconditioner;
 };
 
+} // namespace Krylov
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/linear/krylov/tnlGMRESSolver_impl.h>
+#include <TNL/Solvers/Linear/Krylov/tnlGMRESSolver_impl.h>
 
 #include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/Matrices/EllpackMatrix.h>
 #include <TNL/Matrices/MultidiagonalMatrix.h>
 
 namespace TNL {
-
+namespace Solvers {
+namespace Linear {
+namespace Krylov {   
+   
 extern template class tnlGMRESSolver< Matrices::CSRMatrix< float,  Devices::Host, int > >;
 extern template class tnlGMRESSolver< Matrices::CSRMatrix< double, Devices::Host, int > >;
 extern template class tnlGMRESSolver< Matrices::CSRMatrix< float,  Devices::Host, long int > >;
@@ -143,4 +152,7 @@ extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< float,  Devices::C
 extern template class tnlGMRESSolver< tnlMutliDiagonalMatrix< double, Devices::Cuda, long int > >;*/
 #endif
 
+} // namespace Krylov
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL

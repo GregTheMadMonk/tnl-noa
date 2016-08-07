@@ -16,6 +16,7 @@
 #include <TNL/Logger.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Problem,
           typename TimeStepper >
@@ -93,6 +94,7 @@ class tnlPDESolver : public Object
       tnlTimer *ioTimer, *computeTimer;
 };
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/pde/tnlPDESolver_impl.h>

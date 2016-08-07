@@ -16,14 +16,14 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Solvers/ode/tnlMersonSolver.h>
 #include <TNL/Solvers/ode/tnlEulerSolver.h>
-#include <TNL/Solvers/linear/stationary/tnlSORSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlCGSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlBICGStabSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlGMRESSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlTFQMRSolver.h>
-#include <TNL/Solvers/linear/tnlUmfpackWrapper.h>
-#include <TNL/Solvers/preconditioners/tnlDummyPreconditioner.h>
-#include <TNL/Solvers/preconditioners/tnlDiagonalPreconditioner.h>
+#include <TNL/Solvers/Linear/stationary/tnlSORSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlCGSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlBICGStabSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlGMRESSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlTFQMRSolver.h>
+#include <TNL/Solvers/Linear/tnlUmfpackWrapper.h>
+#include <TNL/Solvers/Linear/preconditioners/tnlDummyPreconditioner.h>
+#include <TNL/Solvers/Linear/preconditioners/tnlDiagonalPreconditioner.h>
 #include <TNL/Solvers/pde/tnlExplicitTimeStepper.h>
 #include <TNL/Solvers/pde/tnlSemiImplicitTimeStepper.h>
 #include <TNL/Solvers/pde/tnlPDESolver.h>
@@ -31,6 +31,7 @@
 #include <TNL/Solvers/ode/tnlODESolverMonitor.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Problem,
           typename ConfigTag,
@@ -298,9 +299,9 @@ class tnlSolverStarterPreconditionerSetter
          const String& preconditioner = parameters.getParameter< String>( "preconditioner" );
 
          if( preconditioner == "none" )
-            return tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, tnlDummyPreconditioner, ConfigTag >::run( problem, parameters );
+            return tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::tnlDummyPreconditioner, ConfigTag >::run( problem, parameters );
          if( preconditioner == "diagonal" )
-            return tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, tnlDiagonalPreconditioner, ConfigTag >::run( problem, parameters );
+            return tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::tnlDiagonalPreconditioner, ConfigTag >::run( problem, parameters );
 
          std::cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal." << std::endl;
          return false;
@@ -631,4 +632,5 @@ bool tnlSolverStarter< ConfigTag > :: writeEpilog( std::ostream& str, const Solv
    return true;
 }
 
+} // namespace Solvers
 } // namespace TNL

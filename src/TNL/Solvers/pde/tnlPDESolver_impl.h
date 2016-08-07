@@ -13,6 +13,7 @@
 #include "tnlPDESolver.h"
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Problem,
           typename TimeStepper >
@@ -362,4 +363,5 @@ writeEpilog( Logger& logger ) const
       this->problem->writeEpilog( logger ) );
 }
 
+} // namespace Solvers
 } // namespace TNL

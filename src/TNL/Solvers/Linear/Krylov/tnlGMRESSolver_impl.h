@@ -11,6 +11,9 @@
 #pragma once
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {
+namespace Krylov {
 
 template< typename Matrix,
            typename Preconditioner >
@@ -389,4 +392,7 @@ bool tnlGMRESSolver< Matrix, Preconditioner > :: setSize( IndexType _size, Index
    return true;
 };
 
+} // namespace Krylov
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL

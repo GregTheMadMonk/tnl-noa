@@ -15,6 +15,7 @@
 #include <ostream>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename MeshConfig >
 class tnlSolverStarter
@@ -41,6 +42,7 @@ class tnlSolverStarter
    tnlTimer ioTimer, computeTimer, totalTimer;
 };
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/tnlSolverStarter_impl.h>

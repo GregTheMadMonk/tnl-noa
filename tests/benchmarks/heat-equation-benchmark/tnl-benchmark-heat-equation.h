@@ -103,7 +103,7 @@ class HeatEquationBenchmarkSetter
 
 int main( int argc, char* argv[] )
 {
-   tnlSolver< HeatEquationBenchmarkSetter, HeatEquationBenchmarkConfig, BuildConfig > solver;
+   Solvers::tnlSolver< HeatEquationBenchmarkSetter, HeatEquationBenchmarkConfig, BuildConfig > solver;
    if( ! solver. run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;

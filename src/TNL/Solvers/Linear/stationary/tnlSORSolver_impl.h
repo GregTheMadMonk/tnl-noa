@@ -11,6 +11,8 @@
 #pragma once
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {   
 
 template< typename Matrix, typename Preconditioner >
 tnlSORSolver< Matrix, Preconditioner > :: tnlSORSolver()
@@ -114,6 +116,8 @@ tnlSORSolver< Matrix, Preconditioner > :: ~tnlSORSolver()
 {
 }
 
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Matrices/CSRMatrix.h>
@@ -121,7 +125,9 @@ tnlSORSolver< Matrix, Preconditioner > :: ~tnlSORSolver()
 #include <TNL/Matrices/MultidiagonalMatrix.h>
 
 namespace TNL {
-
+namespace Solvers {
+namespace Linear {   
+   
 extern template class tnlSORSolver< Matrices::CSRMatrix< float,  Devices::Host, int > >;
 extern template class tnlSORSolver< Matrices::CSRMatrix< double, Devices::Host, int > >;
 extern template class tnlSORSolver< Matrices::CSRMatrix< float,  Devices::Host, long int > >;
@@ -163,4 +169,6 @@ extern template class tnlSORSolver< tnlMutliDiagonalMatrix< double, Devices::Cud
 */
 #endif
 
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL

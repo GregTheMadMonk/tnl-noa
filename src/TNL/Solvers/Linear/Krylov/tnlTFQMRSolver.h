@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlSORSolver.h  -  description
+                          tnlTFQMRSolver.h  -  description
                              -------------------
-    begin                : 2007/07/30
+    begin                : Dec 8, 2012
     copyright            : (C) 2007 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -12,33 +12,39 @@
 
 #include <math.h>
 #include <TNL/Object.h>
-#include <TNL/Solvers/preconditioners/tnlDummyPreconditioner.h>
+#include <TNL/Vectors/Vector.h>
+#include <TNL/Vectors/SharedVector.h>
+#include <TNL/Solvers/Linear/preconditioners/tnlDummyPreconditioner.h>
 #include <TNL/Solvers/tnlIterativeSolver.h>
-#include <TNL/Solvers/linear/tnlLinearResidueGetter.h>
-#include <TNL/tnlSharedPointer.h>
+#include <TNL/Solvers/Linear/tnlLinearResidueGetter.h>
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {
+namespace Krylov {
 
 template< typename Matrix,
           typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
                                                             typename Matrix :: DeviceType,
                                                             typename Matrix :: IndexType> >
-class tnlSORSolver : public Object,
-                     public tnlIterativeSolver< typename Matrix :: RealType,
-                                                typename Matrix :: IndexType >
+
+class tnlTFQMRSolver : public Object,
+                       public tnlIterativeSolver< typename Matrix :: RealType,
+                                                  typename Matrix :: IndexType >
 {
    public:
 
-   typedef typename Matrix :: RealType RealType;
-   typedef typename Matrix :: IndexType IndexType;
-   typedef typename Matrix :: DeviceType DeviceType;
+   typedef typename Matrix::RealType RealType;
+   typedef typename Matrix::IndexType IndexType;
+   typedef typename Matrix::DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
    typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
-   // TODO: make this: typedef tnlSharedPointer< const MatrixType, DeviceType > ConstMatrixPointer; 
+   // TODO: make this: typedef tnlSharedPointer< const MatrixType, DeviceType > ConstMatrixPointer;
 
+   public:
 
-   tnlSORSolver();
+   tnlTFQMRSolver();
 
    String getType() const;
 
@@ -48,13 +54,9 @@ class tnlSORSolver : public Object,
    bool setup( const Config::ParameterContainer& parameters,
               const String& prefix = "" );
 
-   void setOmega( const RealType& omega );
-
-   const RealType& getOmega() const;
-
    void setMatrix( MatrixPointer& matrix );
 
-   void setPreconditioner( const PreconditionerType& preconditioner );
+   void setPreconditioner( const Preconditioner& preconditioner );
 
 #ifdef HAVE_NOT_CXX11
    template< typename VectorPointer,
@@ -62,23 +64,27 @@ class tnlSORSolver : public Object,
    bool solve( const VectorPointer& b, VectorPointer& x );
 #else
    template< typename VectorPointer,
-             typename ResidueGetter = tnlLinearResidueGetter< MatrixPointer, VectorPointer > >
+             typename ResidueGetter = tnlLinearResidueGetter< Matrix, VectorPointer >  >
    bool solve( const VectorPointer& b, VectorPointer& x );
-#endif   
+#endif
 
-   ~tnlSORSolver();
+   ~tnlTFQMRSolver();
 
    protected:
 
-   RealType omega;
+   bool setSize( IndexType size );
+
+   Vectors::Vector< RealType, DeviceType, IndexType >  d, r, w, u, v, r_ast, Au, M_tmp;
+
+   IndexType size;
 
    MatrixPointer matrix;
-
    const PreconditionerType* preconditioner;
-
 };
 
+} // namespace Krylov
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/linear/stationary/tnlSORSolver_impl.h>
-
+#include <TNL/Solvers/Linear/Krylov/tnlTFQMRSolver_impl.h>

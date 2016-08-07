@@ -111,7 +111,7 @@ class eulerSetter
 
 int main( int argc, char* argv[] )
 {
-   tnlSolver< eulerSetter, eulerConfig, BuildConfig > solver;
+   Solvers::tnlSolver< eulerSetter, eulerConfig, BuildConfig > solver;
    if( ! solver. run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;

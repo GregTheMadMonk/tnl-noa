@@ -13,6 +13,7 @@
 #include <TNL/Solvers/tnlIterativeSolverMonitor.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Real, typename Index>
 class tnlODESolverMonitor : public tnlIterativeSolverMonitor< Real, Index >
@@ -42,6 +43,7 @@ class tnlODESolverMonitor : public tnlIterativeSolverMonitor< Real, Index >
 
 };
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/ode/tnlODESolverMonitor_impl.h>

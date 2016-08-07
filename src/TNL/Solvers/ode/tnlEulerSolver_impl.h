@@ -11,6 +11,7 @@
 #pragma once
 
 namespace TNL {
+namespace Solvers {   
 
 #ifdef HAVE_CUDA
 template< typename RealType, typename Index >
@@ -241,4 +242,5 @@ __global__ void updateUEuler( const Index size,
 }
 #endif
 
+} // namespace Solvers
 } // namespace TNL

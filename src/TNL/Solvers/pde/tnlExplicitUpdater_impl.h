@@ -19,6 +19,7 @@
 
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Mesh,
           typename MeshFunction,
@@ -104,4 +105,5 @@ update( const RealType& time,
    }*/
 }
 
+} // namespace Solvers
 } // namespace TNL

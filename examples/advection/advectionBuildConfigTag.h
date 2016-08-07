@@ -7,6 +7,8 @@ namespace TNL {
 
 class advectionBuildConfigTag{};
 
+namespace Solvers {
+
 /****
  * Turn off support for float and long double.
  */
@@ -40,8 +42,9 @@ template<> struct tnlConfigTagTimeDiscretisation< advectionBuildConfigTag, tnlIm
 /****
  * Only the Runge-Kutta-Merson solver is enabled by default.
  */
-template<> struct tnlConfigTagExplicitSolver< advectionBuildConfigTag, tnlExplicitEulerSolverTag >{ enum { enabled = true }; };
+template<> struct tnlConfigTagExplicitSolver< advectionBuildConfigTag, Solvers::tnlExplicitEulerSolverTag >{ enum { enabled = true }; };
 
+} // namespace Solvers
 } // namespace TNL
 
 #endif /* advectionBUILDCONFIGTAG_H_ */

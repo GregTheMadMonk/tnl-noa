@@ -4,6 +4,8 @@
 #include "tnlDiagonalPreconditioner.h"
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {   
 
 #ifdef HAVE_CUDA
 template< typename Real, typename Index, typename Matrix >
@@ -109,4 +111,6 @@ solve( const Vector1& b, Vector2& x ) const
    return true;
 }
 
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL

@@ -212,7 +212,7 @@ getExplicitRHS( const RealType& time,
    //cout << "u = " << u << endl;
    this->bindDofs( meshPointer, uDofs );
    MeshFunctionPointer fuPointer( meshPointer, fuDofs );
-   tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer );
    explicitUpdater.template update< typename Mesh::Cell >(
       time,
@@ -254,12 +254,12 @@ assemblyLinearSystem( const RealType& time,
                       MeshDependentDataType& meshDependentData )
 {
    this->bindDofs( meshPointer, dofsPointer );
-   tnlLinearSystemAssembler< Mesh,
+   Solvers::tnlLinearSystemAssembler< Mesh,
                              MeshFunctionType,
                              DifferentialOperator,
                              BoundaryCondition,
                              RightHandSide,
-                             tnlBackwardTimeDiscretisation,
+                             Solvers::tnlBackwardTimeDiscretisation,
                              typename MatrixPointer::ObjectType,
                              DofVectorType > systemAssembler;
    systemAssembler.template assembly< typename Mesh::Cell >(

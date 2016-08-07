@@ -15,6 +15,7 @@
 #include <TNL/mesh/tnlGrid.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Real = double,
           typename Device = Devices::Host,
@@ -31,4 +32,5 @@ class tnlDummyProblem
       typedef DofVectorType MeshDependentDataType;
 };
 
+} // namespace Solvers
 } // namespace TNL

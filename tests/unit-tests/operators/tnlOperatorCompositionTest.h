@@ -41,7 +41,7 @@ class tnlOperatorCompositionTest
    typedef typename OperatorType::IndexType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef typename MeshType::VertexType VertexType;
-   typedef Functions::ExpBumpFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > TestFunctionType;
+   typedef Functions::Analytic::ExpBumpFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > TestFunctionType;
    typedef Functions::Analytic::ConstantFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > ConstantFunction;
    typedef tnlNeumannBoundaryConditions< MeshType, ConstantFunction > BoundaryConditions;
    typedef tnlOperatorComposition< OperatorType, OperatorType, BoundaryConditions > OperatorComposition;

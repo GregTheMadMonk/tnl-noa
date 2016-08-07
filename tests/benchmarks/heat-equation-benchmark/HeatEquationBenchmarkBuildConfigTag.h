@@ -6,6 +6,8 @@ namespace TNL {
 
 class HeatEquationBenchmarkBuildConfigTag{};
 
+namespace Solvers {
+
 /****
  * Turn off support for float and long double.
  */
@@ -41,5 +43,6 @@ template<> struct tnlConfigTagTimeDiscretisation< HeatEquationBenchmarkBuildConf
 template<> struct tnlConfigTagExplicitSolver< HeatEquationBenchmarkBuildConfigTag, tnlExplicitEulerSolverTag >{ enum { enabled = true }; };
 template<> struct tnlConfigTagExplicitSolver< HeatEquationBenchmarkBuildConfigTag, tnlExplicitMersonSolverTag >{ enum { enabled = false }; };
 
+} // namespace Solvers
 } // namespace TNL
 

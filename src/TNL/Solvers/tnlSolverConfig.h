@@ -13,6 +13,7 @@
 #include <TNL/Config/ConfigDescription.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename MeshConfig,
           typename ProblemConfig >
@@ -22,6 +23,7 @@ class tnlSolverConfig
       static bool configSetup( Config::ConfigDescription& configDescription );
 };
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/tnlSolverConfig_impl.h>

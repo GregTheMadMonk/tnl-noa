@@ -7,6 +7,8 @@ namespace TNL {
 
 class eulerBuildConfigTag{};
 
+namespace Solvers {
+
 /****
  * Turn off support for float and long double.
  */
@@ -43,6 +45,7 @@ template<> struct tnlConfigTagTimeDiscretisation< eulerBuildConfigTag, tnlImplic
  */
 template<> struct tnlConfigTagExplicitSolver< eulerBuildConfigTag, tnlExplicitEulerSolverTag >{ enum { enabled = false }; };
 
-} //namespace TNL
+} // namespace Solvers
+} // namespace TNL
 
 #endif /* eulerBUILDCONFIGTAG_H_ */

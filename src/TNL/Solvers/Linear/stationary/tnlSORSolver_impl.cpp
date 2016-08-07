@@ -8,12 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Solvers/linear/stationary/tnlSORSolver.h>
+#include <TNL/Solvers/Linear/stationary/tnlSORSolver.h>
 #include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/Matrices/EllpackMatrix.h>
 #include <TNL/Matrices/MultidiagonalMatrix.h>
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {
 
 template class tnlSORSolver< Matrices::CSRMatrix< float,  Devices::Host, int > >;
 template class tnlSORSolver< Matrices::CSRMatrix< double, Devices::Host, int > >;
@@ -48,6 +50,8 @@ template class tnlSORSolver< Matrices::MultidiagonalMatrix< float,  Devices::Cud
 template class tnlSORSolver< Matrices::MultidiagonalMatrix< double, Devices::Cuda, long int > >;
 #endif
 
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL
 
 

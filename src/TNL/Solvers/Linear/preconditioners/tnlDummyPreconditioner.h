@@ -13,6 +13,8 @@
 #include <TNL/Object.h>
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {   
 
 template< typename Real, typename Device, typename Index >
 class tnlDummyPreconditioner
@@ -56,4 +58,6 @@ class tnlSolverStarterSolverPreconditionerSetter< LinearSolver, tnlDummyPrecondi
       }
 };
 
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL

@@ -20,11 +20,11 @@
 #include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/legacy/matrices/tnlRgCSRMatrix.h>
 #include <TNL/Solvers/tnlIterativeSolverMonitor.h>
-#include <TNL/Solvers/linear/stationary/tnlSORSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlCGSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlBICGStabSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlGMRESSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlTFQMRSolver.h>
+#include <TNL/Solvers/Linear/stationary/tnlSORSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlCGSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlBICGStabSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlGMRESSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlTFQMRSolver.h>
 #ifdef HAVE_PETSC
    #include <petsc.h>
 #endif

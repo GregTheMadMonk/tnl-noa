@@ -11,6 +11,7 @@
 #pragma once
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Problem >
 tnlExplicitSolver< Problem >::
@@ -46,7 +47,6 @@ setup( const Config::ParameterContainer& parameters,
 {
    return tnlIterativeSolver< typename Problem::RealType, typename Problem::IndexType >::setup( parameters, prefix );
 }
-
 
 template< typename Problem >
 void
@@ -345,4 +345,5 @@ __device__ void computeBlockResidue( Real* du,
 }
 #endif
 
+} // namespace Solvers
 } // namespace TNL

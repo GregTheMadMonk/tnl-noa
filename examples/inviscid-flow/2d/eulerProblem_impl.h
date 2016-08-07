@@ -275,7 +275,7 @@ getExplicitRHS( const RealType& time,
    lF2DContinuity->setTau(tau);
    lF2DContinuity->setVelocityX( *velocityX );
    lF2DContinuity->setVelocityY( *velocityY );
-   tnlExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity; 
+   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity; 
    explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF2DContinuity,
@@ -289,7 +289,7 @@ getExplicitRHS( const RealType& time,
    lF2DMomentumX->setVelocityX( *velocityX );
    lF2DMomentumX->setVelocityY( *velocityY );
    lF2DMomentumX->setPressure( *pressure );
-   tnlExplicitUpdater< Mesh, MeshFunctionType, MomentumX, BoundaryCondition, RightHandSide > explicitUpdaterMomentumX; 
+   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, MomentumX, BoundaryCondition, RightHandSide > explicitUpdaterMomentumX; 
    explicitUpdaterMomentumX.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF2DMomentumX,
@@ -303,7 +303,7 @@ getExplicitRHS( const RealType& time,
    lF2DMomentumY->setVelocityX( *velocityX );
    lF2DMomentumY->setVelocityY( *velocityY );
    lF2DMomentumY->setPressure( *pressure );
-   tnlExplicitUpdater< Mesh, MeshFunctionType, MomentumY, BoundaryCondition, RightHandSide > explicitUpdaterMomentumY;
+   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, MomentumY, BoundaryCondition, RightHandSide > explicitUpdaterMomentumY;
    explicitUpdaterMomentumY.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF2DMomentumY,
@@ -317,7 +317,7 @@ getExplicitRHS( const RealType& time,
    lF2DEnergy->setVelocityX( *velocityX ); 
    lF2DEnergy->setVelocityY( *velocityY ); 
    lF2DEnergy->setPressure( *pressure );
-   tnlExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
+   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
    explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF2DEnergy,

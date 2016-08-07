@@ -13,6 +13,7 @@
 #include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
@@ -126,6 +127,7 @@ class tnlMeshTypeResolverDimensionsSupportChecker< Dimensions, false, MeshTypeRe
                                 const List< String >& parsedMeshType );
 };*/
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/tnlMeshTypeResolver_impl.h>

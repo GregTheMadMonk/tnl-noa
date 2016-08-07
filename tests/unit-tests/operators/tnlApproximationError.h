@@ -89,13 +89,13 @@ class tnlApproximationError
             return;
          }
          u = operatorFunction;
-         tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
+         Solvers::tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
          if( writeFunctions )
             u.write( "approximate-result-" + dimensionsString + meshSizeString, "gnuplot" ) ;
 
          //cerr << "Evaluate difference ... " << std::endl;
          u -= exactU;
-         tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
+         Solvers::tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
          if( writeFunctions )
             u.write( "difference-" + dimensionsString + meshSizeString, "gnuplot" ) ;
          l1Error = u.getLpNorm( 1.0 );

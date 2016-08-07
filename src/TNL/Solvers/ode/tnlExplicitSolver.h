@@ -22,6 +22,7 @@
 #include <TNL/tnlSharedPointer.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< class Problem >
 class tnlExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
@@ -119,6 +120,7 @@ protected:
    Vectors::Vector< RealType, DeviceType, IndexType > cudaBlockResidue;
 };
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/ode/tnlExplicitSolver_impl.h>

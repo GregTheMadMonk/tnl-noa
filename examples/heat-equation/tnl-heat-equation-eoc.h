@@ -24,7 +24,7 @@
 using namespace TNL;
 
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
-typedef tnlFastBuildConfig BuildConfig;
+typedef Solvers::tnlFastBuildConfig BuildConfig;
 
 template< typename MeshConfig >
 class heatEquationEocConfig
@@ -71,7 +71,7 @@ class heatEquationSetter
 
 int main( int argc, char* argv[] )
 {
-   tnlSolver< heatEquationSetter, heatEquationEocConfig, BuildConfig > solver;
+   Solvers::tnlSolver< heatEquationSetter, heatEquationEocConfig, BuildConfig > solver;
    if( ! solver. run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;

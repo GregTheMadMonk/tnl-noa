@@ -557,7 +557,7 @@ getExplicitRHS( const RealType& time,
          //   this->cudaMesh = tnlCuda::passToDevice( &mesh );
          MeshFunctionPointer uPointer( mesh, uDofs );
          MeshFunctionPointer fuPointer( mesh, fuDofs );
-         tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+         Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
          //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
          explicitUpdater.template update< typename Mesh::Cell >( 
             time,
@@ -586,12 +586,12 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& b,
                       MeshDependentDataType& meshDependentData )
 {
-   tnlLinearSystemAssembler< Mesh,
+   Solvers::tnlLinearSystemAssembler< Mesh,
                              MeshFunctionType,
                              DifferentialOperator,
                              BoundaryCondition,
                              RightHandSide,
-                             tnlBackwardTimeDiscretisation,
+                             Solvers::tnlBackwardTimeDiscretisation,
                              typename MatrixPointer::ObjectType,
                              typename DofVectorPointer::ObjectType > systemAssembler;
 

@@ -13,6 +13,7 @@
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {
+namespace Solvers {   
 
 class tnlNoTimeDiscretisation
 {
@@ -32,5 +33,6 @@ class tnlNoTimeDiscretisation
         }
 };
 
+} // namespace Solvers
 } // namespace TNL
 

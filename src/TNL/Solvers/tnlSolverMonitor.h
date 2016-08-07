@@ -11,6 +11,7 @@
 #pragma once
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Real, typename Index >
 class tnlSolverMonitor
@@ -23,5 +24,6 @@ class tnlSolverMonitor
  
 };
 
+} // namespace Solvers
 } // namespace TNL
 

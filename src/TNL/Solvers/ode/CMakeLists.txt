@@ -7,4 +7,4 @@ SET( headers tnlEulerSolver.h
              tnlODESolverMonitor.h                         
              tnlODESolverMonitor_impl.h )
                 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/solvers/ode )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Solvers/ode )

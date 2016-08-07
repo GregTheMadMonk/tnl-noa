@@ -14,11 +14,14 @@
 #include <TNL/Object.h>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Vectors/SharedVector.h>
-#include <TNL/Solvers/preconditioners/tnlDummyPreconditioner.h>
+#include <TNL/Solvers/Linear/preconditioners/tnlDummyPreconditioner.h>
 #include <TNL/Solvers/tnlIterativeSolver.h>
-#include <TNL/Solvers/linear/tnlLinearResidueGetter.h>
+#include <TNL/Solvers/Linear/tnlLinearResidueGetter.h>
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {
+namespace Krylov {   
 
 template< typename Matrix,
           typename Preconditioner = tnlDummyPreconditioner< typename Matrix :: RealType,
@@ -76,6 +79,9 @@ class tnlCGSolver : public Object,
    const PreconditionerType* preconditioner;
 };
 
+} // namespace Krylov
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/linear/krylov/tnlCGSolver_impl.h>
+#include <TNL/Solvers/Linear/Krylov/tnlCGSolver_impl.h>

@@ -13,15 +13,16 @@
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/Solvers/ode/tnlMersonSolver.h>
 #include <TNL/Solvers/ode/tnlEulerSolver.h>
-#include <TNL/Solvers/linear/stationary/tnlSORSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlCGSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlBICGStabSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlGMRESSolver.h>
-#include <TNL/Solvers/linear/krylov/tnlTFQMRSolver.h>
-#include <TNL/Solvers/linear/tnlUmfpackWrapper.h>
-#include <TNL/Solvers/preconditioners/tnlDummyPreconditioner.h>
+#include <TNL/Solvers/Linear/stationary/tnlSORSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlCGSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlBICGStabSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlGMRESSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlTFQMRSolver.h>
+#include <TNL/Solvers/Linear/tnlUmfpackWrapper.h>
+#include <TNL/Solvers/Linear/preconditioners/tnlDummyPreconditioner.h>
 
 namespace TNL {
+namespace Solvers {   
 
 class tnlDefaultBuildConfigTag{};
 
@@ -104,59 +105,60 @@ template< typename ConfigTag, typename ExplicitSolver > struct tnlConfigTagExpli
 class  tnlSemiImplicitSORSolverTag
 {
 public:
-    template< typename Matrix, typename Preconditioner = tnlDummyPreconditioner< typename Matrix::RealType,
+    template< typename Matrix, typename Preconditioner = Linear::tnlDummyPreconditioner< typename Matrix::RealType,
                                                                                  typename Matrix::DeviceType,
                                                                                  typename Matrix::IndexType > >
-    using Template = tnlSORSolver< Matrix, Preconditioner >;
+    using Template = Linear::tnlSORSolver< Matrix, Preconditioner >;
 };
 
 class  tnlSemiImplicitCGSolverTag
 {
 public:
-    template< typename Matrix, typename Preconditioner = tnlDummyPreconditioner< typename Matrix::RealType,
+    template< typename Matrix, typename Preconditioner = Linear::tnlDummyPreconditioner< typename Matrix::RealType,
                                                                                  typename Matrix::DeviceType,
                                                                                  typename Matrix::IndexType > >
-    using Template = tnlCGSolver< Matrix, Preconditioner >;
+    using Template = Linear::Krylov::tnlCGSolver< Matrix, Preconditioner >;
 };
 
 class  tnlSemiImplicitBICGStabSolverTag
 {
 public:
-    template< typename Matrix, typename Preconditioner = tnlDummyPreconditioner< typename Matrix::RealType,
+    template< typename Matrix, typename Preconditioner = Linear::tnlDummyPreconditioner< typename Matrix::RealType,
                                                                                  typename Matrix::DeviceType,
                                                                                  typename Matrix::IndexType > >
-    using Template = tnlBICGStabSolver< Matrix, Preconditioner >;
+    using Template = Linear::Krylov::tnlBICGStabSolver< Matrix, Preconditioner >;
 };
 
 class  tnlSemiImplicitGMRESSolverTag
 {
 public:
-    template< typename Matrix, typename Preconditioner = tnlDummyPreconditioner< typename Matrix::RealType,
+    template< typename Matrix, typename Preconditioner = Linear::tnlDummyPreconditioner< typename Matrix::RealType,
                                                                                  typename Matrix::DeviceType,
                                                                                  typename Matrix::IndexType > >
-    using Template = tnlGMRESSolver< Matrix, Preconditioner >;
+    using Template = Linear::Krylov::tnlGMRESSolver< Matrix, Preconditioner >;
 };
 
 class  tnlSemiImplicitTFQMRSolverTag
 {
 public:
-    template< typename Matrix, typename Preconditioner = tnlDummyPreconditioner< typename Matrix::RealType,
+    template< typename Matrix, typename Preconditioner = Linear::tnlDummyPreconditioner< typename Matrix::RealType,
                                                                                  typename Matrix::DeviceType,
                                                                                  typename Matrix::IndexType > >
-    using Template = tnlTFQMRSolver< Matrix, Preconditioner >;
+    using Template = Linear::Krylov::tnlTFQMRSolver< Matrix, Preconditioner >;
 };
 
 #ifdef HAVE_UMFPACK
 class  tnlSemiImplicitUmfpackSolverTag
 {
 public:
-    template< typename Matrix, typename Preconditioner = tnlDummyPreconditioner< typename Matrix::RealType,
+    template< typename Matrix, typename Preconditioner = Linear::tnlDummyPreconditioner< typename Matrix::RealType,
                                                                                  typename Matrix::DeviceType,
                                                                                  typename Matrix::IndexType > >
-    using Template = tnlUmfpackWrapper< Matrix, Preconditioner >;
+    using Template = Linear::tnlUmfpackWrapper< Matrix, Preconditioner >;
 };
 #endif
 
 template< typename ConfigTag, typename SemiImplicitSolver > struct tnlConfigTagSemiImplicitSolver{ enum { enabled = true }; };
 
+} // namespace Solvers
 } // namespace TNL

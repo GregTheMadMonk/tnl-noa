@@ -5,6 +5,8 @@
 #include <TNL/Vectors/Vector.h>
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {
 
 template< typename Real, typename Device, typename Index >
 class tnlDiagonalPreconditioner
@@ -30,6 +32,8 @@ class tnlDiagonalPreconditioner
    VectorType diagonal;
 };
 
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/preconditioners/tnlDiagonalPreconditioner_impl.h>
+#include <TNL/Solvers/Linear/preconditioners/tnlDiagonalPreconditioner_impl.h>

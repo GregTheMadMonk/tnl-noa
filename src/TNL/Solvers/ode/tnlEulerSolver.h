@@ -17,6 +17,7 @@
 #include <TNL/Timer.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Problem >
 class tnlEulerSolver : public tnlExplicitSolver< Problem >
@@ -60,6 +61,7 @@ class tnlEulerSolver : public tnlExplicitSolver< Problem >
    //tnlTimer timer, updateTimer;
 };
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/ode/tnlEulerSolver_impl.h>

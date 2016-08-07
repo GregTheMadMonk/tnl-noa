@@ -7,7 +7,7 @@ SET( headers tnlCGSolver.h
              tnlTFQMRSolver.h
              tnlTFQMRSolver_impl.h )
 
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Solvers/linear/krylov )
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Solvers/Linear/Krylov )
 set( common_SOURCES ${CURRENT_DIR}/tnlGMRESSolver_impl.cpp )
 set( tnl_solvers_linear_krylov_SOURCES
      ${common_SOURCES}
@@ -19,4 +19,4 @@ if( BUILD_CUDA)
         PARENT_SCOPE )
 endif()
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/solvers/linear/krylov )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Solvers/Linear/Krylov )

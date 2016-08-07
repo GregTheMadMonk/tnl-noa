@@ -2,7 +2,7 @@ SET( headers tnlSORSolver.h
              tnlSORSolver_impl.h
    )
    
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Solvers/linear/stationary )    
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Solvers/Linear/stationary )    
 set( common_SOURCES ${CURRENT_DIR}/tnlSORSolver_impl.cpp )
 
 set( tnl_solvers_linear_stationary_SOURCES
@@ -15,4 +15,4 @@ if( BUILD_CUDA)
         PARENT_SCOPE )
 endif()    
    
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/solvers/linear/stationary )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/Solvers/Linear/stationary )

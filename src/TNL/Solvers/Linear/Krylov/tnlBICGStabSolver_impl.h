@@ -11,6 +11,9 @@
 #pragma once
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {
+namespace Krylov {   
 
 template< typename RealType,
           typename Vector >
@@ -212,4 +215,7 @@ bool tnlBICGStabSolver< Matrix, Preconditioner > :: setSize( IndexType size )
 
 };
 
+} // namespace Krylov
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL

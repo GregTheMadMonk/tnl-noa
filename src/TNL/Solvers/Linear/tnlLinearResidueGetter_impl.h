@@ -11,6 +11,8 @@
 #pragma once
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {   
 
 template< typename MatrixPointer, typename VectorPointer >
 typename tnlLinearResidueGetter< MatrixPointer, VectorPointer >::RealType
@@ -35,4 +37,6 @@ getResidue( const MatrixPointer& matrix,
    return std::sqrt( res ) / bNorm;
 }
 
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL

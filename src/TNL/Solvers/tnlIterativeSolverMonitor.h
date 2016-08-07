@@ -15,6 +15,7 @@
 #include <TNL/TimerRT.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Real, typename Index>
 class tnlIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
@@ -63,6 +64,7 @@ class tnlIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
    TimerRT rtTimer;
 };
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/tnlIterativeSolverMonitor_impl.h>

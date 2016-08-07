@@ -279,7 +279,7 @@ getExplicitRHS( const RealType& time,
    else if (this->velocityType == "advection")
 */  { 
    this->bindDofs( mesh, _u );
-   tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    tnlSharedPointer< MeshFunctionType > u( mesh, _u ); 
    tnlSharedPointer< MeshFunctionType > fu( mesh, _fu );
    differentialOperatorPointer->setTau(tau); 

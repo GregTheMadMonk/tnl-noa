@@ -15,6 +15,7 @@
 #include <TNL/tnlSharedPointer.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Real,
           typename MeshFunction,
@@ -147,6 +148,7 @@ class tnlExplicitUpdater
       tnlTimer* gpuTransferTimer;
 };
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/pde/tnlExplicitUpdater_impl.h>

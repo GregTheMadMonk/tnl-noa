@@ -8,12 +8,15 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Solvers/linear/krylov/tnlGMRESSolver.h>
+#include <TNL/Solvers/Linear/Krylov/tnlGMRESSolver.h>
 #include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/Matrices/EllpackMatrix.h>
 #include <TNL/Matrices/MultidiagonalMatrix.h>
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {
+namespace Krylov {
 
 template class tnlGMRESSolver< Matrices::CSRMatrix< float,  Devices::Host, int > >;
 template class tnlGMRESSolver< Matrices::CSRMatrix< double, Devices::Host, int > >;
@@ -48,4 +51,7 @@ template class tnlGMRESSolver< Matrices::MultidiagonalMatrix< float,  Devices::C
 template class tnlGMRESSolver< Matrices::MultidiagonalMatrix< double, Devices::Cuda, long int > >;*/
 #endif
 
+} // namespace Krylov
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL

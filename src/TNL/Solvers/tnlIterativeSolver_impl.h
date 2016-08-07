@@ -14,6 +14,7 @@
 #include <float.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Real, typename Index >
 tnlIterativeSolver< Real, Index> :: tnlIterativeSolver()
@@ -226,4 +227,5 @@ extern template class tnlIterativeSolver< double, long int >;
 
 #endif
 
+} // namespace Solvers
 } // namespace TNL

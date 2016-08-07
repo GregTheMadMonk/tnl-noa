@@ -15,6 +15,7 @@
 #include <TNL/Functions/FunctionAdapter.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Real,
           typename DofVector,
@@ -77,6 +78,8 @@ class tnlBoundaryConditionsSetter
 
       };
 };
+
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/pde/tnlBoundaryConditionsSetter_impl.h>

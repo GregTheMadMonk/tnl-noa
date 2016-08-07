@@ -15,6 +15,7 @@
 #include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
+namespace Solvers {   
 
 /****
  * In this code we do not use constants and references as we would like to.
@@ -603,4 +604,5 @@ __global__ void updateUMerson( const Index size,
 
 #endif
 
+} // namespace Solvers
 } // namespace TNL

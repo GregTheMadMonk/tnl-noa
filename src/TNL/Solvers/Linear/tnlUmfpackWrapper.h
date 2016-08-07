@@ -11,10 +11,12 @@
 #include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/Solvers/preconditioners/tnlDummyPreconditioner.h>
 #include <TNL/Solvers/tnlIterativeSolver.h>
-#include <TNL/Solvers/linear/tnlLinearResidueGetter.h>
+#include <TNL/Solvers/Linear/tnlLinearResidueGetter.h>
 
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {   
 
 template< typename Matrix >
 struct is_csr_matrix
@@ -121,6 +123,8 @@ protected:
    const PreconditionerType* preconditioner;
 };
 
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL
 
 #include "tnlUmfpackWrapper_impl.h"

@@ -291,7 +291,7 @@ getExplicitRHS( const RealType& time,
    lF1DMomentum->setTau(tau);
    lF1DMomentum->setVelocity( *velocity);
    lF1DMomentum->setPressure( *pressure);
-   tnlExplicitUpdater< Mesh, MeshFunctionType, Momentum, BoundaryCondition, RightHandSide > explicitUpdaterMomentum;
+   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, Momentum, BoundaryCondition, RightHandSide > explicitUpdaterMomentum;
    explicitUpdaterMomentum.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF1DMomentum,
@@ -305,7 +305,7 @@ getExplicitRHS( const RealType& time,
    lF1DEnergy->setTau(tau);
    lF1DEnergy->setPressure( *pressure);
    lF1DEnergy->setVelocity( *velocity);
-   tnlExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
+   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
    explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF1DEnergy,

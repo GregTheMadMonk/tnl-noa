@@ -14,6 +14,7 @@
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {
+namespace Solvers {   
 
 class tnlBackwardTimeDiscretisation
 {
@@ -34,5 +35,6 @@ class tnlBackwardTimeDiscretisation
         }
 };
 
+} // namespace Solvers
 } // namespace TNL
 

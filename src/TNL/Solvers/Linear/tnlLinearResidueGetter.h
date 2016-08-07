@@ -11,6 +11,8 @@
 #pragma once
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {   
 
 template< typename MatrixPointer, typename VectorPointer >
 class tnlLinearResidueGetter
@@ -28,6 +30,8 @@ class tnlLinearResidueGetter
                                RealType bNorm = 0 );
 };
 
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/linear/tnlLinearResidueGetter_impl.h>
+#include <TNL/Solvers/Linear/tnlLinearResidueGetter_impl.h>

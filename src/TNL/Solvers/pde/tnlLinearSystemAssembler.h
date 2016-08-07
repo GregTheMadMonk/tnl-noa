@@ -13,6 +13,7 @@
 #include <TNL/Functions/FunctionAdapter.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Real,
           typename MeshFunction,
@@ -175,6 +176,7 @@ class tnlLinearSystemAssembler
    };
 };
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/pde/tnlLinearSystemAssembler_impl.h>

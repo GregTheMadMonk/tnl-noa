@@ -13,6 +13,7 @@
 #include "tnlExplicitTimeStepper.h"
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
@@ -184,4 +185,5 @@ writeEpilog( Logger& logger )
    return true;
 }
 
+} // namespace Solvers
 } // namespace TNL

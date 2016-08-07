@@ -13,6 +13,7 @@
 #include <TNL/Solvers/tnlBuildConfigTags.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           template< typename ConfTag > class ProblemConfig,
@@ -25,6 +26,7 @@ class tnlSolver
    protected:
 };
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/tnlSolver_impl.h>

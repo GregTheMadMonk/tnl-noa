@@ -7,6 +7,8 @@
 #include "tnlUmfpackWrapper.h"
 
 namespace TNL {
+namespace Solvers {
+namespace Linear {   
 
 template< typename Preconditioner >
 tnlUmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >::
@@ -126,6 +128,8 @@ finished:
     return status == UMFPACK_OK;
 };
 
+} // namespace Linear
+} // namespace Solvers
 } // namespace TNL
 
 #endif

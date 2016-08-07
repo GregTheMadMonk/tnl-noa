@@ -15,6 +15,7 @@
 #include <TNL/Solvers/ode/tnlExplicitSolver.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< class Problem >
 class tnlMersonSolver : public tnlExplicitSolver< Problem >
@@ -70,6 +71,7 @@ class tnlMersonSolver : public tnlExplicitSolver< Problem >
    RealType adaptivity;
 };
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/ode/tnlMersonSolver_impl.h>

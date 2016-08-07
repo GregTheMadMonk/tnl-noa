@@ -15,6 +15,7 @@
 #include <TNL/Solvers/tnlIterativeSolverMonitor.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Real, typename Index >
 class tnlIterativeSolver
@@ -88,6 +89,7 @@ class tnlIterativeSolver
    Index refreshRate;
 };
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/tnlIterativeSolver_impl.h>

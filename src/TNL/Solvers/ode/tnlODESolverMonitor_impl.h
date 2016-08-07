@@ -11,6 +11,7 @@
 #pragma once
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename RealType, typename IndexType >
 tnlODESolverMonitor< RealType, IndexType> :: tnlODESolverMonitor()
@@ -66,4 +67,5 @@ const RealType& tnlODESolverMonitor< RealType, IndexType> :: getTime() const
    return this->time;
 }
 
+} // namespace Solvers
 } // namespace TNL

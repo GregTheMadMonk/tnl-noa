@@ -17,6 +17,7 @@
 #include <TNL/Solvers/pde/tnlPDESolver.h>
 
 namespace TNL {
+namespace Solvers {
 
 template< typename ConfigTag,
           typename ProblemConfig >
@@ -141,15 +142,15 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDes
       config.addDelimiter( " === Semi-implicit solvers parameters === " );
       typedef Matrices::CSRMatrix< double, Devices::Host, int > MatrixType;
       if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitCGSolverTag >::enabled )
-         tnlCGSolver< MatrixType >::configSetup( config );
+         Linear::Krylov::tnlCGSolver< MatrixType >::configSetup( config );
       if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitBICGStabSolverTag >::enabled )
-         tnlBICGStabSolver< MatrixType >::configSetup( config );
+         Linear::Krylov::tnlBICGStabSolver< MatrixType >::configSetup( config );
       if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitGMRESSolverTag >::enabled )
-         tnlGMRESSolver< MatrixType >::configSetup( config );
+         Linear::Krylov::tnlGMRESSolver< MatrixType >::configSetup( config );
       if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitTFQMRSolverTag >::enabled )
-         tnlTFQMRSolver< MatrixType >::configSetup( config );
+         Linear::Krylov::tnlTFQMRSolver< MatrixType >::configSetup( config );
       if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitSORSolverTag >::enabled )
-         tnlSORSolver< MatrixType >::configSetup( config );
+         Linear::tnlSORSolver< MatrixType >::configSetup( config );
    }
 
    config.addDelimiter( " === Logs and messages ===" );
@@ -160,5 +161,6 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDes
 
 }
 
+} // namespace Solvers
 } // namespace TNL
 

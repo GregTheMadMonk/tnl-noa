@@ -16,6 +16,7 @@
 #include <TNL/mesh/grids/tnlTraverser_Grid3D.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Mesh,
           typename MeshFunction,
@@ -47,7 +48,6 @@ assembly( const RealType& time,
    const IndexType maxRowLength = matrixPointer.template getData< Devices::Host >().getMaxRowLength();
    Assert( maxRowLength > 0, );
 
-   //if( std::is_same< DeviceType, Devices::Host >::value )
    {
       TraverserUserData userData( time,
                                   tau,
@@ -67,46 +67,7 @@ assembly( const RealType& time,
                                                     ( meshPointer,
                                                       userData );
    }
-   /*if( std::is_same< DeviceType, tnlCuda >::value )
-   {
-      RealType* kernelTime = Devices::Cuda::passToDevice( time );
-      RealType* kernelTau = Devices::Cuda::passToDevice( tau );
-      DifferentialOperator* kernelDifferentialOperator = Devices::Cuda::passToDevice( differentialOperator );
-      BoundaryConditions* kernelBoundaryConditions = Devices::Cuda::passToDevice( boundaryConditions );
-      RightHandSide* kernelRightHandSide = Devices::Cuda::passToDevice( rightHandSide );
-      MeshFunction* kernelU = Devices::Cuda::passToDevice( u );
-      DofVector* kernelB = Devices::Cuda::passToDevice( b );
-      MatrixType* kernelMatrix = Devices::Cuda::passToDevice( matrix );
-      TraverserUserData userData( *kernelTime,
-                                  *kernelTau,
-                                  *kernelDifferentialOperator,
-                                  *kernelBoundaryConditions,
-                                  *kernelRightHandSide,
-                                  *kernelU,
-                                  *kernelMatrix,
-                                  *kernelB );
-      checkCudaDevice;
-      tnlTraverser< MeshType, EntityType > meshTraverser;
-      meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                      TraverserBoundaryEntitiesProcessor >
-                                                    ( meshPointer,
-                                                      userData );
-      meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                      TraverserInteriorEntitiesProcessor >
-                                                    ( meshPointer,
-                                                      userData );
-
-      checkCudaDevice;
-      Devices::Cuda::freeFromDevice( kernelTime );
-      Devices::Cuda::freeFromDevice( kernelTau );
-      Devices::Cuda::freeFromDevice( kernelDifferentialOperator );
-      Devices::Cuda::freeFromDevice( kernelBoundaryConditions );
-      Devices::Cuda::freeFromDevice( kernelRightHandSide );
-      Devices::Cuda::freeFromDevice( kernelU );
-      Devices::Cuda::freeFromDevice( kernelB );
-      Devices::Cuda::freeFromDevice( kernelMatrix );
-      checkCudaDevice;
-   }*/
 }
 
+} // namespace Solvers
 } // namespace TNL

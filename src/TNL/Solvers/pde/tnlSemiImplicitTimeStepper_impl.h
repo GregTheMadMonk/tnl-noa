@@ -14,6 +14,7 @@
 #include "tnlSemiImplicitTimeStepper.h"
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Problem,
           typename LinearSystemSolver >
@@ -144,7 +145,7 @@ solve( const RealType& time,
    RealType t = time;
    this->linearSystemSolver->setMatrix( this->matrix );
    PreconditionerType preconditioner;
-   tnlSolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerType >
+   Linear::tnlSolverStarterSolverPreconditionerSetter< LinearSystemSolverType, PreconditionerType >
        ::run( *(this->linearSystemSolver), preconditioner );
 
    while( t < stopTime )
@@ -184,7 +185,7 @@ solve( const RealType& time,
       this->preconditionerUpdateTimer.stop();
 
       this->linearSystemSolverTimer.start();
-      if( ! this->linearSystemSolver->template solve< DofVectorPointer, tnlLinearResidueGetter< MatrixPointer, DofVectorPointer > >( this->rightHandSidePointer, dofVector ) )
+      if( ! this->linearSystemSolver->template solve< DofVectorPointer, Linear::tnlLinearResidueGetter< MatrixPointer, DofVectorPointer > >( this->rightHandSidePointer, dofVector ) )
       {
          std::cerr << std::endl << "The linear system solver did not converge." << std::endl;
          return false;
@@ -232,4 +233,5 @@ writeEpilog( Logger& logger )
    return true;
 }
 
+} // namespace Solvers
 } // namespace TNL

@@ -14,6 +14,7 @@
 #include <TNL/mesh/tnlTraverser.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename MeshFunction,
           typename BoundaryConditions >
@@ -52,5 +53,6 @@ apply( const BoundaryConditions& boundaryConditions,
    }
 }
 
+} // namespace Solvers
 } // namespace TNL
 

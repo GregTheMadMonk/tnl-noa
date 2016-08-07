@@ -33,7 +33,7 @@ class tnlSolverTesterProblem
    typedef Mesh MeshType;
    typedef Vectors::Vector< RealType, DeviceType, IndexType> DofVectorType;
    typedef Matrices::CSRMatrix< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
-   typedef tnlDummyPreconditioner< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
+   typedef Solvers::Linear::tnlDummyPreconditioner< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
 
    static String getTypeStatic() { return String( "simpleProblemSolver< " ) + Mesh :: getTypeStatic() + " >"; };
 
@@ -48,7 +48,7 @@ class tnlSolverTesterProblem
 
    bool makeSnapshot( const RealType& time, const IndexType& step ) { return true; };
 
-   tnlSolverMonitor< RealType, IndexType >* getSolverMonitor() { return 0; };
+   Solvers::tnlSolverMonitor< RealType, IndexType >* getSolverMonitor() { return 0; };
 
    DofVectorType& getDofVector() { return this->dofVector;};
 

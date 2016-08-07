@@ -14,4 +14,4 @@ SET( headers tnlBackwardTimeDiscretisation.h
              tnlSemiImplicitTimeStepper_impl.h )
 
              
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/solvers/pde )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Solvers/pde )

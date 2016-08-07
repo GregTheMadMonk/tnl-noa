@@ -14,6 +14,7 @@
 #include <TNL/Logger.h>
 
 namespace TNL {
+namespace Solvers {   
 
 template< typename Problem,
           typename LinearSystemSolver >
@@ -85,6 +86,7 @@ class tnlSemiImplicitTimeStepper
    long long int allIterations;
 };
 
+} // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/pde/tnlSemiImplicitTimeStepper_impl.h>
