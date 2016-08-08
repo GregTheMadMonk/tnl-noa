@@ -1,35 +1,27 @@
 /***************************************************************************
-                          tnlHeatEquationEocProblem_impl.h  -  description
+                          HeatEquationEocProblem_impl.h  -  description
                              -------------------
     begin                : Nov 22, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber et al.
+    copyright            : (C) 2014 by oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
-/***
- * Authors:
- * Oberhuber Tomas, tomas.oberhuber@fjfi.cvut.cz
- * Szekely Ondrej, ondra.szekely@gmail.com
- */
-
-
 #pragma once
 
-#include "tnlHeatEquationProblem.h"
-
 namespace TNL {
+namespace Problems {
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 String
-tnlHeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+MeanCurvatureFlowEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return String( "heatEquationEocSolver< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "HeatEquationEocProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
@@ -37,13 +29,16 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-tnlHeatEquationEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator  >::
+MeanCurvatureFlowEocProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator  >::
 setup( const Config::ParameterContainer& parameters )
 {
-   if( ! this->boundaryConditionPointer->setup( parameters ) ||
-       ! this->rightHandSidePointer->setup( parameters ) )
+   if( ! this->boundaryCondition.setup( parameters ) ||
+       ! this->rightHandSide.setup( parameters ) ||
+       ! this->differentialOperator.nonlinearDiffusionOperator.operatorQ.setEps(parameters.getParameter< double >("eps")) )
       return false;
+ 
    return true;
 }
 
+} // namespace Problems
 } // namespace TNL

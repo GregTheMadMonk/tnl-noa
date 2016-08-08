@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlHeatEquationEocProblem.h  -  description
+                          HeatEquationEocProblem.h  -  description
                              -------------------
     begin                : Nov 22, 2014
     copyright            : (C) 2014 by oberhuber
@@ -10,10 +10,11 @@
 
 #pragma once
 
-#include <TNL/problems/tnlMeanCurvatureFlowProblem.h>
+#include <TNL/Problems/MeanCurvatureFlowProblem.h>
 #include <TNL/operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 
 namespace TNL {
+namespace Problems {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -22,7 +23,7 @@ template< typename Mesh,
                                                           tnlOneSideDiffNonlinearOperator< Mesh, tnlOneSideDiffOperatorQ<Mesh, typename BoundaryCondition::RealType,
                                                           typename BoundaryCondition::IndexType >, typename BoundaryCondition::RealType, typename BoundaryCondition::IndexType >,
                                                           typename BoundaryCondition::RealType, typename BoundaryCondition::IndexType > >
-class tnlMeanCurvatureFlowEocProblem : public tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >
+class MeanCurvatureFlowEocProblem : public MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >
 {
    public:
 
@@ -31,6 +32,7 @@ class tnlMeanCurvatureFlowEocProblem : public tnlMeanCurvatureFlowProblem< Mesh,
       bool setup( const Config::ParameterContainer& parameters );
 };
 
+} // namespace Problems
 } // namespace TNL
 
-#include <TNL/problems/tnlMeanCurvatureFlowEocProblem_impl.h>
+#include <TNL/Problems/MeanCurvatureFlowEocProblem_impl.h>

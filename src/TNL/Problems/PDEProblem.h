@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlPDEProblem.h  -  description
+                          PDEProblem.h  -  description
                              -------------------
     begin                : Jan 10, 2015
     copyright            : (C) 2015 by oberhuber
@@ -10,20 +10,21 @@
 
 #pragma once
 
-#include <TNL/problems/tnlProblem.h>
+#include <TNL/Problems/Problem.h>
 #include <TNL/Matrices/CSRMatrix.h>
 
 namespace TNL {
+namespace Problems {
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
           typename Device = typename Mesh::DeviceType,
           typename Index = typename Mesh::IndexType >
-class tnlPDEProblem : public tnlProblem< Real, Device, Index >
+class PDEProblem : public Problem< Real, Device, Index >
 {
    public:
 
-      typedef tnlProblem< Real, Device, Index > BaseType;
+      typedef Problem< Real, Device, Index > BaseType;
       using typename BaseType::RealType;
       using typename BaseType::DeviceType;
       using typename BaseType::IndexType;
@@ -79,6 +80,7 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
 
 };
 
-} //namespace TNL
+} // namespace Problems
+} // namespace TNL
 
-#include <TNL/problems/tnlPDEProblem_impl.h>
+#include <TNL/Problems/PDEProblem_impl.h>

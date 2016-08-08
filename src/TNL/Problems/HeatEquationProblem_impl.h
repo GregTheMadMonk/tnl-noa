@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlHeatEquationProblem_impl.h  -  description
+                          HeatEquationProblem_impl.h  -  description
                              -------------------
     begin                : Mar 10, 2013
     copyright            : (C) 2013 by Tomas Oberhuber et al.
@@ -25,19 +25,20 @@
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
-#include "tnlHeatEquationProblem.h"
+#include "HeatEquationProblem.h"
 
 namespace TNL {
+namespace Problems {
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 String
-tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
-   return String( "tnlHeatEquationProblem< " ) + Mesh :: getTypeStatic() + " >";
+   return String( "HeatEquationProblem< " ) + Mesh :: getTypeStatic() + " >";
 }
 
 template< typename Mesh,
@@ -45,7 +46,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 String
-tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
    return String( "Heat equation" );
@@ -56,7 +57,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 void
-tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
 }
@@ -66,7 +67,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 writeEpilog( Logger& logger )
 {
    logger.writeParameter< const char* >( "GPU transfer time:", "" );
@@ -79,7 +80,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setup( const Config::ParameterContainer& parameters )
 {
    if( ! this->boundaryConditionPointer->setup( parameters, "boundary-conditions-" ) ||
@@ -92,8 +93,8 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-typename tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
-tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+typename HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getDofs( const MeshPointer& meshPointer ) const
 {
    /****
@@ -107,7 +108,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 void
-tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 bindDofs( const MeshPointer& meshPointer,
           const DofVectorPointer& dofVector )
 {
@@ -120,7 +121,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshPointer& meshPointer,
                      DofVectorPointer& dofs,
@@ -142,7 +143,7 @@ template< typename Mesh,
           typename DifferentialOperator >
    template< typename MatrixPointer >          
 bool
-tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setupLinearSystem( const MeshPointer& meshPointer,
                    MatrixPointer& matrixPointer )
 {
@@ -169,7 +170,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshPointer& meshPointer,
@@ -192,7 +193,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 void
-tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshPointer& meshPointer,
@@ -244,7 +245,7 @@ template< typename Mesh,
           typename DifferentialOperator >
     template< typename MatrixPointer >          
 void
-tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshPointer& meshPointer,
@@ -298,4 +299,5 @@ assemblyLinearSystem( const RealType& time,
    abort();*/
 }
 
+} // namespace Problems
 } // namespace TNL

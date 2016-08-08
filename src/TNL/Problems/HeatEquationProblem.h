@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlHeatEquationProblem.h  -  description
+                          HeatEquationProblem.h  -  description
                              -------------------
     begin                : Feb 23, 2013
     copyright            : (C) 2013 by Tomas Oberhuber et al.
@@ -16,20 +16,21 @@
 
 #pragma once
 
-#include <TNL/problems/tnlPDEProblem.h>
+#include <TNL/Problems/PDEProblem.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/Matrices/EllpackMatrix.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Timer.h>
 
 namespace TNL {
+namespace Problems {
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator = tnlLinearDiffusion< Mesh,
                                                               typename BoundaryCondition::RealType > >
-class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
+class HeatEquationProblem : public PDEProblem< Mesh,
                                                      typename DifferentialOperator::RealType,
                                                      typename Mesh::DeviceType,
                                                      typename DifferentialOperator::IndexType  >
@@ -41,7 +42,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef tnlSharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-      typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef Matrices::CSRMatrix< RealType, DeviceType, IndexType > MatrixType;
       typedef tnlSharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef tnlSharedPointer< BoundaryCondition > BoundaryConditionPointer;
@@ -115,6 +116,7 @@ class tnlHeatEquationProblem : public tnlPDEProblem< Mesh,
          tnlTimer gpuTransferTimer;
 };
 
+} // namespace Problems
 } // namespace TNL
 
-#include <TNL/problems/tnlHeatEquationProblem_impl.h>
+#include <TNL/Problems/HeatEquationProblem_impl.h>

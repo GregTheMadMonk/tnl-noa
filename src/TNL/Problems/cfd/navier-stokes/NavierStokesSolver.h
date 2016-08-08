@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlNavierStokesSolverSolver.h  -  description
+                          NavierStokesSolverSolver.h  -  description
                              -------------------
     begin                : Oct 22, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -18,7 +18,7 @@ namespace TNL {
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-class tnlNavierStokesSolver
+class NavierStokesSolver
 {
    public:
 
@@ -32,7 +32,7 @@ class tnlNavierStokesSolver
    typedef Vector< RealType, DeviceType, IndexType > VectorType;
    typedef SharedVector< RealType, DeviceType, IndexType > DofVectorType;
 
-   tnlNavierStokesSolver();
+   NavierStokesSolver();
 
    static String getTypeStatic();
 
@@ -148,4 +148,4 @@ class tnlNavierStokesSolver
 
 } // namespace TNL
 
-#include <TNL/Solvers/cfd/navier-stokes/tnlNavierStokesSolver_impl.h>
+#include <TNL/Solvers/cfd/navier-stokes/NavierStokesSolver_impl.h>

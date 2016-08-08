@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlProblem.h  -  description
+                          Problem.h  -  description
                              -------------------
     begin                : Jan 10, 2015
     copyright            : (C) 2015 by oberhuber
@@ -13,11 +13,12 @@
 #include <TNL/Matrices/SlicedEllpackMatrix.h>
 
 namespace TNL {
+namespace Problems {
 
 template< typename Real,
           typename Device,
           typename Index >
-class tnlProblem
+class Problem
 {
    public:
 
@@ -26,4 +27,5 @@ class tnlProblem
       typedef Index IndexType;
 };
 
-} //namespace TNL
+} // namespace Problems
+} // namespace TNL

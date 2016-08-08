@@ -1,5 +1,5 @@
-SET( headers tnlNavierStokesSolver.h 
-             tnlNavierStokesSolver_impl.h )
+SET( headers NavierStokesSolver.h 
+             NavierStokesSolver_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Solvers/cfd/navier-stokes )
 

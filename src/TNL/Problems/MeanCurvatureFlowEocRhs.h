@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlHeatEquationEocRhs.h  -  description
+                          HeatEquationEocRhs.h  -  description
                              -------------------
     begin                : Sep 8, 2014
     copyright            : (C) 2014 by oberhuber
@@ -13,11 +13,12 @@
 #include <TNL/Functions/Domain.h>
 
 namespace TNL {
+namespace Problems {
 
 template< typename ExactOperator,
           typename TestFunction,
           int Dimensions >
-class tnlMeanCurvatureFlowEocRhs : public Domain< Dimensions, SpaceDomain >
+class MeanCurvatureFlowEocRhs : public Domain< Dimensions, SpaceDomain >
 {
    public:
 
@@ -51,4 +52,5 @@ class tnlMeanCurvatureFlowEocRhs : public Domain< Dimensions, SpaceDomain >
       TestFunction testFunction;
 };
 
+} // namespace Problems
 } // namespace TNL

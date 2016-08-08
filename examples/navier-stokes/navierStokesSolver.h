@@ -29,7 +29,7 @@
 #include <TNL/operators/gradient/tnlCentralFDMGradient.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/mesh/tnlLinearGridGeometry.h>
-#include <TNL/Solvers/cfd/navier-stokes/tnlNavierStokesSolver.h>
+#include <TNL/Solvers/cfd/navier-stokes/NavierStokesSolver.h>
 
 #include "navierStokesSolverMonitor.h"
 #include "navierStokesBoundaryConditions.h"
@@ -114,7 +114,7 @@ class navierStokesSolver
 
    EulerScheme eulerScheme;
 
-   tnlNavierStokesSolver< EulerScheme,
+   NavierStokesSolver< EulerScheme,
                           tnlLinearDiffusion< MeshType >,
                           navierStokesBoundaryConditions< MeshType > > nsSolver;
 

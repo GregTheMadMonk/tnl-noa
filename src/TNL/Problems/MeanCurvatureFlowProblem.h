@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlHeatEquationProblem.h  -  description
+                          HeatEquationProblem.h  -  description
                              -------------------
     begin                : Feb 23, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -11,12 +11,13 @@
 #pragma once
 
 #include <TNL/operators/diffusion/tnlOneSidedMeanCurvature.h>
-#include <TNL/problems/tnlPDEProblem.h>
+#include <TNL/Problems/PDEProblem.h>
 #include <TNL/operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/Functions/MeshFunction.h>
 
 namespace TNL {
+namespace Problems {
 
 template< typename Mesh,
           typename BoundaryCondition,
@@ -26,7 +27,7 @@ template< typename Mesh,
                                       typename Mesh::RealType,
                                       typename Mesh::IndexType,
                                       false > >
-class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
+class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
                                                      typename DifferentialOperator::RealType,
                                                      typename Mesh::DeviceType,
                                                      typename DifferentialOperator::IndexType >
@@ -37,7 +38,7 @@ class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef CSRMatrix< RealType, DeviceType, IndexType> MatrixType;
 
       using typename BaseType::MeshType;
@@ -101,7 +102,7 @@ class tnlMeanCurvatureFlowProblem : public tnlPDEProblem< Mesh,
       RightHandSide rightHandSide;
 };
 
-
+} // namespace Problems
 } // namespace TNL
 
-#include "tnlMeanCurvatureFlowProblem_impl.h"
+#include "MeanCurvatureFlowProblem_impl.h"

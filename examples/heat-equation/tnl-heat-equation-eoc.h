@@ -17,11 +17,12 @@
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/operators/diffusion/tnlExactLinearDiffusion.h>
-#include <TNL/problems/tnlHeatEquationEocRhs.h>
-#include <TNL/problems/tnlHeatEquationEocProblem.h>
+#include <TNL/Problems/HeatEquationEocRhs.h>
+#include <TNL/Problems/HeatEquationEocProblem.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 
 using namespace TNL;
+using namespace TNL::Problems;
 
 //typedef tnlDefaultBuildMeshConfig BuildConfig;
 typedef Solvers::tnlFastBuildConfig BuildConfig;
@@ -60,10 +61,10 @@ class heatEquationSetter
       typedef tnlLinearDiffusion< MeshType, Real, Index > ApproximateOperator;
       typedef tnlExactLinearDiffusion< Dimensions > ExactOperator;
       typedef Functions::TestFunction< MeshType::meshDimensions, Real, Device > TestFunction;
-      typedef tnlHeatEquationEocRhs< ExactOperator, TestFunction > RightHandSide;
+      typedef HeatEquationEocRhs< ExactOperator, TestFunction > RightHandSide;
       typedef Vectors::StaticVector < MeshType::meshDimensions, Real > Vertex;
       typedef tnlDirichletBoundaryConditions< MeshType, TestFunction, Dimensions, Real, Index > BoundaryConditions;
-      typedef tnlHeatEquationEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
+      typedef HeatEquationEocProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );
    };

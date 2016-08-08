@@ -1,17 +1,18 @@
 #ifndef HeatEquationBenchmarkPROBLEM_H_
 #define HeatEquationBenchmarkPROBLEM_H_
 
-#include <TNL/problems/tnlPDEProblem.h>
+#include <TNL/Problems/PDEProblem.h>
 #include <TNL/Functions/MeshFunction.h>
 
 using namespace TNL;
+using namespace TNL::Problems;
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
            typename DifferentialOperator >
 class HeatEquationBenchmarkProblem:
-   public tnlPDEProblem< Mesh,
+   public PDEProblem< Mesh,
                          typename DifferentialOperator::RealType,
                          typename Mesh::DeviceType,
                          typename DifferentialOperator::IndexType >
@@ -23,7 +24,7 @@ class HeatEquationBenchmarkProblem:
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef tnlSharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-      typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
       typedef tnlSharedPointer< DifferentialOperator > DifferentialOperatorPointer;
       typedef tnlSharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;

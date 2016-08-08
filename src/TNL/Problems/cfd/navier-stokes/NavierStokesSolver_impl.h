@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlNavierStokesSolver_impl.h  -  description
+                          NavierStokesSolver_impl.h  -  description
                              -------------------
     begin                : Oct 22, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include <TNL/Solvers/cfd/navier-stokes/tnlNavierStokesSolver.h>
+#include <TNL/Solvers/cfd/navier-stokes/NavierStokesSolver.h>
 
 namespace TNL {
 
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::tnlNavierStokesSolver()
+NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::NavierStokesSolver()
 : advection( 0 ),
   u1Viscosity( 0 ),
   u2Viscosity( 0 ),
@@ -32,9 +32,9 @@ tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::t
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-String tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getTypeStatic()
+String NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getTypeStatic()
 {
-   return String( "tnlNavierStokesSolver< " ) +
+   return String( "NavierStokesSolver< " ) +
           AdvectionScheme::getTypeStatic() + ", " +
           DiffusionScheme::getTypeStatic() + " >";
 }
@@ -42,7 +42,7 @@ String tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditio
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setAdvectionScheme( AdvectionSchemeType& advection )
+void NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setAdvectionScheme( AdvectionSchemeType& advection )
 {
    this->advection = &advection;
 }
@@ -50,7 +50,7 @@ void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setDiffusionScheme( DiffusionSchemeType& u1Viscosity,
+void NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setDiffusionScheme( DiffusionSchemeType& u1Viscosity,
                                                                                                         DiffusionSchemeType& u2Viscosity,
                                                                                                         DiffusionSchemeType& energyViscosity )
 {
@@ -62,7 +62,7 @@ void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setBoundaryConditions( BoundaryConditionsType& boundaryConditions )
+void NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setBoundaryConditions( BoundaryConditionsType& boundaryConditions )
 {
    this->boundaryConditions = &boundaryConditions;
 }
@@ -70,7 +70,7 @@ void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setMesh( MeshType& mesh )
+void NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setMesh( MeshType& mesh )
 {
    this->mesh = &mesh;
    this->rho.setSize( this->mesh->getDofs() );
@@ -85,7 +85,7 @@ void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setMu( const RealType& mu )
+void NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setMu( const RealType& mu )
 {
    this->mu = mu;
 }
@@ -93,8 +93,8 @@ void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getMu() const
+const typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getMu() const
 {
    return this->mu;
 }
@@ -102,7 +102,7 @@ const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, Boundary
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setR( const RealType& R )
+void NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setR( const RealType& R )
 {
    this->R = R;
 }
@@ -110,8 +110,8 @@ void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getR() const
+const typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getR() const
 {
    return this->R;
 }
@@ -119,7 +119,7 @@ const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, Boundary
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setT( const RealType& T )
+void NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setT( const RealType& T )
 {
    this->T = T;
 }
@@ -127,8 +127,8 @@ void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getT() const
+const typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getT() const
 {
    return this->T;
 }
@@ -136,7 +136,7 @@ const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, Boundary
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setHeatCapacityRatio( const RealType& gamma )
+void NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setHeatCapacityRatio( const RealType& gamma )
 {
    this->gamma = gamma;
 }
@@ -144,8 +144,8 @@ void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getHeatCapacityRatio() const
+const typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getHeatCapacityRatio() const
 {
    return this->gamma;
 }
@@ -153,7 +153,7 @@ const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, Boundary
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setGravity( const RealType& gravity )
+void NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setGravity( const RealType& gravity )
 {
    this->gravity = gravity;
 }
@@ -161,8 +161,8 @@ void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getGravity() const
+const typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::RealType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getGravity() const
 {
    return this->gravity;
 }
@@ -170,8 +170,8 @@ const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, Boundary
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getRho()
+typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getRho()
 {
    return this->rho;
 }
@@ -179,8 +179,8 @@ typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryCondit
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getRho() const
+const typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getRho() const
 {
    return this->rho;
 }
@@ -188,8 +188,8 @@ const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, Boundary
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU1()
+typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU1()
 {
    return this->u1;
 }
@@ -197,8 +197,8 @@ typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryCondit
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU1() const
+const typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU1() const
 {
    return this->u1;
 }
@@ -206,8 +206,8 @@ const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, Boundary
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU2()
+typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU2()
 {
    return this->u2;
 }
@@ -215,8 +215,8 @@ typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryCondit
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU2() const
+const typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU2() const
 {
    return this->u2;
 }
@@ -224,8 +224,8 @@ const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, Boundary
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU()
+typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU()
 {
    return this->u;
 }
@@ -233,8 +233,8 @@ typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryCondit
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU() const
+const typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getU() const
 {
    return this->u;
 }
@@ -242,8 +242,8 @@ const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, Boundary
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getPressure()
+typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getPressure()
 {
    return this->p;
 }
@@ -251,8 +251,8 @@ typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryCondit
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getPressure() const
+const typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getPressure() const
 {
    return this->p;
 }
@@ -260,8 +260,8 @@ const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, Boundary
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getEnergy()
+typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getEnergy()
 {
    return this->energy;
 }
@@ -269,8 +269,8 @@ typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryCondit
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getEnergy() const
+const typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::VectorType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getEnergy() const
 {
    return this->energy;
 }
@@ -278,8 +278,8 @@ const typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, Boundary
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::IndexType
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getDofs() const
+typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::IndexType
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getDofs() const
 {
    return 4*this->mesh->getDofs();
 }
@@ -287,7 +287,7 @@ typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryCondit
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::bindDofVector( RealType* data )
+void NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::bindDofVector( RealType* data )
 {
    this->dofVector.bind( data, this->getDofs() );
 }
@@ -295,8 +295,8 @@ void tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-typename tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::DofVectorType&
-   tnlNavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getDofVector()
+typename NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::DofVectorType&
+   NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getDofVector()
 {
    return this->dofVector;
 }
@@ -305,7 +305,7 @@ template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
    template< typename Vector >
-void tnlNavierStokesSolver< AdvectionScheme,
+void NavierStokesSolver< AdvectionScheme,
                       DiffusionScheme,
                       BoundaryConditions > :: updatePhysicalQuantities( const Vector& dofs_rho,
                                                                         const Vector& dofs_rho_u1,
@@ -338,7 +338,7 @@ template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
    template< typename SolverVectorType >
-void tnlNavierStokesSolver< AdvectionScheme,
+void NavierStokesSolver< AdvectionScheme,
                       DiffusionScheme,
                       BoundaryConditions >::getExplicitRhs( const RealType& time,
                                                             const RealType& tau,
@@ -511,7 +511,7 @@ void tnlNavierStokesSolver< AdvectionScheme,
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-bool tnlNavierStokesSolver< AdvectionScheme,
+bool NavierStokesSolver< AdvectionScheme,
                       DiffusionScheme,
                       BoundaryConditions >::writePhysicalVariables( const RealType& t,
                                                                     const IndexType step )
@@ -548,7 +548,7 @@ bool tnlNavierStokesSolver< AdvectionScheme,
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-bool tnlNavierStokesSolver< AdvectionScheme,
+bool NavierStokesSolver< AdvectionScheme,
                       DiffusionScheme,
                       BoundaryConditions >::writeConservativeVariables( const RealType& t,
                                                                         const IndexType step )
@@ -583,10 +583,10 @@ bool tnlNavierStokesSolver< AdvectionScheme,
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-typename tnlNavierStokesSolver< AdvectionScheme,
+typename NavierStokesSolver< AdvectionScheme,
                                 DiffusionScheme,
                                 BoundaryConditions >::RealType
-   tnlNavierStokesSolver< AdvectionScheme,
+   NavierStokesSolver< AdvectionScheme,
                           DiffusionScheme,
                           BoundaryConditions >::computeEnergy( const RealType& rho,
                                                                const RealType& pressure,
@@ -605,7 +605,7 @@ template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
    template< typename DofVector >
-bool tnlNavierStokesSolver< AdvectionScheme,
+bool NavierStokesSolver< AdvectionScheme,
                       DiffusionScheme,
                       BoundaryConditions >::writeExplicitRhs( const RealType& t,
                                                               const IndexType step,

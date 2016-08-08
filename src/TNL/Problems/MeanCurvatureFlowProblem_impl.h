@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlHeatEquationProblem_impl.h  -  description
+                          HeatEquationProblem_impl.h  -  description
                              -------------------
     begin                : Mar 10, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -19,16 +19,17 @@
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
-#include "tnlMeanCurvatureFlowProblem.h"
+#include "MeanCurvatureFlowProblem.h"
 
 namespace TNL {
+namespace Problems {
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 String
-tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {
    return String( "tnlMeanCurvativeFlowProblem< " ) + Mesh :: getTypeStatic() + " >";
@@ -39,7 +40,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 String
-tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
    return String( "Mean Curvative Flow" );
@@ -50,7 +51,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 void
-tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 writeProlog( Logger& logger, const Config::ParameterContainer& parameters ) const
 {
 }
@@ -60,7 +61,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setup( const Config::ParameterContainer& parameters )
 {
    if( ! this->boundaryCondition.setup( parameters, "boundary-conditions-" ) ||
@@ -74,8 +75,8 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-typename tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
-tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+typename MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getDofs( const MeshType& mesh ) const
 {
    /****
@@ -89,7 +90,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 void
-tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 bindDofs( const MeshType& mesh,
           DofVectorType& dofVector )
 {
@@ -104,7 +105,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setInitialCondition( const Config::ParameterContainer& parameters,
                      const MeshType& mesh,
                      DofVectorType& dofs,
@@ -126,7 +127,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 template< typename Matrix >
 bool
-tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 setupLinearSystem( const MeshType& mesh,
                    Matrix& matrix )
 {
@@ -153,7 +154,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 makeSnapshot( const RealType& time,
               const IndexType& step,
               const MeshType& mesh,
@@ -176,7 +177,7 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator >
 void
-tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getExplicitRHS( const RealType& time,
                 const RealType& tau,
                 const MeshType& mesh,
@@ -229,7 +230,7 @@ template< typename Mesh,
           typename DifferentialOperator >
 template< typename Matrix >
 void
-tnlMeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
                       const MeshType& mesh,
@@ -264,4 +265,5 @@ assemblyLinearSystem( const RealType& time,
    //abort();*/
 }
 
+} // namespace Problems
 } // namespace TNL

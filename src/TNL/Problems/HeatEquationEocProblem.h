@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlHeatEquationEocProblem.h  -  description
+                          HeatEquationEocProblem.h  -  description
                              -------------------
     begin                : Nov 22, 2014
     copyright            : (C) 2014 by Tomas Oberhuber et al.
@@ -17,16 +17,17 @@
 
 #pragma once
 
-#include <TNL/problems/tnlHeatEquationProblem.h>
+#include <TNL/Problems/HeatEquationProblem.h>
 
 namespace TNL {
+namespace Problems {
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator = tnlLinearDiffusion< Mesh,
                                                               typename BoundaryCondition::RealType > >
-class tnlHeatEquationEocProblem : public tnlHeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >
+class HeatEquationEocProblem : public HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >
 {
    public:
 
@@ -35,6 +36,7 @@ class tnlHeatEquationEocProblem : public tnlHeatEquationProblem< Mesh, BoundaryC
       bool setup( const Config::ParameterContainer& parameters );
 };
 
-} //namespace TNL
+} // namespace Problems
+} // namespace TNL
 
-#include <TNL/problems/tnlHeatEquationEocProblem_impl.h>
+#include <TNL/Problems/HeatEquationEocProblem_impl.h>
