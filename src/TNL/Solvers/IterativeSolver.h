@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlIterativeSolver.h  -  description
+                          IterativeSolver.h  -  description
                              -------------------
     begin                : Oct 19, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -12,17 +12,17 @@
 
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Solvers/tnlIterativeSolverMonitor.h>
+#include <TNL/Solvers/IterativeSolverMonitor.h>
 
 namespace TNL {
 namespace Solvers {   
 
 template< typename Real, typename Index >
-class tnlIterativeSolver
+class IterativeSolver
 {
    public:
 
-   tnlIterativeSolver();
+   IterativeSolver();
 
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" );
@@ -54,7 +54,7 @@ class tnlIterativeSolver
 
    void setRefreshRate( const Index& refreshRate );
 
-   void setSolverMonitor( tnlIterativeSolverMonitor< Real, Index >& solverMonitor );
+   void setSolverMonitor( IterativeSolverMonitor< Real, Index >& solverMonitor );
 
    void resetIterations();
 
@@ -84,7 +84,7 @@ class tnlIterativeSolver
 
    Real currentResidue;
 
-   tnlIterativeSolverMonitor< Real, Index >* solverMonitor;
+   IterativeSolverMonitor< Real, Index >* solverMonitor;
 
    Index refreshRate;
 };
@@ -92,4 +92,4 @@ class tnlIterativeSolver
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/tnlIterativeSolver_impl.h>
+#include <TNL/Solvers/IterativeSolver_impl.h>

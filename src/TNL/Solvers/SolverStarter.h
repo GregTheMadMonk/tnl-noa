@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSolverStarter.h  -  description
+                          SolverStarter.h  -  description
                              -------------------
     begin                : Mar 9, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -18,11 +18,11 @@ namespace TNL {
 namespace Solvers {   
 
 template< typename MeshConfig >
-class tnlSolverStarter
+class SolverStarter
 {
    public:
 
-   tnlSolverStarter();
+   SolverStarter();
 
    template< typename Problem >
    static bool run( const Config::ParameterContainer& parameters );
@@ -45,4 +45,4 @@ class tnlSolverStarter
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/tnlSolverStarter_impl.h>
+#include <TNL/Solvers/SolverStarter_impl.h>

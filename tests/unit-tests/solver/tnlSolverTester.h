@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSolverTester.h  -  description
+                          SolverTester.h  -  description
                              -------------------
     begin                : Mar 17, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,22 +8,22 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSOLVERTESTER_H_
-#define TNLSOLVERTESTER_H_
+#ifndef SolverTESTER_H_
+#define SolverTESTER_H_
 
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <TNL/Solvers/tnlSolver.h>
-#include <TNL/Solvers/tnlSolverMonitor.h>
+#include <TNL/Solvers/Solver.h>
+#include <TNL/Solvers/SolverMonitor.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/tnlConfig.h>
 
 using namespace TNL;
 
 template< typename Mesh >
-class tnlSolverTesterProblem
+class SolverTesterProblem
 {
    public:
 
@@ -48,7 +48,7 @@ class tnlSolverTesterProblem
 
    bool makeSnapshot( const RealType& time, const IndexType& step ) { return true; };
 
-   Solvers::tnlSolverMonitor< RealType, IndexType >* getSolverMonitor() { return 0; };
+   Solvers::SolverMonitor< RealType, IndexType >* getSolverMonitor() { return 0; };
 
    DofVectorType& getDofVector() { return this->dofVector;};
 
@@ -63,7 +63,7 @@ class tnlSolverTesterProblem
 };
 
 template< typename SolverStarter >
-class tnlSolverTesterSetter
+class SolverTesterSetter
 {
    public:
    template< typename RealType,
@@ -81,37 +81,37 @@ class tnlSolverTesterSetter
       if( dimensions == 1 )
       {
          typedef tnlGrid< 1, RealType, DeviceType, IndexType > MeshType;
-         return solverStarter. run< tnlSolverTesterProblem< MeshType > >( parameters );
+         return solverStarter. run< SolverTesterProblem< MeshType > >( parameters );
       }
       if( dimensions == 2 )
       {
          typedef tnlGrid< 2, RealType, DeviceType, IndexType > MeshType;
-         return solverStarter. run< tnlSolverTesterProblem< MeshType > >( parameters );
+         return solverStarter. run< SolverTesterProblem< MeshType > >( parameters );
       }
       if( dimensions == 3 )
       {
          typedef tnlGrid< 3, RealType, DeviceType, IndexType > MeshType;
-         return solverStarter. run< tnlSolverTesterProblem< MeshType > >( parameters );
+         return solverStarter. run< SolverTesterProblem< MeshType > >( parameters );
       };
    }
 
 };
 
-class tnlSolverTester : public CppUnit :: TestCase
+class SolverTester : public CppUnit :: TestCase
 {
    public:
-   tnlSolverTester(){};
+   SolverTester(){};
 
    virtual
-   ~tnlSolverTester(){};
+   ~SolverTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlSolverTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "SolverTester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSolverTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SolverTester >(
                                "run",
-                               & tnlSolverTester :: run )
+                               & SolverTester :: run )
                              );
 
       return suiteOfTests;
@@ -120,18 +120,18 @@ class tnlSolverTester : public CppUnit :: TestCase
    void run()
    {
       int argc( 7 );
-      /*const char* argv[]{ "tnlSolverTest",
+      /*const char* argv[]{ "SolverTest",
                           "--verbose","0",
                           "--dimensions", "2",
                           "--time-discretisation", "explicit",
                           "--discrete-solver", "merson",
                           "--snapshot-period", "0.01",
                           "--final-time", "1.0" };
-      const char configFile[] = TNL_TESTS_DIRECTORY "/data/tnlSolverTest.cfg.desc";
-      tnlSolver< tnlSolverTesterSetter > solver;
+      const char configFile[] = TNL_TESTS_DIRECTORY "/data/SolverTest.cfg.desc";
+      Solver< SolverTesterSetter > solver;
       CPPUNIT_ASSERT( solver. run( configFile, argc, const_cast< char** >( argv ) ) );*/
    };
 };
 
 
-#endif /* TNLSOLVERTESTER_H_ */
+#endif /* SolverTESTER_H_ */

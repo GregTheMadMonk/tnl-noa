@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include <TNL/Solvers/tnlIterativeSolverMonitor.h>
+#include <TNL/Solvers/IterativeSolverMonitor.h>
 
 namespace TNL {
 namespace Solvers {
 namespace ODE {   
 
 template< typename Real, typename Index>
-class ODESolverMonitor : public tnlIterativeSolverMonitor< Real, Index >
+class ODESolverMonitor : public IterativeSolverMonitor< Real, Index >
 {
    public:
 

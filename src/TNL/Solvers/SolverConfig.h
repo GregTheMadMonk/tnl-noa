@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSolverConfig.h  -  description
+                          SolverConfig.h  -  description
                              -------------------
     begin                : Jul 8, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -17,7 +17,7 @@ namespace Solvers {
 
 template< typename MeshConfig,
           typename ProblemConfig >
-class tnlSolverConfig
+class SolverConfig
 {
    public:
       static bool configSetup( Config::ConfigDescription& configDescription );
@@ -26,4 +26,4 @@ class tnlSolverConfig
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/tnlSolverConfig_impl.h>
+#include <TNL/Solvers/SolverConfig_impl.h>

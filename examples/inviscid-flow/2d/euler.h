@@ -1,5 +1,5 @@
 #include <TNL/tnlConfig.h>
-#include <TNL/Solvers/tnlSolver.h>
+#include <TNL/Solvers/Solver.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>
@@ -111,7 +111,7 @@ class eulerSetter
 
 int main( int argc, char* argv[] )
 {
-   Solvers::tnlSolver< eulerSetter, eulerConfig, BuildConfig > solver;
+   Solvers::Solver< eulerSetter, eulerConfig, BuildConfig > solver;
    if( ! solver. run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;

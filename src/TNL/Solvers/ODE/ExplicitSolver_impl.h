@@ -37,7 +37,7 @@ ExplicitSolver< Problem >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
-   //tnlIterativeSolver< typename Problem::RealType, typename Problem::IndexType >::configSetup( config, prefix );
+   //IterativeSolver< typename Problem::RealType, typename Problem::IndexType >::configSetup( config, prefix );
 }
 
 template< typename Problem >
@@ -46,7 +46,7 @@ ExplicitSolver< Problem >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   return tnlIterativeSolver< typename Problem::RealType, typename Problem::IndexType >::setup( parameters, prefix );
+   return IterativeSolver< typename Problem::RealType, typename Problem::IndexType >::setup( parameters, prefix );
 }
 
 template< typename Problem >

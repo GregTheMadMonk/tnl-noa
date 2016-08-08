@@ -41,7 +41,7 @@ GMRES< Matrix, Preconditioner >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
-   //tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
+   //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
    config.addEntry< int >( prefix + "gmres-restarting", "Number of iterations after which the GMRES restarts.", 10 );
 }
 
@@ -52,7 +52,7 @@ GMRES< Matrix, Preconditioner >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
+   IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
    this->setRestarting( parameters.getParameter< int >( "gmres-restarting" ) );
    return true;
 }

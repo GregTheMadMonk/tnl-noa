@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlIterativeSolver_impl.cpp  -  description
+                          IterativeSolver_impl.cpp  -  description
                              -------------------
     begin                : Mar 17, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,23 +8,23 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Solvers/tnlIterativeSolver.h>
+#include <TNL/Solvers/IterativeSolver.h>
 
 namespace TNL {
 namespace Solvers {   
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-template class tnlIterativeSolver< float,  int >;
-template class tnlIterativeSolver< double, int >;
-template class tnlIterativeSolver< float,  long int >;
-template class tnlIterativeSolver< double, long int >;
+template class IterativeSolver< float,  int >;
+template class IterativeSolver< double, int >;
+template class IterativeSolver< float,  long int >;
+template class IterativeSolver< double, long int >;
 
 #ifdef HAVE_CUDA
-template class tnlIterativeSolver< float,  int >;
-template class tnlIterativeSolver< double, int >;
-template class tnlIterativeSolver< float,  long int >;
-template class tnlIterativeSolver< double, long int >;
+template class IterativeSolver< float,  int >;
+template class IterativeSolver< double, int >;
+template class IterativeSolver< float,  long int >;
+template class IterativeSolver< double, long int >;
 #endif
 
 #endif

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlIterativeSolver_impl.h  -  description
+                          IterativeSolver_impl.h  -  description
                              -------------------
     begin                : Oct 19, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -17,7 +17,7 @@ namespace TNL {
 namespace Solvers {   
 
 template< typename Real, typename Index >
-tnlIterativeSolver< Real, Index> :: tnlIterativeSolver()
+IterativeSolver< Real, Index> :: IterativeSolver()
 : maxIterations( 100000 ),
   minIterations( 0 ),
   currentIteration( 0 ),
@@ -30,7 +30,7 @@ tnlIterativeSolver< Real, Index> :: tnlIterativeSolver()
 };
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: configSetup( Config::ConfigDescription& config,
+void IterativeSolver< Real, Index> :: configSetup( Config::ConfigDescription& config,
                                                       const String& prefix )
 {
    config.addEntry< int >   ( prefix + "max-iterations", "Maximal number of iterations the solver may perform.", 10000000000 );
@@ -41,7 +41,7 @@ void tnlIterativeSolver< Real, Index> :: configSetup( Config::ConfigDescription&
 }
 
 template< typename Real, typename Index >
-bool tnlIterativeSolver< Real, Index> :: setup( const Config::ParameterContainer& parameters,
+bool IterativeSolver< Real, Index> :: setup( const Config::ParameterContainer& parameters,
                                                const String& prefix )
 {
    this->setMaxIterations( parameters.getParameter< int >( "max-iterations" ) );
@@ -53,37 +53,37 @@ bool tnlIterativeSolver< Real, Index> :: setup( const Config::ParameterContainer
 }
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setMaxIterations( const Index& maxIterations )
+void IterativeSolver< Real, Index> :: setMaxIterations( const Index& maxIterations )
 {
    this->maxIterations = maxIterations;
 }
 
 template< typename Real, typename Index >
-const Index& tnlIterativeSolver< Real, Index> :: getMaxIterations() const
+const Index& IterativeSolver< Real, Index> :: getMaxIterations() const
 {
    return this->maxIterations;
 }
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setMinIterations( const Index& minIterations )
+void IterativeSolver< Real, Index> :: setMinIterations( const Index& minIterations )
 {
    this->minIterations = minIterations;
 }
 
 template< typename Real, typename Index >
-const Index& tnlIterativeSolver< Real, Index> :: getMinIterations() const
+const Index& IterativeSolver< Real, Index> :: getMinIterations() const
 {
    return this->minIterations;
 }
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: resetIterations()
+void IterativeSolver< Real, Index> :: resetIterations()
 {
    this->currentIteration = 0;
 }
 
 template< typename Real, typename Index >
-bool tnlIterativeSolver< Real, Index> :: nextIteration()
+bool IterativeSolver< Real, Index> :: nextIteration()
 {
    // this->checkNextIteration() must be called before the iteration counter is incremented
    bool result = this->checkNextIteration();
@@ -92,7 +92,7 @@ bool tnlIterativeSolver< Real, Index> :: nextIteration()
 }
 
 template< typename Real, typename Index >
-bool tnlIterativeSolver< Real, Index> :: checkNextIteration()
+bool IterativeSolver< Real, Index> :: checkNextIteration()
 {
    // TODO: fix
    //Assert( solverMonitor, );
@@ -114,7 +114,7 @@ bool tnlIterativeSolver< Real, Index> :: checkNextIteration()
 
 template< typename Real, typename Index >
 bool
-tnlIterativeSolver< Real, Index>::
+IterativeSolver< Real, Index>::
 checkConvergence()
 {
    if( std::isnan( this->getResidue() ) )
@@ -143,63 +143,63 @@ checkConvergence()
 
 template< typename Real, typename Index >
 const Index&
-tnlIterativeSolver< Real, Index>::
+IterativeSolver< Real, Index>::
 getIterations() const
 {
    return this->currentIteration;
 }
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setConvergenceResidue( const Real& convergenceResidue )
+void IterativeSolver< Real, Index> :: setConvergenceResidue( const Real& convergenceResidue )
 {
    this->convergenceResidue = convergenceResidue;
 }
 
 template< typename Real, typename Index >
-const Real& tnlIterativeSolver< Real, Index> :: getConvergenceResidue() const
+const Real& IterativeSolver< Real, Index> :: getConvergenceResidue() const
 {
    return this->convergenceResidue;
 }
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setDivergenceResidue( const Real& divergenceResidue )
+void IterativeSolver< Real, Index> :: setDivergenceResidue( const Real& divergenceResidue )
 {
    this->divergenceResidue = divergenceResidue;
 }
 
 template< typename Real, typename Index >
-const Real& tnlIterativeSolver< Real, Index> :: getDivergenceResidue() const
+const Real& IterativeSolver< Real, Index> :: getDivergenceResidue() const
 {
    return this->divergenceResidue;
 }
 
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setResidue( const Real& residue )
+void IterativeSolver< Real, Index> :: setResidue( const Real& residue )
 {
    this->currentResidue = residue;
 }
 
 template< typename Real, typename Index >
-const Real& tnlIterativeSolver< Real, Index> :: getResidue() const
+const Real& IterativeSolver< Real, Index> :: getResidue() const
 {
    return this->currentResidue;
 }
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setRefreshRate( const Index& refreshRate )
+void IterativeSolver< Real, Index> :: setRefreshRate( const Index& refreshRate )
 {
    this->refreshRate = refreshRate;
 }
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: setSolverMonitor( tnlIterativeSolverMonitor< Real, Index >& solverMonitor )
+void IterativeSolver< Real, Index> :: setSolverMonitor( IterativeSolverMonitor< Real, Index >& solverMonitor )
 {
    this->solverMonitor = &solverMonitor;
 }
 
 template< typename Real, typename Index >
-void tnlIterativeSolver< Real, Index> :: refreshSolverMonitor( bool force )
+void IterativeSolver< Real, Index> :: refreshSolverMonitor( bool force )
 {
    if( this->solverMonitor )
    {
@@ -213,16 +213,16 @@ void tnlIterativeSolver< Real, Index> :: refreshSolverMonitor( bool force )
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
-extern template class tnlIterativeSolver< float,  int >;
-extern template class tnlIterativeSolver< double, int >;
-extern template class tnlIterativeSolver< float,  long int >;
-extern template class tnlIterativeSolver< double, long int >;
+extern template class IterativeSolver< float,  int >;
+extern template class IterativeSolver< double, int >;
+extern template class IterativeSolver< float,  long int >;
+extern template class IterativeSolver< double, long int >;
 
 #ifdef HAVE_CUDA
-extern template class tnlIterativeSolver< float,  int >;
-extern template class tnlIterativeSolver< double, int >;
-extern template class tnlIterativeSolver< float,  long int >;
-extern template class tnlIterativeSolver< double, long int >;
+extern template class IterativeSolver< float,  int >;
+extern template class IterativeSolver< double, int >;
+extern template class IterativeSolver< float,  long int >;
+extern template class IterativeSolver< double, long int >;
 #endif
 
 #endif

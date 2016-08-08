@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSolver_impl.h  -  description
+                          Solver_impl.h  -  description
                              -------------------
     begin                : Mar 9, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -10,9 +10,9 @@
 
 #pragma once
 
-#include <TNL/Solvers/tnlSolverInitiator.h>
-#include <TNL/Solvers/tnlSolverStarter.h>
-#include <TNL/Solvers/tnlSolverConfig.h>
+#include <TNL/Solvers/SolverInitiator.h>
+#include <TNL/Solvers/SolverStarter.h>
+#include <TNL/Solvers/SolverConfig.h>
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {
@@ -22,13 +22,13 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           template< typename MeshConfig > class ProblemConfig,
           typename MeshConfig >
 bool
-tnlSolver< ProblemSetter, ProblemConfig, MeshConfig >::
+Solver< ProblemSetter, ProblemConfig, MeshConfig >::
 run( int argc, char* argv[] )
 {
    Config::ParameterContainer parameters;
    Config::ConfigDescription configDescription;
    ProblemConfig< MeshConfig >::configSetup( configDescription );
-   tnlSolverConfig< MeshConfig, ProblemConfig< MeshConfig> >::configSetup( configDescription );
+   SolverConfig< MeshConfig, ProblemConfig< MeshConfig> >::configSetup( configDescription );
    configDescription.addDelimiter( "Parallelization setup:" );
    Devices::Host::configSetup( configDescription );
    Devices::Cuda::configSetup( configDescription );
@@ -36,7 +36,7 @@ run( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return false;
 
-   tnlSolverInitiator< ProblemSetter, MeshConfig > solverInitiator;
+   SolverInitiator< ProblemSetter, MeshConfig > solverInitiator;
    return solverInitiator.run( parameters );
 };
 

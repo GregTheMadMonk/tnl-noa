@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSolverTest.cu  -  description
+                          SolverTest.cu  -  description
                              -------------------
     begin                : Mar 17, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,4 +8,4 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "tnlSolverTest.h"
+#include "SolverTest.h"

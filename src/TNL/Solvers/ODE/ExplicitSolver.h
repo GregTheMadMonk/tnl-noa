@@ -16,7 +16,7 @@
 #include <TNL/core/tnlFlopsCounter.h>
 #include <TNL/Object.h>
 #include <TNL/Solvers/ODE/ODESolverMonitor.h>
-#include <TNL/Solvers/tnlIterativeSolver.h>
+#include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/tnlSharedPointer.h>
@@ -26,7 +26,7 @@ namespace Solvers {
 namespace ODE {
 
 template< class Problem >
-class ExplicitSolver : public tnlIterativeSolver< typename Problem::RealType,
+class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
                                                      typename Problem::IndexType >
 {
    public:

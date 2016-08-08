@@ -10,7 +10,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/Solvers/preconditioners/Dummy.h>
-#include <TNL/Solvers/tnlIterativeSolver.h>
+#include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
 
 
@@ -38,7 +38,7 @@ template< typename Matrix,
 class UmfpackWrapper
     : public Object,
       // just to ensure the same interface as other linear solvers
-      public tnlIterativeSolver< typename Matrix::RealType,
+      public IterativeSolver< typename Matrix::RealType,
                                  typename Matrix::IndexType >
 {
 public:
@@ -90,7 +90,7 @@ template< typename Preconditioner >
 class UmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >
     : public Object,
       // just to ensure the same interface as other linear solvers
-      public tnlIterativeSolver< double, int >
+      public IterativeSolver< double, int >
 {
 public:
     typedef double RealType;

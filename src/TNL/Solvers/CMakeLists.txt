@@ -3,27 +3,27 @@ ADD_SUBDIRECTORY( ODE )
 ADD_SUBDIRECTORY( PDE )
 
 
-SET( headers tnlIterativeSolver.h
-             tnlIterativeSolver_impl.h
+SET( headers IterativeSolver.h
+             IterativeSolver_impl.h
              BuildConfigTags.h
-             tnlFastBuildConfigTag.h
-             tnlMeshTypeResolver.h
-             tnlMeshTypeResolver_impl.h
-             tnlSolver.h
-             tnlSolver_impl.h
-             tnlSolverStarter.h
-             tnlSolverStarter_impl.h
-             tnlSolverInitiator.h
-             tnlSolverInitiator_impl.h
-             tnlSolverMonitor.h
-             tnlSolverConfig.h
-             tnlSolverConfig_impl.h
-             tnlDummyProblem.h
-             tnlIterativeSolverMonitor.h
-             tnlIterativeSolverMonitor_impl.h )
+             FastBuildConfigTag.h
+             MeshTypeResolver.h
+             MeshTypeResolver_impl.h
+             Solver.h
+             Solver_impl.h
+             SolverStarter.h
+             SolverStarter_impl.h
+             SolverInitiator.h
+             SolverInitiator_impl.h
+             SolverMonitor.h
+             SolverConfig.h
+             SolverConfig_impl.h
+             DummyProblem.h
+             IterativeSolverMonitor.h
+             IterativeSolverMonitor_impl.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Solvers )
-set( common_SOURCES ${CURRENT_DIR}/tnlIterativeSolver_impl.cpp )
+set( common_SOURCES ${CURRENT_DIR}/IterativeSolver_impl.cpp )
 
 if( BUILD_CUDA)
       set( tnl_solvers_CUDA__SOURCES

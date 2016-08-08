@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlIterativeSolverMonitor.h  -  description
+                          IterativeSolverMonitor.h  -  description
                              -------------------
     begin                : Oct 19, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Solvers/tnlSolverMonitor.h>
+#include <TNL/Solvers/SolverMonitor.h>
 #include <TNL/TimerCPU.h>
 #include <TNL/TimerRT.h>
 
@@ -18,14 +18,14 @@ namespace TNL {
 namespace Solvers {   
 
 template< typename Real, typename Index>
-class tnlIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
+class IterativeSolverMonitor : public SolverMonitor< Real, Index >
 {
    public:
 
    typedef Index IndexType;
    typedef Real RealType;
 
-   tnlIterativeSolverMonitor();
+   IterativeSolverMonitor();
 
    void setIterations( const IndexType& iterations );
 
@@ -67,4 +67,4 @@ class tnlIterativeSolverMonitor : public tnlSolverMonitor< Real, Index >
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/tnlIterativeSolverMonitor_impl.h>
+#include <TNL/Solvers/IterativeSolverMonitor_impl.h>

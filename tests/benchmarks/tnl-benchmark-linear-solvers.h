@@ -32,7 +32,7 @@
 #include <TNL/Solvers/Linear/BICGStab.h>
 #include <TNL/Solvers/Linear/TFQMR.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
-#include <TNL/Solvers/tnlIterativeSolverMonitor.h>
+#include <TNL/Solvers/IterativeSolverMonitor.h>
 
 using namespace std;
 using namespace TNL;
@@ -85,7 +85,7 @@ bool benchmarkSolver( const Config::ParameterContainer& parameters,
    matrix->vectorProduct( *x, *b );
 
    Solver solver;
-   Solvers::tnlIterativeSolverMonitor< RealType, IndexType > monitor;
+   Solvers::IterativeSolverMonitor< RealType, IndexType > monitor;
    monitor.setVerbose( 1 );
    solver.setSolverMonitor( monitor );
    solver.setMatrix( matrix );

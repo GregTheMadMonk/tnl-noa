@@ -11,8 +11,8 @@
 #ifndef TNL_HEAT_EQUATION_H_
 #define TNL_HEAT_EQUATION_H_
 
-#include <TNL/Solvers/tnlSolver.h>
-#include <TNL/Solvers/tnlFastBuildConfigTag.h>
+#include <TNL/Solvers/Solver.h>
+#include <TNL/Solvers/FastBuildConfigTag.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
@@ -105,7 +105,7 @@ class heatEquationSetter
 
 int main( int argc, char* argv[] )
 {
-   if( ! Solvers::tnlSolver< heatEquationSetter, heatEquationConfig, BuildConfig >::run( argc, argv ) )
+   if( ! Solvers::Solver< heatEquationSetter, heatEquationConfig, BuildConfig >::run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMeshTypeResolver.h  -  description
+                          MeshTypeResolver.h  -  description
                              -------------------
     begin                : Nov 28, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -20,8 +20,8 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag,
-          bool ResolveMesh = tnlConfigTagMeshResolve< ConfigTag >::enabled >
-class tnlMeshTypeResolver
+          bool ResolveMesh = ConfigTagMeshResolve< ConfigTag >::enabled >
+class MeshTypeResolver
 {
 };
 
@@ -30,7 +30,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >
+class MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >
 {
    public:
 
@@ -42,7 +42,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag  >
-class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
+class MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
 {
    public:
 
@@ -55,21 +55,21 @@ class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
 
    // Overload for disabled dimensions
    template< int MeshDimensions,
-             typename = typename std::enable_if< ! tnlConfigTagDimensions<ConfigTag,MeshDimensions>::enabled >::type,
+             typename = typename std::enable_if< ! ConfigTagDimensions<ConfigTag,MeshDimensions>::enabled >::type,
              typename = void >
    static bool resolveMeshRealType( const Config::ParameterContainer& parameters,
                                     const List< String >& parsedMeshType );
 
    // Overload for enabled dimensions
    template< int MeshDimensions,
-             typename = typename std::enable_if< tnlConfigTagDimensions<ConfigTag,MeshDimensions>::enabled >::type >
+             typename = typename std::enable_if< ConfigTagDimensions<ConfigTag,MeshDimensions>::enabled >::type >
    static bool resolveMeshRealType( const Config::ParameterContainer& parameters,
                                     const List< String >& parsedMeshType );
 
    // Overload for disabled real types
    template< int MeshDimensions,
              typename MeshRealType,
-             typename = typename std::enable_if< ! tnlConfigTagReal<ConfigTag, MeshRealType>::enabled >::type,
+             typename = typename std::enable_if< ! ConfigTagReal<ConfigTag, MeshRealType>::enabled >::type,
              typename = void >
    static bool resolveMeshIndexType( const Config::ParameterContainer& parameters,
                                      const List< String >& parsedMeshType );
@@ -77,7 +77,7 @@ class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
    // Overload for enabled real types
    template< int MeshDimensions,
              typename MeshRealType,
-             typename = typename std::enable_if< tnlConfigTagReal<ConfigTag, MeshRealType>::enabled >::type >
+             typename = typename std::enable_if< ConfigTagReal<ConfigTag, MeshRealType>::enabled >::type >
    static bool resolveMeshIndexType( const Config::ParameterContainer& parameters,
                                      const List< String >& parsedMeshType );
 
@@ -85,7 +85,7 @@ class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
    template< int MeshDimensions,
              typename MeshRealType,
              typename MeshIndexType,
-             typename = typename std::enable_if< ! tnlConfigTagIndex<ConfigTag, MeshIndexType>::enabled >::type,
+             typename = typename std::enable_if< ! ConfigTagIndex<ConfigTag, MeshIndexType>::enabled >::type,
              typename = void >
    static bool resolveMeshType( const Config::ParameterContainer& parameters,
                                 const List< String >& parsedMeshType );
@@ -94,23 +94,23 @@ class tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
    template< int MeshDimensions,
              typename MeshRealType,
              typename MeshIndexType,
-             typename = typename std::enable_if< tnlConfigTagIndex<ConfigTag, MeshIndexType>::enabled >::type >
+             typename = typename std::enable_if< ConfigTagIndex<ConfigTag, MeshIndexType>::enabled >::type >
    static bool resolveMeshType( const Config::ParameterContainer& parameters,
                                 const List< String >& parsedMeshType );
 
 
 
    template< int Dimensions, bool DimensionsSupport, typename MeshTypeResolver >
-    friend class tnlMeshTypeResolverDimensionsSupportChecker;
+    friend class MeshTypeResolverDimensionsSupportChecker;
 };
 
 /*template< int Dimensions, bool DimensionsSupport, typename MeshTypeResolver >
-class tnlMeshTypeResolverDimensionsSupportChecker
+class MeshTypeResolverDimensionsSupportChecker
 {
 };
 
 template< int Dimensions, typename MeshTypeResolver >
-class tnlMeshTypeResolverDimensionsSupportChecker< Dimensions, true, MeshTypeResolver >
+class MeshTypeResolverDimensionsSupportChecker< Dimensions, true, MeshTypeResolver >
 {
    public:
 
@@ -119,7 +119,7 @@ class tnlMeshTypeResolverDimensionsSupportChecker< Dimensions, true, MeshTypeRes
 };
 
 template< int Dimensions, typename MeshTypeResolver >
-class tnlMeshTypeResolverDimensionsSupportChecker< Dimensions, false, MeshTypeResolver >
+class MeshTypeResolverDimensionsSupportChecker< Dimensions, false, MeshTypeResolver >
 {
    public:
 
@@ -130,4 +130,4 @@ class tnlMeshTypeResolverDimensionsSupportChecker< Dimensions, false, MeshTypeRe
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/tnlMeshTypeResolver_impl.h>
+#include <TNL/Solvers/MeshTypeResolver_impl.h>

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlDummyProblem.h  -  description
+                          DummyProblem.h  -  description
                              -------------------
     begin                : Jul 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -20,7 +20,7 @@ namespace Solvers {
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
-class tnlDummyProblem
+class DummyProblem
 {
    public:
 

@@ -45,7 +45,7 @@ BICGStab< Matrix, Preconditioner >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
-   //tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
+   //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
 }
 
 template< typename Matrix,
@@ -55,7 +55,7 @@ BICGStab< Matrix, Preconditioner >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   return tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
+   return IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
 }
 
 template< typename Matrix,

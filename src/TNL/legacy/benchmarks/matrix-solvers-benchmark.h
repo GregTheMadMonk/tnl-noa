@@ -19,7 +19,7 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/legacy/matrices/tnlRgCSRMatrix.h>
-#include <TNL/Solvers/tnlIterativeSolverMonitor.h>
+#include <TNL/Solvers/IterativeSolverMonitor.h>
 #include <TNL/Solvers/Linear/stationary/SOR.h>
 #include <TNL/Solvers/Linear/CG.h>
 #include <TNL/Solvers/Linear/BICGStab.h>
@@ -74,7 +74,7 @@ bool benchmarkSolver( const Config::ParameterContainer&  parameters,
    solver. setMaxIterations( maxIterations );
    solver. setMaxResidue( maxResidue );
    solver. setMinResidue( 1.0e9 );
-   tnlIterativeSolverMonitor< RealType, IndexType > solverMonitor;
+   IterativeSolverMonitor< RealType, IndexType > solverMonitor;
    solver. setSolverMonitor( solverMonitor );
    solver. setRefreshRate( 10 );
    solverMonitor. resetTimers();

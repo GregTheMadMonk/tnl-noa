@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSolverInitiator_impl.h  -  description
+                          SolverInitiator_impl.h  -  description
                              -------------------
     begin                : Feb 23, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Solvers/tnlMeshTypeResolver.h>
+#include <TNL/Solvers/MeshTypeResolver.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/Linear/SOR.h>
 #include <TNL/Solvers/Linear/CG.h>
@@ -24,37 +24,37 @@ namespace Solvers {
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename ConfigTag,
-          bool enabled = tnlConfigTagReal< ConfigTag, Real >::enabled >
-class tnlSolverInitiatorRealResolver{};
+          bool enabled = ConfigTagReal< ConfigTag, Real >::enabled >
+class SolverInitiatorRealResolver{};
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename ConfigTag,
-          bool enabled = tnlConfigTagDevice< ConfigTag, Device >::enabled >
-class tnlSolverInitiatorDeviceResolver{};
+          bool enabled = ConfigTagDevice< ConfigTag, Device >::enabled >
+class SolverInitiatorDeviceResolver{};
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename Device,
           typename Index,
           typename ConfigTag,
-          bool enabled = tnlConfigTagIndex< ConfigTag, Index >::enabled >
-class tnlSolverInitiatorIndexResolver{};
+          bool enabled = ConfigTagIndex< ConfigTag, Index >::enabled >
+class SolverInitiatorIndexResolver{};
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename ConfigTag  >
-bool tnlSolverInitiator< ProblemSetter, ConfigTag > :: run( const Config::ParameterContainer& parameters )
+bool SolverInitiator< ProblemSetter, ConfigTag > :: run( const Config::ParameterContainer& parameters )
 {
    const String& realType = parameters. getParameter< String >( "real-type" );
    if( parameters. getParameter< int >( "verbose" ) )
      std::cout << "Setting RealType to   ... " << realType << std::endl;
    if( realType == "float" )
-      return tnlSolverInitiatorRealResolver< ProblemSetter, float, ConfigTag >::run( parameters );
+      return SolverInitiatorRealResolver< ProblemSetter, float, ConfigTag >::run( parameters );
    if( realType == "double" )
-      return tnlSolverInitiatorRealResolver< ProblemSetter, double, ConfigTag >::run( parameters );
+      return SolverInitiatorRealResolver< ProblemSetter, double, ConfigTag >::run( parameters );
    if( realType == "long-double" )
-      return tnlSolverInitiatorRealResolver< ProblemSetter, long double, ConfigTag >::run( parameters );
+      return SolverInitiatorRealResolver< ProblemSetter, long double, ConfigTag >::run( parameters );
    std::cerr << "The real type '" << realType << "' is not defined. " << std::endl;
    return false;
 };
@@ -62,7 +62,7 @@ bool tnlSolverInitiator< ProblemSetter, ConfigTag > :: run( const Config::Parame
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename ConfigTag >
-class tnlSolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
+class SolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
 {
    public:
       static bool run( const Config::ParameterContainer& parameters )
@@ -72,9 +72,9 @@ class tnlSolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
            std::cout << "Setting DeviceType to ... " << device << std::endl;
 
          if( device == "host" )
-            return tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::Host, ConfigTag >::run( parameters );
+            return SolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::Host, ConfigTag >::run( parameters );
          if( device == "cuda" )
-            return tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::Cuda, ConfigTag >::run( parameters );
+            return SolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::Cuda, ConfigTag >::run( parameters );
          std::cerr << "The device '" << device << "' is not defined. " << std::endl;
          return false;
       }
@@ -83,7 +83,7 @@ class tnlSolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
           typename Real,
           typename ConfigTag >
-class tnlSolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, false >
+class SolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, false >
 {
    public:
       static bool run( const Config::ParameterContainer& parameters )
@@ -97,7 +97,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Real,
           typename Device,
           typename ConfigTag >
-class tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, true >
+class SolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, true >
 {
    public:
       static bool run( const Config::ParameterContainer& parameters )
@@ -106,11 +106,11 @@ class tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, 
          if( parameters. getParameter< int >( "verbose" ) )
            std::cout << "Setting IndexType to  ... " << indexType << std::endl;
          if( indexType == "short-int" )
-            return tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, short int, ConfigTag >::run( parameters );
+            return SolverInitiatorIndexResolver< ProblemSetter, Real, Device, short int, ConfigTag >::run( parameters );
          if( indexType == "int" )
-            return tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, int, ConfigTag >::run( parameters );
+            return SolverInitiatorIndexResolver< ProblemSetter, Real, Device, int, ConfigTag >::run( parameters );
          if( indexType == "long int" )
-            return tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, long int, ConfigTag >::run( parameters );
+            return SolverInitiatorIndexResolver< ProblemSetter, Real, Device, long int, ConfigTag >::run( parameters );
          std::cerr << "The index type '" << indexType << "' is not defined. " << std::endl;
          return false;
       }
@@ -120,7 +120,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Real,
           typename Device,
           typename ConfigTag >
-class tnlSolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, false >
+class SolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, false >
 {
    public:
       static bool run( const Config::ParameterContainer& parameters )
@@ -135,7 +135,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-class tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >
+class SolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, ConfigTag, false >
 {
    public:
       static bool run( const Config::ParameterContainer& parameters )
@@ -150,12 +150,12 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-class tnlSolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
+class SolverInitiatorIndexResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >
 {
    public:
       static bool run( const Config::ParameterContainer& parameters )
       {
-         return tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::run( parameters );
+         return MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag >::run( parameters );
       }
 };
 

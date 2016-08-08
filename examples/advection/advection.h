@@ -1,5 +1,5 @@
 #include <TNL/tnlConfig.h>
-#include <TNL/Solvers/tnlSolver.h>
+#include <TNL/Solvers/Solver.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>
@@ -114,7 +114,7 @@ class advectionSetter
 
 int main( int argc, char* argv[] )
 {
-   Solvers::tnlSolver< advectionSetter, advectionConfig, BuildConfig > solver;
+   Solvers::Solver< advectionSetter, advectionConfig, BuildConfig > solver;
    if( ! solver. run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;

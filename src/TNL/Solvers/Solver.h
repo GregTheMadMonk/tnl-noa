@@ -1,7 +1,7 @@
 /***************************************************************************
-                          tnlSolverInitiator.h  -  description
+                          Solver.h  -  description
                              -------------------
-    begin                : Feb 23, 2013
+    begin                : Mar 9, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -10,24 +10,24 @@
 
 #pragma once
 
-#include <TNL/Object.h>
-#include <TNL/Config/ParameterContainer.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 
 namespace TNL {
 namespace Solvers {   
 
-template< template< typename Real, typename Device, typename Index, typename MeshType, typename MeshConfig, typename SolverStarter > class ProblemSetter,
-          typename MeshConfig >
-class tnlSolverInitiator : public Object
+template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
+          template< typename ConfTag > class ProblemConfig,
+          typename ConfigTag = tnlDefaultBuildConfigTag >
+class Solver
 {
    public:
+   static bool run( int argc, char* argv[] );
 
-   static bool run( const Config::ParameterContainer& parameters );
-
+   protected:
 };
 
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/tnlSolverInitiator_impl.h>
+#include <TNL/Solvers/Solver_impl.h>
+

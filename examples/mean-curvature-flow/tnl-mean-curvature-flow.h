@@ -18,8 +18,8 @@
 #ifndef TNL_MEAN_CURVATIVE_FLOW_H_
 #define TNL_MEAN_CURVATIVE_FLOW_H_
 
-#include <TNL/Solvers/tnlSolver.h>
-#include <TNL/Solvers/tnlFastBuildConfigTag.h>
+#include <TNL/Solvers/Solver.h>
+#include <TNL/Solvers/FastBuildConfigTag.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>
@@ -138,7 +138,7 @@ class meanCurvatureFlowSetter
 
 int main( int argc, char* argv[] )
 {
-   tnlSolver< meanCurvatureFlowSetter, meanCurvatureFlowConfig, BuildConfig > solver;
+   Solver< meanCurvatureFlowSetter, meanCurvatureFlowConfig, BuildConfig > solver;
    if( ! solver. run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;

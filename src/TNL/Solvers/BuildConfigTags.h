@@ -30,45 +30,45 @@ class tnlDefaultBuildConfigTag{};
  * All devices are enabled by default. Those which are not available
  * are disabled.
  */
-template< typename ConfigTag, typename Device > struct tnlConfigTagDevice{ enum { enabled = true }; };
+template< typename ConfigTag, typename Device > struct ConfigTagDevice{ enum { enabled = true }; };
 #ifndef HAVE_CUDA
-template< typename ConfigTag > struct tnlConfigTagDevice< ConfigTag, Devices::Cuda >{ enum { enabled = false }; };
+template< typename ConfigTag > struct ConfigTagDevice< ConfigTag, Devices::Cuda >{ enum { enabled = false }; };
 #endif
 
 /****
  * All real types are enabled by default.
  */
-template< typename ConfigTag, typename Real > struct tnlConfigTagReal{ enum { enabled = true }; };
+template< typename ConfigTag, typename Real > struct ConfigTagReal{ enum { enabled = true }; };
 
 /****
  * All index types are enabled by default.
  */
-template< typename ConfigTag, typename Index > struct tnlConfigTagIndex{ enum { enabled = true }; };
+template< typename ConfigTag, typename Index > struct ConfigTagIndex{ enum { enabled = true }; };
 
 /****
- * The mesh type will be resolved by the tnlSolver by default.
+ * The mesh type will be resolved by the Solver by default.
  */
-template< typename ConfigTag > struct tnlConfigTagMeshResolve{ enum { enabled = true }; };
+template< typename ConfigTag > struct ConfigTagMeshResolve{ enum { enabled = true }; };
 
 /****
  * 1, 2, and 3 dimensions are enabled by default
  */
-template< typename ConfigTag, int Dimensions > struct tnlConfigTagDimensions{ enum { enabled = ( Dimensions > 0 && Dimensions <= 3 ) }; };
+template< typename ConfigTag, int Dimensions > struct ConfigTagDimensions{ enum { enabled = ( Dimensions > 0 && Dimensions <= 3 ) }; };
 
 /****
  * Up to the exceptions enlisted below, all mesh types are disabled by default.
  */
-template< typename ConfigTag, typename MeshType > struct tnlConfigTagMesh{ enum { enabled = false }; };
+template< typename ConfigTag, typename MeshType > struct ConfigTagMesh{ enum { enabled = false }; };
 
 /****
  * Use of tnlGrid is enabled for allowed dimensions and Real, Device and Index types.
  */
 template< typename ConfigTag, int Dimensions, typename Real, typename Device, typename Index >
-   struct tnlConfigTagMesh< ConfigTag, tnlGrid< Dimensions, Real, Device, Index > >
-      { enum { enabled = tnlConfigTagDimensions< ConfigTag, Dimensions >::enabled  &&
-                         tnlConfigTagReal< ConfigTag, Real >::enabled &&
-                         tnlConfigTagDevice< ConfigTag, Device >::enabled &&
-                         tnlConfigTagIndex< ConfigTag, Index >::enabled }; };
+   struct ConfigTagMesh< ConfigTag, tnlGrid< Dimensions, Real, Device, Index > >
+      { enum { enabled = ConfigTagDimensions< ConfigTag, Dimensions >::enabled  &&
+                         ConfigTagReal< ConfigTag, Real >::enabled &&
+                         ConfigTagDevice< ConfigTag, Device >::enabled &&
+                         ConfigTagIndex< ConfigTag, Index >::enabled }; };
 
 /****
  * All time discretisations (explicit, semi-impicit and implicit ) are
@@ -78,7 +78,7 @@ class tnlExplicitTimeDiscretisationTag{};
 class tnlSemiImplicitTimeDiscretisationTag{};
 class tnlImplicitTimeDiscretisationTag{};
 
-template< typename ConfigTag, typename TimeDiscretisation > struct tnlConfigTagTimeDiscretisation{ enum { enabled = true }; };
+template< typename ConfigTag, typename TimeDiscretisation > struct ConfigTagTimeDiscretisation{ enum { enabled = true }; };
 
 /****
  * All explicit solvers are enabled by default
@@ -97,7 +97,7 @@ public:
     using Template = ODE::Merson< Problem >;
 };
 
-template< typename ConfigTag, typename ExplicitSolver > struct tnlConfigTagExplicitSolver{ enum { enabled = true }; };
+template< typename ConfigTag, typename ExplicitSolver > struct ConfigTagExplicitSolver{ enum { enabled = true }; };
 
 /****
  * All semi-implicit solvers are enabled by default
@@ -158,7 +158,7 @@ public:
 };
 #endif
 
-template< typename ConfigTag, typename SemiImplicitSolver > struct tnlConfigTagSemiImplicitSolver{ enum { enabled = true }; };
+template< typename ConfigTag, typename SemiImplicitSolver > struct ConfigTagSemiImplicitSolver{ enum { enabled = true }; };
 
 } // namespace Solvers
 } // namespace TNL

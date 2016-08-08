@@ -36,7 +36,7 @@ SOR< Matrix, Preconditioner >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
-   //tnlIterativeSolver< RealType, IndexType >::configSetup( config, prefix );
+   //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "sor-omega", "Relaxation parameter of the SOR method.", 1.0 );
 }
 
@@ -47,7 +47,7 @@ SOR< Matrix, Preconditioner >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   tnlIterativeSolver< RealType, IndexType >::setup( parameters, prefix );
+   IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
    this->setOmega( parameters.getParameter< double >( prefix + "sor-omega" ) );
    if( this->omega <= 0.0 || this->omega > 2.0 )
    {

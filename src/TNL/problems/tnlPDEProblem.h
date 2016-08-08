@@ -74,7 +74,7 @@ class tnlPDEProblem : public tnlProblem< Real, Device, Index >
                         DofVectorPointer& dofs,
                         MeshDependentDataType& meshDependentData );
 
-      Solvers::tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();
+      Solvers::SolverMonitor< RealType, IndexType >* getSolverMonitor();
 
 
 };

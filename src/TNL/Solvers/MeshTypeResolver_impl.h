@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMeshTypeResolver_impl.h  -  description
+                          MeshTypeResolver_impl.h  -  description
                              -------------------
     begin                : Nov 28, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -13,7 +13,7 @@
 #include <TNL/String.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/mesh/tnlDummyMesh.h>
-#include <TNL/Solvers/tnlSolverStarter.h>
+#include <TNL/Solvers/SolverStarter.h>
 
 namespace TNL {
 namespace Solvers {   
@@ -24,7 +24,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Index,
           typename MeshType,
           typename ConfigTag,
-          bool MeshTypeSupported = tnlConfigTagMesh< ConfigTag, MeshType >::enabled >
+          bool MeshTypeSupported = ConfigTagMesh< ConfigTag, MeshType >::enabled >
 class tnlMeshResolverTerminator{};
 
 
@@ -33,14 +33,14 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, false  >::run( const Config::ParameterContainer& parameters )
+bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, false  >::run( const Config::ParameterContainer& parameters )
 {
    return ProblemSetter< Real,
                          Device,
                          Index,
                          tnlDummyMesh< Real, Device, Index >,
                          ConfigTag,
-                         tnlSolverStarter< ConfigTag > >::template run< Real, Device, Index, ConfigTag >( parameters );
+                         SolverStarter< ConfigTag > >::template run< Real, Device, Index, ConfigTag >( parameters );
 };
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
@@ -48,7 +48,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::run( const Config::ParameterContainer& parameters )
+bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::run( const Config::ParameterContainer& parameters )
 {
    const String& meshFileName = parameters.getParameter< String >( "mesh" );
 
@@ -73,7 +73,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Device,
           typename Index,
           typename ConfigTag >
-bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshDimensions( const Config::ParameterContainer& parameters,
+bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshDimensions( const Config::ParameterContainer& parameters,
                                                                                                         const List< String >& parsedMeshType )
 {
    int dimensions = atoi( parsedMeshType[ 1 ].getString() );
@@ -94,7 +94,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Index,
           typename ConfigTag >
    template< int MeshDimensions, typename, typename >
-bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshRealType( const Config::ParameterContainer& parameters,
+bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshRealType( const Config::ParameterContainer& parameters,
                                                                                                       const List< String >& parsedMeshType )
 {
    std::cerr << "Mesh dimension " << MeshDimensions << " is not supported." << std::endl;
@@ -107,7 +107,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Index,
           typename ConfigTag >
    template< int MeshDimensions, typename >
-bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshRealType( const Config::ParameterContainer& parameters,
+bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshRealType( const Config::ParameterContainer& parameters,
                                                                                                       const List< String >& parsedMeshType )
 {
    if( parsedMeshType[ 2 ] == "float" )
@@ -128,7 +128,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
    template< int MeshDimensions,
              typename MeshRealType,
              typename, typename >
-bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshIndexType( const Config::ParameterContainer& parameters,
+bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshIndexType( const Config::ParameterContainer& parameters,
                                                                                                         const List< String >& parsedMeshType )
 {
    std::cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for real type." << std::endl;
@@ -143,7 +143,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
    template< int MeshDimensions,
              typename MeshRealType,
              typename >
-bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshIndexType( const Config::ParameterContainer& parameters,
+bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshIndexType( const Config::ParameterContainer& parameters,
                                                                                                         const List< String >& parsedMeshType )
 {
    if( parsedMeshType[ 4 ] == "short int" )
@@ -165,7 +165,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
              typename MeshRealType,
              typename MeshIndexType,
              typename, typename >
-bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshType( const Config::ParameterContainer& parameters,
+bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshType( const Config::ParameterContainer& parameters,
                                                                                                    const List< String >& parsedMeshType )
 {
    std::cerr << "The type '" << parsedMeshType[ 4 ] << "' is not allowed for indexing type." << std::endl;
@@ -181,7 +181,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
              typename MeshRealType,
              typename MeshIndexType,
              typename >
-bool tnlMeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshType( const Config::ParameterContainer& parameters,
+bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshType( const Config::ParameterContainer& parameters,
                                                                                                    const List< String >& parsedMeshType )
 {
    if( parsedMeshType[ 0 ] == "tnlGrid" )
@@ -220,7 +220,7 @@ class tnlMeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, C
    public:
       static bool run( const Config::ParameterContainer& parameters )
       {
-         return ProblemSetter< Real, Device, Index, MeshType, ConfigTag, tnlSolverStarter< ConfigTag > >::run( parameters );
+         return ProblemSetter< Real, Device, Index, MeshType, ConfigTag, SolverStarter< ConfigTag > >::run( parameters );
       }
 };
 

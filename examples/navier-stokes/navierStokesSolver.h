@@ -24,7 +24,7 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/Solvers/preconditioners/Dummy.h>
-#include <TNL/Solvers/tnlSolverMonitor.h>
+#include <TNL/Solvers/SolverMonitor.h>
 #include <TNL/operators/euler/fvm/tnlLaxFridrichs.h>
 #include <TNL/operators/gradient/tnlCentralFDMGradient.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
@@ -98,7 +98,7 @@ class navierStokesSolver
                         DofVectorType& _u,
                         DofVectorType& _fu );
 
-   tnlSolverMonitor< RealType, IndexType >* getSolverMonitor();
+   SolverMonitor< RealType, IndexType >* getSolverMonitor();
 
    protected:
 

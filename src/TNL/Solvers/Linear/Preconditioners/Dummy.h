@@ -35,7 +35,7 @@ class Dummy
 };
 
 template< typename LinearSolver, typename Preconditioner >
-class tnlSolverStarterSolverPreconditionerSetter
+class SolverStarterSolverPreconditionerSetter
 {
    public:
        
@@ -46,7 +46,7 @@ class tnlSolverStarterSolverPreconditionerSetter
 };
 
 template< typename LinearSolver, typename Real, typename Device, typename Index >
-class tnlSolverStarterSolverPreconditionerSetter< LinearSolver, Dummy< Real, Device, Index > >
+class SolverStarterSolverPreconditionerSetter< LinearSolver, Dummy< Real, Device, Index > >
 {
    public:
 

@@ -13,7 +13,7 @@
 #include <math.h>
 #include <TNL/Object.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
-#include <TNL/Solvers/tnlIterativeSolver.h>
+#include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
 #include <TNL/tnlSharedPointer.h>
 
@@ -26,7 +26,7 @@ template< typename Matrix,
                                                             typename Matrix :: DeviceType,
                                                             typename Matrix :: IndexType> >
 class SOR : public Object,
-                     public tnlIterativeSolver< typename Matrix :: RealType,
+                     public IterativeSolver< typename Matrix :: RealType,
                                                 typename Matrix :: IndexType >
 {
    public:

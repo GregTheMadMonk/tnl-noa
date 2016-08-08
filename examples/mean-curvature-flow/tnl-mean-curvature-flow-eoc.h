@@ -18,8 +18,8 @@
 #ifndef TNL_MEAN_CURVATURE_FLOW_EOC_H_
 #define TNL_MEAN_CURVATURE_FLOW_EOC_H_
 
-#include <TNL/Solvers/tnlSolver.h>
-#include <TNL/Solvers/tnlFastBuildConfigTag.h>
+#include <TNL/Solvers/Solver.h>
+#include <TNL/Solvers/FastBuildConfigTag.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
@@ -91,7 +91,7 @@ class meanCurvatureFlowEocSetter
 
 int main( int argc, char* argv[] )
 {
-   tnlSolver< meanCurvatureFlowEocSetter, meanCurvatureFlowEocConfig, BuildConfig > solver;
+   Solver< meanCurvatureFlowEocSetter, meanCurvatureFlowEocConfig, BuildConfig > solver;
    if( ! solver. run( argc, argv ) )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;

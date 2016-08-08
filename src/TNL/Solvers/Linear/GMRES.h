@@ -15,7 +15,7 @@
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Vectors/SharedVector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
-#include <TNL/Solvers/tnlIterativeSolver.h>
+#include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
 #include <TNL/tnlSharedPointer.h>
 
@@ -28,7 +28,7 @@ template< typename Matrix,
                                                             typename Matrix :: DeviceType,
                                                             typename Matrix :: IndexType> >
 class GMRES : public Object,
-                       public tnlIterativeSolver< typename Matrix :: RealType,
+                       public IterativeSolver< typename Matrix :: RealType,
                                                   typename Matrix :: IndexType >
 {
    public:
