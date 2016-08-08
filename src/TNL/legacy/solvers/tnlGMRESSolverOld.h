@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlGMRESSolverOld.h  -  description
+                          GMRESOld.h  -  description
                              -------------------
     begin                : 2007/07/31
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlGMRESSolverOldH
-#define tnlGMRESSolverOldH
+#ifndef GMRESOldH
+#define GMRESOldH
 
 
 #include <math.h>
@@ -17,11 +17,11 @@
 #include <TNL/legacy/solvers/MatrixSolver.h>
 
 template< typename Real, typename Device = Devices::Host, typename Index = int >
-class tnlGMRESSolverOld : public MatrixSolver< Real, Device, Index >
+class GMRESOld : public MatrixSolver< Real, Device, Index >
 {
    public:
 
-   tnlGMRESSolverOld( const String& name );
+   GMRESOld( const String& name );
 
    String getType() const;
 
@@ -34,7 +34,7 @@ class tnlGMRESSolverOld : public MatrixSolver< Real, Device, Index >
                const Index max_iterations,
                tnlPreconditioner< Real >* precond = 0 );
 
-   ~tnlGMRESSolverOld();
+   ~GMRESOld();
 
    protected:
 
@@ -69,25 +69,25 @@ class tnlGMRESSolverOld : public MatrixSolver< Real, Device, Index >
 };
 
 template< typename Real, typename Device, typename Index >
-tnlGMRESSolverOld< Real, Device, Index > :: tnlGMRESSolverOld( const String& name )
+GMRESOld< Real, Device, Index > :: GMRESOld( const String& name )
 : MatrixSolver< Real, Device, Index >( name ),
-  _r( "tnlGMRESSolverOld::_r" ),
-  _w( "tnlGMRESSolverOld::_w" ),
-  _v( "tnlGMRESSolverOld::_v" ),
-  _M_tmp( "tnlGMRESSolverOld::_M_tmp" ),
-  _s( "tnlGMRESSolverOld::_s" ),
-  _cs( "tnlGMRESSolverOld::_cs" ),
-  _sn( "tnlGMRESSolverOld::_sn" ),
-  _H( "tnlGMRESSolverOld:_H" ),
+  _r( "GMRESOld::_r" ),
+  _w( "GMRESOld::_w" ),
+  _v( "GMRESOld::_v" ),
+  _M_tmp( "GMRESOld::_M_tmp" ),
+  _s( "GMRESOld::_s" ),
+  _cs( "GMRESOld::_cs" ),
+  _sn( "GMRESOld::_sn" ),
+  _H( "GMRESOld:_H" ),
   size( 0 ),
   restarting( 0 )
 {
 };
  
 template< typename Real, typename Device, typename Index >
-String tnlGMRESSolverOld< Real, Device, Index > :: getType() const
+String GMRESOld< Real, Device, Index > :: getType() const
 {
-   return String( "tnlGMRESSolverOld< " ) +
+   return String( "GMRESOld< " ) +
           String( getType( ( Real ) 0.0 ) ) +
           String( ", " ) +
           Device :: getDeviceType() +
@@ -97,7 +97,7 @@ String tnlGMRESSolverOld< Real, Device, Index > :: getType() const
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlGMRESSolverOld< Real, Device, Index > :: setRestarting( Index rest )
+void GMRESOld< Real, Device, Index > :: setRestarting( Index rest )
 {
    if( size != 0 )
       setSize( size, rest );
@@ -105,7 +105,7 @@ void tnlGMRESSolverOld< Real, Device, Index > :: setRestarting( Index rest )
 };
 
 template< typename Real, typename Device, typename Index >
-bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const Matrix< Real, Device, Index >& A,
+bool GMRESOld< Real, Device, Index > :: solve( const Matrix< Real, Device, Index >& A,
                                                      const Vector< Real, Device, Index >& b,
                                                      Vector< Real, Device, Index >& x,
                                                      const Real& max_residue,
@@ -302,20 +302,20 @@ bool tnlGMRESSolverOld< Real, Device, Index > :: solve( const Matrix< Real, Devi
 };
 
 template< typename Real, typename Device, typename Index >
-tnlGMRESSolverOld< Real, Device, Index > :: ~tnlGMRESSolverOld()
+GMRESOld< Real, Device, Index > :: ~GMRESOld()
 {
 };
 
 template< typename Real, typename Device, typename Index >
-void tnlGMRESSolverOld< Real, Device, Index > :: update( Index k,
+void GMRESOld< Real, Device, Index > :: update( Index k,
                                                       Index m,
                                                       const Vector< Real, Devices::Host, Index >& H,
                                                       const Vector< Real, Devices::Host, Index >& s,
                                                       Vector< Real, Device, Index >& v,
                                                       Vector< Real, Device, Index >& x )
 {
-   //dbgFunctionName( "tnlGMRESSolverOld", "Update" );
-   Vector< Real, Devices::Host, Index > y( "tnlGMRESSolverOld::update:y" );
+   //dbgFunctionName( "GMRESOld", "Update" );
+   Vector< Real, Devices::Host, Index > y( "GMRESOld::update:y" );
    y. setSize( m + 1 );
 
    Index i, j;
@@ -341,7 +341,7 @@ void tnlGMRESSolverOld< Real, Device, Index > :: update( Index k,
 };
 
 template< typename Real, typename Device, typename Index >
-void tnlGMRESSolverOld< Real, Device, Index > :: generatePlaneRotation( Real &dx,
+void GMRESOld< Real, Device, Index > :: generatePlaneRotation( Real &dx,
                                                                      Real &dy,
                                                                      Real &cs,
                                                                      Real &sn )
@@ -367,7 +367,7 @@ void tnlGMRESSolverOld< Real, Device, Index > :: generatePlaneRotation( Real &dx
 };
 
 template< typename Real, typename Device, typename Index >
-void tnlGMRESSolverOld< Real, Device, Index > :: applyPlaneRotation( Real &dx,
+void GMRESOld< Real, Device, Index > :: applyPlaneRotation( Real &dx,
                                                                   Real &dy,
                                                                   Real &cs,
                                                                   Real &sn )
@@ -378,7 +378,7 @@ void tnlGMRESSolverOld< Real, Device, Index > :: applyPlaneRotation( Real &dx,
 };
 
 template< typename Real, typename Device, typename Index >
-bool tnlGMRESSolverOld< Real, Device, Index > :: setSize( Index _size, Index m )
+bool GMRESOld< Real, Device, Index > :: setSize( Index _size, Index m )
 {
    if( size == _size && restarting == m ) return true;
    size = _size;

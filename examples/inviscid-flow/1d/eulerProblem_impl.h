@@ -3,9 +3,9 @@
 
 #include <TNL/core/mfilename.h>
 #include <TNL/Matrices/MatrixSetter.h>
-#include <TNL/Solvers/pde/tnlExplicitUpdater.h>
-#include <TNL/Solvers/pde/tnlLinearSystemAssembler.h>
-#include <TNL/Solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsMomentum.h"
 #include "LaxFridrichsEnergy.h"
@@ -277,7 +277,7 @@ getExplicitRHS( const RealType& time,
    this->bindDofs( mesh, _u );
    lF1DContinuity->setTau(tau);
    lF1DContinuity->setVelocity( *velocity);
-   /*tnlExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity;
+   /*ExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity;
    explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF1DContinuity,
@@ -291,7 +291,7 @@ getExplicitRHS( const RealType& time,
    lF1DMomentum->setTau(tau);
    lF1DMomentum->setVelocity( *velocity);
    lF1DMomentum->setPressure( *pressure);
-   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, Momentum, BoundaryCondition, RightHandSide > explicitUpdaterMomentum;
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Momentum, BoundaryCondition, RightHandSide > explicitUpdaterMomentum;
    explicitUpdaterMomentum.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF1DMomentum,
@@ -305,7 +305,7 @@ getExplicitRHS( const RealType& time,
    lF1DEnergy->setTau(tau);
    lF1DEnergy->setPressure( *pressure);
    lF1DEnergy->setVelocity( *velocity);
-   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
    explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF1DEnergy,
@@ -331,12 +331,12 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& b,
                       MeshDependentDataType& meshDependentData )
 {
-/*   tnlLinearSystemAssembler< Mesh,
+/*   LinearSystemAssembler< Mesh,
                              MeshFunctionType,
                              DifferentialOperator,
                              BoundaryCondition,
                              RightHandSide,
-                             tnlBackwardTimeDiscretisation,
+                             BackwardTimeDiscretisation,
                              Matrix,
                              DofVectorType > systemAssembler;
 

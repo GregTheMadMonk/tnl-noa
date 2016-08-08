@@ -1,7 +1,7 @@
 #ifndef advectionBUILDCONFIGTAG_H_
 #define advectionBUILDCONFIGTAG_H_
 
-#include <TNL/Solvers/tnlBuildConfigTags.h>
+#include <TNL/Solvers/BuildConfigTags.h>
 
 namespace TNL {
 

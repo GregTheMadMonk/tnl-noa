@@ -23,7 +23,7 @@
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Matrices/CSRMatrix.h>
-#include <TNL/Solvers/preconditioners/tnlDummyPreconditioner.h>
+#include <TNL/Solvers/preconditioners/Dummy.h>
 #include <TNL/Solvers/tnlSolverMonitor.h>
 #include <TNL/operators/euler/fvm/tnlLaxFridrichs.h>
 #include <TNL/operators/gradient/tnlCentralFDMGradient.h>
@@ -47,7 +47,7 @@ class navierStokesSolver
    typedef Vector< RealType, DeviceType, IndexType> DofVectorType;
 
    typedef CSRMatrix< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
-   typedef tnlDummyPreconditioner< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
+   typedef Dummy< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
 
    enum BoundaryConditionType { dirichlet, neumann, noSlip };
 

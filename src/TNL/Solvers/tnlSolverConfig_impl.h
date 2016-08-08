@@ -11,10 +11,10 @@
 #pragma once
 
 #include <TNL/tnlConfig.h>
-#include <TNL/Solvers/tnlBuildConfigTags.h>
+#include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Solvers/tnlDummyProblem.h>
-#include <TNL/Solvers/pde/tnlExplicitTimeStepper.h>
-#include <TNL/Solvers/pde/tnlPDESolver.h>
+#include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
+#include <TNL/Solvers/PDE/PDESolver.h>
 
 namespace TNL {
 namespace Solvers {
@@ -78,8 +78,8 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDes
     * Time discretisation
     */
    config.addDelimiter( " === Time discretisation parameters ==== " );
-   typedef tnlExplicitTimeStepper< DummyProblem, tnlEulerSolver > ExplicitTimeStepper;
-   tnlPDESolver< DummyProblem, ExplicitTimeStepper >::configSetup( config );
+   typedef PDE::ExplicitTimeStepper< DummyProblem, ODE::Euler > ExplicitTimeStepper;
+   PDE::PDESolver< DummyProblem, ExplicitTimeStepper >::configSetup( config );
    ExplicitTimeStepper::configSetup( config );
    if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled ||
        tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled ||
@@ -130,27 +130,27 @@ bool tnlSolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDes
    if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlExplicitTimeDiscretisationTag >::enabled )
    {
       config.addDelimiter( " === Explicit solvers parameters === " );
-      tnlExplicitSolver< tnlDummyProblem< double, Devices::Host, int > >::configSetup( config );
+      ODE::ExplicitSolver< tnlDummyProblem< double, Devices::Host, int > >::configSetup( config );
       if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitEulerSolverTag >::enabled )
-         tnlEulerSolver< tnlDummyProblem< double, Devices::Host, int > >::configSetup( config );
+         ODE::Euler< tnlDummyProblem< double, Devices::Host, int > >::configSetup( config );
 
       if( tnlConfigTagExplicitSolver< ConfigTag, tnlExplicitMersonSolverTag >::enabled )
-         tnlMersonSolver< tnlDummyProblem< double, Devices::Host, int > >::configSetup( config );
+         ODE::Merson< tnlDummyProblem< double, Devices::Host, int > >::configSetup( config );
    }
    if( tnlConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled )
    {
       config.addDelimiter( " === Semi-implicit solvers parameters === " );
       typedef Matrices::CSRMatrix< double, Devices::Host, int > MatrixType;
       if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitCGSolverTag >::enabled )
-         Linear::Krylov::tnlCGSolver< MatrixType >::configSetup( config );
+         Linear::CG< MatrixType >::configSetup( config );
       if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitBICGStabSolverTag >::enabled )
-         Linear::Krylov::tnlBICGStabSolver< MatrixType >::configSetup( config );
+         Linear::BICGStab< MatrixType >::configSetup( config );
       if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitGMRESSolverTag >::enabled )
-         Linear::Krylov::tnlGMRESSolver< MatrixType >::configSetup( config );
+         Linear::GMRES< MatrixType >::configSetup( config );
       if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitTFQMRSolverTag >::enabled )
-         Linear::Krylov::tnlTFQMRSolver< MatrixType >::configSetup( config );
+         Linear::TFQMR< MatrixType >::configSetup( config );
       if( tnlConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitSORSolverTag >::enabled )
-         Linear::tnlSORSolver< MatrixType >::configSetup( config );
+         Linear::SOR< MatrixType >::configSetup( config );
    }
 
    config.addDelimiter( " === Logs and messages ===" );

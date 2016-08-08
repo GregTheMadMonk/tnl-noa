@@ -14,21 +14,21 @@
 #include <TNL/Logger.h>
 #include <TNL/String.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Solvers/ode/tnlMersonSolver.h>
-#include <TNL/Solvers/ode/tnlEulerSolver.h>
-#include <TNL/Solvers/Linear/stationary/tnlSORSolver.h>
-#include <TNL/Solvers/Linear/Krylov/tnlCGSolver.h>
-#include <TNL/Solvers/Linear/Krylov/tnlBICGStabSolver.h>
-#include <TNL/Solvers/Linear/Krylov/tnlGMRESSolver.h>
-#include <TNL/Solvers/Linear/Krylov/tnlTFQMRSolver.h>
-#include <TNL/Solvers/Linear/tnlUmfpackWrapper.h>
-#include <TNL/Solvers/Linear/preconditioners/tnlDummyPreconditioner.h>
-#include <TNL/Solvers/Linear/preconditioners/tnlDiagonalPreconditioner.h>
-#include <TNL/Solvers/pde/tnlExplicitTimeStepper.h>
-#include <TNL/Solvers/pde/tnlSemiImplicitTimeStepper.h>
-#include <TNL/Solvers/pde/tnlPDESolver.h>
+#include <TNL/Solvers/ODE/Merson.h>
+#include <TNL/Solvers/ODE/Euler.h>
+#include <TNL/Solvers/Linear/SOR.h>
+#include <TNL/Solvers/Linear/CG.h>
+#include <TNL/Solvers/Linear/BICGStab.h>
+#include <TNL/Solvers/Linear/GMRES.h>
+#include <TNL/Solvers/Linear/TFQMR.h>
+#include <TNL/Solvers/Linear/UmfpackWrapper.h>
+#include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
+#include <TNL/Solvers/Linear/Preconditioners/Diagonal.h>
+#include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
+#include <TNL/Solvers/PDE/SemiImplicitTimeStepper.h>
+#include <TNL/Solvers/PDE/PDESolver.h>
 #include <TNL/Solvers/tnlIterativeSolverMonitor.h>
-#include <TNL/Solvers/ode/tnlODESolverMonitor.h>
+#include <TNL/Solvers/ODE/ODESolverMonitor.h>
 
 namespace TNL {
 namespace Solvers {   
@@ -274,7 +274,7 @@ class tnlSolverStarterExplicitSolverSetter< Problem, ExplicitSolverTag, ConfigTa
       static bool run( Problem& problem,
                        const Config::ParameterContainer& parameters )
       {
-         typedef tnlExplicitTimeStepper< Problem, ExplicitSolverTag::template Template > TimeStepper;
+         typedef PDE::ExplicitTimeStepper< Problem, ExplicitSolverTag::template Template > TimeStepper;
          typedef typename ExplicitSolverTag::template Template< TimeStepper > ExplicitSolver;
          return tnlSolverStarterExplicitTimeStepperSetter< Problem,
                                                            ExplicitSolver,
@@ -299,9 +299,9 @@ class tnlSolverStarterPreconditionerSetter
          const String& preconditioner = parameters.getParameter< String>( "preconditioner" );
 
          if( preconditioner == "none" )
-            return tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::tnlDummyPreconditioner, ConfigTag >::run( problem, parameters );
+            return tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Dummy, ConfigTag >::run( problem, parameters );
          if( preconditioner == "diagonal" )
-            return tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::tnlDiagonalPreconditioner, ConfigTag >::run( problem, parameters );
+            return tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, Linear::Preconditioners::Diagonal, ConfigTag >::run( problem, parameters );
 
          std::cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal." << std::endl;
          return false;
@@ -338,7 +338,7 @@ class tnlSolverStarterSemiImplicitSolverSetter< Problem, SemiImplicitSolverTag, 
          typedef typename MatrixType::DeviceType DeviceType;
          typedef typename MatrixType::IndexType IndexType;
          typedef typename SemiImplicitSolverTag::template Template< MatrixType, Preconditioner< RealType, DeviceType, IndexType > > LinearSystemSolver;
-         typedef tnlSemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
+         typedef PDE::SemiImplicitTimeStepper< Problem, LinearSystemSolver > TimeStepper;
          return tnlSolverStarterSemiImplicitTimeStepperSetter< Problem,
                                                                TimeStepper,
                                                                ConfigTag >::run( problem, parameters );
@@ -362,7 +362,7 @@ class tnlSolverStarterExplicitTimeStepperSetter
       {
          typedef typename Problem::RealType RealType;
          typedef typename Problem::IndexType IndexType;
-         typedef tnlODESolverMonitor< RealType, IndexType > SolverMonitorType;
+         typedef ODE::ODESolverMonitor< RealType, IndexType > SolverMonitorType;
 
          const int verbose = parameters.getParameter< int >( "verbose" );
 
@@ -459,7 +459,7 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
 
    if( discreteSolver == "sor" )
    {
-      typedef tnlSORSolver< typename Problem :: DiscreteSolverMatrixType,
+      typedef SOR< typename Problem :: DiscreteSolverMatrixType,
                             typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
       double omega = parameters. getParameter< double >( "sor-omega" );
@@ -470,7 +470,7 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
 
    if( discreteSolver == "cg" )
    {
-      typedef tnlCGSolver< typename Problem :: DiscreteSolverMatrixType,
+      typedef CG< typename Problem :: DiscreteSolverMatrixType,
                            typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
       //solver. setVerbose( this->verbose );
@@ -479,7 +479,7 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
 
    if( discreteSolver == "bicg-stab" )
    {
-      typedef tnlBICGStabSolver< typename Problem :: DiscreteSolverMatrixType,
+      typedef BICGStab< typename Problem :: DiscreteSolverMatrixType,
                                  typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
       //solver. setVerbose( this->verbose );
@@ -488,7 +488,7 @@ bool tnlSolverStarter< ConfigTag > :: setDiscreteSolver( Problem& problem,
 
    if( discreteSolver == "gmres" )
    {
-      typedef tnlGMRESSolver< typename Problem :: DiscreteSolverMatrixType,
+      typedef GMRES< typename Problem :: DiscreteSolverMatrixType,
                               typename Problem :: DiscreteSolverPreconditioner > DiscreteSolver;
       DiscreteSolver solver;
       int restarting = parameters. getParameter< int >( "gmres-restarting" );
@@ -515,7 +515,7 @@ bool tnlSolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    /****
     * Set-up the PDE solver
     */
-   tnlPDESolver< Problem, TimeStepper > solver;
+   PDE::PDESolver< Problem, TimeStepper > solver;
    solver.setProblem( problem );
    solver.setTimeStepper( timeStepper );
    if( ! solver.setup( parameters ) )

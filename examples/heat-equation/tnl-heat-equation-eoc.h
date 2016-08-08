@@ -13,7 +13,7 @@
 
 #include <TNL/Solvers/tnlSolver.h>
 #include <TNL/Solvers/tnlFastBuildConfigTag.h>
-#include <TNL/Solvers/tnlBuildConfigTags.h>
+#include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/operators/diffusion/tnlLinearDiffusion.h>
 #include <TNL/operators/diffusion/tnlExactLinearDiffusion.h>

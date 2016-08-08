@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMersonSolverTester.h
+                          MersonTester.h
                              -------------------
     begin                : Feb 1, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -8,11 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLMERSONSOLVERTESTER_H_
-#define TNLMERSONSOLVERTESTER_H_
+#ifndef MersonTESTER_H_
+#define MersonTESTER_H_
 
 #include <TNL/legacy/mesh/tnlGridOld.h>
-#include <TNL/Solvers/ode/tnlMersonSolver.h>
+#include <TNL/Solvers/ODE/Merson.h>
 #include <TNL/core/mfilename.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
@@ -65,17 +65,17 @@ __global__ void heatEquationRHSKernel( const Index xSize,
 
 
 template< typename Real, typename Device, typename Index = int >
-class tnlMersonSolverTester : public CppUnit :: TestCase
+class MersonTester : public CppUnit :: TestCase
 {
    public:
 
-   tnlMersonSolverTester( ){};
+   MersonTester( ){};
 
-   tnlMersonSolverTester( const String& s ){};
+   MersonTester( const String& s ){};
 
    String getType() const
    {
-      return String( "tnlMersonSolverTester< " ) +
+      return String( "MersonTester< " ) +
              getType( Real( 0 ) ) +
              String( ", ") +
              Device :: getDeviceType() +
@@ -86,14 +86,14 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlMersonSolverTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "MersonTester" );
       CppUnit :: TestResult result;
 
       Real param;
       String test_name = String( "testUpdateU< " ) + getType( param ) + String( " >" );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlMersonSolverTester< Real, Device, Index > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< MersonTester< Real, Device, Index > >(
                test_name. getString(),
-               & tnlMersonSolverTester< Real, Device, Index > :: testUpdateU )
+               & MersonTester< Real, Device, Index > :: testUpdateU )
       );
 
       return suiteOfTests;
@@ -153,7 +153,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
          }
       hostU. draw( "u-ini", "gnuplot" );
 
-      tnlMersonSolver< tnlMersonSolverTester< Real, Device, Index > >
+      Merson< MersonTester< Real, Device, Index > >
                        mersonSolver( "mersonSolver" );
       mersonSolver. setVerbosity( 2 );
       mersonSolver. setAdaptivity( 0.001 );
@@ -169,7 +169,7 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
       hostAuxU. setLike( hostU );
 
 #ifdef HAVE_CUDA
-      /*tnlMersonSolver< tnlMersonSolverTester< Real, Device, Index >,
+      /*Merson< MersonTester< Real, Device, Index >,
                        tnlGridOld< 2, Real, Devices::Cuda, Index >,
                        Real,
                        Devices::Cuda,
@@ -220,4 +220,4 @@ class tnlMersonSolverTester : public CppUnit :: TestCase
    };
 };
 
-#endif /* TNLMERSONSOLVERCUDATESTER_H_ */
+#endif /* MersonCUDATESTER_H_ */

@@ -14,10 +14,10 @@
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/Functions/Analytic/ConstantFunction.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
-#include <TNL/Solvers/pde/tnlExplicitUpdater.h>
+#include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Functions/ExactOperatorFunction.h>
 #include <TNL/Functions/MeshFunction.h>
-#include <TNL/Solvers/pde/tnlBoundaryConditionsSetter.h>
+#include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
 
 using namespace TNL;
 
@@ -89,13 +89,13 @@ class tnlApproximationError
             return;
          }
          u = operatorFunction;
-         Solvers::tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
+         Solvers::PDE::BoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
          if( writeFunctions )
             u.write( "approximate-result-" + dimensionsString + meshSizeString, "gnuplot" ) ;
 
          //cerr << "Evaluate difference ... " << std::endl;
          u -= exactU;
-         Solvers::tnlBoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
+         Solvers::PDE::BoundaryConditionsSetter< MeshFunction, DirichletBoundaryConditions >::template apply< MeshEntity >( boundaryConditions, 0.0, u );
          if( writeFunctions )
             u.write( "difference-" + dimensionsString + meshSizeString, "gnuplot" ) ;
          l1Error = u.getLpNorm( 1.0 );

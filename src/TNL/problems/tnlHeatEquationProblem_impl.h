@@ -20,10 +20,10 @@
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Matrices/MultidiagonalMatrixSetter.h>
 #include <TNL/Logger.h>
-#include <TNL/Solvers/pde/tnlBoundaryConditionsSetter.h>
-#include <TNL/Solvers/pde/tnlExplicitUpdater.h>
-#include <TNL/Solvers/pde/tnlLinearSystemAssembler.h>
-#include <TNL/Solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
+#include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 #include "tnlHeatEquationProblem.h"
 
@@ -201,7 +201,7 @@ getExplicitRHS( const RealType& time,
                 MeshDependentDataType& meshDependentData )
 {
    /****
-    * If you use an explicit solver like tnlEulerSolver or tnlMersonSolver, you
+    * If you use an explicit solver like Euler or Merson, you
     * need to implement this method. Compute the right-hand side of
     *
     *   d/dt u(x) = fu( x, u )
@@ -212,7 +212,7 @@ getExplicitRHS( const RealType& time,
    //cout << "u = " << u << endl;
    this->bindDofs( meshPointer, uDofs );
    MeshFunctionPointer fuPointer( meshPointer, fuDofs );
-   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer );
    explicitUpdater.template update< typename Mesh::Cell >(
       time,
@@ -222,7 +222,7 @@ getExplicitRHS( const RealType& time,
       this->rightHandSidePointer,
       this->uPointer,
       fuPointer );
-   /*tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
+   /*BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
    boundaryConditionsSetter.template apply< typename Mesh::Cell >(
       this->boundaryCondition,
       time + tau,
@@ -254,12 +254,12 @@ assemblyLinearSystem( const RealType& time,
                       MeshDependentDataType& meshDependentData )
 {
    this->bindDofs( meshPointer, dofsPointer );
-   Solvers::tnlLinearSystemAssembler< Mesh,
+   Solvers::PDE::LinearSystemAssembler< Mesh,
                              MeshFunctionType,
                              DifferentialOperator,
                              BoundaryCondition,
                              RightHandSide,
-                             Solvers::tnlBackwardTimeDiscretisation,
+                             Solvers::PDE::BackwardTimeDiscretisation,
                              typename MatrixPointer::ObjectType,
                              DofVectorType > systemAssembler;
    systemAssembler.template assembly< typename Mesh::Cell >(

@@ -2,9 +2,9 @@
 
 #include <TNL/core/mfilename.h>
 #include <TNL/Matrices/MatrixSetter.h>
-#include <TNL/Solvers/pde/tnlExplicitUpdater.h>
-#include <TNL/Solvers/pde/tnlLinearSystemAssembler.h>
-#include <TNL/Solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsEnergy.h"
@@ -275,7 +275,7 @@ getExplicitRHS( const RealType& time,
    lF2DContinuity->setTau(tau);
    lF2DContinuity->setVelocityX( *velocityX );
    lF2DContinuity->setVelocityY( *velocityY );
-   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity; 
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Continuity, BoundaryCondition, RightHandSide > explicitUpdaterContinuity; 
    explicitUpdaterContinuity.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF2DContinuity,
@@ -289,7 +289,7 @@ getExplicitRHS( const RealType& time,
    lF2DMomentumX->setVelocityX( *velocityX );
    lF2DMomentumX->setVelocityY( *velocityY );
    lF2DMomentumX->setPressure( *pressure );
-   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, MomentumX, BoundaryCondition, RightHandSide > explicitUpdaterMomentumX; 
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumX, BoundaryCondition, RightHandSide > explicitUpdaterMomentumX; 
    explicitUpdaterMomentumX.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF2DMomentumX,
@@ -303,7 +303,7 @@ getExplicitRHS( const RealType& time,
    lF2DMomentumY->setVelocityX( *velocityX );
    lF2DMomentumY->setVelocityY( *velocityY );
    lF2DMomentumY->setPressure( *pressure );
-   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, MomentumY, BoundaryCondition, RightHandSide > explicitUpdaterMomentumY;
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, MomentumY, BoundaryCondition, RightHandSide > explicitUpdaterMomentumY;
    explicitUpdaterMomentumY.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF2DMomentumY,
@@ -317,7 +317,7 @@ getExplicitRHS( const RealType& time,
    lF2DEnergy->setVelocityX( *velocityX ); 
    lF2DEnergy->setVelocityY( *velocityY ); 
    lF2DEnergy->setPressure( *pressure );
-   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, Energy, BoundaryCondition, RightHandSide > explicitUpdaterEnergy;
    explicitUpdaterEnergy.template update< typename Mesh::Cell >( time,
                                                            mesh,
                                                            lF2DEnergy,
@@ -327,7 +327,7 @@ getExplicitRHS( const RealType& time,
                                                            fuEnergy );
 
 /*
-   tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
+   BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
    boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
       this->boundaryCondition, 
       time + tau, 
@@ -349,12 +349,12 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& b,
                       MeshDependentDataType& meshDependentData )
 {
-/*   tnlLinearSystemAssembler< Mesh,
+/*   LinearSystemAssembler< Mesh,
                              MeshFunctionType,
                              DifferentialOperator,
                              BoundaryCondition,
                              RightHandSide,
-                             tnlBackwardTimeDiscretisation,
+                             BackwardTimeDiscretisation,
                              Matrix,
                              DofVectorType > systemAssembler;
 

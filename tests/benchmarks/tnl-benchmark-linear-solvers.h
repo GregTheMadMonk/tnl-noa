@@ -27,11 +27,11 @@
 #include <TNL/Matrices/SlicedEllpackMatrix.h>
 #include <TNL/Matrices/ChunkedEllpackMatrix.h>
 #include <TNL/Matrices/MatrixReader.h>
-#include <TNL/Solvers/Linear/Krylov/tnlGMRESSolver.h>
-#include <TNL/Solvers/Linear/Krylov/tnlCGSolver.h>
-#include <TNL/Solvers/Linear/Krylov/tnlBICGStabSolver.h>
-#include <TNL/Solvers/Linear/Krylov/tnlTFQMRSolver.h>
-#include <TNL/Solvers/Linear/tnlLinearResidueGetter.h>
+#include <TNL/Solvers/Linear/GMRES.h>
+#include <TNL/Solvers/Linear/CG.h>
+#include <TNL/Solvers/Linear/BICGStab.h>
+#include <TNL/Solvers/Linear/TFQMR.h>
+#include <TNL/Solvers/Linear/LinearResidueGetter.h>
 #include <TNL/Solvers/tnlIterativeSolverMonitor.h>
 
 using namespace std;
@@ -90,7 +90,7 @@ bool benchmarkSolver( const Config::ParameterContainer& parameters,
    solver.setSolverMonitor( monitor );
    solver.setMatrix( matrix );
    solver.setConvergenceResidue( 1.0e-6 );
-   solver.template solve< VectorPointer, Solvers::Linear::tnlLinearResidueGetter< MatrixPointer, VectorPointer > >( b, y );
+   solver.template solve< VectorPointer, Solvers::Linear::LinearResidueGetter< MatrixPointer, VectorPointer > >( b, y );
    cout << endl;
    return true;
 }
@@ -143,16 +143,16 @@ bool resolveLinearSolver( const Config::ParameterContainer& parameters )
       return false;
 
    if( solver == "gmres" )
-      return benchmarkSolver< Solvers::Linear::Krylov::tnlGMRESSolver< Matrix > >( parameters, matrix );
+      return benchmarkSolver< Solvers::Linear::GMRES< Matrix > >( parameters, matrix );
 
    if( solver == "cg" )
-      return benchmarkSolver< Solvers::Linear::Krylov::tnlCGSolver< Matrix > >( parameters, matrix );
+      return benchmarkSolver< Solvers::Linear::CG< Matrix > >( parameters, matrix );
 
    if( solver == "bicgstab" )
-      return benchmarkSolver< Solvers::Linear::Krylov::tnlBICGStabSolver< Matrix > >( parameters, matrix );
+      return benchmarkSolver< Solvers::Linear::BICGStab< Matrix > >( parameters, matrix );
 
    if( solver == "tfqmr" )
-      return benchmarkSolver< Solvers::Linear::Krylov::tnlTFQMRSolver< Matrix > >( parameters, matrix );
+      return benchmarkSolver< Solvers::Linear::TFQMR< Matrix > >( parameters, matrix );
 
    std::cerr << "Unknown solver " << solver << "." << std::endl;
    return false;

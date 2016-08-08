@@ -3,9 +3,9 @@
 
 #include <TNL/core/mfilename.h>
 #include <TNL/Matrices/MatrixSetter.h>
-#include <TNL/Solvers/pde/tnlExplicitUpdater.h>
-#include <TNL/Solvers/pde/tnlLinearSystemAssembler.h>
-#include <TNL/Solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 namespace TNL {
 
@@ -246,7 +246,7 @@ getExplicitRHS( const RealType& time,
                 MeshDependentDataType& meshDependentData )
 {
    /****
-    * If you use an explicit solver like tnlEulerSolver or tnlMersonSolver, you
+    * If you use an explicit solver like Euler or Merson, you
     * need to implement this method. Compute the right-hand side of
     *
     *   d/dt u(x) = fu( x, u )
@@ -279,7 +279,7 @@ getExplicitRHS( const RealType& time,
    else if (this->velocityType == "advection")
 */  { 
    this->bindDofs( mesh, _u );
-   Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+   Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    tnlSharedPointer< MeshFunctionType > u( mesh, _u ); 
    tnlSharedPointer< MeshFunctionType > fu( mesh, _fu );
    differentialOperatorPointer->setTau(tau); 
@@ -290,7 +290,7 @@ getExplicitRHS( const RealType& time,
                                                            this->rightHandSidePointer,
                                                            u,
                                                            fu );
-/*   tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
+/*   BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter; 
    boundaryConditionsSetter.template apply< typename Mesh::Cell >( 
       this->boundaryCondition, 
       time + tau, 
@@ -312,12 +312,12 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& b,
                       MeshDependentDataType& meshDependentData )
 {
-   /*tnlLinearSystemAssembler< Mesh,
+   /*LinearSystemAssembler< Mesh,
                              MeshFunctionType,
                              DifferentialOperator,
                              BoundaryCondition,
                              RightHandSide,
-                             tnlBackwardTimeDiscretisation,
+                             BackwardTimeDiscretisation,
                              Matrix,
                              DofVectorType > systemAssembler;
 

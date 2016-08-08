@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Solvers/tnlBuildConfigTags.h>
+#include <TNL/Solvers/BuildConfigTags.h>
 
 namespace TNL {
 namespace Solvers {   

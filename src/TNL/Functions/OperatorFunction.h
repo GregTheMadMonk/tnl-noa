@@ -13,7 +13,7 @@
 #include <type_traits>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Functions/MeshFunction.h>
-#include <TNL/Solvers/pde/tnlBoundaryConditionsSetter.h>
+#include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
 
 namespace TNL {
 namespace Functions {   
@@ -319,7 +319,7 @@ class OperatorFunction< Operator, PreimageFunction, BoundaryConditions, false >
              ! operatorFunction.refresh( time )  )
              return false;
          this->imageFunction = operatorFunction;
-         Solvers::tnlBoundaryConditionsSetter< ImageFunctionType, BoundaryConditionsType >::apply( this->boundaryConditions, time, this->imageFunction );
+         Solvers::PDE::BoundaryConditionsSetter< ImageFunctionType, BoundaryConditionsType >::apply( this->boundaryConditions, time, this->imageFunction );
          return true;
       };
  

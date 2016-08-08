@@ -20,11 +20,11 @@
 #include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/legacy/matrices/tnlRgCSRMatrix.h>
 #include <TNL/Solvers/tnlIterativeSolverMonitor.h>
-#include <TNL/Solvers/Linear/stationary/tnlSORSolver.h>
-#include <TNL/Solvers/Linear/Krylov/tnlCGSolver.h>
-#include <TNL/Solvers/Linear/Krylov/tnlBICGStabSolver.h>
-#include <TNL/Solvers/Linear/Krylov/tnlGMRESSolver.h>
-#include <TNL/Solvers/Linear/Krylov/tnlTFQMRSolver.h>
+#include <TNL/Solvers/Linear/stationary/SOR.h>
+#include <TNL/Solvers/Linear/CG.h>
+#include <TNL/Solvers/Linear/BICGStab.h>
+#include <TNL/Solvers/Linear/GMRES.h>
+#include <TNL/Solvers/Linear/TFQMR.h>
 #ifdef HAVE_PETSC
    #include <petsc.h>
 #endif
@@ -79,7 +79,7 @@ bool benchmarkSolver( const Config::ParameterContainer&  parameters,
    solver. setRefreshRate( 10 );
    solverMonitor. resetTimers();
 #ifdef HAVE_NOT_CXX11
-   solver. template solve< Vector, tnlLinearResidueGetter< Matrix, Vector > >( b, x );
+   solver. template solve< Vector, LinearResidueGetter< Matrix, Vector > >( b, x );
 #else
    solver. solve( b, x );
 #endif
@@ -132,31 +132,31 @@ bool benchmarkMatrixOnDevice( const Config::ParameterContainer&  parameters,
       bool converged( false );
       if( solverName == "sor" )
       {
-         tnlSORSolver< Matrix > solver;
+         SOR< Matrix > solver;
          const RealType& sorOmega = parameters. getParameter< double >( "sor-omega" );
          solver. setOmega( sorOmega );
          return benchmarkSolver( parameters, solver, matrix, b, x );
       }
       if( solverName == "cg" )
       {
-         tnlCGSolver< Matrix > solver;
+         CG< Matrix > solver;
          return benchmarkSolver( parameters, solver, matrix, b, x );
       }
       if( solverName == "bicgstab" )
       {
-         tnlBICGStabSolver< Matrix > solver;
+         BICGStab< Matrix > solver;
          return benchmarkSolver( parameters, solver, matrix, b, x );
       }
       if( solverName == "gmres" )
       {
-         tnlGMRESSolver< Matrix > solver;
+         GMRES< Matrix > solver;
          const IndexType& gmresRestarting = parameters. getParameter< int >( "gmres-restarting" );
          solver. setRestarting( gmresRestarting );
          return benchmarkSolver( parameters, solver, matrix, b, x );
       }
       if( solverName == "tfqmr" )
       {
-         tnlTFQMRSolver< Matrix > solver;
+         TFQMR< Matrix > solver;
          return benchmarkSolver( parameters, solver, matrix, b, x );
       }
       std::cerr << "Unknown solver " << solverName << std::endl;

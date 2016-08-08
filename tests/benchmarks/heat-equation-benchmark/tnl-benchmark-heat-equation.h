@@ -1,6 +1,6 @@
 #include <TNL/tnlConfig.h>
 #include <TNL/Solvers/tnlSolver.h>
-#include <TNL/Solvers/tnlBuildConfigTags.h>
+#include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>
 #include <TNL/Functions/Analytic/ConstantFunction.h>

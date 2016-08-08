@@ -12,7 +12,7 @@
 
 #include <TNL/Object.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Solvers/tnlBuildConfigTags.h>
+#include <TNL/Solvers/BuildConfigTags.h>
 
 namespace TNL {
 namespace Solvers {   

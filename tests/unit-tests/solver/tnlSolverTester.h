@@ -33,7 +33,7 @@ class tnlSolverTesterProblem
    typedef Mesh MeshType;
    typedef Vectors::Vector< RealType, DeviceType, IndexType> DofVectorType;
    typedef Matrices::CSRMatrix< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
-   typedef Solvers::Linear::tnlDummyPreconditioner< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
+   typedef Solvers::Linear::Preconditioners::Dummy< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
 
    static String getTypeStatic() { return String( "simpleProblemSolver< " ) + Mesh :: getTypeStatic() + " >"; };
 

@@ -10,11 +10,11 @@
 
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Solvers/tnlMeshTypeResolver.h>
-#include <TNL/Solvers/tnlBuildConfigTags.h>
-#include <TNL/Solvers/Linear/stationary/tnlSORSolver.h>
-#include <TNL/Solvers/Linear/Krylov/tnlCGSolver.h>
-#include <TNL/Solvers/Linear/Krylov/tnlBICGStabSolver.h>
-#include <TNL/Solvers/Linear/Krylov/tnlGMRESSolver.h>
+#include <TNL/Solvers/BuildConfigTags.h>
+#include <TNL/Solvers/Linear/SOR.h>
+#include <TNL/Solvers/Linear/CG.h>
+#include <TNL/Solvers/Linear/BICGStab.h>
+#include <TNL/Solvers/Linear/GMRES.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 

@@ -1,11 +1,11 @@
 ADD_SUBDIRECTORY( Linear )
-ADD_SUBDIRECTORY( ode )
-ADD_SUBDIRECTORY( pde )
+ADD_SUBDIRECTORY( ODE )
+ADD_SUBDIRECTORY( PDE )
 
 
 SET( headers tnlIterativeSolver.h
              tnlIterativeSolver_impl.h
-             tnlBuildConfigTags.h
+             BuildConfigTags.h
              tnlFastBuildConfigTag.h
              tnlMeshTypeResolver.h
              tnlMeshTypeResolver_impl.h

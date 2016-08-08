@@ -18,7 +18,7 @@ namespace Matrices {
    
 #ifdef HAVE_UMFPACK
     template< typename Matrix, typename Preconditioner >
-    class tnlUmfpackWrapper;
+    class UmfpackWrapper;
 #endif
 
 template< typename Real >
@@ -211,7 +211,7 @@ class CSRMatrix : public SparseMatrix< Real, Device, Index >
    friend class tnlCusparseCSRMatrix< RealType >;
 #ifdef HAVE_UMFPACK
     template< typename Matrix, typename Preconditioner >
-    friend class tnlUmfpackWrapper;
+    friend class UmfpackWrapper;
 #endif
 
 };

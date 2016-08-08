@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlBICGStabSolver.h  -  description
+                          BICGStab.h  -  description
                              -------------------
     begin                : 2007/07/31
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -8,18 +8,18 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlBICGStabSolverOldH
-#define tnlBICGStabSolverOldH
+#ifndef BICGStabOldH
+#define BICGStabOldH
 
 
 #include <math.h>
 #include <TNL/legacy/solvers/MatrixSolver.h>
 
-template< typename T > class tnlBICGStabSolverOld : public MatrixSolver< T >
+template< typename T > class BICGStabOld : public MatrixSolver< T >
 {
    public:
 
-   tnlBICGStabSolverOld()
+   BICGStabOld()
    : r( 0 ), r_ast( 0 ), r_new( 0 ), p( 0 ), s( 0 ), Ap( 0 ), As( 0 ), M_tmp( 0 ),
      size( 0 )
    {
@@ -32,7 +32,7 @@ template< typename T > class tnlBICGStabSolverOld : public MatrixSolver< T >
                const int max_iterations,
                tnlPreconditioner< T >* precond = 0 )
    {
-      dbgFunctionName( "tnlBICGStabSolver", "Solve" );
+      dbgFunctionName( "BICGStab", "Solve" );
       if( ! SetSize( A. GetSize() ) ) return false;
 
       MatrixSolver< T > :: residue =  max_residue + 1.0;
@@ -171,7 +171,7 @@ template< typename T > class tnlBICGStabSolverOld : public MatrixSolver< T >
          MatrixSolver< T > :: PrintOut();
    };
 
-   ~tnlBICGStabSolverOld()
+   ~BICGStabOld()
    {
       FreeSupportingArrays();
    };

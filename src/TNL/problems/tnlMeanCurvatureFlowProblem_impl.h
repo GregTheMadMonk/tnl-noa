@@ -14,10 +14,10 @@
 #include <TNL/Matrices/MatrixSetter.h>
 #include <TNL/Matrices/MultidiagonalMatrixSetter.h>
 #include <TNL/Logger.h>
-#include <TNL/Solvers/pde/tnlExplicitUpdater.h>
-#include <TNL/Solvers/pde/tnlBoundaryConditionsSetter.h>
-#include <TNL/Solvers/pde/tnlLinearSystemAssembler.h>
-#include <TNL/Solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <TNL/Solvers/PDE/BoundaryConditionsSetter.h>
+#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 #include "tnlMeanCurvatureFlowProblem.h"
 
@@ -185,7 +185,7 @@ getExplicitRHS( const RealType& time,
 		MeshDependentDataType& meshDependentData )
 {
    /****
-    * If you use an explicit solver like tnlEulerSolver or tnlMersonSolver, you
+    * If you use an explicit solver like Euler or Merson, you
     * need to implement this method. Compute the right-hand side of
     *
     *   d/dt u(x) = fu( x, u )
@@ -200,7 +200,7 @@ getExplicitRHS( const RealType& time,
    MeshFunctionType u( mesh, inDofs );
    MeshFunctionType fu( mesh, outDofs );
    //differentialOperator.nonlinearDiffusionOperator.operatorQ.update( mesh, time );
-   tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+   ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
    explicitUpdater.template update< typename Mesh::Cell >(
       time,
       mesh,
@@ -210,7 +210,7 @@ getExplicitRHS( const RealType& time,
       u,
       fu );
  
-   tnlBoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
+   BoundaryConditionsSetter< MeshFunctionType, BoundaryCondition > boundaryConditionsSetter;
    boundaryConditionsSetter.template apply< typename Mesh::Cell >(
       this->boundaryCondition,
       time,
@@ -239,12 +239,12 @@ assemblyLinearSystem( const RealType& time,
                       MeshDependentDataType& meshDependentData )
 {
    MeshFunctionType u( mesh, dofsU );
-   tnlLinearSystemAssembler< Mesh,
+   LinearSystemAssembler< Mesh,
 			     MeshFunctionType,
 			     DifferentialOperator,
 			     BoundaryCondition,
 			     RightHandSide,
-			     tnlBackwardTimeDiscretisation,
+			     BackwardTimeDiscretisation,
 			     MatrixType,
 			     DofVectorType > systemAssembler;
    systemAssembler.template assembly< typename Mesh::Cell >(

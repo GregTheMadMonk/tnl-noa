@@ -26,7 +26,7 @@
 #include <TNL/core/mfilename.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/Vectors/SharedVector.h>
-#include <TNL/Solvers/ode/tnlMersonSolver.h>
+#include <TNL/Solvers/ODE/Merson.h>
 
 
 #ifdef HAVE_CUDA

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSORSolverOld.h  -  description
+                          SOROld.h  -  description
                              -------------------
     begin                : 2007/07/30
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -8,18 +8,18 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlSORSolverOldH
-#define tnlSORSolverOldH
+#ifndef SOROldH
+#define SOROldH
 
 #include <math.h>
 #include <TNL/legacy/solvers/MatrixSolver.h>
 
 template< typename Real, typename Device = Devices::Host, typename Index = int >
-class tnlSORSolverOld : public MatrixSolver< Real, Device, Index >
+class SOROld : public MatrixSolver< Real, Device, Index >
 {
    public:
  
-   tnlSORSolverOld( const String& name );
+   SOROld( const String& name );
 
    String getType() const;
 
@@ -40,7 +40,7 @@ class tnlSORSolverOld : public MatrixSolver< Real, Device, Index >
 };
 
 template< typename Real, typename Device, typename Index >
-tnlSORSolverOld< Real, Device, Index > :: tnlSORSolverOld( const String& name )
+SOROld< Real, Device, Index > :: SOROld( const String& name )
 : MatrixSolver< Real, Device, Index >( name ),
   sorOmega( 1.0 )
   {
@@ -48,9 +48,9 @@ tnlSORSolverOld< Real, Device, Index > :: tnlSORSolverOld( const String& name )
 
 
 template< typename Real, typename Device, typename Index >
-String tnlSORSolverOld< Real, Device, Index > :: getType() const
+String SOROld< Real, Device, Index > :: getType() const
 {
-   return String( "tnlSORSolverOld< " ) +
+   return String( "SOROld< " ) +
           String( getType( ( Real ) 0.0 ) ) +
           String( ", " ) +
           Device :: getDeviceType() +
@@ -60,19 +60,19 @@ String tnlSORSolverOld< Real, Device, Index > :: getType() const
 }
 
 template< typename Real, typename Device, typename Index >
-void tnlSORSolverOld< Real, Device, Index > :: setSOROmega( const Real& omega )
+void SOROld< Real, Device, Index > :: setSOROmega( const Real& omega )
 {
    this->sorOmega = omega;
 }
 
 template< typename Real, typename Device, typename Index >
-Real tnlSORSolverOld< Real, Device, Index > :: getSOROmega( ) const
+Real SOROld< Real, Device, Index > :: getSOROmega( ) const
 {
    return this->sorOmega;
 }
 
 template< typename Real, typename Device, typename Index >
-bool tnlSORSolverOld< Real, Device, Index > :: solve( const Matrix< Real, Device, Index >& A,
+bool SOROld< Real, Device, Index > :: solve( const Matrix< Real, Device, Index >& A,
                                                    const Vector< Real, Device, Index >& b,
                                                    Vector< Real, Device, Index >& x,
                                                    const Real& max_residue,

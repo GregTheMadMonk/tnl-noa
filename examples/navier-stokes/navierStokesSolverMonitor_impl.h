@@ -37,7 +37,7 @@ void navierStokesSolverMonitor< Real, Index > :: refresh()
            << " ) E=( " << eMax
            << ", " << eAvg << " ) ";
    }
-   tnlODESolverMonitor< Real, Index > :: refresh();
+   ODESolverMonitor< Real, Index > :: refresh();
 }
 
 #endif /* TNLNAVIERSTOKESSOLVERMONITOR_IMPL_H_ */

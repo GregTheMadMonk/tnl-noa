@@ -3,9 +3,9 @@
 
 #include <TNL/core/mfilename.h>
 #include <TNL/Matrices/MatrixSetter.h>
-#include <TNL/Solvers/pde/tnlExplicitUpdater.h>
-#include <TNL/Solvers/pde/tnlLinearSystemAssembler.h>
-#include <TNL/Solvers/pde/tnlBackwardTimeDiscretisation.h>
+#include <TNL/Solvers/PDE/ExplicitUpdater.h>
+#include <TNL/Solvers/PDE/LinearSystemAssembler.h>
+#include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 #include "TestGridEntity.h"
 
 template< typename Mesh,
@@ -417,7 +417,7 @@ getExplicitRHS( const RealType& time,
                 MeshDependentDataType& meshDependentData )
 {
    /****
-    * If you use an explicit solver like tnlEulerSolver or tnlMersonSolver, you
+    * If you use an explicit solver like Euler or Merson, you
     * need to implement this method. Compute the right-hand side of
     *
     *   d/dt u(x) = fu( x, u )
@@ -557,7 +557,7 @@ getExplicitRHS( const RealType& time,
          //   this->cudaMesh = tnlCuda::passToDevice( &mesh );
          MeshFunctionPointer uPointer( mesh, uDofs );
          MeshFunctionPointer fuPointer( mesh, fuDofs );
-         Solvers::tnlExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+         Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
          //explicitUpdater.setGPUTransferTimer( this->gpuTransferTimer ); 
          explicitUpdater.template update< typename Mesh::Cell >( 
             time,
@@ -586,12 +586,12 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& b,
                       MeshDependentDataType& meshDependentData )
 {
-   Solvers::tnlLinearSystemAssembler< Mesh,
+   Solvers::PDE::LinearSystemAssembler< Mesh,
                              MeshFunctionType,
                              DifferentialOperator,
                              BoundaryCondition,
                              RightHandSide,
-                             Solvers::tnlBackwardTimeDiscretisation,
+                             Solvers::PDE::BackwardTimeDiscretisation,
                              typename MatrixPointer::ObjectType,
                              typename DofVectorPointer::ObjectType > systemAssembler;
 

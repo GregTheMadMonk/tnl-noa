@@ -20,7 +20,7 @@
 
 #include <TNL/Solvers/tnlSolver.h>
 #include <TNL/Solvers/tnlFastBuildConfigTag.h>
-#include <TNL/Solvers/tnlBuildConfigTags.h>
+#include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/operators/tnlDirichletBoundaryConditions.h>
 #include <TNL/operators/tnlNeumannBoundaryConditions.h>
