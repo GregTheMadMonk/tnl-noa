@@ -3,7 +3,7 @@
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Functions/MeshFunction.h>
-#include <TNL/tnlSharedPointer.h>
+#include <TNL/SharedPointer.h>
 
 using namespace TNL::Problems;
 
@@ -26,10 +26,10 @@ class advectionProblem:
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
-      typedef tnlSharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-      typedef tnlSharedPointer< DifferentialOperator > DifferentialOperatorPointer;
-      typedef tnlSharedPointer< BoundaryCondition > BoundaryConditionPointer;
-      typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
+      typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
+      typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
+      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
       
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;

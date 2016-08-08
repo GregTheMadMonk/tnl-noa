@@ -35,7 +35,7 @@ class tnlPDEOperatorEocTest
       typedef TestFunction TestFunctionType;
       typedef ExactOperator ExactOperatorType;
       typedef typename ApproximateOperator::MeshType MeshType;
-      typedef tnlSharedPointer< MeshType > MeshPointer;
+      typedef SharedPointer< MeshType > MeshPointer;
       typedef typename ApproximateOperator::RealType RealType;
       typedef typename ApproximateOperator::IndexType IndexType;
  

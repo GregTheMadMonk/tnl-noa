@@ -30,10 +30,10 @@ class PDESolver : public Object
       typedef typename TimeStepper::IndexType IndexType;
       typedef Problem ProblemType;
       typedef typename ProblemType::MeshType MeshType;
-      typedef tnlSharedPointer< MeshType, DeviceType > MeshPointer;
+      typedef SharedPointer< MeshType, DeviceType > MeshPointer;
       typedef typename ProblemType::DofVectorType DofVectorType;
       typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
-      typedef tnlSharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+      typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
 
       PDESolver();
 
@@ -70,9 +70,9 @@ class PDESolver : public Object
 
       const RealType& getSnapshotPeriod() const;
 
-      void setIoTimer( tnlTimer& ioTimer);
+      void setIoTimer( Timer& ioTimer);
 
-      void setComputeTimer( tnlTimer& computeTimer );
+      void setComputeTimer( Timer& computeTimer );
 
       bool solve();
 
@@ -92,7 +92,7 @@ class PDESolver : public Object
 
       ProblemType* problem;
 
-      tnlTimer *ioTimer, *computeTimer;
+      Timer *ioTimer, *computeTimer;
 };
 
 } // namespace PDE

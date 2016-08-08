@@ -39,7 +39,7 @@ class SolverStarter
 
    int logWidth;
 
-   tnlTimer ioTimer, computeTimer, totalTimer;
+   Timer ioTimer, computeTimer, totalTimer;
 };
 
 } // namespace Solvers

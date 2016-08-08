@@ -31,7 +31,7 @@ class tnlGridTraverser< tnlGrid< 1, Real, Devices::Host, Index > >
    public:
       
       typedef tnlGrid< 1, Real, Devices::Host, Index > GridType;
-      typedef tnlSharedPointer< GridType > GridPointer;
+      typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::Host DeviceType;
       typedef Index IndexType;
@@ -62,7 +62,7 @@ class tnlGridTraverser< tnlGrid< 1, Real, Devices::Cuda, Index > >
    public:
       
       typedef tnlGrid< 1, Real, Devices::Cuda, Index > GridType;
-      typedef tnlSharedPointer< GridType > GridPointer;
+      typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::Host DeviceType;
       typedef Index IndexType;
@@ -93,7 +93,7 @@ class tnlGridTraverser< tnlGrid< 2, Real, Devices::Host, Index > >
    public:
       
       typedef tnlGrid< 2, Real, Devices::Host, Index > GridType;
-      typedef tnlSharedPointer< GridType > GridPointer;
+      typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::Host DeviceType;
       typedef Index IndexType;
@@ -126,7 +126,7 @@ class tnlGridTraverser< tnlGrid< 2, Real, Devices::Cuda, Index > >
    public:
       
       typedef tnlGrid< 2, Real, Devices::Cuda, Index > GridType;
-      typedef tnlSharedPointer< GridType > GridPointer;
+      typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::Host DeviceType;
       typedef Index IndexType;
@@ -159,7 +159,7 @@ class tnlGridTraverser< tnlGrid< 3, Real, Devices::Host, Index > >
    public:
       
       typedef tnlGrid< 3, Real, Devices::Host, Index > GridType;
-      typedef tnlSharedPointer< GridType > GridPointer;
+      typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::Host DeviceType;
       typedef Index IndexType;
@@ -193,7 +193,7 @@ class tnlGridTraverser< tnlGrid< 3, Real, Devices::Cuda, Index > >
    public:
       
       typedef tnlGrid< 3, Real, Devices::Cuda, Index > GridType;
-      typedef tnlSharedPointer< GridType > GridPointer;
+      typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::Host DeviceType;
       typedef Index IndexType;

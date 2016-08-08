@@ -39,7 +39,7 @@ set( common_SOURCES
      File.cpp
      Object.cpp
      Logger.cpp
-     tnlSmartPointersRegister.cpp
+     SmartPointersRegister.cpp
      String.cpp
      SystemInfo.cpp
      Timer.cpp

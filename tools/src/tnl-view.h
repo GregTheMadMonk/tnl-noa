@@ -98,13 +98,13 @@ bool setMeshEntityType( const MeshPointer& meshPointer,
 
 template< typename MeshReal,
           typename MeshIndex >
-bool setMeshEntityDimensions( const tnlSharedPointer< tnlGrid< 1, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
+bool setMeshEntityDimensions( const SharedPointer< tnlGrid< 1, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
                               const String& inputFileName,
                               const List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
    typedef tnlGrid< 1, MeshReal, Devices::Host, MeshIndex > Mesh;
-   typedef tnlSharedPointer< Mesh > MeshPointer;
+   typedef SharedPointer< Mesh > MeshPointer;
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
    {
@@ -122,13 +122,13 @@ bool setMeshEntityDimensions( const tnlSharedPointer< tnlGrid< 1, MeshReal, Devi
 
 template< typename MeshReal,
           typename MeshIndex >
-bool setMeshEntityDimensions( const tnlSharedPointer< tnlGrid< 2, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
+bool setMeshEntityDimensions( const SharedPointer< tnlGrid< 2, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
                               const String& inputFileName,
                               const List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
    typedef tnlGrid< 2, MeshReal, Devices::Host, MeshIndex > Mesh;
-   typedef tnlSharedPointer< Mesh > MeshPointer;
+   typedef SharedPointer< Mesh > MeshPointer;
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
    {
@@ -149,13 +149,13 @@ bool setMeshEntityDimensions( const tnlSharedPointer< tnlGrid< 2, MeshReal, Devi
 
 template< typename MeshReal,
           typename MeshIndex >
-bool setMeshEntityDimensions( const tnlSharedPointer< tnlGrid< 3, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
+bool setMeshEntityDimensions( const SharedPointer< tnlGrid< 3, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
                               const String& inputFileName,
                               const List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
    typedef tnlGrid< 3, MeshReal, Devices::Host, MeshIndex > Mesh;
-   typedef tnlSharedPointer< Mesh > MeshPointer;
+   typedef SharedPointer< Mesh > MeshPointer;
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
    {
@@ -378,7 +378,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
    int verbose = parameters. getParameter< int >( "verbose");
    String meshFile = parameters. getParameter< String >( "mesh" );
 
-   typedef tnlSharedPointer< Mesh > MeshPointer;
+   typedef SharedPointer< Mesh > MeshPointer;
    MeshPointer meshPointer;
    
    if( meshFile != "" )

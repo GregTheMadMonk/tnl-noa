@@ -12,7 +12,7 @@
 
 namespace TNL {
 
-#include <TNL/tnlSharedPointer.h>
+#include <TNL/SharedPointer.h>
 
 template< typename Real,
           typename Device,
@@ -22,7 +22,7 @@ class tnlTraverser< tnlGrid< 3, Real, Device, Index >, GridEntity, 3 >
 {
    public:
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      typedef tnlSharedPointer< GridType > GridPointer;
+      typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
@@ -52,7 +52,7 @@ class tnlTraverser< tnlGrid< 3, Real, Device, Index >, GridEntity, 2 >
 {
    public:
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      typedef tnlSharedPointer< GridType > GridPointer;
+      typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
@@ -82,7 +82,7 @@ class tnlTraverser< tnlGrid< 3, Real, Device, Index >, GridEntity, 1 >
 {
    public:
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      typedef tnlSharedPointer< GridType > GridPointer;
+      typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
@@ -113,7 +113,7 @@ class tnlTraverser< tnlGrid< 3, Real, Device, Index >, GridEntity, 0 >
 {
    public:
       typedef tnlGrid< 3, Real, Device, Index > GridType;
-      typedef tnlSharedPointer< GridType > GridPointer;
+      typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;

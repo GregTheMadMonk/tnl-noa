@@ -17,7 +17,7 @@
 namespace TNL {
 namespace Devices {
  
-tnlSmartPointersRegister Cuda::smartPointersRegister;   
+SmartPointersRegister Cuda::smartPointersRegister;   
    
 String Cuda::getDeviceType()
 {
@@ -69,12 +69,12 @@ bool Cuda::setup( const Config::ParameterContainer& parameters,
    return true;
 }
 
-void Cuda::insertSmartPointer( tnlSmartPointer* pointer )
+void Cuda::insertSmartPointer( SmartPointer* pointer )
 {
     smartPointersRegister.insert( pointer, 0 );
 }
 
-void Cuda::removeSmartPointer( tnlSmartPointer* pointer )
+void Cuda::removeSmartPointer( SmartPointer* pointer )
 {
     smartPointersRegister.remove( pointer, 0 );
 }

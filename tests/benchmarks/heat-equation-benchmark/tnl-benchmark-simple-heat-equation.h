@@ -236,9 +236,9 @@ bool writeFunction(
 
 template< typename Real, typename Index >
 bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
-                            tnlTimer& timer,
-                            tnlTimer& computationTimer,
-                            tnlTimer& updateTimer )
+                            Timer& timer,
+                            Timer& computationTimer,
+                            Timer& updateTimer )
 {
    const Real domainXSize = parameters.getParameter< double >( "domain-x-size" );
    const Real domainYSize = parameters.getParameter< double >( "domain-y-size" );
@@ -387,7 +387,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
     */
    typedef tnlGrid< 2, Real, Devices::Cuda, Index > GridType;
    typedef typename GridType::VertexType VertexType;
-   typedef tnlSharedPointer< GridType > GridPointer;
+   typedef SharedPointer< GridType > GridPointer;
    GridPointer gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
    gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
@@ -414,9 +414,9 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
 
 template< typename Real, typename Index >
 bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
-                            tnlTimer& timer,
-                            tnlTimer& computationTimer,
-                            tnlTimer& updateTimer )
+                            Timer& timer,
+                            Timer& computationTimer,
+                            Timer& updateTimer )
 {
    const Real domainXSize = parameters.getParameter< double >( "domain-x-size" );
    const Real domainYSize = parameters.getParameter< double >( "domain-y-size" );
@@ -539,7 +539,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
     */
    typedef tnlGrid< 2, Real, Devices::Host, Index > GridType;
    typedef typename GridType::VertexType VertexType;
-   tnlSharedPointer< GridType > gridPointer;
+   SharedPointer< GridType > gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
    gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
    Vectors::Vector< Real, Devices::Host, Index > vecU;
@@ -579,7 +579,7 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, config, parameters ) )
       return EXIT_FAILURE;
    
-   tnlTimer timer, computationTimer, updateTimer;
+   Timer timer, computationTimer, updateTimer;
    
    String device = parameters.getParameter< String >( "device" );
    if( device == "host" &&

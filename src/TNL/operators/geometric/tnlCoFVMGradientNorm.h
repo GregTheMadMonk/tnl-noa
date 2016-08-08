@@ -49,7 +49,7 @@ class tnlCoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex
       typedef tnlMeshEntitiesInterpolants< MeshType, MeshDimensions - 1, MeshDimensions > OuterOperator;
       typedef tnlOperatorComposition< OuterOperator, InnerOperator > BaseType;
       typedef tnlExactGradientNorm< MeshDimensions, RealType > ExactOperatorType;
-      typedef tnlSharedPointer< MeshType > MeshPointer;
+      typedef SharedPointer< MeshType > MeshPointer;
          
       tnlCoFVMGradientNorm( const OuterOperator& outerOperator,
                             InnerOperator& innerOperator,

@@ -30,7 +30,7 @@ class Euler : public ExplicitSolver< Problem >
    typedef typename Problem :: RealType RealType;
    typedef typename Problem :: DeviceType DeviceType;
    typedef typename Problem :: IndexType IndexType;
-   typedef tnlSharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+   typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
 
 
    Euler();
@@ -59,7 +59,7 @@ class Euler : public ExplicitSolver< Problem >
 
    RealType cflCondition;
  
-   //tnlTimer timer, updateTimer;
+   //Timer timer, updateTimer;
 };
 
 } // namespace ODE

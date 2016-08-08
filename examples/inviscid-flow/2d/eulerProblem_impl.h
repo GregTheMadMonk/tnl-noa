@@ -265,10 +265,10 @@ getExplicitRHS( const RealType& time,
    MeshFunctionPointer uEnergy( mesh, _uEnergy ); 
    MeshFunctionPointer fuEnergy( mesh, _fuEnergy );
    //generate Operators
-   tnlSharedPointer< Continuity > lF2DContinuity;
-   tnlSharedPointer< MomentumX > lF2DMomentumX;
-   tnlSharedPointer< MomentumY > lF2DMomentumY;
-   tnlSharedPointer< Energy > lF2DEnergy;
+   SharedPointer< Continuity > lF2DContinuity;
+   SharedPointer< MomentumX > lF2DMomentumX;
+   SharedPointer< MomentumY > lF2DMomentumY;
+   SharedPointer< Energy > lF2DEnergy;
 
    this->bindDofs( mesh, _u );
    //rho

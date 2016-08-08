@@ -49,7 +49,7 @@ class tnlOperatorComposition
       typedef typename InnerOperator::IndexType IndexType;
       typedef tnlExactOperatorComposition< typename OuterOperator::ExactOperatorType,
                                            typename InnerOperator::ExactOperatorType > ExactOperatorType;
-      typedef tnlSharedPointer< MeshType > MeshPointer;
+      typedef SharedPointer< MeshType > MeshPointer;
       
       static constexpr int getPreimageEntitiesDimensions() { return InnerOperator::getImageEntitiesDimensions(); };
       static constexpr int getImageEntitiesDimensions() { return OuterOperator::getImageEntitiesDimensions(); };
@@ -130,7 +130,7 @@ class tnlOperatorComposition< OuterOperator, InnerOperator, void >
       typedef Functions::OperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
       typedef typename InnerOperator::RealType RealType;
       typedef typename InnerOperator::IndexType IndexType;
-      typedef tnlSharedPointer< MeshType > MeshPointer;
+      typedef SharedPointer< MeshType > MeshPointer;
       
       tnlOperatorComposition( const OuterOperator& outerOperator,
                               InnerOperator& innerOperator,

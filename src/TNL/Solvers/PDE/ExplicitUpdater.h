@@ -12,7 +12,7 @@
 
 #include <TNL/Functions/FunctionAdapter.h>
 #include <TNL/Timer.h>
-#include <TNL/tnlSharedPointer.h>
+#include <TNL/SharedPointer.h>
 
 namespace TNL {
 namespace Solvers {
@@ -76,7 +76,7 @@ class ExplicitUpdater
 {
    public:
       typedef Mesh MeshType;
-      typedef tnlSharedPointer< MeshType > MeshPointer;
+      typedef SharedPointer< MeshType > MeshPointer;
       typedef typename MeshFunction::RealType RealType;
       typedef typename MeshFunction::DeviceType DeviceType;
       typedef typename MeshFunction::IndexType IndexType;
@@ -85,15 +85,15 @@ class ExplicitUpdater
                                                    DifferentialOperator,
                                                    BoundaryConditions,
                                                    RightHandSide > TraverserUserData;
-      typedef tnlSharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
-      typedef tnlSharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-      typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-      typedef tnlSharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
+      typedef SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
+      typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
+      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      typedef SharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
       
       ExplicitUpdater()
       : gpuTransferTimer( 0 ){}
  
-      void setGPUTransferTimer( tnlTimer& timer )
+      void setGPUTransferTimer( Timer& timer )
       {
          this->gpuTransferTimer = &timer;
       }
@@ -146,7 +146,7 @@ class ExplicitUpdater
  
    protected:
  
-      tnlTimer* gpuTransferTimer;
+      Timer* gpuTransferTimer;
 };
 
 } // namespace PDE

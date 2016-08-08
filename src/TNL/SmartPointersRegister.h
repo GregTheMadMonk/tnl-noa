@@ -8,20 +8,39 @@
  ***************************************************************************/
 
 /***************************************************************************
-                          tnlSmartPointer.h  -  description
+                          SmartPointersRegister.h  -  description
                              -------------------
-    begin                : May 30, 2016
+    begin                : Apr 29, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 #pragma once
 
-class tnlSmartPointer
-{
+#include <vector>
+#include <list>
+#include <TNL/SmartPointer.h>
+#include <TNL/Assert.h>
+
+class SmartPointersRegister
+{   
+  
    public:
-      
-      virtual bool synchronize() = 0;      
    
+      SmartPointersRegister( int devicesCount = 1 );
+      
+      void insert( SmartPointer* pointer, int deviceId );
+      
+      void remove( SmartPointer* pointer, int deviceId );
+      
+      bool synchronizeDevice( int deviceId );
+      
+   protected:
+      
+      typedef std::list< SmartPointer* > ListType;   
+      
+      std::vector< ListType > pointersOnDevices;
+      
+      int devicesCount;
 };
 

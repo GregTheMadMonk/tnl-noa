@@ -8,7 +8,7 @@
  ***************************************************************************/
 
 /***************************************************************************
-                          tnlSmartPointersRegister.cpp  -  description
+                          SmartPointersRegister.cpp  -  description
                              -------------------
     begin                : Apr 29, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -16,16 +16,16 @@
  ***************************************************************************/
 
 #include <iostream>
-#include <TNL/tnlSmartPointersRegister.h>
+#include <TNL/SmartPointersRegister.h>
 
-tnlSmartPointersRegister::tnlSmartPointersRegister( int devicesCount )
+SmartPointersRegister::SmartPointersRegister( int devicesCount )
 {
    Assert( devicesCount > 0, std::cerr << "devicesCount = " << devicesCount );
    pointersOnDevices.resize( devicesCount );
    this->devicesCount = devicesCount;
 }
 
-void tnlSmartPointersRegister::insert( tnlSmartPointer* pointer, int deviceId )
+void SmartPointersRegister::insert( SmartPointer* pointer, int deviceId )
 {
    Assert( deviceId >= 0 && deviceId < this->devicesCount,
               std::cerr << "deviceId = " << deviceId << " devicesCount = " << this->devicesCount );
@@ -33,7 +33,7 @@ void tnlSmartPointersRegister::insert( tnlSmartPointer* pointer, int deviceId )
    pointersOnDevices[ deviceId ].push_back( pointer );
 }
 
-void tnlSmartPointersRegister::remove( tnlSmartPointer* pointer, int deviceId )
+void SmartPointersRegister::remove( SmartPointer* pointer, int deviceId )
 {
    Assert( deviceId >= 0 && deviceId < this->devicesCount,
               std::cerr << "deviceId = " << deviceId << " devicesCount = " << this->devicesCount );   
@@ -41,7 +41,7 @@ void tnlSmartPointersRegister::remove( tnlSmartPointer* pointer, int deviceId )
 }
 
 
-bool tnlSmartPointersRegister::synchronizeDevice( int deviceId )
+bool SmartPointersRegister::synchronizeDevice( int deviceId )
 {
    for( ListType::iterator it = pointersOnDevices[ deviceId ].begin();
         it != pointersOnDevices[ deviceId ].end();

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTimer.cpp  -  description
+                          Timer.cpp  -  description
                              -------------------
     begin                : Mar 14, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -22,14 +22,14 @@
 
 namespace TNL {
 
-tnlTimer defaultTimer;
+Timer defaultTimer;
 
-tnlTimer::tnlTimer()
+Timer::Timer()
 {
    reset();
 }
 
-void tnlTimer::reset()
+void Timer::reset()
 {
    this->initialCPUTime = 0;
    this->totalCPUTime = 0.0;
@@ -40,7 +40,7 @@ void tnlTimer::reset()
    this->stopState = true;
 }
 
-void tnlTimer::stop()
+void Timer::stop()
 {
 
    if( ! this->stopState )
@@ -71,7 +71,7 @@ void tnlTimer::stop()
    }
 }
 
-void tnlTimer::start()
+void Timer::start()
 {
    /****
     * Real time
@@ -99,7 +99,7 @@ void tnlTimer::start()
    this->stopState = false;
 }
 
-double tnlTimer::getRealTime()
+double Timer::getRealTime()
 {
 #ifdef HAVE_TIME
    if( ! this->stopState )
@@ -113,7 +113,7 @@ double tnlTimer::getRealTime()
 #endif
 }
 
-double tnlTimer::getCPUTime()
+double Timer::getCPUTime()
 {
 #ifdef HAVE_SYS_RESOURCE_H
    if( ! this->stopState )
@@ -127,7 +127,7 @@ double tnlTimer::getCPUTime()
 #endif
 }
 
-unsigned long long int tnlTimer::getCPUCycles()
+unsigned long long int Timer::getCPUCycles()
 {
    if( ! this->stopState )
    {
@@ -137,7 +137,7 @@ unsigned long long int tnlTimer::getCPUCycles()
    return this->totalCPUCycles;
 }
 
-bool tnlTimer::writeLog( Logger& logger, int logLevel )
+bool Timer::writeLog( Logger& logger, int logLevel )
 {
    logger.writeParameter< double                 >( "Real time:",  this->getRealTime(),  logLevel );
    logger.writeParameter< double                 >( "CPU time:",   this->getCPUTime(),   logLevel );

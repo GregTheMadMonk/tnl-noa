@@ -37,8 +37,8 @@ class CG : public Object,
    typedef typename Matrix::DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
-   typedef tnlSharedPointer< PreconditionerType, DeviceType > PreconditionerPointer;
+   typedef SharedPointer< MatrixType, DeviceType > MatrixPointer;
+   typedef SharedPointer< PreconditionerType, DeviceType > PreconditionerPointer;
    // TODO: make this const
 
 

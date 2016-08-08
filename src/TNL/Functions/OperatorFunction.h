@@ -71,7 +71,7 @@ class OperatorFunction< Operator, MeshFunctionT, void, true >
       typedef typename OperatorType::IndexType IndexType;
       typedef typename OperatorType::ExactOperatorType ExactOperatorType;
       typedef MeshFunction< MeshType, OperatorType::getPreimageEntitiesDimensions() > PreimageFunctionType;
-      typedef tnlSharedPointer< MeshType, DeviceType > MeshPointer;
+      typedef SharedPointer< MeshType, DeviceType > MeshPointer;
       
       static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
       
@@ -150,7 +150,7 @@ class OperatorFunction< Operator, PreimageFunction, void, false >
       typedef Functions::MeshFunction< MeshType, Operator::getImageEntitiesDimensions() > ImageFunctionType;
       typedef OperatorFunction< Operator, PreimageFunction, void, true > OperatorFunctionType;
       typedef typename OperatorType::ExactOperatorType ExactOperatorType;
-      typedef tnlSharedPointer< MeshType, DeviceType > MeshPointer;
+      typedef SharedPointer< MeshType, DeviceType > MeshPointer;
       
       static constexpr int getEntitiesDimensions() { return OperatorType::getImageEntitiesDimensions(); };     
       
@@ -250,7 +250,7 @@ class OperatorFunction< Operator, PreimageFunction, BoundaryConditions, false >
  
       typedef Operator OperatorType;
       typedef typename OperatorType::MeshType MeshType;
-      typedef tnlSharedPointer< MeshType > MeshPointer;
+      typedef SharedPointer< MeshType > MeshPointer;
       typedef typename OperatorType::RealType RealType;
       typedef typename OperatorType::DeviceType DeviceType;
       typedef typename OperatorType::IndexType IndexType;

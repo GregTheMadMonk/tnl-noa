@@ -266,9 +266,9 @@ getExplicitRHS( const RealType& time,
     this->fuEnergy->bind(mesh, _u, 2 * count);
 
    //generating Differential operator object
-   tnlSharedPointer< Continuity > lF1DContinuity;
-   tnlSharedPointer< Momentum > lF1DMomentum;
-   tnlSharedPointer< Energy > lF1DEnergy;
+   SharedPointer< Continuity > lF1DContinuity;
+   SharedPointer< Momentum > lF1DMomentum;
+   SharedPointer< Energy > lF1DEnergy;
 
    
    

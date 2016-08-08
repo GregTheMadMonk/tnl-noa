@@ -596,7 +596,7 @@ assemblyLinearSystem( const RealType& time,
                              typename DofVectorPointer::ObjectType > systemAssembler;
 
    typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-   typedef tnlSharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
+   typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
    MeshFunctionPointer u( mesh, *_u );
    systemAssembler.template assembly< typename Mesh::Cell >( time,
                                                              tau,

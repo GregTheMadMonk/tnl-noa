@@ -34,9 +34,9 @@ class SemiImplicitTimeStepper
    typedef LinearSystemSolver LinearSystemSolverType;
    typedef typename LinearSystemSolverType::PreconditionerType PreconditionerType;
    typedef typename ProblemType::MatrixType MatrixType;
-   typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
-   typedef tnlSharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-   typedef tnlSharedPointer< PreconditionerType, DeviceType > PreconditionerPointer;
+   typedef SharedPointer< MatrixType, DeviceType > MatrixPointer;
+   typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+   typedef SharedPointer< PreconditionerType, DeviceType > PreconditionerPointer;
 
    SemiImplicitTimeStepper();
 
@@ -80,7 +80,7 @@ class SemiImplicitTimeStepper
 
    RealType timeStep;
 
-   tnlTimer preIterateTimer, linearSystemAssemblerTimer, preconditionerUpdateTimer, linearSystemSolverTimer, postIterateTimer;
+   Timer preIterateTimer, linearSystemAssemblerTimer, preconditionerUpdateTimer, linearSystemSolverTimer, postIterateTimer;
  
    bool verbose;
  

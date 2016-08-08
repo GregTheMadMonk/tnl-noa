@@ -197,7 +197,7 @@ setupLinearSystem( const MeshPointer& mesh,
 {
    const IndexType dofs = this->getDofs( mesh );
    typedef typename Matrix::ObjectType::CompressedRowsLengthsVector CompressedRowsLengthsVectorType;
-   tnlSharedPointer< CompressedRowsLengthsVectorType > rowLengths;
+   SharedPointer< CompressedRowsLengthsVectorType > rowLengths;
    if( ! rowLengths->setSize( dofs ) )
       return false;
    Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowsLengthsVectorType > matrixSetter;
@@ -280,8 +280,8 @@ getExplicitRHS( const RealType& time,
 */  { 
    this->bindDofs( mesh, _u );
    Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-   tnlSharedPointer< MeshFunctionType > u( mesh, _u ); 
-   tnlSharedPointer< MeshFunctionType > fu( mesh, _fu );
+   SharedPointer< MeshFunctionType > u( mesh, _u ); 
+   SharedPointer< MeshFunctionType > fu( mesh, _fu );
    differentialOperatorPointer->setTau(tau); 
    explicitUpdater.template update< typename Mesh::Cell >( time,
                                                            mesh,

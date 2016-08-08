@@ -23,7 +23,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/tnlUniquePointer.h>
+#include <TNL/UniquePointer.h>
 #include <TNL/Arrays/StaticArray.h>
 
 using namespace TNL;

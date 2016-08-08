@@ -21,9 +21,9 @@ class MatrixSetterTraversalUserData
    public:
       
       typedef typename CompressedRowsLengthsVector::DeviceType DeviceType;
-      typedef tnlSharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
-      typedef tnlSharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-      typedef tnlSharedPointer< CompressedRowsLengthsVector, DeviceType > CompressedRowsLengthsVectorPointer;
+      typedef SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
+      typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
+      typedef SharedPointer< CompressedRowsLengthsVector, DeviceType > CompressedRowsLengthsVectorPointer;
 
 
       const DifferentialOperatorPointer differentialOperatorPointer;
@@ -50,15 +50,15 @@ class MatrixSetter
 {
    public:
    typedef Mesh MeshType;
-   typedef tnlSharedPointer< MeshType > MeshPointer;
+   typedef SharedPointer< MeshType > MeshPointer;
    typedef typename MeshType::DeviceType DeviceType;
    typedef typename CompressedRowsLengthsVector::RealType IndexType;
    typedef MatrixSetterTraversalUserData< DifferentialOperator,
                                              BoundaryConditions,
                                              CompressedRowsLengthsVector > TraversalUserData;
-   typedef tnlSharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
-   typedef tnlSharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-   typedef tnlSharedPointer< CompressedRowsLengthsVector, DeviceType > CompressedRowsLengthsVectorPointer;
+   typedef SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
+   typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
+   typedef SharedPointer< CompressedRowsLengthsVector, DeviceType > CompressedRowsLengthsVectorPointer;
 
    template< typename EntityType >
    void getCompressedRowsLengths( const MeshPointer& meshPointer,

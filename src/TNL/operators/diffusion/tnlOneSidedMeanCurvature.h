@@ -31,7 +31,7 @@ class tnlOneSidedMeanCurvature
    public:
  
       typedef Mesh MeshType;
-      typedef tnlSharedPointer< MeshType > MeshPointer;
+      typedef SharedPointer< MeshType > MeshPointer;
       typedef Real RealType;
       typedef Index IndexType;
       typedef tnlFDMGradientNorm< MeshType, tnlForwardFiniteDifference, RealType, IndexType > GradientNorm;

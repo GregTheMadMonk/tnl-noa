@@ -17,7 +17,7 @@
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
-#include <TNL/tnlSharedPointer.h>
+#include <TNL/SharedPointer.h>
 
 namespace TNL {
 namespace Solvers {
@@ -38,8 +38,8 @@ class GMRES : public Object,
    typedef typename Matrix :: DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
-   // TODO: make this: typedef tnlSharedPointer< const MatrixType, DeviceType > ConstMatrixPointer;
+   typedef SharedPointer< MatrixType, DeviceType > MatrixPointer;
+   // TODO: make this: typedef SharedPointer< const MatrixType, DeviceType > ConstMatrixPointer;
 
    GMRES();
 

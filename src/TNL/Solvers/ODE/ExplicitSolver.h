@@ -19,7 +19,7 @@
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/tnlSharedPointer.h>
+#include <TNL/SharedPointer.h>
 
 namespace TNL {
 namespace Solvers {
@@ -36,7 +36,7 @@ class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
    typedef typename Problem :: RealType RealType;
    typedef typename Problem :: DeviceType DeviceType;
    typedef typename Problem :: IndexType IndexType;
-   typedef tnlSharedPointer< DofVectorType, DeviceType >  DofVectorPointer;
+   typedef SharedPointer< DofVectorType, DeviceType >  DofVectorPointer;
 
    ExplicitSolver();
 

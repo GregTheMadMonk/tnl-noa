@@ -34,7 +34,7 @@ class tnlApproximationError
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::VertexType VertexType;
-      typedef tnlSharedPointer< MeshType > MeshPointer;
+      typedef SharedPointer< MeshType > MeshPointer;
       typedef Functions::Analytic::ConstantFunction< MeshType::meshDimensions, RealType > ConstantFunctionType;
       typedef tnlDirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
 

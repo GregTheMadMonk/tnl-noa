@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlTimerCPUH
-#define tnlTimerCPUH
+#ifndef TimerCPUH
+#define TimerCPUH
 
 // TODO: remove this file
 

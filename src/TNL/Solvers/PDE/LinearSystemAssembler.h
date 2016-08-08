@@ -28,12 +28,12 @@ class LinearSystemAssemblerTraverserUserData
    public:
       typedef Matrix MatrixType;
       typedef typename Matrix::DeviceType DeviceType;
-      typedef tnlSharedPointer< Matrix, DeviceType > MatrixPointer;
-      typedef tnlSharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
-      typedef tnlSharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-      typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-      typedef tnlSharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
-      typedef tnlSharedPointer< DofVector, DeviceType > DofVectorPointer;
+      typedef SharedPointer< Matrix, DeviceType > MatrixPointer;
+      typedef SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
+      typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
+      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      typedef SharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
+      typedef SharedPointer< DofVector, DeviceType > DofVectorPointer;
 
       const Real* time;
 
@@ -101,12 +101,12 @@ class LinearSystemAssembler
                                                       MatrixType,
                                                       DofVector > TraverserUserData;
 
-   typedef tnlSharedPointer< Matrix, DeviceType > MatrixPointer;
-   typedef tnlSharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
-   typedef tnlSharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-   typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-   typedef tnlSharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
-   typedef tnlSharedPointer< DofVector, DeviceType > DofVectorPointer;
+   typedef SharedPointer< Matrix, DeviceType > MatrixPointer;
+   typedef SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
+   typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
+   typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+   typedef SharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
+   typedef SharedPointer< DofVector, DeviceType > DofVectorPointer;
    
       
    template< typename EntityType >

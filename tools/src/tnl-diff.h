@@ -425,7 +425,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
     */
    String meshFile = parameters. getParameter< String >( "mesh" );
    
-   typedef tnlSharedPointer< Mesh > MeshPointer;
+   typedef SharedPointer< Mesh > MeshPointer;
 
    MeshPointer meshPointer;
    if( meshFile != "" )

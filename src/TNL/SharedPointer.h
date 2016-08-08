@@ -8,7 +8,7 @@
  ***************************************************************************/
 
 /***************************************************************************
-                          tnlSharedPointer.h  -  description
+                          SharedPointer.h  -  description
                              -------------------
     begin                : May 6, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -20,7 +20,7 @@
 #include <utility>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/tnlSmartPointer.h>
+#include <TNL/SmartPointer.h>
 
 namespace TNL {
 
@@ -32,7 +32,7 @@ template< typename Object,
           typename Device = typename Object::DeviceType,
           bool lazy = false,
           bool isConst = std::is_const< Object >::value >
-class tnlSharedPointer
+class SharedPointer
 {
    static_assert( ! std::is_same< Device, void >::value, "The device cannot be void. You need to specify the device explicitly in your code." );
 };
@@ -41,17 +41,17 @@ class tnlSharedPointer
  * Non-const specialization
  */
 template< typename Object, bool lazy >
-class tnlSharedPointer< Object, Devices::Host, lazy, false > : public tnlSmartPointer
+class SharedPointer< Object, Devices::Host, lazy, false > : public SmartPointer
 {   
    public:
       
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
-      typedef tnlSharedPointer< Object, Devices::Host, lazy, false > ThisType;
-      typedef tnlSharedPointer< const Object, Devices::Host, lazy, true > ConstThisType;
+      typedef SharedPointer< Object, Devices::Host, lazy, false > ThisType;
+      typedef SharedPointer< const Object, Devices::Host, lazy, true > ConstThisType;
          
       template< typename... Args >
-      explicit  tnlSharedPointer( Args... args )
+      explicit  SharedPointer( Args... args )
       : counter( 0 ), pointer( 0 )
       {
          if( ! lazy )
@@ -62,7 +62,7 @@ class tnlSharedPointer< Object, Devices::Host, lazy, false > : public tnlSmartPo
          }
       }
       
-      tnlSharedPointer( const ThisType& pointer )
+      SharedPointer( const ThisType& pointer )
       : pointer( pointer.pointer ),
         counter( pointer.counter )
       {
@@ -155,7 +155,7 @@ class tnlSharedPointer< Object, Devices::Host, lazy, false > : public tnlSmartPo
          return true;
       }
       
-      ~tnlSharedPointer()
+      ~SharedPointer()
       {
          this->free();
       }
@@ -187,17 +187,17 @@ class tnlSharedPointer< Object, Devices::Host, lazy, false > : public tnlSmartPo
  * Const specialization
  */
 template< typename Object, bool lazy >
-class tnlSharedPointer< Object, Devices::Host, lazy, true > : public tnlSmartPointer
+class SharedPointer< Object, Devices::Host, lazy, true > : public SmartPointer
 {   
    public:
       
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
-      typedef tnlSharedPointer< Object, Devices::Host, lazy, true > ThisType;
+      typedef SharedPointer< Object, Devices::Host, lazy, true > ThisType;
       typedef typename std::remove_const< Object >::type NonConstObjectType;
          
       template< typename... Args >
-      explicit  tnlSharedPointer( Args... args )
+      explicit  SharedPointer( Args... args )
       : counter( 0 ), pointer( 0 )
       {
          if( ! lazy )
@@ -208,14 +208,14 @@ class tnlSharedPointer< Object, Devices::Host, lazy, true > : public tnlSmartPoi
          }
       }
       
-      tnlSharedPointer( const ThisType& pointer )
+      SharedPointer( const ThisType& pointer )
       : pointer( pointer.pointer ),
         counter( pointer.counter )
       {
          *counter++;
       }
       
-      tnlSharedPointer( const tnlSharedPointer< NonConstObjectType, Devices::Host, lazy >& pointer )
+      SharedPointer( const SharedPointer< NonConstObjectType, Devices::Host, lazy >& pointer )
       : pointer( pointer.pointer ),
         counter( pointer.counter )
       {
@@ -268,7 +268,7 @@ class tnlSharedPointer< Object, Devices::Host, lazy, true > : public tnlSmartPoi
          return *( this->pointer );
       }
       
-      const ThisType& operator=( const tnlSharedPointer< NonConstObjectType, Devices::Host >& ptr )
+      const ThisType& operator=( const SharedPointer< NonConstObjectType, Devices::Host >& ptr )
       {
          this->free();
          this->pointer = ptr.pointer;
@@ -303,7 +303,7 @@ class tnlSharedPointer< Object, Devices::Host, lazy, true > : public tnlSmartPoi
          return true;
       }
       
-      ~tnlSharedPointer()
+      ~SharedPointer()
       {
          this->free();
       }
@@ -335,16 +335,16 @@ class tnlSharedPointer< Object, Devices::Host, lazy, true > : public tnlSmartPoi
  * Non-const specialization for CUDA
  */
 template< typename Object, bool lazy >
-class tnlSharedPointer< Object, Devices::Cuda, lazy, false > : public tnlSmartPointer
+class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
 {
    public:
       
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
-      typedef tnlSharedPointer< Object, Devices::Cuda, lazy > ThisType;
+      typedef SharedPointer< Object, Devices::Cuda, lazy > ThisType;
 
       template< typename... Args >
-      explicit  tnlSharedPointer( Args... args )
+      explicit  SharedPointer( Args... args )
       : counter( 0 ), cuda_pointer( 0 ), 
         pointer( 0 ), modified( false )
       {
@@ -361,7 +361,7 @@ class tnlSharedPointer< Object, Devices::Cuda, lazy, false > : public tnlSmartPo
          }
       }
                   
-      tnlSharedPointer( const ThisType& pointer )
+      SharedPointer( const ThisType& pointer )
       : pointer( pointer.pointer ),
         cuda_pointer( pointer.cuda_pointer ),
         counter( pointer.counter ),
@@ -516,7 +516,7 @@ class tnlSharedPointer< Object, Devices::Cuda, lazy, false > : public tnlSmartPo
 #endif         
       }
             
-      ~tnlSharedPointer()
+      ~SharedPointer()
       {
          this->free();
 #ifdef HAVE_CUDA         
@@ -559,17 +559,17 @@ class tnlSharedPointer< Object, Devices::Cuda, lazy, false > : public tnlSmartPo
  * Const specialization for CUDA
  */
 template< typename Object, bool lazy >
-class tnlSharedPointer< Object, Devices::Cuda, lazy, true > : public tnlSmartPointer
+class SharedPointer< Object, Devices::Cuda, lazy, true > : public SmartPointer
 {
    public:
       
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
-      typedef tnlSharedPointer< Object, Devices::Cuda, lazy > ThisType;
+      typedef SharedPointer< Object, Devices::Cuda, lazy > ThisType;
       typedef typename std::remove_const< Object >::type NonConstObjectType;      
 
       template< typename... Args >
-      explicit  tnlSharedPointer( Args... args )
+      explicit  SharedPointer( Args... args )
       : counter( 0 ), cuda_pointer( 0 ), 
         pointer( 0 ), modified( false )
       {
@@ -586,7 +586,7 @@ class tnlSharedPointer< Object, Devices::Cuda, lazy, true > : public tnlSmartPoi
          }
       }
                   
-      tnlSharedPointer( const ThisType& pointer )
+      SharedPointer( const ThisType& pointer )
       : pointer( pointer.pointer ),
         cuda_pointer( pointer.cuda_pointer ),
         counter( pointer.counter ),
@@ -595,7 +595,7 @@ class tnlSharedPointer< Object, Devices::Cuda, lazy, true > : public tnlSmartPoi
          *counter++;
       }
       
-      tnlSharedPointer( const tnlSharedPointer< NonConstObjectType, Devices::Cuda, lazy >& pointer )
+      SharedPointer( const SharedPointer< NonConstObjectType, Devices::Cuda, lazy >& pointer )
       : pointer( pointer.pointer ),
         cuda_pointer( pointer.cuda_pointer ),
         counter( pointer.counter )
@@ -692,7 +692,7 @@ class tnlSharedPointer< Object, Devices::Cuda, lazy, true > : public tnlSmartPoi
          return *this;
       }*/
 
-      const ThisType& operator=( const tnlSharedPointer< NonConstObjectType, Devices::Cuda >& ptr )
+      const ThisType& operator=( const SharedPointer< NonConstObjectType, Devices::Cuda >& ptr )
       {
          this->free();
          this->pointer = ptr.pointer;
@@ -719,7 +719,7 @@ class tnlSharedPointer< Object, Devices::Cuda, lazy, true > : public tnlSmartPoi
          return true;
       }
             
-      ~tnlSharedPointer()
+      ~SharedPointer()
       {
          this->free();
 #ifdef HAVE_CUDA         

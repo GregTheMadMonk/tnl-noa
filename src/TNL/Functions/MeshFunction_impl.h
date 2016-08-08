@@ -170,7 +170,7 @@ template< typename Mesh,
 void
 MeshFunction< Mesh, MeshEntityDimensions, Real >::
 bind( const MeshPointer& meshPointer,
-      const tnlSharedPointer< Vector >& data,
+      const SharedPointer< Vector >& data,
       const IndexType& offset )
 {
    this->meshPointer = meshPointer;

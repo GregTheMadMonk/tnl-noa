@@ -23,10 +23,10 @@ class eulerProblem:
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef tnlSharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
-      typedef tnlSharedPointer< DifferentialOperator > DifferentialOperatorPointer;
-      typedef tnlSharedPointer< BoundaryCondition > BoundaryConditionPointer;
-      typedef tnlSharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
+      typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
+      typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
+      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
       typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;      
       
       using typename BaseType::MeshType;

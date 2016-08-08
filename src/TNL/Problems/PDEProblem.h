@@ -30,11 +30,11 @@ class PDEProblem : public Problem< Real, Device, Index >
       using typename BaseType::IndexType;
 
       typedef Mesh MeshType;
-      typedef tnlSharedPointer< MeshType, DeviceType > MeshPointer;
+      typedef SharedPointer< MeshType, DeviceType > MeshPointer;
       typedef Vectors::Vector< RealType, DeviceType, IndexType> DofVectorType;
-      typedef tnlSharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+      typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
       typedef Matrices::CSRMatrix< RealType, DeviceType, IndexType > MatrixType;
-      typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
+      typedef SharedPointer< MatrixType, DeviceType > MatrixPointer;
       typedef Vectors::Vector< RealType, DeviceType, IndexType > MeshDependentDataType;
 
       /****

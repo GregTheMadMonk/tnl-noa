@@ -20,7 +20,7 @@
 #include <utility>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/tnlSmartPointer.h>
+#include <TNL/SmartPointer.h>
 
 namespace TNL { 
 
@@ -30,7 +30,7 @@ class tnlUniquePointer
 };
 
 template< typename Object >
-class tnlUniquePointer< Object, Devices::Host > : public tnlSmartPointer
+class tnlUniquePointer< Object, Devices::Host > : public SmartPointer
 {
    public:
       
@@ -112,7 +112,7 @@ class tnlUniquePointer< Object, Devices::Host > : public tnlSmartPointer
 };
 
 template< typename Object >
-class tnlUniquePointer< Object, Devices::Cuda > : public tnlSmartPointer
+class tnlUniquePointer< Object, Devices::Cuda > : public SmartPointer
 {
    public:
       

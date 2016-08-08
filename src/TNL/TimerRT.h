@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef tnlTimerRTH
-#define tnlTimerRTH
+#ifndef TimerRTH
+#define TimerRTH
 
 #include <TNL/core/mpi-supp.h>
 

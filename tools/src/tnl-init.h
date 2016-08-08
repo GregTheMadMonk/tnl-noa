@@ -28,7 +28,7 @@ template< typename MeshType,
           int zDiff >
 bool renderFunction( const Config::ParameterContainer& parameters )
 {
-   tnlSharedPointer< MeshType > meshPointer;
+   SharedPointer< MeshType > meshPointer;
    String meshFile = parameters.getParameter< String >( "mesh" );
    std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
    if( ! meshPointer->load( meshFile ) )

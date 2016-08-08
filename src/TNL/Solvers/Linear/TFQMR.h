@@ -38,8 +38,8 @@ class TFQMR : public Object,
    typedef typename Matrix::DeviceType DeviceType;
    typedef Matrix MatrixType;
    typedef Preconditioner PreconditionerType;
-   typedef tnlSharedPointer< MatrixType, DeviceType > MatrixPointer;
-   // TODO: make this: typedef tnlSharedPointer< const MatrixType, DeviceType > ConstMatrixPointer;
+   typedef SharedPointer< MatrixType, DeviceType > MatrixPointer;
+   // TODO: make this: typedef SharedPointer< const MatrixType, DeviceType > ConstMatrixPointer;
 
    public:
 

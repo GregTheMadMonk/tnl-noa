@@ -12,7 +12,7 @@
 #include <TNL/Functions/Domain.h>
 #include <TNL/Functions/MeshFunctionGnuplotWriter.h>
 #include <TNL/Functions/MeshFunctionVTKWriter.h>
-#include <TNL/tnlSharedPointer.h>
+#include <TNL/SharedPointer.h>
 
 #pragma once
 
@@ -31,7 +31,7 @@ class MeshFunction :
    public:
       
       typedef Mesh MeshType;
-      typedef tnlSharedPointer< MeshType > MeshPointer;
+      typedef SharedPointer< MeshType > MeshPointer;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
       typedef Real RealType;
@@ -74,7 +74,7 @@ class MeshFunction :
       
       template< typename Vector >
       void bind( const MeshPointer& meshPointer,
-                 const tnlSharedPointer< Vector >& dataPtr,
+                 const SharedPointer< Vector >& dataPtr,
                  const IndexType& offset = 0 );
       
       

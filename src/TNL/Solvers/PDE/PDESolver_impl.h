@@ -284,13 +284,13 @@ getTimeStepOrder() const
 }
 
 template< typename Problem, typename TimeStepper >
-void PDESolver< Problem, TimeStepper > :: setIoTimer( tnlTimer& ioTimer )
+void PDESolver< Problem, TimeStepper > :: setIoTimer( Timer& ioTimer )
 {
    this->ioTimer = &ioTimer;
 }
 
 template< typename Problem, typename TimeStepper >
-void PDESolver< Problem, TimeStepper > :: setComputeTimer( tnlTimer& computeTimer )
+void PDESolver< Problem, TimeStepper > :: setComputeTimer( Timer& computeTimer )
 {
    this->computeTimer = &computeTimer;
 }

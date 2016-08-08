@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTimer.h  -  description
+                          Timer.h  -  description
                              -------------------
     begin                : Mar 14, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -15,11 +15,11 @@
 
 namespace TNL {
 
-class tnlTimer
+class Timer
 {
    public:
  
-      tnlTimer();
+      Timer();
 
       void reset();
 
@@ -52,7 +52,7 @@ class tnlTimer
    }
 };
 
-extern tnlTimer defaultTimer;
+extern Timer defaultTimer;
 
 } // namespace TNL
 

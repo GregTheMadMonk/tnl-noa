@@ -32,10 +32,10 @@ class ExplicitTimeStepper
    typedef typename Problem::DeviceType DeviceType;
    typedef typename Problem::IndexType IndexType;
    typedef typename Problem::MeshType MeshType;
-   typedef tnlSharedPointer< MeshType > MeshPointer;
+   typedef SharedPointer< MeshType > MeshPointer;
    typedef typename ProblemType::DofVectorType DofVectorType;
    typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
-   typedef tnlSharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+   typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
 
    ExplicitTimeStepper();
 
@@ -82,7 +82,7 @@ class ExplicitTimeStepper
 
    MeshDependentDataType* meshDependentData;
  
-   tnlTimer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
+   Timer preIterateTimer, explicitUpdaterTimer, mainTimer, postIterateTimer;
  
    long long int allIterations;
 };

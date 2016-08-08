@@ -20,7 +20,7 @@ class tnlTraverser< tnlGrid< 2, Real, Device, Index >, GridEntity, 2 >
 {
    public:
       typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlSharedPointer< GridType > GridPointer;
+      typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
@@ -50,7 +50,7 @@ class tnlTraverser< tnlGrid< 2, Real, Device, Index >, GridEntity, 1 >
 {
    public:
       typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlSharedPointer< GridType > GridPointer;
+      typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
@@ -81,7 +81,7 @@ class tnlTraverser< tnlGrid< 2, Real, Device, Index >, GridEntity, 0 >
 {
    public:
       typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlSharedPointer< GridType > GridPointer;
+      typedef SharedPointer< GridType > GridPointer;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;

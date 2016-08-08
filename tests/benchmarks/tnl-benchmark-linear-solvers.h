@@ -18,7 +18,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Timer.h>
-#include <TNL/tnlSharedPointer.h>
+#include <TNL/SharedPointer.h>
 #include <TNL/Matrices/DenseMatrix.h>
 #include <TNL/Matrices/TridiagonalMatrix.h>
 #include <TNL/Matrices/MultidiagonalMatrix.h>
@@ -67,15 +67,15 @@ void configSetup( Config::ConfigDescription& config )
 
 template< typename Solver >
 bool benchmarkSolver( const Config::ParameterContainer& parameters,
-                      tnlSharedPointer< typename Solver::MatrixType >& matrix)
+                      SharedPointer< typename Solver::MatrixType >& matrix)
 {
    typedef typename Solver::MatrixType MatrixType;
    typedef typename MatrixType::RealType RealType;
    typedef typename MatrixType::DeviceType DeviceType;
    typedef typename MatrixType::IndexType IndexType;
    typedef Vectors::Vector< RealType, DeviceType, IndexType > VectorType;
-   typedef tnlSharedPointer< VectorType > VectorPointer;
-   typedef tnlSharedPointer< MatrixType > MatrixPointer;
+   typedef SharedPointer< VectorType > VectorPointer;
+   typedef SharedPointer< MatrixType > MatrixPointer;
 
    VectorPointer x, y, b;
    x->setSize( matrix->getColumns() );
@@ -136,7 +136,7 @@ template< typename Matrix >
 bool resolveLinearSolver( const Config::ParameterContainer& parameters )
 {
    const String& solver = parameters.getParameter< String >( "solver" );
-   typedef tnlSharedPointer< Matrix > MatrixPointer;
+   typedef SharedPointer< Matrix > MatrixPointer;
 
    MatrixPointer matrix;
    if( ! readMatrix( parameters, *matrix ) )

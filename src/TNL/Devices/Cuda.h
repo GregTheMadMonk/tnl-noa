@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <TNL/String.h>
 #include <TNL/Assert.h>
-#include <TNL/tnlSmartPointersRegister.h>
+#include <TNL/SmartPointersRegister.h>
 
 namespace TNL {
 
@@ -100,15 +100,15 @@ class Cuda
    static bool setup( const Config::ParameterContainer& parameters,
                       const String& prefix = "" );
    
-   static void insertSmartPointer( tnlSmartPointer* pointer );
+   static void insertSmartPointer( SmartPointer* pointer );
    
-   static void removeSmartPointer( tnlSmartPointer* pointer );
+   static void removeSmartPointer( SmartPointer* pointer );
    
    static bool synchronizeDevice( int deviceId = 0  );
    
    protected:
    
-      static tnlSmartPointersRegister smartPointersRegister;
+      static SmartPointersRegister smartPointersRegister;
 
 
 };

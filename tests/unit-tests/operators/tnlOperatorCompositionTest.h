@@ -65,7 +65,7 @@ class tnlOperatorCompositionTest
  
    void test()
    {      
-      tnlSharedPointer< MeshType > mesh;
+      SharedPointer< MeshType > mesh;
       mesh->setDimensions( CoordinatesType( 25 ) );
       mesh->setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
       TestFunctionType testFunction;
