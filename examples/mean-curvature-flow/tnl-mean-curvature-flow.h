@@ -20,15 +20,15 @@
 
 #include <TNL/Solvers/Solver.h>
 #include <TNL/Solvers/FastBuildConfigTag.h>
-#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
-#include <TNL/operators/tnlDirichletBoundaryConditions.h>
-#include <TNL/operators/tnlNeumannBoundaryConditions.h>
+#include <TNL/Operators/diffusion/LinearDiffusion.h>
+#include <TNL/Operators/DirichletBoundaryConditions.h>
+#include <TNL/Operators/NeumannBoundaryConditions.h>
 #include <TNL/Functions/Analytic/ConstantFunction.h>
 #include <TNL/Problems/MeanCurvatureFlowProblem.h>
-#include <TNL/operators/diffusion/tnlOneSidedNonlinearDiffusion.h>
-#include <TNL/operators/operator-Q/tnlOneSideDiffOperatorQ.h>
-#include <TNL/operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
-#include <TNL/operators/diffusion/nonlinear-diffusion-operators/tnlFiniteVolumeNonlinearOperator.h>
+#include <TNL/Operators/diffusion/OneSidedNonlinearDiffusion.h>
+#include <TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
+#include <TNL/Operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
+#include <TNL/Operators/diffusion/nonlinear-diffusion-operators/FiniteVolumeNonlinearOperator.h>
 #include <TNL/Functions/MeshFunction.h>
 
 //typedef tnlDefaultConfigTag BuildConfig;
@@ -90,7 +90,7 @@ class meanCurvatureFlowSetter
       if( numericalScheme == "fvm" )
       {
          typedef tnlFiniteVolumeOperatorQ<MeshType, Real, Index, 0> QOperator;
-         typedef tnlFiniteVolumeNonlinearOperator<MeshType, QOperator, Real, Index > NonlinearOperator;         
+         typedef FiniteVolumeNonlinearOperator<MeshType, QOperator, Real, Index > NonlinearOperator;         
          return setBoundaryConditions< NonlinearOperator, QOperator >( parameters );
       }
       return false;
@@ -100,7 +100,7 @@ class meanCurvatureFlowSetter
              typename QOperator >
    static bool setBoundaryConditions( const Config::ParameterContainer& parameters )
    {
-      typedef tnlOneSidedNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
+      typedef OneSidedNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
       typedef ConstantFunction< Dimensions, Real > RightHandSide;
       typedef StaticVector< MeshType::meshDimensions, Real > Vertex;
 
@@ -110,12 +110,12 @@ class meanCurvatureFlowSetter
          typedef ConstantFunction< Dimensions, Real > ConstantFunction;
          if( boundaryConditionsType == "dirichlet" )
          {
-            typedef tnlDirichletBoundaryConditions< MeshType, ConstantFunction, Dimensions, Real, Index > BoundaryConditions;
+            typedef DirichletBoundaryConditions< MeshType, ConstantFunction, Dimensions, Real, Index > BoundaryConditions;
             typedef MeanCurvatureFlowProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
             SolverStarter solverStarter;
             return solverStarter.template run< Solver >( parameters );
          }
-         typedef tnlNeumannBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
+         typedef NeumannBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
          typedef MeanCurvatureFlowProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
          SolverStarter solverStarter;
          return solverStarter.template run< Solver >( parameters );
@@ -124,12 +124,12 @@ class meanCurvatureFlowSetter
       typedef Functions::MeshFunction< MeshType > MeshFunction;
       if( boundaryConditionsType == "dirichlet" )
       {
-         typedef tnlDirichletBoundaryConditions< MeshType, MeshFunction, Dimensions, Real, Index > BoundaryConditions;
+         typedef DirichletBoundaryConditions< MeshType, MeshFunction, Dimensions, Real, Index > BoundaryConditions;
          typedef MeanCurvatureFlowProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
          SolverStarter solverStarter;
          return solverStarter.template run< Solver >( parameters );
       }
-      typedef tnlNeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
+      typedef NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
       typedef MeanCurvatureFlowProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
       SolverStarter solverStarter;
       return solverStarter.template run< Solver >( parameters );

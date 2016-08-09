@@ -1,8 +1,8 @@
 #include <TNL/tnlConfig.h>
 #include <TNL/Solvers/Solver.h>
 #include <TNL/Solvers/BuildConfigTags.h>
-#include <TNL/operators/tnlDirichletBoundaryConditions.h>
-#include <TNL/operators/tnlNeumannBoundaryConditions.h>
+#include <TNL/Operators/DirichletBoundaryConditions.h>
+#include <TNL/Operators/NeumannBoundaryConditions.h>
 #include <TNL/Functions/Analytic/ConstantFunction.h>
 #include "eulerProblem.h"
 #include "LaxFridrichs.h"
@@ -82,12 +82,12 @@ class eulerSetter
              typedef Functions::Analytic::ConstantFunction< Dimensions, Real > ConstantFunction;
              if( boundaryConditionsType == "dirichlet" )
              {
-                typedef tnlDirichletBoundaryConditions< MeshType, ConstantFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+                typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
                 typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
              }
-             typedef tnlNeumannBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
+             typedef Operators::NeumannBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
              typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
@@ -95,12 +95,12 @@ class eulerSetter
           typedef Functions::MeshFunction< MeshType > MeshFunction;
           if( boundaryConditionsType == "dirichlet" )
           {
-             typedef tnlDirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+             typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
              typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }
-          typedef tnlNeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
+          typedef Operators::NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
           typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
           SolverStarter solverStarter;
           return solverStarter.template run< Problem >( parameters );

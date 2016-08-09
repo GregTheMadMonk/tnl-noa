@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTwoSidedGradientNormTest.h  -  description
+                          TwoSidedGradientNormTest.h  -  description
                              -------------------
     begin                : Jan 17, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -11,8 +11,8 @@
 #ifndef TNLTWOSIDEDGRADIENTNORMTEST_H
 #define	TNLTWOSIDEDGRADIENTNORMTEST_H
 
-#include <TNL/operators/geometric/tnlTwoSidedGradientNorm.h>
-#include <TNL/operators/geometric/tnlExactGradientNorm.h>
+#include <TNL/Operators/geometric/TwoSidedGradientNorm.h>
+#include <TNL/Operators/geometric/ExactGradientNorm.h>
 #include "../../tnlUnitTestStarter.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../tnlPDEOperatorEocUnitTest.h"
@@ -23,7 +23,7 @@ template< typename ApproximateOperator,
           typename TestFunction,
           bool write = false,
           bool verbose = false >
-class tnlTwoSidedGradientNormTest
+class TwoSidedGradientNormTest
    : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction >
 {
    public:
@@ -41,7 +41,7 @@ class tnlTwoSidedGradientNormTest
  
       static String getType()
       {
-         return String( "tnlTwoSidedGradientNormTest< " ) +
+         return String( "TwoSidedGradientNormTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }
@@ -86,7 +86,7 @@ template< typename Operator,
           bool verbose >
 bool runTest()
 {
-   typedef tnlTwoSidedGradientNormTest< Operator, Function, write, verbose > OperatorTest;
+   typedef TwoSidedGradientNormTest< Operator, Function, write, verbose > OperatorTest;
 #ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter::run< tnlPDEOperatorEocUnitTest< OperatorTest > >() )
       return false;
@@ -100,7 +100,7 @@ template< typename Mesh,
           bool verbose >
 bool setDifferenceOperator()
 {
-   typedef tnlTwoSidedGradientNorm< Mesh > GradientNorm;
+   typedef Operators::TwoSidedGradientNorm< Mesh > GradientNorm;
    return ( runTest< GradientNorm, Function, write, verbose >() );
 }
 

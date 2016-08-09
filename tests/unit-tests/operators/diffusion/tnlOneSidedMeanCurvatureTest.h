@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlOneSidedMeanCurvatureTest.h  -  description
+                          OneSidedMeanCurvatureTest.h  -  description
                              -------------------
     begin                : Feb 1, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -11,8 +11,8 @@
 #ifndef TNLMEANCURVATURETEST_H
 #define	TNLMEANCURVATURETEST_H
 
-#include <TNL/operators/diffusion/tnlOneSidedMeanCurvature.h>
-#include <TNL/operators/diffusion/tnlExactLinearDiffusion.h>
+#include <TNL/Operators/diffusion/OneSidedMeanCurvature.h>
+#include <TNL/Operators/diffusion/ExactLinearDiffusion.h>
 #include <TNL/mesh/tnlGrid.h>
 #include "../tnlPDEOperatorEocUnitTest.h"
 #include "../tnlPDEOperatorEocTest.h"
@@ -24,7 +24,7 @@ template< typename ApproximateOperator,
           typename TestFunction,
           bool write = false,
           bool verbose = false >
-class tnlOneSidedMeanCurvatureTest
+class OneSidedMeanCurvatureTest
    : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction >
 {
    public:
@@ -40,11 +40,11 @@ class tnlOneSidedMeanCurvatureTest
       const RealType  eoc[ 3 ] =       { 2.0,  2.0,  2.0 };
       const RealType  tolerance[ 3 ] = { 0.05, 0.05, 0.05 };
  
-      tnlOneSidedMeanCurvatureTest(){};
+      OneSidedMeanCurvatureTest(){};
  
       static String getType()
       {
-         return String( "tnlOneSidedMeanCurvatureTest< " ) +
+         return String( "OneSidedMeanCurvatureTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }
@@ -91,8 +91,8 @@ template< typename Mesh,
           bool verbose >
 bool runTest()
 {
-   typedef tnlOneSidedMeanCurvature< Mesh > ApproximateOperator;
-   typedef tnlOneSidedMeanCurvatureTest< ApproximateOperator, Function, write, verbose > OperatorTest;
+   typedef Operators::OneSidedMeanCurvature< Mesh > ApproximateOperator;
+   typedef OneSidedMeanCurvatureTest< ApproximateOperator, Function, write, verbose > OperatorTest;
    OperatorTest test;
    test.runUnitTest();
 #ifdef HAVE_CPPUNIT

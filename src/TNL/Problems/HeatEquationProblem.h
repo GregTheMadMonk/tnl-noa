@@ -17,7 +17,7 @@
 #pragma once
 
 #include <TNL/Problems/PDEProblem.h>
-#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
+#include <TNL/Operators/diffusion/LinearDiffusion.h>
 #include <TNL/Matrices/EllpackMatrix.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Timer.h>
@@ -28,7 +28,7 @@ namespace Problems {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator = tnlLinearDiffusion< Mesh,
+          typename DifferentialOperator = Operators::LinearDiffusion< Mesh,
                                                               typename BoundaryCondition::RealType > >
 class HeatEquationProblem : public PDEProblem< Mesh,
                                                      typename DifferentialOperator::RealType,

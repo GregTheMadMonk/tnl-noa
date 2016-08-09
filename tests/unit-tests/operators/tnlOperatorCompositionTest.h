@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlOperatorCompositionTest.h  -  description
+                          OperatorCompositionTest.h  -  description
                              -------------------
     begin                : Feb 11, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -11,12 +11,12 @@
 #ifndef OperatorFunctionTEST_H
 #define	OperatorFunctionTEST_H
 
-#include <TNL/operators/tnlOperatorComposition.h>
+#include <TNL/Operators/OperatorComposition.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/Functions/Analytic/ExpBumpFunction.h>
 #include <TNL/Functions/Analytic/ConstantFunction.h>
-#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
-#include <TNL/operators/tnlNeumannBoundaryConditions.h>
+#include <TNL/Operators/diffusion/LinearDiffusion.h>
+#include <TNL/Operators/NeumannBoundaryConditions.h>
 #include "../tnlUnitTestStarter.h"
 
 #ifdef HAVE_CPPUNIT
@@ -29,11 +29,11 @@
 using namespace TNL;
 
 template< typename Operator >
-class tnlOperatorCompositionTest
+class OperatorCompositionTest
    : public CppUnit::TestCase
 {
    public:
-   typedef tnlOperatorCompositionTest< Operator > TesterType;
+   typedef OperatorCompositionTest< Operator > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
    typedef Operator OperatorType;
    typedef typename OperatorType::MeshType MeshType;
@@ -43,20 +43,20 @@ class tnlOperatorCompositionTest
    typedef typename MeshType::VertexType VertexType;
    typedef Functions::Analytic::ExpBumpFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > TestFunctionType;
    typedef Functions::Analytic::ConstantFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > ConstantFunction;
-   typedef tnlNeumannBoundaryConditions< MeshType, ConstantFunction > BoundaryConditions;
-   typedef tnlOperatorComposition< OperatorType, OperatorType, BoundaryConditions > OperatorComposition;
+   typedef Operators::NeumannBoundaryConditions< MeshType, ConstantFunction > BoundaryConditions;
+   typedef Operators::OperatorComposition< OperatorType, OperatorType, BoundaryConditions > OperatorComposition;
    typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
    typedef Functions::OperatorFunction< OperatorType, MeshFunctionType, BoundaryConditions > OperatorFunction;
    typedef Functions::OperatorFunction< OperatorType, OperatorFunction, BoundaryConditions > OperatorFunction2;
 
-   tnlOperatorCompositionTest(){};
+   OperatorCompositionTest(){};
 
    virtual
-   ~tnlOperatorCompositionTest(){};
+   ~OperatorCompositionTest(){};
 
    static CppUnit::Test* suite()
    {
-      CppUnit::TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlOperatorCompositionTest" );
+      CppUnit::TestSuite* suiteOfTests = new CppUnit :: TestSuite( "OperatorCompositionTest" );
       CppUnit::TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "test", &TesterType::test ) );
@@ -118,9 +118,9 @@ class tnlOperatorCompositionTest
 template< typename Operator >
 bool runTest()
 {
-   //tnlOperatorCompositionTest< Operator > test;
+   //OperatorCompositionTest< Operator > test;
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter::run< tnlOperatorCompositionTest< Operator > >() )
+   if( ! tnlUnitTestStarter::run< OperatorCompositionTest< Operator > >() )
      return false;
    return true;
 #else
@@ -133,7 +133,7 @@ using namespace TNL;
 template< typename MeshType >
 bool setOperator()
 {
-   return runTest< tnlLinearDiffusion< MeshType > >();
+   return runTest< Operators::LinearDiffusion< MeshType > >();
 }
 
 int main( int argc, char* argv[] )

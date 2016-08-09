@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Problems/MeanCurvatureFlowProblem.h>
-#include <TNL/operators/operator-Q/tnlOneSideDiffOperatorQ.h>
+#include <TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 
 namespace TNL {
 namespace Problems {
@@ -19,7 +19,7 @@ namespace Problems {
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
-          typename DifferentialOperator = tnlNonlinearDiffusion< Mesh,
+          typename DifferentialOperator = NonlinearDiffusion< Mesh,
                                                           tnlOneSideDiffNonlinearOperator< Mesh, tnlOneSideDiffOperatorQ<Mesh, typename BoundaryCondition::RealType,
                                                           typename BoundaryCondition::IndexType >, typename BoundaryCondition::RealType, typename BoundaryCondition::IndexType >,
                                                           typename BoundaryCondition::RealType, typename BoundaryCondition::IndexType > >

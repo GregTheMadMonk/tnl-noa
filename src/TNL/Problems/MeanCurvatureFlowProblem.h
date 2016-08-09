@@ -10,9 +10,9 @@
 
 #pragma once
 
-#include <TNL/operators/diffusion/tnlOneSidedMeanCurvature.h>
+#include <TNL/Operators/diffusion/OneSidedMeanCurvature.h>
 #include <TNL/Problems/PDEProblem.h>
-#include <TNL/operators/operator-Q/tnlOneSideDiffOperatorQ.h>
+#include <TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
 #include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/Functions/MeshFunction.h>
 
@@ -23,7 +23,7 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator =
-            tnlOneSidedMeanCurvature< Mesh,
+            OneSidedMeanCurvature< Mesh,
                                       typename Mesh::RealType,
                                       typename Mesh::IndexType,
                                       false > >

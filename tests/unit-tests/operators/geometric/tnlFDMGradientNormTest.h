@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFDMGradientNormTest.h  -  description
+                          FDMGradientNormTest.h  -  description
                              -------------------
     begin                : Jan 17, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -11,11 +11,11 @@
 #ifndef TNLFDMGRADIENTNORMTEST_H
 #define	TNLFDMGRADIENTNORMTEST_H
 
-#include <TNL/operators/geometric/tnlFDMGradientNorm.h>
-#include <TNL/operators/geometric/tnlExactGradientNorm.h>
-#include <TNL/operators/fdm/tnlBackwardFiniteDifference.h>
-#include <TNL/operators/fdm/tnlForwardFiniteDifference.h>
-#include <TNL/operators/fdm/tnlCentralFiniteDifference.h>
+#include <TNL/Operators/geometric/FDMGradientNorm.h>
+#include <TNL/Operators/geometric/ExactGradientNorm.h>
+#include <TNL/Operators/fdm/BackwardFiniteDifference.h>
+#include <TNL/Operators/fdm/ForwardFiniteDifference.h>
+#include <TNL/Operators/fdm/CentralFiniteDifference.h>
 #include "../../tnlUnitTestStarter.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../tnlPDEOperatorEocUnitTest.h"
@@ -23,7 +23,7 @@
 using namespace TNL;
 
 template< typename ApproximateOperator >
-class tnlFDMGradientNormEocTestResults
+class FDMGradientNormEocTestResults
 {
    public:
  
@@ -36,7 +36,7 @@ class tnlFDMGradientNormEocTestResults
 template< typename MeshType,
           typename RealType,
           typename IndexType >
-class tnlFDMGradientNormEocTestResults< tnlCentralFiniteDifference< MeshType, 1, 0, 0, RealType, IndexType > >
+class FDMGradientNormEocTestResults< Operators::CentralFiniteDifference< MeshType, 1, 0, 0, RealType, IndexType > >
 {
    public:
  
@@ -48,9 +48,9 @@ template< typename ApproximateOperator,
           typename TestFunction,
           bool write = false,
           bool verbose = false >
-class tnlFDMGradientNormTest
+class FDMGradientNormTest
    : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction >,
-     public tnlFDMGradientNormEocTestResults< typename ApproximateOperator::template XDifferenceOperatorType< typename ApproximateOperator::MeshType::Cell > >
+     public FDMGradientNormEocTestResults< typename ApproximateOperator::template XDifferenceOperatorType< typename ApproximateOperator::MeshType::Cell > >
 {
    public:
  
@@ -64,7 +64,7 @@ class tnlFDMGradientNormTest
  
       static String getType()
       {
-         return String( "tnlFDMGradientNormTest< " ) +
+         return String( "FDMGradientNormTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }
@@ -108,7 +108,7 @@ template< typename Operator,
           bool verbose >
 bool runTest()
 {
-   typedef tnlFDMGradientNormTest< Operator, Function, write, verbose > OperatorTest;
+   typedef FDMGradientNormTest< Operator, Function, write, verbose > OperatorTest;
 #ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter::run< tnlPDEOperatorEocUnitTest< OperatorTest > >() )
       return false;
@@ -122,9 +122,9 @@ template< typename Mesh,
           bool verbose >
 bool setDifferenceOperator()
 {
-   typedef tnlFDMGradientNorm< Mesh, tnlForwardFiniteDifference > ForwardGradientNorm;
-   typedef tnlFDMGradientNorm< Mesh, tnlBackwardFiniteDifference > BackwardGradientNorm;
-   typedef tnlFDMGradientNorm< Mesh, tnlCentralFiniteDifference > CentralGradientNorm;
+   typedef Operators::FDMGradientNorm< Mesh, Operators::ForwardFiniteDifference > ForwardGradientNorm;
+   typedef Operators::FDMGradientNorm< Mesh, Operators::BackwardFiniteDifference > BackwardGradientNorm;
+   typedef Operators::FDMGradientNorm< Mesh, Operators::CentralFiniteDifference > CentralGradientNorm;
    return ( runTest< ForwardGradientNorm, Function, write, verbose >() &&
             runTest< BackwardGradientNorm, Function, write, verbose >() &&
             runTest< CentralGradientNorm, Function, write, verbose >() );

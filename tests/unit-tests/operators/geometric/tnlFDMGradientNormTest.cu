@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFDMGradientNormTest.cu  -  description
+                          FDMGradientNormTest.cu  -  description
                              -------------------
     begin                : Jan 17, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -8,4 +8,4 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "tnlFDMGradientNormTest.h"
+#include "FDMGradientNormTest.h"

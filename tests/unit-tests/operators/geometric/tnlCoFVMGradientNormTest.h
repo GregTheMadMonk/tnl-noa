@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCoFVMGradientNormTest.h  -  description
+                          CoFVMGradientNormTest.h  -  description
                              -------------------
     begin                : Jan 17, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -11,10 +11,10 @@
 #ifndef TNLTWOSIDEDGRADIENTNORMTEST_H
 #define	TNLTWOSIDEDGRADIENTNORMTEST_H
 
-#include <TNL/operators/geometric/tnlCoFVMGradientNorm.h>
-#include <TNL/operators/geometric/tnlExactGradientNorm.h>
-#include <TNL/operators/interpolants/tnlMeshEntitiesInterpolants.h>
-#include <TNL/operators/tnlOperatorComposition.h>
+#include <TNL/Operators/geometric/CoFVMGradientNorm.h>
+#include <TNL/Operators/geometric/ExactGradientNorm.h>
+#include <TNL/Operators/interpolants/MeshEntitiesInterpolants.h>
+#include <TNL/Operators/OperatorComposition.h>
 #include "../../tnlUnitTestStarter.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../tnlPDEOperatorEocUnitTest.h"
@@ -25,7 +25,7 @@ template< typename ApproximateOperator,
           typename TestFunction,
           bool write = false,
           bool verbose = false >
-class tnlCoFVMGradientNormTest
+class CoFVMGradientNormTest
    : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction >
 {
    public:
@@ -43,7 +43,7 @@ class tnlCoFVMGradientNormTest
  
       static String getType()
       {
-         return String( "tnlCoFVMGradientNormTest< " ) +
+         return String( "CoFVMGradientNormTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }
@@ -92,7 +92,7 @@ template< typename Operator,
           bool verbose >
 bool runTest()
 {
-   typedef tnlCoFVMGradientNormTest< Operator, Function, write, verbose > OperatorTest;
+   typedef CoFVMGradientNormTest< Operator, Function, write, verbose > OperatorTest;
 #ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter::run< tnlPDEOperatorEocUnitTest< OperatorTest > >() )
       return false;
@@ -106,7 +106,7 @@ template< typename Mesh,
           bool verbose >
 bool setDifferenceOperator()
 {
-   typedef tnlCoFVMGradientNorm< Mesh > GradientNorm;
+   typedef Operators::CoFVMGradientNorm< Mesh > GradientNorm;
    return ( runTest< GradientNorm, Function, write, verbose >() );
 }
 

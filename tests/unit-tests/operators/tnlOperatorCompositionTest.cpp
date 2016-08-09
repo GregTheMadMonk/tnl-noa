@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlOperatorCompositionTest.cpp  -  description
+                          OperatorCompositionTest.cpp  -  description
                              -------------------
     begin                : Feb 13, 2016
     copyright            : (C) 2016 by Tomas Oberhuber

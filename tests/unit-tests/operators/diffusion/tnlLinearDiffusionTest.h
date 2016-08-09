@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlLinearDiffusionTest.h  -  description
+                          LinearDiffusionTest.h  -  description
                              -------------------
     begin                : Feb 1, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -11,8 +11,8 @@
 #ifndef TNLLINEARDIFFUSIONTEST_H
 #define	TNLLINEARDIFFUSIONTEST_H
 
-#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
-#include <TNL/operators/diffusion/tnlExactLinearDiffusion.h>
+#include <TNL/Operators/diffusion/LinearDiffusion.h>
+#include <TNL/Operators/diffusion/ExactLinearDiffusion.h>
 #include <TNL/mesh/tnlGrid.h>
 #include "../tnlPDEOperatorEocUnitTest.h"
 #include "../tnlPDEOperatorEocTest.h"
@@ -24,7 +24,7 @@ template< typename ApproximateOperator,
           typename TestFunction,
           bool write = false,
           bool verbose = false >
-class tnlLinearDiffusionTest
+class LinearDiffusionTest
    : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction >
 {
    public:
@@ -42,7 +42,7 @@ class tnlLinearDiffusionTest
  
       static String getType()
       {
-         return String( "tnlLinearDiffusionTest< " ) +
+         return String( "LinearDiffusionTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }
@@ -87,8 +87,8 @@ template< typename Mesh,
           bool verbose >
 bool runTest()
 {
-   typedef tnlLinearDiffusion< Mesh > ApproximateOperator;
-   typedef tnlLinearDiffusionTest< ApproximateOperator, Function, write, verbose > OperatorTest;
+   typedef Operators::LinearDiffusion< Mesh > ApproximateOperator;
+   typedef LinearDiffusionTest< ApproximateOperator, Function, write, verbose > OperatorTest;
 #ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter::run< tnlPDEOperatorEocUnitTest< OperatorTest > >() )
       return false;

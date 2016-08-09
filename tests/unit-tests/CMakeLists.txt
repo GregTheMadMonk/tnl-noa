@@ -30,10 +30,10 @@ ADD_TEST( mesh/tnlGridTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlGrid
 ADD_TEST( mesh/tnlMeshEntityTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMeshEntityTest${mpiExt}${debugExt} )
 ADD_TEST( mesh/tnlMeshTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMeshTest${mpiExt}${debugExt} )
 
-ADD_TEST( functions/tnlOperatorFunctionTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlOperatorFunctionTest${mpiExt}${debugExt} )
+ADD_TEST( functions/OperatorFunctionTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/OperatorFunctionTest${mpiExt}${debugExt} )
 
-ADD_TEST( operators/diffusion/tnlLinearDiffusionTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlLinearDiffusionTest${mpiExt}${debugExt} )
-ADD_TEST( operators/diffusion/tnlFiniteDifferencesTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlFiniteDifferencesTest${mpiExt}${debugExt} )
+ADD_TEST( operators/diffusion/LinearDiffusionTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/LinearDiffusionTest${mpiExt}${debugExt} )
+ADD_TEST( operators/diffusion/FiniteDifferencesTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/FiniteDifferencesTest${mpiExt}${debugExt} )
 
 if( BUILD_CUDA )
    ADD_TEST( core/cuda/tnlCudaTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCudaTest${mpiExt}${debugExt} )

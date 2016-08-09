@@ -25,9 +25,9 @@
 #include <TNL/Matrices/CSRMatrix.h>
 #include <TNL/Solvers/preconditioners/Dummy.h>
 #include <TNL/Solvers/SolverMonitor.h>
-#include <TNL/operators/euler/fvm/tnlLaxFridrichs.h>
-#include <TNL/operators/gradient/tnlCentralFDMGradient.h>
-#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
+#include <TNL/Operators/euler/fvm/LaxFridrichs.h>
+#include <TNL/Operators/gradient/tnlCentralFDMGradient.h>
+#include <TNL/Operators/diffusion/LinearDiffusion.h>
 #include <TNL/mesh/tnlLinearGridGeometry.h>
 #include <TNL/Solvers/cfd/navier-stokes/NavierStokesSolver.h>
 
@@ -115,10 +115,10 @@ class navierStokesSolver
    EulerScheme eulerScheme;
 
    NavierStokesSolver< EulerScheme,
-                          tnlLinearDiffusion< MeshType >,
+                          LinearDiffusion< MeshType >,
                           navierStokesBoundaryConditions< MeshType > > nsSolver;
 
-   tnlLinearDiffusion< MeshType > u1Viscosity, u2Viscosity, eViscosity;
+   LinearDiffusion< MeshType > u1Viscosity, u2Viscosity, eViscosity;
    tnlCentralFDMGradient< MeshType > pressureGradient;
 
    navierStokesBoundaryConditions< MeshType > boundaryConditions;

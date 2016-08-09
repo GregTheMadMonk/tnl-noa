@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFiniteDifferencesTest.h  -  description
+                          FiniteDifferencesTest.h  -  description
                              -------------------
     begin                : Jan 12, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -16,10 +16,10 @@
 #include "../tnlPDEOperatorEocUnitTest.h"
 #include "../../tnlUnitTestStarter.h"
 #include <TNL/mesh/tnlGrid.h>
-#include <TNL/operators/fdm/tnlBackwardFiniteDifference.h>
-#include <TNL/operators/fdm/tnlForwardFiniteDifference.h>
-#include <TNL/operators/fdm/tnlCentralFiniteDifference.h>
-#include <TNL/operators/fdm/tnlExactDifference.h>
+#include <TNL/Operators/fdm/BackwardFiniteDifference.h>
+#include <TNL/Operators/fdm/ForwardFiniteDifference.h>
+#include <TNL/Operators/fdm/CentralFiniteDifference.h>
+#include <TNL/Operators/fdm/ExactDifference.h>
 #include "../tnlPDEOperatorEocTestResult.h"
 #include <TNL/Functions/Analytic/ExpBumpFunction.h>
 
@@ -43,7 +43,7 @@ template< typename MeshType,
           int YDifference,
           int ZDifference,
           typename IndexType >
-class tnlFinitDifferenceEocTestResults< tnlCentralFiniteDifference< MeshType, XDifference, YDifference, ZDifference, RealType, IndexType > >
+class tnlFinitDifferenceEocTestResults< Operators::CentralFiniteDifference< MeshType, XDifference, YDifference, ZDifference, RealType, IndexType > >
 {
    public:
  
@@ -72,7 +72,7 @@ class tnlFiniteDifferenceTest
  
       static String getType()
       {
-         return String( "tnlLinearDiffusionTest< " ) +
+         return String( "LinearDiffusionTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }
@@ -137,9 +137,9 @@ template< typename Mesh,
           bool Verbose >
 bool setFiniteDifferenceOperator()
 {
-    typedef tnlForwardFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > ForwardFiniteDifference;
-    typedef tnlBackwardFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > BackwardFiniteDifference;
-    typedef tnlCentralFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > CentralFiniteDifference;
+    typedef Operators::ForwardFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > ForwardFiniteDifference;
+    typedef Operators::BackwardFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > BackwardFiniteDifference;
+    typedef Operators::CentralFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > CentralFiniteDifference;
  
     if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
       return ( testFiniteDifferenceOperator< ForwardFiniteDifference, Function, WriteFunctions, Verbose >() &&

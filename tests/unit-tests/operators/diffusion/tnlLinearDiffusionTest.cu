@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlLinearDiffusionTest.cu  -  description
+                          LinearDiffusionTest.cu  -  description
                              -------------------
     begin                : Nov 15, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -8,4 +8,4 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "tnlLinearDiffusionTest.h"
+#include "LinearDiffusionTest.h"

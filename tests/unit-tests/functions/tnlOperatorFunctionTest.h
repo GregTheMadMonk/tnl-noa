@@ -14,8 +14,8 @@
 #include <TNL/Functions/OperatorFunction.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/Functions/Analytic/ExpBumpFunction.h>
-#include <TNL/operators/diffusion/tnlLinearDiffusion.h>
-#include <TNL/operators/tnlDirichletBoundaryConditions.h>
+#include <TNL/Operators/diffusion/LinearDiffusion.h>
+#include <TNL/Operators/DirichletBoundaryConditions.h>
 #include "../tnlUnitTestStarter.h"
 
 #ifdef HAVE_CPPUNIT
@@ -91,7 +91,7 @@ class OperatorFunctionTest
    void testWithBoundaryConditions()
    {
       SharedPointer< MeshType > mesh;
-      typedef tnlDirichletBoundaryConditions< MeshType > BoundaryConditionsType;
+      typedef Operators::DirichletBoundaryConditions< MeshType > BoundaryConditionsType;
       typedef Functions::OperatorFunction< Operator, MeshFunctionType, BoundaryConditionsType, EvaluateOnFly > OperatorFunctionType;
       mesh->setDimensions( CoordinatesType( 25 ) );
       mesh->setDomain( VertexType( -1.0 ), VertexType( 2.0 ) );
@@ -125,7 +125,7 @@ template< typename MeshType >
 bool runTest()
 {
 #ifdef HAVE_CPPUNIT
-   typedef tnlLinearDiffusion< MeshType > OperatorType;
+   typedef Operators::LinearDiffusion< MeshType > OperatorType;
    OperatorFunctionTest< OperatorType, false > test;
    //test.testWithBoundaryConditions();
    if( //! tnlUnitTestStarter::run< OperatorFunctionTest< OperatorType, true > >() ||

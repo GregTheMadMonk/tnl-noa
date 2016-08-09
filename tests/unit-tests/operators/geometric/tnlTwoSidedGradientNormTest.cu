@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTwoSidedGradientNormTest.cu  -  description
+                          TwoSidedGradientNormTest.cu  -  description
                              -------------------
     begin                : Jan 17, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -8,4 +8,4 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "tnlTwoSidedGradientNormTest.h"
+#include "TwoSidedGradientNormTest.h"

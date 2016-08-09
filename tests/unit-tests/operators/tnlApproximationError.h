@@ -13,7 +13,7 @@
 
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/Functions/Analytic/ConstantFunction.h>
-#include <TNL/operators/tnlDirichletBoundaryConditions.h>
+#include <TNL/Operators/DirichletBoundaryConditions.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Functions/ExactOperatorFunction.h>
 #include <TNL/Functions/MeshFunction.h>
@@ -36,7 +36,7 @@ class tnlApproximationError
       typedef typename MeshType::VertexType VertexType;
       typedef SharedPointer< MeshType > MeshPointer;
       typedef Functions::Analytic::ConstantFunction< MeshType::meshDimensions, RealType > ConstantFunctionType;
-      typedef tnlDirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
+      typedef Operators::DirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
 
       static void getError( const ExactOperator& exactOperator,
                             ApproximateOperator& approximateOperator,
@@ -48,7 +48,7 @@ class tnlApproximationError
                             bool writeFunctions )
       {
          typedef Functions::MeshFunction< MeshType, MeshEntity::getDimensions() > MeshFunction;
-         typedef tnlDirichletBoundaryConditions< MeshType, Functions::Analytic::ConstantFunction< MeshType::meshDimensions > > DirichletBoundaryConditions;
+         typedef Operators::DirichletBoundaryConditions< MeshType, Functions::Analytic::ConstantFunction< MeshType::meshDimensions > > DirichletBoundaryConditions;
          typedef Functions::OperatorFunction< DirichletBoundaryConditions, MeshFunction > BoundaryOperatorFunction;
          typedef Functions::OperatorFunction< ApproximateOperator, MeshFunction > OperatorFunction;
          typedef Functions::ExactOperatorFunction< ExactOperator, Function > ExactOperatorFunction;
@@ -119,7 +119,7 @@ class tnlApproximationError< Mesh, ExactOperator, ApproximateOperator, Function,
       typedef typename MeshType::IndexType IndexType;
       typedef typename MeshType::VertexType VertexType;
       typedef ConstantFunction< MeshType::meshDimensions, RealType > ConstantFunctionType;
-      typedef tnlDirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
+      typedef DirichletBoundaryConditions< MeshType, Function  > BoundaryConditionsType;
 
       static void getError( const Mesh& mesh,
                             const ExactOperator& exactOperator,

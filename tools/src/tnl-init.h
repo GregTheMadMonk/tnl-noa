@@ -15,7 +15,7 @@
 #include <TNL/Vectors/Vector.h>
 #include <TNL/mesh/tnlGrid.h>
 #include <TNL/Functions/TestFunction.h>
-#include <TNL/operators/tnlFiniteDifferences.h>
+#include <TNL/Operators/FiniteDifferences.h>
 #include <TNL/core/mfilename.h>
 #include <TNL/Functions/MeshFunction.h>
 
@@ -63,7 +63,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
          //if( ! auxDiscreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
          //   return false;
          //tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< 0, 0, 0 >( mesh, function, auxDiscreteFunction, time );
-         //tnlFiniteDifferences< MeshType >::template getDifference< DiscreteFunctionType, xDiff, yDiff, zDiff, 0, 0, 0 >( mesh, auxDiscreteFunction, discreteFunction );
+         //FiniteDifferences< MeshType >::template getDifference< DiscreteFunctionType, xDiff, yDiff, zDiff, 0, 0, 0 >( mesh, auxDiscreteFunction, discreteFunction );
       }
       else
       {
