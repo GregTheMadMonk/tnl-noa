@@ -20,10 +20,10 @@
 
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Matrices/CSRMatrix.h>
-#include <TNL/Matrices/EllpackMatrix.h>
-#include <TNL/Matrices/SlicedEllpackMatrix.h>
-#include <TNL/Matrices/ChunkedEllpackMatrix.h>
+#include <TNL/Matrices/CSR.h>
+#include <TNL/Matrices/Ellpack.h>
+#include <TNL/Matrices/SlicedEllpack.h>
+#include <TNL/Matrices/ChunkedEllpack.h>
 #include <TNL/Matrices/MatrixReader.h>
 #include <TNL/TimerRT.h>
 #include "tnlCusparseCSRMatrix.h"
@@ -297,11 +297,11 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
    }
    if( test == "mtx" )
    {
-      typedef Matrices::CSRMatrix< Real, Devices::Host, int > CSRMatrixType;
-      CSRMatrixType csrMatrix;
+      typedef Matrices::CSR< Real, Devices::Host, int > CSRType;
+      CSRType csrMatrix;
       try
       {
-         if( ! MatrixReader< CSRMatrixType >::readMtxFile( inputFileName, csrMatrix ) )
+         if( ! MatrixReader< CSRType >::readMtxFile( inputFileName, csrMatrix ) )
          {
             std::cerr << "I am not able to read the matrix file " << inputFileName << "." << std::endl;
             logFile << std::endl;
@@ -360,19 +360,19 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                                                verbose,
                                                logFile );
 #ifdef HAVE_CUDA
-      typedef CSRMatrix< Real, Devices::Cuda, int > CSRMatrixCudaType;
-      CSRMatrixCudaType cudaCSRMatrix;
+      typedef CSR< Real, Devices::Cuda, int > CSRCudaType;
+      CSRCudaType cudaCSR;
       //cout << "Copying matrix to GPU... ";
-      if( ! cudaCSRMatrix.copyFrom( csrMatrix, rowLengthsCuda ) )
+      if( ! cudaCSR.copyFrom( csrMatrix, rowLengthsCuda ) )
       {
          std::cerr << "I am not able to transfer the matrix on GPU." << std::endl;
          writeTestFailed( logFile, 21 );
       }
       else
       {
-         ::tnlCusparseCSRMatrix< Real > cusparseCSRMatrix;
-         cusparseCSRMatrix.init( cudaCSRMatrix, &cusparseHandle );
-         benchmarkMatrix( cusparseCSRMatrix,
+         ::tnlCusparseCSR< Real > cusparseCSR;
+         cusparseCSR.init( cudaCSR, &cusparseHandle );
+         benchmarkMatrix( cusparseCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -384,8 +384,8 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
          cusparseDestroy( cusparseHandle );
 
         std::cout << " done.   \r";
-         /*cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::scalar );
-         benchmarkMatrix( cudaCSRMatrix,
+         /*cudaCSR.setCudaKernelType( CSRCudaType::scalar );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -394,9 +394,9 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::vector );
-         cudaCSRMatrix.setCudaWarpSize( 1 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setCudaKernelType( CSRCudaType::vector );
+         cudaCSR.setCudaWarpSize( 1 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -405,8 +405,8 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setCudaWarpSize( 2 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setCudaWarpSize( 2 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -415,8 +415,8 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setCudaWarpSize( 4 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setCudaWarpSize( 4 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -425,8 +425,8 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setCudaWarpSize( 8 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setCudaWarpSize( 8 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -435,8 +435,8 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setCudaWarpSize( 16 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setCudaWarpSize( 16 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -445,8 +445,8 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setCudaWarpSize( 32 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setCudaWarpSize( 32 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -455,9 +455,9 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setCudaKernelType( CSRMatrixCudaType::hybrid );
-         cudaCSRMatrix.setHybridModeSplit( 2 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setCudaKernelType( CSRCudaType::hybrid );
+         cudaCSR.setHybridModeSplit( 2 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -466,8 +466,8 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setHybridModeSplit( 4 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setHybridModeSplit( 4 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -476,8 +476,8 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setHybridModeSplit( 8 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setHybridModeSplit( 8 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -486,8 +486,8 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setHybridModeSplit( 16 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setHybridModeSplit( 16 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -496,8 +496,8 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setHybridModeSplit( 32 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setHybridModeSplit( 32 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -506,8 +506,8 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           baseline,
                           verbose,
                           logFile );
-         cudaCSRMatrix.setHybridModeSplit( 64 );
-         benchmarkMatrix( cudaCSRMatrix,
+         cudaCSR.setHybridModeSplit( 64 );
+         benchmarkMatrix( cudaCSR,
                           cudaX,
                           cudaB,
                           nonzeroElements,
@@ -517,13 +517,13 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           verbose,
                           logFile );*/
       }
-      cudaCSRMatrix.reset();
+      cudaCSR.reset();
 #endif
 
       long int allocatedElements;
       double padding;
-      typedef EllpackMatrix< Real, Devices::Host, int > EllpackMatrixType;
-      EllpackMatrixType ellpackMatrix;
+      typedef Ellpack< Real, Devices::Host, int > EllpackType;
+      EllpackType ellpackMatrix;
       if( ! ellpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
          writeTestFailed( logFile, 7 );
       else
@@ -541,10 +541,10 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           verbose,
                           logFile );
 #ifdef HAVE_CUDA
-         typedef EllpackMatrix< Real, Devices::Cuda, int > EllpackMatrixCudaType;
-         EllpackMatrixCudaType cudaEllpackMatrix;
+         typedef Ellpack< Real, Devices::Cuda, int > EllpackCudaType;
+         EllpackCudaType cudaEllpack;
         std::cout << "Copying matrix to GPU... ";
-         if( ! cudaEllpackMatrix.copyFrom( ellpackMatrix, rowLengthsCuda ) )
+         if( ! cudaEllpack.copyFrom( ellpackMatrix, rowLengthsCuda ) )
          {
             std::cerr << "I am not able to transfer the matrix on GPU." << std::endl;
             writeTestFailed( logFile, 3 );
@@ -552,7 +552,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
          else
          {
            std::cout << " done.   \r";
-            benchmarkMatrix( cudaEllpackMatrix,
+            benchmarkMatrix( cudaEllpack,
                              cudaX,
                              cudaB,
                              nonzeroElements,
@@ -562,21 +562,21 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                              verbose,
                              logFile );
          }
-         cudaEllpackMatrix.reset();
+         cudaEllpack.reset();
 #endif
          ellpackMatrix.reset();
       }
 
-      typedef SlicedEllpackMatrix< Real, Devices::Host, int > SlicedEllpackMatrixType;
-      SlicedEllpackMatrixType slicedEllpackMatrix;
-      if( ! slicedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
+      typedef SlicedEllpack< Real, Devices::Host, int > SlicedEllpackType;
+      SlicedEllpackType slicedEllpack;
+      if( ! slicedEllpack.copyFrom( csrMatrix, rowLengthsHost ) )
          writeTestFailed( logFile, 7 );
       else
       {
-         allocatedElements = slicedEllpackMatrix.getNumberOfMatrixElements();
+         allocatedElements = slicedEllpack.getNumberOfMatrixElements();
          padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
          logFile << "    " << padding << std::endl;
-         benchmarkMatrix( slicedEllpackMatrix,
+         benchmarkMatrix( slicedEllpack,
                           hostX,
                           hostB,
                           nonzeroElements,
@@ -586,10 +586,10 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           verbose,
                           logFile );
 #ifdef HAVE_CUDA
-         typedef SlicedEllpackMatrix< Real, Devices::Cuda, int > SlicedEllpackMatrixCudaType;
-         SlicedEllpackMatrixCudaType cudaSlicedEllpackMatrix;
+         typedef SlicedEllpack< Real, Devices::Cuda, int > SlicedEllpackCudaType;
+         SlicedEllpackCudaType cudaSlicedEllpack;
         std::cout << "Copying matrix to GPU... ";
-         if( ! cudaSlicedEllpackMatrix.copyFrom( slicedEllpackMatrix, rowLengthsCuda ) )
+         if( ! cudaSlicedEllpack.copyFrom( slicedEllpack, rowLengthsCuda ) )
          {
             std::cerr << "I am not able to transfer the matrix on GPU." << std::endl;
             writeTestFailed( logFile, 3 );
@@ -597,7 +597,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
          else
          {
            std::cout << " done.   \r";
-            benchmarkMatrix( cudaSlicedEllpackMatrix,
+            benchmarkMatrix( cudaSlicedEllpack,
                              cudaX,
                              cudaB,
                              nonzeroElements,
@@ -607,21 +607,21 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                              verbose,
                              logFile );
          }
-         cudaSlicedEllpackMatrix.reset();
+         cudaSlicedEllpack.reset();
 #endif
-         slicedEllpackMatrix.reset();
+         slicedEllpack.reset();
       }
 
-      typedef ChunkedEllpackMatrix< Real, Devices::Host, int > ChunkedEllpackMatrixType;
-      ChunkedEllpackMatrixType chunkedEllpackMatrix;
-      if( ! chunkedEllpackMatrix.copyFrom( csrMatrix, rowLengthsHost ) )
+      typedef ChunkedEllpack< Real, Devices::Host, int > ChunkedEllpackType;
+      ChunkedEllpackType chunkedEllpack;
+      if( ! chunkedEllpack.copyFrom( csrMatrix, rowLengthsHost ) )
          writeTestFailed( logFile, 7 );
       else
       {
-         allocatedElements = chunkedEllpackMatrix.getNumberOfMatrixElements();
+         allocatedElements = chunkedEllpack.getNumberOfMatrixElements();
          padding = ( double ) allocatedElements / ( double ) nonzeroElements * 100.0 - 100.0;
          logFile << "    " << padding << std::endl;
-         benchmarkMatrix( chunkedEllpackMatrix,
+         benchmarkMatrix( chunkedEllpack,
                           hostX,
                           hostB,
                           nonzeroElements,
@@ -631,10 +631,10 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                           verbose,
                           logFile );
 #ifdef HAVE_CUDA
-         typedef ChunkedEllpackMatrix< Real, Devices::Cuda, int > ChunkedEllpackMatrixCudaType;
-         ChunkedEllpackMatrixCudaType cudaChunkedEllpackMatrix;
+         typedef ChunkedEllpack< Real, Devices::Cuda, int > ChunkedEllpackCudaType;
+         ChunkedEllpackCudaType cudaChunkedEllpack;
         std::cout << "Copying matrix to GPU... ";
-         if( ! cudaChunkedEllpackMatrix.copyFrom( chunkedEllpackMatrix, rowLengthsCuda ) )
+         if( ! cudaChunkedEllpack.copyFrom( chunkedEllpack, rowLengthsCuda ) )
          {
             std::cerr << "I am not able to transfer the matrix on GPU." << std::endl;
             writeTestFailed( logFile, 3 );
@@ -642,7 +642,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
          else
          {
            std::cout << " done.    \r";
-            benchmarkMatrix( cudaChunkedEllpackMatrix,
+            benchmarkMatrix( cudaChunkedEllpack,
                              cudaX,
                              cudaB,
                              nonzeroElements,
@@ -652,9 +652,9 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
                              verbose,
                              logFile );
          }
-         cudaChunkedEllpackMatrix.reset();
+         cudaChunkedEllpack.reset();
 #endif
-         chunkedEllpackMatrix.reset();
+         chunkedEllpack.reset();
       }
    }
    return true;

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CSRMatrix_impl.h  -  description
+                          CSR_impl.h  -  description
                              -------------------
     begin                : Dec 10, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/CSRMatrix.h>
+#include <TNL/Matrices/CSR.h>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Vectors/SharedVector.h>
 #include <TNL/core/mfuncs.h>
@@ -31,7 +31,7 @@ class tnlCusparseCSRWrapper {};
 template< typename Real,
           typename Device,
           typename Index >
-CSRMatrix< Real, Device, Index >::CSRMatrix()
+CSR< Real, Device, Index >::CSR()
 : spmvCudaKernel( hybrid ),
   cudaWarpSize( 32 ), //Devices::Cuda::getWarpSize() )
   hybridModeSplit( 4 )
@@ -41,9 +41,9 @@ CSRMatrix< Real, Device, Index >::CSRMatrix()
 template< typename Real,
           typename Device,
           typename Index >
-String CSRMatrix< Real, Device, Index >::getType()
+String CSR< Real, Device, Index >::getType()
 {
-   return String( "CSRMatrix< ") +
+   return String( "CSR< ") +
           String( TNL::getType< Real>() ) +
           String( ", " ) +
           Device :: getDeviceType() +
@@ -53,7 +53,7 @@ String CSRMatrix< Real, Device, Index >::getType()
 template< typename Real,
           typename Device,
           typename Index >
-String CSRMatrix< Real, Device, Index >::getTypeVirtual() const
+String CSR< Real, Device, Index >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -61,10 +61,10 @@ String CSRMatrix< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool CSRMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
+bool CSR< Real, Device, Index >::setDimensions( const IndexType rows,
                                                          const IndexType columns )
 {
-   if( ! SparseMatrix< Real, Device, Index >::setDimensions( rows, columns ) ||
+   if( ! Sparse< Real, Device, Index >::setDimensions( rows, columns ) ||
        ! this->rowPointers.setSize( this->rows + 1 ) )
       return false;
    this->rowPointers.setValue( 0 );
@@ -74,7 +74,7 @@ bool CSRMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index >
-bool CSRMatrix< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
+bool CSR< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
    /****
     * Compute the rows pointers. The last one is
@@ -104,7 +104,7 @@ bool CSRMatrix< Real, Device, Index >::setCompressedRowsLengths( const Compresse
 template< typename Real,
           typename Device,
           typename Index >
-Index CSRMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
+Index CSR< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
    return this->rowPointers[ row + 1 ] - this->rowPointers[ row ];
 }
@@ -115,9 +115,9 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool CSRMatrix< Real, Device, Index >::setLike( const CSRMatrix< Real2, Device2, Index2 >& matrix )
+bool CSR< Real, Device, Index >::setLike( const CSR< Real2, Device2, Index2 >& matrix )
 {
-   if( ! SparseMatrix< Real, Device, Index >::setLike( matrix ) ||
+   if( ! Sparse< Real, Device, Index >::setLike( matrix ) ||
        ! this->rowPointers.setLike( matrix.rowPointers ) )
       return false;
    return true;
@@ -126,9 +126,9 @@ bool CSRMatrix< Real, Device, Index >::setLike( const CSRMatrix< Real2, Device2,
 template< typename Real,
           typename Device,
           typename Index >
-void CSRMatrix< Real, Device, Index >::reset()
+void CSR< Real, Device, Index >::reset()
 {
-   SparseMatrix< Real, Device, Index >::reset();
+   Sparse< Real, Device, Index >::reset();
    this->rowPointers.reset();
 }
 
@@ -136,7 +136,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool CSRMatrix< Real, Device, Index >::setElementFast( const IndexType row,
+bool CSR< Real, Device, Index >::setElementFast( const IndexType row,
                                                           const IndexType column,
                                                           const Real& value )
 {
@@ -146,7 +146,7 @@ bool CSRMatrix< Real, Device, Index >::setElementFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool CSRMatrix< Real, Device, Index >::setElement( const IndexType row,
+bool CSR< Real, Device, Index >::setElement( const IndexType row,
                                                       const IndexType column,
                                                       const Real& value )
 {
@@ -158,7 +158,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool CSRMatrix< Real, Device, Index >::addElementFast( const IndexType row,
+bool CSR< Real, Device, Index >::addElementFast( const IndexType row,
                                                           const IndexType column,
                                                           const RealType& value,
                                                           const RealType& thisElementMultiplicator )
@@ -208,7 +208,7 @@ bool CSRMatrix< Real, Device, Index >::addElementFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool CSRMatrix< Real, Device, Index >::addElement( const IndexType row,
+bool CSR< Real, Device, Index >::addElement( const IndexType row,
                                                       const IndexType column,
                                                       const RealType& value,
                                                       const RealType& thisElementMultiplicator )
@@ -259,7 +259,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool CSRMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
+bool CSR< Real, Device, Index > :: setRowFast( const IndexType row,
                                                         const IndexType* columnIndexes,
                                                         const RealType* values,
                                                         const IndexType elements )
@@ -284,7 +284,7 @@ bool CSRMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool CSRMatrix< Real, Device, Index > :: setRow( const IndexType row,
+bool CSR< Real, Device, Index > :: setRow( const IndexType row,
                                                     const IndexType* columnIndexes,
                                                     const RealType* values,
                                                     const IndexType elements )
@@ -309,7 +309,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool CSRMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
+bool CSR< Real, Device, Index > :: addRowFast( const IndexType row,
                                                         const IndexType* columns,
                                                         const RealType* values,
                                                         const IndexType numberOfElements,
@@ -322,7 +322,7 @@ bool CSRMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool CSRMatrix< Real, Device, Index > :: addRow( const IndexType row,
+bool CSR< Real, Device, Index > :: addRow( const IndexType row,
                                                     const IndexType* columns,
                                                     const RealType* values,
                                                     const IndexType numberOfElements,
@@ -335,7 +335,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Real CSRMatrix< Real, Device, Index >::getElementFast( const IndexType row,
+Real CSR< Real, Device, Index >::getElementFast( const IndexType row,
                                                           const IndexType column ) const
 {
    IndexType elementPtr = this->rowPointers[ row ];
@@ -353,7 +353,7 @@ Real CSRMatrix< Real, Device, Index >::getElementFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-Real CSRMatrix< Real, Device, Index >::getElement( const IndexType row,
+Real CSR< Real, Device, Index >::getElement( const IndexType row,
                                                       const IndexType column ) const
 {
    IndexType elementPtr = this->rowPointers.getElement( row );
@@ -372,7 +372,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-void CSRMatrix< Real, Device, Index >::getRowFast( const IndexType row,
+void CSR< Real, Device, Index >::getRowFast( const IndexType row,
                                                       IndexType* columns,
                                                       RealType* values ) const
 {
@@ -390,8 +390,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-typename CSRMatrix< Real, Device, Index >::MatrixRow
-CSRMatrix< Real, Device, Index >::
+typename CSR< Real, Device, Index >::MatrixRow
+CSR< Real, Device, Index >::
 getRow( const IndexType rowIndex )
 {
    const IndexType rowOffset = this->rowPointers[ rowIndex ];
@@ -406,8 +406,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-const typename CSRMatrix< Real, Device, Index >::MatrixRow
-CSRMatrix< Real, Device, Index >::
+const typename CSR< Real, Device, Index >::MatrixRow
+CSR< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
    const IndexType rowOffset = this->rowPointers[ rowIndex ];
@@ -423,7 +423,7 @@ template< typename Real,
           typename Index >
    template< typename Vector >
 __cuda_callable__
-typename Vector::RealType CSRMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
+typename Vector::RealType CSR< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                  const Vector& vector ) const
 {
    Real result = 0.0;
@@ -440,7 +440,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename InVector, typename OutVector >
-void CSRMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
+void CSR< Real, Device, Index >::vectorProduct( const InVector& inVector,
                                                          OutVector& outVector ) const
 {
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
@@ -451,7 +451,7 @@ template< typename Real,
           typename Index >
    template< typename Real2,
              typename Index2 >
-void CSRMatrix< Real, Device, Index >::addMatrix( const CSRMatrix< Real2, Device, Index2 >& matrix,
+void CSR< Real, Device, Index >::addMatrix( const CSR< Real2, Device, Index2 >& matrix,
                                                                           const RealType& matrixMultiplicator,
                                                                           const RealType& thisMatrixMultiplicator )
 {
@@ -464,7 +464,7 @@ template< typename Real,
           typename Index >
    template< typename Real2,
              typename Index2 >
-void CSRMatrix< Real, Device, Index >::getTransposition( const CSRMatrix< Real2, Device, Index2 >& matrix,
+void CSR< Real, Device, Index >::getTransposition( const CSR< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
    Assert( false, std::cerr << "TODO: implement" );
@@ -475,7 +475,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-bool CSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
+bool CSR< Real, Device, Index >::performSORIteration( const Vector& b,
                                                                const IndexType row,
                                                                Vector& x,
                                                                const RealType& omega ) const
@@ -511,9 +511,9 @@ bool CSRMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
 template< typename Real,
           typename Device,
           typename Index >
-bool CSRMatrix< Real, Device, Index >::save( File& file ) const
+bool CSR< Real, Device, Index >::save( File& file ) const
 {
-   if( ! SparseMatrix< Real, Device, Index >::save( file ) ||
+   if( ! Sparse< Real, Device, Index >::save( file ) ||
        ! this->rowPointers.save( file ) )
       return false;
    return true;
@@ -522,9 +522,9 @@ bool CSRMatrix< Real, Device, Index >::save( File& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool CSRMatrix< Real, Device, Index >::load( File& file )
+bool CSR< Real, Device, Index >::load( File& file )
 {
-   if( ! SparseMatrix< Real, Device, Index >::load( file ) ||
+   if( ! Sparse< Real, Device, Index >::load( file ) ||
        ! this->rowPointers.load( file ) )
       return false;
    return true;
@@ -533,7 +533,7 @@ bool CSRMatrix< Real, Device, Index >::load( File& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool CSRMatrix< Real, Device, Index >::save( const String& fileName ) const
+bool CSR< Real, Device, Index >::save( const String& fileName ) const
 {
    return Object::save( fileName );
 }
@@ -541,7 +541,7 @@ bool CSRMatrix< Real, Device, Index >::save( const String& fileName ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool CSRMatrix< Real, Device, Index >::load( const String& fileName )
+bool CSR< Real, Device, Index >::load( const String& fileName )
 {
    return Object::load( fileName );
 }
@@ -549,7 +549,7 @@ bool CSRMatrix< Real, Device, Index >::load( const String& fileName )
 template< typename Real,
           typename Device,
           typename Index >
-void CSRMatrix< Real, Device, Index >::print( std::ostream& str ) const
+void CSR< Real, Device, Index >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -568,7 +568,7 @@ void CSRMatrix< Real, Device, Index >::print( std::ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index >
-void CSRMatrix< Real, Device, Index >::setCudaKernelType( const SPMVCudaKernel kernel )
+void CSR< Real, Device, Index >::setCudaKernelType( const SPMVCudaKernel kernel )
 {
    this->spmvCudaKernel = kernel;
 }
@@ -577,7 +577,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-typename CSRMatrix< Real, Device, Index >::SPMVCudaKernel CSRMatrix< Real, Device, Index >::getCudaKernelType() const
+typename CSR< Real, Device, Index >::SPMVCudaKernel CSR< Real, Device, Index >::getCudaKernelType() const
 {
    return this->spmvCudaKernel;
 }
@@ -585,7 +585,7 @@ typename CSRMatrix< Real, Device, Index >::SPMVCudaKernel CSRMatrix< Real, Devic
 template< typename Real,
           typename Device,
           typename Index >
-void CSRMatrix< Real, Device, Index >::setCudaWarpSize( const int warpSize )
+void CSR< Real, Device, Index >::setCudaWarpSize( const int warpSize )
 {
    this->cudaWarpSize = warpSize;
 }
@@ -593,7 +593,7 @@ void CSRMatrix< Real, Device, Index >::setCudaWarpSize( const int warpSize )
 template< typename Real,
           typename Device,
           typename Index >
-int CSRMatrix< Real, Device, Index >::getCudaWarpSize() const
+int CSR< Real, Device, Index >::getCudaWarpSize() const
 {
    return this->cudaWarpSize;
 }
@@ -601,7 +601,7 @@ int CSRMatrix< Real, Device, Index >::getCudaWarpSize() const
 template< typename Real,
           typename Device,
           typename Index >
-void CSRMatrix< Real, Device, Index >::setHybridModeSplit( const IndexType hybridModeSplit )
+void CSR< Real, Device, Index >::setHybridModeSplit( const IndexType hybridModeSplit )
 {
    this->hybridModeSplit = hybridModeSplit;
 }
@@ -610,7 +610,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Index CSRMatrix< Real, Device, Index >::getHybridModeSplit() const
+Index CSR< Real, Device, Index >::getHybridModeSplit() const
 {
    return this->hybridModeSplit;
 }
@@ -623,7 +623,7 @@ template< typename Real,
              typename OutVector,
              int warpSize >
 __device__
-void CSRMatrix< Real, Device, Index >::spmvCudaVectorized( const InVector& inVector,
+void CSR< Real, Device, Index >::spmvCudaVectorized( const InVector& inVector,
                                                               OutVector& outVector,
                                                               const IndexType warpStart,
                                                               const IndexType warpEnd,
@@ -665,7 +665,7 @@ template< typename Real,
              typename OutVector,
              int warpSize >
 __device__
-void CSRMatrix< Real, Device, Index >::vectorProductCuda( const InVector& inVector,
+void CSR< Real, Device, Index >::vectorProductCuda( const InVector& inVector,
                                                              OutVector& outVector,
                                                              int gridIdx ) const
 {
@@ -704,7 +704,7 @@ void CSRMatrix< Real, Device, Index >::vectorProductCuda( const InVector& inVect
 #endif
 
 template<>
-class CSRMatrixDeviceDependentCode< Devices::Host >
+class CSRDeviceDependentCode< Devices::Host >
 {
    public:
 
@@ -714,12 +714,12 @@ class CSRMatrixDeviceDependentCode< Devices::Host >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const CSRMatrix< Real, Device, Index >& matrix,
+      static void vectorProduct( const CSR< Real, Device, Index >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
          const Index rows = matrix.getRows();
-         const CSRMatrix< Real, Device, Index >* matrixPtr = &matrix;
+         const CSR< Real, Device, Index >* matrixPtr = &matrix;
          const InVector* inVectorPtr = &inVector;
          OutVector* outVectorPtr = &outVector;
 #ifdef HAVE_OPENMP
@@ -737,12 +737,12 @@ template< typename Real,
           typename InVector,
           typename OutVector,
           int warpSize >
-__global__ void CSRMatrixVectorProductCudaKernel( const CSRMatrix< Real, Devices::Cuda, Index >* matrix,
+__global__ void CSRVectorProductCudaKernel( const CSR< Real, Devices::Cuda, Index >* matrix,
                                                      const InVector* inVector,
                                                      OutVector* outVector,
                                                      int gridIdx )
 {
-   typedef CSRMatrix< Real, Devices::Cuda, Index > Matrix;
+   typedef CSR< Real, Devices::Cuda, Index > Matrix;
    static_assert( std::is_same< typename Matrix::DeviceType, Devices::Cuda >::value, "" );
    const typename Matrix::IndexType rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( matrix->getCudaKernelType() == Matrix::scalar )
@@ -763,12 +763,12 @@ template< typename Real,
           typename Index,
           typename InVector,
           typename OutVector >
-void CSRMatrixVectorProductCuda( const CSRMatrix< Real, Devices::Cuda, Index >& matrix,
+void CSRVectorProductCuda( const CSR< Real, Devices::Cuda, Index >& matrix,
                                     const InVector& inVector,
                                     OutVector& outVector )
 {
 #ifdef HAVE_CUDA
-   typedef CSRMatrix< Real, Devices::Cuda, Index > Matrix;
+   typedef CSR< Real, Devices::Cuda, Index > Matrix;
    typedef typename Matrix::IndexType IndexType;
    Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
    InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
@@ -783,42 +783,42 @@ void CSRMatrixVectorProductCuda( const CSRMatrix< Real, Devices::Cuda, Index >& 
          cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
       const int sharedMemory = cudaBlockSize.x * sizeof( Real );
       if( matrix.getCudaWarpSize() == 32 )
-         CSRMatrixVectorProductCudaKernel< Real, Index, InVector, OutVector, 32 >
+         CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 32 >
                                             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                             ( kernel_this,
                                               kernel_inVector,
                                               kernel_outVector,
                                               gridIdx );
       if( matrix.getCudaWarpSize() == 16 )
-         CSRMatrixVectorProductCudaKernel< Real, Index, InVector, OutVector, 16 >
+         CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 16 >
                                             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                             ( kernel_this,
                                               kernel_inVector,
                                               kernel_outVector,
                                               gridIdx );
       if( matrix.getCudaWarpSize() == 8 )
-         CSRMatrixVectorProductCudaKernel< Real, Index, InVector, OutVector, 8 >
+         CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 8 >
                                             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                             ( kernel_this,
                                               kernel_inVector,
                                               kernel_outVector,
                                               gridIdx );
       if( matrix.getCudaWarpSize() == 4 )
-         CSRMatrixVectorProductCudaKernel< Real, Index, InVector, OutVector, 4 >
+         CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 4 >
                                             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                             ( kernel_this,
                                               kernel_inVector,
                                               kernel_outVector,
                                               gridIdx );
       if( matrix.getCudaWarpSize() == 2 )
-         CSRMatrixVectorProductCudaKernel< Real, Index, InVector, OutVector, 2 >
+         CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 2 >
                                             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                             ( kernel_this,
                                               kernel_inVector,
                                               kernel_outVector,
                                               gridIdx );
       if( matrix.getCudaWarpSize() == 1 )
-         CSRMatrixVectorProductCudaKernel< Real, Index, InVector, OutVector, 1 >
+         CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 1 >
                                             <<< cudaGridSize, cudaBlockSize, sharedMemory >>>
                                             ( kernel_this,
                                               kernel_inVector,
@@ -919,7 +919,7 @@ class tnlCusparseCSRWrapper< double, int >
 #endif
 
 template<>
-class CSRMatrixDeviceDependentCode< Devices::Cuda >
+class CSRDeviceDependentCode< Devices::Cuda >
 {
    public:
 
@@ -929,7 +929,7 @@ class CSRMatrixDeviceDependentCode< Devices::Cuda >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const CSRMatrix< Real, Device, Index >& matrix,
+      static void vectorProduct( const CSR< Real, Device, Index >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
@@ -943,7 +943,7 @@ class CSRMatrixDeviceDependentCode< Devices::Cuda >
                                                               inVector.getData(),
                                                               outVector.getData() );
 #else
-         CSRMatrixVectorProductCuda( matrix, inVector, outVector );
+         CSRVectorProductCuda( matrix, inVector, outVector );
 #endif
       }
 

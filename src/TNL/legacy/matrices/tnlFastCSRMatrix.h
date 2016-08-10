@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFastCSRMatrix.h  -  description
+                          tnlFastCSR.h  -  description
                              -------------------
     begin                : Jul 10, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -21,7 +21,7 @@
 
 
 
-template< typename Real, typename Device, typename Index > class tnlFastRgCSRMatrix;
+template< typename Real, typename Device, typename Index > class tnlFastRgCSR;
 
 
 //! The Fast CSR format is based on the common CSR format but with compression of the column indices.
@@ -31,17 +31,17 @@ template< typename Real, typename Device, typename Index > class tnlFastRgCSRMat
  */
 
 template< typename Real, typename Device = Devices::Host, typename Index = int >
-class tnlFastCSRMatrix
+class tnlFastCSR
 {
 };
 
 template< typename Real, typename Index >
-class tnlFastCSRMatrix< Real, Devices::Host, Index > : public Matrix< Real, Devices::Host, Index >
+class tnlFastCSR< Real, Devices::Host, Index > : public Matrix< Real, Devices::Host, Index >
 {
    public:
 
    //! Basic constructor
-   tnlFastCSRMatrix( const char* name );
+   tnlFastCSR( const char* name );
 
    const String& getMatrixClass() const;
 
@@ -78,7 +78,7 @@ class tnlFastCSRMatrix< Real, Devices::Host, Index > : public Matrix< Real, Devi
                       Index column,
                       const Real& value );
 
-   bool copyFrom( const CSRMatrix< Real, Devices::Host, Index >& csr_matrix );
+   bool copyFrom( const CSR< Real, Devices::Host, Index >& csr_matrix );
 
    Real getElement( Index row,
                     Index column ) const;
@@ -163,37 +163,37 @@ class tnlFastCSRMatrix< Real, Devices::Host, Index > : public Matrix< Real, Devi
 
    Index column_sequences_length;
 
-   friend class tnlFastRgCSRMatrix< Real, Devices::Host, Index >;
-   //friend class EllpackMatrix< Real, Devices::Host >;
+   friend class tnlFastRgCSR< Real, Devices::Host, Index >;
+   //friend class Ellpack< Real, Devices::Host >;
 };
 
 template< typename Real, typename Index >
-tnlFastCSRMatrix< Real, Devices::Host, Index > :: tnlFastCSRMatrix( const char* name )
+tnlFastCSR< Real, Devices::Host, Index > :: tnlFastCSR( const char* name )
    : Matrix< Real, Devices::Host, Index >( name ),
-     nonzero_elements( "tnlFastCSRMatrix< Real, Devices::Host, Index > :: nonzero-elements" ),
-     row_offsets( "tnlFastCSRMatrix< Real, Devices::Host, Index > :: row-offsets" ),
-     column_sequences( "tnlFastCSRMatrix< Real, Devices::Host, Index > :: column-sequences" ),
-     columns_sequences_offsets( "tnlFastCSRMatrix< Real, Devices::Host, Index > :: columns-sequences-offsets" ),
-     column_sequences_lengths( "tnlFastCSRMatrix< Real, Devices::Host, Index > :: column-sequences-lengths" ),
+     nonzero_elements( "tnlFastCSR< Real, Devices::Host, Index > :: nonzero-elements" ),
+     row_offsets( "tnlFastCSR< Real, Devices::Host, Index > :: row-offsets" ),
+     column_sequences( "tnlFastCSR< Real, Devices::Host, Index > :: column-sequences" ),
+     columns_sequences_offsets( "tnlFastCSR< Real, Devices::Host, Index > :: columns-sequences-offsets" ),
+     column_sequences_lengths( "tnlFastCSR< Real, Devices::Host, Index > :: column-sequences-lengths" ),
      last_nonzero_element( 0 ),
      column_sequences_length( 0 )
 {
 };
 
 template< typename Real, typename Index >
-const String& tnlFastCSRMatrix< Real, Devices::Host, Index > :: getMatrixClass() const
+const String& tnlFastCSR< Real, Devices::Host, Index > :: getMatrixClass() const
 {
    return MatrixClass :: main;
 };
 
 template< typename Real, typename Index >
-String tnlFastCSRMatrix< Real, Devices::Host, Index > :: getType() const
+String tnlFastCSR< Real, Devices::Host, Index > :: getType() const
 {
-   return String( "tnlFastCSRMatrix< ") + String( getType( Real( 0.0 ) ) ) + String( ", Devices::Host >" );
+   return String( "tnlFastCSR< ") + String( getType( Real( 0.0 ) ) ) + String( ", Devices::Host >" );
 };
 
 template< typename Real, typename Index >
-bool tnlFastCSRMatrix< Real, Devices::Host, Index > :: setSize( Index new_size )
+bool tnlFastCSR< Real, Devices::Host, Index > :: setSize( Index new_size )
 {
    this->size = new_size;
    if( ! row_offsets. setSize( this->size + 1 ) ||
@@ -207,9 +207,9 @@ bool tnlFastCSRMatrix< Real, Devices::Host, Index > :: setSize( Index new_size )
 };
 
 template< typename Real, typename Index >
-bool tnlFastCSRMatrix< Real, Devices::Host, Index > :: setNonzeroElements( Index elements )
+bool tnlFastCSR< Real, Devices::Host, Index > :: setNonzeroElements( Index elements )
 {
-   dbgFunctionName( "tnlFastCSRMatrix< Real, Devices::Host >", "setNonzeroElements" );
+   dbgFunctionName( "tnlFastCSR< Real, Devices::Host >", "setNonzeroElements" );
    dbgExpr( elements );
    if( ! nonzero_elements. setSize( elements ) )
       return false;
@@ -222,7 +222,7 @@ bool tnlFastCSRMatrix< Real, Devices::Host, Index > :: setNonzeroElements( Index
 };
 
 template< typename Real, typename Index >
-void tnlFastCSRMatrix< Real, Devices::Host, Index > :: reset()
+void tnlFastCSR< Real, Devices::Host, Index > :: reset()
 {
    nonzero_elements. reset();
    row_offsets. reset();
@@ -234,33 +234,33 @@ void tnlFastCSRMatrix< Real, Devices::Host, Index > :: reset()
 }
 
 template< typename Real, typename Index >
-Index tnlFastCSRMatrix< Real, Devices::Host, Index > :: getNonzeroElements() const
+Index tnlFastCSR< Real, Devices::Host, Index > :: getNonzeroElements() const
 {
 	return last_nonzero_element;
 }
 
 template< typename Real, typename Index >
-Index tnlFastCSRMatrix< Real, Devices::Host, Index > :: getColumnSequencesLength() const
+Index tnlFastCSR< Real, Devices::Host, Index > :: getColumnSequencesLength() const
 {
 	return column_sequences_length;
 }
 
 template< typename Real, typename Index >
-Index tnlFastCSRMatrix< Real, Devices::Host, Index > :: getRowLength( Index row ) const
+Index tnlFastCSR< Real, Devices::Host, Index > :: getRowLength( Index row ) const
 {
 	Assert( row >= 0 && row < this->getSize(), );
 	return row_offsets[ row + 1 ] - row_offsets[ row ];
 }
 
 /*template< typename Real, typename Index >
-Index tnlFastCSRMatrix< Real, Devices::Host, Index > :: getElementPosition( Index row,
+Index tnlFastCSR< Real, Devices::Host, Index > :: getElementPosition( Index row,
                                                              Index column ) const
 {
 
 }*/
 
 template< typename Real, typename Index >
-bool tnlFastCSRMatrix< Real, Devices::Host, Index > :: setElement( Index row,
+bool tnlFastCSR< Real, Devices::Host, Index > :: setElement( Index row,
                                                              Index column,
                                                              const Real& value )
 {
@@ -269,7 +269,7 @@ bool tnlFastCSRMatrix< Real, Devices::Host, Index > :: setElement( Index row,
 }
 
 template< typename Real, typename Index >
-bool tnlFastCSRMatrix< Real, Devices::Host, Index > :: addToElement( Index row,
+bool tnlFastCSR< Real, Devices::Host, Index > :: addToElement( Index row,
                                                                Index column,
                                                                const Real& value )
 {
@@ -278,7 +278,7 @@ bool tnlFastCSRMatrix< Real, Devices::Host, Index > :: addToElement( Index row,
 }
 
 template< typename Real, typename Index >
-Index tnlFastCSRMatrix< Real, Devices::Host, Index > :: insertColumnSequence( const Vector< Index >& columns,
+Index tnlFastCSR< Real, Devices::Host, Index > :: insertColumnSequence( const Vector< Index >& columns,
 	                                                                     Index column_sequence_offset,
 		                                                                  Index column_sequence_length,
 		                                                                  Index row )
@@ -286,9 +286,9 @@ Index tnlFastCSRMatrix< Real, Devices::Host, Index > :: insertColumnSequence( co
 }
 
 template< typename Real, typename Index >
-bool tnlFastCSRMatrix< Real, Devices::Host, Index > :: copyFrom( const CSRMatrix< Real, Devices::Host, Index >& csr_matrix )
+bool tnlFastCSR< Real, Devices::Host, Index > :: copyFrom( const CSR< Real, Devices::Host, Index >& csr_matrix )
 {
-	dbgFunctionName( "tnlFastCSRMatrix< Real, Devices::Host >", "copyFrom" );
+	dbgFunctionName( "tnlFastCSR< Real, Devices::Host >", "copyFrom" );
 	if( ! this->setSize( csr_matrix. getSize() ) )
 		return false;
 
@@ -346,7 +346,7 @@ bool tnlFastCSRMatrix< Real, Devices::Host, Index > :: copyFrom( const CSRMatrix
 }
 
 template< typename Real, typename Index >
-Real tnlFastCSRMatrix< Real, Devices::Host, Index > :: getElement( Index row,
+Real tnlFastCSR< Real, Devices::Host, Index > :: getElement( Index row,
                                                       Index column ) const
 {
    Assert( 0 <= row && row < this->getSize(),
@@ -368,7 +368,7 @@ Real tnlFastCSRMatrix< Real, Devices::Host, Index > :: getElement( Index row,
 }
 
 template< typename Real, typename Index >
-Real tnlFastCSRMatrix< Real, Devices::Host, Index > :: rowProduct( Index row,
+Real tnlFastCSR< Real, Devices::Host, Index > :: rowProduct( Index row,
                                                              const Vector< Real, Devices::Host, Index >& vec ) const
 {
    Assert( 0 <= row && row < this->getSize(),
@@ -401,7 +401,7 @@ Real tnlFastCSRMatrix< Real, Devices::Host, Index > :: rowProduct( Index row,
 }
 
 template< typename Real, typename Index >
-void tnlFastCSRMatrix< Real, Devices::Host, Index > :: vectorProduct( const Vector< Real, Devices::Host, Index >& vec,
+void tnlFastCSR< Real, Devices::Host, Index > :: vectorProduct( const Vector< Real, Devices::Host, Index >& vec,
                                                                 Vector< Real, Devices::Host, Index >& result ) const
 {
    Assert( vec. getSize() == this->getSize(),
@@ -436,13 +436,13 @@ void tnlFastCSRMatrix< Real, Devices::Host, Index > :: vectorProduct( const Vect
 
 
 template< typename Real, typename Index >
-Real tnlFastCSRMatrix< Real, Devices::Host, Index > :: getRowL1Norm( Index row ) const
+Real tnlFastCSR< Real, Devices::Host, Index > :: getRowL1Norm( Index row ) const
 {
 	Assert( false, );
 };
 
 template< typename Real, typename Index >
-void tnlFastCSRMatrix< Real, Devices::Host, Index > :: multiplyRow( Index row, const Real& value )
+void tnlFastCSR< Real, Devices::Host, Index > :: multiplyRow( Index row, const Real& value )
 {
 	Assert( false, );
 };
@@ -450,26 +450,26 @@ void tnlFastCSRMatrix< Real, Devices::Host, Index > :: multiplyRow( Index row, c
 
 
 template< typename Real, typename Index >
-bool tnlFastCSRMatrix< Real, Devices::Host, Index > :: Save( std::ostream& file ) const
-{
-	Assert( false, );
-	return true;
-};
-
-
-template< typename Real, typename Index >
-bool tnlFastCSRMatrix< Real, Devices::Host, Index > :: Load( std::istream& file )
+bool tnlFastCSR< Real, Devices::Host, Index > :: Save( std::ostream& file ) const
 {
 	Assert( false, );
 	return true;
 };
 
+
 template< typename Real, typename Index >
-void tnlFastCSRMatrix< Real, Devices::Host, Index > :: printOut( std::ostream& str,
+bool tnlFastCSR< Real, Devices::Host, Index > :: Load( std::istream& file )
+{
+	Assert( false, );
+	return true;
+};
+
+template< typename Real, typename Index >
+void tnlFastCSR< Real, Devices::Host, Index > :: printOut( std::ostream& str,
                                                            const String& name,
 		                                                     const Index lines ) const
 {
-   str << "Structure of tnlFastCSRMatrix" << std::endl;
+   str << "Structure of tnlFastCSR" << std::endl;
    str << "Matrix name:" << name << std::endl;
    str << "Matrix size:" << this->getSize() << std::endl;
    str << "Allocated elements:" << nonzero_elements. getSize() << std::endl;

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          EllpackMatrix_impl.h  -  description
+                          Ellpack_impl.h  -  description
                              -------------------
     begin                : Dec 7, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/EllpackMatrix.h>
+#include <TNL/Matrices/Ellpack.h>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/core/mfuncs.h>
 
@@ -20,7 +20,7 @@ namespace Matrices {
 template< typename Real,
           typename Device,
           typename Index >
-EllpackMatrix< Real, Device, Index > :: EllpackMatrix()
+Ellpack< Real, Device, Index > :: Ellpack()
 : rowLengths( 0 ), alignedRows( 0 )
 {
 };
@@ -28,9 +28,9 @@ EllpackMatrix< Real, Device, Index > :: EllpackMatrix()
 template< typename Real,
           typename Device,
           typename Index >
-String EllpackMatrix< Real, Device, Index > :: getType()
+String Ellpack< Real, Device, Index > :: getType()
 {
-   return String( "EllpackMatrix< ") +
+   return String( "Ellpack< ") +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
           Device :: getDeviceType() +
@@ -42,7 +42,7 @@ String EllpackMatrix< Real, Device, Index > :: getType()
 template< typename Real,
           typename Device,
           typename Index >
-String EllpackMatrix< Real, Device, Index >::getTypeVirtual() const
+String Ellpack< Real, Device, Index >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -50,7 +50,7 @@ String EllpackMatrix< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
+bool Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
                                                              const IndexType columns )
 {
    Assert( rows > 0 && columns > 0,
@@ -69,7 +69,7 @@ bool EllpackMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackMatrix< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
+bool Ellpack< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
    Assert( this->getRows() > 0, );
    Assert( this->getColumns() > 0, );
@@ -81,7 +81,7 @@ bool EllpackMatrix< Real, Device, Index >::setCompressedRowsLengths( const Compr
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackMatrix< Real, Device, Index >::setConstantCompressedRowsLengths( const IndexType& rowLengths )
+bool Ellpack< Real, Device, Index >::setConstantCompressedRowsLengths( const IndexType& rowLengths )
 {
    Assert( rowLengths > 0,
               std::cerr << " rowLengths = " << rowLengths );
@@ -94,7 +94,7 @@ bool EllpackMatrix< Real, Device, Index >::setConstantCompressedRowsLengths( con
 template< typename Real,
           typename Device,
           typename Index >
-Index EllpackMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
+Index Ellpack< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
    return this->rowLengths;
 }
@@ -105,9 +105,9 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool EllpackMatrix< Real, Device, Index >::setLike( const EllpackMatrix< Real2, Device2, Index2 >& matrix )
+bool Ellpack< Real, Device, Index >::setLike( const Ellpack< Real2, Device2, Index2 >& matrix )
 {
-   if( ! SparseMatrix< Real, Device, Index >::setLike( matrix ) )
+   if( ! Sparse< Real, Device, Index >::setLike( matrix ) )
       return false;
    this->rowLengths = matrix.rowLengths;
    this->alignedRows = matrix.alignedRows;
@@ -117,9 +117,9 @@ bool EllpackMatrix< Real, Device, Index >::setLike( const EllpackMatrix< Real2, 
 template< typename Real,
           typename Device,
           typename Index >
-void EllpackMatrix< Real, Device, Index > :: reset()
+void Ellpack< Real, Device, Index > :: reset()
 {
-   SparseMatrix< Real, Device, Index >::reset();
+   Sparse< Real, Device, Index >::reset();
    this->rowLengths = 0;
    this->alignedRows = 0;
 }
@@ -130,7 +130,7 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool EllpackMatrix< Real, Device, Index >::operator == ( const EllpackMatrix< Real2, Device2, Index2 >& matrix ) const
+bool Ellpack< Real, Device, Index >::operator == ( const Ellpack< Real2, Device2, Index2 >& matrix ) const
 {
    Assert( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
@@ -148,7 +148,7 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool EllpackMatrix< Real, Device, Index >::operator != ( const EllpackMatrix< Real2, Device2, Index2 >& matrix ) const
+bool Ellpack< Real, Device, Index >::operator != ( const Ellpack< Real2, Device2, Index2 >& matrix ) const
 {
    return ! ( ( *this ) == matrix );
 }
@@ -157,7 +157,7 @@ bool EllpackMatrix< Real, Device, Index >::operator != ( const EllpackMatrix< Re
           typename Device,
           typename Index >
    template< typename Matrix >
-bool EllpackMatrix< Real, Device, Index >::copyFrom( const Matrix& matrix,
+bool Ellpack< Real, Device, Index >::copyFrom( const Matrix& matrix,
                                                         const CompressedRowsLengthsVector& rowLengths )
 {
    return Matrix< RealType, DeviceType, IndexType >::copyFrom( matrix, rowLengths );
@@ -167,7 +167,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool EllpackMatrix< Real, Device, Index > :: setElementFast( const IndexType row,
+bool Ellpack< Real, Device, Index > :: setElementFast( const IndexType row,
                                                                 const IndexType column,
                                                                 const Real& value )
 {
@@ -177,7 +177,7 @@ bool EllpackMatrix< Real, Device, Index > :: setElementFast( const IndexType row
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackMatrix< Real, Device, Index > :: setElement( const IndexType row,
+bool Ellpack< Real, Device, Index > :: setElement( const IndexType row,
                                                             const IndexType column,
                                                             const Real& value )
 {
@@ -189,7 +189,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool EllpackMatrix< Real, Device, Index > :: addElementFast( const IndexType row,
+bool Ellpack< Real, Device, Index > :: addElementFast( const IndexType row,
                                                                 const IndexType column,
                                                                 const RealType& value,
                                                                 const RealType& thisElementMultiplicator )
@@ -201,7 +201,7 @@ bool EllpackMatrix< Real, Device, Index > :: addElementFast( const IndexType row
                    << " column = " << column
                    << " this->rows = " << this->rows
                    << " this->columns = " << this-> columns );*/
-   typedef EllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   typedef EllpackDeviceDependentCode< DeviceType > DDCType;
    IndexType i = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
@@ -240,12 +240,12 @@ bool EllpackMatrix< Real, Device, Index > :: addElementFast( const IndexType row
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackMatrix< Real, Device, Index > :: addElement( const IndexType row,
+bool Ellpack< Real, Device, Index > :: addElement( const IndexType row,
                                                             const IndexType column,
                                                             const RealType& value,
                                                             const RealType& thisElementMultiplicator )
 {
-   typedef EllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   typedef EllpackDeviceDependentCode< DeviceType > DDCType;
    IndexType i = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
@@ -285,12 +285,12 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool EllpackMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
+bool Ellpack< Real, Device, Index > :: setRowFast( const IndexType row,
                                                             const IndexType* columnIndexes,
                                                             const RealType* values,
                                                             const IndexType elements )
 {
-   typedef EllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   typedef EllpackDeviceDependentCode< DeviceType > DDCType;
    IndexType elementPointer = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
@@ -317,12 +317,12 @@ bool EllpackMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackMatrix< Real, Device, Index > :: setRow( const IndexType row,
+bool Ellpack< Real, Device, Index > :: setRow( const IndexType row,
                                                         const IndexType* columnIndexes,
                                                         const RealType* values,
                                                         const IndexType elements )
 {
-   typedef EllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   typedef EllpackDeviceDependentCode< DeviceType > DDCType;
    IndexType elementPointer = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
@@ -351,7 +351,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool EllpackMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
+bool Ellpack< Real, Device, Index > :: addRowFast( const IndexType row,
                                                             const IndexType* columns,
                                                             const RealType* values,
                                                             const IndexType numberOfElements,
@@ -364,7 +364,7 @@ bool EllpackMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackMatrix< Real, Device, Index > :: addRow( const IndexType row,
+bool Ellpack< Real, Device, Index > :: addRow( const IndexType row,
                                                         const IndexType* columns,
                                                         const RealType* values,
                                                         const IndexType numberOfElements,
@@ -378,10 +378,10 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Real EllpackMatrix< Real, Device, Index >::getElementFast( const IndexType row,
+Real Ellpack< Real, Device, Index >::getElementFast( const IndexType row,
                                                               const IndexType column ) const
 {
-   typedef EllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   typedef EllpackDeviceDependentCode< DeviceType > DDCType;
    IndexType elementPtr = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
@@ -397,10 +397,10 @@ Real EllpackMatrix< Real, Device, Index >::getElementFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-Real EllpackMatrix< Real, Device, Index >::getElement( const IndexType row,
+Real Ellpack< Real, Device, Index >::getElement( const IndexType row,
                                                           const IndexType column ) const
 {
-   typedef EllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   typedef EllpackDeviceDependentCode< DeviceType > DDCType;
    IndexType elementPtr = DDCType::getRowBegin( *this, row );
    const IndexType rowEnd = DDCType::getRowEnd( *this, row );
    const IndexType step = DDCType::getElementStep( *this );
@@ -418,11 +418,11 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-void EllpackMatrix< Real, Device, Index >::getRowFast( const IndexType row,
+void Ellpack< Real, Device, Index >::getRowFast( const IndexType row,
                                                           IndexType* columns,
                                                           RealType* values ) const
 {
-   //typedef EllpackMatrixDeviceDependentCode< DeviceType > DDCType;
+   //typedef EllpackDeviceDependentCode< DeviceType > DDCType;
    IndexType elementPtr = DeviceDependentCode::getRowBegin( *this, row );
    const IndexType rowEnd = DeviceDependentCode::getRowEnd( *this, row );
    const IndexType step = DeviceDependentCode::getElementStep( *this );
@@ -439,8 +439,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-typename EllpackMatrix< Real, Device, Index >::MatrixRow
-EllpackMatrix< Real, Device, Index >::
+typename Ellpack< Real, Device, Index >::MatrixRow
+Ellpack< Real, Device, Index >::
 getRow( const IndexType rowIndex )
 {
    //printf( "this->rowLengths = %d this = %p \n", this->rowLengths, this );
@@ -455,8 +455,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-const typename EllpackMatrix< Real, Device, Index >::MatrixRow
-EllpackMatrix< Real, Device, Index >::
+const typename Ellpack< Real, Device, Index >::MatrixRow
+Ellpack< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
    //printf( "this->rowLengths = %d this = %p \n", this->rowLengths, this );
@@ -472,7 +472,7 @@ template< typename Real,
           typename Index >
   template< typename Vector >
 __cuda_callable__
-typename Vector::RealType EllpackMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
+typename Vector::RealType Ellpack< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                      const Vector& vector ) const
 {
    IndexType i = DeviceDependentCode::getRowBegin( *this, row );
@@ -494,7 +494,7 @@ template< typename Real,
           typename Index >
    template< typename InVector,
              typename OutVector >
-void EllpackMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
+void Ellpack< Real, Device, Index >::vectorProduct( const InVector& inVector,
                                                                    OutVector& outVector ) const
 {
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
@@ -505,7 +505,7 @@ template< typename Real,
           typename Index >
    template< typename Real2,
              typename Index2 >
-void EllpackMatrix< Real, Device, Index > :: addMatrix( const EllpackMatrix< Real2, Device, Index2 >& matrix,
+void Ellpack< Real, Device, Index > :: addMatrix( const Ellpack< Real2, Device, Index2 >& matrix,
                                                                  const RealType& matrixMultiplicator,
                                                                  const RealType& thisMatrixMultiplicator )
 {
@@ -518,7 +518,7 @@ template< typename Real,
           typename Index >
    template< typename Real2,
              typename Index2 >
-void EllpackMatrix< Real, Device, Index >::getTransposition( const EllpackMatrix< Real2, Device, Index2 >& matrix,
+void Ellpack< Real, Device, Index >::getTransposition( const Ellpack< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
    Assert( false, std::cerr << "TODO: implement" );
@@ -529,7 +529,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-bool EllpackMatrix< Real, Device, Index > :: performSORIteration( const Vector& b,
+bool Ellpack< Real, Device, Index > :: performSORIteration( const Vector& b,
                                                                            const IndexType row,
                                                                            Vector& x,
                                                                            const RealType& omega ) const
@@ -567,9 +567,9 @@ bool EllpackMatrix< Real, Device, Index > :: performSORIteration( const Vector& 
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackMatrix< Real, Device, Index >::save( File& file ) const
+bool Ellpack< Real, Device, Index >::save( File& file ) const
 {
-   if( ! SparseMatrix< Real, Device, Index >::save( file) ) return false;
+   if( ! Sparse< Real, Device, Index >::save( file) ) return false;
 #ifdef HAVE_NOT_CXX11
    if( ! file.write< IndexType, Devices::Host, IndexType >( &this->rowLengths, 1 ) ) return false;
 #else
@@ -581,9 +581,9 @@ bool EllpackMatrix< Real, Device, Index >::save( File& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackMatrix< Real, Device, Index >::load( File& file )
+bool Ellpack< Real, Device, Index >::load( File& file )
 {
-   if( ! SparseMatrix< Real, Device, Index >::load( file) ) return false;
+   if( ! Sparse< Real, Device, Index >::load( file) ) return false;
 #ifdef HAVE_NOT_CXX11
    if( ! file.read< IndexType, Devices::Host, IndexType >( &this->rowLengths, 1 ) ) return false;
 #else
@@ -595,7 +595,7 @@ bool EllpackMatrix< Real, Device, Index >::load( File& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackMatrix< Real, Device, Index >::save( const String& fileName ) const
+bool Ellpack< Real, Device, Index >::save( const String& fileName ) const
 {
    return Object::save( fileName );
 }
@@ -603,7 +603,7 @@ bool EllpackMatrix< Real, Device, Index >::save( const String& fileName ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackMatrix< Real, Device, Index >::load( const String& fileName )
+bool Ellpack< Real, Device, Index >::load( const String& fileName )
 {
    return Object::load( fileName );
 }
@@ -611,7 +611,7 @@ bool EllpackMatrix< Real, Device, Index >::load( const String& fileName )
 template< typename Real,
           typename Device,
           typename Index >
-void EllpackMatrix< Real, Device, Index >::print( std::ostream& str ) const
+void Ellpack< Real, Device, Index >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -634,15 +634,15 @@ void EllpackMatrix< Real, Device, Index >::print( std::ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackMatrix< Real, Device, Index >::allocateElements()
+bool Ellpack< Real, Device, Index >::allocateElements()
 {
-   if( ! SparseMatrix< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths ) )
+   if( ! Sparse< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths ) )
       return false;
    return true;
 }
 
 template<>
-class EllpackMatrixDeviceDependentCode< Devices::Host >
+class EllpackDeviceDependentCode< Devices::Host >
 {
    public:
 
@@ -651,7 +651,7 @@ class EllpackMatrixDeviceDependentCode< Devices::Host >
       template< typename Real,
                 typename Index >
       __cuda_callable__
-      static Index getRowBegin( const EllpackMatrix< Real, Device, Index >& matrix,
+      static Index getRowBegin( const Ellpack< Real, Device, Index >& matrix,
                                 const Index row )
       {
          return row * matrix.rowLengths;
@@ -660,7 +660,7 @@ class EllpackMatrixDeviceDependentCode< Devices::Host >
       template< typename Real,
                 typename Index >
       __cuda_callable__
-      static Index getRowEnd( const EllpackMatrix< Real, Device, Index >& matrix,
+      static Index getRowEnd( const Ellpack< Real, Device, Index >& matrix,
                                 const Index row )
       {
          return ( row + 1 ) * matrix.rowLengths;
@@ -669,7 +669,7 @@ class EllpackMatrixDeviceDependentCode< Devices::Host >
       template< typename Real,
                 typename Index >
       __cuda_callable__
-      static Index getElementStep( const EllpackMatrix< Real, Device, Index >& matrix )
+      static Index getElementStep( const Ellpack< Real, Device, Index >& matrix )
       {
          return 1;
       }
@@ -678,7 +678,7 @@ class EllpackMatrixDeviceDependentCode< Devices::Host >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const EllpackMatrix< Real, Device, Index >& matrix,
+      static void vectorProduct( const Ellpack< Real, Device, Index >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
@@ -703,7 +703,7 @@ class EllpackMatrixDeviceDependentCode< Devices::Host >
 template<
    typename Real,
    typename Index >
-__global__ void EllpackMatrixVectorProductCudaKernel(
+__global__ void EllpackVectorProductCudaKernel(
    const Index rows,
    const Index columns,
    const Index compressedRowsLengths,
@@ -736,7 +736,7 @@ __global__ void EllpackMatrixVectorProductCudaKernel(
 
 
 template<>
-class EllpackMatrixDeviceDependentCode< Devices::Cuda >
+class EllpackDeviceDependentCode< Devices::Cuda >
 {
    public:
 
@@ -745,7 +745,7 @@ class EllpackMatrixDeviceDependentCode< Devices::Cuda >
       template< typename Real,
                 typename Index >
       __cuda_callable__
-      static Index getRowBegin( const EllpackMatrix< Real, Device, Index >& matrix,
+      static Index getRowBegin( const Ellpack< Real, Device, Index >& matrix,
                                 const Index row )
       {
          return row;
@@ -754,7 +754,7 @@ class EllpackMatrixDeviceDependentCode< Devices::Cuda >
       template< typename Real,
                 typename Index >
       __cuda_callable__
-      static Index getRowEnd( const EllpackMatrix< Real, Device, Index >& matrix,
+      static Index getRowEnd( const Ellpack< Real, Device, Index >& matrix,
                                 const Index row )
       {
          return row + getElementStep( matrix ) * matrix.rowLengths;
@@ -763,7 +763,7 @@ class EllpackMatrixDeviceDependentCode< Devices::Cuda >
       template< typename Real,
                 typename Index >
       __cuda_callable__
-      static Index getElementStep( const EllpackMatrix< Real, Device, Index >& matrix )
+      static Index getElementStep( const Ellpack< Real, Device, Index >& matrix )
       {
          return matrix.alignedRows;
       }
@@ -772,13 +772,13 @@ class EllpackMatrixDeviceDependentCode< Devices::Cuda >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const EllpackMatrix< Real, Device, Index >& matrix,
+      static void vectorProduct( const Ellpack< Real, Device, Index >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
          //MatrixVectorProductCuda( matrix, inVector, outVector );
          #ifdef HAVE_CUDA
-            typedef EllpackMatrix< Real, Device, Index > Matrix;
+            typedef Ellpack< Real, Device, Index > Matrix;
             typedef typename Matrix::IndexType IndexType;
             //Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
             //InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
@@ -790,7 +790,7 @@ class EllpackMatrixDeviceDependentCode< Devices::Cuda >
             {
                if( gridIdx == cudaGrids - 1 )
                   cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
-               EllpackMatrixVectorProductCudaKernel
+               EllpackVectorProductCudaKernel
                < Real, Index >
                 <<< cudaGridSize, cudaBlockSize >>>
                 ( matrix.getRows(),

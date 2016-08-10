@@ -13,7 +13,7 @@
 #include <TNL/Operators/diffusion/OneSidedMeanCurvature.h>
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
-#include <TNL/Matrices/CSRMatrix.h>
+#include <TNL/Matrices/CSR.h>
 #include <TNL/Functions/MeshFunction.h>
 
 namespace TNL {
@@ -39,7 +39,7 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
       typedef typename DifferentialOperator::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
-      typedef CSRMatrix< RealType, DeviceType, IndexType> MatrixType;
+      typedef CSR< RealType, DeviceType, IndexType> MatrixType;
 
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;

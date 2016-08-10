@@ -1,37 +1,37 @@
 SET( headers Matrix.h
              Matrix_impl.h
-             DenseMatrix.h
-             DenseMatrix_impl.h
-             TridiagonalMatrix.h
-             TridiagonalMatrix_impl.h
-             MultidiagonalMatrix.h
-             MultidiagonalMatrix_impl.h
-             SparseMatrix.h
-             SparseMatrix_impl.h
-             EllpackMatrix.h
-             EllpackMatrix_impl.h
-             SlicedEllpackMatrix.h
-             SlicedEllpackMatrix_impl.h
-             ChunkedEllpackMatrix.h
-             ChunkedEllpackMatrix_impl.h
-             CSRMatrix.h
-             CSRMatrix_impl.h 
+             Dense.h
+             Dense_impl.h
+             Tridiagonal.h
+             Tridiagonal_impl.h
+             Multidiagonal.h
+             Multidiagonal_impl.h
+             Sparse.h
+             Sparse_impl.h
+             Ellpack.h
+             Ellpack_impl.h
+             SlicedEllpack.h
+             SlicedEllpack_impl.h
+             ChunkedEllpack.h
+             ChunkedEllpack_impl.h
+             CSR.h
+             CSR_impl.h 
              MatrixReader.h
              MatrixReader_impl.h
              MatrixWriter.h
              MatrixWriter_impl.h
              MatrixSetter.h
              MatrixSetter_impl.h
-             SparseMatrixRow.h
-             SparseMatrixRow_impl.h
-             DenseMatrixRow.h
-             DenseMatrixRow_impl.h
-             TridiagonalMatrixRow.h
-             TridiagonalMatrixRow_impl.h
+             SparseRow.h
+             SparseRow_impl.h
+             DenseRow.h
+             DenseRow_impl.h
+             TridiagonalRow.h
+             TridiagonalRow_impl.h
              MultidiagonalMatrixSetter.h
              MultidiagonalMatrixSetter_impl.h
-             MultidiagonalMatrixRow.h
-             MultidiagonalMatrixRow_impl.h  )
+             MultidiagonalRow.h
+             MultidiagonalRow_impl.h  )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/matrices )
 set( common_SOURCES  )

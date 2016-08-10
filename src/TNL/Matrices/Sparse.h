@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SparseMatrix.h  -  description
+                          Sparse.h  -  description
                              -------------------
     begin                : Dec 21, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Matrices/Matrix.h>
-#include <TNL/Matrices/SparseMatrixRow.h>
+#include <TNL/Matrices/SparseRow.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -19,7 +19,7 @@ namespace Matrices {
 template< typename Real,
           typename Device,
           typename Index >
-class SparseMatrix : public Matrix< Real, Device, Index >
+class Sparse : public Matrix< Real, Device, Index >
 {
    public:
 
@@ -30,14 +30,14 @@ class SparseMatrix : public Matrix< Real, Device, Index >
    typedef typename Matrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef Vectors::Vector< IndexType, DeviceType, IndexType > ColumnIndexesVector;
    typedef Matrix< Real, Device, Index > BaseType;
-   typedef SparseMatrixRow< RealType, IndexType > MatrixRow;
+   typedef SparseRow< RealType, IndexType > MatrixRow;
 
-   SparseMatrix();
+   Sparse();
 
    virtual bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths ) = 0;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const SparseMatrix< Real2, Device2, Index2 >& matrix );
+   bool setLike( const Sparse< Real2, Device2, Index2 >& matrix );
 
    IndexType getNumberOfMatrixElements() const;
 
@@ -68,4 +68,4 @@ class SparseMatrix : public Matrix< Real, Device, Index >
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/SparseMatrix_impl.h>
+#include <TNL/Matrices/Sparse_impl.h>

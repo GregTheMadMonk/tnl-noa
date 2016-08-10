@@ -1,8 +1,8 @@
 /***************************************************************************
-                          DenseMatrixRow.h  -  description
+                          MultidiagonalRow.h  -  description
                              -------------------
-    begin                : Dec 24, 2014
-    copyright            : (C) 2014 by oberhuber
+    begin                : Jan 2, 2015
+    copyright            : (C) 2015 by oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -14,20 +14,26 @@ namespace TNL {
 namespace Matrices {   
 
 template< typename Real, typename Index >
-class DenseMatrixRow
+class MultidiagonalRow
 {
    public:
 
       __cuda_callable__
-      DenseMatrixRow();
+      MultidiagonalRow();
 
       __cuda_callable__
-      DenseMatrixRow( Real* values,
-                         const Index columns,
-                         const Index step );
+      MultidiagonalRow( Real* values,
+                                 Index* diagonals,
+                                 const Index maxRowLength,
+                                 const Index row,
+                                 const Index columns,
+                                 const Index step );
 
       __cuda_callable__
       void bind( Real* values,
+                 Index* diagonals,
+                 const Index maxRowLength,
+                 const Index row,
                  const Index columns,
                  const Index step );
 
@@ -40,11 +46,13 @@ class DenseMatrixRow
 
       Real* values;
 
-      Index columns, step;
+      Index* diagonals;
+
+      Index row, columns, maxRowLength, step;
 };
 
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/DenseMatrixRow_impl.h>
+#include <TNL/Matrices/MultidiagonalRow_impl.h>
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          DenseMatrix_impl.h  -  description
+                          Dense_impl.h  -  description
                              -------------------
     begin                : Nov 29, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Assert.h>
-#include <TNL/Matrices/DenseMatrix.h>
+#include <TNL/Matrices/Dense.h>
 
 #ifdef HAVE_CUDA
 #include <TNL/core/cuda/reduction-operations.h>
@@ -23,16 +23,16 @@ namespace Matrices {
 template< typename Real,
           typename Device,
           typename Index >
-DenseMatrix< Real, Device, Index >::DenseMatrix()
+Dense< Real, Device, Index >::Dense()
 {
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-String DenseMatrix< Real, Device, Index >::getType()
+String Dense< Real, Device, Index >::getType()
 {
-   return String( "DenseMatrix< " ) +
+   return String( "Dense< " ) +
           String( TNL::getType< RealType >() ) + ", " +
           String( Device :: getDeviceType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";
@@ -41,7 +41,7 @@ String DenseMatrix< Real, Device, Index >::getType()
 template< typename Real,
           typename Device,
           typename Index >
-String DenseMatrix< Real, Device, Index >::getTypeVirtual() const
+String Dense< Real, Device, Index >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -49,7 +49,7 @@ String DenseMatrix< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool DenseMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
+bool Dense< Real, Device, Index >::setDimensions( const IndexType rows,
                                                            const IndexType columns )
 {
    if( ! Matrix< Real, Device, Index >::setDimensions( rows, columns ) ||
@@ -65,7 +65,7 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool DenseMatrix< Real, Device, Index >::setLike( const DenseMatrix< Real2, Device2, Index2 >& matrix )
+bool Dense< Real, Device, Index >::setLike( const Dense< Real2, Device2, Index2 >& matrix )
 {
    return this->setDimensions( matrix.getRows(), matrix.getColumns() );
 }
@@ -73,7 +73,7 @@ bool DenseMatrix< Real, Device, Index >::setLike( const DenseMatrix< Real2, Devi
 template< typename Real,
           typename Device,
           typename Index >
-bool DenseMatrix< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
+bool Dense< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
    return true;
 }
@@ -81,7 +81,7 @@ bool DenseMatrix< Real, Device, Index >::setCompressedRowsLengths( const Compres
 template< typename Real,
           typename Device,
           typename Index >
-Index DenseMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
+Index Dense< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
    return this->getColumns();
 }
@@ -89,7 +89,7 @@ Index DenseMatrix< Real, Device, Index >::getRowLength( const IndexType row ) co
 template< typename Real,
           typename Device,
           typename Index >
-Index DenseMatrix< Real, Device, Index >::getMaxRowLength() const
+Index Dense< Real, Device, Index >::getMaxRowLength() const
 {
    return this->getColumns();
 }
@@ -97,7 +97,7 @@ Index DenseMatrix< Real, Device, Index >::getMaxRowLength() const
 template< typename Real,
           typename Device,
           typename Index >
-Index DenseMatrix< Real, Device, Index >::getNumberOfMatrixElements() const
+Index Dense< Real, Device, Index >::getNumberOfMatrixElements() const
 {
    return this->getRows() * this->getColumns();
 }
@@ -105,7 +105,7 @@ Index DenseMatrix< Real, Device, Index >::getNumberOfMatrixElements() const
 template< typename Real,
           typename Device,
           typename Index >
-Index DenseMatrix< Real, Device, Index >::getNumberOfNonzeroMatrixElements() const
+Index Dense< Real, Device, Index >::getNumberOfNonzeroMatrixElements() const
 {
    IndexType nonzeroElements( 0 );
    for( IndexType row = 0; row < this->getRows(); row++ )
@@ -118,7 +118,7 @@ Index DenseMatrix< Real, Device, Index >::getNumberOfNonzeroMatrixElements() con
 template< typename Real,
           typename Device,
           typename Index >
-void DenseMatrix< Real, Device, Index >::reset()
+void Dense< Real, Device, Index >::reset()
 {
    Matrix< Real, Device, Index >::reset();
    this->values.reset();
@@ -127,7 +127,7 @@ void DenseMatrix< Real, Device, Index >::reset()
 template< typename Real,
           typename Device,
           typename Index >
-void DenseMatrix< Real, Device, Index >::setValue( const Real& value )
+void Dense< Real, Device, Index >::setValue( const Real& value )
 {
    this->values.setValue( value );
 }
@@ -137,7 +137,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool DenseMatrix< Real, Device, Index >::setElementFast( const IndexType row,
+bool Dense< Real, Device, Index >::setElementFast( const IndexType row,
                                                             const IndexType column,
                                                             const RealType& value )
 {
@@ -152,7 +152,7 @@ bool DenseMatrix< Real, Device, Index >::setElementFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool DenseMatrix< Real, Device, Index >::setElement( const IndexType row,
+bool Dense< Real, Device, Index >::setElement( const IndexType row,
                                                         const IndexType column,
                                                         const RealType& value )
 {
@@ -165,7 +165,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool DenseMatrix< Real, Device, Index >::addElementFast( const IndexType row,
+bool Dense< Real, Device, Index >::addElementFast( const IndexType row,
                                                             const IndexType column,
                                                             const RealType& value,
                                                             const RealType& thisElementMultiplicator )
@@ -185,7 +185,7 @@ bool DenseMatrix< Real, Device, Index >::addElementFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool DenseMatrix< Real, Device, Index >::addElement( const IndexType row,
+bool Dense< Real, Device, Index >::addElement( const IndexType row,
                                                         const IndexType column,
                                                         const RealType& value,
                                                         const RealType& thisElementMultiplicator )
@@ -205,7 +205,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool DenseMatrix< Real, Device, Index >::setRowFast( const IndexType row,
+bool Dense< Real, Device, Index >::setRowFast( const IndexType row,
                                                         const IndexType* columns,
                                                         const RealType* values,
                                                         const IndexType elements )
@@ -221,7 +221,7 @@ bool DenseMatrix< Real, Device, Index >::setRowFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool DenseMatrix< Real, Device, Index >::setRow( const IndexType row,
+bool Dense< Real, Device, Index >::setRow( const IndexType row,
                                                     const IndexType* columns,
                                                     const RealType* values,
                                                     const IndexType elements )
@@ -238,7 +238,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool DenseMatrix< Real, Device, Index >::addRowFast( const IndexType row,
+bool Dense< Real, Device, Index >::addRowFast( const IndexType row,
                                                         const IndexType* columns,
                                                         const RealType* values,
                                                         const IndexType elements,
@@ -256,7 +256,7 @@ bool DenseMatrix< Real, Device, Index >::addRowFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool DenseMatrix< Real, Device, Index >::addRow( const IndexType row,
+bool Dense< Real, Device, Index >::addRow( const IndexType row,
                                                     const IndexType* columns,
                                                     const RealType* values,
                                                     const IndexType elements,
@@ -276,7 +276,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-const Real& DenseMatrix< Real, Device, Index >::getElementFast( const IndexType row,
+const Real& Dense< Real, Device, Index >::getElementFast( const IndexType row,
                                                             const IndexType column ) const
 {
    Assert( row >= 0 && row < this->getRows() &&
@@ -288,7 +288,7 @@ const Real& DenseMatrix< Real, Device, Index >::getElementFast( const IndexType 
 template< typename Real,
           typename Device,
           typename Index >
-Real DenseMatrix< Real, Device, Index >::getElement( const IndexType row,
+Real Dense< Real, Device, Index >::getElement( const IndexType row,
                                                         const IndexType column ) const
 {
    return this->values.getElement( this->getElementIndex( row, column ) );
@@ -298,7 +298,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-void DenseMatrix< Real, Device, Index >::getRowFast( const IndexType row,
+void Dense< Real, Device, Index >::getRowFast( const IndexType row,
                                                         IndexType* columns,
                                                         RealType* values ) const
 {
@@ -313,8 +313,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-typename DenseMatrix< Real, Device, Index >::MatrixRow
-DenseMatrix< Real, Device, Index >::
+typename Dense< Real, Device, Index >::MatrixRow
+Dense< Real, Device, Index >::
 getRow( const IndexType rowIndex )
 {
    if( std::is_same< Device, Devices::Host >::value )
@@ -331,8 +331,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-const typename DenseMatrix< Real, Device, Index >::MatrixRow
-DenseMatrix< Real, Device, Index >::
+const typename Dense< Real, Device, Index >::MatrixRow
+Dense< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
    if( std::is_same< Device, Devices::Host >::value )
@@ -350,7 +350,7 @@ template< typename Real,
           typename Index >
    template< typename Vector >
 __cuda_callable__
-typename Vector::RealType DenseMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
+typename Vector::RealType Dense< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                    const Vector& vector ) const
 {
    RealType sum( 0.0 );
@@ -364,7 +364,7 @@ template< typename Real,
           typename Index >
    template< typename InVector,
              typename OutVector >
-void DenseMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
+void Dense< Real, Device, Index >::vectorProduct( const InVector& inVector,
                                                            OutVector& outVector ) const
 {
    Assert( this->getColumns() == inVector.getSize(),
@@ -381,7 +381,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Matrix >
-void DenseMatrix< Real, Device, Index >::addMatrix( const Matrix& matrix,
+void Dense< Real, Device, Index >::addMatrix( const Matrix& matrix,
                                                        const RealType& matrixMultiplicator,
                                                        const RealType& thisMatrixMultiplicator )
 {
@@ -405,7 +405,7 @@ template< typename Real,
           typename Matrix2,
           int tileDim,
           int tileRowBlockSize >
-__global__ void DenseMatrixMatrixProductKernel( DenseMatrix< Real, Devices::Cuda, Index >* resultMatrix,
+__global__ void DenseMatrixProductKernel( Dense< Real, Devices::Cuda, Index >* resultMatrix,
                                                    const Matrix1* matrixA,
                                                    const Matrix2* matrixB,
                                                    const Real matrixAMultiplicator,
@@ -501,7 +501,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Matrix1, typename Matrix2, int tileDim >
-void DenseMatrix< Real, Device, Index >::getMatrixProduct( const Matrix1& matrix1,
+void Dense< Real, Device, Index >::getMatrixProduct( const Matrix1& matrix1,
                                                               const Matrix2& matrix2,
                                                               const RealType& matrix1Multiplicator,
                                                               const RealType& matrix2Multiplicator )
@@ -561,7 +561,7 @@ void DenseMatrix< Real, Device, Index >::getMatrixProduct( const Matrix1& matrix
             ThisType* this_kernel = Devices::Cuda::passToDevice( *this );
             Matrix1* matrix1_kernel = Devices::Cuda::passToDevice( matrix1 );
             Matrix2* matrix2_kernel = Devices::Cuda::passToDevice( matrix2 );
-            DenseMatrixMatrixProductKernel< Real,
+            DenseMatrixProductKernel< Real,
                                                Index,
                                                Matrix1,
                                                Matrix2,
@@ -591,7 +591,7 @@ template< typename Real,
           typename Matrix,
           int tileDim,
           int tileRowBlockSize >
-__global__ void DenseMatrixTranspositionAlignedKernel( DenseMatrix< Real, Devices::Cuda, Index >* resultMatrix,
+__global__ void DenseTranspositionAlignedKernel( Dense< Real, Devices::Cuda, Index >* resultMatrix,
                                                           const Matrix* inputMatrix,
                                                           const Real matrixMultiplicator,
                                                           const Index gridIdx_x,
@@ -660,7 +660,7 @@ template< typename Real,
           typename Matrix,
           int tileDim,
           int tileRowBlockSize >
-__global__ void DenseMatrixTranspositionNonAlignedKernel( DenseMatrix< Real, Devices::Cuda, Index >* resultMatrix,
+__global__ void DenseTranspositionNonAlignedKernel( Dense< Real, Devices::Cuda, Index >* resultMatrix,
                                                              const Matrix* inputMatrix,
                                                              const Real matrixMultiplicator,
                                                              const Index gridIdx_x,
@@ -739,7 +739,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Matrix, int tileDim >
-void DenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matrix,
+void Dense< Real, Device, Index >::getTransposition( const Matrix& matrix,
                                                               const RealType& matrixMultiplicator )
 {
    Assert( this->getColumns() == matrix.getRows() &&
@@ -788,7 +788,7 @@ void DenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matrix,
             if( ( gridIdx_x < columnGrids - 1 || matrix.getColumns() % tileDim == 0 ) &&
                 ( gridIdx_y < rowGrids - 1 || matrix.getRows() % tileDim == 0 ) )
             {
-               DenseMatrixTranspositionAlignedKernel< Real,
+               DenseTranspositionAlignedKernel< Real,
                                                          Index,
                                                          Matrix,
                                                          tileDim,
@@ -804,7 +804,7 @@ void DenseMatrix< Real, Device, Index >::getTransposition( const Matrix& matrix,
             }
             else
             {
-               DenseMatrixTranspositionNonAlignedKernel< Real,
+               DenseTranspositionNonAlignedKernel< Real,
                                                          Index,
                                                          Matrix,
                                                          tileDim,
@@ -830,7 +830,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-void DenseMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
+void Dense< Real, Device, Index >::performSORIteration( const Vector& b,
                                                                  const IndexType row,
                                                                  Vector& x,
                                                                  const RealType& omega ) const
@@ -849,7 +849,7 @@ void DenseMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
 template< typename Real,
           typename Device,
           typename Index >
-bool DenseMatrix< Real, Device, Index >::save( const String& fileName ) const
+bool Dense< Real, Device, Index >::save( const String& fileName ) const
 {
    return Object::save( fileName );
 }
@@ -857,7 +857,7 @@ bool DenseMatrix< Real, Device, Index >::save( const String& fileName ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool DenseMatrix< Real, Device, Index >::load( const String& fileName )
+bool Dense< Real, Device, Index >::load( const String& fileName )
 {
    return Object::load( fileName );
 }
@@ -865,7 +865,7 @@ bool DenseMatrix< Real, Device, Index >::load( const String& fileName )
 template< typename Real,
           typename Device,
           typename Index >
-bool DenseMatrix< Real, Device, Index >::save( File& file ) const
+bool Dense< Real, Device, Index >::save( File& file ) const
 {
    if( ! Matrix< Real, Device, Index >::save( file )  )
       return false;
@@ -875,7 +875,7 @@ bool DenseMatrix< Real, Device, Index >::save( File& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool DenseMatrix< Real, Device, Index >::load( File& file )
+bool Dense< Real, Device, Index >::load( File& file )
 {
    if( ! Matrix< Real, Device, Index >::load( file ) )
       return false;
@@ -885,7 +885,7 @@ bool DenseMatrix< Real, Device, Index >::load( File& file )
 template< typename Real,
           typename Device,
           typename Index >
-void DenseMatrix< Real, Device, Index >::print( std::ostream& str ) const
+void Dense< Real, Device, Index >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -900,7 +900,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Index DenseMatrix< Real, Device, Index >::getElementIndex( const IndexType row,
+Index Dense< Real, Device, Index >::getElementIndex( const IndexType row,
                                                               const IndexType column ) const
 {
    Assert( ( std::is_same< Device, Devices::Host >::value ||
@@ -913,7 +913,7 @@ Index DenseMatrix< Real, Device, Index >::getElementIndex( const IndexType row,
 }
 
 template<>
-class DenseMatrixDeviceDependentCode< Devices::Host >
+class DenseDeviceDependentCode< Devices::Host >
 {
    public:
 
@@ -923,7 +923,7 @@ class DenseMatrixDeviceDependentCode< Devices::Host >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const DenseMatrix< Real, Device, Index >& matrix,
+      static void vectorProduct( const Dense< Real, Device, Index >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
@@ -936,7 +936,7 @@ class DenseMatrixDeviceDependentCode< Devices::Host >
 };
 
 template<>
-class DenseMatrixDeviceDependentCode< Devices::Cuda >
+class DenseDeviceDependentCode< Devices::Cuda >
 {
    public:
 
@@ -946,7 +946,7 @@ class DenseMatrixDeviceDependentCode< Devices::Cuda >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const DenseMatrix< Real, Device, Index >& matrix,
+      static void vectorProduct( const Dense< Real, Device, Index >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {

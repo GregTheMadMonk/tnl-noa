@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSlicedSlicedEllpackMatrix_impl.h  -  description
+                          tnlSlicedSlicedEllpack_impl.h  -  description
                              -------------------
     begin                : Dec 8, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/SlicedEllpackMatrix.h>
+#include <TNL/Matrices/SlicedEllpack.h>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/core/mfuncs.h>
 
@@ -21,7 +21,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-SlicedEllpackMatrix< Real, Device, Index, SliceSize >::SlicedEllpackMatrix()
+SlicedEllpack< Real, Device, Index, SliceSize >::SlicedEllpack()
 {
 };
 
@@ -29,9 +29,9 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-String SlicedEllpackMatrix< Real, Device, Index, SliceSize >::getType()
+String SlicedEllpack< Real, Device, Index, SliceSize >::getType()
 {
-   return String( "SlicedEllpackMatrix< ") +
+   return String( "SlicedEllpack< ") +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
           Device :: getDeviceType() +
@@ -42,7 +42,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-String SlicedEllpackMatrix< Real, Device, Index, SliceSize >::getTypeVirtual() const
+String SlicedEllpack< Real, Device, Index, SliceSize >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -51,20 +51,20 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize >::setDimensions( const IndexType rows,
+bool SlicedEllpack< Real, Device, Index, SliceSize >::setDimensions( const IndexType rows,
                                                                               const IndexType columns )
 {
    Assert( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
                    << " columns = " << columns << std::endl );
-   return SparseMatrix< Real, Device, Index >::setDimensions( rows, columns );
+   return Sparse< Real, Device, Index >::setDimensions( rows, columns );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
+bool SlicedEllpack< Real, Device, Index, SliceSize >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
    Assert( this->getRows() > 0, );
    Assert( this->getColumns() > 0, );
@@ -85,7 +85,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-Index SlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRowLength( const IndexType row ) const
+Index SlicedEllpack< Real, Device, Index, SliceSize >::getRowLength( const IndexType row ) const
 {
    const IndexType slice = row / SliceSize;
    return this->sliceCompressedRowsLengths.getElement( slice );
@@ -98,9 +98,9 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize >::setLike( const SlicedEllpackMatrix< Real2, Device2, Index2, SliceSize >& matrix )
+bool SlicedEllpack< Real, Device, Index, SliceSize >::setLike( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix )
 {
-   if( !SparseMatrix< Real, Device, Index >::setLike( matrix ) ||
+   if( !Sparse< Real, Device, Index >::setLike( matrix ) ||
        ! this->slicePointers.setLike( matrix.slicePointers ) ||
        ! this->sliceCompressedRowsLengths.setLike( matrix.sliceCompressedRowsLengths ) )
       return false;
@@ -111,9 +111,9 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-void SlicedEllpackMatrix< Real, Device, Index, SliceSize >::reset()
+void SlicedEllpack< Real, Device, Index, SliceSize >::reset()
 {
-   SparseMatrix< Real, Device, Index >::reset();
+   Sparse< Real, Device, Index >::reset();
    this->slicePointers.reset();
    this->sliceCompressedRowsLengths.reset();
 }
@@ -125,7 +125,7 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize >::operator == ( const SlicedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const
+bool SlicedEllpack< Real, Device, Index, SliceSize >::operator == ( const SlicedEllpack< Real2, Device2, Index2 >& matrix ) const
 {
    Assert( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
@@ -144,7 +144,7 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize >::operator != ( const SlicedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const
+bool SlicedEllpack< Real, Device, Index, SliceSize >::operator != ( const SlicedEllpack< Real2, Device2, Index2 >& matrix ) const
 {
    return ! ( ( *this ) == matrix );
 }
@@ -154,7 +154,7 @@ template< typename Real,
           typename Index,
           int SliceSize >
 __cuda_callable__
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize >::setElementFast( const IndexType row,
+bool SlicedEllpack< Real, Device, Index, SliceSize >::setElementFast( const IndexType row,
                                                                                const IndexType column,
                                                                                const Real& value )
 {
@@ -165,7 +165,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize >::setElement( const IndexType row,
+bool SlicedEllpack< Real, Device, Index, SliceSize >::setElement( const IndexType row,
                                                                            const IndexType column,
                                                                            const Real& value )
 {
@@ -178,7 +178,7 @@ template< typename Real,
           typename Index,
           int SliceSize >
 __cuda_callable__
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElementFast( const IndexType row,
+bool SlicedEllpack< Real, Device, Index, SliceSize >::addElementFast( const IndexType row,
                                                                                const IndexType column,
                                                                                const RealType& value,
                                                                                const RealType& thisElementMultiplicator )
@@ -226,7 +226,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize >::addElement( const IndexType row,
+bool SlicedEllpack< Real, Device, Index, SliceSize >::addElement( const IndexType row,
                                                                            const IndexType column,
                                                                            const RealType& value,
                                                                            const RealType& thisElementMultiplicator )
@@ -275,7 +275,7 @@ template< typename Real,
           typename Index,
           int SliceSize >
 __cuda_callable__
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize > :: setRowFast( const IndexType row,
+bool SlicedEllpack< Real, Device, Index, SliceSize > :: setRowFast( const IndexType row,
                                                                              const IndexType* columnIndexes,
                                                                              const RealType* values,
                                                                              const IndexType elements )
@@ -309,7 +309,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize > :: setRow( const IndexType row,
+bool SlicedEllpack< Real, Device, Index, SliceSize > :: setRow( const IndexType row,
                                                                          const IndexType* columnIndexes,
                                                                          const RealType* values,
                                                                          const IndexType elements )
@@ -344,7 +344,7 @@ template< typename Real,
           typename Index,
           int SliceSize >
 __cuda_callable__
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize > :: addRowFast( const IndexType row,
+bool SlicedEllpack< Real, Device, Index, SliceSize > :: addRowFast( const IndexType row,
                                                                              const IndexType* columns,
                                                                              const RealType* values,
                                                                              const IndexType numberOfElements,
@@ -358,7 +358,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize > :: addRow( const IndexType row,
+bool SlicedEllpack< Real, Device, Index, SliceSize > :: addRow( const IndexType row,
                                                                          const IndexType* columns,
                                                                          const RealType* values,
                                                                          const IndexType numberOfElements,
@@ -373,7 +373,7 @@ template< typename Real,
           typename Index,
           int SliceSize >
 __cuda_callable__
-Real SlicedEllpackMatrix< Real, Device, Index, SliceSize >::getElementFast( const IndexType row,
+Real SlicedEllpack< Real, Device, Index, SliceSize >::getElementFast( const IndexType row,
                                                                                const IndexType column ) const
 {
    Index elementPtr, rowEnd, step;
@@ -393,7 +393,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-Real SlicedEllpackMatrix< Real, Device, Index, SliceSize >::getElement( const IndexType row,
+Real SlicedEllpack< Real, Device, Index, SliceSize >::getElement( const IndexType row,
                                                                            const IndexType column ) const
 {
 
@@ -415,7 +415,7 @@ template< typename Real,
           typename Index,
           int SliceSize >
 __cuda_callable__
-void SlicedEllpackMatrix< Real, Device, Index, SliceSize >::getRowFast( const IndexType row,
+void SlicedEllpack< Real, Device, Index, SliceSize >::getRowFast( const IndexType row,
                                                                            IndexType* columns,
                                                                            RealType* values ) const
 {
@@ -436,8 +436,8 @@ template< typename Real,
           typename Index,
           int SliceSize >
 __cuda_callable__
-typename SlicedEllpackMatrix< Real, Device, Index, SliceSize >::MatrixRow
-SlicedEllpackMatrix< Real, Device, Index, SliceSize >::
+typename SlicedEllpack< Real, Device, Index, SliceSize >::MatrixRow
+SlicedEllpack< Real, Device, Index, SliceSize >::
 getRow( const IndexType rowIndex )
 {
    Index rowBegin, rowEnd, step;
@@ -454,8 +454,8 @@ template< typename Real,
           typename Index,
           int SliceSize >
 __cuda_callable__
-const typename SlicedEllpackMatrix< Real, Device, Index, SliceSize >::MatrixRow
-SlicedEllpackMatrix< Real, Device, Index, SliceSize >::
+const typename SlicedEllpack< Real, Device, Index, SliceSize >::MatrixRow
+SlicedEllpack< Real, Device, Index, SliceSize >::
 getRow( const IndexType rowIndex ) const
 {
    Index rowBegin, rowEnd, step;
@@ -473,7 +473,7 @@ template< typename Real,
           int SliceSize >
   template< typename Vector >
 __cuda_callable__
-typename Vector::RealType SlicedEllpackMatrix< Real, Device, Index, SliceSize >::rowVectorProduct( const IndexType row,
+typename Vector::RealType SlicedEllpack< Real, Device, Index, SliceSize >::rowVectorProduct( const IndexType row,
                                                                                                       const Vector& vector ) const
 {
    Real result = 0.0;
@@ -497,7 +497,7 @@ template< typename Real,
           int SliceSize >
    template< typename InVector,
              typename OutVector >
-void SlicedEllpackMatrix< Real, Device, Index, SliceSize >::vectorProduct( const InVector& inVector,
+void SlicedEllpack< Real, Device, Index, SliceSize >::vectorProduct( const InVector& inVector,
                                                                               OutVector& outVector ) const
 {
    DeviceDependentCode::vectorProduct( *this, inVector, outVector );
@@ -509,7 +509,7 @@ template< typename Real,
           int SliceSize >
    template< typename Real2,
              typename Index2 >
-void SlicedEllpackMatrix< Real, Device, Index, SliceSize >::addMatrix( const SlicedEllpackMatrix< Real2, Device, Index2 >& matrix,
+void SlicedEllpack< Real, Device, Index, SliceSize >::addMatrix( const SlicedEllpack< Real2, Device, Index2 >& matrix,
                                                                           const RealType& matrixMultiplicator,
                                                                           const RealType& thisMatrixMultiplicator )
 {
@@ -523,7 +523,7 @@ template< typename Real,
           int SliceSize >
    template< typename Real2,
              typename Index2 >
-void SlicedEllpackMatrix< Real, Device, Index, SliceSize >::getTransposition( const SlicedEllpackMatrix< Real2, Device, Index2 >& matrix,
+void SlicedEllpack< Real, Device, Index, SliceSize >::getTransposition( const SlicedEllpack< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
    Assert( false, std::cerr << "TODO: implement" );
@@ -535,7 +535,7 @@ template< typename Real,
           typename Index,
           int SliceSize >
    template< typename Vector >
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize >::performSORIteration( const Vector& b,
+bool SlicedEllpack< Real, Device, Index, SliceSize >::performSORIteration( const Vector& b,
                                                                                     const IndexType row,
                                                                                     Vector& x,
                                                                                     const RealType& omega ) const
@@ -577,9 +577,9 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize >::save( File& file ) const
+bool SlicedEllpack< Real, Device, Index, SliceSize >::save( File& file ) const
 {
-   if( ! SparseMatrix< Real, Device, Index >::save( file ) ||
+   if( ! Sparse< Real, Device, Index >::save( file ) ||
        ! this->slicePointers.save( file ) ||
        ! this->sliceCompressedRowsLengths.save( file ) )
       return false;
@@ -590,9 +590,9 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize >::load( File& file )
+bool SlicedEllpack< Real, Device, Index, SliceSize >::load( File& file )
 {
-   if( ! SparseMatrix< Real, Device, Index >::load( file ) ||
+   if( ! Sparse< Real, Device, Index >::load( file ) ||
        ! this->slicePointers.load( file ) ||
        ! this->sliceCompressedRowsLengths.load( file ) )
       return false;
@@ -603,7 +603,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize >::save( const String& fileName ) const
+bool SlicedEllpack< Real, Device, Index, SliceSize >::save( const String& fileName ) const
 {
    return Object::save( fileName );
 }
@@ -612,7 +612,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpackMatrix< Real, Device, Index, SliceSize >::load( const String& fileName )
+bool SlicedEllpack< Real, Device, Index, SliceSize >::load( const String& fileName )
 {
    return Object::load( fileName );
 }
@@ -621,7 +621,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-void SlicedEllpackMatrix< Real, Device, Index, SliceSize >::print( std::ostream& str ) const
+void SlicedEllpack< Real, Device, Index, SliceSize >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -648,7 +648,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-__device__ void SlicedEllpackMatrix< Real, Device, Index, SliceSize >::computeMaximalRowLengthInSlicesCuda( const CompressedRowsLengthsVector& rowLengths,
+__device__ void SlicedEllpack< Real, Device, Index, SliceSize >::computeMaximalRowLengthInSlicesCuda( const CompressedRowsLengthsVector& rowLengths,
                                                                                                                const IndexType sliceIdx )
 {
    Index rowIdx = sliceIdx * SliceSize;
@@ -671,7 +671,7 @@ __device__ void SlicedEllpackMatrix< Real, Device, Index, SliceSize >::computeMa
 #endif
 
 template<>
-class SlicedEllpackMatrixDeviceDependentCode< Devices::Host >
+class SlicedEllpackDeviceDependentCode< Devices::Host >
 {
    public:
 
@@ -680,7 +680,7 @@ class SlicedEllpackMatrixDeviceDependentCode< Devices::Host >
       template< typename Real,
                 typename Index,
                 int SliceSize >
-      static void initRowTraverse( const SlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
+      static void initRowTraverse( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
                                    const Index row,
                                    Index& rowBegin,
                                    Index& rowEnd,
@@ -699,7 +699,7 @@ class SlicedEllpackMatrixDeviceDependentCode< Devices::Host >
                 typename Index,
                 int SliceSize >
       __cuda_callable__
-      static void initRowTraverseFast( const SlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
+      static void initRowTraverseFast( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
                                        const Index row,
                                        Index& rowBegin,
                                        Index& rowEnd,
@@ -718,8 +718,8 @@ class SlicedEllpackMatrixDeviceDependentCode< Devices::Host >
       template< typename Real,
                 typename Index,
                 int SliceSize >
-      static bool computeMaximalRowLengthInSlices( SlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
-                                                   const typename SlicedEllpackMatrix< Real, Device, Index >::CompressedRowsLengthsVector& rowLengths )
+      static bool computeMaximalRowLengthInSlices( SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                                   const typename SlicedEllpack< Real, Device, Index >::CompressedRowsLengthsVector& rowLengths )
       {
          Index row( 0 ), slice( 0 ), sliceRowLength( 0 );
          while( row < matrix.getRows() )
@@ -746,7 +746,7 @@ class SlicedEllpackMatrixDeviceDependentCode< Devices::Host >
                 typename InVector,
                 typename OutVector,
                 int SliceSize >
-      static void vectorProduct( const SlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
+      static void vectorProduct( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
@@ -763,8 +763,8 @@ class SlicedEllpackMatrixDeviceDependentCode< Devices::Host >
 template< typename Real,
           typename Index,
           int SliceSize >
-__global__ void SlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel( SlicedEllpackMatrix< Real, Devices::Cuda, Index, SliceSize >* matrix,
-                                                                                   const typename SlicedEllpackMatrix< Real, Devices::Cuda, Index, SliceSize >::CompressedRowsLengthsVector* rowLengths,
+__global__ void SlicedEllpack_computeMaximalRowLengthInSlices_CudaKernel( SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >* matrix,
+                                                                                   const typename SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >::CompressedRowsLengthsVector* rowLengths,
                                                                                    int gridIdx )
 {
    const Index sliceIdx = gridIdx * Devices::Cuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
@@ -777,7 +777,7 @@ template<
    typename Real,
    typename Index,
    int SliceSize >
-__global__ void SlicedEllpackMatrixVectorProductCudaKernel(
+__global__ void SlicedEllpackVectorProductCudaKernel(
    const Index rows,
    const Index columns,
    const Index* slicePointers,
@@ -812,7 +812,7 @@ __global__ void SlicedEllpackMatrixVectorProductCudaKernel(
 
 
 template<>
-class SlicedEllpackMatrixDeviceDependentCode< Devices::Cuda >
+class SlicedEllpackDeviceDependentCode< Devices::Cuda >
 {
    public:
 
@@ -821,7 +821,7 @@ class SlicedEllpackMatrixDeviceDependentCode< Devices::Cuda >
       template< typename Real,
                 typename Index,
                 int SliceSize >
-      static void initRowTraverse( const SlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
+      static void initRowTraverse( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
                                    const Index row,
                                    Index& rowBegin,
                                    Index& rowEnd,
@@ -840,7 +840,7 @@ class SlicedEllpackMatrixDeviceDependentCode< Devices::Cuda >
                 typename Index,
                 int SliceSize >
       __cuda_callable__
-      static void initRowTraverseFast( const SlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
+      static void initRowTraverseFast( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
                                        const Index row,
                                        Index& rowBegin,
                                        Index& rowEnd,
@@ -859,11 +859,11 @@ class SlicedEllpackMatrixDeviceDependentCode< Devices::Cuda >
       template< typename Real,
                 typename Index,
                 int SliceSize >
-      static bool computeMaximalRowLengthInSlices( SlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
-                                                   const typename SlicedEllpackMatrix< Real, Device, Index >::CompressedRowsLengthsVector& rowLengths )
+      static bool computeMaximalRowLengthInSlices( SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
+                                                   const typename SlicedEllpack< Real, Device, Index >::CompressedRowsLengthsVector& rowLengths )
       {
 #ifdef HAVE_CUDA
-         typedef SlicedEllpackMatrix< Real, Device, Index, SliceSize > Matrix;
+         typedef SlicedEllpack< Real, Device, Index, SliceSize > Matrix;
          typedef typename Matrix::CompressedRowsLengthsVector CompressedRowsLengthsVector;
          Matrix* kernel_matrix = Devices::Cuda::passToDevice( matrix );
          CompressedRowsLengthsVector* kernel_rowLengths = Devices::Cuda::passToDevice( rowLengths );
@@ -875,7 +875,7 @@ class SlicedEllpackMatrixDeviceDependentCode< Devices::Cuda >
          {
             if( gridIdx == cudaGrids - 1 )
                cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
-            SlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize ><<< cudaGridSize, cudaBlockSize >>>
+            SlicedEllpack_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize ><<< cudaGridSize, cudaBlockSize >>>
                                                                              ( kernel_matrix,
                                                                                kernel_rowLengths,
                                                                                gridIdx );
@@ -892,13 +892,13 @@ class SlicedEllpackMatrixDeviceDependentCode< Devices::Cuda >
                 typename InVector,
                 typename OutVector,
                 int SliceSize >
-      static void vectorProduct( const SlicedEllpackMatrix< Real, Device, Index, SliceSize >& matrix,
+      static void vectorProduct( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
          //MatrixVectorProductCuda( matrix, inVector, outVector );
          #ifdef HAVE_CUDA
-            typedef SlicedEllpackMatrix< Real, Device, Index, SliceSize > Matrix;
+            typedef SlicedEllpack< Real, Device, Index, SliceSize > Matrix;
             typedef typename Matrix::IndexType IndexType;
             //Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
             //InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
@@ -910,7 +910,7 @@ class SlicedEllpackMatrixDeviceDependentCode< Devices::Cuda >
             {
                if( gridIdx == cudaGrids - 1 )
                   cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
-               SlicedEllpackMatrixVectorProductCudaKernel
+               SlicedEllpackVectorProductCudaKernel
                < Real, Index, SliceSize >
                 <<< cudaGridSize, cudaBlockSize >>>
                 ( matrix.getRows(),

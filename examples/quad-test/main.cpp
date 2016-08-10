@@ -18,8 +18,8 @@
 #include "quad-test-conf.h"
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Matrices/CSRMatrix.h>
-//#include "../../src/matrix/CSRMatrix.h"
+#include <TNL/Matrices/CSR.h>
+//#include "../../src/matrix/CSR.h"
 #include "Quadcpp.h"
 
 int main(int argc, char* argv[]) {
@@ -38,14 +38,14 @@ int main(int argc, char* argv[]) {
 		cerr << "I am not able to open the file " << inputFile << "." << std::endl;
 		return 1;
 	}
-	CSRMatrix <double> doubleMatrix("double");
+	CSR <double> doubleMatrix("double");
 	if(! doubleMatrix.load(binaryFile)) {
 		cerr << "Unable to restore the CSR matrix." << std::endl;
 		return 1;
 	}
 	binaryFile.close();
 	
-	CSRMatrix <QuadDouble> quadMatrix("quad");
+	CSR <QuadDouble> quadMatrix("quad");
 	quadMatrix = doubleMatrix;
 	return EXIT_SUCCESS;
 }

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SlicedEllpackMatrixTester.h  -  description
+                          SlicedEllpackTester.h  -  description
                              -------------------
     begin                : Dec 9, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef SlicedEllpackMatrixTESTER_H_
-#define SlicedEllpackMatrixTESTER_H_
+#ifndef SlicedEllpackTESTER_H_
+#define SlicedEllpackTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -17,37 +17,37 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/Matrices/SlicedEllpackMatrix.h>
+#include <TNL/Matrices/SlicedEllpack.h>
 #include <TNL/File.h>
 #include <TNL/Vectors/Vector.h>
 
 using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType, int SliceSize >
-class SlicedEllpackMatrixTester : public CppUnit :: TestCase
+class SlicedEllpackTester : public CppUnit :: TestCase
 {
    public:
-   typedef SlicedEllpackMatrix< RealType, Device, IndexType, SliceSize > MatrixType;
+   typedef SlicedEllpack< RealType, Device, IndexType, SliceSize > MatrixType;
    typedef Vector< RealType, Device, IndexType > VectorType;
    typedef Vector< IndexType, Device, IndexType > IndexVector;
-   typedef SlicedEllpackMatrixTester< RealType, Device, IndexType, SliceSize > TesterType;
+   typedef SlicedEllpackTester< RealType, Device, IndexType, SliceSize > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   SlicedEllpackMatrixTester(){};
+   SlicedEllpackTester(){};
 
    virtual
-   ~SlicedEllpackMatrixTester(){};
+   ~SlicedEllpackTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "TridiagonalMatrixTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "TridiagonalTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setLikeTest", &TesterType::setLikeTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElementTest", &TesterType::setElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElement_DiagonalMatrixTest", &TesterType::setElement_DiagonalMatrixTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "setElement_DenseMatrixTest", &TesterType::setElement_DenseMatrixTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "setElement_DenseTest", &TesterType::setElement_DenseTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElement_LowerTriangularMatrixTest", &TesterType::setElement_LowerTriangularMatrixTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
@@ -115,7 +115,7 @@ class SlicedEllpackMatrixTester : public CppUnit :: TestCase
       }
    }
 
-   void setElement_DenseMatrixTest()
+   void setElement_DenseTest()
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
@@ -245,4 +245,4 @@ class SlicedEllpackMatrixTester : public CppUnit :: TestCase
 
 #endif /* HAVE_CPPUNIT */
 
-#endif /* SlicedEllpackMatrixTESTER_H_ */
+#endif /* SlicedEllpackTESTER_H_ */

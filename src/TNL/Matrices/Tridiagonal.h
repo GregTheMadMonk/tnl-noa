@@ -1,51 +1,43 @@
 /***************************************************************************
-                          CSRMatrix.h  -  description
+                          Tridiagonal.h  -  description
                              -------------------
-    begin                : Dec 10, 2013
+    begin                : Nov 30, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
-#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Matrices/Matrix.h>
 #include <TNL/Vectors/Vector.h>
+#include <TNL/Matrices/TridiagonalRow.h>
 
 namespace TNL {
-namespace Matrices {
-   
-#ifdef HAVE_UMFPACK
-    template< typename Matrix, typename Preconditioner >
-    class UmfpackWrapper;
-#endif
-
-template< typename Real >
-class tnlCusparseCSRMatrix;
+namespace Matrices {   
 
 template< typename Device >
-class CSRMatrixDeviceDependentCode;
+class TridiagonalDeviceDependentCode;
 
-template< typename Real, typename Device = Devices::Host, typename Index = int >
-class CSRMatrix : public SparseMatrix< Real, Device, Index >
+template< typename Real = double,
+          typename Device = Devices::Host,
+          typename Index = int >
+class Tridiagonal : public Matrix< Real, Device, Index >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename SparseMatrix< RealType, DeviceType, IndexType >:: CompressedRowsLengthsVector CompressedRowsLengthsVector;
-   typedef CSRMatrix< Real, Device, Index > ThisType;
-   typedef CSRMatrix< Real, Devices::Host, Index > HostType;
-   typedef CSRMatrix< Real, Devices::Cuda, Index > CudaType;
-   typedef SparseMatrix< Real, Device, Index > BaseType;
-   typedef typename BaseType::MatrixRow MatrixRow;
+   typedef typename Matrix< Real, Device, Index >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
+   typedef Tridiagonal< Real, Device, Index > ThisType;
+   typedef Tridiagonal< Real, Devices::Host, Index > HostType;
+   typedef Tridiagonal< Real, Devices::Cuda, Index > CudaType;
+   typedef Matrix< Real, Device, Index > BaseType;
+   typedef TridiagonalRow< Real, Index > MatrixRow;
 
-
-   enum SPMVCudaKernel { scalar, vector, hybrid };
-
-   CSRMatrix();
+   Tridiagonal();
 
    static String getType();
 
@@ -58,10 +50,26 @@ class CSRMatrix : public SparseMatrix< Real, Device, Index >
 
    IndexType getRowLength( const IndexType row ) const;
 
+   IndexType getMaxRowLength() const;
+
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const CSRMatrix< Real2, Device2, Index2 >& matrix );
+   bool setLike( const Tridiagonal< Real2, Device2, Index2 >& m );
+
+   IndexType getNumberOfMatrixElements() const;
+
+   IndexType getNumberOfNonzeroMatrixElements() const;
+
+   IndexType getMaxRowlength() const;
 
    void reset();
+
+   template< typename Real2, typename Device2, typename Index2 >
+   bool operator == ( const Tridiagonal< Real2, Device2, Index2 >& matrix ) const;
+
+   template< typename Real2, typename Device2, typename Index2 >
+   bool operator != ( const Tridiagonal< Real2, Device2, Index2 >& matrix ) const;
+
+   void setValue( const RealType& v );
 
    __cuda_callable__
    bool setElementFast( const IndexType row,
@@ -71,6 +79,7 @@ class CSRMatrix : public SparseMatrix< Real, Device, Index >
    bool setElement( const IndexType row,
                     const IndexType column,
                     const RealType& value );
+
    __cuda_callable__
    bool addElementFast( const IndexType row,
                         const IndexType column,
@@ -82,32 +91,29 @@ class CSRMatrix : public SparseMatrix< Real, Device, Index >
                     const RealType& value,
                     const RealType& thisElementMultiplicator = 1.0 );
 
-
    __cuda_callable__
    bool setRowFast( const IndexType row,
-                    const IndexType* columnIndexes,
+                    const IndexType* columns,
                     const RealType* values,
                     const IndexType elements );
 
    bool setRow( const IndexType row,
-                const IndexType* columnIndexes,
+                const IndexType* columns,
                 const RealType* values,
                 const IndexType elements );
-
 
    __cuda_callable__
    bool addRowFast( const IndexType row,
                     const IndexType* columns,
                     const RealType* values,
-                    const IndexType numberOfElements,
-                    const RealType& thisElementMultiplicator = 1.0 );
+                    const IndexType elements,
+                    const RealType& thisRowMultiplicator = 1.0 );
 
    bool addRow( const IndexType row,
                 const IndexType* columns,
                 const RealType* values,
-                const IndexType numberOfElements,
-                const RealType& thisElementMultiplicator = 1.0 );
-
+                const IndexType elements,
+                const RealType& thisRowMultiplicator = 1.0 );
 
    __cuda_callable__
    RealType getElementFast( const IndexType row,
@@ -136,19 +142,25 @@ class CSRMatrix : public SparseMatrix< Real, Device, Index >
              typename OutVector >
    void vectorProduct( const InVector& inVector,
                        OutVector& outVector ) const;
-   // TODO: add const RealType& multiplicator = 1.0 )
 
    template< typename Real2, typename Index2 >
-   void addMatrix( const CSRMatrix< Real2, Device, Index2 >& matrix,
+   void addMatrix( const Tridiagonal< Real2, Device, Index2 >& matrix,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
+#ifdef HAVE_NOT_CXX11
    template< typename Real2, typename Index2 >
-   void getTransposition( const CSRMatrix< Real2, Device, Index2 >& matrix,
+   void getTransposition( const Tridiagonal< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
+#else
+   template< typename Real2, typename Index2 >
+   void getTransposition( const Tridiagonal< Real2, Device, Index2 >& matrix,
+                          const RealType& matrixMultiplicator = 1.0 );
+#endif
 
    template< typename Vector >
-   bool performSORIteration( const Vector& b,
+   __cuda_callable__
+   void performSORIteration( const Vector& b,
                              const IndexType row,
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
@@ -163,61 +175,19 @@ class CSRMatrix : public SparseMatrix< Real, Device, Index >
 
    void print( std::ostream& str ) const;
 
-   void setCudaKernelType( const SPMVCudaKernel kernel );
-
-   __cuda_callable__
-   SPMVCudaKernel getCudaKernelType() const;
-
-   void setCudaWarpSize( const int warpSize );
-
-   int getCudaWarpSize() const;
-
-   void setHybridModeSplit( const IndexType hybridModeSplit );
-
-   __cuda_callable__
-   IndexType getHybridModeSplit() const;
-
-#ifdef HAVE_CUDA
-
-   template< typename InVector,
-             typename OutVector,
-             int warpSize >
-   __device__
-   void spmvCudaVectorized( const InVector& inVector,
-                            OutVector& outVector,
-                            const IndexType warpStart,
-                            const IndexType warpEnd,
-                            const IndexType inWarpIdx ) const;
-
-   template< typename InVector,
-             typename OutVector,
-             int warpSize >
-   __device__
-   void vectorProductCuda( const InVector& inVector,
-                           OutVector& outVector,
-                           int gridIdx ) const;
-#endif
-
    protected:
 
-   Vectors::Vector< Index, Device, Index > rowPointers;
+   __cuda_callable__
+   IndexType getElementIndex( const IndexType row,
+                              const IndexType column ) const;
 
-   SPMVCudaKernel spmvCudaKernel;
+   Vectors::Vector< RealType, DeviceType, IndexType > values;
 
-   int cudaWarpSize, hybridModeSplit;
-
-   typedef CSRMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
-   friend class CSRMatrixDeviceDependentCode< DeviceType >;
-   friend class tnlCusparseCSRMatrix< RealType >;
-#ifdef HAVE_UMFPACK
-    template< typename Matrix, typename Preconditioner >
-    friend class UmfpackWrapper;
-#endif
-
+   typedef TridiagonalDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class TridiagonalDeviceDependentCode< DeviceType >;
 };
 
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/CSRMatrix_impl.h>
-
+#include <TNL/Matrices/Tridiagonal_impl.h>

@@ -1,8 +1,8 @@
 /***************************************************************************
-                          MultidiagonalMatrixRow.h  -  description
+                          TridiagonalRow.h  -  description
                              -------------------
-    begin                : Jan 2, 2015
-    copyright            : (C) 2015 by oberhuber
+    begin                : Dec 31, 2014
+    copyright            : (C) 2014 by oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -14,25 +14,21 @@ namespace TNL {
 namespace Matrices {   
 
 template< typename Real, typename Index >
-class MultidiagonalMatrixRow
+class TridiagonalRow
 {
    public:
 
       __cuda_callable__
-      MultidiagonalMatrixRow();
+      TridiagonalRow();
 
       __cuda_callable__
-      MultidiagonalMatrixRow( Real* values,
-                                 Index* diagonals,
-                                 const Index maxRowLength,
-                                 const Index row,
-                                 const Index columns,
-                                 const Index step );
+      TridiagonalRow( Real* values,
+                               const Index row,
+                               const Index columns,
+                               const Index step );
 
       __cuda_callable__
       void bind( Real* values,
-                 Index* diagonals,
-                 const Index maxRowLength,
                  const Index row,
                  const Index columns,
                  const Index step );
@@ -46,13 +42,10 @@ class MultidiagonalMatrixRow
 
       Real* values;
 
-      Index* diagonals;
-
-      Index row, columns, maxRowLength, step;
+      Index row, columns, step;
 };
 
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/MultidiagonalMatrixRow_impl.h>
-
+#include <TNL/Matrices/TridiagonalRow_impl.h>

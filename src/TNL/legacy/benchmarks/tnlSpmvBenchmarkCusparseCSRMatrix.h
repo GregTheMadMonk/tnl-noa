@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSpmvBenchmarkCusparseCSRMatrix.h  -  description
+                          tnlSpmvBenchmarkCusparseCSR.h  -  description
                              -------------------
     begin                : Feb 16, 2012
     copyright            : (C) 2012 by Tomas Oberhuber
@@ -13,15 +13,15 @@
 
 #include "tnlSpmvBenchmark.h"
 #include <TNL/tnlConfig.h>
-#include <TNL/legacy/matrices/tnlCusparseCSRMatrix.h>
+#include <TNL/legacy/matrices/tnlCusparseCSR.h>
 
 template< typename Real, typename Index>
-class tnlSpmvBenchmarkCusparseCSRMatrix : public tnlSpmvBenchmark< Real, Devices::Cuda, Index, tnlCusparseCSRMatrix >
+class tnlSpmvBenchmarkCusparseCSR : public tnlSpmvBenchmark< Real, Devices::Cuda, Index, tnlCusparseCSR >
 {
    public:
-   tnlSpmvBenchmarkCusparseCSRMatrix();
+   tnlSpmvBenchmarkCusparseCSR();
 
-   bool setup( const CSRMatrix< Real, Devices::Host, Index >& matrix );
+   bool setup( const CSR< Real, Devices::Host, Index >& matrix );
 
    void tearDown();
 
@@ -32,14 +32,14 @@ class tnlSpmvBenchmarkCusparseCSRMatrix : public tnlSpmvBenchmark< Real, Devices
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
                          const String& inputMtxFile,
-                         const CSRMatrix< Real, Devices::Host, Index >& csrMatrix,
+                         const CSR< Real, Devices::Host, Index >& csrMatrix,
                          bool writeMatrixInfo  ) const;
 
    void setNonzeroElements( const Index nonzeroElements );
 };
 
 template< typename Real, typename Index>
-bool tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: setup( const CSRMatrix< Real, Devices::Host, Index >& matrix )
+bool tnlSpmvBenchmarkCusparseCSR< Real, Index > :: setup( const CSR< Real, Devices::Host, Index >& matrix )
 {
    if( ! this->matrix. copyFrom( matrix ) )
       return false;
@@ -49,21 +49,21 @@ bool tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: setup( const CSRMatrix<
 
 template< typename Real,
           typename Index>
-void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: tearDown()
+void tnlSpmvBenchmarkCusparseCSR< Real, Index > :: tearDown()
 {
    this->matrix. reset();
 }
 
 template< typename Real,
           typename Index>
-Index tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: getArtificialZeros() const
+Index tnlSpmvBenchmarkCusparseCSR< Real, Index > :: getArtificialZeros() const
 {
    return 0;
 }
 
 template< typename Real,
           typename Index >
-void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: writeProgress() const
+void tnlSpmvBenchmarkCusparseCSR< Real, Index > :: writeProgress() const
 {
   std::cout << left << std::setw( this->formatColumnWidth ) << "Cusparse";
    //  std::cout << left << std::setw( 25 ) << matrixFormat << std::setw( 5 ) << cudaBlockSize;
@@ -82,17 +82,17 @@ void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: writeProgress() const
 
 template< typename Real,
           typename Index >
-tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: tnlSpmvBenchmarkCusparseCSRMatrix()
+tnlSpmvBenchmarkCusparseCSR< Real, Index > :: tnlSpmvBenchmarkCusparseCSR()
 {
 
 }
 
 template< typename Real,
           typename Index >
-void tnlSpmvBenchmarkCusparseCSRMatrix< Real, Index > :: writeToLogTable( std::ostream& logFile,
+void tnlSpmvBenchmarkCusparseCSR< Real, Index > :: writeToLogTable( std::ostream& logFile,
                                                                        const double& csrGflops,
                                                                        const String& inputMtxFile,
-                                                                       const CSRMatrix< Real, Devices::Host, Index >& csrMatrix,
+                                                                       const CSR< Real, Devices::Host, Index >& csrMatrix,
                                                                        bool writeMatrixInfo  ) const
 {
    if( this->getBenchmarkWasSuccesful() )

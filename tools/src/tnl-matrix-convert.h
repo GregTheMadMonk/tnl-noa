@@ -15,7 +15,7 @@
 #include <TNL/String.h>
 #include <TNL/File.h>
 #include <TNL/Matrices/Matrix.h>
-#include <TNL/Matrices/CSRMatrix.h>
+#include <TNL/Matrices/CSR.h>
 
 using namespace std;
 
@@ -29,9 +29,9 @@ bool convertMatrix( const String& input_file,
    /*Matrix< REAL >* matrix( NULL ), *verify_matrix( NULL );
    if( output_matrix_format == "csr" )
    {
-      matrix = new CSRMatrix< REAL, Devices::Host >( input_file. getString() );
+      matrix = new CSR< REAL, Devices::Host >( input_file. getString() );
       if( verify )
-         verify_matrix = new CSRMatrix< REAL, Devices::Host >( "verify-matrix" );
+         verify_matrix = new CSR< REAL, Devices::Host >( "verify-matrix" );
    }
    if( ! matrix )
    {

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          EllpackMatrixTester.h  -  description
+                          EllpackTester.h  -  description
                              -------------------
     begin                : Jul 31, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef EllpackMatrixTESTER_H_
-#define EllpackMatrixTESTER_H_
+#ifndef EllpackTESTER_H_
+#define EllpackTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -17,36 +17,36 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/Matrices/EllpackMatrix.h>
+#include <TNL/Matrices/Ellpack.h>
 #include <TNL/File.h>
 #include <TNL/Vectors/Vector.h>
 
 using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
-class EllpackMatrixTester : public CppUnit :: TestCase
+class EllpackTester : public CppUnit :: TestCase
 {
    public:
-   typedef EllpackMatrix< RealType, Device, IndexType > MatrixType;
+   typedef Ellpack< RealType, Device, IndexType > MatrixType;
    typedef Vector< RealType, Device, IndexType > VectorType;
-   typedef EllpackMatrixTester< RealType, Device, IndexType > TesterType;
+   typedef EllpackTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   EllpackMatrixTester(){};
+   EllpackTester(){};
 
    virtual
-   ~EllpackMatrixTester(){};
+   ~EllpackTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "TridiagonalMatrixTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "TridiagonalTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setLikeTest", &TesterType::setLikeTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElementTest", &TesterType::setElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElement_DiagonalMatrixTest", &TesterType::setElement_DiagonalMatrixTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "setElement_DenseMatrixTest", &TesterType::setElement_DenseMatrixTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "setElement_DenseTest", &TesterType::setElement_DenseTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
       /*suiteOfTests -> addTest( new TestCallerType( "matrixTranspositionTest", &TesterType::matrixTranspositionTest ) );
@@ -99,7 +99,7 @@ class EllpackMatrixTester : public CppUnit :: TestCase
                CPPUNIT_ASSERT( m.getElement( i, j ) == 0 );
    }
 
-   void setElement_DenseMatrixTest()
+   void setElement_DenseTest()
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
@@ -186,4 +186,4 @@ class EllpackMatrixTester : public CppUnit :: TestCase
 
 
 
-#endif /* EllpackMatrixTESTER_H_ */
+#endif /* EllpackTESTER_H_ */

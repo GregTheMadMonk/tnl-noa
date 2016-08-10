@@ -1,5 +1,5 @@
 /***************************************************************************
-                          TridiagonalMatrixRow_impl.h  -  description
+                          TridiagonalRow_impl.h  -  description
                              -------------------
     begin                : Dec 31, 2014
     copyright            : (C) 2014 by oberhuber
@@ -15,8 +15,8 @@ namespace Matrices {
 
 template< typename Real, typename Index >
 __cuda_callable__
-TridiagonalMatrixRow< Real, Index >::
-TridiagonalMatrixRow()
+TridiagonalRow< Real, Index >::
+TridiagonalRow()
 : values( 0 ),
   row( 0 ),
   columns( 0 ),
@@ -26,8 +26,8 @@ TridiagonalMatrixRow()
 
 template< typename Real, typename Index >
 __cuda_callable__
-TridiagonalMatrixRow< Real, Index >::
-TridiagonalMatrixRow( Real* values,
+TridiagonalRow< Real, Index >::
+TridiagonalRow( Real* values,
                          const Index row,
                          const Index columns,
                          const Index step )
@@ -41,7 +41,7 @@ TridiagonalMatrixRow( Real* values,
 template< typename Real, typename Index >
 __cuda_callable__
 void
-TridiagonalMatrixRow< Real, Index >::
+TridiagonalRow< Real, Index >::
 bind( Real* values,
       const Index row,
       const Index columns,
@@ -56,7 +56,7 @@ bind( Real* values,
 template< typename Real, typename Index >
 __cuda_callable__
 void
-TridiagonalMatrixRow< Real, Index >::
+TridiagonalRow< Real, Index >::
 setElement( const Index& elementIndex,
             const Index& column,
             const Real& value )

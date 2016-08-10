@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CSRMatrix.h  -  description
+                          CSR.h  -  description
                              -------------------
     begin                : Jul 10, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef CSRMatrix_H_
-#define CSRMatrix_H_
+#ifndef CSR_H_
+#define CSR_H_
 
 #include <string>
 
@@ -23,11 +23,11 @@
 
 using namespace std;
 
-template< typename Real, typename device, typename Index > class tnlRgCSRMatrix;
-template< typename Real, typename device, typename Index > class tnlCusparseCSRMatrix;
-template< typename Real, typename device, typename Index > class tnlAdaptiveRgCSRMatrix;
-template< typename Real, typename device, typename Index > class tnlFastCSRMatrix;
-template< typename Real, typename device, typename Index > class EllpackMatrix;
+template< typename Real, typename device, typename Index > class tnlRgCSR;
+template< typename Real, typename device, typename Index > class tnlCusparseCSR;
+template< typename Real, typename device, typename Index > class tnlAdaptiveRgCSR;
+template< typename Real, typename device, typename Index > class tnlFastCSR;
+template< typename Real, typename device, typename Index > class Ellpack;
 
 //! Matrix storing the non-zero elements in the CSR (Compressed Sparse Row) format
 /*! For details see. Yousef Saad, Iterative Methods for Sparse Linear Systems, p. 85
@@ -41,7 +41,7 @@ template< typename Real, typename device, typename Index > class EllpackMatrix;
 
 // TODO: add CUDA support
 template< typename Real, typename Device = Devices::Host, typename Index = int >
-class CSRMatrix : public Matrix< Real, Device, Index >
+class CSR : public Matrix< Real, Device, Index >
 {
    public:
 
@@ -50,7 +50,7 @@ class CSRMatrix : public Matrix< Real, Device, Index >
    typedef Index IndexType;
 
    //! Basic constructor
-   CSRMatrix( const String& name );
+   CSR( const String& name );
 
    const String& getMatrixClass() const;
 
@@ -59,7 +59,7 @@ class CSRMatrix : public Matrix< Real, Device, Index >
    //! Sets the number of row and columns.
    bool setSize( Index new_size );
 
-   bool setLike( const CSRMatrix< Real, Device, Index >& matrix );
+   bool setLike( const CSR< Real, Device, Index >& matrix );
 
    void reset();
 
@@ -123,7 +123,7 @@ class CSRMatrix : public Matrix< Real, Device, Index >
    Real getRowL1Norm( Index row ) const;
 
    bool reorderRows( const Vector< Index, Device, Index >& rowPermutation,
-                     const CSRMatrix< Real, Device, Index >& csrMatrix );
+                     const CSR< Real, Device, Index >& csrMatrix );
 
    void multiplyRow( Index row, const Real& value );
 
@@ -140,7 +140,7 @@ class CSRMatrix : public Matrix< Real, Device, Index >
    bool load( const String& fileName );
 
    template< typename Real2 >
-   CSRMatrix< Real, Device, Index >& operator = ( const CSRMatrix< Real2, Device, Index >& csrMatrix );
+   CSR< Real, Device, Index >& operator = ( const CSR< Real2, Device, Index >& csrMatrix );
 
    //! Prints out the matrix structure
    void printOut( std::ostream& str,
@@ -220,20 +220,20 @@ class CSRMatrix : public Matrix< Real, Device, Index >
    bool backwardSpMV;
 
    template< typename Real2, typename Device2, typename Index2 >
-      friend class CSRMatrix;
+      friend class CSR;
    friend class Matrix< Real, Devices::Host, Index >;
    friend class Matrix< Real, Devices::Cuda, Index >;
-   friend class tnlCusparseCSRMatrix< Real, Devices::Cuda, Index >;
-   friend class tnlRgCSRMatrix< Real, Devices::Host, Index >;
-   friend class tnlRgCSRMatrix< Real, Devices::Cuda, Index >;
-   friend class tnlAdaptiveRgCSRMatrix< Real, Devices::Host, Index >;
-   friend class tnlAdaptiveRgCSRMatrix< Real, Devices::Cuda, Index >;
-   friend class tnlFastCSRMatrix< Real, Devices::Host, Index >;
-   friend class EllpackMatrix< Real, Devices::Host, Index >;
+   friend class tnlCusparseCSR< Real, Devices::Cuda, Index >;
+   friend class tnlRgCSR< Real, Devices::Host, Index >;
+   friend class tnlRgCSR< Real, Devices::Cuda, Index >;
+   friend class tnlAdaptiveRgCSR< Real, Devices::Host, Index >;
+   friend class tnlAdaptiveRgCSR< Real, Devices::Cuda, Index >;
+   friend class tnlFastCSR< Real, Devices::Host, Index >;
+   friend class Ellpack< Real, Devices::Host, Index >;
 };
 
 template< typename Real, typename Device, typename Index >
-CSRMatrix< Real, Device, Index > :: CSRMatrix( const String& name )
+CSR< Real, Device, Index > :: CSR( const String& name )
    : Matrix< Real, Device, Index >( name ),
      nonzero_elements( name + " : nonzero-elements" ),
      columns( name + " : columns" ),
@@ -244,15 +244,15 @@ CSRMatrix< Real, Device, Index > :: CSRMatrix( const String& name )
 };
 
 template< typename Real, typename Device, typename Index >
-const String& CSRMatrix< Real, Device, Index > :: getMatrixClass() const
+const String& CSR< Real, Device, Index > :: getMatrixClass() const
 {
    return MatrixClass :: main;
 };
 
 template< typename Real, typename Device, typename Index >
-String CSRMatrix< Real, Device, Index > :: getType() const
+String CSR< Real, Device, Index > :: getType() const
 {
-   return String( "CSRMatrix< ") +
+   return String( "CSR< ") +
            String( TNL::getType< Real >() ) +
            String( ", " ) +
            Device :: getDeviceType() +
@@ -260,7 +260,7 @@ String CSRMatrix< Real, Device, Index > :: getType() const
 };
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: setSize( Index new_size )
+bool CSR< Real, Device, Index > :: setSize( Index new_size )
 {
    this->size = new_size;
    if( ! row_offsets. setSize( this->size + 1 ) )
@@ -271,9 +271,9 @@ bool CSRMatrix< Real, Device, Index > :: setSize( Index new_size )
 };
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: setLike( const CSRMatrix< Real, Device, Index >& matrix )
+bool CSR< Real, Device, Index > :: setLike( const CSR< Real, Device, Index >& matrix )
 {
-   dbgFunctionName( "CSRMatrix< Real, Device, Index >", "setLike" );
+   dbgFunctionName( "CSR< Real, Device, Index >", "setLike" );
    dbgCout( "Setting size to " << matrix. getSize() << "." );
 
    this->size = matrix. getSize();
@@ -287,7 +287,7 @@ bool CSRMatrix< Real, Device, Index > :: setLike( const CSRMatrix< Real, Device,
 }
 
 template< typename Real, typename Device, typename Index >
-void CSRMatrix< Real, Device, Index > :: reset()
+void CSR< Real, Device, Index > :: reset()
 {
    nonzero_elements. reset();
    columns. reset();
@@ -296,7 +296,7 @@ void CSRMatrix< Real, Device, Index > :: reset()
 }
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: setNonzeroElements( Index elements )
+bool CSR< Real, Device, Index > :: setNonzeroElements( Index elements )
 {
    if( ! nonzero_elements. setSize( elements ) )
       return false;
@@ -308,13 +308,13 @@ bool CSRMatrix< Real, Device, Index > :: setNonzeroElements( Index elements )
 };
 
 template< typename Real, typename Device, typename Index >
-Index CSRMatrix< Real, Device, Index > :: getNonzeroElements() const
+Index CSR< Real, Device, Index > :: getNonzeroElements() const
 {
 	return nonzero_elements. getSize();
 }
 
 template< typename Real, typename Device, typename Index >
-Index CSRMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& row ) const
+Index CSR< Real, Device, Index > :: getNonzeroElementsInRow( const Index& row ) const
 {
    Assert( row >= 0 && row < this->getSize(),
               std::cerr << "row = " << row << " this->getSize() = " << this->getSize() );
@@ -322,7 +322,7 @@ Index CSRMatrix< Real, Device, Index > :: getNonzeroElementsInRow( const Index& 
 }
 
 template< typename Real, typename Device, typename Index >
-Index CSRMatrix< Real, Device, Index > :: checkNonzeroElements() const
+Index CSR< Real, Device, Index > :: checkNonzeroElements() const
 {
 	Index elements( 0 );
 	for( Index i = 0; i < nonzero_elements. getSize(); i ++ )
@@ -331,24 +331,24 @@ Index CSRMatrix< Real, Device, Index > :: checkNonzeroElements() const
 }
 
 template< typename Real, typename Device, typename Index >
-Index CSRMatrix< Real, Device, Index > :: getRowLength( const Index row ) const
+Index CSR< Real, Device, Index > :: getRowLength( const Index row ) const
 {
 	Assert( row >= 0 && row < this->getSize(), );
 	return row_offsets[ row + 1 ] - row_offsets[ row ];
 }
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: shiftElements( Index position,
+bool CSR< Real, Device, Index > :: shiftElements( Index position,
                                                            Index row,
                                                            Index shift )
 {
-   dbgFunctionName( "CSRMatrix< Real, Device, Index >", "shiftElements" );
+   dbgFunctionName( "CSR< Real, Device, Index >", "shiftElements" );
    dbgCout( "Shifting non-zero elements by " << shift << " elements." );
    Assert( position <= last_nonzero_element,
-              std::cerr << "Starting position for the shift in CSRMatrix is behind the last element." );
+              std::cerr << "Starting position for the shift in CSR is behind the last element." );
    if( last_nonzero_element + shift > nonzero_elements. getSize() )
    {
-      std::cerr << "Not enough allocated memory to shift the data in CSRMatrix." << std::endl;
+      std::cerr << "Not enough allocated memory to shift the data in CSR." << std::endl;
       return false;
    }
    if( position + shift < 0 )
@@ -389,7 +389,7 @@ bool CSRMatrix< Real, Device, Index > :: shiftElements( Index position,
          row_offsets[ i ] += shift;
          if( i > 1 && row_offsets[ i ] < row_offsets[ i -1 ] )
          {
-            std::cerr << "The shift in the CSRMatrix lead to the row pointer crossing for rows "
+            std::cerr << "The shift in the CSR lead to the row pointer crossing for rows "
                  << i - 1 << " and " << i << "." << std::endl;
             return false;
          }
@@ -398,13 +398,13 @@ bool CSRMatrix< Real, Device, Index > :: shiftElements( Index position,
 }
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: insertRow( Index row,
+bool CSR< Real, Device, Index > :: insertRow( Index row,
                                                        Index elements,
                                                        Real* data,
                                                        Index first_column,
                                                        Index* offsets )
 {
-   dbgFunctionName( "CSRMatrix< Real, Device, Index >", "insertRow" )
+   dbgFunctionName( "CSR< Real, Device, Index >", "insertRow" )
    Assert( row >=0 && row < this->getSize(),
               std::cerr << "The row " << row << " is out of the matrix." );
    Assert( elements > 0,
@@ -456,7 +456,7 @@ bool CSRMatrix< Real, Device, Index > :: insertRow( Index row,
      cls[ first_in_row + i ] = column;
      if( i > 0 && offsets[ i - 1 ] >= offsets[ i ] )
      {
-        std::cerr << "The offsets of the elements inserted to the CSRMatrix are not sorted monotonicaly increasingly." << std::endl;
+        std::cerr << "The offsets of the elements inserted to the CSR are not sorted monotonicaly increasingly." << std::endl;
         return false;
      }
    }
@@ -464,7 +464,7 @@ bool CSRMatrix< Real, Device, Index > :: insertRow( Index row,
 }
 
 template< typename Real, typename Device, typename Index >
-Index CSRMatrix< Real, Device, Index > :: getElementPosition( Index row,
+Index CSR< Real, Device, Index > :: getElementPosition( Index row,
                                                                   Index column ) const
 {
    Assert( 0 <= row && row < this->getSize(),
@@ -481,12 +481,12 @@ Index CSRMatrix< Real, Device, Index > :: getElementPosition( Index row,
 
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: setElementAux( Index row,
+bool CSR< Real, Device, Index > :: setElementAux( Index row,
                                                             Index column,
                                                             const Real& value,
                                                             const elementOperation operation )
 {
-   dbgFunctionName( "CSRMatrix< Real, Device, Index >", "setElementAux" );
+   dbgFunctionName( "CSR< Real, Device, Index >", "setElementAux" );
    Real* els = nonzero_elements. getData();
    Index* cols = columns. getData();
    Index i = getElementPosition( row, column );
@@ -504,7 +504,7 @@ bool CSRMatrix< Real, Device, Index > :: setElementAux( Index row,
 }
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: setElement( Index row,
+bool CSR< Real, Device, Index > :: setElement( Index row,
                                                          Index column,
                                                          const Real& value )
 {
@@ -512,7 +512,7 @@ bool CSRMatrix< Real, Device, Index > :: setElement( Index row,
 }
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: addToElement( Index row,
+bool CSR< Real, Device, Index > :: addToElement( Index row,
                                                            Index column,
                                                            const Real& value )
 {
@@ -520,7 +520,7 @@ bool CSRMatrix< Real, Device, Index > :: addToElement( Index row,
 }
 
 template< typename Real, typename Device, typename Index >
-Real CSRMatrix< Real, Device, Index > :: getElement( Index row,
+Real CSR< Real, Device, Index > :: getElement( Index row,
                                                         Index column ) const
 {
    const Real* els = nonzero_elements. getData();
@@ -532,19 +532,19 @@ Real CSRMatrix< Real, Device, Index > :: getElement( Index row,
 }
 
 template< typename Real, typename Device, typename Index >
-const Index* CSRMatrix< Real, Device, Index > :: getRowColumnIndexes( const Index row ) const
+const Index* CSR< Real, Device, Index > :: getRowColumnIndexes( const Index row ) const
 {
    return &columns[ row_offsets[ row ] ];
 }
 
 template< typename Real, typename Device, typename Index >
-const Real* CSRMatrix< Real, Device, Index > :: getRowValues( const Index row ) const
+const Real* CSR< Real, Device, Index > :: getRowValues( const Index row ) const
 {
    return &nonzero_elements[ row_offsets[ row ] ];
 }
 
 template< typename Real, typename Device, typename Index >
-Real CSRMatrix< Real, Device, Index > :: rowProduct( Index row,
+Real CSR< Real, Device, Index > :: rowProduct( Index row,
                                                          const Vector< Real, Device, Index >& vec ) const
 {
    Assert( 0 <= row && row < this->getSize(),
@@ -570,7 +570,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector1, typename Vector2 >
-void CSRMatrix< Real, Device, Index > :: vectorProduct( const Vector1& vec,
+void CSR< Real, Device, Index > :: vectorProduct( const Vector1& vec,
                                                            Vector2& result ) const
 {
    Assert( vec. getSize() == this->getSize(),
@@ -625,7 +625,7 @@ void CSRMatrix< Real, Device, Index > :: vectorProduct( const Vector1& vec,
 }
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
+bool CSR< Real, Device, Index > :: performSORIteration( const Real& omega,
                                                                  const Vector< Real, Device, Index >& b,
                                                                  Vector< Real, Device, Index >& x,
                                                                  Index firstRow,
@@ -664,13 +664,13 @@ bool CSRMatrix< Real, Device, Index > :: performSORIteration( const Real& omega,
 
 
 template< typename Real, typename Device, typename Index >
-void CSRMatrix< Real, Device, Index > :: setBackwardSpMV( bool backwardSpMV )
+void CSR< Real, Device, Index > :: setBackwardSpMV( bool backwardSpMV )
 {
    this->backwardSpMV = backwardSpMV;
 }
 
 template< typename Real, typename Device, typename Index >
-Real CSRMatrix< Real, Device, Index > :: getRowL1Norm( Index row ) const
+Real CSR< Real, Device, Index > :: getRowL1Norm( Index row ) const
 {
    Assert( 0 <= row && row < this->getSize(),
                  std::cerr << "The row is outside the matrix." );
@@ -684,7 +684,7 @@ Real CSRMatrix< Real, Device, Index > :: getRowL1Norm( Index row ) const
 };
 
 template< typename Real, typename Device, typename Index >
-void CSRMatrix< Real, Device, Index > :: multiplyRow( Index row, const Real& value )
+void CSR< Real, Device, Index > :: multiplyRow( Index row, const Real& value )
 {
    Assert( 0 <= row && row < this->getSize(),
                  std::cerr << "The row is outside the matrix." );
@@ -696,10 +696,10 @@ void CSRMatrix< Real, Device, Index > :: multiplyRow( Index row, const Real& val
 };
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: reorderRows( const Vector< Index, Device, Index >& rowPermutation,
-                                                         const CSRMatrix< Real, Device, Index >& inputCsrMatrix )
+bool CSR< Real, Device, Index > :: reorderRows( const Vector< Index, Device, Index >& rowPermutation,
+                                                         const CSR< Real, Device, Index >& inputCsrMatrix )
 {
-   dbgFunctionName( "CSRMatrix< Real, Device, Index >", "reorderRows" );
+   dbgFunctionName( "CSR< Real, Device, Index >", "reorderRows" );
    last_nonzero_element = 0;
    if( ! this->setLike( inputCsrMatrix ) )
    {
@@ -728,7 +728,7 @@ bool CSRMatrix< Real, Device, Index > :: reorderRows( const Vector< Index, Devic
 }
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: save( File& file ) const
+bool CSR< Real, Device, Index > :: save( File& file ) const
 {
    if( ! Matrix< Real, Device, Index > :: save( file ) ) return false;
    if( ! nonzero_elements. save( file ) ) return false;
@@ -744,7 +744,7 @@ bool CSRMatrix< Real, Device, Index > :: save( File& file ) const
 };
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: load( File& file )
+bool CSR< Real, Device, Index > :: load( File& file )
 {
    if( ! Matrix< Real, Device, Index > :: load( file ) ) return false;
    if( ! nonzero_elements. load( file ) ) return false;
@@ -760,20 +760,20 @@ bool CSRMatrix< Real, Device, Index > :: load( File& file )
 };
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: save( const String& fileName ) const
+bool CSR< Real, Device, Index > :: save( const String& fileName ) const
 {
    return Object :: save( fileName );
 }
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: load( const String& fileName )
+bool CSR< Real, Device, Index > :: load( const String& fileName )
 {
    return Object :: load( fileName );
 }
 
 template< typename Real, typename Device, typename Index >
    template< typename Real2 >
-CSRMatrix< Real, Device, Index >& CSRMatrix< Real, Device, Index > :: operator = ( const CSRMatrix< Real2, Device, Index >& csrMatrix )
+CSR< Real, Device, Index >& CSR< Real, Device, Index > :: operator = ( const CSR< Real2, Device, Index >& csrMatrix )
 {
    if( ! nonzero_elements. setSize( csrMatrix. nonzero_elements. getSize() ) ||
        ! columns. setSize( csrMatrix. columns. getSize() ) ||
@@ -790,12 +790,12 @@ CSRMatrix< Real, Device, Index >& CSRMatrix< Real, Device, Index > :: operator =
 }
 
 template< typename Real, typename Device, typename Index >
-void CSRMatrix< Real, Device, Index > :: printOut( std::ostream& str,
+void CSR< Real, Device, Index > :: printOut( std::ostream& str,
                                                       const String& name,
                                                       const String& format,
 		                                                const Index lines ) const
 {
-   str << "Structure of CSRMatrix" << std::endl;
+   str << "Structure of CSR" << std::endl;
    str << "Matrix name:" << name << std::endl;
    str << "Matrix size:" << this->getSize() << std::endl;
    str << "Allocated elements:" << nonzero_elements. getSize() << std::endl;
@@ -823,7 +823,7 @@ void CSRMatrix< Real, Device, Index > :: printOut( std::ostream& str,
 };
 
 template< typename Real, typename Device, typename Index >
-void CSRMatrix< Real, Device, Index > :: getRowStatistics( Index& min_row_length,
+void CSR< Real, Device, Index > :: getRowStatistics( Index& min_row_length,
                                                         Index& max_row_length,
                                                         Index& average_row_length ) const
 {
@@ -841,12 +841,12 @@ void CSRMatrix< Real, Device, Index > :: getRowStatistics( Index& min_row_length
 };
 
 template< typename Real, typename Device, typename Index >
-void CSRMatrix< Real, Device, Index > :: insertToAllocatedRow( Index row,
+void CSR< Real, Device, Index > :: insertToAllocatedRow( Index row,
 		                                                    Index column,
 		                                                    const Real& value,
 		                                                    Index insertedElements )
 {
-    dbgFunctionName( "CSRMatrix< T >", "insertToAllocatedRow" );
+    dbgFunctionName( "CSR< T >", "insertToAllocatedRow" );
 
     if( insertedElements != 0 )
     {
@@ -909,10 +909,10 @@ void CSRMatrix< Real, Device, Index > :: insertToAllocatedRow( Index row,
 }
 
 template< typename Real, typename Device, typename Index >
-bool CSRMatrix< Real, Device, Index > :: read( std::istream& file,
+bool CSR< Real, Device, Index > :: read( std::istream& file,
                                                    int verbose )
 {
-   dbgFunctionName( "CSRMatrix< T >", "read" );
+   dbgFunctionName( "CSR< T >", "read" );
    String line;
    bool dimensions_line( false ), format_ok( false );
    List< String > parsed_line;
@@ -1046,7 +1046,7 @@ bool CSRMatrix< Real, Device, Index > :: read( std::istream& file,
    dbgExpr( header_end );
    file. clear();
    file. seekg( header_end, std::ios::beg );
-   Vector< Index, Devices::Host > insertedElementsInRows( "CSRMatrix::insertedElementsInRows" );
+   Vector< Index, Devices::Host > insertedElementsInRows( "CSR::insertedElementsInRows" );
    insertedElementsInRows. setSize( size );
    insertedElementsInRows. setValue( 0 );
    while( line. getLine( file ) )
@@ -1088,7 +1088,7 @@ bool CSRMatrix< Real, Device, Index > :: read( std::istream& file,
 }
 
 template< typename Real, typename Device, typename Index >
-void CSRMatrix< Real, Device, Index > :: writePostscriptBody( std::ostream& str,
+void CSR< Real, Device, Index > :: writePostscriptBody( std::ostream& str,
                                                                  const int elementSize,
                                                                  bool verbose ) const
 {
@@ -1116,5 +1116,5 @@ void CSRMatrix< Real, Device, Index > :: writePostscriptBody( std::ostream& str,
 }
 
 
-#endif /* CSRMatrix_H_ */
+#endif /* CSR_H_ */
 

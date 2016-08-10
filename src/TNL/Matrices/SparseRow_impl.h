@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SparseMatrixRow_impl.h  -  description
+                          SparseRow_impl.h  -  description
                              -------------------
     begin                : Dec 19, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,8 +15,8 @@ namespace Matrices {
 
 template< typename Real, typename Index >
 __cuda_callable__
-SparseMatrixRow< Real, Index >::
-SparseMatrixRow()
+SparseRow< Real, Index >::
+SparseRow()
 : values( 0 ),
   columns( 0 ),
   length( 0 ),
@@ -26,8 +26,8 @@ SparseMatrixRow()
 
 template< typename Real, typename Index >
 __cuda_callable__
-SparseMatrixRow< Real, Index >::
-SparseMatrixRow( Index* columns,
+SparseRow< Real, Index >::
+SparseRow( Index* columns,
                     Real* values,
                     const Index length,
                     const Index step )
@@ -41,7 +41,7 @@ SparseMatrixRow( Index* columns,
 template< typename Real, typename Index >
 __cuda_callable__
 void
-SparseMatrixRow< Real, Index >::
+SparseRow< Real, Index >::
 bind( Index* columns,
       Real* values,
       const Index length,
@@ -56,7 +56,7 @@ bind( Index* columns,
 template< typename Real, typename Index >
 __cuda_callable__
 void
-SparseMatrixRow< Real, Index >::
+SparseRow< Real, Index >::
 setElement( const Index& elementIndex,
             const Index& column,
             const Real& value )
@@ -74,7 +74,7 @@ setElement( const Index& elementIndex,
 
 template< typename Real, typename Index >
 void
-SparseMatrixRow< Real, Index >::
+SparseRow< Real, Index >::
 print( std::ostream& str ) const
 {
    Index pos( 0 );

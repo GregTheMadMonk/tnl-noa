@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSpmvBenchmarkCSRMatrix.h  -  description
+                          tnlSpmvBenchmarkCSR.h  -  description
                              -------------------
     begin                : May 15, 2011
     copyright            : (C) 2011 by Tomas Oberhuber
@@ -12,14 +12,14 @@
 #define TNLSPMVBENCHMARKCSRMATRIX_H_
 
 #include "tnlSpmvBenchmark.h"
-#include <TNL/Matrices/CSRMatrix.h>
+#include <TNL/Matrices/CSR.h>
 
 template< typename Real, typename Index>
-class tnlSpmvBenchmarkCSRMatrix : public tnlSpmvBenchmark< Real, Devices::Host, Index, CSRMatrix >
+class tnlSpmvBenchmarkCSR : public tnlSpmvBenchmark< Real, Devices::Host, Index, CSR >
 {
    public:
 
-   bool setup( const CSRMatrix< Real, Devices::Host, Index >& matrix );
+   bool setup( const CSR< Real, Devices::Host, Index >& matrix );
 
    void tearDown();
 
@@ -28,7 +28,7 @@ class tnlSpmvBenchmarkCSRMatrix : public tnlSpmvBenchmark< Real, Devices::Host, 
    void writeToLogTable( std::ostream& logFile,
                          const double& csrGflops,
                          const String& inputMtxFile,
-                         const CSRMatrix< Real, Devices::Host, Index >& csrMatrix,
+                         const CSR< Real, Devices::Host, Index >& csrMatrix,
                          bool writeMatrixInfo  ) const;
    Real getForwardBackwardDifference() const;
 
@@ -42,7 +42,7 @@ class tnlSpmvBenchmarkCSRMatrix : public tnlSpmvBenchmark< Real, Devices::Host, 
 };
 
 template< typename Real, typename Index>
-bool tnlSpmvBenchmarkCSRMatrix< Real, Index > :: setup( const CSRMatrix< Real, Devices::Host, Index >& matrix )
+bool tnlSpmvBenchmarkCSR< Real, Index > :: setup( const CSR< Real, Devices::Host, Index >& matrix )
 {
    this->matrix = matrix;
 
@@ -68,14 +68,14 @@ bool tnlSpmvBenchmarkCSRMatrix< Real, Index > :: setup( const CSRMatrix< Real, D
 }
 
 template< typename Real, typename Index>
-void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: tearDown()
+void tnlSpmvBenchmarkCSR< Real, Index > :: tearDown()
 {
    this->matrix. setSize( 0 );
 }
 
 template< typename Real,
           typename Index >
-void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeProgress() const
+void tnlSpmvBenchmarkCSR< Real, Index > :: writeProgress() const
 {
   std::cout << left << std::setw( this->formatColumnWidth ) << "CSR";
    //  std::cout << left << std::setw( 25 ) << matrixFormat << std::setw( 5 ) << cudaBlockSize;
@@ -91,10 +91,10 @@ void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeProgress() const
 
 template< typename Real,
           typename Index >
-void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeToLogTable( std::ostream& logFile,
+void tnlSpmvBenchmarkCSR< Real, Index > :: writeToLogTable( std::ostream& logFile,
                                                                   const double& csrGflops,
                                                                   const String& inputMtxFile,
-                                                                  const CSRMatrix< Real, Devices::Host, Index >& csrMatrix,
+                                                                  const CSR< Real, Devices::Host, Index >& csrMatrix,
                                                                   bool writeMatrixInfo  ) const
 {
    if( this->getBenchmarkWasSuccesful() )
@@ -111,7 +111,7 @@ void tnlSpmvBenchmarkCSRMatrix< Real, Index > :: writeToLogTable( std::ostream& 
 
 template< typename Real,
           typename Index >
-Real tnlSpmvBenchmarkCSRMatrix< Real, Index > :: getForwardBackwardDifference() const
+Real tnlSpmvBenchmarkCSR< Real, Index > :: getForwardBackwardDifference() const
 {
    return forwardBackwardDifference;
 }

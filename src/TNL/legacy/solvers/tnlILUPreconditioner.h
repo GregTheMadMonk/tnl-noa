@@ -31,7 +31,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
       ilu_check = new T[ size * size ];
 #endif
       y = new T[ size ];
-      M = new CSRMatrixOld< T >( size, initial_size, segment_size, init_row_elements );
+      M = new CSROld< T >( size, initial_size, segment_size, init_row_elements );
    }
 
    String getType() const
@@ -41,12 +41,12 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
    };
 
 
-   const CSRMatrixOld< T >* Data() const
+   const CSROld< T >* Data() const
    {
       return M;
    }
 
-   bool Init( const CSRMatrixOld< T >& A, const T& threshold )
+   bool Init( const CSROld< T >& A, const T& threshold )
    {
       dbgFunctionName( "tnlILUPreconditioner", "Init" );
       assert( A. getSize() == M -> getSize() );
@@ -55,8 +55,8 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
       M -> ResetStatistics();
 #endif
       int i, j, k;
-      const CSRMatrixOldElement< T > *A_data;
-      const CSRMatrixOldRowInfo *A_rows_info;
+      const CSROldElement< T > *A_data;
+      const CSROldRowInfo *A_rows_info;
       A. Data( A_data, A_rows_info );
  
 #ifdef ILU_DEBUG
@@ -72,8 +72,8 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
 #endif
 
       M -> Reset();
-      CSRMatrixOldElement< T >* M_data;
-      const CSRMatrixOldRowInfo *M_rows_info;
+      CSROldElement< T >* M_data;
+      const CSROldRowInfo *M_rows_info;
       // 2. Processing IKJ version of ILU factorisation
       // For i = 0, ... , N
       for( i = 0; i < size; i ++ )
@@ -263,8 +263,8 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
    {
       dbgFunctionName( "tnlILUPreconditioner", "Solve" );
       const int size = M -> getSize();
-      const CSRMatrixOldElement< T >* M_data;
-      const CSRMatrixOldRowInfo *M_rows_info;
+      const CSROldElement< T >* M_data;
+      const CSROldRowInfo *M_rows_info;
       M -> Data( M_data, M_rows_info );
       int i, j;
  
@@ -335,7 +335,7 @@ template< typename T > class tnlILUPreconditioner : public tnlPreconditioner< T 
 
    protected:
 
-   CSRMatrixOld< T >* M;
+   CSROld< T >* M;
 
    T* y;
 

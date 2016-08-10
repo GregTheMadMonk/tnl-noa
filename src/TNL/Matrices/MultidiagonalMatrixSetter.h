@@ -35,7 +35,7 @@ class MultidiagonalMatrixSetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex > 
 
       template< typename Real, typename Index >
       static bool setupMatrix( const MeshType& mesh,
-                               MultidiagonalMatrix< Real, Device, Index >& matrix,
+                               Multidiagonal< Real, Device, Index >& matrix,
                                int stencilSize = 1,
                                bool crossStencil = false );
 
@@ -56,7 +56,7 @@ class MultidiagonalMatrixSetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex > 
 
       template< typename Real, typename Index >
       static bool setupMatrix( const MeshType& mesh,
-                               MultidiagonalMatrix< Real, Device, Index >& matrix,
+                               Multidiagonal< Real, Device, Index >& matrix,
                                int stencilSize = 1,
                                bool crossStencil = false );
 };
@@ -76,7 +76,7 @@ class MultidiagonalMatrixSetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex > 
 
       template< typename Real, typename Index >
       static bool setupMatrix( const MeshType& mesh,
-                               MultidiagonalMatrix< Real, Device, Index >& matrix,
+                               Multidiagonal< Real, Device, Index >& matrix,
                                int stencilSize = 1,
                                bool crossStencil = false );
 };

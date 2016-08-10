@@ -107,41 +107,41 @@ class GMRES : public Object,
 
 #include <TNL/Solvers/Linear/GMRES_impl.h>
 
-#include <TNL/Matrices/CSRMatrix.h>
-#include <TNL/Matrices/EllpackMatrix.h>
-#include <TNL/Matrices/MultidiagonalMatrix.h>
+#include <TNL/Matrices/CSR.h>
+#include <TNL/Matrices/Ellpack.h>
+#include <TNL/Matrices/Multidiagonal.h>
 
 namespace TNL {
 namespace Solvers {
 namespace Linear {
    
-extern template class GMRES< Matrices::CSRMatrix< float,  Devices::Host, int > >;
-extern template class GMRES< Matrices::CSRMatrix< double, Devices::Host, int > >;
-extern template class GMRES< Matrices::CSRMatrix< float,  Devices::Host, long int > >;
-extern template class GMRES< Matrices::CSRMatrix< double, Devices::Host, long int > >;
+extern template class GMRES< Matrices::CSR< float,  Devices::Host, int > >;
+extern template class GMRES< Matrices::CSR< double, Devices::Host, int > >;
+extern template class GMRES< Matrices::CSR< float,  Devices::Host, long int > >;
+extern template class GMRES< Matrices::CSR< double, Devices::Host, long int > >;
 
-/*extern template class GMRES< EllpackMatrix< float,  Devices::Host, int > >;
-extern template class GMRES< EllpackMatrix< double, Devices::Host, int > >;
-extern template class GMRES< EllpackMatrix< float,  Devices::Host, long int > >;
-extern template class GMRES< EllpackMatrix< double, Devices::Host, long int > >;
+/*extern template class GMRES< Ellpack< float,  Devices::Host, int > >;
+extern template class GMRES< Ellpack< double, Devices::Host, int > >;
+extern template class GMRES< Ellpack< float,  Devices::Host, long int > >;
+extern template class GMRES< Ellpack< double, Devices::Host, long int > >;
 
-extern template class GMRES< MultidiagonalMatrix< float,  Devices::Host, int > >;
-extern template class GMRES< MultidiagonalMatrix< double, Devices::Host, int > >;
-extern template class GMRES< MultidiagonalMatrix< float,  Devices::Host, long int > >;
-extern template class GMRES< MultidiagonalMatrix< double, Devices::Host, long int > >;*/
+extern template class GMRES< Multidiagonal< float,  Devices::Host, int > >;
+extern template class GMRES< Multidiagonal< double, Devices::Host, int > >;
+extern template class GMRES< Multidiagonal< float,  Devices::Host, long int > >;
+extern template class GMRES< Multidiagonal< double, Devices::Host, long int > >;*/
 
 
 #ifdef HAVE_CUDA
 // TODO: fix this - does not work with CUDA 5.5
-/*extern template class GMRES< CSRMatrix< float,  Devices::Cuda, int > >;
-extern template class GMRES< CSRMatrix< double, Devices::Cuda, int > >;
-extern template class GMRES< CSRMatrix< float,  Devices::Cuda, long int > >;
-extern template class GMRES< CSRMatrix< double, Devices::Cuda, long int > >;*/
+/*extern template class GMRES< CSR< float,  Devices::Cuda, int > >;
+extern template class GMRES< CSR< double, Devices::Cuda, int > >;
+extern template class GMRES< CSR< float,  Devices::Cuda, long int > >;
+extern template class GMRES< CSR< double, Devices::Cuda, long int > >;*/
 
-/*extern template class GMRES< EllpackMatrix< float,  Devices::Cuda, int > >;
-extern template class GMRES< EllpackMatrix< double, Devices::Cuda, int > >;
-extern template class GMRES< EllpackMatrix< float,  Devices::Cuda, long int > >;
-extern template class GMRES< EllpackMatrix< double, Devices::Cuda, long int > >;
+/*extern template class GMRES< Ellpack< float,  Devices::Cuda, int > >;
+extern template class GMRES< Ellpack< double, Devices::Cuda, int > >;
+extern template class GMRES< Ellpack< float,  Devices::Cuda, long int > >;
+extern template class GMRES< Ellpack< double, Devices::Cuda, long int > >;
 
 extern template class GMRES< tnlMutliDiagonalMatrix< float,  Devices::Cuda, int > >;
 extern template class GMRES< tnlMutliDiagonalMatrix< double, Devices::Cuda, int > >;

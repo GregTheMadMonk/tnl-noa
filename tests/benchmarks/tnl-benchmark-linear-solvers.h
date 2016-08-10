@@ -19,13 +19,13 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Timer.h>
 #include <TNL/SharedPointer.h>
-#include <TNL/Matrices/DenseMatrix.h>
-#include <TNL/Matrices/TridiagonalMatrix.h>
-#include <TNL/Matrices/MultidiagonalMatrix.h>
-#include <TNL/Matrices/CSRMatrix.h>
-#include <TNL/Matrices/EllpackMatrix.h>
-#include <TNL/Matrices/SlicedEllpackMatrix.h>
-#include <TNL/Matrices/ChunkedEllpackMatrix.h>
+#include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/Tridiagonal.h>
+#include <TNL/Matrices/Multidiagonal.h>
+#include <TNL/Matrices/CSR.h>
+#include <TNL/Matrices/Ellpack.h>
+#include <TNL/Matrices/SlicedEllpack.h>
+#include <TNL/Matrices/ChunkedEllpack.h>
 #include <TNL/Matrices/MatrixReader.h>
 #include <TNL/Solvers/Linear/GMRES.h>
 #include <TNL/Solvers/Linear/CG.h>
@@ -165,25 +165,25 @@ bool resolveMatrixFormat( const Config::ParameterContainer& parameters )
    const String& matrixFormat = parameters.getParameter< String >( "matrix-format" );
 
    if( matrixFormat == "dense" )
-      return resolveLinearSolver< DenseMatrix< Real, Device, int > >( parameters );
+      return resolveLinearSolver< Dense< Real, Device, int > >( parameters );
 
    if( matrixFormat == "tridiagonal" )
-      return resolveLinearSolver< TridiagonalMatrix< Real, Device, int > >( parameters );
+      return resolveLinearSolver< Tridiagonal< Real, Device, int > >( parameters );
 
    if( matrixFormat == "multidiagonal" )
-      return resolveLinearSolver< MultidiagonalMatrix< Real, Device, int > >( parameters );
+      return resolveLinearSolver< Multidiagonal< Real, Device, int > >( parameters );
 
    if( matrixFormat == "ellpack" )
-      return resolveLinearSolver< EllpackMatrix< Real, Device, int > >( parameters );
+      return resolveLinearSolver< Ellpack< Real, Device, int > >( parameters );
 
    if( matrixFormat == "sliced-ellpack" )
-      return resolveLinearSolver< SlicedEllpackMatrix< Real, Device, int > >( parameters );
+      return resolveLinearSolver< SlicedEllpack< Real, Device, int > >( parameters );
 
    if( matrixFormat == "chunked-ellpack" )
-      return resolveLinearSolver< ChunkedEllpackMatrix< Real, Device, int > >( parameters );
+      return resolveLinearSolver< ChunkedEllpack< Real, Device, int > >( parameters );
 
    if( matrixFormat == "csr" )
-      return resolveLinearSolver< CSRMatrix< Real, Device, int > >( parameters );
+      return resolveLinearSolver< CSR< Real, Device, int > >( parameters );
 
    std::cerr << "Unknown matrix format " << matrixFormat << "." << std::endl;
    return false;

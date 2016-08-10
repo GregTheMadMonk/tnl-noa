@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SlicedEllpackMatrixTest.cu  -  description
+                          SlicedEllpackTest.cu  -  description
                              -------------------
     begin                : Jan 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -10,7 +10,7 @@
 
 #include <TNL/tnlConfig.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Matrices/SlicedEllpackMatrix.h>
+#include <TNL/Matrices/SlicedEllpack.h>
 #include <cstdlib>
 
 #include "tnlSparseMatrixTester.h"
@@ -19,10 +19,10 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-  if( ! tnlUnitTestStarter::run< SparseMatrixTester< SlicedEllpackMatrix< float, Devices::Cuda, int, 32 > > >() ||
-      ! tnlUnitTestStarter::run< SparseMatrixTester< SlicedEllpackMatrix< double, Devices::Cuda, int, 32 > > >() ||
-      ! tnlUnitTestStarter::run< SparseMatrixTester< SlicedEllpackMatrix< float, Devices::Cuda, int, 4 > > >() ||
-      ! tnlUnitTestStarter::run< SparseMatrixTester< SlicedEllpackMatrix< double, Devices::Cuda, int, 4 > > >()
+  if( ! tnlUnitTestStarter::run< SparseTester< SlicedEllpack< float, Devices::Cuda, int, 32 > > >() ||
+      ! tnlUnitTestStarter::run< SparseTester< SlicedEllpack< double, Devices::Cuda, int, 32 > > >() ||
+      ! tnlUnitTestStarter::run< SparseTester< SlicedEllpack< float, Devices::Cuda, int, 4 > > >() ||
+      ! tnlUnitTestStarter::run< SparseTester< SlicedEllpack< double, Devices::Cuda, int, 4 > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

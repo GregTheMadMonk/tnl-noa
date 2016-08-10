@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SparseMatrix_impl.h  -  description
+                          Sparse_impl.h  -  description
                              -------------------
     begin                : Dec 21, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -16,7 +16,7 @@ namespace Matrices {
 template< typename Real,
           typename Device,
           typename Index >
-SparseMatrix< Real, Device, Index >::SparseMatrix()
+Sparse< Real, Device, Index >::Sparse()
 : maxRowLength( 0 )
 {
 }
@@ -27,7 +27,7 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool SparseMatrix< Real, Device, Index >::setLike( const SparseMatrix< Real2, Device2, Index2 >& matrix )
+bool Sparse< Real, Device, Index >::setLike( const Sparse< Real2, Device2, Index2 >& matrix )
 {
    if( ! Matrix< Real, Device, Index >::setLike( matrix ) ||
        ! this->allocateMatrixElements( matrix.getNumberOfMatrixElements() ) )
@@ -38,7 +38,7 @@ bool SparseMatrix< Real, Device, Index >::setLike( const SparseMatrix< Real2, De
 template< typename Real,
           typename Device,
           typename Index >
-Index SparseMatrix< Real, Device, Index >::getNumberOfMatrixElements() const
+Index Sparse< Real, Device, Index >::getNumberOfMatrixElements() const
 {
    return this->values.getSize();
 }
@@ -46,7 +46,7 @@ Index SparseMatrix< Real, Device, Index >::getNumberOfMatrixElements() const
 template< typename Real,
           typename Device,
           typename Index >
-Index SparseMatrix< Real, Device, Index >::getNumberOfNonzeroMatrixElements() const
+Index Sparse< Real, Device, Index >::getNumberOfNonzeroMatrixElements() const
 {
    IndexType nonzeroElements( 0 );
    for( IndexType i = 0; i < this->values.getSize(); i++ )
@@ -60,7 +60,7 @@ template< typename Real,
           typename Device,
           typename Index >
 Index
-SparseMatrix< Real, Device, Index >::
+Sparse< Real, Device, Index >::
 getMaxRowLength() const
 {
    return this->maxRowLength;
@@ -70,7 +70,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Index SparseMatrix< Real, Device, Index >::getPaddingIndex() const
+Index Sparse< Real, Device, Index >::getPaddingIndex() const
 {
    return this->getColumns();
 }
@@ -78,7 +78,7 @@ Index SparseMatrix< Real, Device, Index >::getPaddingIndex() const
 template< typename Real,
           typename Device,
           typename Index >
-void SparseMatrix< Real, Device, Index >::reset()
+void Sparse< Real, Device, Index >::reset()
 {
    Matrix< Real, Device, Index >::reset();
    this->values.reset();
@@ -88,7 +88,7 @@ void SparseMatrix< Real, Device, Index >::reset()
 template< typename Real,
           typename Device,
           typename Index >
-bool SparseMatrix< Real, Device, Index >::save( File& file ) const
+bool Sparse< Real, Device, Index >::save( File& file ) const
 {
    if( ! Matrix< Real, Device, Index >::save( file ) ||
        ! this->values.save( file ) ||
@@ -100,7 +100,7 @@ bool SparseMatrix< Real, Device, Index >::save( File& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool SparseMatrix< Real, Device, Index >::load( File& file )
+bool Sparse< Real, Device, Index >::load( File& file )
 {
    if( ! Matrix< Real, Device, Index >::load( file ) ||
        ! this->values.load( file ) ||
@@ -112,7 +112,7 @@ bool SparseMatrix< Real, Device, Index >::load( File& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool SparseMatrix< Real, Device, Index >::allocateMatrixElements( const IndexType& numberOfMatrixElements )
+bool Sparse< Real, Device, Index >::allocateMatrixElements( const IndexType& numberOfMatrixElements )
 {
    if( ! this->values.setSize( numberOfMatrixElements ) ||
        ! this->columnIndexes.setSize( numberOfMatrixElements ) )
@@ -129,7 +129,7 @@ bool SparseMatrix< Real, Device, Index >::allocateMatrixElements( const IndexTyp
 template< typename Real,
           typename Device,
           typename Index >
-void SparseMatrix< Real, Device, Index >::printStructure( std::ostream& str ) const
+void Sparse< Real, Device, Index >::printStructure( std::ostream& str ) const
 {
 }
 

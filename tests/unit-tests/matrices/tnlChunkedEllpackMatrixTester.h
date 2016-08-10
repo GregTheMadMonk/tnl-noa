@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ChunkedEllpackMatrixTester.h  -  description
+                          ChunkedEllpackTester.h  -  description
                              -------------------
     begin                : Dec 13, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef ChunkedEllpackMatrixTESTER_H_
-#define ChunkedEllpackMatrixTESTER_H_
+#ifndef ChunkedEllpackTESTER_H_
+#define ChunkedEllpackTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -17,7 +17,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/Matrices/ChunkedEllpackMatrix.h>
+#include <TNL/Matrices/ChunkedEllpack.h>
 #include <TNL/File.h>
 #include <TNL/Vectors/Vector.h>
 
@@ -28,30 +28,30 @@ template< typename RealType,
           typename IndexType,
           int SliceSize,
           int ChunkSize >
-class ChunkedEllpackMatrixTester : public CppUnit :: TestCase
+class ChunkedEllpackTester : public CppUnit :: TestCase
 {
    public:
-   typedef ChunkedEllpackMatrix< RealType, Device, IndexType > MatrixType;
+   typedef ChunkedEllpack< RealType, Device, IndexType > MatrixType;
    typedef Vector< RealType, Device, IndexType > VectorType;
    typedef Vector< IndexType, Device, IndexType > IndexVector;
-   typedef ChunkedEllpackMatrixTester< RealType, Device, IndexType, SliceSize, ChunkSize > TesterType;
+   typedef ChunkedEllpackTester< RealType, Device, IndexType, SliceSize, ChunkSize > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   ChunkedEllpackMatrixTester(){};
+   ChunkedEllpackTester(){};
 
    virtual
-   ~ChunkedEllpackMatrixTester(){};
+   ~ChunkedEllpackTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "TridiagonalMatrixTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "TridiagonalTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setLikeTest", &TesterType::setLikeTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElementTest", &TesterType::setElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElement_DiagonalMatrixTest", &TesterType::setElement_DiagonalMatrixTest ) );
-      suiteOfTests -> addTest( new TestCallerType( "setElement_DenseMatrixTest", &TesterType::setElement_DenseMatrixTest ) );
+      suiteOfTests -> addTest( new TestCallerType( "setElement_DenseTest", &TesterType::setElement_DenseTest ) );
       suiteOfTests -> addTest( new TestCallerType( "setElement_LowerTriangularMatrixTest", &TesterType::setElement_LowerTriangularMatrixTest ) );
       suiteOfTests -> addTest( new TestCallerType( "addElementTest", &TesterType::addElementTest ) );
       suiteOfTests -> addTest( new TestCallerType( "vectorProductTest", &TesterType::vectorProductTest ) );
@@ -129,7 +129,7 @@ class ChunkedEllpackMatrixTester : public CppUnit :: TestCase
       }
    }
 
-   void setElement_DenseMatrixTest()
+   void setElement_DenseTest()
    {
       MatrixType m;
       m.setDimensions( 10, 10 );
@@ -273,7 +273,7 @@ class ChunkedEllpackMatrixTester : public CppUnit :: TestCase
 };
 #else /* HAVE_CPPUNIT */
 template< typename ElementType, typename Device, typename IndexType >
-class ChunkedEllpackMatrixTester{};
+class ChunkedEllpackTester{};
 #endif /* HAVE_CPPUNIT */
 
-#endif /* ChunkedEllpackMatrixTESTER_H_ */
+#endif /* ChunkedEllpackTESTER_H_ */

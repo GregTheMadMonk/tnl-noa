@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SlicedEllpackMatrix.h  -  description
+                          SlicedEllpack.h  -  description
                              -------------------
     begin                : Dec 8, 2013
     copyright            : (C) 2013 by Tomas Oberhuber et al.
@@ -21,27 +21,27 @@
 
 #pragma once
 
-#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Matrices/Sparse.h>
 #include <TNL/Vectors/Vector.h>
 
 namespace TNL {
 namespace Matrices {   
 
 template< typename Device >
-class SlicedEllpackMatrixDeviceDependentCode;
+class SlicedEllpackDeviceDependentCode;
 
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
           int SliceSize = 32 >
-class SlicedEllpackMatrix;
+class SlicedEllpack;
 
 #ifdef HAVE_CUDA
 template< typename Real,
           typename Index,
           int SliceSize >
-__global__ void SlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel( SlicedEllpackMatrix< Real, Devices::Cuda, Index, SliceSize >* matrix,
-                                                                                   const typename SlicedEllpackMatrix< Real, Devices::Cuda, Index, SliceSize >::CompressedRowsLengthsVector* rowLengths,
+__global__ void SlicedEllpack_computeMaximalRowLengthInSlices_CudaKernel( SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >* matrix,
+                                                                                   const typename SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >::CompressedRowsLengthsVector* rowLengths,
                                                                                    int gridIdx );
 #endif
 
@@ -49,24 +49,24 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-class SlicedEllpackMatrix : public SparseMatrix< Real, Device, Index >
+class SlicedEllpack : public Sparse< Real, Device, Index >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename SparseMatrix< RealType, DeviceType, IndexType >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
-   typedef typename SparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
-   typedef typename SparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-   typedef SlicedEllpackMatrix< Real, Device, Index > ThisType;
-   typedef SlicedEllpackMatrix< Real, Devices::Host, Index > HostType;
-   typedef SlicedEllpackMatrix< Real, Devices::Cuda, Index > CudaType;
-   typedef SparseMatrix< Real, Device, Index > BaseType;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
+   typedef SlicedEllpack< Real, Device, Index > ThisType;
+   typedef SlicedEllpack< Real, Devices::Host, Index > HostType;
+   typedef SlicedEllpack< Real, Devices::Cuda, Index > CudaType;
+   typedef Sparse< Real, Device, Index > BaseType;
    typedef typename BaseType::MatrixRow MatrixRow;
 
 
-   SlicedEllpackMatrix();
+   SlicedEllpack();
 
    static String getType();
 
@@ -80,15 +80,15 @@ class SlicedEllpackMatrix : public SparseMatrix< Real, Device, Index >
    IndexType getRowLength( const IndexType row ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const SlicedEllpackMatrix< Real2, Device2, Index2, SliceSize >& matrix );
+   bool setLike( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix );
 
    void reset();
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator == ( const SlicedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
+   bool operator == ( const SlicedEllpack< Real2, Device2, Index2 >& matrix ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator != ( const SlicedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
+   bool operator != ( const SlicedEllpack< Real2, Device2, Index2 >& matrix ) const;
 
    __cuda_callable__
    bool setElementFast( const IndexType row,
@@ -163,12 +163,12 @@ class SlicedEllpackMatrix : public SparseMatrix< Real, Device, Index >
                        OutVector& outVector ) const;
 
    template< typename Real2, typename Index2 >
-   void addMatrix( const SlicedEllpackMatrix< Real2, Device, Index2 >& matrix,
+   void addMatrix( const SlicedEllpack< Real2, Device, Index2 >& matrix,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
    template< typename Real2, typename Index2 >
-   void getTransposition( const SlicedEllpackMatrix< Real2, Device, Index2 >& matrix,
+   void getTransposition( const SlicedEllpack< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector >
@@ -191,11 +191,11 @@ class SlicedEllpackMatrix : public SparseMatrix< Real, Device, Index >
 
    Vectors::Vector< Index, Device, Index > slicePointers, sliceCompressedRowsLengths;
 
-   typedef SlicedEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
-   friend class SlicedEllpackMatrixDeviceDependentCode< DeviceType >;
+   typedef SlicedEllpackDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class SlicedEllpackDeviceDependentCode< DeviceType >;
 #ifdef HAVE_CUDA
-   /*friend __global__ void SlicedEllpackMatrix_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize >( SlicedEllpackMatrix< Real, Devices::Cuda, Index, SliceSize >* matrix,
-                                                                                      const typename SlicedEllpackMatrix< Real, Devices::Cuda, Index, SliceSize >::CompressedRowsLengthsVector* rowLengths,
+   /*friend __global__ void SlicedEllpack_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize >( SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >* matrix,
+                                                                                      const typename SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >::CompressedRowsLengthsVector* rowLengths,
                                                                                       int gridIdx );
     */
    // TODO: The friend declaration above does not work because of __global__ storage specifier. Therefore we declare the following method as public. Fix this, when possible.
@@ -211,4 +211,4 @@ class SlicedEllpackMatrix : public SparseMatrix< Real, Device, Index >
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/SlicedEllpackMatrix_impl.h>
+#include <TNL/Matrices/SlicedEllpack_impl.h>

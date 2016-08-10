@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ChunkedEllpackMatrix.h  -  description
+                          ChunkedEllpack.h  -  description
                              -------------------
     begin                : Dec 12, 2013
     copyright            : (C) 2013 by Tomas Oberhuber et al.
@@ -22,17 +22,17 @@
 
 #pragma once
 
-#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Matrices/Sparse.h>
 #include <TNL/Vectors/Vector.h>
 
 namespace TNL {
 namespace Matrices {   
 
 template< typename Device >
-class ChunkedEllpackMatrixDeviceDependentCode;
+class ChunkedEllpackDeviceDependentCode;
 
 template< typename Real, typename Device = Devices::Host, typename Index = int >
-class ChunkedEllpackMatrix;
+class ChunkedEllpack;
 
 #ifdef HAVE_CUDA
 #endif
@@ -53,14 +53,14 @@ struct tnlChunkedEllpackSliceInfo
 template< typename Real,
           typename Index,
           typename Vector >
-__global__ void ChunkedEllpackMatrixVectorProductCudaKernel( const ChunkedEllpackMatrix< Real, Devices::Cuda, Index >* matrix,
+__global__ void ChunkedEllpackVectorProductCudaKernel( const ChunkedEllpack< Real, Devices::Cuda, Index >* matrix,
                                                                 const Vector* inVector,
                                                                 Vector* outVector,
                                                                 int gridIdx );
 #endif
 
 template< typename Real, typename Device, typename Index >
-class ChunkedEllpackMatrix : public SparseMatrix< Real, Device, Index >
+class ChunkedEllpack : public Sparse< Real, Device, Index >
 {
    public:
 
@@ -68,14 +68,14 @@ class ChunkedEllpackMatrix : public SparseMatrix< Real, Device, Index >
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef tnlChunkedEllpackSliceInfo< IndexType > ChunkedEllpackSliceInfo;
-   typedef typename SparseMatrix< RealType, DeviceType, IndexType >:: CompressedRowsLengthsVector CompressedRowsLengthsVector;
-   typedef ChunkedEllpackMatrix< Real, Device, Index > ThisType;
-   typedef ChunkedEllpackMatrix< Real, Devices::Host, Index > HostType;
-   typedef ChunkedEllpackMatrix< Real, Devices::Cuda, Index > CudaType;
-   typedef SparseMatrix< Real, Device, Index > BaseType;
+   typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowsLengthsVector CompressedRowsLengthsVector;
+   typedef ChunkedEllpack< Real, Device, Index > ThisType;
+   typedef ChunkedEllpack< Real, Devices::Host, Index > HostType;
+   typedef ChunkedEllpack< Real, Devices::Cuda, Index > CudaType;
+   typedef Sparse< Real, Device, Index > BaseType;
    typedef typename BaseType::MatrixRow MatrixRow;
 
-   ChunkedEllpackMatrix();
+   ChunkedEllpack();
 
    static String getType();
 
@@ -89,15 +89,15 @@ class ChunkedEllpackMatrix : public SparseMatrix< Real, Device, Index >
    IndexType getRowLength( const IndexType row ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const ChunkedEllpackMatrix< Real2, Device2, Index2 >& matrix );
+   bool setLike( const ChunkedEllpack< Real2, Device2, Index2 >& matrix );
 
    void reset();
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator == ( const ChunkedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
+   bool operator == ( const ChunkedEllpack< Real2, Device2, Index2 >& matrix ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator != ( const ChunkedEllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
+   bool operator != ( const ChunkedEllpack< Real2, Device2, Index2 >& matrix ) const;
 
    void setNumberOfChunksInSlice( const IndexType chunksInSlice );
 
@@ -200,12 +200,12 @@ class ChunkedEllpackMatrix : public SparseMatrix< Real, Device, Index >
                        OutVector& outVector ) const;
 
    template< typename Real2, typename Index2 >
-   void addMatrix( const ChunkedEllpackMatrix< Real2, Device, Index2 >& matrix,
+   void addMatrix( const ChunkedEllpack< Real2, Device, Index2 >& matrix,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
    template< typename Real2, typename Index2 >
-   void getTransposition( const ChunkedEllpackMatrix< Real2, Device, Index2 >& matrix,
+   void getTransposition( const ChunkedEllpack< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector >
@@ -309,14 +309,14 @@ class ChunkedEllpackMatrix : public SparseMatrix< Real, Device, Index >
 
    IndexType numberOfSlices;
 
-   typedef ChunkedEllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
-   friend class ChunkedEllpackMatrixDeviceDependentCode< DeviceType >;
-   friend class ChunkedEllpackMatrix< RealType, Devices::Host, IndexType >;
-   friend class ChunkedEllpackMatrix< RealType, Devices::Cuda, IndexType >;
+   typedef ChunkedEllpackDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class ChunkedEllpackDeviceDependentCode< DeviceType >;
+   friend class ChunkedEllpack< RealType, Devices::Host, IndexType >;
+   friend class ChunkedEllpack< RealType, Devices::Cuda, IndexType >;
 
 #ifdef HAVE_CUDA
    template< typename Vector >
-   friend void ChunkedEllpackMatrixVectorProductCudaKernel( const ChunkedEllpackMatrix< Real, Devices::Cuda, Index >* matrix,
+   friend void ChunkedEllpackVectorProductCudaKernel( const ChunkedEllpack< Real, Devices::Cuda, Index >* matrix,
                                                                const Vector* inVector,
                                                                Vector* outVector,
                                                                int gridIdx );
@@ -326,5 +326,5 @@ class ChunkedEllpackMatrix : public SparseMatrix< Real, Device, Index >
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/ChunkedEllpackMatrix_impl.h>
+#include <TNL/Matrices/ChunkedEllpack_impl.h>
 

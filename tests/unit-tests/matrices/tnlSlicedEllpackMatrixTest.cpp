@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SlicedEllpackMatrixTest.cpp  -  description
+                          SlicedEllpackTest.cpp  -  description
                              -------------------
     begin                : Dec 9, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -10,7 +10,7 @@
 
 #include <TNL/tnlConfig.h>
 #include <TNL/Devices/Host.h>
-#include <TNL/Matrices/SlicedEllpackMatrix.h>
+#include <TNL/Matrices/SlicedEllpack.h>
 #include <cstdlib>
 
 #include "tnlSparseMatrixTester.h"
@@ -19,14 +19,14 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::SlicedEllpackMatrix< float, Devices::Host, int, 32 > > >() ||
-       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::SlicedEllpackMatrix< double, Devices::Host, int, 32 > > >() ||
-       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::SlicedEllpackMatrix< float, Devices::Host, long int, 32 > > >() ||
-       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::SlicedEllpackMatrix< double, Devices::Host, long int, 32 > > >() ||
-       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::SlicedEllpackMatrix< float, Devices::Host, int, 4 > > >() ||
-       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::SlicedEllpackMatrix< double, Devices::Host, int, 4 > > >() ||
-       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::SlicedEllpackMatrix< float, Devices::Host, long int, 4 > > >() ||
-       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::SlicedEllpackMatrix< double, Devices::Host, long int, 4 > > >()
+   if( ! tnlUnitTestStarter :: run< SparseTester< Matrices::SlicedEllpack< float, Devices::Host, int, 32 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::SlicedEllpack< double, Devices::Host, int, 32 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::SlicedEllpack< float, Devices::Host, long int, 32 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::SlicedEllpack< double, Devices::Host, long int, 32 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::SlicedEllpack< float, Devices::Host, int, 4 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::SlicedEllpack< double, Devices::Host, int, 4 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::SlicedEllpack< float, Devices::Host, long int, 4 > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::SlicedEllpack< double, Devices::Host, long int, 4 > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

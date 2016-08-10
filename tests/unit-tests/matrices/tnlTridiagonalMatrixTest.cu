@@ -1,5 +1,5 @@
 /***************************************************************************
-                          TridiagonalMatrixTest.cu  -  description
+                          TridiagonalTest.cu  -  description
                              -------------------
     begin                : Jan 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -18,10 +18,10 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< TridiagonalMatrixTester< float, Devices::Cuda, int > >() ||
-       ! tnlUnitTestStarter :: run< TridiagonalMatrixTester< double, Devices::Cuda, int > >() ||
-       ! tnlUnitTestStarter :: run< TridiagonalMatrixTester< float, Devices::Cuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< TridiagonalMatrixTester< double, Devices::Cuda, long int > >()
+   if( ! tnlUnitTestStarter :: run< TridiagonalTester< float, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< TridiagonalTester< double, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< TridiagonalTester< float, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< TridiagonalTester< double, Devices::Cuda, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

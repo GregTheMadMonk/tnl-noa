@@ -17,8 +17,8 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Matrices/CSRMatrix.h>
-#include <TNL/legacy/matrices/tnlRgCSRMatrix.h>
+#include <TNL/Matrices/CSR.h>
+#include <TNL/legacy/matrices/tnlRgCSR.h>
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 #include <TNL/Solvers/Linear/stationary/SOR.h>
 #include <TNL/Solvers/Linear/CG.h>
@@ -246,7 +246,7 @@ bool benchmarkMatrix( const Config::ParameterContainer&  parameters )
    /****
     * Loading the matrix from the input file
     */
-   typedef CSRMatrix< Real, Devices::Host, Index > csrMatrixType;
+   typedef CSR< Real, Devices::Host, Index > csrMatrixType;
    String inputFile = parameters. getParameter< String >( "input-file" );
    csrMatrixType csrMatrix;
    if( ! csrMatrix. load( inputFile ) )
@@ -300,16 +300,16 @@ bool benchmarkMatrix( const Config::ParameterContainer&  parameters )
    if( device == "cuda" )
    {
 #ifdef HAVE_CUDA
-      tnlRgCSRMatrix< Real, Devices::Cuda, Index > rgCSRMatrix( "matrix-solvers-benchmark:rgCSRMatrix" );
+      tnlRgCSR< Real, Devices::Cuda, Index > rgCSR( "matrix-solvers-benchmark:rgCSR" );
       // FIX THIS
-      //rgCSRMatrix = csrMatrix;
+      //rgCSR = csrMatrix;
       /*Vector< Real, Devices::Cuda, Index > cudaX( "matrix-solvers-benchmark:cudaX" );
       Vector< Real, Devices::Cuda, Index > cudaB( "matrix-solvers-benchmark:cudaB" );
       cudaX. setLike( x );
       cudaX = x;
       cudaB. setLike( b );
       cudaB = b;
-      if( ! benchmarkMatrixOnDevice( parameters, rgCSRMatrix, cudaB, cudaX ) )
+      if( ! benchmarkMatrixOnDevice( parameters, rgCSR, cudaB, cudaX ) )
          return false;
       x = cudaX;*/
 #else
@@ -361,9 +361,9 @@ int main( int argc, char* argv[] )
    parseObjectType( objectType,
                     parsedObjectType );
    String objectClass = parsedObjectType[ 0 ];
-   if( objectClass != "CSRMatrix" )
+   if( objectClass != "CSR" )
    {
-      std::cerr << "I am sorry, I am expecting CSRMatrix in the input file but I found " << objectClass << "." << std::endl;
+      std::cerr << "I am sorry, I am expecting CSR in the input file but I found " << objectClass << "." << std::endl;
       return EXIT_FAILURE;
    }
 

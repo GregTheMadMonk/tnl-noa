@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SparseMatrixRow.h  -  description
+                          SparseRow.h  -  description
                              -------------------
     begin                : Dec 19, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -15,15 +15,15 @@ namespace TNL {
 namespace Matrices {   
 
 template< typename Real, typename Index >
-class SparseMatrixRow
+class SparseRow
 {
    public:
 
       __cuda_callable__
-      SparseMatrixRow();
+      SparseRow();
 
       __cuda_callable__
-      SparseMatrixRow( Index* columns,
+      SparseRow( Index* columns,
                           Real* values,
                           const Index length,
                           const Index step );
@@ -51,7 +51,7 @@ class SparseMatrixRow
 };
 
 template< typename Real, typename Index >
-std::ostream& operator << ( std::ostream& str, const SparseMatrixRow< Real, Index >& row )
+std::ostream& operator << ( std::ostream& str, const SparseRow< Real, Index >& row )
 {
    row.print( str );
    return str;
@@ -60,4 +60,4 @@ std::ostream& operator << ( std::ostream& str, const SparseMatrixRow< Real, Inde
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/SparseMatrixRow_impl.h>
+#include <TNL/Matrices/SparseRow_impl.h>

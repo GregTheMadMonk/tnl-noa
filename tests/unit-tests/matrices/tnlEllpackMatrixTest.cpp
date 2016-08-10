@@ -13,16 +13,16 @@
 #include <cstdlib>
 
 #include "tnlSparseMatrixTester.h"
-#include <TNL/Matrices/EllpackMatrix.h>
+#include <TNL/Matrices/Ellpack.h>
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::EllpackMatrix< float, Devices::Host, int > > >() ||
-       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::EllpackMatrix< double, Devices::Host, int > > >() ||
-       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::EllpackMatrix< float, Devices::Host, long int > > >() ||
-       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::EllpackMatrix< double, Devices::Host, long int > > >()
+   if( ! tnlUnitTestStarter :: run< SparseTester< Matrices::Ellpack< float, Devices::Host, int > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::Ellpack< double, Devices::Host, int > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::Ellpack< float, Devices::Host, long int > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::Ellpack< double, Devices::Host, long int > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

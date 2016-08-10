@@ -1,7 +1,7 @@
 /***************************************************************************
-                          TridiagonalMatrixRow.h  -  description
+                          DenseRow.h  -  description
                              -------------------
-    begin                : Dec 31, 2014
+    begin                : Dec 24, 2014
     copyright            : (C) 2014 by oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -14,22 +14,20 @@ namespace TNL {
 namespace Matrices {   
 
 template< typename Real, typename Index >
-class TridiagonalMatrixRow
+class DenseRow
 {
    public:
 
       __cuda_callable__
-      TridiagonalMatrixRow();
+      DenseRow();
 
       __cuda_callable__
-      TridiagonalMatrixRow( Real* values,
-                               const Index row,
-                               const Index columns,
-                               const Index step );
+      DenseRow( Real* values,
+                         const Index columns,
+                         const Index step );
 
       __cuda_callable__
       void bind( Real* values,
-                 const Index row,
                  const Index columns,
                  const Index step );
 
@@ -42,10 +40,11 @@ class TridiagonalMatrixRow
 
       Real* values;
 
-      Index row, columns, step;
+      Index columns, step;
 };
 
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/TridiagonalMatrixRow_impl.h>
+#include <TNL/Matrices/DenseRow_impl.h>
+

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MultidiagonalMatrixRow_impl.h  -  description
+                          MultidiagonalRow_impl.h  -  description
                              -------------------
     begin                : Jan 2, 2015
     copyright            : (C) 2015 by oberhuber
@@ -15,8 +15,8 @@ namespace Matrices {
 
 template< typename Real, typename Index >
 __cuda_callable__
-MultidiagonalMatrixRow< Real, Index >::
-MultidiagonalMatrixRow()
+MultidiagonalRow< Real, Index >::
+MultidiagonalRow()
 : values( 0 ),
   diagonals( 0 ),
   row( 0 ),
@@ -28,8 +28,8 @@ MultidiagonalMatrixRow()
 
 template< typename Real, typename Index >
 __cuda_callable__
-MultidiagonalMatrixRow< Real, Index >::
-MultidiagonalMatrixRow( Real* values,
+MultidiagonalRow< Real, Index >::
+MultidiagonalRow( Real* values,
                            Index* diagonals,
                            const Index maxRowLength,
                            const Index row,
@@ -47,7 +47,7 @@ MultidiagonalMatrixRow( Real* values,
 template< typename Real, typename Index >
 __cuda_callable__
 void
-MultidiagonalMatrixRow< Real, Index >::
+MultidiagonalRow< Real, Index >::
 bind( Real* values,
       Index* diagonals,
       const Index maxRowLength,
@@ -66,7 +66,7 @@ bind( Real* values,
 template< typename Real, typename Index >
 __cuda_callable__
 void
-MultidiagonalMatrixRow< Real, Index >::
+MultidiagonalRow< Real, Index >::
 setElement( const Index& elementIndex,
             const Index& column,
             const Real& value )

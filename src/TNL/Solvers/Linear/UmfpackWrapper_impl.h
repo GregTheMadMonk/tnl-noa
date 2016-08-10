@@ -11,13 +11,13 @@ namespace Solvers {
 namespace Linear {   
 
 template< typename Preconditioner >
-UmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >::
+UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
 UmfpackWrapper()
 {}
 
 template< typename Preconditioner >
 void
-UmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >::
+UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
@@ -25,7 +25,7 @@ configSetup( Config::ConfigDescription& config,
 
 template< typename Preconditioner >
 bool
-UmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >::
+UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -33,14 +33,14 @@ setup( const Config::ParameterContainer& parameters,
 }
 
 template< typename Preconditioner >
-void UmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >::
+void UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
 setMatrix( const MatrixType& matrix )
 {
     this -> matrix = &matrix;
 }
 
 template< typename Preconditioner >
-void UmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >::
+void UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
 setPreconditioner( const Preconditioner& preconditioner )
 {
     this -> preconditioner = &preconditioner;
@@ -49,7 +49,7 @@ setPreconditioner( const Preconditioner& preconditioner )
 
 template< typename Preconditioner >
     template< typename Vector, typename ResidueGetter >
-bool UmfpackWrapper< CSRMatrix< double, Devices::Host, int >, Preconditioner >::
+bool UmfpackWrapper< CSR< double, Devices::Host, int >, Preconditioner >::
 solve( const Vector& b,
        Vector& x )
 {

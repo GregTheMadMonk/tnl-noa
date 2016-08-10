@@ -140,7 +140,7 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    if( ConfigTagTimeDiscretisation< ConfigTag, tnlSemiImplicitTimeDiscretisationTag >::enabled )
    {
       config.addDelimiter( " === Semi-implicit solvers parameters === " );
-      typedef Matrices::CSRMatrix< double, Devices::Host, int > MatrixType;
+      typedef Matrices::CSR< double, Devices::Host, int > MatrixType;
       if( ConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitCGSolverTag >::enabled )
          Linear::CG< MatrixType >::configSetup( config );
       if( ConfigTagSemiImplicitSolver< ConfigTag, tnlSemiImplicitBICGStabSolverTag >::enabled )

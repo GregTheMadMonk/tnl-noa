@@ -1,5 +1,5 @@
 /***************************************************************************
-                          TridiagonalMatrix_impl.h  -  description
+                          Tridiagonal_impl.h  -  description
                              -------------------
     begin                : Nov 30, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -11,27 +11,27 @@
 #pragma once
 
 #include <TNL/Assert.h>
-#include <TNL/Matrices/TridiagonalMatrix.h>
+#include <TNL/Matrices/Tridiagonal.h>
 
 namespace TNL {
 namespace Matrices {   
 
 template< typename Device >
-class TridiagonalMatrixDeviceDependentCode;
+class TridiagonalDeviceDependentCode;
 
 template< typename Real,
           typename Device,
           typename Index >
-TridiagonalMatrix< Real, Device, Index >::TridiagonalMatrix()
+Tridiagonal< Real, Device, Index >::Tridiagonal()
 {
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-String TridiagonalMatrix< Real, Device, Index >::getType()
+String Tridiagonal< Real, Device, Index >::getType()
 {
-   return String( "TridiagonalMatrix< " ) +
+   return String( "Tridiagonal< " ) +
           String( TNL::getType< RealType >() ) + ", " +
           String( Device :: getDeviceType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";
@@ -40,7 +40,7 @@ String TridiagonalMatrix< Real, Device, Index >::getType()
 template< typename Real,
           typename Device,
           typename Index >
-String TridiagonalMatrix< Real, Device, Index >::getTypeVirtual() const
+String Tridiagonal< Real, Device, Index >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -48,7 +48,7 @@ String TridiagonalMatrix< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool TridiagonalMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
+bool Tridiagonal< Real, Device, Index >::setDimensions( const IndexType rows,
                                                                  const IndexType columns )
 {
    if( ! Matrix< Real, Device, Index >::setDimensions( rows, columns ) )
@@ -62,7 +62,7 @@ bool TridiagonalMatrix< Real, Device, Index >::setDimensions( const IndexType ro
 template< typename Real,
           typename Device,
           typename Index >
-bool TridiagonalMatrix< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
+bool Tridiagonal< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
    if( rowLengths[ 0 ] > 2 )
       return false;
@@ -85,7 +85,7 @@ bool TridiagonalMatrix< Real, Device, Index >::setCompressedRowsLengths( const C
 template< typename Real,
           typename Device,
           typename Index >
-Index TridiagonalMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
+Index Tridiagonal< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
    const IndexType diagonalLength = min( this->getRows(), this->getColumns() );
    if( row == 0 )
@@ -102,7 +102,7 @@ Index TridiagonalMatrix< Real, Device, Index >::getRowLength( const IndexType ro
 template< typename Real,
           typename Device,
           typename Index >
-Index TridiagonalMatrix< Real, Device, Index >::getMaxRowLength() const
+Index Tridiagonal< Real, Device, Index >::getMaxRowLength() const
 {
    return 3;
 }
@@ -111,7 +111,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Real2, typename Device2, typename Index2 >
-bool TridiagonalMatrix< Real, Device, Index >::setLike( const TridiagonalMatrix< Real2, Device2, Index2 >& m )
+bool Tridiagonal< Real, Device, Index >::setLike( const Tridiagonal< Real2, Device2, Index2 >& m )
 {
    return this->setDimensions( m.getRows(), m.getColumns() );
 }
@@ -119,7 +119,7 @@ bool TridiagonalMatrix< Real, Device, Index >::setLike( const TridiagonalMatrix<
 template< typename Real,
           typename Device,
           typename Index >
-Index TridiagonalMatrix< Real, Device, Index >::getNumberOfMatrixElements() const
+Index Tridiagonal< Real, Device, Index >::getNumberOfMatrixElements() const
 {
    return 3 * min( this->getRows(), this->getColumns() );
 }
@@ -127,7 +127,7 @@ Index TridiagonalMatrix< Real, Device, Index >::getNumberOfMatrixElements() cons
 template< typename Real,
           typename Device,
           typename Index >
-Index TridiagonalMatrix< Real, Device, Index > :: getNumberOfNonzeroMatrixElements() const
+Index Tridiagonal< Real, Device, Index > :: getNumberOfNonzeroMatrixElements() const
 {
    IndexType nonzeroElements;
    for( IndexType i = 0; i < this->values.getSize(); i++ )
@@ -140,7 +140,7 @@ template< typename Real,
           typename Device,
           typename Index >
 Index
-TridiagonalMatrix< Real, Device, Index >::
+Tridiagonal< Real, Device, Index >::
 getMaxRowlength() const
 {
    return 3;
@@ -149,7 +149,7 @@ getMaxRowlength() const
 template< typename Real,
           typename Device,
           typename Index >
-void TridiagonalMatrix< Real, Device, Index >::reset()
+void Tridiagonal< Real, Device, Index >::reset()
 {
    Matrix< Real, Device, Index >::reset();
    this->values.reset();
@@ -159,7 +159,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Real2, typename Device2, typename Index2 >
-bool TridiagonalMatrix< Real, Device, Index >::operator == ( const TridiagonalMatrix< Real2, Device2, Index2 >& matrix ) const
+bool Tridiagonal< Real, Device, Index >::operator == ( const Tridiagonal< Real2, Device2, Index2 >& matrix ) const
 {
    return this->values == matrix.values;
 }
@@ -168,7 +168,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Real2, typename Device2, typename Index2 >
-bool TridiagonalMatrix< Real, Device, Index >::operator != ( const TridiagonalMatrix< Real2, Device2, Index2 >& matrix ) const
+bool Tridiagonal< Real, Device, Index >::operator != ( const Tridiagonal< Real2, Device2, Index2 >& matrix ) const
 {
    return this->values != matrix.values;
 }
@@ -176,7 +176,7 @@ bool TridiagonalMatrix< Real, Device, Index >::operator != ( const TridiagonalMa
 template< typename Real,
           typename Device,
           typename Index >
-void TridiagonalMatrix< Real, Device, Index >::setValue( const RealType& v )
+void Tridiagonal< Real, Device, Index >::setValue( const RealType& v )
 {
    this->values.setValue( v );
 }
@@ -185,7 +185,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool TridiagonalMatrix< Real, Device, Index >::setElementFast( const IndexType row,
+bool Tridiagonal< Real, Device, Index >::setElementFast( const IndexType row,
                                                                   const IndexType column,
                                                                   const RealType& value )
 {
@@ -196,7 +196,7 @@ bool TridiagonalMatrix< Real, Device, Index >::setElementFast( const IndexType r
 template< typename Real,
           typename Device,
           typename Index >
-bool TridiagonalMatrix< Real, Device, Index >::setElement( const IndexType row,
+bool Tridiagonal< Real, Device, Index >::setElement( const IndexType row,
                                                               const IndexType column,
                                                               const RealType& value )
 {
@@ -208,7 +208,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool TridiagonalMatrix< Real, Device, Index >::addElementFast( const IndexType row,
+bool Tridiagonal< Real, Device, Index >::addElementFast( const IndexType row,
                                                                   const IndexType column,
                                                                   const RealType& value,
                                                                   const RealType& thisElementMultiplicator )
@@ -221,7 +221,7 @@ bool TridiagonalMatrix< Real, Device, Index >::addElementFast( const IndexType r
 template< typename Real,
           typename Device,
           typename Index >
-bool TridiagonalMatrix< Real, Device, Index >::addElement( const IndexType row,
+bool Tridiagonal< Real, Device, Index >::addElement( const IndexType row,
                                                               const IndexType column,
                                                               const RealType& value,
                                                               const RealType& thisElementMultiplicator )
@@ -235,7 +235,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool TridiagonalMatrix< Real, Device, Index >::setRowFast( const IndexType row,
+bool Tridiagonal< Real, Device, Index >::setRowFast( const IndexType row,
                                                               const IndexType* columns,
                                                               const RealType* values,
                                                               const IndexType elements )
@@ -249,7 +249,7 @@ bool TridiagonalMatrix< Real, Device, Index >::setRowFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool TridiagonalMatrix< Real, Device, Index >::setRow( const IndexType row,
+bool Tridiagonal< Real, Device, Index >::setRow( const IndexType row,
                                                           const IndexType* columns,
                                                           const RealType* values,
                                                           const IndexType elements )
@@ -264,7 +264,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool TridiagonalMatrix< Real, Device, Index >::addRowFast( const IndexType row,
+bool Tridiagonal< Real, Device, Index >::addRowFast( const IndexType row,
                                                               const IndexType* columns,
                                                               const RealType* values,
                                                               const IndexType elements,
@@ -288,7 +288,7 @@ bool TridiagonalMatrix< Real, Device, Index >::addRowFast( const IndexType row,
 template< typename Real,
           typename Device,
           typename Index >
-bool TridiagonalMatrix< Real, Device, Index >::addRow( const IndexType row,
+bool Tridiagonal< Real, Device, Index >::addRow( const IndexType row,
                                                           const IndexType* columns,
                                                           const RealType* values,
                                                           const IndexType elements,
@@ -313,7 +313,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Real TridiagonalMatrix< Real, Device, Index >::getElementFast( const IndexType row,
+Real Tridiagonal< Real, Device, Index >::getElementFast( const IndexType row,
                                                                   const IndexType column ) const
 {
    if( abs( column - row ) > 1 )
@@ -324,7 +324,7 @@ Real TridiagonalMatrix< Real, Device, Index >::getElementFast( const IndexType r
 template< typename Real,
           typename Device,
           typename Index >
-Real TridiagonalMatrix< Real, Device, Index >::getElement( const IndexType row,
+Real Tridiagonal< Real, Device, Index >::getElement( const IndexType row,
                                                               const IndexType column ) const
 {
    if( abs( column - row ) > 1 )
@@ -336,7 +336,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-void TridiagonalMatrix< Real, Device, Index >::getRowFast( const IndexType row,
+void Tridiagonal< Real, Device, Index >::getRowFast( const IndexType row,
                                                               IndexType* columns,
                                                               RealType* values ) const
 {
@@ -357,8 +357,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-typename TridiagonalMatrix< Real, Device, Index >::MatrixRow
-TridiagonalMatrix< Real, Device, Index >::
+typename Tridiagonal< Real, Device, Index >::MatrixRow
+Tridiagonal< Real, Device, Index >::
 getRow( const IndexType rowIndex )
 {
    if( std::is_same< Device, Devices::Host >::value )
@@ -377,8 +377,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-const typename TridiagonalMatrix< Real, Device, Index >::MatrixRow
-TridiagonalMatrix< Real, Device, Index >::
+const typename Tridiagonal< Real, Device, Index >::MatrixRow
+Tridiagonal< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
    Assert( false, );
@@ -390,10 +390,10 @@ template< typename Real,
           typename Index >
 template< typename Vector >
 __cuda_callable__
-typename Vector::RealType TridiagonalMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
+typename Vector::RealType Tridiagonal< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                          const Vector& vector ) const
 {
-   return TridiagonalMatrixDeviceDependentCode< Device >::
+   return TridiagonalDeviceDependentCode< Device >::
              rowVectorProduct( this->rows,
                                this->values,
                                row,
@@ -405,7 +405,7 @@ template< typename Real,
           typename Index >
    template< typename InVector,
              typename OutVector >
-void TridiagonalMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
+void Tridiagonal< Real, Device, Index >::vectorProduct( const InVector& inVector,
                                                                  OutVector& outVector ) const
 {
    Assert( this->getColumns() == inVector.getSize(),
@@ -422,7 +422,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Real2, typename Index2 >
-void TridiagonalMatrix< Real, Device, Index >::addMatrix( const TridiagonalMatrix< Real2, Device, Index2 >& matrix,
+void Tridiagonal< Real, Device, Index >::addMatrix( const Tridiagonal< Real2, Device, Index2 >& matrix,
                                                              const RealType& matrixMultiplicator,
                                                              const RealType& thisMatrixMultiplicator )
 {
@@ -441,8 +441,8 @@ template< typename Real,
           typename Real2,
           typename Index,
           typename Index2 >
-__global__ void TridiagonalMatrixTranspositionCudaKernel( const TridiagonalMatrix< Real2, Devices::Cuda, Index2 >* inMatrix,
-                                                             TridiagonalMatrix< Real, Devices::Cuda, Index >* outMatrix,
+__global__ void TridiagonalTranspositionCudaKernel( const Tridiagonal< Real2, Devices::Cuda, Index2 >* inMatrix,
+                                                             Tridiagonal< Real, Devices::Cuda, Index >* outMatrix,
                                                              const Real matrixMultiplicator,
                                                              const Index gridIdx )
 {
@@ -468,7 +468,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Real2, typename Index2 >
-void TridiagonalMatrix< Real, Device, Index >::getTransposition( const TridiagonalMatrix< Real2, Device, Index2 >& matrix,
+void Tridiagonal< Real, Device, Index >::getTransposition( const Tridiagonal< Real2, Device, Index2 >& matrix,
                                                                     const RealType& matrixMultiplicator )
 {
    Assert( this->getRows() == matrix.getRows(),
@@ -489,7 +489,7 @@ void TridiagonalMatrix< Real, Device, Index >::getTransposition( const Tridiagon
    {
 #ifdef HAVE_CUDA
       ThisType* kernel_this = Devices::Cuda::passToDevice( *this );
-      typedef  TridiagonalMatrix< Real2, Device, Index2 > InMatrixType;
+      typedef  Tridiagonal< Real2, Device, Index2 > InMatrixType;
       InMatrixType* kernel_inMatrix = Devices::Cuda::passToDevice( matrix );
       dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
       const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
@@ -498,7 +498,7 @@ void TridiagonalMatrix< Real, Device, Index >::getTransposition( const Tridiagon
       {
          if( gridIdx == cudaGrids - 1 )
             cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
-         TridiagonalMatrixTranspositionCudaKernel<<< cudaGridSize, cudaBlockSize >>>
+         TridiagonalTranspositionCudaKernel<<< cudaGridSize, cudaBlockSize >>>
                                                     ( kernel_inMatrix,
                                                       kernel_this,
                                                       matrixMultiplicator,
@@ -516,7 +516,7 @@ template< typename Real,
           typename Index >
    template< typename Vector >
 __cuda_callable__
-void TridiagonalMatrix< Real, Device, Index >::performSORIteration( const Vector& b,
+void Tridiagonal< Real, Device, Index >::performSORIteration( const Vector& b,
                                                                        const IndexType row,
                                                                        Vector& x,
                                                                        const RealType& omega ) const
@@ -532,7 +532,7 @@ void TridiagonalMatrix< Real, Device, Index >::performSORIteration( const Vector
 template< typename Real,
           typename Device,
           typename Index >
-bool TridiagonalMatrix< Real, Device, Index >::save( File& file ) const
+bool Tridiagonal< Real, Device, Index >::save( File& file ) const
 {
    if( ! Matrix< Real, Device, Index >::save( file ) ||
        ! this->values.save( file ) )
@@ -546,7 +546,7 @@ bool TridiagonalMatrix< Real, Device, Index >::save( File& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool TridiagonalMatrix< Real, Device, Index >::load( File& file )
+bool Tridiagonal< Real, Device, Index >::load( File& file )
 {
    if( ! Matrix< Real, Device, Index >::load( file ) ||
        ! this->values.load( file ) )
@@ -560,7 +560,7 @@ bool TridiagonalMatrix< Real, Device, Index >::load( File& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool TridiagonalMatrix< Real, Device, Index >::save( const String& fileName ) const
+bool Tridiagonal< Real, Device, Index >::save( const String& fileName ) const
 {
    return Object::save( fileName );
 }
@@ -568,7 +568,7 @@ bool TridiagonalMatrix< Real, Device, Index >::save( const String& fileName ) co
 template< typename Real,
           typename Device,
           typename Index >
-bool TridiagonalMatrix< Real, Device, Index >::load( const String& fileName )
+bool Tridiagonal< Real, Device, Index >::load( const String& fileName )
 {
    return Object::load( fileName );
 }
@@ -576,7 +576,7 @@ bool TridiagonalMatrix< Real, Device, Index >::load( const String& fileName )
 template< typename Real,
           typename Device,
           typename Index >
-void TridiagonalMatrix< Real, Device, Index >::print( std::ostream& str ) const
+void Tridiagonal< Real, Device, Index >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -592,7 +592,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Index TridiagonalMatrix< Real, Device, Index >::getElementIndex( const IndexType row,
+Index Tridiagonal< Real, Device, Index >::getElementIndex( const IndexType row,
                                                                     const IndexType column ) const
 {
    Assert( row >= 0 && column >= 0 && row < this->rows && column < this->rows,
@@ -600,11 +600,11 @@ Index TridiagonalMatrix< Real, Device, Index >::getElementIndex( const IndexType
                    << " row = " << row << " column = " << column );
    Assert( abs( row - column ) < 2,
               std::cerr << "row = " << row << " column = " << column << std::endl );
-   return TridiagonalMatrixDeviceDependentCode< Device >::getElementIndex( this->rows, row, column );
+   return TridiagonalDeviceDependentCode< Device >::getElementIndex( this->rows, row, column );
 }
 
 template<>
-class TridiagonalMatrixDeviceDependentCode< Devices::Host >
+class TridiagonalDeviceDependentCode< Devices::Host >
 {
    public:
 
@@ -644,7 +644,7 @@ class TridiagonalMatrixDeviceDependentCode< Devices::Host >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const TridiagonalMatrix< Real, Device, Index >& matrix,
+      static void vectorProduct( const Tridiagonal< Real, Device, Index >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
@@ -657,7 +657,7 @@ class TridiagonalMatrixDeviceDependentCode< Devices::Host >
 };
 
 template<>
-class TridiagonalMatrixDeviceDependentCode< Devices::Cuda >
+class TridiagonalDeviceDependentCode< Devices::Cuda >
 {
    public:
  
@@ -697,7 +697,7 @@ class TridiagonalMatrixDeviceDependentCode< Devices::Cuda >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const TridiagonalMatrix< Real, Device, Index >& matrix,
+      static void vectorProduct( const Tridiagonal< Real, Device, Index >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {

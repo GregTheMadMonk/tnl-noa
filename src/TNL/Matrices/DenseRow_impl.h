@@ -1,5 +1,5 @@
 /***************************************************************************
-                          DenseMatrixRow_impl.h  -  description
+                          DenseRow_impl.h  -  description
                              -------------------
     begin                : Dec 24, 2014
     copyright            : (C) 2014 by oberhuber
@@ -15,8 +15,8 @@ namespace Matrices {
 
 template< typename Real, typename Index >
 __cuda_callable__
-DenseMatrixRow< Real, Index >::
-DenseMatrixRow()
+DenseRow< Real, Index >::
+DenseRow()
 : values( 0 ),
   columns( 0 ),
   step( 0 )
@@ -25,8 +25,8 @@ DenseMatrixRow()
 
 template< typename Real, typename Index >
 __cuda_callable__
-DenseMatrixRow< Real, Index >::
-DenseMatrixRow( Real* values,
+DenseRow< Real, Index >::
+DenseRow( Real* values,
                    const Index columns,
                    const Index step )
 : values( values ),
@@ -38,7 +38,7 @@ DenseMatrixRow( Real* values,
 template< typename Real, typename Index >
 __cuda_callable__
 void
-DenseMatrixRow< Real, Index >::
+DenseRow< Real, Index >::
 bind( Real* values,
       const Index columns,
       const Index step )
@@ -51,7 +51,7 @@ bind( Real* values,
 template< typename Real, typename Index >
 __cuda_callable__
 void
-DenseMatrixRow< Real, Index >::
+DenseRow< Real, Index >::
 setElement( const Index& elementIndex,
             const Index& column,
             const Real& value )

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CSRMatrixTest.cpp  -  description
+                          CSRTest.cpp  -  description
                              -------------------
     begin                : Dec 10, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -13,16 +13,16 @@
 #include <cstdlib>
 
 #include "tnlSparseMatrixTester.h"
-#include <TNL/Matrices/CSRMatrix.h>
+#include <TNL/Matrices/CSR.h>
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::CSRMatrix< float, Devices::Host, int > > >() ||
-       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::CSRMatrix< double, Devices::Host, int > > >() ||
-       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::CSRMatrix< float, Devices::Host, long int > > >() ||
-       ! tnlUnitTestStarter :: run< SparseMatrixTester< Matrices::CSRMatrix< double, Devices::Host, long int > > >()
+   if( ! tnlUnitTestStarter :: run< SparseTester< Matrices::CSR< float, Devices::Host, int > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::CSR< double, Devices::Host, int > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::CSR< float, Devices::Host, long int > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::CSR< double, Devices::Host, long int > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

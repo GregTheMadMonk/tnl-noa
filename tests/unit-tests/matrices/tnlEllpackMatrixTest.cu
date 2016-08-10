@@ -10,7 +10,7 @@
 
 #include <TNL/tnlConfig.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Matrices/EllpackMatrix.h>
+#include <TNL/Matrices/Ellpack.h>
 #include <cstdlib>
 
 #include "tnlSparseMatrixTester.h"
@@ -19,8 +19,8 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter::run< SparseMatrixTester< EllpackMatrix< float, Devices::Cuda, int > > >() ||
-       ! tnlUnitTestStarter::run< SparseMatrixTester< EllpackMatrix< double, Devices::Cuda, int > > >()
+   if( ! tnlUnitTestStarter::run< SparseTester< Ellpack< float, Devices::Cuda, int > > >() ||
+       ! tnlUnitTestStarter::run< SparseTester< Ellpack< double, Devices::Cuda, int > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

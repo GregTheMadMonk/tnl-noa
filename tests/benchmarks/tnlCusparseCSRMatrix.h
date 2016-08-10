@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCusparseCSRMatrix.h  -  description
+                          tnlCusparseCSR.h  -  description
                              -------------------
     begin                : Jul 3, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -17,14 +17,14 @@
 namespace TNL {
 
 template< typename Real >
-class tnlCusparseCSRMatrixBase
+class tnlCusparseCSRBase
 {
    public:
       typedef Real RealType;
       typedef Devices::Cuda DeviceType;
-      typedef Matrices::CSRMatrix< RealType, Devices::Cuda, int > MatrixType;
+      typedef Matrices::CSR< RealType, Devices::Cuda, int > MatrixType;
 
-      tnlCusparseCSRMatrixBase()
+      tnlCusparseCSRBase()
       : matrix( 0 )
       {
       };
@@ -90,11 +90,11 @@ class tnlCusparseCSRMatrixBase
 
 
 template< typename Real >
-class tnlCusparseCSRMatrix
+class tnlCusparseCSR
 {};
 
 template<>
-class tnlCusparseCSRMatrix< double > : public tnlCusparseCSRMatrixBase< double >
+class tnlCusparseCSR< double > : public tnlCusparseCSRBase< double >
 {
    public:
 
@@ -122,7 +122,7 @@ class tnlCusparseCSRMatrix< double > : public tnlCusparseCSRMatrixBase< double >
 };
 
 template<>
-class tnlCusparseCSRMatrix< float > : public tnlCusparseCSRMatrixBase< float >
+class tnlCusparseCSR< float > : public tnlCusparseCSRBase< float >
 {
    public:
 

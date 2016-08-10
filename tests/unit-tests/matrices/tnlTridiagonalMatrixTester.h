@@ -1,5 +1,5 @@
 /***************************************************************************
-                          DenseMatrixTester.h  -  description
+                          DenseTester.h  -  description
                              -------------------
     begin                : Dec 2, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TridiagonalMatrixTESTER_H_
-#define TridiagonalMatrixTESTER_H_
+#ifndef TridiagonalTESTER_H_
+#define TridiagonalTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -17,29 +17,29 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/Matrices/TridiagonalMatrix.h>
+#include <TNL/Matrices/Tridiagonal.h>
 #include <TNL/File.h>
 #include <TNL/Vectors/Vector.h>
 
 using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
-class TridiagonalMatrixTester : public CppUnit :: TestCase
+class TridiagonalTester : public CppUnit :: TestCase
 {
    public:
-   typedef Matrices::TridiagonalMatrix< RealType, Device, IndexType > MatrixType;
+   typedef Matrices::Tridiagonal< RealType, Device, IndexType > MatrixType;
    typedef Vectors::Vector< RealType, Device, IndexType > VectorType;
-   typedef TridiagonalMatrixTester< RealType, Device, IndexType > TesterType;
+   typedef TridiagonalTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   TridiagonalMatrixTester(){};
+   TridiagonalTester(){};
 
    virtual
-   ~TridiagonalMatrixTester(){};
+   ~TridiagonalTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "TridiagonalMatrixTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "TridiagonalTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
@@ -226,4 +226,4 @@ class TridiagonalMatrixTester : public CppUnit :: TestCase
 
 #endif /* HAVE_CPPUNIT */
 
-#endif /* TridiagonalMatrixTESTER_H_ */
+#endif /* TridiagonalTESTER_H_ */

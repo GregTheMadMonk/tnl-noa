@@ -1,5 +1,5 @@
 /***************************************************************************
-                          EllpackMatrixCUDA.h  -  description
+                          EllpackCUDA.h  -  description
                              -------------------
     begin                : Aug 1, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -8,13 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef EllpackMatrixCUDA_H_
-#define EllpackMatrixCUDA_H_
+#ifndef EllpackCUDA_H_
+#define EllpackCUDA_H_
 
-#include <TNL/Matrices/EllpackMatrix.h>
+#include <TNL/Matrices/Ellpack.h>
 
 template< typename Real, typename Index >
-class EllpackMatrix< Real, Devices::Cuda, Index > : public Matrix< Real, Devices::Cuda, Index >
+class Ellpack< Real, Devices::Cuda, Index > : public Matrix< Real, Devices::Cuda, Index >
 {
    public:
 
@@ -23,7 +23,7 @@ class EllpackMatrix< Real, Devices::Cuda, Index > : public Matrix< Real, Devices
    typedef Index IndexType;
 
    //! Basic constructor
-   EllpackMatrix( const String& name, Index _row );
+   Ellpack( const String& name, Index _row );
 
    const String& getMatrixClass() const;
 
@@ -55,7 +55,7 @@ class EllpackMatrix< Real, Devices::Cuda, Index > : public Matrix< Real, Devices
                       const Real& value )
    { abort(); };
 
-   bool copyFrom( const EllpackMatrix< Real, Devices::Host >& ellpack_matrix );
+   bool copyFrom( const Ellpack< Real, Devices::Host >& ellpack_matrix );
 
    Real getElement( Index row,
                     Index column ) const;
@@ -99,7 +99,7 @@ class EllpackMatrix< Real, Devices::Cuda, Index > : public Matrix< Real, Devices
 
 #ifdef HAVE_CUDA
 template< typename Real, typename Index >
-__global__ void sparseEllpackMatrixVectorProductKernel( Index size,
+__global__ void sparseEllpackVectorProductKernel( Index size,
                                                         Index row_length,
                                                         const Real* ellpack_nonzero_elements,
                                                         const Index* ellpack_columns,
@@ -130,7 +130,7 @@ __global__ void sparseEllpackMatrixVectorProductKernel( Index size,
 
 
 template< typename Real, typename Index >
-EllpackMatrix< Real, Devices::Cuda, Index > :: EllpackMatrix( const String& name, Index _row_length )
+Ellpack< Real, Devices::Cuda, Index > :: Ellpack( const String& name, Index _row_length )
 : Matrix< Real >( name ),
   ellpack_nonzero_elements( "ellpack-nonzero-elements" ),
   ellpack_columns( "ellpack-columns" ),
@@ -145,19 +145,19 @@ EllpackMatrix< Real, Devices::Cuda, Index > :: EllpackMatrix( const String& name
 };
 
 template< typename Real, typename Index >
-const String& EllpackMatrix< Real, Devices::Cuda, Index > :: getMatrixClass() const
+const String& Ellpack< Real, Devices::Cuda, Index > :: getMatrixClass() const
 {
    return MatrixClass :: main;
 };
 
 template< typename Real, typename Index >
-String EllpackMatrix< Real, Devices::Cuda, Index > :: getType() const
+String Ellpack< Real, Devices::Cuda, Index > :: getType() const
 {
-   return String( "EllpackMatrix< ") + String( getType( Real( 0.0 ) ) ) + String( ", Devices::Cuda >" );
+   return String( "Ellpack< ") + String( getType( Real( 0.0 ) ) ) + String( ", Devices::Cuda >" );
 };
 
 template< typename Real, typename Index >
-bool EllpackMatrix< Real, Devices::Cuda, Index > :: setSize( Index new_size )
+bool Ellpack< Real, Devices::Cuda, Index > :: setSize( Index new_size )
 {
    this->size = new_size;
    if( ! ellpack_nonzero_elements. setSize( new_size * row_length ) )
@@ -170,19 +170,19 @@ bool EllpackMatrix< Real, Devices::Cuda, Index > :: setSize( Index new_size )
 };
 
 template< typename Real, typename Index >
-Index EllpackMatrix< Real, Devices::Cuda, Index > :: getRowLength() const
+Index Ellpack< Real, Devices::Cuda, Index > :: getRowLength() const
 {
    return row_length;
 }
 
 template< typename Real, typename Index >
-bool EllpackMatrix< Real, Devices::Cuda, Index > :: setNonzeroElements( Index elements )
+bool Ellpack< Real, Devices::Cuda, Index > :: setNonzeroElements( Index elements )
 {
    return true;
 }
 
 template< typename Real, typename Index >
-bool EllpackMatrix< Real, Devices::Cuda, Index > :: setNonzeroCOOElements( Index elements )
+bool Ellpack< Real, Devices::Cuda, Index > :: setNonzeroCOOElements( Index elements )
 {
    if( ! coo_nonzero_elements. setSize( elements ) ||
       ! coo_rows. setSize( elements ) ||
@@ -196,7 +196,7 @@ bool EllpackMatrix< Real, Devices::Cuda, Index > :: setNonzeroCOOElements( Index
 };
 
 template< typename Real, typename Index >
-void EllpackMatrix< Real, Devices::Cuda, Index > :: reset()
+void Ellpack< Real, Devices::Cuda, Index > :: reset()
 {
    ellpack_nonzero_elements. reset();
    ellpack_columns. reset();
@@ -209,21 +209,21 @@ void EllpackMatrix< Real, Devices::Cuda, Index > :: reset()
 };
 
 template< typename Real, typename Index >
-Index EllpackMatrix< Real, Devices::Cuda, Index > :: getNonzeroElements() const
+Index Ellpack< Real, Devices::Cuda, Index > :: getNonzeroElements() const
 {
    return coo_nonzero_elements. getSize() + ellpack_nonzero_elements. getSize() - artificial_zeros;
 };
 
 template< typename Real, typename Index >
-Index EllpackMatrix< Real, Devices::Cuda, Index > :: getArtificialZeroElements() const
+Index Ellpack< Real, Devices::Cuda, Index > :: getArtificialZeroElements() const
 {
    return artificial_zeros;
 };
 
 template< typename Real, typename Index >
-bool EllpackMatrix< Real, Devices::Cuda, Index > :: copyFrom( const EllpackMatrix< Real, Devices::Host >& ellpack_matrix )
+bool Ellpack< Real, Devices::Cuda, Index > :: copyFrom( const Ellpack< Real, Devices::Host >& ellpack_matrix )
 {
-   dbgFunctionName( "EllpackMatrix< Real, Devices::Cuda >", "copyFrom" );
+   dbgFunctionName( "Ellpack< Real, Devices::Cuda >", "copyFrom" );
 
    row_length = ellpack_matrix. getRowLength();
    if( ! this->setSize( ellpack_matrix. getSize() ) )
@@ -241,14 +241,14 @@ bool EllpackMatrix< Real, Devices::Cuda, Index > :: copyFrom( const EllpackMatri
 };
 
 template< typename Real, typename Index >
-Real EllpackMatrix< Real, Devices::Cuda, Index > :: getElement( Index row,
+Real Ellpack< Real, Devices::Cuda, Index > :: getElement( Index row,
                                                              Index column ) const
 {
 	Assert( false, );
 };
 
 template< typename Real, typename Index >
-void EllpackMatrix< Real, Devices::Cuda, Index > :: vectorProduct( const Vector< Real, Devices::Cuda, Index >& x,
+void Ellpack< Real, Devices::Cuda, Index > :: vectorProduct( const Vector< Real, Devices::Cuda, Index >& x,
                                                                 Vector< Real, Devices::Cuda, Index >& b ) const
 {
    Assert( x. getSize() == this->getSize(),
@@ -260,7 +260,7 @@ void EllpackMatrix< Real, Devices::Cuda, Index > :: vectorProduct( const Vector<
                    << "The matrix size is " << this->getSize() << "."
                    << "The vector size is " << b. getSize() << std::endl; );
 #ifdef HAVE_CUDA
-	sparseEllpackMatrixVectorProductKernelCaller( this->getSize(),
+	sparseEllpackVectorProductKernelCaller( this->getSize(),
 	                                       row_length,
 	                                       ellpack_nonzero_elements. getData(),
 	                                       ellpack_columns. getData(),
@@ -272,7 +272,7 @@ void EllpackMatrix< Real, Devices::Cuda, Index > :: vectorProduct( const Vector<
 };
 
 template< typename Real, typename Index >
-Real EllpackMatrix< Real, Devices::Cuda, Index > :: rowProduct( Index row,
+Real Ellpack< Real, Devices::Cuda, Index > :: rowProduct( Index row,
                                                              const Vector< Real, Devices::Cuda, Index >& vector ) const
 {
    Assert( vector. getSize() == this->getSize(),
@@ -284,9 +284,9 @@ Real EllpackMatrix< Real, Devices::Cuda, Index > :: rowProduct( Index row,
 };
 
 template< typename Real, typename Index >
-void EllpackMatrix< Real, Devices::Cuda, Index > :: printOut( std::ostream& str ) const
+void Ellpack< Real, Devices::Cuda, Index > :: printOut( std::ostream& str ) const
 {
 	Assert( false, );
 };
 
-#endif /* EllpackMatrixCUDA_H_ */
+#endif /* EllpackCUDA_H_ */

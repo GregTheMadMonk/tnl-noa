@@ -1,8 +1,8 @@
 /***************************************************************************
-                          EllpackMatrix.h  -  description
+                          Multidiagonal.h  -  description
                              -------------------
-    begin                : Dec 7, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Oct 13, 2011
+    copyright            : (C) 2011 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -10,33 +10,33 @@
 
 #pragma once
 
-#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Matrices/Matrix.h>
 #include <TNL/Vectors/Vector.h>
+#include <TNL/Matrices/MultidiagonalRow.h>
 
 namespace TNL {
 namespace Matrices {   
 
 template< typename Device >
-class EllpackMatrixDeviceDependentCode;
+class MultidiagonalDeviceDependentCode;
 
 template< typename Real, typename Device = Devices::Host, typename Index = int >
-class EllpackMatrix : public SparseMatrix< Real, Device, Index >
+class Multidiagonal : public Matrix< Real, Device, Index >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename SparseMatrix< RealType, DeviceType, IndexType >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
-   typedef typename SparseMatrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
-   typedef typename SparseMatrix< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-   typedef EllpackMatrix< Real, Device, Index > ThisType;
-   typedef EllpackMatrix< Real, Devices::Host, Index > HostType;
-   typedef EllpackMatrix< Real, Devices::Cuda, Index > CudaType;
-   typedef SparseMatrix< Real, Device, Index > BaseType;
-   typedef typename BaseType::MatrixRow MatrixRow;
+   typedef typename Matrix< Real, Device, Index >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
+   typedef Multidiagonal< Real, Device, Index > ThisType;
+   typedef Multidiagonal< Real, Devices::Host, Index > HostType;
+   typedef Multidiagonal< Real, Devices::Cuda, Index > CudaType;
+   typedef Matrix< Real, Device, Index > BaseType;
+   typedef MultidiagonalRow< Real, Index > MatrixRow;
 
-   EllpackMatrix();
+
+   Multidiagonal();
 
    static String getType();
 
@@ -47,24 +47,33 @@ class EllpackMatrix : public SparseMatrix< Real, Device, Index >
 
    bool setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths );
 
-   bool setConstantCompressedRowsLengths( const IndexType& rowLengths );
-
    IndexType getRowLength( const IndexType row ) const;
 
+   IndexType getMaxRowLength() const;
+
+   template< typename Vector >
+   bool setDiagonals( const Vector& diagonals );
+
+   const Vectors::Vector< Index, Device, Index >& getDiagonals() const;
+
    template< typename Real2, typename Device2, typename Index2 >
-   bool setLike( const EllpackMatrix< Real2, Device2, Index2 >& matrix );
+   bool setLike( const Multidiagonal< Real2, Device2, Index2 >& matrix );
+
+   IndexType getNumberOfMatrixElements() const;
+
+   IndexType getNumberOfNonzeroMatrixElements() const;
+
+   IndexType getMaxRowlength() const;
 
    void reset();
- 
-   template< typename Real2, typename Device2, typename Index2 >
-   bool operator == ( const EllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   bool operator != ( const EllpackMatrix< Real2, Device2, Index2 >& matrix ) const;
+   bool operator == ( const Multidiagonal< Real2, Device2, Index2 >& matrix ) const;
 
-   /*template< typename Matrix >
-   bool copyFrom( const Matrix& matrix,
-                  const CompressedRowsLengthsVector& rowLengths );*/
+   template< typename Real2, typename Device2, typename Index2 >
+   bool operator != ( const Multidiagonal< Real2, Device2, Index2 >& matrix ) const;
+
+   void setValue( const RealType& v );
 
    __cuda_callable__
    bool setElementFast( const IndexType row,
@@ -89,14 +98,14 @@ class EllpackMatrix : public SparseMatrix< Real, Device, Index >
 
    __cuda_callable__
    bool setRowFast( const IndexType row,
-                    const IndexType* columnIndexes,
+                    const IndexType* columns,
                     const RealType* values,
-                    const IndexType elements );
+                    const IndexType numberOfElements );
 
    bool setRow( const IndexType row,
-                const IndexType* columnIndexes,
+                const IndexType* columns,
                 const RealType* values,
-                const IndexType elements );
+                const IndexType numberOfElements );
 
 
    __cuda_callable__
@@ -124,6 +133,10 @@ class EllpackMatrix : public SparseMatrix< Real, Device, Index >
                     IndexType* columns,
                     RealType* values ) const;
 
+   /*void getRow( const IndexType row,
+                IndexType* columns,
+                RealType* values ) const;*/
+
    __cuda_callable__
    MatrixRow getRow( const IndexType rowIndex );
 
@@ -141,12 +154,12 @@ class EllpackMatrix : public SparseMatrix< Real, Device, Index >
                        OutVector& outVector ) const;
 
    template< typename Real2, typename Index2 >
-   void addMatrix( const EllpackMatrix< Real2, Device, Index2 >& matrix,
+   void addMatrix( const Multidiagonal< Real2, Device, Index2 >& matrix,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
    template< typename Real2, typename Index2 >
-   void getTransposition( const EllpackMatrix< Real2, Device, Index2 >& matrix,
+   void getTransposition( const Multidiagonal< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector >
@@ -167,15 +180,26 @@ class EllpackMatrix : public SparseMatrix< Real, Device, Index >
 
    protected:
 
-   bool allocateElements();
+   bool getElementIndex( const IndexType row,
+                         const IndexType column,
+                         IndexType& index ) const;
 
-   IndexType rowLengths, alignedRows;
+   __cuda_callable__
+   bool getElementIndexFast( const IndexType row,
+                             const IndexType column,
+                             IndexType& index ) const;
 
-   typedef EllpackMatrixDeviceDependentCode< DeviceType > DeviceDependentCode;
-   friend class EllpackMatrixDeviceDependentCode< DeviceType >;
+   Vectors::Vector< Real, Device, Index > values;
+
+   Vectors::Vector< Index, Device, Index > diagonalsShift;
+
+   typedef MultidiagonalDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class MultidiagonalDeviceDependentCode< DeviceType >;
+
+
 };
 
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/EllpackMatrix_impl.h>
+#include <TNL/Matrices/Multidiagonal_impl.h>

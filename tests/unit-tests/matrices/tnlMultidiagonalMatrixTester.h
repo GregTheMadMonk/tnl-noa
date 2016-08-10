@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MultidiagonalMatrixTester.h  -  description
+                          MultidiagonalTester.h  -  description
                              -------------------
     begin                : Dec 4, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef MultidiagonalMatrixTESTER_H_
-#define MultidiagonalMatrixTESTER_H_
+#ifndef MultidiagonalTESTER_H_
+#define MultidiagonalTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -17,7 +17,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/Matrices/MultidiagonalMatrix.h>
+#include <TNL/Matrices/Multidiagonal.h>
 #include <TNL/File.h>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Vectors/SharedVector.h>
@@ -25,22 +25,22 @@
 using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
-class MultidiagonalMatrixTester : public CppUnit :: TestCase
+class MultidiagonalTester : public CppUnit :: TestCase
 {
    public:
-   typedef Matrices::MultidiagonalMatrix< RealType, Device, IndexType > MatrixType;
+   typedef Matrices::Multidiagonal< RealType, Device, IndexType > MatrixType;
    typedef Vectors::Vector< RealType, Device, IndexType > VectorType;
-   typedef MultidiagonalMatrixTester< RealType, Device, IndexType > TesterType;
+   typedef MultidiagonalTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   MultidiagonalMatrixTester(){};
+   MultidiagonalTester(){};
 
    virtual
-   ~MultidiagonalMatrixTester(){};
+   ~MultidiagonalTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "TridiagonalMatrixTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "TridiagonalTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
@@ -239,4 +239,4 @@ class MultidiagonalMatrixTester : public CppUnit :: TestCase
 
 #endif
 
-#endif /* MultidiagonalMatrixTESTER_H_ */
+#endif /* MultidiagonalTESTER_H_ */

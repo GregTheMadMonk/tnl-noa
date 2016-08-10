@@ -32,7 +32,7 @@ class SolverTesterProblem
    typedef typename Mesh :: IndexType IndexType;
    typedef Mesh MeshType;
    typedef Vectors::Vector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef Matrices::CSRMatrix< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
+   typedef Matrices::CSR< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
    typedef Solvers::Linear::Preconditioners::Dummy< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
 
    static String getTypeStatic() { return String( "simpleProblemSolver< " ) + Mesh :: getTypeStatic() + " >"; };

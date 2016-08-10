@@ -11,7 +11,7 @@
 #ifndef TNLSPMVBENCHMARKBASE_H_
 #define TNLSPMVBENCHMARKBASE_H_
 
-#include <TNL/Matrices/CSRMatrix.h>
+#include <TNL/Matrices/CSR.h>
 #include <TNL/TimerRT.h>
 #include <TNL/core/mfuncs.h>
 
@@ -46,7 +46,7 @@ class tnlSpmvBenchmarkBase
 
    void writeProgressTableHeader();
 
-   virtual bool setup( const CSRMatrix< RealType, Devices::Host, IndexType >& matrix ) = 0;
+   virtual bool setup( const CSR< RealType, Devices::Host, IndexType >& matrix ) = 0;
 
    virtual void tearDown() = 0;
 
@@ -64,7 +64,7 @@ class tnlSpmvBenchmarkBase
    virtual void writeToLogTable( std::ostream& logFile,
                                  const double& csrGflops,
                                  const String& inputMtxFile,
-                                 const CSRMatrix< RealType, Devices::Host, IndexType >& csrMatrix,
+                                 const CSR< RealType, Devices::Host, IndexType >& csrMatrix,
                                  bool writeMatrixInfo  ) const = 0;
 
    protected:

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFastRgCSRMatrix.h  -  description
+                          tnlFastRgCSR.h  -  description
                              -------------------
     begin                : Jul 10, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -17,11 +17,11 @@
 #include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/Matrices/Matrix.h>
-#include <TNL/legacy/matrices/tnlFastRgCSRMatrix.h>
+#include <TNL/legacy/matrices/tnlFastRgCSR.h>
 #include <TNL/debug/tnlDebug.h>
 
 #ifdef HAVE_CUDA
-void sparseFastCSRMatrixVectorProductKernelCaller( int size,
+void sparseFastCSRVectorProductKernelCaller( int size,
  												   int block_size,
 												   const int* columns_sequences_blocks_offsets,
 												   const int* columns_sequences_offsets,
@@ -33,7 +33,7 @@ void sparseFastCSRMatrixVectorProductKernelCaller( int size,
 												   const float* vec_x,
 												   float* vec_b );
 
-void sparseFastCSRMatrixVectorProductKernelCaller( int size,
+void sparseFastCSRVectorProductKernelCaller( int size,
 										           int block_size,
 												   const int* columns_sequences_blocks_offsets,
 												   const int* columns_sequences_offsets,
@@ -48,11 +48,11 @@ void sparseFastCSRMatrixVectorProductKernelCaller( int size,
 
 
 template< typename Real, typename Index >
-class tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > : public Matrix< Real, Devices::Cuda, Index >
+class tnlFastRgCSR< Real, Devices::Cuda, Index > : public Matrix< Real, Devices::Cuda, Index >
 {
    public:
    //! Basic constructor
-   tnlFastRgCSRMatrix( const char* name );
+   tnlFastRgCSR( const char* name );
 
    const String& getMatrixClass() const;
 
@@ -82,7 +82,7 @@ class tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > : public Matrix< Real, De
                       const Real& value )
    { abort(); };
 
-   bool copyFrom( const tnlFastRgCSRMatrix< Real, Devices::Host >& csr_matrix );
+   bool copyFrom( const tnlFastRgCSR< Real, Devices::Host >& csr_matrix );
 
    Real getElement( int row,
                     int column ) const;
@@ -164,15 +164,15 @@ class tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > : public Matrix< Real, De
 };
 
 template< typename Real, typename Index >
-tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: tnlFastRgCSRMatrix( const char* name )
+tnlFastRgCSR< Real, Devices::Cuda, Index > :: tnlFastRgCSR( const char* name )
    : Matrix< Real, Devices::Cuda, Index >( name ),
-     nonzero_elements( "tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: nonzero-elements" ),
-     block_offsets( "tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: block-offsets" ),
-     column_sequences( "tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: column-sequences" ),
-     columns_sequences_offsets( "tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: columns-sequences-offsets" ),
-     columns_sequences_blocks_offsets( "tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: columns-sequences-blocks-offsets" ),
-     column_sequences_in_block( "tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: columns-sequences-in-block" ),
-     column_sequences_lengths( "tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: column-sequences-lengths" ),
+     nonzero_elements( "tnlFastRgCSR< Real, Devices::Cuda, Index > :: nonzero-elements" ),
+     block_offsets( "tnlFastRgCSR< Real, Devices::Cuda, Index > :: block-offsets" ),
+     column_sequences( "tnlFastRgCSR< Real, Devices::Cuda, Index > :: column-sequences" ),
+     columns_sequences_offsets( "tnlFastRgCSR< Real, Devices::Cuda, Index > :: columns-sequences-offsets" ),
+     columns_sequences_blocks_offsets( "tnlFastRgCSR< Real, Devices::Cuda, Index > :: columns-sequences-blocks-offsets" ),
+     column_sequences_in_block( "tnlFastRgCSR< Real, Devices::Cuda, Index > :: columns-sequences-in-block" ),
+     column_sequences_lengths( "tnlFastRgCSR< Real, Devices::Cuda, Index > :: column-sequences-lengths" ),
      block_size( 0 ),
      artificial_zeros( 0 ),
      column_sequences_length( 0 )
@@ -180,19 +180,19 @@ tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: tnlFastRgCSRMatrix( const ch
 };
 
 template< typename Real, typename Index >
-const String& tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: getMatrixClass() const
+const String& tnlFastRgCSR< Real, Devices::Cuda, Index > :: getMatrixClass() const
 {
    return MatrixClass :: main;
 };
 
 template< typename Real, typename Index >
-String tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: getType() const
+String tnlFastRgCSR< Real, Devices::Cuda, Index > :: getType() const
 {
-   return String( "tnlFastRgCSRMatrix< ") + String( getType( Real( 0.0 ) ) ) + String( ", Devices::Cuda >" );
+   return String( "tnlFastRgCSR< ") + String( getType( Real( 0.0 ) ) ) + String( ", Devices::Cuda >" );
 };
 
 template< typename Real, typename Index >
-bool tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: setSize( int new_size )
+bool tnlFastRgCSR< Real, Devices::Cuda, Index > :: setSize( int new_size )
 {
    this->size = new_size;
    int blocks_number = this->size / block_size + ( this->size % block_size != 0 );
@@ -212,7 +212,7 @@ bool tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: setSize( int new_size )
 };
 
 template< typename Real, typename Index >
-bool tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: setNonzeroElements( int elements )
+bool tnlFastRgCSR< Real, Devices::Cuda, Index > :: setNonzeroElements( int elements )
 {
 /*   if( ! nonzero_elements. setSize( elements ) )
       return false;
@@ -222,7 +222,7 @@ bool tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: setNonzeroElements( int
 };
 
 template< typename Real, typename Index >
-void tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: reset()
+void tnlFastRgCSR< Real, Devices::Cuda, Index > :: reset()
 {
    nonzero_elements. reset();
    block_offsets. reset();
@@ -237,29 +237,29 @@ void tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: reset()
 };
 
 template< typename Real, typename Index >
-int tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: getNonzeroElements() const
+int tnlFastRgCSR< Real, Devices::Cuda, Index > :: getNonzeroElements() const
 {
    Assert( nonzero_elements. getSize() > artificial_zeros, );
    return nonzero_elements. getSize() - artificial_zeros;
 };
 
 template< typename Real, typename Index >
-int tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: getArtificialZeroElements() const
+int tnlFastRgCSR< Real, Devices::Cuda, Index > :: getArtificialZeroElements() const
 {
 	return artificial_zeros;
 };
 
 template< typename Real, typename Index >
-int tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: getMaxColumnSequenceDictionarySize() const
+int tnlFastRgCSR< Real, Devices::Cuda, Index > :: getMaxColumnSequenceDictionarySize() const
 {
 	return  max_column_sequences_block_size;
 };
 
 
 template< typename Real, typename Index >
-bool tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: copyFrom( const tnlFastRgCSRMatrix< Real, Devices::Host >& coa_fast_csr_matrix )
+bool tnlFastRgCSR< Real, Devices::Cuda, Index > :: copyFrom( const tnlFastRgCSR< Real, Devices::Host >& coa_fast_csr_matrix )
 {
-	dbgFunctionName( "tnlFastRgCSRMatrix< Real, Devices::Cuda >", "copyFrom" );
+	dbgFunctionName( "tnlFastRgCSR< Real, Devices::Cuda >", "copyFrom" );
 
 	if( coa_fast_csr_matrix. getMaxColumnSequenceDictionarySize() > 10240 / 4 )
 	{
@@ -294,7 +294,7 @@ bool tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: copyFrom( const tnlFast
 };
 
 template< typename Real, typename Index >
-Real tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: getElement( int row,
+Real tnlFastRgCSR< Real, Devices::Cuda, Index > :: getElement( int row,
                                                         int column ) const
 {
     Assert( 0 <= row && row < this->getSize(),
@@ -306,7 +306,7 @@ Real tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: getElement( int row,
 }
 
 template< typename Real, typename Index >
-Real tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: rowProduct( int row,
+Real tnlFastRgCSR< Real, Devices::Cuda, Index > :: rowProduct( int row,
                                                                const Vector< Real, Devices::Cuda, Index >& vec ) const
 {
    Assert( 0 <= row && row < this->getSize(),
@@ -317,13 +317,13 @@ Real tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: rowProduct( int row,
 }
 
 template< typename Real, typename Index >
-void tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: vectorProduct( const Vector< Real, Devices::Cuda, Index >& vec,
+void tnlFastRgCSR< Real, Devices::Cuda, Index > :: vectorProduct( const Vector< Real, Devices::Cuda, Index >& vec,
                                                                   Vector< Real, Devices::Cuda, Index >& result ) const
 {
    Assert( vec != NULL && result != NULL,);
 
 #ifdef HAVE_CUDA
-	/*sparseFastCSRMatrixVectorProductKernel( this->getSize(),
+	/*sparseFastCSRVectorProductKernel( this->getSize(),
 	                                              block_size,
 	                                              columns_sequences_blocks_offsets. getData(),
 	                                              columns_sequences_offsets. getData(),
@@ -342,11 +342,11 @@ void tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: vectorProduct( const Ve
 
 
 template< typename Real, typename Index >
-void tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: printOut( std::ostream& str,
+void tnlFastRgCSR< Real, Devices::Cuda, Index > :: printOut( std::ostream& str,
                                                              const String& name,
 		                                                       const int lines ) const
 {
-   str << "Structure of tnlFastRgCSRMatrix" << std::endl;
+   str << "Structure of tnlFastRgCSR" << std::endl;
    str << "Matrix name:" << name << std::endl;
    str << "Matrix size:" << this->getSize() << std::endl;
    str << "Allocated elements:" << nonzero_elements. getSize() << std::endl;
@@ -399,7 +399,7 @@ void tnlFastRgCSRMatrix< Real, Devices::Cuda, Index > :: printOut( std::ostream&
 #ifdef HAVE_CUDA
 
 template< typename Real, typename Index >
-__global__ void sparseFastCSRMatrixVectorProductKernel( int size,
+__global__ void sparseFastCSRVectorProductKernel( int size,
                                                       int block_size,
                                                       const int* columns_sequences_blocks_offsets,
                                                       const int* columns_sequences_offsets,

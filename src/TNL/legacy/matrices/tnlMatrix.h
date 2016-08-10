@@ -35,7 +35,7 @@ class MatrixClass
    static const String cusparse;
 };
 
-template< typename Real, typename device, typename Index > class CSRMatrix;
+template< typename Real, typename device, typename Index > class CSR;
 
 template< typename Real, typename Device = Devices::Host, typename Index = int >
 class Matrix : public Object
@@ -134,11 +134,11 @@ class Matrix : public Object
 
    /****
     * If we draw sparse matrix it is much faster if we now positions of the non-zero elements.
-    * They are best accessible from the CSR format. Therefore we may pass pointer to CSRMatrix.
+    * They are best accessible from the CSR format. Therefore we may pass pointer to CSR.
     */
    virtual bool draw( std::ostream& str,
 		                const String& format,
-		                CSRMatrix< Real, Device, Index >* csrMatrix = 0,
+		                CSR< Real, Device, Index >* csrMatrix = 0,
 		                int verbose = 0 );
 
    virtual void printOut( std::ostream& stream,
@@ -455,7 +455,7 @@ bool Matrix< Real, Device, Index > :: sortRowsDecreasingly( Vector< Index, Devic
 template< typename Real, typename Device, typename Index >
 bool Matrix< Real, Device, Index > :: draw( std::ostream& str,
 		                                         const String& format,
-		                                         CSRMatrix< Real, Device, Index >* csrMatrix,
+		                                         CSR< Real, Device, Index >* csrMatrix,
 		                                         int verbose )
 {
 	if( format == "gnuplot" )

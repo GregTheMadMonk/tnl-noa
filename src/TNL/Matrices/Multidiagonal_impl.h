@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MultidiagonalMatrix.h  -  description
+                          Multidiagonal.h  -  description
                              -------------------
     begin                : Dec 4, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/MultidiagonalMatrix.h>
+#include <TNL/Matrices/Multidiagonal.h>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/core/mfuncs.h>
 
@@ -18,21 +18,21 @@ namespace TNL {
 namespace Matrices {   
 
 template< typename Device >
-class MultidiagonalMatrixDeviceDependentCode;
+class MultidiagonalDeviceDependentCode;
 
 template< typename Real,
           typename Device,
           typename Index >
-MultidiagonalMatrix< Real, Device, Index > :: MultidiagonalMatrix()
+Multidiagonal< Real, Device, Index > :: Multidiagonal()
 {
 };
 
 template< typename Real,
           typename Device,
           typename Index >
-String MultidiagonalMatrix< Real, Device, Index > :: getType()
+String Multidiagonal< Real, Device, Index > :: getType()
 {
-   return String( "MultidiagonalMatrix< ") +
+   return String( "Multidiagonal< ") +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
           Device :: getDeviceType() +
@@ -42,7 +42,7 @@ String MultidiagonalMatrix< Real, Device, Index > :: getType()
 template< typename Real,
           typename Device,
           typename Index >
-String MultidiagonalMatrix< Real, Device, Index >::getTypeVirtual() const
+String Multidiagonal< Real, Device, Index >::getTypeVirtual() const
 {
    return this->getType();
 }
@@ -50,7 +50,7 @@ String MultidiagonalMatrix< Real, Device, Index >::getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-bool MultidiagonalMatrix< Real, Device, Index >::setDimensions( const IndexType rows,
+bool Multidiagonal< Real, Device, Index >::setDimensions( const IndexType rows,
                                                                    const IndexType columns )
 {
    Assert( rows > 0 && columns > 0,
@@ -70,7 +70,7 @@ bool MultidiagonalMatrix< Real, Device, Index >::setDimensions( const IndexType 
 template< typename Real,
           typename Device,
           typename Index >
-bool MultidiagonalMatrix< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
+bool Multidiagonal< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsLengthsVector& rowLengths )
 {
    /****
     * TODO: implement some check here similar to the one in the tridiagonal matrix
@@ -81,7 +81,7 @@ bool MultidiagonalMatrix< Real, Device, Index >::setCompressedRowsLengths( const
 template< typename Real,
           typename Device,
           typename Index >
-Index MultidiagonalMatrix< Real, Device, Index >::getRowLength( const IndexType row ) const
+Index Multidiagonal< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
    IndexType rowLength( 0 );
    for( IndexType i = 0; i < diagonalsShift.getSize(); i++ )
@@ -97,7 +97,7 @@ template< typename Real,
           typename Device,
           typename Index >
 Index
-MultidiagonalMatrix< Real, Device, Index >::
+Multidiagonal< Real, Device, Index >::
 getMaxRowLength() const
 {
    return diagonalsShift.getSize();
@@ -107,7 +107,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-bool MultidiagonalMatrix< Real, Device, Index > :: setDiagonals(  const Vector& diagonals )
+bool Multidiagonal< Real, Device, Index > :: setDiagonals(  const Vector& diagonals )
 {
    Assert( diagonals.getSize() > 0,
               std::cerr << "New number of diagonals = " << diagonals.getSize() << std::endl );
@@ -125,7 +125,7 @@ bool MultidiagonalMatrix< Real, Device, Index > :: setDiagonals(  const Vector& 
 template< typename Real,
           typename Device,
           typename Index >
-const Vectors::Vector< Index, Device, Index >& MultidiagonalMatrix< Real, Device, Index > :: getDiagonals() const
+const Vectors::Vector< Index, Device, Index >& Multidiagonal< Real, Device, Index > :: getDiagonals() const
 {
    return this->diagonalsShift;
 }
@@ -136,7 +136,7 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool MultidiagonalMatrix< Real, Device, Index > :: setLike( const MultidiagonalMatrix< Real2, Device2, Index2 >& matrix )
+bool Multidiagonal< Real, Device, Index > :: setLike( const Multidiagonal< Real2, Device2, Index2 >& matrix )
 {
    if( ! this->setDimensions( matrix.getRows(), matrix.getColumns() ) )
       return false;
@@ -148,7 +148,7 @@ bool MultidiagonalMatrix< Real, Device, Index > :: setLike( const MultidiagonalM
 template< typename Real,
           typename Device,
           typename Index >
-Index MultidiagonalMatrix< Real, Device, Index > :: getNumberOfMatrixElements() const
+Index Multidiagonal< Real, Device, Index > :: getNumberOfMatrixElements() const
 {
    return this->values.getSize();
 }
@@ -156,7 +156,7 @@ Index MultidiagonalMatrix< Real, Device, Index > :: getNumberOfMatrixElements() 
 template< typename Real,
           typename Device,
           typename Index >
-Index MultidiagonalMatrix< Real, Device, Index > :: getNumberOfNonzeroMatrixElements() const
+Index Multidiagonal< Real, Device, Index > :: getNumberOfNonzeroMatrixElements() const
 {
    IndexType nonzeroElements;
    for( IndexType i = 0; i < this->values.getSize(); i++ )
@@ -168,7 +168,7 @@ Index MultidiagonalMatrix< Real, Device, Index > :: getNumberOfNonzeroMatrixElem
 template< typename Real,
           typename Device,
           typename Index >
-void MultidiagonalMatrix< Real, Device, Index > :: reset()
+void Multidiagonal< Real, Device, Index > :: reset()
 {
    this->rows = 0;
    this->columns = 0;
@@ -181,7 +181,7 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool MultidiagonalMatrix< Real, Device, Index >::operator == ( const MultidiagonalMatrix< Real2, Device2, Index2 >& matrix ) const
+bool Multidiagonal< Real, Device, Index >::operator == ( const Multidiagonal< Real2, Device2, Index2 >& matrix ) const
 {
    Assert( this->getRows() == matrix.getRows() &&
               this->getColumns() == matrix.getColumns(),
@@ -199,7 +199,7 @@ template< typename Real,
    template< typename Real2,
              typename Device2,
              typename Index2 >
-bool MultidiagonalMatrix< Real, Device, Index >::operator != ( const MultidiagonalMatrix< Real2, Device2, Index2 >& matrix ) const
+bool Multidiagonal< Real, Device, Index >::operator != ( const Multidiagonal< Real2, Device2, Index2 >& matrix ) const
 {
    return ! ( ( *this ) == matrix );
 }
@@ -207,7 +207,7 @@ bool MultidiagonalMatrix< Real, Device, Index >::operator != ( const Multidiagon
 template< typename Real,
           typename Device,
           typename Index >
-void MultidiagonalMatrix< Real, Device, Index >::setValue( const RealType& v )
+void Multidiagonal< Real, Device, Index >::setValue( const RealType& v )
 {
    this->values.setValue( v );
 }
@@ -216,7 +216,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool MultidiagonalMatrix< Real, Device, Index > :: setElementFast( const IndexType row,
+bool Multidiagonal< Real, Device, Index > :: setElementFast( const IndexType row,
                                                                       const IndexType column,
                                                                       const Real& value )
 {
@@ -230,7 +230,7 @@ bool MultidiagonalMatrix< Real, Device, Index > :: setElementFast( const IndexTy
 template< typename Real,
           typename Device,
           typename Index >
-bool MultidiagonalMatrix< Real, Device, Index > :: setElement( const IndexType row,
+bool Multidiagonal< Real, Device, Index > :: setElement( const IndexType row,
                                                                   const IndexType column,
                                                                   const Real& value )
 {
@@ -246,7 +246,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool MultidiagonalMatrix< Real, Device, Index > :: addElementFast( const IndexType row,
+bool Multidiagonal< Real, Device, Index > :: addElementFast( const IndexType row,
                                                                       const IndexType column,
                                                                       const RealType& value,
                                                                       const RealType& thisElementMultiplicator )
@@ -262,7 +262,7 @@ bool MultidiagonalMatrix< Real, Device, Index > :: addElementFast( const IndexTy
 template< typename Real,
           typename Device,
           typename Index >
-bool MultidiagonalMatrix< Real, Device, Index > :: addElement( const IndexType row,
+bool Multidiagonal< Real, Device, Index > :: addElement( const IndexType row,
                                                                   const IndexType column,
                                                                   const RealType& value,
                                                                   const RealType& thisElementMultiplicator )
@@ -278,7 +278,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool MultidiagonalMatrix< Real, Device, Index > :: setRowFast( const IndexType row,
+bool Multidiagonal< Real, Device, Index > :: setRowFast( const IndexType row,
                                                                   const IndexType* columns,
                                                                   const RealType* values,
                                                                   const IndexType numberOfElements )
@@ -289,7 +289,7 @@ bool MultidiagonalMatrix< Real, Device, Index > :: setRowFast( const IndexType r
 template< typename Real,
           typename Device,
           typename Index >
-bool MultidiagonalMatrix< Real, Device, Index > :: setRow( const IndexType row,
+bool Multidiagonal< Real, Device, Index > :: setRow( const IndexType row,
                                                               const Index* columns,
                                                               const Real* values,
                                                               const Index numberOfElements )
@@ -302,7 +302,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool MultidiagonalMatrix< Real, Device, Index > :: addRowFast( const IndexType row,
+bool Multidiagonal< Real, Device, Index > :: addRowFast( const IndexType row,
                                                                   const IndexType* columns,
                                                                   const RealType* values,
                                                                   const IndexType numberOfElements,
@@ -310,7 +310,7 @@ bool MultidiagonalMatrix< Real, Device, Index > :: addRowFast( const IndexType r
 {
    if( this->diagonalsShift.getSize() < numberOfElements )
       return false;
-   typedef MultidiagonalMatrixDeviceDependentCode< Device > DDCType;
+   typedef MultidiagonalDeviceDependentCode< Device > DDCType;
    const IndexType elements = min( this->diagonalsShift.getSize(), numberOfElements );
    IndexType i( 0 );
    while( i < elements )
@@ -333,7 +333,7 @@ bool MultidiagonalMatrix< Real, Device, Index > :: addRowFast( const IndexType r
 template< typename Real,
           typename Device,
           typename Index >
-bool MultidiagonalMatrix< Real, Device, Index > :: addRow( const IndexType row,
+bool Multidiagonal< Real, Device, Index > :: addRow( const IndexType row,
                                                               const Index* columns,
                                                               const Real* values,
                                                               const Index numberOfElements,
@@ -341,7 +341,7 @@ bool MultidiagonalMatrix< Real, Device, Index > :: addRow( const IndexType row,
 {
    if( this->diagonalsShift.getSize() < numberOfElements )
       return false;
-   typedef MultidiagonalMatrixDeviceDependentCode< Device > DDCType;
+   typedef MultidiagonalDeviceDependentCode< Device > DDCType;
    const IndexType elements = min( this->diagonalsShift.getSize(), numberOfElements );
    IndexType i( 0 );
    while( i < elements )
@@ -366,7 +366,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Real MultidiagonalMatrix< Real, Device, Index >::getElementFast( const IndexType row,
+Real Multidiagonal< Real, Device, Index >::getElementFast( const IndexType row,
                                                                     const IndexType column ) const
 {
    Index index;
@@ -378,7 +378,7 @@ Real MultidiagonalMatrix< Real, Device, Index >::getElementFast( const IndexType
 template< typename Real,
           typename Device,
           typename Index >
-Real MultidiagonalMatrix< Real, Device, Index >::getElement( const IndexType row,
+Real Multidiagonal< Real, Device, Index >::getElement( const IndexType row,
                                                                 const IndexType column ) const
 {
    Index index;
@@ -392,7 +392,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-void MultidiagonalMatrix< Real, Device, Index >::getRowFast( const IndexType row,
+void Multidiagonal< Real, Device, Index >::getRowFast( const IndexType row,
                                                                 IndexType* columns,
                                                                 RealType* values ) const
 {
@@ -413,8 +413,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-typename MultidiagonalMatrix< Real, Device, Index >::MatrixRow
-MultidiagonalMatrix< Real, Device, Index >::
+typename Multidiagonal< Real, Device, Index >::MatrixRow
+Multidiagonal< Real, Device, Index >::
 getRow( const IndexType rowIndex )
 {
    IndexType firstRowElement( 0 );
@@ -444,8 +444,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-const typename MultidiagonalMatrix< Real, Device, Index >::MatrixRow
-MultidiagonalMatrix< Real, Device, Index >::
+const typename Multidiagonal< Real, Device, Index >::MatrixRow
+Multidiagonal< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
    IndexType firstRowElement( 0 );
@@ -475,10 +475,10 @@ template< typename Real,
           typename Index >
    template< typename Vector >
 __cuda_callable__
-typename Vector::RealType MultidiagonalMatrix< Real, Device, Index >::rowVectorProduct( const IndexType row,
+typename Vector::RealType Multidiagonal< Real, Device, Index >::rowVectorProduct( const IndexType row,
                                                                                            const Vector& vector ) const
 {
-   typedef MultidiagonalMatrixDeviceDependentCode< Device > DDCType;
+   typedef MultidiagonalDeviceDependentCode< Device > DDCType;
    Real result = 0.0;
    for( Index i = 0;
         i < this->diagonalsShift.getSize();
@@ -500,7 +500,7 @@ template< typename Real,
           typename Index >
    template< typename InVector,
              typename OutVector >
-void MultidiagonalMatrix< Real, Device, Index >::vectorProduct( const InVector& inVector,
+void Multidiagonal< Real, Device, Index >::vectorProduct( const InVector& inVector,
                                                                    OutVector& outVector ) const
 {
    Assert( this->getColumns() == inVector.getSize(),
@@ -518,7 +518,7 @@ template< typename Real,
           typename Index >
    template< typename Real2,
              typename Index2 >
-void MultidiagonalMatrix< Real, Device, Index > :: addMatrix( const MultidiagonalMatrix< Real2, Device, Index2 >& matrix,
+void Multidiagonal< Real, Device, Index > :: addMatrix( const Multidiagonal< Real2, Device, Index2 >& matrix,
                                                                  const RealType& matrixMultiplicator,
                                                                  const RealType& thisMatrixMultiplicator )
 {
@@ -530,7 +530,7 @@ template< typename Real,
           typename Index >
    template< typename Real2,
              typename Index2 >
-void MultidiagonalMatrix< Real, Device, Index >::getTransposition( const MultidiagonalMatrix< Real2, Device, Index2 >& matrix,
+void Multidiagonal< Real, Device, Index >::getTransposition( const Multidiagonal< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
    Vectors::Vector< Index > auxDiagonals;
@@ -554,7 +554,7 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename Vector >
-bool MultidiagonalMatrix< Real, Device, Index > :: performSORIteration( const Vector& b,
+bool Multidiagonal< Real, Device, Index > :: performSORIteration( const Vector& b,
                                                                            const IndexType row,
                                                                            Vector& x,
                                                                            const RealType& omega ) const
@@ -594,7 +594,7 @@ bool MultidiagonalMatrix< Real, Device, Index > :: performSORIteration( const Ve
 template< typename Real,
           typename Device,
           typename Index >
-bool MultidiagonalMatrix< Real, Device, Index >::save( File& file ) const
+bool Multidiagonal< Real, Device, Index >::save( File& file ) const
 {
    if( ! Matrix< Real, Device, Index >::save( file ) ) return false;
    if( ! this->values.save( file ) ) return false;
@@ -605,7 +605,7 @@ bool MultidiagonalMatrix< Real, Device, Index >::save( File& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool MultidiagonalMatrix< Real, Device, Index >::load( File& file )
+bool Multidiagonal< Real, Device, Index >::load( File& file )
 {
    if( ! Matrix< Real, Device, Index >::load( file ) ) return false;
    if( ! this->values.load( file ) ) return false;
@@ -616,7 +616,7 @@ bool MultidiagonalMatrix< Real, Device, Index >::load( File& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool MultidiagonalMatrix< Real, Device, Index >::save( const String& fileName ) const
+bool Multidiagonal< Real, Device, Index >::save( const String& fileName ) const
 {
    return Object::save( fileName );
 }
@@ -624,7 +624,7 @@ bool MultidiagonalMatrix< Real, Device, Index >::save( const String& fileName ) 
 template< typename Real,
           typename Device,
           typename Index >
-bool MultidiagonalMatrix< Real, Device, Index >::load( const String& fileName )
+bool Multidiagonal< Real, Device, Index >::load( const String& fileName )
 {
    return Object::load( fileName );
 }
@@ -632,7 +632,7 @@ bool MultidiagonalMatrix< Real, Device, Index >::load( const String& fileName )
 template< typename Real,
           typename Device,
           typename Index >
-void MultidiagonalMatrix< Real, Device, Index >::print( std::ostream& str ) const
+void Multidiagonal< Real, Device, Index >::print( std::ostream& str ) const
 {
    for( IndexType row = 0; row < this->getRows(); row++ )
    {
@@ -650,7 +650,7 @@ void MultidiagonalMatrix< Real, Device, Index >::print( std::ostream& str ) cons
 template< typename Real,
           typename Device,
           typename Index >
-bool MultidiagonalMatrix< Real, Device, Index >::getElementIndex( const IndexType row,
+bool Multidiagonal< Real, Device, Index >::getElementIndex( const IndexType row,
                                                                      const IndexType column,
                                                                      Index& index ) const
 {
@@ -661,7 +661,7 @@ bool MultidiagonalMatrix< Real, Device, Index >::getElementIndex( const IndexTyp
             std::cerr << "column = " << column
                  << " this->columns = " << this->columns << std::endl );
 
-   typedef MultidiagonalMatrixDeviceDependentCode< Device > DDCType;
+   typedef MultidiagonalDeviceDependentCode< Device > DDCType;
    IndexType i( 0 );
    while( i < this->diagonalsShift.getSize() )
    {
@@ -679,7 +679,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-bool MultidiagonalMatrix< Real, Device, Index >::getElementIndexFast( const IndexType row,
+bool Multidiagonal< Real, Device, Index >::getElementIndexFast( const IndexType row,
                                                                          const IndexType column,
                                                                          Index& index ) const
 {
@@ -690,7 +690,7 @@ bool MultidiagonalMatrix< Real, Device, Index >::getElementIndexFast( const Inde
             std::cerr << "column = " << column
                  << " this->columns = " << this->columns << std::endl );
 
-   typedef MultidiagonalMatrixDeviceDependentCode< Device > DDCType;
+   typedef MultidiagonalDeviceDependentCode< Device > DDCType;
    IndexType i( 0 );
    while( i < this->diagonalsShift.getSize() )
    {
@@ -705,7 +705,7 @@ bool MultidiagonalMatrix< Real, Device, Index >::getElementIndexFast( const Inde
 }
 
 template<>
-class MultidiagonalMatrixDeviceDependentCode< Devices::Host >
+class MultidiagonalDeviceDependentCode< Devices::Host >
 {
    public:
 
@@ -725,7 +725,7 @@ class MultidiagonalMatrixDeviceDependentCode< Devices::Host >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const MultidiagonalMatrix< Real, Device, Index >& matrix,
+      static void vectorProduct( const Multidiagonal< Real, Device, Index >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
@@ -738,7 +738,7 @@ class MultidiagonalMatrixDeviceDependentCode< Devices::Host >
 };
 
 template<>
-class MultidiagonalMatrixDeviceDependentCode< Devices::Cuda >
+class MultidiagonalDeviceDependentCode< Devices::Cuda >
 {
    public:
 
@@ -758,7 +758,7 @@ class MultidiagonalMatrixDeviceDependentCode< Devices::Cuda >
                 typename Index,
                 typename InVector,
                 typename OutVector >
-      static void vectorProduct( const MultidiagonalMatrix< Real, Device, Index >& matrix,
+      static void vectorProduct( const Multidiagonal< Real, Device, Index >& matrix,
                                  const InVector& inVector,
                                  OutVector& outVector )
       {

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          DenseMatrixTester.h  -  description
+                          DenseTester.h  -  description
                              -------------------
     begin                : Nov 30, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef DenseMatrixTESTER_H_
-#define DenseMatrixTESTER_H_
+#ifndef DenseTESTER_H_
+#define DenseTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -17,17 +17,17 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/Matrices/DenseMatrix.h>
+#include <TNL/Matrices/Dense.h>
 #include <TNL/File.h>
 #include <TNL/Vectors/Vector.h>
 
 #ifdef HAVE_CUDA
 template< typename RealType, typename IndexType >
-__global__ void setElementFastTestKernel( DenseMatrix< RealType, Devices::Cuda, IndexType >* matrix );
+__global__ void setElementFastTestKernel( Dense< RealType, Devices::Cuda, IndexType >* matrix );
 template< typename RealType, typename IndexType >
-__global__ void addElementFastTestKernel( DenseMatrix< RealType, Devices::Cuda, IndexType >* matrix );
+__global__ void addElementFastTestKernel( Dense< RealType, Devices::Cuda, IndexType >* matrix );
 template< typename RealType, typename IndexType >
-__global__ void setRowFastTestKernel( DenseMatrix< RealType, Devices::Cuda, IndexType >* matrix,
+__global__ void setRowFastTestKernel( Dense< RealType, Devices::Cuda, IndexType >* matrix,
                                       const IndexType* columns,
                                       const RealType* values,
                                       const IndexType numberOfElements );
@@ -36,22 +36,22 @@ __global__ void setRowFastTestKernel( DenseMatrix< RealType, Devices::Cuda, Inde
 using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
-class DenseMatrixTester : public CppUnit :: TestCase
+class DenseTester : public CppUnit :: TestCase
 {
    public:
-   typedef Matrices::DenseMatrix< RealType, Device, IndexType > MatrixType;
+   typedef Matrices::Dense< RealType, Device, IndexType > MatrixType;
    typedef Vectors::Vector< RealType, Device, IndexType > VectorType;
-   typedef DenseMatrixTester< RealType, Device, IndexType > TesterType;
+   typedef DenseTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   DenseMatrixTester(){};
+   DenseTester(){};
 
    virtual
-   ~DenseMatrixTester(){};
+   ~DenseTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "DenseMatrixTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "DenseTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDimensionsTest", &TesterType::setDimensionsTest ) );
@@ -338,13 +338,13 @@ class DenseMatrixTester : public CppUnit :: TestCase
 
 #ifdef HAVE_CUDA
 template< typename RealType, typename IndexType >
-__global__ void setElementFastTestKernel( DenseMatrix< RealType, Devices::Cuda, IndexType >* matrix )
+__global__ void setElementFastTestKernel( Dense< RealType, Devices::Cuda, IndexType >* matrix )
 {
    if( threadIdx.x < matrix->getRows() )
       matrix->setElementFast( threadIdx.x, threadIdx.x, threadIdx.x );
 }
 template< typename RealType, typename IndexType >
-__global__ void addElementFastTestKernel( DenseMatrix< RealType, Devices::Cuda, IndexType >* matrix )
+__global__ void addElementFastTestKernel( Dense< RealType, Devices::Cuda, IndexType >* matrix )
 {
 
    const IndexType column = threadIdx.x;
@@ -353,7 +353,7 @@ __global__ void addElementFastTestKernel( DenseMatrix< RealType, Devices::Cuda, 
 }
 
 template< typename RealType, typename IndexType >
-__global__ void setRowFastTestKernel( DenseMatrix< RealType, Devices::Cuda, IndexType >* matrix,
+__global__ void setRowFastTestKernel( Dense< RealType, Devices::Cuda, IndexType >* matrix,
                                       const IndexType* columns,
                                       const RealType* values,
                                       const IndexType numberOfElements )
@@ -368,4 +368,4 @@ __global__ void setRowFastTestKernel( DenseMatrix< RealType, Devices::Cuda, Inde
 
 #endif /* HAVE_CPPUNIT */
 
-#endif /* DenseMatrixTESTER_H_ */
+#endif /* DenseTESTER_H_ */
