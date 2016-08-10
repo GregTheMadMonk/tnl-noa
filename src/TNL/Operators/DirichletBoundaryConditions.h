@@ -11,14 +11,14 @@
 #pragma once
 
 #include <TNL/Operators/Operator.h>
-#include <TNL/Functions/Analytic/ConstantFunction.h>
+#include <TNL/Functions/Analytic/Constant.h>
 #include <TNL/Functions/FunctionAdapter.h>
 
 namespace TNL {
 namespace Operators {
 
 template< typename Mesh,
-          typename Function = Functions::Analytic::ConstantFunction< Mesh::getMeshDimensions(), typename Mesh::RealType >,
+          typename Function = Functions::Analytic::Constant< Mesh::getMeshDimensions(), typename Mesh::RealType >,
           int MeshEntitiesDimensions = Mesh::getMeshDimensions(),
           typename Real = typename Mesh::RealType,
           typename Index = typename Mesh::IndexType >

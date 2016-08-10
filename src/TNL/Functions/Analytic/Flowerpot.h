@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExpBumpFunction.h  -  description
+                          ExpBump.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -21,7 +21,7 @@ namespace Analytic {
 
 template< typename Real,
           int Dimensions >
-class FlowerpotFunctionBase : public Domain< Dimensions, SpaceDomain >
+class FlowerpotBase : public Domain< Dimensions, SpaceDomain >
 {
    public:
 
@@ -41,12 +41,12 @@ class FlowerpotFunctionBase : public Domain< Dimensions, SpaceDomain >
 
 template< int Dimensions,
           typename Real >
-class FlowerpotFunction
+class Flowerpot
 {
 };
 
 template< typename Real >
-class FlowerpotFunction< 1, Real > : public FlowerpotFunctionBase< Real, 1 >
+class Flowerpot< 1, Real > : public FlowerpotBase< Real, 1 >
 {
    public:
 
@@ -56,7 +56,7 @@ class FlowerpotFunction< 1, Real > : public FlowerpotFunctionBase< Real, 1 >
 
       static String getType();
 
-      FlowerpotFunction();
+      Flowerpot();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -80,7 +80,7 @@ class FlowerpotFunction< 1, Real > : public FlowerpotFunctionBase< Real, 1 >
 };
 
 template< typename Real >
-class FlowerpotFunction< 2, Real > : public FlowerpotFunctionBase< Real, 2 >
+class Flowerpot< 2, Real > : public FlowerpotBase< Real, 2 >
 {
    public:
 
@@ -90,7 +90,7 @@ class FlowerpotFunction< 2, Real > : public FlowerpotFunctionBase< Real, 2 >
 
       static String getType();
 
-      FlowerpotFunction();
+      Flowerpot();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -114,7 +114,7 @@ class FlowerpotFunction< 2, Real > : public FlowerpotFunctionBase< Real, 2 >
 };
 
 template< typename Real >
-class FlowerpotFunction< 3, Real > : public FlowerpotFunctionBase< Real, 3 >
+class Flowerpot< 3, Real > : public FlowerpotBase< Real, 3 >
 {
    public:
 
@@ -124,7 +124,7 @@ class FlowerpotFunction< 3, Real > : public FlowerpotFunctionBase< Real, 3 >
 
       static String getType();
 
-      FlowerpotFunction();
+      Flowerpot();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -149,7 +149,7 @@ class FlowerpotFunction< 3, Real > : public FlowerpotFunctionBase< Real, 3 >
 
 template< int Dimensions,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const FlowerpotFunction< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const Flowerpot< Dimensions, Real >& f )
 {
    str << "Flowerpot function.";
    return str;
@@ -159,5 +159,5 @@ std::ostream& operator << ( std::ostream& str, const FlowerpotFunction< Dimensio
 } // namespace Functions
 } // namespace TNL
 
-#include <TNL/Functions/Analytic/FlowerpotFunction_impl.h>
+#include <TNL/Functions/Analytic/Flowerpot_impl.h>
 

@@ -12,7 +12,7 @@
 #define TNLPDEOPERATOREOCTESTSETTER_H_
 
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Functions/Analytic/ExpBumpFunction.h>
+#include <TNL/Functions/Analytic/ExpBump.h>
 
 using namespace TNL;
 
@@ -32,7 +32,7 @@ template< typename ApproximateOperator,
 class tnlPDEOperatorEocTestSetter< ApproximateOperator,
                                    ExactOperator,
                                    Meshes::Grid< 1, Real, Device, Index >,
-                                   ExpBumpFunction< 1, Real > >
+                                   ExpBump< 1, Real > >
 {
    public:
       typedef Real RealType;
@@ -43,7 +43,7 @@ class tnlPDEOperatorEocTestSetter< ApproximateOperator,
       typedef ApproximateOperator ApproximateOperatorType;
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef ExpBumpFunction< 1, Real > FunctionType;
+      typedef ExpBump< 1, Real > FunctionType;
 
    static void setMesh( MeshType& mesh,
                         const IndexType& size )
@@ -73,7 +73,7 @@ template< typename ApproximateOperator,
 class tnlPDEOperatorEocTestSetter< ApproximateOperator,
                                    ExactOperator,
                                    Meshes::Grid< 2, Real, Device, Index >,
-                                   ExpBumpFunction< 2, Real > >
+                                   ExpBump< 2, Real > >
 {
    public:
       typedef Real RealType;
@@ -84,7 +84,7 @@ class tnlPDEOperatorEocTestSetter< ApproximateOperator,
       typedef ApproximateOperator ApproximateOperatorType;
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef ExpBumpFunction< 2, Real > FunctionType;
+      typedef ExpBump< 2, Real > FunctionType;
 
    static void setMesh( MeshType& mesh,
                         const IndexType& size )
@@ -117,7 +117,7 @@ template< typename ApproximateOperator,
 class tnlPDEOperatorEocTestSetter< ApproximateOperator,
                                    ExactOperator,
                                    Meshes::Grid< 3, Real, Device, Index >,
-                                   ExpBumpFunction< 3, Real > >
+                                   ExpBump< 3, Real > >
 {
    public:
       typedef Real RealType;
@@ -128,7 +128,7 @@ class tnlPDEOperatorEocTestSetter< ApproximateOperator,
       typedef ApproximateOperator ApproximateOperatorType;
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef ExpBumpFunction< 3, Real > FunctionType;
+      typedef ExpBump< 3, Real > FunctionType;
 
    static void setMesh( MeshType& mesh,
                         const IndexType& size )

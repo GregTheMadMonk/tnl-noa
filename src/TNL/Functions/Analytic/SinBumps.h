@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExpBumpFunction.h  -  description
+                          SinBumps.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Vectors/StaticVector.h>
@@ -18,79 +18,52 @@ namespace TNL {
 namespace Functions {
 namespace Analytic {   
 
-template< int dimensions,
-          typename Real >
-class ExpBumpFunctionBase : public Domain< dimensions, SpaceDomain >
+template< typename Vertex >
+class SinBumpsBase : public Domain< Vertex::size, SpaceDomain >
 {
    public:
  
-      typedef Real RealType;
- 
-      ExpBumpFunctionBase();
- 
-      bool setup( const Config::ParameterContainer& parameters,
-                 const String& prefix = "" );
+      typedef Vertex VertexType;
+      typedef typename Vertex::RealType RealType;
+      enum { Dimensions = VertexType::size };
+
+      void setWaveLength( const VertexType& waveLength );
+
+      const VertexType& getWaveLength() const;
 
       void setAmplitude( const RealType& amplitude );
 
       const RealType& getAmplitude() const;
 
-      void setSigma( const RealType& sigma );
+      void setPhase( const VertexType& phase );
 
-      const RealType& getSigma() const;
+      const VertexType& getPhase() const;
 
    protected:
 
-      RealType amplitude, sigma;
+      RealType amplitude;
+
+      VertexType waveLength, phase;
 };
 
-template< int Dimensions,
-          typename Real >
-class ExpBumpFunction
+template< int Dimensions, typename Real >
+class SinBumps
 {
 };
 
 template< typename Real >
-class ExpBumpFunction< 1, Real > : public ExpBumpFunctionBase< 1, Real >
+class SinBumps< 1, Real  > : public SinBumpsBase< Vectors::StaticVector< 1, Real > >
 {
    public:
  
       typedef Real RealType;
       typedef Vectors::StaticVector< 1, RealType > VertexType;
 
-      static String getType();
 
-      ExpBumpFunction();
+      SinBumps();
 
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder >
-#else
-      template< int XDiffOrder = 0,
-                int YDiffOrder = 0,
-                int ZDiffOrder = 0 >
-#endif
-   __cuda_callable__
-   RealType getPartialDerivative( const VertexType& v,
-                                  const Real& time = 0.0 ) const;
- 
-   __cuda_callable__
-   RealType operator()( const VertexType& v,
-                        const RealType& time = 0.0 ) const;
-};
-
-template< typename Real >
-class ExpBumpFunction< 2, Real > : public ExpBumpFunctionBase< 2, Real >
-{
-   public:
- 
-      typedef Real RealType;
-      typedef Vectors::StaticVector< 2, RealType > VertexType;
-
-      static String getType();
-
-      ExpBumpFunction();
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -101,27 +74,29 @@ class ExpBumpFunction< 2, Real > : public ExpBumpFunctionBase< 2, Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
 #endif
-   __cuda_callable__ inline
-   RealType getPartialDerivative( const VertexType& v,
-                                  const Real& time = 0.0 ) const;
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
  
    __cuda_callable__
    RealType operator()( const VertexType& v,
                         const Real& time = 0.0 ) const;
+ 
 };
 
 template< typename Real >
-class ExpBumpFunction< 3, Real > : public ExpBumpFunctionBase< 3, Real >
+class SinBumps< 2, Real > : public SinBumpsBase< Vectors::StaticVector< 2, Real > >
 {
    public:
- 
+
       typedef Real RealType;
-      typedef Vectors::StaticVector< 3, RealType > VertexType;
-
+      typedef Vectors::StaticVector< 2, RealType > VertexType;
  
-      static String getType();
 
-      ExpBumpFunction();
+      SinBumps();
+
+      bool setup( const Config::ParameterContainer& parameters,
+                 const String& prefix = "" );
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -132,9 +107,41 @@ class ExpBumpFunction< 3, Real > : public ExpBumpFunctionBase< 3, Real >
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
 #endif
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
+ 
    __cuda_callable__
-   RealType getPartialDerivative( const VertexType& v,
-                                  const Real& time = 0.0 ) const;
+   RealType operator()( const VertexType& v,
+                        const Real& time = 0.0 ) const;
+ 
+};
+
+template< typename Real >
+class SinBumps< 3, Real > : public SinBumpsBase< Vectors::StaticVector< 3, Real > >
+{
+   public:
+
+      typedef Real RealType;
+      typedef Vectors::StaticVector< 3, RealType > VertexType;
+
+      SinBumps();
+
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" );
+
+#ifdef HAVE_NOT_CXX11
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+#else
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+#endif
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
+                         const Real& time = 0.0 ) const;
  
    __cuda_callable__
    RealType operator()( const VertexType& v,
@@ -144,9 +151,11 @@ class ExpBumpFunction< 3, Real > : public ExpBumpFunctionBase< 3, Real >
 
 template< int Dimensions,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const ExpBumpFunction< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const SinBumps< Dimensions, Real >& f )
 {
-   str << "ExpBump. function: amplitude = " << f.getAmplitude() << " sigma = " << f.getSigma();
+   str << "Sin Bumps. function: amplitude = " << f.getAmplitude()
+       << " wavelength = " << f.getWaveLength()
+       << " phase = " << f.getPhase();
    return str;
 }
 
@@ -154,6 +163,4 @@ std::ostream& operator << ( std::ostream& str, const ExpBumpFunction< Dimensions
 } // namespace Functions
 } // namespace TNL
 
-#include <TNL/Functions/Analytic/ExpBumpFunction_impl.h>
-
-
+#include <TNL/Functions/Analytic/SinBumps_impl.h>

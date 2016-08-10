@@ -135,7 +135,7 @@ template< typename Mesh,
           bool verbose >
 bool setTestFunction()
 {
-   return setDifferenceOperator< Mesh, Functions::Analytic::ExpBumpFunction< Mesh::getMeshDimensions(), double >, write, verbose >();
+   return setDifferenceOperator< Mesh, Functions::Analytic::ExpBump< Mesh::getMeshDimensions(), double >, write, verbose >();
 }
 
 template< typename Device,

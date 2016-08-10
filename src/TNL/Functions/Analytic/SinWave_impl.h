@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SinWaveFunction_impl.h  -  description
+                          SinWave_impl.h  -  description
                              -------------------
     begin                : Nov 19, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include <TNL/Functions/Analytic/SinWaveFunction.h>
+#include <TNL/Functions/Analytic/SinWave.h>
 
 namespace TNL {
 namespace Functions {
 namespace Analytic {   
 
 template< int dimensions, typename Real >
-SinWaveFunctionBase< dimensions, Real >::SinWaveFunctionBase()
+SinWaveBase< dimensions, Real >::SinWaveBase()
 : waveLength( 1.0 ),
   amplitude( 1.0 ),
   phase( 0 ),
@@ -26,7 +26,7 @@ SinWaveFunctionBase< dimensions, Real >::SinWaveFunctionBase()
 }
 
 template< int dimensions, typename Real >
-bool SinWaveFunctionBase< dimensions, Real >::setup( const Config::ParameterContainer& parameters,
+bool SinWaveBase< dimensions, Real >::setup( const Config::ParameterContainer& parameters,
                                            const String& prefix )
 {
    this->waveLength = parameters.getParameter< double >( prefix + "wave-length" );
@@ -37,37 +37,37 @@ bool SinWaveFunctionBase< dimensions, Real >::setup( const Config::ParameterCont
 }
 
 template< int dimensions, typename Real >
-void SinWaveFunctionBase< dimensions, Real >::setWaveLength( const Real& waveLength )
+void SinWaveBase< dimensions, Real >::setWaveLength( const Real& waveLength )
 {
    this->waveLength = waveLength;
 }
 
 template< int dimensions, typename Real >
-Real SinWaveFunctionBase< dimensions, Real >::getWaveLength() const
+Real SinWaveBase< dimensions, Real >::getWaveLength() const
 {
    return this->waveLength;
 }
 
 template< int dimensions, typename Real >
-void SinWaveFunctionBase< dimensions, Real >::setAmplitude( const Real& amplitude )
+void SinWaveBase< dimensions, Real >::setAmplitude( const Real& amplitude )
 {
    this->amplitude = amplitude;
 }
 
 template< int dimensions, typename Real >
-Real SinWaveFunctionBase< dimensions, Real >::getAmplitude() const
+Real SinWaveBase< dimensions, Real >::getAmplitude() const
 {
    return this->amplitude;
 }
 
 template< int dimensions, typename Real >
-void SinWaveFunctionBase< dimensions, Real >::setPhase( const Real& phase )
+void SinWaveBase< dimensions, Real >::setPhase( const Real& phase )
 {
    this->phase = phase;
 }
 
 template< int dimensions, typename Real >
-Real SinWaveFunctionBase< dimensions, Real >::getPhase() const
+Real SinWaveBase< dimensions, Real >::getPhase() const
 {
    return this->phase;
 }
@@ -80,7 +80,7 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-SinWaveFunction< 1, Real >::
+SinWave< 1, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -108,7 +108,7 @@ getPartialDerivative( const VertexType& v,
 template< typename Real >
 __cuda_callable__
 Real
-SinWaveFunction< 1, Real >::
+SinWave< 1, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {
@@ -123,7 +123,7 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-SinWaveFunction< 2, Real >::
+SinWave< 2, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -152,7 +152,7 @@ getPartialDerivative( const VertexType& v,
 template< typename Real >
 __cuda_callable__
 Real
-SinWaveFunction< 2, Real >::
+SinWave< 2, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {
@@ -166,7 +166,7 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-SinWaveFunction< 3, Real >::
+SinWave< 3, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -204,7 +204,7 @@ getPartialDerivative( const VertexType& v,
 template< typename Real >
 __cuda_callable__
 Real
-SinWaveFunction< 3, Real >::
+SinWave< 3, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {

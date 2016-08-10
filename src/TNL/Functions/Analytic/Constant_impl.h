@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ConstantFunction_impl.h  -  description
+                          Constant_impl.h  -  description
                              -------------------
     begin                : Aug 2, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -16,8 +16,8 @@ namespace Analytic {
 
 template< int Dimensions,
           typename Real >
-ConstantFunction< Dimensions, Real >::
-ConstantFunction()
+Constant< Dimensions, Real >::
+Constant()
 : constant( 0.0 )
 {
 }
@@ -25,7 +25,7 @@ ConstantFunction()
 template< int Dimensions,
           typename Real >
 void
-ConstantFunction< Dimensions, Real >::
+Constant< Dimensions, Real >::
 setConstant( const RealType& constant )
 {
    this->constant = constant;
@@ -34,7 +34,7 @@ setConstant( const RealType& constant )
 template< int Dimensions,
           typename Real >
 const Real&
-ConstantFunction< Dimensions, Real >::
+Constant< Dimensions, Real >::
 getConstant() const
 {
    return this->constant;
@@ -43,7 +43,7 @@ getConstant() const
 template< int FunctionDimensions,
           typename Real >
 void
-ConstantFunction< FunctionDimensions, Real >::
+Constant< FunctionDimensions, Real >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
@@ -53,7 +53,7 @@ configSetup( Config::ConfigDescription& config,
 template< int Dimensions,
           typename Real >
 bool
-ConstantFunction< Dimensions, Real >::
+Constant< Dimensions, Real >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -67,7 +67,7 @@ template< int Dimensions,
              int YDiffOrder,
              int ZDiffOrder >
 Real
-ConstantFunction< Dimensions, Real >::
+Constant< Dimensions, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {

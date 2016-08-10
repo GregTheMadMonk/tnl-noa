@@ -1,21 +1,21 @@
-SET( headers BlobFunction.h
-             BlobFunction_impl.h  
-             ConstantFunction.h
-             ConstantFunction_impl.h
-             CylinderFunction.h
-             CylinderFunction_impl.h  
-             ExpBumpFunction.h
-             ExpBumpFunction_impl.h
-	     FlowerpotFunction.h
-             FlowerpotFunction_impl.h 
-	     PseudoSquareFunction.h
-             PseudoSquareFunction_impl.h
-             SinBumpsFunction.h
-             SinBumpsFunction_impl.h
-             SinWaveFunction.h
-             SinWaveFunction_impl.h
-	     TwinsFunction.h
-             TwinsFunction_impl.h 
+SET( headers Blob.h
+             Blob_impl.h  
+             Constant.h
+             Constant_impl.h
+             Cylinder.h
+             Cylinder_impl.h  
+             ExpBump.h
+             ExpBump_impl.h
+	     Flowerpot.h
+             Flowerpot_impl.h 
+	     PseudoSquare.h
+             PseudoSquare_impl.h
+             SinBumps.h
+             SinBumps_impl.h
+             SinWave.h
+             SinWave_impl.h
+	     Twins.h
+             Twins_impl.h 
    )
    
 INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Functions/Analytic )

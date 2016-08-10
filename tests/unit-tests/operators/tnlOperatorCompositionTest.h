@@ -13,8 +13,8 @@
 
 #include <TNL/Operators/OperatorComposition.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Functions/Analytic/ExpBumpFunction.h>
-#include <TNL/Functions/Analytic/ConstantFunction.h>
+#include <TNL/Functions/Analytic/ExpBump.h>
+#include <TNL/Functions/Analytic/Constant.h>
 #include <TNL/Operators/diffusion/LinearDiffusion.h>
 #include <TNL/Operators/NeumannBoundaryConditions.h>
 #include "../tnlUnitTestStarter.h"
@@ -41,9 +41,9 @@ class OperatorCompositionTest
    typedef typename OperatorType::IndexType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef typename MeshType::VertexType VertexType;
-   typedef Functions::Analytic::ExpBumpFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > TestFunctionType;
-   typedef Functions::Analytic::ConstantFunction< MeshType::getMeshDimensions(), typename MeshType::RealType > ConstantFunction;
-   typedef Operators::NeumannBoundaryConditions< MeshType, ConstantFunction > BoundaryConditions;
+   typedef Functions::Analytic::ExpBump< MeshType::getMeshDimensions(), typename MeshType::RealType > TestFunctionType;
+   typedef Functions::Analytic::Constant< MeshType::getMeshDimensions(), typename MeshType::RealType > Constant;
+   typedef Operators::NeumannBoundaryConditions< MeshType, Constant > BoundaryConditions;
    typedef Operators::OperatorComposition< OperatorType, OperatorType, BoundaryConditions > OperatorComposition;
    typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
    typedef Functions::OperatorFunction< OperatorType, MeshFunctionType, BoundaryConditions > OperatorFunction;

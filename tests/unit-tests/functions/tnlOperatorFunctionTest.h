@@ -13,7 +13,7 @@
 
 #include <TNL/Functions/OperatorFunction.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Functions/Analytic/ExpBumpFunction.h>
+#include <TNL/Functions/Analytic/ExpBump.h>
 #include <TNL/Operators/diffusion/LinearDiffusion.h>
 #include <TNL/Operators/DirichletBoundaryConditions.h>
 #include "../tnlUnitTestStarter.h"
@@ -41,7 +41,7 @@ class OperatorFunctionTest
    typedef typename OperatorType::IndexType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef typename MeshType::VertexType VertexType;
-   typedef Functions::Analytic::ExpBumpFunction< MeshType::getMeshDimensions(), RealType > TestFunctionType;
+   typedef Functions::Analytic::ExpBump< MeshType::getMeshDimensions(), RealType > TestFunctionType;
    typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimensions() > MeshFunctionType;
    typedef SharedPointer< MeshType > MeshPointer;
 

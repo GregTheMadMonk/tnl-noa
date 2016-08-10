@@ -3,7 +3,7 @@
 #include <TNL/Solvers/BuildConfigTags.h>
 #include <TNL/Operators/DirichletBoundaryConditions.h>
 #include <TNL/Operators/NeumannBoundaryConditions.h>
-#include <TNL/Functions/Analytic/ConstantFunction.h>
+#include <TNL/Functions/Analytic/Constant.h>
 #include "advectionProblem.h"
 #include "LaxFridrichs.h"
 #include "advectionRhs.h"
@@ -83,15 +83,15 @@ class advectionSetter
           String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
           if( parameters.checkParameter( "boundary-conditions-constant" ) )
           {
-             typedef Functions::Analytic::ConstantFunction< Dimensions, Real > ConstantFunction;
+             typedef Functions::Analytic::Constant< Dimensions, Real > Constant;
              if( boundaryConditionsType == "dirichlet" )
              {
-                typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunction, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
+                typedef Operators::DirichletBoundaryConditions< MeshType, Constant, MeshType::getMeshDimensions(), Real, Index > BoundaryConditions;
                 typedef advectionProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
              }
-             typedef Operators::NeumannBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
+             typedef Operators::NeumannBoundaryConditions< MeshType, Constant, Real, Index > BoundaryConditions;
              typedef advectionProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );

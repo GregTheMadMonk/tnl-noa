@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExpBumpFunction_impl.h  -  description
+                          ExpBump_impl.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Functions/Analytic/CylinderFunction.h>
+#include <TNL/Functions/Analytic/PseudoSquare.h>
 
 namespace TNL {
 namespace Functions {
@@ -19,29 +19,15 @@ namespace Analytic {
 template< typename Real,
           int Dimensions >
 bool
-CylinderFunctionBase< Real, Dimensions >::
+PseudoSquareBase< Real, Dimensions >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   this->diameter = parameters.getParameter< double >( prefix + "diameter" );
+   this->height = parameters.getParameter< double >( prefix + "height" );
+ 
    return true;
 }
 
-template< typename Real,
-          int Dimensions >
-void
-CylinderFunctionBase< Real, Dimensions >::
-setDiameter( const Real& sigma )
-{
-   this->diameter = diameter;
-}
-
-template< typename Real,
-          int Dimensions >
-const Real& CylinderFunctionBase< Real, Dimensions >::getDiameter() const
-{
-   return this->diameter;
-}
 
 /***
  * 1D
@@ -49,38 +35,38 @@ const Real& CylinderFunctionBase< Real, Dimensions >::getDiameter() const
 
 template< typename Real >
 String
-CylinderFunction< 1, Real >::getType()
+PseudoSquare< 1, Real >::getType()
 {
-   return "CylinderFunction< 1, " + TNL::getType< Real >() + String( " >" );
+   return "PseudoSquare< 1, " + TNL::getType< Real >() + String( " >" );
 }
 
 template< typename Real >
-CylinderFunction< 1, Real >::CylinderFunction()
+PseudoSquare< 1, Real >::PseudoSquare()
 {
 }
 
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
-CylinderFunction< 1, Real >::getPartialDerivative( const Vertex& v,
-                                                      const Real& time ) const
+PseudoSquare< 1, Real >::
+getPartialDerivative( const VertexType& v,
+                      const Real& time ) const
 {
    const RealType& x = v.x();
    if( YDiffOrder != 0 || ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 )
-      return ( ( x*x - this->diameter ) < 0 ) - ( ( x*x - this->diameter ) > 0 ) + 1;
+      return 0.0;
    return 0.0;
 }
 
 template< typename Real >
 __cuda_callable__
 Real
-CylinderFunction< 1, Real >::
+PseudoSquare< 1, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {
@@ -90,28 +76,26 @@ operator()( const VertexType& v,
 /****
  * 2D
  */
-
 template< typename Real >
 String
-CylinderFunction< 2, Real >::getType()
+PseudoSquare< 2, Real >::getType()
 {
-   return String( "CylinderFunction< 2, " ) + TNL::getType< Real >() + " >";
+   return String( "PseudoSquare< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
-CylinderFunction< 2, Real >::CylinderFunction()
+PseudoSquare< 2, Real >::PseudoSquare()
 {
 }
 
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
-CylinderFunction< 2, Real >::
-getPartialDerivative( const Vertex& v,
+PseudoSquare< 2, Real >::
+getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
    const RealType& x = v.x();
@@ -119,60 +103,57 @@ getPartialDerivative( const Vertex& v,
    if( ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 && YDiffOrder == 0 )
-      return ( ( x*x + y*y - this->diameter ) < 0 ) - ( ( x*x + y*y - this->diameter ) > 0 ) + 1;
+      return x * x + y * y - this->height - ::cos( 2 * x * y ) * ::cos( 2 * x * y );
    return 0.0;
 }
 
 template< typename Real >
 __cuda_callable__
 Real
-CylinderFunction< 2, Real >::
+PseudoSquare< 2, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {
    return this->template getPartialDerivative< 0, 0, 0 >( v, time );
 }
 
-
 /****
  * 3D
  */
-
 template< typename Real >
 String
-CylinderFunction< 3, Real >::getType()
+PseudoSquare< 3, Real >::getType()
 {
-   return String( "CylinderFunction< 3, " ) + TNL::getType< Real >() + " >";
+   return String( "PseudoSquare< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
-CylinderFunction< 3, Real >::CylinderFunction()
+PseudoSquare< 3, Real >::PseudoSquare()
 {
 }
 
 template< typename Real >
    template< int XDiffOrder,
              int YDiffOrder,
-             int ZDiffOrder,
-             typename Vertex >
+             int ZDiffOrder >
 __cuda_callable__
 Real
-CylinderFunction< 3, Real >::
-getPartialDerivative( const Vertex& v,
+PseudoSquare< 3, Real >::
+getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
    const RealType& x = v.x();
    const RealType& y = v.y();
    const RealType& z = v.z();
    if( XDiffOrder == 0 && YDiffOrder == 0 && ZDiffOrder == 0 )
-      return ( ( x*x + y*y + z*z - this->diameter ) < 0 ) - ( ( x*x + y*y + z*z - this->diameter ) > 0 ) + 1;
+      return 0.0;
    return 0.0;
 }
 
 template< typename Real >
 __cuda_callable__
 Real
-CylinderFunction< 3, Real >::
+PseudoSquare< 3, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {
@@ -181,4 +162,4 @@ operator()( const VertexType& v,
 
 } // namespace Analytic
 } // namespace Functions
-} // namespace TNL
+} // namepsace TNL

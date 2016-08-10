@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExpBumpFunction_impl.h  -  description
+                          ExpBump_impl.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -11,22 +11,22 @@
 #pragma once
 
 #include <cmath>
-#include <TNL/Functions/Analytic/ExpBumpFunction.h>
+#include <TNL/Functions/Analytic/ExpBump.h>
 
 namespace TNL {
 namespace Functions {
 namespace Analytic {   
 
 template< int dimensions, typename Real >
-ExpBumpFunctionBase< dimensions, Real >::
-ExpBumpFunctionBase()
+ExpBumpBase< dimensions, Real >::
+ExpBumpBase()
    : amplitude( 1.0 ), sigma( 1.0 )
 {
 }
 
 template< int dimensions, typename Real >
 bool
-ExpBumpFunctionBase< dimensions, Real >::
+ExpBumpBase< dimensions, Real >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -36,25 +36,25 @@ setup( const Config::ParameterContainer& parameters,
 }
 
 template< int dimensions, typename Real >
-void ExpBumpFunctionBase< dimensions, Real >::setAmplitude( const Real& amplitude )
+void ExpBumpBase< dimensions, Real >::setAmplitude( const Real& amplitude )
 {
    this->amplitude = amplitude;
 }
 
 template< int dimensions, typename Real >
-const Real& ExpBumpFunctionBase< dimensions, Real >::getAmplitude() const
+const Real& ExpBumpBase< dimensions, Real >::getAmplitude() const
 {
    return this->amplitude;
 }
 
 template< int dimensions, typename Real >
-void ExpBumpFunctionBase< dimensions, Real >::setSigma( const Real& sigma )
+void ExpBumpBase< dimensions, Real >::setSigma( const Real& sigma )
 {
    this->sigma = sigma;
 }
 
 template< int dimensions, typename Real >
-const Real& ExpBumpFunctionBase< dimensions, Real >::getSigma() const
+const Real& ExpBumpBase< dimensions, Real >::getSigma() const
 {
    return this->sigma;
 }
@@ -65,13 +65,13 @@ const Real& ExpBumpFunctionBase< dimensions, Real >::getSigma() const
 
 template< typename Real >
 String
-ExpBumpFunction< 1, Real >::getType()
+ExpBump< 1, Real >::getType()
 {
-   return "ExpBumpFunction< 1, " + TNL::getType< Real >() + String( " >" );
+   return "ExpBump< 1, " + TNL::getType< Real >() + String( " >" );
 }
 
 template< typename Real >
-ExpBumpFunction< 1, Real >::ExpBumpFunction()
+ExpBump< 1, Real >::ExpBump()
 {
 }
 
@@ -81,7 +81,7 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-ExpBumpFunction< 1, Real >::
+ExpBump< 1, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -101,7 +101,7 @@ getPartialDerivative( const VertexType& v,
 template< typename Real >
 __cuda_callable__
 Real
-ExpBumpFunction< 1, Real >::
+ExpBump< 1, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {
@@ -115,13 +115,13 @@ operator()( const VertexType& v,
 
 template< typename Real >
 String
-ExpBumpFunction< 2, Real >::getType()
+ExpBump< 2, Real >::getType()
 {
-   return String( "ExpBumpFunction< 2, " ) + TNL::getType< Real >() + " >";
+   return String( "ExpBump< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
-ExpBumpFunction< 2, Real >::ExpBumpFunction()
+ExpBump< 2, Real >::ExpBump()
 {
 }
 
@@ -131,7 +131,7 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__ inline
 Real
-ExpBumpFunction< 2, Real >::
+ExpBump< 2, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -157,7 +157,7 @@ getPartialDerivative( const VertexType& v,
 template< typename Real >
 __cuda_callable__
 Real
-ExpBumpFunction< 2, Real >::
+ExpBump< 2, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {
@@ -170,13 +170,13 @@ operator()( const VertexType& v,
 
 template< typename Real >
 String
-ExpBumpFunction< 3, Real >::getType()
+ExpBump< 3, Real >::getType()
 {
-   return String( "ExpBumpFunction< 3, " ) + TNL::getType< Real >() + " >";
+   return String( "ExpBump< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
-ExpBumpFunction< 3, Real >::ExpBumpFunction()
+ExpBump< 3, Real >::ExpBump()
 {
 }
 
@@ -186,7 +186,7 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-ExpBumpFunction< 3, Real >::
+ExpBump< 3, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -219,7 +219,7 @@ getPartialDerivative( const VertexType& v,
 template< typename Real >
 __cuda_callable__
 Real
-ExpBumpFunction< 3, Real >::
+ExpBump< 3, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {

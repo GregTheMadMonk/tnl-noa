@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExpBumpFunction.h  -  description
+                          ExpBump.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -17,11 +17,11 @@
 
 namespace TNL {
 namespace Functions {
-namespace Analytic {   
-
+namespace Analytic {
+   
 template< typename Real,
           int Dimensions >
-class PseudoSquareFunctionBase : public Domain< Dimensions, SpaceDomain >
+class BlobBase : public Domain< Dimensions, SpaceDomain >
 {
    public:
 
@@ -30,19 +30,19 @@ class PseudoSquareFunctionBase : public Domain< Dimensions, SpaceDomain >
       bool setup( const Config::ParameterContainer& parameters,
                  const String& prefix = "" );
 
-   protected:
+     protected:
 
       RealType height;
 };
 
 template< int Dimensions,
           typename Real >
-class PseudoSquareFunction
+class Blob
 {
 };
 
 template< typename Real >
-class PseudoSquareFunction< 1, Real > : public PseudoSquareFunctionBase< Real, 1 >
+class Blob< 1, Real > : public BlobBase< Real, 1 >
 {
    public:
 
@@ -52,7 +52,7 @@ class PseudoSquareFunction< 1, Real > : public PseudoSquareFunctionBase< Real, 1
 
       static String getType();
 
-      PseudoSquareFunction();
+      Blob();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -73,7 +73,7 @@ class PseudoSquareFunction< 1, Real > : public PseudoSquareFunctionBase< Real, 1
 };
 
 template< typename Real >
-class PseudoSquareFunction< 2, Real > : public PseudoSquareFunctionBase< Real, 2 >
+class Blob< 2, Real > : public BlobBase< Real, 2 >
 {
    public:
 
@@ -83,7 +83,7 @@ class PseudoSquareFunction< 2, Real > : public PseudoSquareFunctionBase< Real, 2
 
       static String getType();
 
-      PseudoSquareFunction();
+      Blob();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -97,14 +97,15 @@ class PseudoSquareFunction< 2, Real > : public PseudoSquareFunctionBase< Real, 2
       __cuda_callable__
       RealType getPartialDerivative( const VertexType& v,
                                      const Real& time = 0.0 ) const;
- 
+
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
+ 
 };
 
 template< typename Real >
-class PseudoSquareFunction< 3, Real > : public PseudoSquareFunctionBase< Real, 3 >
+class Blob< 3, Real > : public BlobBase< Real, 3 >
 {
    public:
 
@@ -114,7 +115,7 @@ class PseudoSquareFunction< 3, Real > : public PseudoSquareFunctionBase< Real, 3
 
       static String getType();
 
-      PseudoSquareFunction();
+      Blob();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -132,12 +133,11 @@ class PseudoSquareFunction< 3, Real > : public PseudoSquareFunctionBase< Real, 3
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
- 
 };
 
 template< int Dimensions,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const PseudoSquareFunction< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const Blob< Dimensions, Real >& f )
 {
    str << "Level-set pseudo square function.";
    return str;
@@ -147,4 +147,5 @@ std::ostream& operator << ( std::ostream& str, const PseudoSquareFunction< Dimen
 } // namespace Functions
 } // namepsace TNL
 
-#include <TNL/Functions/Analytic/PseudoSquareFunction_impl.h>
+#include <TNL/Functions/Analytic/Blob_impl.h>
+

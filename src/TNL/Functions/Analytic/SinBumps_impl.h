@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SinBumpsFunction_impl.h  -  description
+                          SinBumps_impl.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -10,44 +10,44 @@
 
 #pragma once
 
-#include <TNL/Functions/Analytic/SinBumpsFunction.h>
+#include <TNL/Functions/Analytic/SinBumps.h>
 
 namespace TNL {
 namespace Functions {
 namespace Analytic {   
 
 template< typename Vertex >
-void SinBumpsFunctionBase< Vertex >::setWaveLength( const Vertex& waveLength )
+void SinBumpsBase< Vertex >::setWaveLength( const Vertex& waveLength )
 {
    this->waveLength = waveLength;
 }
 
 template< typename Vertex >
-const Vertex& SinBumpsFunctionBase< Vertex >::getWaveLength() const
+const Vertex& SinBumpsBase< Vertex >::getWaveLength() const
 {
    return this->waveLength;
 }
 
 template< typename Vertex >
-void SinBumpsFunctionBase< Vertex >::setAmplitude( const typename Vertex::RealType& amplitude )
+void SinBumpsBase< Vertex >::setAmplitude( const typename Vertex::RealType& amplitude )
 {
    this->amplitude = amplitude;
 }
 
 template< typename Vertex >
-const typename Vertex::RealType& SinBumpsFunctionBase< Vertex >::getAmplitude() const
+const typename Vertex::RealType& SinBumpsBase< Vertex >::getAmplitude() const
 {
    return this->amplitude;
 }
 
 template< typename Vertex >
-void SinBumpsFunctionBase< Vertex >::setPhase( const Vertex& phase )
+void SinBumpsBase< Vertex >::setPhase( const Vertex& phase )
 {
    this->phase = phase;
 }
 
 template< typename Vertex >
-const Vertex& SinBumpsFunctionBase< Vertex >::getPhase() const
+const Vertex& SinBumpsBase< Vertex >::getPhase() const
 {
    return this->phase;
 }
@@ -57,12 +57,12 @@ const Vertex& SinBumpsFunctionBase< Vertex >::getPhase() const
  */
 
 template< typename Real >
-SinBumpsFunction< 1, Real >::SinBumpsFunction()
+SinBumps< 1, Real >::SinBumps()
 {
 }
 
 template< typename Real >
-bool SinBumpsFunction< 1, Real >::setup( const Config::ParameterContainer& parameters,
+bool SinBumps< 1, Real >::setup( const Config::ParameterContainer& parameters,
                                            const String& prefix )
 {
    this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
@@ -78,7 +78,7 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-SinBumpsFunction< 1, Real >::
+SinBumps< 1, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -97,7 +97,7 @@ getPartialDerivative( const VertexType& v,
 template< typename Real >
 __cuda_callable__
 Real
-SinBumpsFunction< 1, Real >::
+SinBumps< 1, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {
@@ -110,12 +110,12 @@ operator()( const VertexType& v,
  */
 
 template< typename Real >
-SinBumpsFunction< 2, Real >::SinBumpsFunction()
+SinBumps< 2, Real >::SinBumps()
 {
 }
 
 template< typename Real >
-bool SinBumpsFunction< 2, Real >::setup( const Config::ParameterContainer& parameters,
+bool SinBumps< 2, Real >::setup( const Config::ParameterContainer& parameters,
                                             const String& prefix )
 {
    this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
@@ -133,7 +133,7 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-SinBumpsFunction< 2, Real>::
+SinBumps< 2, Real>::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -161,7 +161,7 @@ getPartialDerivative( const VertexType& v,
 template< typename Real >
 __cuda_callable__
 Real
-SinBumpsFunction< 2, Real >::
+SinBumps< 2, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {
@@ -173,12 +173,12 @@ operator()( const VertexType& v,
  */
 
 template< typename Real >
-SinBumpsFunction< 3, Real >::SinBumpsFunction()
+SinBumps< 3, Real >::SinBumps()
 {
 }
 
 template< typename Real >
-bool SinBumpsFunction< 3, Real >::setup( const Config::ParameterContainer& parameters,
+bool SinBumps< 3, Real >::setup( const Config::ParameterContainer& parameters,
                                            const String& prefix )
 {
    this->amplitude = parameters.getParameter< double >( prefix + "amplitude" );
@@ -198,7 +198,7 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-SinBumpsFunction< 3, Real >::
+SinBumps< 3, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -234,7 +234,7 @@ getPartialDerivative( const VertexType& v,
 template< typename Real >
 __cuda_callable__
 Real
-SinBumpsFunction< 3, Real >::
+SinBumps< 3, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {

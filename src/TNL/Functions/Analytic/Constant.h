@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ConstantFunction.h  -  description
+                          Constant.h  -  description
                              -------------------
     begin                : Aug 2, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -20,14 +20,14 @@ namespace Analytic {
 
 template< int dimensions,
           typename Real = double >
-class ConstantFunction : public Domain< dimensions, NonspaceDomain >
+class Constant : public Domain< dimensions, NonspaceDomain >
 {
    public:
  
       typedef Real RealType;
       typedef Vectors::StaticVector< dimensions, RealType > VertexType;
  
-      ConstantFunction();
+      Constant();
 
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" );
@@ -72,7 +72,7 @@ class ConstantFunction : public Domain< dimensions, NonspaceDomain >
 
 template< int dimensions,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const ConstantFunction< dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const Constant< dimensions, Real >& f )
 {
    str << "Constant function: constant = " << f.getConstant();
    return str;
@@ -82,5 +82,5 @@ std::ostream& operator << ( std::ostream& str, const ConstantFunction< dimension
 } // namespace Functions
 } // namespace TNL
 
-#include <TNL/Functions/Analytic/ConstantFunction_impl.h>
+#include <TNL/Functions/Analytic/Constant_impl.h>
 

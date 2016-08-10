@@ -17,7 +17,7 @@
 #include <TNL/Operators/diffusion/LinearDiffusion.h>
 #include <TNL/Operators/DirichletBoundaryConditions.h>
 #include <TNL/Operators/NeumannBoundaryConditions.h>
-#include <TNL/Functions/Analytic/ConstantFunction.h>
+#include <TNL/Functions/Analytic/Constant.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Problems/HeatEquationProblem.h>
 #include <TNL/Meshes/Grid.h>
@@ -42,7 +42,7 @@ class heatEquationConfig
          typedef Meshes::Grid< 1, double, Devices::Host, int > Mesh;
          typedef Functions::MeshFunction< Mesh > MeshFunction;
          Operators::DirichletBoundaryConditions< Mesh, MeshFunction >::configSetup( config );
-         Operators::DirichletBoundaryConditions< Mesh, Functions::Analytic::ConstantFunction< 1 > >::configSetup( config );
+         Operators::DirichletBoundaryConditions< Mesh, Functions::Analytic::Constant< 1 > >::configSetup( config );
          config.addEntry< String >( "boundary-conditions-file", "File with the values of the boundary conditions.", "boundary.tnl" );
          config.addEntry< double >( "boundary-conditions-constant", "This sets a value in case of the constant boundary conditions." );
          config.addEntry< double >( "right-hand-side-constant", "This sets a constant value for the right-hand side.", 0.0 );
@@ -70,21 +70,21 @@ class heatEquationSetter
    {
       enum { Dimensions = MeshType::meshDimensions };
       typedef Operators::LinearDiffusion< MeshType, Real, Index > ApproximateOperator;
-      typedef Functions::Analytic::ConstantFunction< Dimensions, Real > RightHandSide;
+      typedef Functions::Analytic::Constant< Dimensions, Real > RightHandSide;
       typedef Vectors::StaticVector < MeshType::meshDimensions, Real > Vertex;
 
       String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
       if( parameters.checkParameter( "boundary-conditions-constant" ) )
       {
-         typedef Functions::Analytic::ConstantFunction< Dimensions, Real > ConstantFunction;
+         typedef Functions::Analytic::Constant< Dimensions, Real > Constant;
          if( boundaryConditionsType == "dirichlet" )
          {
-            typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunction > BoundaryConditions;
+            typedef Operators::DirichletBoundaryConditions< MeshType, Constant > BoundaryConditions;
             typedef HeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
             SolverStarter solverStarter;
             return solverStarter.template run< Problem >( parameters );
          }
-         typedef Operators::NeumannBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
+         typedef Operators::NeumannBoundaryConditions< MeshType, Constant, Real, Index > BoundaryConditions;
          typedef HeatEquationProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
          SolverStarter solverStarter;
          return solverStarter.template run< Problem >( parameters );

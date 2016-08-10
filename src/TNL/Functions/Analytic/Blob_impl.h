@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExpBumpFunction_impl.h  -  description
+                          ExpBump_impl.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -10,16 +10,16 @@
 
 #pragma once
 
-#include <TNL/Functions/Analytic/PseudoSquareFunction.h>
+#include <TNL/Functions/Analytic/Blob.h>
 
 namespace TNL {
 namespace Functions {
-namespace Analytic {   
+namespace Analytic {
 
 template< typename Real,
           int Dimensions >
 bool
-PseudoSquareFunctionBase< Real, Dimensions >::
+BlobBase< Real, Dimensions >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -28,20 +28,19 @@ setup( const Config::ParameterContainer& parameters,
    return true;
 }
 
-
 /***
  * 1D
  */
 
 template< typename Real >
 String
-PseudoSquareFunction< 1, Real >::getType()
+Blob< 1, Real >::getType()
 {
-   return "PseudoSquareFunction< 1, " + TNL::getType< Real >() + String( " >" );
+   return "Blob< 1, " + TNL::getType< Real >() + String( " >" );
 }
 
 template< typename Real >
-PseudoSquareFunction< 1, Real >::PseudoSquareFunction()
+Blob< 1, Real >::Blob()
 {
 }
 
@@ -51,7 +50,7 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-PseudoSquareFunction< 1, Real >::
+Blob< 1, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -66,7 +65,7 @@ getPartialDerivative( const VertexType& v,
 template< typename Real >
 __cuda_callable__
 Real
-PseudoSquareFunction< 1, Real >::
+Blob< 1, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {
@@ -78,13 +77,13 @@ operator()( const VertexType& v,
  */
 template< typename Real >
 String
-PseudoSquareFunction< 2, Real >::getType()
+Blob< 2, Real >::getType()
 {
-   return String( "PseudoSquareFunction< 2, " ) + TNL::getType< Real >() + " >";
+   return String( "Blob< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
-PseudoSquareFunction< 2, Real >::PseudoSquareFunction()
+Blob< 2, Real >::Blob()
 {
 }
 
@@ -94,7 +93,7 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-PseudoSquareFunction< 2, Real >::
+Blob< 2, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -103,14 +102,14 @@ getPartialDerivative( const VertexType& v,
    if( ZDiffOrder != 0 )
       return 0.0;
    if( XDiffOrder == 0 && YDiffOrder == 0 )
-      return x * x + y * y - this->height - ::cos( 2 * x * y ) * ::cos( 2 * x * y );
+      return x * x + y * y - this->height - ::sin( ::cos( 2 * x + y ) * ::sin( 2 * x + y ) );
    return 0.0;
 }
 
 template< typename Real >
 __cuda_callable__
 Real
-PseudoSquareFunction< 2, Real >::
+Blob< 2, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {
@@ -122,13 +121,13 @@ operator()( const VertexType& v,
  */
 template< typename Real >
 String
-PseudoSquareFunction< 3, Real >::getType()
+Blob< 3, Real >::getType()
 {
-   return String( "PseudoSquareFunction< 3, " ) + TNL::getType< Real >() + " >";
+   return String( "Blob< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
-PseudoSquareFunction< 3, Real >::PseudoSquareFunction()
+Blob< 3, Real >::Blob()
 {
 }
 
@@ -138,7 +137,7 @@ template< typename Real >
              int ZDiffOrder >
 __cuda_callable__
 Real
-PseudoSquareFunction< 3, Real >::
+Blob< 3, Real >::
 getPartialDerivative( const VertexType& v,
                       const Real& time ) const
 {
@@ -153,7 +152,7 @@ getPartialDerivative( const VertexType& v,
 template< typename Real >
 __cuda_callable__
 Real
-PseudoSquareFunction< 3, Real >::
+Blob< 3, Real >::
 operator()( const VertexType& v,
             const Real& time ) const
 {

@@ -11,19 +11,19 @@
 #pragma once
 
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Functions/Analytic/ConstantFunction.h>
-#include <TNL/Functions/Analytic/ExpBumpFunction.h>
-#include <TNL/Functions/Analytic/SinBumpsFunction.h>
-#include <TNL/Functions/Analytic/SinWaveFunction.h>
-#include <TNL/Functions/Analytic/ConstantFunction.h>
-#include <TNL/Functions/Analytic/ExpBumpFunction.h>
-#include <TNL/Functions/Analytic/SinBumpsFunction.h>
-#include <TNL/Functions/Analytic/SinWaveFunction.h>
-#include <TNL/Functions/Analytic/CylinderFunction.h>
-#include <TNL/Functions/Analytic/FlowerpotFunction.h>
-#include <TNL/Functions/Analytic/TwinsFunction.h>
-#include <TNL/Functions/Analytic/BlobFunction.h>
-#include <TNL/Functions/Analytic/PseudoSquareFunction.h>
+#include <TNL/Functions/Analytic/Constant.h>
+#include <TNL/Functions/Analytic/ExpBump.h>
+#include <TNL/Functions/Analytic/SinBumps.h>
+#include <TNL/Functions/Analytic/SinWave.h>
+#include <TNL/Functions/Analytic/Constant.h>
+#include <TNL/Functions/Analytic/ExpBump.h>
+#include <TNL/Functions/Analytic/SinBumps.h>
+#include <TNL/Functions/Analytic/SinWave.h>
+#include <TNL/Functions/Analytic/Cylinder.h>
+#include <TNL/Functions/Analytic/Flowerpot.h>
+#include <TNL/Functions/Analytic/Twins.h>
+#include <TNL/Functions/Analytic/Blob.h>
+#include <TNL/Functions/Analytic/PseudoSquare.h>
 
 namespace TNL {
 namespace Functions {   
@@ -143,55 +143,55 @@ setup( const Config::ParameterContainer& parameters,
   std::cout << "Test function ... " << testFunction << std::endl;
    if( testFunction == "constant" )
    {
-      typedef ConstantFunction< Dimensions, Real > FunctionType;
+      typedef Constant< Dimensions, Real > FunctionType;
       functionType = constant;
       return setupFunction< FunctionType >( parameters );
    }
    if( testFunction == "exp-bump" )
    {
-      typedef ExpBumpFunction< Dimensions, Real > FunctionType;
+      typedef ExpBump< Dimensions, Real > FunctionType;
       functionType = expBump;
       return setupFunction< FunctionType >( parameters );
    }
    if( testFunction == "sin-bumps" )
    {
-      typedef SinBumpsFunction< Dimensions, Real > FunctionType;
+      typedef SinBumps< Dimensions, Real > FunctionType;
       functionType = sinBumps;
       return setupFunction< FunctionType >( parameters );
    }
    if( testFunction == "sin-wave" )
    {
-      typedef SinWaveFunction< Dimensions, Real > FunctionType;
+      typedef SinWave< Dimensions, Real > FunctionType;
       functionType = sinWave;
       return setupFunction< FunctionType >( parameters );
    }
    if( testFunction == "cylinder" )
    {
-      typedef CylinderFunction< Dimensions, Real > FunctionType;
+      typedef Cylinder< Dimensions, Real > FunctionType;
       functionType = cylinder;
       return setupFunction< FunctionType >( parameters );
    }
    if( testFunction == "flowerpot" )
    {
-      typedef FlowerpotFunction< Dimensions, Real > FunctionType;
+      typedef Flowerpot< Dimensions, Real > FunctionType;
       functionType = flowerpot;
       return setupFunction< FunctionType >( parameters );
    }
    if( testFunction == "twins" )
    {
-      typedef TwinsFunction< Dimensions, Real > FunctionType;
+      typedef Twins< Dimensions, Real > FunctionType;
       functionType = twins;
       return setupFunction< FunctionType >( parameters );
    }
    if( testFunction == "pseudoSquare" )
    {
-      typedef PseudoSquareFunction< Dimensions, Real > FunctionType;
+      typedef PseudoSquare< Dimensions, Real > FunctionType;
       functionType = pseudoSquare;
       return setupFunction< FunctionType >( parameters );
    }
    if( testFunction == "blob" )
    {
-      typedef BlobFunction< Dimensions, Real > FunctionType;
+      typedef Blob< Dimensions, Real > FunctionType;
       functionType = blob;
       return setupFunction< FunctionType >( parameters );
    }
@@ -220,31 +220,31 @@ operator = ( const TestFunction& function )
    switch( this->functionType )
    {
       case constant:
-         this->copyFunction< ConstantFunction< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< Constant< FunctionDimensions, Real > >( function.function );
          break;
       case expBump:
-         this->copyFunction< ExpBumpFunction< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< ExpBump< FunctionDimensions, Real > >( function.function );
          break;
       case sinBumps:
-         this->copyFunction< SinBumpsFunction< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< SinBumps< FunctionDimensions, Real > >( function.function );
          break;
       case sinWave:
-         this->copyFunction< SinWaveFunction< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< SinWave< FunctionDimensions, Real > >( function.function );
          break;
       case cylinder:
-         this->copyFunction< CylinderFunction< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< Cylinder< FunctionDimensions, Real > >( function.function );
          break;
       case flowerpot:
-         this->copyFunction< FlowerpotFunction< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< Flowerpot< FunctionDimensions, Real > >( function.function );
          break;
       case twins:
-         this->copyFunction< TwinsFunction< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< Twins< FunctionDimensions, Real > >( function.function );
          break;
       case pseudoSquare:
-         this->copyFunction< PseudoSquareFunction< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< PseudoSquare< FunctionDimensions, Real > >( function.function );
          break;
       case blob:
-         this->copyFunction< BlobFunction< FunctionDimensions, Real > >( function.function );
+         this->copyFunction< Blob< FunctionDimensions, Real > >( function.function );
          break;
       default:
          Assert( false, );
@@ -286,31 +286,31 @@ getPartialDerivative( const VertexType& vertex,
    switch( functionType )
    {
       case constant:
-         return scale * ( ( ConstantFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( Constant< Dimensions, Real >* ) function )->
                    template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case expBump:
-         return scale * ( ( ExpBumpFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( ExpBump< Dimensions, Real >* ) function )->
                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinBumps:
-         return scale * ( ( SinBumpsFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( SinBumps< Dimensions, Real >* ) function )->
                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinWave:
-         return scale * ( ( SinWaveFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( SinWave< Dimensions, Real >* ) function )->
                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case cylinder:
-         return scale * ( ( CylinderFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( Cylinder< Dimensions, Real >* ) function )->
                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case flowerpot:
-         return scale * ( ( FlowerpotFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( Flowerpot< Dimensions, Real >* ) function )->
                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case twins:
-         return scale * ( ( TwinsFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( Twins< Dimensions, Real >* ) function )->
                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case pseudoSquare:
-         return scale * ( ( PseudoSquareFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( PseudoSquare< Dimensions, Real >* ) function )->
                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case blob:
-         return scale * ( ( BlobFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( Blob< Dimensions, Real >* ) function )->
                   template getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       default:
          return 0.0;
@@ -348,36 +348,36 @@ getTimeDerivative( const VertexType& vertex,
    switch( functionType )
    {
       case constant:
-         return scale * ( ( ConstantFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( Constant< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case expBump:
-         return scale * ( ( ExpBumpFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( ExpBump< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinBumps:
-         return scale * ( ( SinBumpsFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( SinBumps< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
       case sinWave:
-         return scale * ( ( SinWaveFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( SinWave< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       case cylinder:
-         return scale * ( ( CylinderFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( Cylinder< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       case flowerpot:
-         return scale * ( ( FlowerpotFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( Flowerpot< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       case twins:
-         return scale * ( ( TwinsFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( Twins< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       case pseudoSquare:
-         return scale * ( ( PseudoSquareFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( PseudoSquare< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       case blob:
-         return scale * ( ( BlobFunction< Dimensions, Real >* ) function )->
+         return scale * ( ( Blob< Dimensions, Real >* ) function )->
                   getPartialDerivative< XDiffOrder, YDiffOrder, ZDiffOrder >( vertex, time );
          break;
       default:
@@ -416,31 +416,31 @@ deleteFunctions()
    switch( functionType )
    {
       case constant:
-         deleteFunction< ConstantFunction< Dimensions, Real> >();
+         deleteFunction< Constant< Dimensions, Real> >();
          break;
       case expBump:
-         deleteFunction< ExpBumpFunction< Dimensions, Real> >();
+         deleteFunction< ExpBump< Dimensions, Real> >();
          break;
       case sinBumps:
-         deleteFunction< SinBumpsFunction< Dimensions, Real> >();
+         deleteFunction< SinBumps< Dimensions, Real> >();
          break;
       case sinWave:
-         deleteFunction< SinWaveFunction< Dimensions, Real> >();
+         deleteFunction< SinWave< Dimensions, Real> >();
          break;
       case cylinder:
-         deleteFunction< CylinderFunction< Dimensions, Real> >();
+         deleteFunction< Cylinder< Dimensions, Real> >();
          break;
       case flowerpot:
-         deleteFunction< FlowerpotFunction< Dimensions, Real> >();
+         deleteFunction< Flowerpot< Dimensions, Real> >();
          break;
       case twins:
-         deleteFunction< TwinsFunction< Dimensions, Real> >();
+         deleteFunction< Twins< Dimensions, Real> >();
          break;
       case pseudoSquare:
-         deleteFunction< PseudoSquareFunction< Dimensions, Real> >();
+         deleteFunction< PseudoSquare< Dimensions, Real> >();
          break;
       case blob:
-         deleteFunction< BlobFunction< Dimensions, Real> >();
+         deleteFunction< Blob< Dimensions, Real> >();
          break;
    }
 }
@@ -501,23 +501,23 @@ print( std::ostream& str ) const
    switch( functionType )
    {
       case constant:
-         return printFunction< ConstantFunction< Dimensions, Real> >( str );
+         return printFunction< Constant< Dimensions, Real> >( str );
       case expBump:
-         return printFunction< ExpBumpFunction< Dimensions, Real> >( str );
+         return printFunction< ExpBump< Dimensions, Real> >( str );
       case sinBumps:
-         return printFunction< SinBumpsFunction< Dimensions, Real> >( str );
+         return printFunction< SinBumps< Dimensions, Real> >( str );
       case sinWave:
-         return printFunction< SinWaveFunction< Dimensions, Real> >( str );
+         return printFunction< SinWave< Dimensions, Real> >( str );
       case cylinder:
-         return printFunction< CylinderFunction< Dimensions, Real> >( str );
+         return printFunction< Cylinder< Dimensions, Real> >( str );
       case flowerpot:
-         return printFunction< FlowerpotFunction< Dimensions, Real> >( str );
+         return printFunction< Flowerpot< Dimensions, Real> >( str );
       case twins:
-         return printFunction< TwinsFunction< Dimensions, Real> >( str );
+         return printFunction< Twins< Dimensions, Real> >( str );
       case pseudoSquare:
-         return printFunction< PseudoSquareFunction< Dimensions, Real> >( str );
+         return printFunction< PseudoSquare< Dimensions, Real> >( str );
       case blob:
-         return printFunction< BlobFunction< Dimensions, Real> >( str );
+         return printFunction< Blob< Dimensions, Real> >( str );
    }
    return str;
 }

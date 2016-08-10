@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExpBumpFunction.h  -  description
+                          ExpBump.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -21,7 +21,7 @@ namespace Analytic {
 
 template< typename Real,
           int Dimensions >
-class CylinderFunctionBase : public Domain< Dimensions, SpaceDomain >
+class PseudoSquareBase : public Domain< Dimensions, SpaceDomain >
 {
    public:
 
@@ -30,23 +30,19 @@ class CylinderFunctionBase : public Domain< Dimensions, SpaceDomain >
       bool setup( const Config::ParameterContainer& parameters,
                  const String& prefix = "" );
 
-      void setDiameter( const RealType& sigma );
-
-      const RealType& getDiameter() const;
-
    protected:
 
-      RealType diameter;
+      RealType height;
 };
 
 template< int Dimensions,
           typename Real >
-class CylinderFunction
+class PseudoSquare
 {
 };
 
 template< typename Real >
-class CylinderFunction< 1, Real > : public CylinderFunctionBase< Real, 1 >
+class PseudoSquare< 1, Real > : public PseudoSquareBase< Real, 1 >
 {
    public:
 
@@ -56,31 +52,28 @@ class CylinderFunction< 1, Real > : public CylinderFunctionBase< Real, 1 >
 
       static String getType();
 
-      CylinderFunction();
+      PseudoSquare();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
+      RealType getPartialDerivative( const VertexType& v,
                                      const Real& time = 0.0 ) const;
-
+ 
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
- 
 };
 
 template< typename Real >
-class CylinderFunction< 2, Real > : public CylinderFunctionBase< Real, 2 >
+class PseudoSquare< 2, Real > : public PseudoSquareBase< Real, 2 >
 {
    public:
 
@@ -90,31 +83,28 @@ class CylinderFunction< 2, Real > : public CylinderFunctionBase< Real, 2 >
 
       static String getType();
 
-      CylinderFunction();
+      PseudoSquare();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
+      RealType getPartialDerivative( const VertexType& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
- 
 };
 
 template< typename Real >
-class CylinderFunction< 3, Real > : public CylinderFunctionBase< Real, 3 >
+class PseudoSquare< 3, Real > : public PseudoSquareBase< Real, 3 >
 {
    public:
 
@@ -124,21 +114,19 @@ class CylinderFunction< 3, Real > : public CylinderFunctionBase< Real, 3 >
 
       static String getType();
 
-      CylinderFunction();
+      PseudoSquare();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
+      RealType getPartialDerivative( const VertexType& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
@@ -149,15 +137,14 @@ class CylinderFunction< 3, Real > : public CylinderFunctionBase< Real, 3 >
 
 template< int Dimensions,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const CylinderFunction< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const PseudoSquare< Dimensions, Real >& f )
 {
-   str << "Cylinder function.";
+   str << "Level-set pseudo square function.";
    return str;
 }
 
 } // namespace Analytic
 } // namespace Functions
-} // namespace TNL
+} // namepsace TNL
 
-#include <TNL/Functions/Analytic/CylinderFunction_impl.h>
-
+#include <TNL/Functions/Analytic/PseudoSquare_impl.h>

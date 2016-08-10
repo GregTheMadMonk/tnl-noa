@@ -21,7 +21,7 @@
 #include <TNL/Operators/fdm/CentralFiniteDifference.h>
 #include <TNL/Operators/fdm/ExactDifference.h>
 #include "../tnlPDEOperatorEocTestResult.h"
-#include <TNL/Functions/Analytic/ExpBumpFunction.h>
+#include <TNL/Functions/Analytic/ExpBump.h>
 
 using namespace TNL;
 
@@ -161,7 +161,7 @@ template< typename Mesh,
 bool setFunction()
 {
     const int Dimensions = Mesh::meshDimensions;
-    typedef Functions::Analytic::ExpBumpFunction< Dimensions, RealType >  Function;
+    typedef Functions::Analytic::ExpBump< Dimensions, RealType >  Function;
     return setFiniteDifferenceOperator< Mesh, Function, RealType, IndexType, XDifference, YDifference, ZDifference, MeshSize, WriteFunctions, Verbose  >();
 }
 

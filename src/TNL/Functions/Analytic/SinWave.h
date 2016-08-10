@@ -1,7 +1,7 @@
 /***************************************************************************
-                          ExpBumpFunction.h  -  description
+                          SinWave.h  -  description
                              -------------------
-    begin                : Dec 5, 2013
+    begin                : Nov 19, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -13,56 +13,90 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Vectors/StaticVector.h>
 #include <TNL/Functions/Domain.h>
-#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 namespace Functions {
 namespace Analytic {   
 
-template< typename Real,
-          int Dimensions >
-class TwinsFunctionBase : public Domain< Dimensions, SpaceDomain >
+template< int dimensions,
+          typename Real = double >
+class SinWaveBase : public Domain< dimensions, SpaceDomain >
 {
    public:
+ 
+   SinWaveBase();
 
-      typedef Real RealType;
+   bool setup( const Config::ParameterContainer& parameters,
+              const String& prefix = "" );
 
-      bool setup( const Config::ParameterContainer& parameters,
-                 const String& prefix = "" );
+   void setWaveLength( const Real& waveLength );
+
+   Real getWaveLength() const;
+
+   void setAmplitude( const Real& amplitude );
+
+   Real getAmplitude() const;
+
+   void setPhase( const Real& phase );
+
+   Real getPhase() const;
+
+   protected:
+
+   Real waveLength, amplitude, phase, wavesNumber;
 };
 
-template< int Dimensions,
-          typename Real >
-class TwinsFunction
+template< int Dimensions, typename Real >
+class SinWave
 {
 };
 
 template< typename Real >
-class TwinsFunction< 1, Real > : public TwinsFunctionBase< Real, 1 >
+class SinWave< 1, Real > : public SinWaveBase< 1, Real >
 {
    public:
-
-      enum { Dimensions = 1 };
+ 
       typedef Real RealType;
-      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
-
-      static String getType();
-
-      TwinsFunction();
+      typedef Vectors::StaticVector< 1, RealType > VertexType;
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
+      RealType getPartialDerivative( const VertexType& v,
+                                     const Real& time = 0.0 ) const;
+ 
+      __cuda_callable__
+      RealType operator()( const VertexType& v,
+                           const Real& time = 0.0 ) const;
+
+};
+
+template< typename Real >
+class SinWave< 2, Real > : public SinWaveBase< 2, Real >
+{
+   public:
+ 
+      typedef Real RealType;
+      typedef Vectors::StaticVector< 2, RealType > VertexType;
+ 
+#ifdef HAVE_NOT_CXX11
+      template< int XDiffOrder,
+                int YDiffOrder,
+                int ZDiffOrder >
+#else
+      template< int XDiffOrder = 0,
+                int YDiffOrder = 0,
+                int ZDiffOrder = 0 >
+#endif
+      __cuda_callable__
+      RealType getPartialDerivative( const VertexType& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
@@ -72,66 +106,27 @@ class TwinsFunction< 1, Real > : public TwinsFunctionBase< Real, 1 >
 };
 
 template< typename Real >
-class TwinsFunction< 2, Real > : public TwinsFunctionBase< Real, 2 >
+class SinWave< 3, Real > : public SinWaveBase< 3, Real >
 {
    public:
-
-      enum { Dimensions = 2 };
+ 
       typedef Real RealType;
-      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
+      typedef Vectors::StaticVector< 3, RealType > VertexType;
 
-      static String getType();
 
-      TwinsFunction();
-
+ 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
+                int ZDiffOrder >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
+                int ZDiffOrder = 0 >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
-                                     const Real& time = 0.0 ) const;
- 
-      __cuda_callable__
-      RealType operator()( const VertexType& v,
-                           const Real& time = 0.0 ) const;
- 
-};
-
-template< typename Real >
-class TwinsFunction< 3, Real > : public TwinsFunctionBase< Real, 3 >
-{
-   public:
-
-      enum { Dimensions = 3 };
-      typedef Real RealType;
-      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
-
-      static String getType();
-
-      TwinsFunction();
-
-#ifdef HAVE_NOT_CXX11
-      template< int XDiffOrder,
-                int YDiffOrder,
-                int ZDiffOrder,
-                typename Vertex >
-#else
-      template< int XDiffOrder = 0,
-                int YDiffOrder = 0,
-                int ZDiffOrder = 0,
-                typename Vertex = VertexType >
-#endif
-      __cuda_callable__
-      RealType getPartialDerivative( const Vertex& v,
-                                     const Real& time = 0.0 ) const;
+      RealType getPartialDerivative( const VertexType& v,
+                         const Real& time = 0.0 ) const;
  
       __cuda_callable__
       RealType operator()( const VertexType& v,
@@ -141,9 +136,11 @@ class TwinsFunction< 3, Real > : public TwinsFunctionBase< Real, 3 >
 
 template< int Dimensions,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const TwinsFunction< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const SinWave< Dimensions, Real >& f )
 {
-   str << "Twins function.";
+   str << "Sin Wave. function: amplitude = " << f.getAmplitude()
+       << " wavelength = " << f.getWaveLength()
+       << " phase = " << f.getPhase();
    return str;
 }
 
@@ -151,5 +148,5 @@ std::ostream& operator << ( std::ostream& str, const TwinsFunction< Dimensions, 
 } // namespace Functions
 } // namespace TNL
 
-#include <TNL/Functions/Analytic/TwinsFunction_impl.h>
+#include <TNL/Functions/Analytic/SinWave_impl.h>
 

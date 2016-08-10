@@ -23,7 +23,7 @@
 #include <TNL/Operators/diffusion/LinearDiffusion.h>
 #include <TNL/Operators/DirichletBoundaryConditions.h>
 #include <TNL/Operators/NeumannBoundaryConditions.h>
-#include <TNL/Functions/Analytic/ConstantFunction.h>
+#include <TNL/Functions/Analytic/Constant.h>
 #include <TNL/Problems/MeanCurvatureFlowProblem.h>
 #include <TNL/Operators/diffusion/OneSidedNonlinearDiffusion.h>
 #include <TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
@@ -101,21 +101,21 @@ class meanCurvatureFlowSetter
    static bool setBoundaryConditions( const Config::ParameterContainer& parameters )
    {
       typedef OneSidedNonlinearDiffusion< MeshType, NonlinearOperator, Real, Index > ApproximateOperator;
-      typedef ConstantFunction< Dimensions, Real > RightHandSide;
+      typedef Constant< Dimensions, Real > RightHandSide;
       typedef StaticVector< MeshType::meshDimensions, Real > Vertex;
 
       String boundaryConditionsType = parameters.getParameter< String >( "boundary-conditions-type" );
       if( parameters.checkParameter( "boundary-conditions-constant" ) )
       {
-         typedef ConstantFunction< Dimensions, Real > ConstantFunction;
+         typedef Constant< Dimensions, Real > Constant;
          if( boundaryConditionsType == "dirichlet" )
          {
-            typedef DirichletBoundaryConditions< MeshType, ConstantFunction, Dimensions, Real, Index > BoundaryConditions;
+            typedef DirichletBoundaryConditions< MeshType, Constant, Dimensions, Real, Index > BoundaryConditions;
             typedef MeanCurvatureFlowProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
             SolverStarter solverStarter;
             return solverStarter.template run< Solver >( parameters );
          }
-         typedef NeumannBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
+         typedef NeumannBoundaryConditions< MeshType, Constant, Real, Index > BoundaryConditions;
          typedef MeanCurvatureFlowProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Solver;
          SolverStarter solverStarter;
          return solverStarter.template run< Solver >( parameters );

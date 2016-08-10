@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExpBumpFunction.h  -  description
+                          ExpBump.h  -  description
                              -------------------
     begin                : Dec 5, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -17,11 +17,11 @@
 
 namespace TNL {
 namespace Functions {
-namespace Analytic {
-   
+namespace Analytic {   
+
 template< typename Real,
           int Dimensions >
-class BlobFunctionBase : public Domain< Dimensions, SpaceDomain >
+class TwinsBase : public Domain< Dimensions, SpaceDomain >
 {
    public:
 
@@ -29,20 +29,16 @@ class BlobFunctionBase : public Domain< Dimensions, SpaceDomain >
 
       bool setup( const Config::ParameterContainer& parameters,
                  const String& prefix = "" );
-
-     protected:
-
-      RealType height;
 };
 
 template< int Dimensions,
           typename Real >
-class BlobFunction
+class Twins
 {
 };
 
 template< typename Real >
-class BlobFunction< 1, Real > : public BlobFunctionBase< Real, 1 >
+class Twins< 1, Real > : public TwinsBase< Real, 1 >
 {
    public:
 
@@ -52,28 +48,31 @@ class BlobFunction< 1, Real > : public BlobFunctionBase< Real, 1 >
 
       static String getType();
 
-      BlobFunction();
+      Twins();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder >
+                int ZDiffOrder,
+                typename Vertex >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0 >
+                int ZDiffOrder = 0,
+                typename Vertex = VertexType >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const Vertex& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
+ 
 };
 
 template< typename Real >
-class BlobFunction< 2, Real > : public BlobFunctionBase< Real, 2 >
+class Twins< 2, Real > : public TwinsBase< Real, 2 >
 {
    public:
 
@@ -83,21 +82,23 @@ class BlobFunction< 2, Real > : public BlobFunctionBase< Real, 2 >
 
       static String getType();
 
-      BlobFunction();
+      Twins();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder >
+                int ZDiffOrder,
+                typename Vertex >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0 >
+                int ZDiffOrder = 0,
+                typename Vertex = VertexType >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const Vertex& v,
                                      const Real& time = 0.0 ) const;
-
+ 
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
@@ -105,7 +106,7 @@ class BlobFunction< 2, Real > : public BlobFunctionBase< Real, 2 >
 };
 
 template< typename Real >
-class BlobFunction< 3, Real > : public BlobFunctionBase< Real, 3 >
+class Twins< 3, Real > : public TwinsBase< Real, 3 >
 {
    public:
 
@@ -115,37 +116,40 @@ class BlobFunction< 3, Real > : public BlobFunctionBase< Real, 3 >
 
       static String getType();
 
-      BlobFunction();
+      Twins();
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
                 int YDiffOrder,
-                int ZDiffOrder >
+                int ZDiffOrder,
+                typename Vertex >
 #else
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
-                int ZDiffOrder = 0 >
+                int ZDiffOrder = 0,
+                typename Vertex = VertexType >
 #endif
       __cuda_callable__
-      RealType getPartialDerivative( const VertexType& v,
+      RealType getPartialDerivative( const Vertex& v,
                                      const Real& time = 0.0 ) const;
  
       __cuda_callable__
       RealType operator()( const VertexType& v,
                            const Real& time = 0.0 ) const;
+ 
 };
 
 template< int Dimensions,
           typename Real >
-std::ostream& operator << ( std::ostream& str, const BlobFunction< Dimensions, Real >& f )
+std::ostream& operator << ( std::ostream& str, const Twins< Dimensions, Real >& f )
 {
-   str << "Level-set pseudo square function.";
+   str << "Twins function.";
    return str;
 }
 
 } // namespace Analytic
 } // namespace Functions
-} // namepsace TNL
+} // namespace TNL
 
-#include <TNL/Functions/Analytic/BlobFunction_impl.h>
+#include <TNL/Functions/Analytic/Twins_impl.h>
 
