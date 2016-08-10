@@ -117,9 +117,9 @@ template< typename Device,
           bool verbose >
 bool setMesh()
 {
-   return ( setTestFunction< tnlGrid< 1, double, Device, int >, write, verbose >() &&
-            setTestFunction< tnlGrid< 2, double, Device, int >, write, verbose >() &&
-            setTestFunction< tnlGrid< 3, double, Device, int >, write, verbose >() );
+   return ( setTestFunction< Meshes::Grid< 1, double, Device, int >, write, verbose >() &&
+            setTestFunction< Meshes::Grid< 2, double, Device, int >, write, verbose >() &&
+            setTestFunction< Meshes::Grid< 3, double, Device, int >, write, verbose >() );
 }
 
 int main( int argc, char* argv[] )

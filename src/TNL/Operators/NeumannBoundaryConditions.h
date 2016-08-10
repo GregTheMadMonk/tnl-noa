@@ -62,9 +62,9 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-class NeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >
+class NeumannBoundaryConditions< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >
    : public NeumannBoundaryConditionsBase< Function >,
-     public Operator< tnlGrid< 1, MeshReal, Device, MeshIndex >,
+     public Operator< Meshes::Grid< 1, MeshReal, Device, MeshIndex >,
                          Functions::MeshBoundaryDomain,
                          1, 1,
                          Real,
@@ -72,7 +72,7 @@ class NeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Func
 {
    public:
 
-   typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
@@ -154,9 +154,9 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-class NeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >
+class NeumannBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >
    : public NeumannBoundaryConditionsBase< Function >,
-     public Operator< tnlGrid< 2, MeshReal, Device, MeshIndex >,
+     public Operator< Meshes::Grid< 2, MeshReal, Device, MeshIndex >,
                          Functions::MeshBoundaryDomain,
                          2, 2,
                          Real,
@@ -165,7 +165,7 @@ class NeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Func
 {
    public:
 
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
@@ -274,9 +274,9 @@ template< typename MeshReal,
           typename Function,
           typename Real,
           typename Index >
-class NeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >
+class NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >
    : public NeumannBoundaryConditionsBase< Function >,
-     public Operator< tnlGrid< 3, MeshReal, Device, MeshIndex >,
+     public Operator< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
                          Functions::MeshBoundaryDomain,
                          3, 3,
                          Real,
@@ -284,7 +284,7 @@ class NeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Func
 {
    public:
 
-      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;

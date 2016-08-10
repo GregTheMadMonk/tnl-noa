@@ -12,7 +12,7 @@
 #pragma once
 
 #include <TNL/Vectors/Vector.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Operators/diffusion/ExactNonlinearDiffusion.h>
 
 namespace TNL {
@@ -32,11 +32,11 @@ template< typename MeshReal,
           typename Nonlinearity,
           typename Real,
           typename Index >
-class OneSidedNonlinearDiffusion< tnlGrid< 1,MeshReal, Device, MeshIndex >, Nonlinearity, Real, Index >
+class OneSidedNonlinearDiffusion< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Nonlinearity, Real, Index >
 {
    public:
  
-      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
@@ -127,11 +127,11 @@ template< typename MeshReal,
           typename Nonlinearity,
           typename Real,
           typename Index >
-class OneSidedNonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Nonlinearity, Real, Index >
+class OneSidedNonlinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Nonlinearity, Real, Index >
 {
    public:
  
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
@@ -236,11 +236,11 @@ template< typename MeshReal,
           typename Nonlinearity,
           typename Real,
           typename Index >
-class OneSidedNonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Nonlinearity, Real, Index >
+class OneSidedNonlinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Nonlinearity, Real, Index >
 {
    public:
  
-      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;

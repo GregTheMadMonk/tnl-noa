@@ -31,10 +31,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class MeshFunctionVTKWriter< MeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 1, Real > >
+class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > >
 {
    public:
-      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
@@ -51,10 +51,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class MeshFunctionVTKWriter< MeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 0, Real > >
+class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >
 {
    public:
-      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
@@ -71,10 +71,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class MeshFunctionVTKWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 2, Real > >
+class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >
 {
    public:
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::MeshFunction< MeshType, 2, RealType > MeshFunctionType;
 
@@ -91,10 +91,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class MeshFunctionVTKWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real > >
+class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >
 {
    public:
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
@@ -111,10 +111,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class MeshFunctionVTKWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 0, Real > >
+class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >
 {
    public:
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
@@ -131,10 +131,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class MeshFunctionVTKWriter< MeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 3, Real > >
+class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > >
 {
    public:
-      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::MeshFunction< MeshType, 3, RealType > MeshFunctionType;
 
@@ -151,10 +151,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class MeshFunctionVTKWriter< MeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real > >
+class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > >
 {
    public:
-      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::MeshFunction< MeshType, 2, RealType > MeshFunctionType;
 
@@ -171,10 +171,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class MeshFunctionVTKWriter< MeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 1, Real > >
+class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1, Real > >
 {
    public:
-      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
@@ -191,10 +191,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class MeshFunctionVTKWriter< MeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 0, Real > >
+class MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > >
 {
    public:
-      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
 

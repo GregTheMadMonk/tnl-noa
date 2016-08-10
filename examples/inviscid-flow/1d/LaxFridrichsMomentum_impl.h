@@ -12,7 +12,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-LaxFridrichsMomentum< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentum< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
    return String( "LaxFridrichsMomentum< " ) +
@@ -29,7 +29,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-LaxFridrichsMomentum< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentum< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -57,7 +57,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-LaxFridrichsMomentum< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentum< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -80,7 +80,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-LaxFridrichsMomentum< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentum< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -115,7 +115,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-LaxFridrichsMomentum< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentum< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
    return String( "LaxFridrichsMomentum< " ) +
@@ -132,7 +132,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-LaxFridrichsMomentum< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentum< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -165,7 +165,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-LaxFridrichsMomentum< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentum< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -188,7 +188,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-LaxFridrichsMomentum< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentum< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -228,7 +228,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-LaxFridrichsMomentum< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentum< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
    return String( "LaxFridrichsMomentum< " ) +
@@ -245,7 +245,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-LaxFridrichsMomentum< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentum< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -282,7 +282,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-LaxFridrichsMomentum< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentum< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -305,7 +305,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-LaxFridrichsMomentum< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LaxFridrichsMomentum< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,

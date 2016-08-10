@@ -24,10 +24,10 @@ template<> struct ConfigTagIndex< eulerBuildConfigTag, long int >{ enum { enable
 template< int Dimensions > struct ConfigTagDimensions< eulerBuildConfigTag, Dimensions >{ enum { enabled = ( Dimensions == 1 ) }; };
 
 /****
- * Use of tnlGrid is enabled for allowed dimensions and Real, Device and Index types.
+ * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
  */
 template< int Dimensions, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< eulerBuildConfigTag, tnlGrid< Dimensions, Real, Device, Index > >
+   struct ConfigTagMesh< eulerBuildConfigTag, Meshes::Grid< Dimensions, Real, Device, Index > >
       { enum { enabled = ConfigTagDimensions< eulerBuildConfigTag, Dimensions >::enabled  &&
                          ConfigTagReal< eulerBuildConfigTag, Real >::enabled &&
                          ConfigTagDevice< eulerBuildConfigTag, Device >::enabled &&

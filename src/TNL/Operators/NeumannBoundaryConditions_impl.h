@@ -72,7 +72,7 @@ template< typename MeshReal,
              typename MeshFunction >
 __cuda_callable__
 const Real
-NeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+NeumannBoundaryConditions< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 operator()( const MeshFunction& u,
             const EntityType& entity,
             const RealType& time ) const
@@ -98,7 +98,7 @@ template< typename MeshReal,
    template< typename EntityType >
 __cuda_callable__
 Index
-NeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+NeumannBoundaryConditions< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const EntityType& entity ) const
@@ -117,7 +117,7 @@ template< typename MeshReal,
              typename MeshFunction >
 __cuda_callable__
 void
-NeumannBoundaryConditions< tnlGrid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+NeumannBoundaryConditions< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setMatrixElements( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
@@ -158,7 +158,7 @@ template< typename MeshReal,
              typename MeshFunction >
 __cuda_callable__
 const Real
-NeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+NeumannBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 operator()( const MeshFunction& u,
             const EntityType& entity,
             const RealType& time ) const
@@ -197,7 +197,7 @@ template< typename MeshReal,
    template< typename EntityType >          
 __cuda_callable__
 Index
-NeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+NeumannBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const EntityType& entity ) const
@@ -216,7 +216,7 @@ template< typename MeshReal,
              typename MeshFunction >
 __cuda_callable__
 void
-NeumannBoundaryConditions< tnlGrid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+NeumannBoundaryConditions< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setMatrixElements( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,
@@ -271,7 +271,7 @@ template< typename MeshReal,
              typename MeshFunction >
 __cuda_callable__
 const Real
-NeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 operator()( const MeshFunction& u,
             const EntityType& entity,            
             const RealType& time ) const
@@ -320,7 +320,7 @@ template< typename MeshReal,
    template< typename EntityType >          
 __cuda_callable__
 Index
-NeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const EntityType& entity ) const
@@ -339,7 +339,7 @@ template< typename MeshReal,
              typename MeshFunction >
 __cuda_callable__
 void
-NeumannBoundaryConditions< tnlGrid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
+NeumannBoundaryConditions< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Function, Real, Index >::
 setMatrixElements( const RealType& time,
                     const MeshType& mesh,
                     const IndexType& index,

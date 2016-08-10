@@ -38,18 +38,18 @@ class PNGImage : public tnlImage< Index >
                 typename Device,
                 typename Vector >
       bool read( const RegionOfInterest< Index > roi,
-                 const tnlGrid< 2, Real, Device, Index >& grid,
+                 const Meshes::Grid< 2, Real, Device, Index >& grid,
                  Vector& vector );
  
       template< typename Real,
                 typename Device >
       bool openForWrite( const String& fileName,
-                         tnlGrid< 2, Real, Device, Index >& grid );
+                         Meshes::Grid< 2, Real, Device, Index >& grid );
  
       template< typename Real,
                 typename Device,
                 typename Vector >
-      bool write( const tnlGrid< 2, Real, Device, Index >& grid,
+      bool write( const Meshes::Grid< 2, Real, Device, Index >& grid,
                   Vector& vector );
  
       void close();
@@ -62,7 +62,7 @@ class PNGImage : public tnlImage< Index >
  
       template< typename Real,
                 typename Device >
-      bool writeHeader( const tnlGrid< 2, Real, Device, Index >& grid );
+      bool writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid );
  
       FILE* file;
 

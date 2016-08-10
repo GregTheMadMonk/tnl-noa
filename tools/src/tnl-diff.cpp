@@ -9,8 +9,8 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include "tnl-diff.h"
-#include <TNL/mesh/tnlDummyMesh.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/DummyMesh.h>
+#include <TNL/Meshes/Grid.h>
 
 void setupConfig( Config::ConfigDescription& config )
 {
@@ -45,7 +45,7 @@ int main( int argc, char* argv[] )
    String meshFile = parameters. getParameter< String >( "mesh" );
    /*if( meshFile == "" )
    {
-      if( ! processFiles< tnlDummyMesh< double, Devices::Host, int > >( parameters ) )
+      if( ! processFiles< DummyMesh< double, Devices::Host, int > >( parameters ) )
          return EXIT_FAILURE;
       return EXIT_SUCCESS;
    }*/
@@ -62,24 +62,24 @@ int main( int argc, char* argv[] )
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
       return false;
    }
-   if( parsedMeshType[ 0 ] == "tnlGrid" )
+   if( parsedMeshType[ 0 ] == "Grid" )
    {
       int dimensions = atoi( parsedMeshType[ 1 ].getString() );
       if( dimensions == 1 )
       {
-         typedef tnlGrid< 1, double, Devices::Host, int > MeshType;
+         typedef Meshes::Grid< 1, double, Devices::Host, int > MeshType;
          if( ! processFiles< MeshType >( parameters ) )
             return EXIT_FAILURE;
       }
       if( dimensions == 2 )
       {
-         typedef tnlGrid< 2, double, Devices::Host, int > MeshType;
+         typedef Meshes::Grid< 2, double, Devices::Host, int > MeshType;
          if( ! processFiles< MeshType >( parameters ) )
             return EXIT_FAILURE;
       }
       if( dimensions == 3 )
       {
-         typedef tnlGrid< 3, double, Devices::Host, int > MeshType;
+         typedef Meshes::Grid< 3, double, Devices::Host, int > MeshType;
          if( ! processFiles< MeshType >( parameters ) )
             return EXIT_FAILURE;
       }

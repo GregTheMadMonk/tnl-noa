@@ -11,9 +11,9 @@
 #pragma once
 
 #include <type_traits>
-#include <TNL/mesh/grids/tnlTraverser_Grid1D.h>
-#include <TNL/mesh/grids/tnlTraverser_Grid2D.h>
-#include <TNL/mesh/grids/tnlTraverser_Grid3D.h>
+#include <TNL/Meshes/GridDetails/Traverser_Grid1D.h>
+#include <TNL/Meshes/GridDetails/Traverser_Grid2D.h>
+#include <TNL/Meshes/GridDetails/Traverser_Grid3D.h>
 
 namespace TNL {
 namespace Solvers {
@@ -58,7 +58,7 @@ assembly( const RealType& time,
                                   uPointer,
                                   matrixPointer,
                                   bPointer );
-      tnlTraverser< MeshType, EntityType > meshTraverser;
+      Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
                                                     ( meshPointer,

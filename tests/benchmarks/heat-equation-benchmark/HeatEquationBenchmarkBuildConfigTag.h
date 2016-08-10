@@ -21,10 +21,10 @@ template<> struct ConfigTagIndex< HeatEquationBenchmarkBuildConfigTag, short int
 template<> struct ConfigTagIndex< HeatEquationBenchmarkBuildConfigTag, long int >{ enum { enabled = false }; };
 
 /****
- * Use of tnlGrid is enabled for allowed dimensions and Real, Device and Index types.
+ * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
  */
 template< int Dimensions, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< HeatEquationBenchmarkBuildConfigTag, tnlGrid< Dimensions, Real, Device, Index > >
+   struct ConfigTagMesh< HeatEquationBenchmarkBuildConfigTag, Meshes::Grid< Dimensions, Real, Device, Index > >
       { enum { enabled = ( Dimensions == 2 )  &&
                          ConfigTagReal< HeatEquationBenchmarkBuildConfigTag, Real >::enabled &&
                          ConfigTagDevice< HeatEquationBenchmarkBuildConfigTag, Device >::enabled &&

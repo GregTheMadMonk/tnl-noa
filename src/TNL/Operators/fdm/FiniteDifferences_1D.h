@@ -29,7 +29,7 @@ template< typename MeshReal,
           int YDirection,
           int ZDirection >
 class FiniteDifferences<
-   tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index,
+   Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
    XDifference, YDifference, ZDifference,
    XDirection, YDirection, ZDirection >
 {
@@ -55,7 +55,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class FiniteDifferences<
-   tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index,
+   Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
    1, 0, 0,
    1, 0, 0 >
 {
@@ -82,7 +82,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class FiniteDifferences<
-   tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index,
+   Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
    1, 0, 0,
    -1, 0, 0 >
 {
@@ -109,7 +109,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class FiniteDifferences<
-   tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index,
+   Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
    1, 0, 0,
    0, 0, 0 >
 {
@@ -136,7 +136,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class FiniteDifferences<
-   tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index,
+   Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
    2, 0, 0,
    1, 0, 0 >
 {
@@ -162,7 +162,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class FiniteDifferences<
-   tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index,
+   Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
    2, 0, 0,
    -1, 0, 0 >
 {
@@ -188,7 +188,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class FiniteDifferences<
-   tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index,
+   Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
    2, 0, 0,
    0, 0, 0 >
 {

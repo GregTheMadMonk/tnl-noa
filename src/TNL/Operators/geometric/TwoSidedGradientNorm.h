@@ -30,13 +30,13 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class TwoSidedGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
-   : public Operator< tnlGrid< 1, MeshReal, Device, MeshIndex >,
+class TwoSidedGradientNorm< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+   : public Operator< Meshes::Grid< 1, MeshReal, Device, MeshIndex >,
                          Functions::MeshInteriorDomain, 1, 1, Real, Index >
 {
    public:
  
-   typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
@@ -83,13 +83,13 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class TwoSidedGradientNorm< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
-   : public Operator< tnlGrid< 2, MeshReal, Device, MeshIndex >,
+class TwoSidedGradientNorm< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+   : public Operator< Meshes::Grid< 2, MeshReal, Device, MeshIndex >,
                          Functions::MeshInteriorDomain, 2, 2, Real, Index >
 {
    public:
  
-   typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
@@ -146,13 +146,13 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class TwoSidedGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >
-   : public Operator< tnlGrid< 3, MeshReal, Device, MeshIndex >,
+class TwoSidedGradientNorm< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >
+   : public Operator< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
                          Functions::MeshInteriorDomain, 3, 3, Real, Index >
 {
    public:
  
-   typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;

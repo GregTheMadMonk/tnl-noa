@@ -2,7 +2,7 @@
 #define EulerVelGetter_H
 
 #include <TNL/Vectors/Vector.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
 

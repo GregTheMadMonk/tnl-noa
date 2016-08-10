@@ -12,11 +12,11 @@
 #define curve_identH
 
 #include <TNL/core/tnlCurve.h>
-#include <TNL/legacy/mesh/tnlGridOld.h>
+#include <TNL/legacy/mesh/GridOld.h>
 #include <TNL/debug/tnlDebug.h>
 
 template< typename Real, typename Device, typename Index >
-bool getLevelSetCurve( const tnlGridOld< 2, Real, Device, Index >& u,
+bool getLevelSetCurve( const GridOld< 2, Real, Device, Index >& u,
                        tnlCurve< StaticVector< 2, Real > >& crv,
                        const Real level = 0.0 )
 {

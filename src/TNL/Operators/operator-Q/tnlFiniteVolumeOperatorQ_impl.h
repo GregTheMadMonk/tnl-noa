@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Operators/operator-Q/tnlFiniteVolumeOperatorQ.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
 namespace Operators {   
@@ -22,7 +22,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 getType()
 {
    return String( "tnlFiniteVolumeOperatorQ< " ) +
@@ -37,7 +37,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 getType()
 {
    return String( "tnlFiniteVolumeOperatorQ< " ) +
@@ -51,7 +51,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-bool tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
+bool tnlFiniteVolumeOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
 {
   this->eps = eps;
   
@@ -63,7 +63,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-bool tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
+bool tnlFiniteVolumeOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
 {
   this->eps = eps;
   
@@ -77,7 +77,7 @@ template< typename MeshReal,
           typename Index >   
 __cuda_callable__
 void  
-tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 update( const MeshType& mesh, const RealType& time )
 {
 }
@@ -90,7 +90,7 @@ template< typename MeshReal,
 template< typename MeshEntity, typename Vector, int AxeX, int AxeY, int AxeZ >
 __cuda_callable__
 Real
-tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 boundaryDerivative( const MeshEntity& entity,
                     const Vector& u,
                     const Real& time,
@@ -110,7 +110,7 @@ template< typename MeshEntity,
           typename Vector >
 __cuda_callable__
 Real
-tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 operator()( 
    const MeshType& mesh,
    const MeshEntity& entity,
@@ -131,7 +131,7 @@ template< typename MeshReal,
 template< typename MeshEntity, typename Vector, int AxeX, int AxeY, int AxeZ >
 __cuda_callable__
 Real
-tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 boundaryDerivative( 
    const MeshType& mesh,
    const MeshEntity& entity,
@@ -152,7 +152,7 @@ template< typename MeshReal,
 template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
-tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 operator()( 
    const MeshType& mesh,
    const MeshEntity& entity,
@@ -171,7 +171,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 getType()
 {
    return String( "tnlFiniteVolumeOperatorQ< " ) +
@@ -186,7 +186,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 getType()
 {
    return String( "tnlFiniteVolumeOperatorQ< " ) +
@@ -200,7 +200,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-bool tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
+bool tnlFiniteVolumeOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
 {
   this->eps = eps;
   
@@ -212,7 +212,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-bool tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
+bool tnlFiniteVolumeOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
 {
   this->eps = eps;
   
@@ -226,7 +226,7 @@ template< typename MeshReal,
           typename Index >
 template< typename Vector >
 Index 
-tnlFiniteVolumeOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 bind( Vector& u) 
 {
     return 0;
@@ -239,7 +239,7 @@ template< typename MeshReal,
           typename Index >
 __cuda_callable__
 void 
-tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 update( const MeshType& mesh, const RealType& time )
 {
     CoordinatesType dimensions = mesh.getDimensions();
@@ -260,7 +260,7 @@ template< typename MeshReal,
 template< typename MeshEntity, typename Vector, int AxeX, int AxeY, int AxeZ >
 __cuda_callable__
 Real
-tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 boundaryDerivative( 
    const MeshType& mesh,
    const MeshEntity& entity,
@@ -313,7 +313,7 @@ template< typename MeshReal,
 template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
-tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 operator()( const MeshEntity& entity,
           const Vector& u,
           const Real& time,
@@ -360,7 +360,7 @@ template< typename MeshReal,
 template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
-tnlFiniteVolumeOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 operator()( const MeshType& mesh,
           const MeshEntity& entity,
           const Vector& u,
@@ -378,7 +378,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-tnlFiniteVolumeOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 getType()
 {
    return String( "tnlFiniteVolumeOperatorQ< " ) +
@@ -393,7 +393,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-tnlFiniteVolumeOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 getType()
 {
    return String( "tnlFiniteVolumeOperatorQ< " ) +
@@ -407,7 +407,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-bool tnlFiniteVolumeOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
+bool tnlFiniteVolumeOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::setEps( const Real& eps )
 {
   this->eps = eps;
   
@@ -419,7 +419,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-bool tnlFiniteVolumeOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
+bool tnlFiniteVolumeOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
 {
   this->eps = eps;
   
@@ -433,7 +433,7 @@ template< typename MeshReal,
           typename Index >
 template< typename Vector >
 Index 
-tnlFiniteVolumeOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 bind( Vector& u) 
 {
     this->u.bind(u);
@@ -450,7 +450,7 @@ template< typename MeshReal,
           typename Index >
 __cuda_callable__
 void 
-tnlFiniteVolumeOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
 update( const MeshType& mesh, const RealType& time )
 {
     CoordinatesType dimensions = mesh.getDimensions();
@@ -470,7 +470,7 @@ template< typename MeshReal,
 template< typename MeshEntity, typename Vector, int AxeX, int AxeY, int AxeZ >
 __cuda_callable__
 Real
-tnlFiniteVolumeOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 boundaryDerivative( 
    const MeshType& mesh,
    const MeshEntity& entity,
@@ -562,7 +562,7 @@ template< typename MeshReal,
 template< typename MeshEntity, typename Vector >
 __cuda_callable__
 Real
-tnlFiniteVolumeOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
+tnlFiniteVolumeOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
 operator()( 
    const MeshEntity& entity,
    const Vector& u,

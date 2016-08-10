@@ -11,9 +11,9 @@
 #pragma once
 
 #include <type_traits>
-#include <TNL/mesh/grids/tnlTraverser_Grid1D.h>
-#include <TNL/mesh/grids/tnlTraverser_Grid2D.h>
-#include <TNL/mesh/grids/tnlTraverser_Grid3D.h>
+#include <TNL/Meshes/GridDetails/Traverser_Grid1D.h>
+#include <TNL/Meshes/GridDetails/Traverser_Grid2D.h>
+#include <TNL/Meshes/GridDetails/Traverser_Grid3D.h>
 
 #include "ExplicitUpdater.h"
 
@@ -51,7 +51,7 @@ update( const RealType& time,
                                   uPointer.template modifyData< DeviceType >(),
                                   fuPointer.template modifyData< DeviceType >(),
                                   fuPointer.template modifyData< Devices::Host >() );
-      tnlTraverser< MeshType, EntityType > meshTraverser;
+      Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
                                                     ( meshPointer,

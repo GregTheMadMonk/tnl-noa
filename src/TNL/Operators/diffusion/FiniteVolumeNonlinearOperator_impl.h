@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTraverser.h  -  description
+                          Traverser.h  -  description
                              -------------------
     begin                : Feb 17, 2016
     email                : tomas.oberhuber@fjfi.cvut.cz
@@ -10,7 +10,7 @@
 #pragma once
 
 #include "FiniteVolumeNonlinearOperator.h"
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
 namespace Operators {   
@@ -22,7 +22,7 @@ template< typename MeshReal,
           typename Index,
           typename OperatorQ >
 String
-FiniteVolumeNonlinearOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+FiniteVolumeNonlinearOperator< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 getType()
 {
    return String( "FiniteVolumeNonlinearOperator< " ) +
@@ -42,7 +42,7 @@ template< typename MeshEntity,
           typename Vector >
 __cuda_callable__
 Real
-FiniteVolumeNonlinearOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+FiniteVolumeNonlinearOperator< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 operator()( const MeshEntity& entity,
           const Vector& u,
           const Real& time ) const
@@ -59,7 +59,7 @@ template< typename MeshReal,
    template< typename MeshEntity >
 __cuda_callable__
 Index
-FiniteVolumeNonlinearOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+FiniteVolumeNonlinearOperator< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -79,7 +79,7 @@ template< typename MeshEntity,
           typename Matrix >
 __cuda_callable__
 void
-FiniteVolumeNonlinearOperator< tnlGrid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+FiniteVolumeNonlinearOperator< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -99,7 +99,7 @@ template< typename MeshReal,
           typename Index,
 	  typename OperatorQ >
 String
-FiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+FiniteVolumeNonlinearOperator< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 getType()
 {
    return String( "FiniteVolumeNonlinearOperator< " ) +
@@ -119,7 +119,7 @@ template< typename MeshEntity,
           typename Vector >
 __cuda_callable__
 Real
-FiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+FiniteVolumeNonlinearOperator< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 operator()( const MeshEntity& entity,
             const Vector& u,
             const Real& time ) const
@@ -143,7 +143,7 @@ template< typename MeshReal,
    template< typename MeshEntity >
 __cuda_callable__
 Index
-FiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+FiniteVolumeNonlinearOperator< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -163,7 +163,7 @@ template< typename MeshEntity,
           typename Matrix >
 __cuda_callable__
 void
-FiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+FiniteVolumeNonlinearOperator< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -202,7 +202,7 @@ template< typename MeshReal,
           typename Index,
  	  typename OperatorQ >
 String
-FiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+FiniteVolumeNonlinearOperator< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 getType()
 {
    return String( "FiniteVolumeNonlinearOperator< " ) +
@@ -222,7 +222,7 @@ template< typename MeshEntity,
           typename Vector >
 __cuda_callable__
 Real
-FiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+FiniteVolumeNonlinearOperator< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 operator()( const MeshEntity& entity,
             const Vector& u,
             const Real& time ) const
@@ -254,7 +254,7 @@ template< typename MeshReal,
    template< typename MeshEntity >
 __cuda_callable__
 Index
-FiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+FiniteVolumeNonlinearOperator< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -276,7 +276,7 @@ template< typename MeshEntity,
 __cuda_callable__
 #endif
 void
-FiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
+FiniteVolumeNonlinearOperator< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
 setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,

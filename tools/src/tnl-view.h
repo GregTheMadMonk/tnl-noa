@@ -17,7 +17,7 @@
 #include <TNL/String.h>
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Vectors/MultiVector.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/MeshFunction.h>
 
 using namespace std;
@@ -98,12 +98,12 @@ bool setMeshEntityType( const MeshPointer& meshPointer,
 
 template< typename MeshReal,
           typename MeshIndex >
-bool setMeshEntityDimensions( const SharedPointer< tnlGrid< 1, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
+bool setMeshEntityDimensions( const SharedPointer< Meshes::Grid< 1, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
                               const String& inputFileName,
                               const List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
-   typedef tnlGrid< 1, MeshReal, Devices::Host, MeshIndex > Mesh;
+   typedef Meshes::Grid< 1, MeshReal, Devices::Host, MeshIndex > Mesh;
    typedef SharedPointer< Mesh > MeshPointer;
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
@@ -122,12 +122,12 @@ bool setMeshEntityDimensions( const SharedPointer< tnlGrid< 1, MeshReal, Devices
 
 template< typename MeshReal,
           typename MeshIndex >
-bool setMeshEntityDimensions( const SharedPointer< tnlGrid< 2, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
+bool setMeshEntityDimensions( const SharedPointer< Meshes::Grid< 2, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
                               const String& inputFileName,
                               const List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
-   typedef tnlGrid< 2, MeshReal, Devices::Host, MeshIndex > Mesh;
+   typedef Meshes::Grid< 2, MeshReal, Devices::Host, MeshIndex > Mesh;
    typedef SharedPointer< Mesh > MeshPointer;
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
@@ -149,12 +149,12 @@ bool setMeshEntityDimensions( const SharedPointer< tnlGrid< 2, MeshReal, Devices
 
 template< typename MeshReal,
           typename MeshIndex >
-bool setMeshEntityDimensions( const SharedPointer< tnlGrid< 3, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
+bool setMeshEntityDimensions( const SharedPointer< Meshes::Grid< 3, MeshReal, Devices::Host, MeshIndex > >& meshPointer,
                               const String& inputFileName,
                               const List< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters )
 {
-   typedef tnlGrid< 3, MeshReal, Devices::Host, MeshIndex > Mesh;
+   typedef Meshes::Grid< 3, MeshReal, Devices::Host, MeshIndex > Mesh;
    typedef SharedPointer< Mesh > MeshPointer;
    int meshEntityDimensions = atoi( parsedObjectType[ 2 ].getString() );
    switch( meshEntityDimensions )
@@ -225,7 +225,7 @@ bool convertObject( const MeshPointer& meshPointer,
       Vectors::MultiVector< Dimensions, Element, Devices::Host, Index > multiVector;
       if( ! multiVector. load( inputFileName ) )
          return false;
-      typedef tnlGrid< Dimensions, Real, Devices::Host, Index > GridType;
+      typedef Meshes::Grid< Dimensions, Real, Devices::Host, Index > GridType;
       typedef typename GridType::VertexType VertexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       GridType grid;

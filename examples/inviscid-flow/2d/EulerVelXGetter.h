@@ -2,7 +2,7 @@
 #define EulerVelXGetter_H
 
 #include <TNL/Vectors/Vector.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
 
@@ -18,10 +18,10 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelXGetter< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+class EulerVelXGetter< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
@@ -73,10 +73,10 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelXGetter< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+class EulerVelXGetter< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
@@ -127,10 +127,10 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class EulerVelXGetter< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+class EulerVelXGetter< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;

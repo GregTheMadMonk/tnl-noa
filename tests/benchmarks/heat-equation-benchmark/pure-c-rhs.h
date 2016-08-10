@@ -30,7 +30,7 @@ struct Data
 {
    double time, tau;
    TNL::Vectors::StaticVector< 2, double > c1, c2, c3, c4;
-   TNL::tnlGrid< 2, double > grid;
+   TNL::Meshes::Grid< 2, double > grid;
 };
 
 #ifdef HAVE_CUDA
@@ -106,7 +106,7 @@ bool pureCRhsCuda( dim3 cudaGridSize,
    Coordinates* kernelC2 = tnlCuda::passToDevice( c );
    Coordinates* kernelC3 = tnlCuda::passToDevice( c );
    Coordinates* kernelC4 = tnlCuda::passToDevice( c );
-   typedef tnlGrid< 2, Real, tnlCuda, int > Grid;
+   typedef Meshes::Grid< 2, Real, tnlCuda, int > Grid;
    Grid g;
    Grid* kernelGrid = tnlCuda::passToDevice( g );*/
    Data d, d2;

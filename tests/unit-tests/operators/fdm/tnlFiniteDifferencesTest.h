@@ -15,7 +15,7 @@
 #include "../tnlPDEOperatorEocTest.h"
 #include "../tnlPDEOperatorEocUnitTest.h"
 #include "../../tnlUnitTestStarter.h"
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Operators/fdm/BackwardFiniteDifference.h>
 #include <TNL/Operators/fdm/ForwardFiniteDifference.h>
 #include <TNL/Operators/fdm/CentralFiniteDifference.h>
@@ -175,9 +175,9 @@ template< typename MeshReal,
           bool Verbose >
 bool setDifferenceOrder()
 {
-    typedef tnlGrid< 1, MeshReal, Device, MeshIndex > Grid1D;
-    typedef tnlGrid< 2, MeshReal, Device, MeshIndex > Grid2D;
-    typedef tnlGrid< 3, MeshReal, Device, MeshIndex > Grid3D;
+    typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > Grid1D;
+    typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > Grid2D;
+    typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > Grid3D;
     return ( setFunction< Grid1D, RealType, IndexType, 1, 0, 0, MeshSize, WriteFunctions, Verbose >() &&
              setFunction< Grid1D, RealType, IndexType, 2, 0, 0, MeshSize, WriteFunctions, Verbose >() &&
              setFunction< Grid2D, RealType, IndexType, 1, 0, 0, MeshSize, WriteFunctions, Verbose >() &&

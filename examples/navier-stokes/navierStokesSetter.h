@@ -34,11 +34,11 @@ class navierStokesSetter
 };
 
 template< typename MeshReal, typename Device, typename MeshIndex, typename SolverStarter >
-class navierStokesSetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, SolverStarter >
+class navierStokesSetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, SolverStarter >
 {
    public:
 
-   typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
 
    template< typename RealType,
              typename DeviceType,

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Operators/diffusion/LinearDiffusion.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
 namespace Operators {   
@@ -22,7 +22,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-LinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LinearDiffusion< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
    return String( "LinearDiffusion< " ) +
@@ -41,7 +41,7 @@ template< typename PreimageFunction,
 __cuda_callable__
 inline
 Real
-LinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LinearDiffusion< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const PreimageFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -64,7 +64,7 @@ template< typename MeshReal,
 __cuda_callable__
 inline
 Index
-LinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LinearDiffusion< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -84,7 +84,7 @@ template< typename MeshReal,
 __cuda_callable__
 inline
 void
-LinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+LinearDiffusion< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 setMatrixElements( const PreimageFunction& u,
                    const MeshEntity& entity,
                    const RealType& time,
@@ -109,7 +109,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-LinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
    return String( "LinearDiffusion< " ) +
@@ -127,7 +127,7 @@ template< typename MeshReal,
 __cuda_callable__
 inline
 Index
-LinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const EntityType& entity ) const
@@ -146,7 +146,7 @@ template< typename PreimageFunction,
 __cuda_callable__
 inline
 Real
-LinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const PreimageFunction& u,
             const EntityType& entity,
             const Real& time ) const
@@ -175,7 +175,7 @@ template< typename MeshReal,
 __cuda_callable__
 inline
 void
-LinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+LinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 setMatrixElements( const PreimageFunction& u,
                    const MeshEntity& entity,
                    const RealType& time,
@@ -204,7 +204,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-LinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
    return String( "LinearDiffusion< " ) +
@@ -223,7 +223,7 @@ template< typename PreimageFunction,
 __cuda_callable__
 inline
 Real
-LinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const PreimageFunction& u,
             const EntityType& entity,
             const Real& time ) const
@@ -252,7 +252,7 @@ template< typename MeshReal,
 __cuda_callable__
 inline
 Index
-LinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const EntityType& entity ) const
@@ -272,7 +272,7 @@ template< typename MeshReal,
 __cuda_callable__
 inline
 void
-LinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+LinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 setMatrixElements( const PreimageFunction& u,
                    const MeshEntity& entity,
                    const RealType& time,

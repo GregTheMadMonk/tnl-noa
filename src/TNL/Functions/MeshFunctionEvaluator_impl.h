@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Functions/MeshFunctionEvaluator.h>
-#include <TNL/mesh/tnlTraverser.h>
+#include <TNL/Meshes/Traverser.h>
 
 namespace TNL {
 namespace Functions {   
@@ -101,7 +101,7 @@ evaluateEntities( OutMeshFunction& meshFunction,
    if( std::is_same< MeshDeviceType, Devices::Host >::value )
    {
       TraverserUserData userData( &function, &time, &meshFunction, &outFunctionMultiplicator, &inFunctionMultiplicator );
-      tnlTraverser< MeshType, MeshEntityType > meshTraverser;
+      Meshes::Traverser< MeshType, MeshEntityType > meshTraverser;
       switch( entitiesType )
       {
          case all:
@@ -152,7 +152,7 @@ evaluateEntities( OutMeshFunction& meshFunction,
  
       TraverserUserData userData( kernelFunction, kernelTime, kernelMeshFunction, kernelOutFunctionMultiplicator, kernelInFunctionMultiplicator );
       checkCudaDevice;
-      tnlTraverser< MeshType, MeshEntityType > meshTraverser;
+      Meshes::Traverser< MeshType, MeshEntityType > meshTraverser;
       switch( entitiesType )
       {
          case all:

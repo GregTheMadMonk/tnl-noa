@@ -73,7 +73,7 @@ bool navierStokesSolver< Mesh, EulerScheme > :: setMeshGeometry( tnlLinearGridGe
 template< typename Mesh, typename EulerScheme >
    template< typename Real, typename Device, typename Index,
              template< int, typename, typename, typename > class Geometry >
-bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 1, Real, Device, Index, Geometry >& mesh,
+bool navierStokesSolver< Mesh, EulerScheme >::initMesh( Meshes::Grid< 1, Real, Device, Index, Geometry >& mesh,
                                                         const Config::ParameterContainer& parameters ) const
 {
 
@@ -82,7 +82,7 @@ bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 1, Real, Device
 template< typename Mesh, typename EulerScheme >
    template< typename Real, typename Device, typename Index,
              template< int, typename, typename, typename > class Geometry >
-bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 2, Real, Device, Index, Geometry >& mesh,
+bool navierStokesSolver< Mesh, EulerScheme >::initMesh( Meshes::Grid< 2, Real, Device, Index, Geometry >& mesh,
                                                         const Config::ParameterContainer& parameters ) const
 {
    StaticVector< 2, IndexType > meshes;
@@ -105,7 +105,7 @@ bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 2, Real, Device
 template< typename Mesh, typename EulerScheme >
    template< typename Real, typename Device, typename Index,
              template< int, typename, typename, typename > class Geometry >
-bool navierStokesSolver< Mesh, EulerScheme >::initMesh( tnlGrid< 3, Real, Device, Index, Geometry >& mesh,
+bool navierStokesSolver< Mesh, EulerScheme >::initMesh( Meshes::Grid< 3, Real, Device, Index, Geometry >& mesh,
                                                         const Config::ParameterContainer& parameters ) const
 {
 

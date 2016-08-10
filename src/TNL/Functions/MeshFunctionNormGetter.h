@@ -28,13 +28,13 @@ template< int Dimensions,
           typename MeshIndex,
           int EntityDimensions,
           typename Real >
-class MeshFunctionNormGetter< MeshFunction< tnlGrid< Dimensions, MeshReal, Devices::Host, MeshIndex >, EntityDimensions, Real >,
-                                 tnlGrid< Dimensions, MeshReal, Devices::Host, MeshIndex > >
+class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimensions, MeshReal, Devices::Host, MeshIndex >, EntityDimensions, Real >,
+                                 Meshes::Grid< Dimensions, MeshReal, Devices::Host, MeshIndex > >
 {
    public:
  
-      typedef Functions::MeshFunction< tnlGrid< Dimensions, MeshReal, Devices::Host, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
-      typedef tnlGrid< Dimensions, MeshReal, Devices::Host, MeshIndex > GridType;
+      typedef Functions::MeshFunction< Meshes::Grid< Dimensions, MeshReal, Devices::Host, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
+      typedef Meshes::Grid< Dimensions, MeshReal, Devices::Host, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
       typedef Devices::Host DeviceType;
       typedef MeshIndex MeshIndexType;
@@ -107,13 +107,13 @@ template< int Dimensions,
           typename MeshIndex,
           int EntityDimensions,
           typename Real >
-class MeshFunctionNormGetter< MeshFunction< tnlGrid< Dimensions, MeshReal, Devices::Cuda, MeshIndex >, EntityDimensions, Real >,
-                                 tnlGrid< Dimensions, MeshReal, Devices::Cuda, MeshIndex > >
+class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimensions, MeshReal, Devices::Cuda, MeshIndex >, EntityDimensions, Real >,
+                                 Meshes::Grid< Dimensions, MeshReal, Devices::Cuda, MeshIndex > >
 {
    public:
  
-      typedef Functions::MeshFunction< tnlGrid< Dimensions, MeshReal, Devices::Cuda, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
-      typedef tnlGrid< Dimensions, MeshReal, Devices::Cuda, MeshIndex > GridType;
+      typedef Functions::MeshFunction< Meshes::Grid< Dimensions, MeshReal, Devices::Cuda, MeshIndex >, EntityDimensions, Real > MeshFunctionType;
+      typedef Meshes::Grid< Dimensions, MeshReal, Devices::Cuda, MeshIndex > GridType;
       typedef MeshReal MeshRealType;
       typedef Devices::Cuda DeviceType;
       typedef MeshIndex MeshIndexType;

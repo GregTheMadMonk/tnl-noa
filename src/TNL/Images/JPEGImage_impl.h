@@ -100,11 +100,11 @@ template< typename Index >
 bool
 JPEGImage< Index >::
 read( const RegionOfInterest< Index > roi,
-      const tnlGrid< 2, Real, Device, Index >& grid,
+      const Meshes::Grid< 2, Real, Device, Index >& grid,
       Vector& vector )
 {
 #ifdef HAVE_JPEG_H
-   typedef tnlGrid< 2, Real, Device, Index > GridType;
+   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
  
    /***
@@ -180,7 +180,7 @@ template< typename Index >
              typename Device >
 bool
 JPEGImage< Index >::
-writeHeader( const tnlGrid< 2, Real, Device, Index >& grid )
+writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid )
 {
 #ifdef HAVE_JPEG_H
    this->cinfo.err = jpeg_std_error( &this->jerr.pub );
@@ -204,7 +204,7 @@ template< typename Index >
 bool
 JPEGImage< Index >::
 openForWrite( const String& fileName,
-              tnlGrid< 2, Real, Device, Index >& grid )
+              Meshes::Grid< 2, Real, Device, Index >& grid )
 {
    this->close();
    this->file = fopen( fileName.getString(), "w" );
@@ -225,10 +225,10 @@ template< typename Index >
              typename Vector >
 bool
 JPEGImage< Index >::
-write( const tnlGrid< 2, Real, Device, Index >& grid,
+write( const Meshes::Grid< 2, Real, Device, Index >& grid,
        Vector& vector )
 {
-   typedef tnlGrid< 2, Real, Device, Index > GridType;
+   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
 
 #ifdef HAVE_JPEG_H

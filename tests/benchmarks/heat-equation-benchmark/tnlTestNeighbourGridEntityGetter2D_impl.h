@@ -18,7 +18,7 @@
 #pragma once
 
 #include "tnlTestNeighbourGridEntityGetter.h"
-#include <mesh/grids/tnlGrid2D.h>
+#include <mesh/grids/Grid2D.h>
 #include <core/tnlStaticFor.h>
 
 /****
@@ -34,7 +34,7 @@ template< typename Real,
           typename Config,
           typename StencilStorage >
 class tnlTestNeighbourGridEntityGetter< 
-   tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 2, Config >,
+   GridEntity< Meshes::Grid< 2, Real, Device, Index >, 2, Config >,
    2,
    StencilStorage >
 {
@@ -42,13 +42,13 @@ class tnlTestNeighbourGridEntityGetter<
       
       static const int EntityDimensions = 2;
       static const int NeighbourEntityDimensions = 2;
-      typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, EntityDimensions, Config > GridEntityType;
-      typedef tnlGridEntity< GridType, NeighbourEntityDimensions, Config > NeighbourGridEntityType;
+      typedef Meshes::Grid< 2, Real, Device, Index > GridType;
+      typedef GridEntity< GridType, EntityDimensions, Config > GridEntityType;
+      typedef GridEntity< GridType, NeighbourEntityDimensions, Config > NeighbourGridEntityType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef tnlGridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
+      typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
 
       __cuda_callable__ inline
       tnlTestNeighbourGridEntityGetter( const GridEntityType& entity )
@@ -77,22 +77,22 @@ template< typename Real,
           typename Index,
           typename Config >
 class tnlTestNeighbourGridEntityGetter< 
-   tnlGridEntity< tnlGrid< 2, Real, Device, Index >, 2, Config >,
+   GridEntity< Meshes::Grid< 2, Real, Device, Index >, 2, Config >,
    2,
-   tnlGridEntityStencilStorageTag< tnlGridEntityCrossStencil > >
+   GridEntityStencilStorageTag< GridEntityCrossStencil > >
 {
    public:
       
       static const int EntityDimensions = 2;
       static const int NeighbourEntityDimensions = 2;
-      typedef tnlGrid< 2, Real, Device, Index > GridType;
-      typedef tnlGridEntity< GridType, EntityDimensions, Config > GridEntityType;
-      typedef tnlGridEntity< GridType, NeighbourEntityDimensions, Config > NeighbourGridEntityType;
+      typedef Meshes::Grid< 2, Real, Device, Index > GridType;
+      typedef GridEntity< GridType, EntityDimensions, Config > GridEntityType;
+      typedef GridEntity< GridType, NeighbourEntityDimensions, Config > NeighbourGridEntityType;
       typedef Real RealType;
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      typedef tnlGridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
-      typedef tnlGridEntityStencilStorageTag< tnlGridEntityCrossStencil > StencilStorage;
+      typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetter;
+      typedef GridEntityStencilStorageTag< GridEntityCrossStencil > StencilStorage;
       typedef tnlTestNeighbourGridEntityGetter< GridEntityType, 2, StencilStorage > ThisType;
       
       

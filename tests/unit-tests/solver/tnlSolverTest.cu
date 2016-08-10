@@ -8,4 +8,4 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "SolverTest.h"
+#include "tnlSolverTest.h"

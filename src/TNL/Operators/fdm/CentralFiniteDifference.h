@@ -36,13 +36,13 @@ template< int Dimensions,
           int ZDifference,
           typename Real,
           typename Index >
-class CentralFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >, XDifference, YDifference, ZDifference, Real, Index >
-: public Operator< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >,
+class CentralFiniteDifference< Meshes::Grid< Dimensions, MeshReal, MeshDevice, MeshIndex >, XDifference, YDifference, ZDifference, Real, Index >
+: public Operator< Meshes::Grid< Dimensions, MeshReal, MeshDevice, MeshIndex >,
                       Functions::MeshInteriorDomain, Dimensions, Dimensions, Real, Index >
 {
    public:
  
-      typedef tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex > MeshType;
+      typedef Meshes::Grid< Dimensions, MeshReal, MeshDevice, MeshIndex > MeshType;
       typedef Real RealType;
       typedef MeshDevice DeviceType;
       typedef Index IndexType;

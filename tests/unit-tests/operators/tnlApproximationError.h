@@ -11,7 +11,7 @@
 #ifndef TNLAPPROXIMATIONERROR_H_
 #define TNLAPPROXIMATIONERROR_H_
 
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/Analytic/ConstantFunction.h>
 #include <TNL/Operators/DirichletBoundaryConditions.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>

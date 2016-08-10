@@ -14,8 +14,8 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Functions/TestFunction.h>
-#include <TNL/mesh/tnlDummyMesh.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/DummyMesh.h>
+#include <TNL/Meshes/Grid.h>
 
 using namespace TNL;
 

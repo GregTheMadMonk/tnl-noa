@@ -31,7 +31,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 bool
-MeshFunctionGnuplotWriter< MeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 1, Real > >::
+MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -57,7 +57,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 bool
-MeshFunctionGnuplotWriter< MeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
+MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -84,7 +84,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 bool
-MeshFunctionGnuplotWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
+MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
 write( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -116,7 +116,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 bool
-MeshFunctionGnuplotWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
+MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -172,7 +172,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 bool
-MeshFunctionGnuplotWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
+MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
        std::ostream& str )
 {

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Solvers/ODE/Merson.h>
 #include <TNL/Solvers/ODE/Euler.h>
 #include <TNL/Solvers/Linear/SOR.h>
@@ -61,10 +61,10 @@ template< typename ConfigTag, int Dimensions > struct ConfigTagDimensions{ enum 
 template< typename ConfigTag, typename MeshType > struct ConfigTagMesh{ enum { enabled = false }; };
 
 /****
- * Use of tnlGrid is enabled for allowed dimensions and Real, Device and Index types.
+ * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
  */
 template< typename ConfigTag, int Dimensions, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< ConfigTag, tnlGrid< Dimensions, Real, Device, Index > >
+   struct ConfigTagMesh< ConfigTag, Meshes::Grid< Dimensions, Real, Device, Index > >
       { enum { enabled = ConfigTagDimensions< ConfigTag, Dimensions >::enabled  &&
                          ConfigTagReal< ConfigTag, Real >::enabled &&
                          ConfigTagDevice< ConfigTag, Device >::enabled &&

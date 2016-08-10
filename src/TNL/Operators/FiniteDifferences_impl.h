@@ -23,7 +23,7 @@ template< typename Real, typename Device, typename Index >
              int XDifferenceDirection,
              int YDifferenceDirection,
              int ZDifferenceDirection >
-Real FiniteDifferences< tnlGrid< 1, Real, Device, Index > >::getDifference( const GridType& grid,
+Real FiniteDifferences< Meshes::Grid< 1, Real, Device, Index > >::getDifference( const GridType& grid,
                                                                                const GridFunction& inFunction,
                                                                                GridFunction& outFunction )
 {
@@ -61,7 +61,7 @@ template< typename Real, typename Device, typename Index >
              int XDifferenceDirection,
              int YDifferenceDirection,
              int ZDifferenceDirection >
-Real FiniteDifferences< tnlGrid< 1, Real, Device, Index > >::getDifference( const GridType& grid,
+Real FiniteDifferences< Meshes::Grid< 1, Real, Device, Index > >::getDifference( const GridType& grid,
                                                                                const CellType& cell,
                                                                                const GridFunction& function )
 {
@@ -100,7 +100,7 @@ template< typename Real, typename Device, typename Index >
              int XDifferenceDirection,
              int YDifferenceDirection,
              int ZDifferenceDirection >
-Real FiniteDifferences< tnlGrid< 2, Real, Device, Index > >::getDifference( const GridType& grid,
+Real FiniteDifferences< Meshes::Grid< 2, Real, Device, Index > >::getDifference( const GridType& grid,
                                                                                const GridFunction& inFunction,
                                                                                GridFunction& outFunction )
 {
@@ -115,7 +115,7 @@ template< typename Real, typename Device, typename Index >
              int XDifferenceDirection,
              int YDifferenceDirection,
              int ZDifferenceDirection >
-Real FiniteDifferences< tnlGrid< 2, Real, Device, Index > >::getDifference( const GridType& grid,
+Real FiniteDifferences< Meshes::Grid< 2, Real, Device, Index > >::getDifference( const GridType& grid,
                                                                                const CellType& cell,
                                                                                const GridFunction& function )
 {
@@ -165,7 +165,7 @@ template< typename Real, typename Device, typename Index >
              int XDifferenceDirection,
              int YDifferenceDirection,
              int ZDifferenceDirection >
-Real FiniteDifferences< tnlGrid< 3, Real, Device, Index > >::getDifference( const GridType& grid,
+Real FiniteDifferences< Meshes::Grid< 3, Real, Device, Index > >::getDifference( const GridType& grid,
                                                                                const GridFunction& inFunction,
                                                                                GridFunction& outFunction )
 {
@@ -180,7 +180,7 @@ template< typename Real, typename Device, typename Index >
              int XDifferenceDirection,
              int YDifferenceDirection,
              int ZDifferenceDirection >
-Real FiniteDifferences< tnlGrid< 3, Real, Device, Index > >::getDifference( const GridType& grid,
+Real FiniteDifferences< Meshes::Grid< 3, Real, Device, Index > >::getDifference( const GridType& grid,
                                                                                const CellType& cell,
                                                                                const GridFunction& function )
 {

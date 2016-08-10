@@ -29,12 +29,12 @@ class MeshEntitiesInterpolants
 template< typename Real,
           typename Device,
           typename Index >
-class MeshEntitiesInterpolants< tnlGrid< 1, Real, Device, Index >, 1, 0 >
+class MeshEntitiesInterpolants< Meshes::Grid< 1, Real, Device, Index >, 1, 0 >
    : public Functions::Domain< 1, Functions::MeshInteriorDomain >
 {
    public:
  
-      typedef tnlGrid< 1, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -61,12 +61,12 @@ class MeshEntitiesInterpolants< tnlGrid< 1, Real, Device, Index >, 1, 0 >
 template< typename Real,
           typename Device,
           typename Index >
-class MeshEntitiesInterpolants< tnlGrid< 1, Real, Device, Index >, 0, 1 >
+class MeshEntitiesInterpolants< Meshes::Grid< 1, Real, Device, Index >, 0, 1 >
    : public Functions::Domain< 1, Functions::MeshInteriorDomain >
 {
    public:
  
-      typedef tnlGrid< 1, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -93,12 +93,12 @@ class MeshEntitiesInterpolants< tnlGrid< 1, Real, Device, Index >, 0, 1 >
 template< typename Real,
           typename Device,
           typename Index >
-class MeshEntitiesInterpolants< tnlGrid< 2, Real, Device, Index >, 2, 1 >
+class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 2, 1 >
    : public Functions::Domain< 2, Functions::MeshInteriorDomain >
 {
    public:
  
-      typedef tnlGrid< 2, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 2, Real, Device, Index > MeshType;
  
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -129,12 +129,12 @@ class MeshEntitiesInterpolants< tnlGrid< 2, Real, Device, Index >, 2, 1 >
 template< typename Real,
           typename Device,
           typename Index >
-class MeshEntitiesInterpolants< tnlGrid< 2, Real, Device, Index >, 2, 0 >
+class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 2, 0 >
    : public Functions::Domain< 2, Functions::MeshInteriorDomain >
 {
    public:
  
-      typedef tnlGrid< 2, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 2, Real, Device, Index > MeshType;
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -163,12 +163,12 @@ class MeshEntitiesInterpolants< tnlGrid< 2, Real, Device, Index >, 2, 0 >
 template< typename Real,
           typename Device,
           typename Index >
-class MeshEntitiesInterpolants< tnlGrid< 2, Real, Device, Index >, 1, 2 >
+class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 1, 2 >
    : public Functions::Domain< 2, Functions::MeshInteriorDomain >
 {
    public:
  
-      typedef tnlGrid< 2, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 2, Real, Device, Index > MeshType;
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -197,12 +197,12 @@ class MeshEntitiesInterpolants< tnlGrid< 2, Real, Device, Index >, 1, 2 >
 template< typename Real,
           typename Device,
           typename Index >
-class MeshEntitiesInterpolants< tnlGrid< 2, Real, Device, Index >, 0, 2 >
+class MeshEntitiesInterpolants< Meshes::Grid< 2, Real, Device, Index >, 0, 2 >
    : public Functions::Domain< 2, Functions::MeshInteriorDomain >
 {
    public:
  
-      typedef tnlGrid< 2, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 2, Real, Device, Index > MeshType;
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -231,12 +231,12 @@ class MeshEntitiesInterpolants< tnlGrid< 2, Real, Device, Index >, 0, 2 >
 template< typename Real,
           typename Device,
           typename Index >
-class MeshEntitiesInterpolants< tnlGrid< 3, Real, Device, Index >, 3, 2 >
+class MeshEntitiesInterpolants< Meshes::Grid< 3, Real, Device, Index >, 3, 2 >
    : public Functions::Domain< 3, Functions::MeshInteriorDomain >
 {
    public:
  
-      typedef tnlGrid< 3, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 3, Real, Device, Index > MeshType;
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -270,12 +270,12 @@ class MeshEntitiesInterpolants< tnlGrid< 3, Real, Device, Index >, 3, 2 >
 template< typename Real,
           typename Device,
           typename Index >
-class MeshEntitiesInterpolants< tnlGrid< 3, Real, Device, Index >, 2, 3 >
+class MeshEntitiesInterpolants< Meshes::Grid< 3, Real, Device, Index >, 2, 3 >
    : public Functions::Domain< 3, Functions::MeshInteriorDomain >
 {
    public:
  
-      typedef tnlGrid< 3, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 3, Real, Device, Index > MeshType;
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__

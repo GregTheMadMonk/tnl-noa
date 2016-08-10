@@ -82,13 +82,13 @@ template< typename Real,
 bool
 DicomSeries::
 getImage( const int imageIdx,
-          const tnlGrid< 2, Real, Device, Index >& grid,
+          const Meshes::Grid< 2, Real, Device, Index >& grid,
           const RegionOfInterest< int > roi,
           Vector& vector )
 {
 #ifdef HAVE_DCMTK_H
    const Uint16* imageData = this->getData( imageIdx );
-   typedef tnlGrid< 2, Real, Device, Index > GridType;
+   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
  
    Index i, j;

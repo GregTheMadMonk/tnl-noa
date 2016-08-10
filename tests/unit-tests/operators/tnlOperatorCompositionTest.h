@@ -12,7 +12,7 @@
 #define	OperatorFunctionTEST_H
 
 #include <TNL/Operators/OperatorComposition.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/Analytic/ExpBumpFunction.h>
 #include <TNL/Functions/Analytic/ConstantFunction.h>
 #include <TNL/Operators/diffusion/LinearDiffusion.h>
@@ -138,9 +138,9 @@ bool setOperator()
 
 int main( int argc, char* argv[] )
 {
-   if( ! setOperator< tnlGrid< 1, double, Devices::Host, int > >() ||
-       ! setOperator< tnlGrid< 2, double, Devices::Host, int > >() ||
-       ! setOperator< tnlGrid< 3, double, Devices::Host, int > >() )
+   if( ! setOperator< Meshes::Grid< 1, double, Devices::Host, int > >() ||
+       ! setOperator< Meshes::Grid< 2, double, Devices::Host, int > >() ||
+       ! setOperator< Meshes::Grid< 3, double, Devices::Host, int > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

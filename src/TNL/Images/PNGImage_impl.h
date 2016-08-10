@@ -124,11 +124,11 @@ template< typename Index >
 bool
 PNGImage< Index >::
 read( const RegionOfInterest< Index > roi,
-      const tnlGrid< 2, Real, Device, Index >& grid,
+      const Meshes::Grid< 2, Real, Device, Index >& grid,
       Vector& vector )
 {
 #ifdef HAVE_PNG_H
-   typedef tnlGrid< 2, Real, Device, Index > GridType;
+   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
  
    /***
@@ -219,7 +219,7 @@ template< typename Index >
              typename Device >
 bool
 PNGImage< Index >::
-writeHeader( const tnlGrid< 2, Real, Device, Index >& grid )
+writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid )
 {
 #ifdef HAVE_PNG_H
    this->png_ptr = png_create_write_struct( PNG_LIBPNG_VER_STRING,
@@ -278,7 +278,7 @@ template< typename Index >
 bool
 PNGImage< Index >::
 openForWrite( const String& fileName,
-              tnlGrid< 2, Real, Device, Index >& grid )
+              Meshes::Grid< 2, Real, Device, Index >& grid )
 {
    this->close();
    this->file = fopen( fileName.getString(), "w" );
@@ -299,11 +299,11 @@ template< typename Index >
              typename Vector >
 bool
 PNGImage< Index >::
-write( const tnlGrid< 2, Real, Device, Index >& grid,
+write( const Meshes::Grid< 2, Real, Device, Index >& grid,
        Vector& vector )
 {
 #ifdef HAVE_PNG_H
-   typedef tnlGrid< 2, Real, Device, Index > GridType;
+   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
  
    /***

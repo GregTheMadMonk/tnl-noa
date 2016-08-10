@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Operators/geometric/ExactGradientNorm.h>
 #include <TNL/Operators/interpolants/MeshEntitiesInterpolants.h>
 #include <TNL/Operators/Operator.h>
@@ -33,15 +33,15 @@ template< int MeshDimensions,
           typename MeshIndex,
           typename Real,
           typename Index >
-class CoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex >, MeshDimensions, Real, Index >
+class CoFVMGradientNorm< Meshes::Grid< MeshDimensions, MeshReal, Device, MeshIndex >, MeshDimensions, Real, Index >
 : public OperatorComposition<
-   MeshEntitiesInterpolants< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex >,
+   MeshEntitiesInterpolants< Meshes::Grid< MeshDimensions, MeshReal, Device, MeshIndex >,
                                 MeshDimensions - 1,
                                 MeshDimensions >,
-   CoFVMGradientNorm< tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex >, MeshDimensions - 1, Real, Index > >
+   CoFVMGradientNorm< Meshes::Grid< MeshDimensions, MeshReal, Device, MeshIndex >, MeshDimensions - 1, Real, Index > >
 {
    public:
-      typedef tnlGrid< MeshDimensions, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< MeshDimensions, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
@@ -82,12 +82,12 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class CoFVMGradientNorm< tnlGrid< 1,MeshReal, Device, MeshIndex >, 0, Real, Index >
-   : public Operator< tnlGrid< 1,MeshReal, Device, MeshIndex >, Functions::MeshInteriorDomain, 1, 0, Real, Index >
+class CoFVMGradientNorm< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, 0, Real, Index >
+   : public Operator< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Functions::MeshInteriorDomain, 1, 0, Real, Index >
 {
    public:
  
-   typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
@@ -142,12 +142,12 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class CoFVMGradientNorm< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real, Index >
-   : public Operator< tnlGrid< 2,MeshReal, Device, MeshIndex >, Functions::MeshInteriorDomain, 2, 1, Real, Index >
+class CoFVMGradientNorm< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real, Index >
+   : public Operator< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Functions::MeshInteriorDomain, 2, 1, Real, Index >
 {
    public:
  
-   typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
@@ -260,12 +260,12 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class CoFVMGradientNorm< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real, Index >
-   : public Operator< tnlGrid< 3, MeshReal, Device, MeshIndex >, Functions::MeshInteriorDomain, 3, 2, Real, Index >
+class CoFVMGradientNorm< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real, Index >
+   : public Operator< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Functions::MeshInteriorDomain, 3, 2, Real, Index >
 {
    public:
  
-   typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;

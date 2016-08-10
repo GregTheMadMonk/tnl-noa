@@ -11,8 +11,8 @@
 #pragma once
 
 #include <TNL/String.h>
-#include <TNL/mesh/tnlGrid.h>
-#include <TNL/mesh/tnlDummyMesh.h>
+#include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/DummyMesh.h>
 #include <TNL/Solvers/SolverStarter.h>
 
 namespace TNL {
@@ -25,7 +25,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename MeshType,
           typename ConfigTag,
           bool MeshTypeSupported = ConfigTagMesh< ConfigTag, MeshType >::enabled >
-class tnlMeshResolverTerminator{};
+class MeshResolverTerminator{};
 
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter > class ProblemSetter,
@@ -38,7 +38,7 @@ bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, false  >::
    return ProblemSetter< Real,
                          Device,
                          Index,
-                         tnlDummyMesh< Real, Device, Index >,
+                         Meshes::DummyMesh< Real, Device, Index >,
                          ConfigTag,
                          SolverStarter< ConfigTag > >::template run< Real, Device, Index, ConfigTag >( parameters );
 };
@@ -184,10 +184,10 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshType( const Config::ParameterContainer& parameters,
                                                                                                    const List< String >& parsedMeshType )
 {
-   if( parsedMeshType[ 0 ] == "tnlGrid" )
+   if( parsedMeshType[ 0 ] == "Grid" )
    {
-      typedef tnlGrid< MeshDimensions, MeshRealType, Device, MeshIndexType > MeshType;
-      return tnlMeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag >::run( parameters );
+      typedef Meshes::Grid< MeshDimensions, MeshRealType, Device, MeshIndexType > MeshType;
+      return MeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag >::run( parameters );
    }
    std::cerr << "Unknown mesh type " << parsedMeshType[ 0 ] << "." << std::endl;
    return false;
@@ -199,7 +199,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Index,
           typename MeshType,
           typename ConfigTag >
-class tnlMeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag, false >
+class MeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag, false >
 {
    public:
       static bool run( const Config::ParameterContainer& parameters )
@@ -215,7 +215,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
           typename Index,
           typename MeshType,
           typename ConfigTag >
-class tnlMeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag, true >
+class MeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag, true >
 {
    public:
       static bool run( const Config::ParameterContainer& parameters )

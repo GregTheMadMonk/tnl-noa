@@ -35,10 +35,10 @@ template<> struct ConfigTagIndex< tnlFastBuildConfig, short int >{ enum { enable
 template<> struct ConfigTagIndex< tnlFastBuildConfig, long int >{ enum { enabled = false }; };
 
 /****
- * Use of tnlGrid is enabled for allowed dimensions and Real, Device and Index types.
+ * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
  */
 template< int Dimensions, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< tnlFastBuildConfig, tnlGrid< Dimensions, Real, Device, Index > >
+   struct ConfigTagMesh< tnlFastBuildConfig, Meshes::Grid< Dimensions, Real, Device, Index > >
       { enum { enabled = ConfigTagDimensions< tnlFastBuildConfig, Dimensions >::enabled  &&
                          ConfigTagReal< tnlFastBuildConfig, Real >::enabled &&
                          ConfigTagDevice< tnlFastBuildConfig, Device >::enabled &&

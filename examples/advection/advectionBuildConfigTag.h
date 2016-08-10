@@ -22,11 +22,11 @@ template<> struct ConfigTagIndex< advectionBuildConfigTag, short int >{ enum { e
 template<> struct ConfigTagIndex< advectionBuildConfigTag, long int >{ enum { enabled = false }; };
 
 /****
- * Use of tnlGrid is enabled for allowed dimensions and Real, Device and Index types.
+ * Use of Grid is enabled for allowed dimensions and Real, Device and Index types.
  */
 
 template< int Dimensions, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< advectionBuildConfigTag, tnlGrid< Dimensions, Real, Device, Index > >
+   struct ConfigTagMesh< advectionBuildConfigTag, Meshes::Grid< Dimensions, Real, Device, Index > >
       { enum { enabled = ConfigTagDimensions< advectionBuildConfigTag, Dimensions >::enabled  &&
                          ConfigTagReal< advectionBuildConfigTag, Real >::enabled &&
                          ConfigTagDevice< advectionBuildConfigTag, Device >::enabled &&

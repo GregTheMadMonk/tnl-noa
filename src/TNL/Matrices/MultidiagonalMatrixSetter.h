@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -23,13 +23,13 @@ class MultidiagonalMatrixSetter
 template< typename MeshReal,
           typename Device,
           typename MeshIndex >
-class MultidiagonalMatrixSetter< tnlGrid< 1, MeshReal, Device, MeshIndex > >
+class MultidiagonalMatrixSetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex > >
 {
    public:
       typedef MeshReal MeshRealType;
       typedef Device DeviceType;
       typedef MeshIndex MeshIndexType;
-      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       enum { Dimensions = 1 };
 
@@ -44,13 +44,13 @@ class MultidiagonalMatrixSetter< tnlGrid< 1, MeshReal, Device, MeshIndex > >
 template< typename MeshReal,
           typename Device,
           typename MeshIndex >
-class MultidiagonalMatrixSetter< tnlGrid< 2, MeshReal, Device, MeshIndex > >
+class MultidiagonalMatrixSetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex > >
 {
    public:
       typedef MeshReal MeshRealType;
       typedef Device DeviceType;
       typedef MeshIndex MeshIndexType;
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       enum { Dimensions = 2 };
 
@@ -64,13 +64,13 @@ class MultidiagonalMatrixSetter< tnlGrid< 2, MeshReal, Device, MeshIndex > >
 template< typename MeshReal,
           typename Device,
           typename MeshIndex >
-class MultidiagonalMatrixSetter< tnlGrid< 3, MeshReal, Device, MeshIndex > >
+class MultidiagonalMatrixSetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex > >
 {
    public:
       typedef MeshReal MeshRealType;
       typedef Device DeviceType;
       typedef MeshIndex MeshIndexType;
-      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       enum { Dimensions = 3 };
 

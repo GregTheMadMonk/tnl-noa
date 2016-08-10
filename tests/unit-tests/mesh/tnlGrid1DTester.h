@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlGrid1DTester.h  -  description
+                          Grid1DTester.h  -  description
                              -------------------
     begin                : Feb 13, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -14,23 +14,23 @@
 using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
-class tnlGridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCase
+class GridTester< 1, RealType, Device, IndexType >: public CppUnit :: TestCase
 {
    public:
-   typedef tnlGridTester< 1, RealType, Device, IndexType > TesterType;
+   typedef GridTester< 1, RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
-   typedef tnlGrid< 1, RealType, Device, IndexType > GridType;
+   typedef Meshes::Grid< 1, RealType, Device, IndexType > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
    typedef typename GridType::VertexType VertexType;
 
-   tnlGridTester(){};
+   GridTester(){};
 
    virtual
-   ~tnlGridTester(){};
+   ~GridTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlGridTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "GridTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDomainTest", &TesterType::setDomainTest ) );

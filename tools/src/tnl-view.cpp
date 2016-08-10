@@ -13,8 +13,8 @@
 #include <TNL/File.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/mesh/tnlDummyMesh.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/DummyMesh.h>
+#include <TNL/Meshes/Grid.h>
 
 void setupConfig( Config::ConfigDescription& config )
 {
@@ -60,7 +60,7 @@ int main( int argc, char* argv[] )
    String meshFile = parameters. getParameter< String >( "mesh" );
    if( meshFile == "" )
    {
-      //if( ! processFiles< tnlDummyMesh< double, Devices::Host, int > >( parameters ) )
+      //if( ! processFiles< DummyMesh< double, Devices::Host, int > >( parameters ) )
       //   return EXIT_FAILURE;
       //return EXIT_SUCCESS;
    }
@@ -77,40 +77,40 @@ int main( int argc, char* argv[] )
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
       return false;
    }
-   if( parsedMeshType[ 0 ] == "tnlGrid" )
+   if( parsedMeshType[ 0 ] == "Grid" )
    {
       int dimensions = atoi( parsedMeshType[ 1 ].getString() );
       if( dimensions == 1 )
       {
-         typedef tnlGrid< 1, double, Devices::Host, int > MeshType;
+         typedef Meshes::Grid< 1, double, Devices::Host, int > MeshType;
          if( ! processFiles< MeshType >( parameters ) )
             return EXIT_FAILURE;
       }
       if( dimensions == 2 )
       {
-         typedef tnlGrid< 2, double, Devices::Host, int > MeshType;
+         typedef Meshes::Grid< 2, double, Devices::Host, int > MeshType;
          if( ! processFiles< MeshType >( parameters ) )
             return EXIT_FAILURE;
       }
       if( dimensions == 3 )
       {
-         typedef tnlGrid< 3, double, Devices::Host, int > MeshType;
+         typedef Meshes::Grid< 3, double, Devices::Host, int > MeshType;
          if( ! processFiles< MeshType >( parameters ) )
             return EXIT_FAILURE;
       }
       return EXIT_SUCCESS;
    }
-   if( parsedMeshType[ 0 ] == "tnlMesh" )
+   if( parsedMeshType[ 0 ] == "Mesh" )
    {
       /*String meshFile = parameters. getParameter< String >( "mesh" );
-      struct MeshConfig : public tnlMeshConfigBase< 2 >
+      struct MeshConfig : public MeshConfigBase< 2 >
       {
-         typedef tnlMeshTriangleTopology CellType;
+         typedef MeshTriangleTopology CellType;
       };
-      tnlMesh< MeshConfig > mesh;
+      Mesh< MeshConfig > mesh;
       if( ! mesh.load( meshFile ) )
          return EXIT_FAILURE;
-      if( ! tnlMeshWriterNetgen::writeMesh( "tnl-mesh.ng", mesh, true ) )
+      if( ! MeshWriterNetgen::writeMesh( "tnl-mesh.ng", mesh, true ) )
          return EXIT_FAILURE;*/
    }
    return EXIT_FAILURE;

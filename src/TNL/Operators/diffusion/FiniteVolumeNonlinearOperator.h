@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTraverser.h  -  description
+                          Traverser.h  -  description
                              -------------------
     begin                : Feb 17, 2016
     email                : tomas.oberhuber@fjfi.cvut.cz
@@ -10,7 +10,7 @@
 #pragma once
 
 #include <TNL/Vectors/Vector.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
 namespace Operators {
@@ -32,11 +32,11 @@ template< typename MeshReal,
           typename Real,
           typename Index,
           typename OperatorQ >
-class FiniteVolumeNonlinearOperator< tnlGrid< 1,MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >
+class FiniteVolumeNonlinearOperator< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >
 {
    public: 
    
-   typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
@@ -84,11 +84,11 @@ template< typename MeshReal,
           typename Real,
           typename Index,
           typename OperatorQ >
-class FiniteVolumeNonlinearOperator< tnlGrid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >
+class FiniteVolumeNonlinearOperator< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >
 {
    public: 
    
-   typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
@@ -138,11 +138,11 @@ template< typename MeshReal,
           typename Real,
           typename Index,
           typename OperatorQ >
-class FiniteVolumeNonlinearOperator< tnlGrid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >
+class FiniteVolumeNonlinearOperator< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >
 {
    public: 
    
-   typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;

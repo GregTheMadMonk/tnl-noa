@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Images//Image.h>
 
 namespace TNL {

@@ -11,8 +11,8 @@
 #pragma once
 
 #include <TNL/Vectors/SharedVector.h>
-#include <TNL/mesh/tnlGrid.h>
-#include <TNL/mesh/tnlIdenticalGridGeometry.h>
+#include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/tnlIdenticalGridGeometry.h>
 #include <TNL/Operators/gradient/tnlCentralFDMGradient.h>
 
 namespace TNL {
@@ -29,11 +29,11 @@ template< typename Real,
           typename Index,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
-class LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient >
+class LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient >
 {
    public:
 
-   typedef tnlGrid< 2, Real, Device, Index, GridGeometry > MeshType;
+   typedef Meshes::Grid< 2, Real, Device, Index, GridGeometry > MeshType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
@@ -98,11 +98,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename PressureGradient >
-class LaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient >
+class LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient >
 {
    public:
 
-   typedef tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry > MeshType;
+   typedef Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry > MeshType;
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;

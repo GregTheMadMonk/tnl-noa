@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Operators/operator-Q/tnlOneSideDiffOperatorQ.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
 namespace Operators {
@@ -22,7 +22,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+tnlOneSideDiffOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
    return String( "tnlOneSideDiffOperatorQ< " ) +
@@ -37,7 +37,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 void
-tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+tnlOneSideDiffOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 setEps( const Real& eps )
 {
   this->eps = eps;
@@ -52,7 +52,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+tnlOneSideDiffOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,          
             const Real& time ) const
@@ -73,7 +73,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-tnlOneSideDiffOperatorQ< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+tnlOneSideDiffOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getValueStriped( const MeshFunction& u,
                  const MeshEntity& entity,                 
                  const Real& time ) const
@@ -98,7 +98,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+tnlOneSideDiffOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
    return String( "tnlOneSideDiffOperatorQ< " ) +
@@ -113,7 +113,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 void
-tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+tnlOneSideDiffOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 setEps( const Real& eps )
 {
   this->eps = eps;
@@ -128,7 +128,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+tnlOneSideDiffOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,          
             const Real& time ) const
@@ -152,7 +152,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-tnlOneSideDiffOperatorQ< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+tnlOneSideDiffOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getValueStriped( const MeshFunction& u,
                  const MeshEntity& entity,                 
                  const Real& time ) const
@@ -183,7 +183,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+tnlOneSideDiffOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
    return String( "tnlOneSideDiffOperatorQ< " ) +
@@ -198,7 +198,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 void 
-tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+tnlOneSideDiffOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 setEps( const Real& eps )
 {
   this->eps = eps;
@@ -213,7 +213,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+tnlOneSideDiffOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,            
             const Real& time ) const
@@ -240,7 +240,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-tnlOneSideDiffOperatorQ< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+tnlOneSideDiffOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getValueStriped( const MeshFunction& u,
                  const MeshEntity& entity,                 
                  const Real& time ) const

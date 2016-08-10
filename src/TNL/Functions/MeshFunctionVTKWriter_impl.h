@@ -32,7 +32,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 void
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 1, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > >::
 writeHeader( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -50,7 +50,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 bool
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 1, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -104,7 +104,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 void
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
 writeHeader( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -122,7 +122,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 bool
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -176,7 +176,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 void
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
 writeHeader( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -194,7 +194,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 bool
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >::
 write( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -262,7 +262,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 void
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
 writeHeader( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -280,7 +280,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 bool
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -377,7 +377,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 void
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
 writeHeader( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -395,7 +395,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 bool
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -465,7 +465,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 void
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 3, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > >::
 writeHeader( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -483,7 +483,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 bool
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 3, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 3, Real > >::
 write( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -573,7 +573,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 void
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > >::
 writeHeader( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -591,7 +591,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 bool
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 2, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real > >::
 write( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -751,7 +751,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 void
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 1, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1, Real > >::
 writeHeader( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -769,7 +769,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 bool
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 1, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 1, Real > >::
 write( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -923,7 +923,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 void
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 0, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > >::
 writeHeader( const MeshFunctionType& function,
        std::ostream& str )
 {
@@ -941,7 +941,7 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real >
 bool
-MeshFunctionVTKWriter< MeshFunction< tnlGrid< 3, MeshReal, Device, MeshIndex >, 0, Real > >::
+MeshFunctionVTKWriter< MeshFunction< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 0, Real > >::
 write( const MeshFunctionType& function,
        std::ostream& str )
 {

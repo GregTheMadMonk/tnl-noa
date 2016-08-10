@@ -8,6 +8,6 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "FiniteDifferencesTest.h"
+#include "tnlFiniteDifferencesTest.h"
 
 

@@ -20,7 +20,7 @@
 #include <TNL/Functions/Analytic/ConstantFunction.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Problems/HeatEquationProblem.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 using namespace TNL;
 using namespace TNL::Problems;
@@ -39,7 +39,7 @@ class heatEquationConfig
             config.addEntryEnum< String >( "dirichlet" );
             config.addEntryEnum< String >( "neumann" );
 
-         typedef tnlGrid< 1, double, Devices::Host, int > Mesh;
+         typedef Meshes::Grid< 1, double, Devices::Host, int > Mesh;
          typedef Functions::MeshFunction< Mesh > MeshFunction;
          Operators::DirichletBoundaryConditions< Mesh, MeshFunction >::configSetup( config );
          Operators::DirichletBoundaryConditions< Mesh, Functions::Analytic::ConstantFunction< 1 > >::configSetup( config );

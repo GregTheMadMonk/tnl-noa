@@ -18,7 +18,7 @@ template< typename Real,
           typename Index,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
-LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >,
+LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >,
                  PressureGradient > :: LaxFridrichs()
 : regularizeEps( 0.0 ),
   viscosityCoefficient( 1.0 ),
@@ -32,11 +32,11 @@ template< typename Real,
           typename Index,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
-String LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >,
+String LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >,
                            PressureGradient > :: getTypeStatic()
 {
    return String( "LaxFridrichs< " ) +
-          tnlGrid< 2, Real, Device, Index, GridGeometry > :: getTypeStatic() + ", " +
+          Meshes::Grid< 2, Real, Device, Index, GridGeometry > :: getTypeStatic() + ", " +
           PressureGradient :: getTypeStatic() + " >";
 }
 
@@ -45,7 +45,7 @@ template< typename Real,
           typename Index,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  >::bindMesh( const MeshType& mesh )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  >::bindMesh( const MeshType& mesh )
 {
    this->mesh = &mesh;
 }
@@ -55,8 +55,8 @@ template< typename Real,
           typename Index,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
-const typename LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  >::MeshType&
-   LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  >::getMesh() const
+const typename LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  >::MeshType&
+   LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  >::getMesh() const
 {
    return * this->mesh;
 }
@@ -66,7 +66,7 @@ template< typename Real,
           typename Index,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRegularization( const RealType& epsilon )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRegularization( const RealType& epsilon )
 {
    this->regularizeEps = epsilon;
 }
@@ -76,7 +76,7 @@ template< typename Real,
           typename Index,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setViscosityCoefficient( const RealType& v )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setViscosityCoefficient( const RealType& v )
 {
    this->viscosityCoefficient = v;
 }
@@ -87,7 +87,7 @@ template< typename Real,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
    template< typename Vector >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRho( Vector& rho )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRho( Vector& rho )
 {
    this->rho.bind( rho );
 }
@@ -98,7 +98,7 @@ template< typename Real,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
    template< typename Vector >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRhoU1( Vector& rho_u1 )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRhoU1( Vector& rho_u1 )
 {
    this->rho_u1. bind( rho_u1 );
 }
@@ -109,7 +109,7 @@ template< typename Real,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
    template< typename Vector >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRhoU2( Vector& rho_u2 )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setRhoU2( Vector& rho_u2 )
 {
    this->rho_u2. bind( rho_u2 );
 }
@@ -120,7 +120,7 @@ template< typename Real,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
    template< typename Vector >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setE( Vector& e )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setE( Vector& e )
 {
    this->e.bind( e );
 }
@@ -131,7 +131,7 @@ template< typename Real,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
    template< typename Vector >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setPressureGradient( Vector& grad_p )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: setPressureGradient( Vector& grad_p )
 {
    this->pressureGradient = &grad_p;
 }
@@ -141,7 +141,7 @@ template< typename Real,
           typename Index,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: getExplicitRhs( const IndexType centralVolume,
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: getExplicitRhs( const IndexType centralVolume,
                                                                                                               RealType& rho_t,
                                                                                                               RealType& rho_u1_t,
                                                                                                               RealType& rho_u2_t,
@@ -279,7 +279,7 @@ template< typename Real,
           typename Index,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
-Real LaxFridrichs< tnlGrid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: regularize( const Real& r ) const
+Real LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  > :: regularize( const Real& r ) const
 {
    return r + ( ( r >= 0 ) - ( r < 0 ) ) * this->regularizeEps;
 }
@@ -292,7 +292,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename PressureGradient >
-LaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >,
+LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >,
                  PressureGradient > :: LaxFridrichs()
 : regularizeEps( 1.0e-5 ),
   viscosityCoefficient( 1.0 ),
@@ -305,7 +305,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename PressureGradient >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: bindMesh( const MeshType& mesh )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: bindMesh( const MeshType& mesh )
 {
    this->mesh = &mesh;
 }
@@ -314,7 +314,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename PressureGradient >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRegularization( const RealType& epsilon )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRegularization( const RealType& epsilon )
 {
    this->regularizeEps = epsilon;
 }
@@ -323,7 +323,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename PressureGradient >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setViscosityCoefficient( const RealType& v )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setViscosityCoefficient( const RealType& v )
 {
    this->viscosityCoefficient = v;
 }
@@ -333,7 +333,7 @@ template< typename Real,
           typename Index,
           typename PressureGradient >
    template< typename Vector >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRho( Vector& rho )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRho( Vector& rho )
 {
    this->rho. bind( rho );
 }
@@ -343,7 +343,7 @@ template< typename Real,
           typename Index,
           typename PressureGradient >
    template< typename Vector >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRhoU1( Vector& rho_u1 )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRhoU1( Vector& rho_u1 )
 {
    this->rho_u1. bind( rho_u1 );
 }
@@ -353,7 +353,7 @@ template< typename Real,
           typename Index,
           typename PressureGradient >
    template< typename Vector >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRhoU2( Vector& rho_u2 )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setRhoU2( Vector& rho_u2 )
 {
    this->rho_u2. bind( rho_u2 );
 }
@@ -363,7 +363,7 @@ template< typename Real,
           typename Index,
           typename PressureGradient >
    template< typename Vector >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setE( Vector& e )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setE( Vector& e )
 {
    this->energy.bind( e );
 }
@@ -373,7 +373,7 @@ template< typename Real,
           typename Index,
           typename PressureGradient >
    template< typename Vector >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setP( Vector& p )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setP( Vector& p )
 {
    this->p.bind( p );
 }
@@ -383,7 +383,7 @@ template< typename Real,
           typename Index,
           typename PressureGradient >
    template< typename Vector >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setPressureGradient( Vector& grad_p )
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: setPressureGradient( Vector& grad_p )
 {
    this->pressureGradient = &grad_p;
 }
@@ -392,7 +392,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename PressureGradient >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: getExplicitRhs( const IndexType centralVolume,
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: getExplicitRhs( const IndexType centralVolume,
                                                                                                                           RealType& rho_t,
                                                                                                                           RealType& rho_u1_t,
                                                                                                                           RealType& rho_u2_t,
@@ -449,7 +449,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename PressureGradient >
-void LaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: getExplicitRhs( const IndexType centralVolume,
+void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: getExplicitRhs( const IndexType centralVolume,
                                                                                                                           RealType& rho_t,
                                                                                                                           RealType& rho_u1_t,
                                                                                                                           RealType& rho_u2_t,
@@ -515,7 +515,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename PressureGradient >
-Real LaxFridrichs< tnlGrid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: regularize( const Real& r ) const
+Real LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, tnlIdenticalGridGeometry >, PressureGradient  > :: regularize( const Real& r ) const
 {
    return r + ( ( r >= 0 ) - ( r < 0 ) ) * this->regularizeEps;
 }

@@ -12,7 +12,7 @@
 #define	OperatorFunctionTEST_H
 
 #include <TNL/Functions/OperatorFunction.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/Analytic/ExpBumpFunction.h>
 #include <TNL/Operators/diffusion/LinearDiffusion.h>
 #include <TNL/Operators/DirichletBoundaryConditions.h>
@@ -140,9 +140,9 @@ bool runTest()
 int main( int argc, char* argv[] )
 {
    using namespace TNL;
-   if( ! runTest< tnlGrid< 1, double, Devices::Host, int > >() ||
-       ! runTest< tnlGrid< 2, double, Devices::Host, int > >() ||
-       ! runTest< tnlGrid< 3, double, Devices::Host, int > >() )
+   if( ! runTest< Meshes::Grid< 1, double, Devices::Host, int > >() ||
+       ! runTest< Meshes::Grid< 2, double, Devices::Host, int > >() ||
+       ! runTest< Meshes::Grid< 3, double, Devices::Host, int > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

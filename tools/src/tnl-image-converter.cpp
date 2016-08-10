@@ -11,7 +11,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/core/mfilename.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Images//PGMImage.h>
 #include <TNL/Images//PNGImage.h>
 #include <TNL/Images//JPEGImage.h>
@@ -41,7 +41,7 @@ bool processImages( const Config::ParameterContainer& parameters )
     String meshFile = parameters.getParameter< String >( "mesh-file" );
     bool verbose = parameters.getParameter< bool >( "verbose" );
  
-    typedef tnlGrid< 2, double, Devices::Host, int > GridType;
+    typedef Meshes::Grid< 2, double, Devices::Host, int > GridType;
     GridType grid;
     Vectors::Vector< double, Devices::Host, int > vector;
     Images::RegionOfInterest< int > roi;
@@ -137,7 +137,7 @@ bool processTNLFiles( const Config::ParameterContainer& parameters )
    String meshFile = parameters.getParameter< String >( "mesh-file" );
    bool verbose = parameters.getParameter< bool >( "verbose" );
  
-   tnlGrid< 2, double, Devices::Host, int > grid;
+   Meshes::Grid< 2, double, Devices::Host, int > grid;
    if( ! grid.load( meshFile ) )
    {
       std::cerr << "I am not able to load the mesh file " << meshFile << "." << std::endl;

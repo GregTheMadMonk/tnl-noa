@@ -12,7 +12,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-EulerVelGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
    return String( "EulerVelGetter< " ) +
@@ -29,7 +29,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-EulerVelGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -57,7 +57,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-EulerVelGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -80,7 +80,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-EulerVelGetter< tnlGrid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -115,7 +115,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-EulerVelGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
    return String( "EulerVelGetter< " ) +
@@ -132,7 +132,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-EulerVelGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -158,7 +158,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-EulerVelGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -181,7 +181,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-EulerVelGetter< tnlGrid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -221,7 +221,7 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 String
-EulerVelGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getType()
 {
    return String( "EulerVelGetter< " ) +
@@ -238,7 +238,7 @@ template< typename MeshReal,
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
-EulerVelGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 operator()( const MeshFunction& u,
             const MeshEntity& entity,
             const Real& time ) const
@@ -275,7 +275,7 @@ template< typename MeshReal,
 template< typename MeshEntity >
 __cuda_callable__
 Index
-EulerVelGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -298,7 +298,7 @@ template< typename MeshReal,
    template< typename MeshEntity, typename Vector, typename MatrixRow >
 __cuda_callable__
 void
-EulerVelGetter< tnlGrid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
+EulerVelGetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
 updateLinearSystem( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,

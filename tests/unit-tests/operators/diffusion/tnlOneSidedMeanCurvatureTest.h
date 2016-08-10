@@ -13,7 +13,7 @@
 
 #include <TNL/Operators/diffusion/OneSidedMeanCurvature.h>
 #include <TNL/Operators/diffusion/ExactLinearDiffusion.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include "../tnlPDEOperatorEocUnitTest.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../../tnlUnitTestStarter.h"
@@ -117,9 +117,9 @@ template< typename Device,
           bool verbose >
 bool setMesh()
 {
-   return ( setTestFunction< tnlGrid< 1, double, Device, int >, write, verbose >() &&
-            setTestFunction< tnlGrid< 2, double, Device, int >, write, verbose >() &&
-            setTestFunction< tnlGrid< 3, double, Device, int >, write, verbose >() );
+   return ( setTestFunction< Meshes::Grid< 1, double, Device, int >, write, verbose >() &&
+            setTestFunction< Meshes::Grid< 2, double, Device, int >, write, verbose >() &&
+            setTestFunction< Meshes::Grid< 3, double, Device, int >, write, verbose >() );
 }
 
 int main( int argc, char* argv[] )

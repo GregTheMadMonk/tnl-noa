@@ -2,7 +2,7 @@
 #pragma once
 
 #include "NonlinearDiffusion.h"
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
 namespace Operators {
@@ -14,7 +14,7 @@ template< typename MeshReal,
           typename Index,
           typename NonlinearDiffusionOperator >
 String
-NonlinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
+NonlinearDiffusion< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 getType()
 {
    return String( "NonlinearDiffusion< " ) +
@@ -34,7 +34,7 @@ template< typename MeshEntity,
           typename Vector >
 __cuda_callable__
 Real
-NonlinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
+NonlinearDiffusion< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 operator()( const MeshEntity& entity,
             const Vector& u,
             const Real& time ) const
@@ -51,7 +51,7 @@ template< typename MeshReal,
    template< typename MeshEntity >          
 __cuda_callable__
 Index
-NonlinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
+NonlinearDiffusion< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -71,7 +71,7 @@ template< typename MeshEntity,
           typename Matrix >
 __cuda_callable__
 void
-NonlinearDiffusion< tnlGrid< 1, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
+NonlinearDiffusion< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -91,7 +91,7 @@ template< typename MeshReal,
           typename Index,
           typename NonlinearDiffusionOperator >
 String
-NonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
+NonlinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 getType()
 {
    return String( "NonlinearDiffusion< " ) +
@@ -111,7 +111,7 @@ template< typename MeshEntity,
           typename Vector >
 __cuda_callable__
 Real
-NonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
+NonlinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 operator()( const MeshEntity& entity,
             const Vector& u,
             const Real& time ) const
@@ -128,7 +128,7 @@ template< typename MeshReal,
    template< typename MeshEntity >
 __cuda_callable__
 Index
-NonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
+NonlinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -148,7 +148,7 @@ template< typename MeshEntity,
           typename Matrix >
 __cuda_callable__
 void
-NonlinearDiffusion< tnlGrid< 2, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
+NonlinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,
@@ -168,7 +168,7 @@ template< typename MeshReal,
           typename Index,
           typename NonlinearDiffusionOperator >
 String
-NonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
+NonlinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 getType()
 {
    return String( "NonlinearDiffusion< " ) +
@@ -188,7 +188,7 @@ template< typename MeshEntity,
           typename Vector >
 __cuda_callable__
 Real
-NonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
+NonlinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 operator()( const MeshEntity& entity,
             const Vector& u,
             const Real& time ) const
@@ -205,7 +205,7 @@ template< typename MeshReal,
    template< typename MeshEntity >
 __cuda_callable__
 Index
-NonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
+NonlinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 getLinearSystemRowLength( const MeshType& mesh,
                           const IndexType& index,
                           const MeshEntity& entity ) const
@@ -225,7 +225,7 @@ template< typename MeshEntity,
           typename Matrix >
 __cuda_callable__
 void
-NonlinearDiffusion< tnlGrid< 3, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
+NonlinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, NonlinearDiffusionOperator, Real, Index >::
 setMatrixElements( const RealType& time,
                     const RealType& tau,
                     const MeshType& mesh,

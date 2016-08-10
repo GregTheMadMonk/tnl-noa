@@ -13,7 +13,7 @@
 
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Vectors/Vector.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/Operators/FiniteDifferences.h>
 #include <TNL/core/mfilename.h>
@@ -204,9 +204,9 @@ bool resolveMesh( const List< String >& parsedMeshType,
                   const Config::ParameterContainer& parameters )
 {
   std::cout << "+ -> Setting mesh type to " << parsedMeshType[ 0 ] << " ... " << std::endl;
-   if( parsedMeshType[ 0 ] == "tnlGrid" )
+   if( parsedMeshType[ 0 ] == "Grid" )
    {
-      typedef tnlGrid< Dimensions, RealType, Devices::Host, IndexType > MeshType;
+      typedef Meshes::Grid< Dimensions, RealType, Devices::Host, IndexType > MeshType;
       return resolveRealType< MeshType >( parameters );
    }
    std::cerr << "Unknown mesh type." << std::endl;

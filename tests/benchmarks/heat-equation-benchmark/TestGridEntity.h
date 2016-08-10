@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlGridEntity.h  -  description
+                          GridEntity.h  -  description
                              -------------------
     begin                : Nov 13, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -42,7 +42,7 @@ template< int Dimensions,
           typename Device,
           typename Index,          
           int EntityDimensions >
-class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, EntityDimensions >
+class TestGridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, EntityDimensions >
 {
    public:
       static const int entityDimensions = EntityDimensions;
@@ -55,11 +55,11 @@ template< int Dimensions,
           typename Real,
           typename Device,
           typename Index >
-class TestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions >
+class TestGridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, Dimensions >
 {
    public:
       
-      typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
+      typedef Meshes::Grid< Dimensions, Real, Device, Index > GridType;
       typedef GridType MeshType;
       typedef typename GridType::RealType RealType;
       typedef typename GridType::IndexType IndexType;

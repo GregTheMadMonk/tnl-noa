@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Functions/OperatorFunction.h>
 #include <TNL/Functions/FunctionAdapter.h>

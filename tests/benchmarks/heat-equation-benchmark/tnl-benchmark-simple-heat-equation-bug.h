@@ -7,12 +7,12 @@
 #include <iomanip>
 
 
-class tnlGridEntity
+class GridEntity
 {
    public:
       
       __device__ inline
-      tnlGridEntity()
+      GridEntity()
       : //e1( this ), e2( this ), e3( this )
         // ,
         eidx1( -1 ), eidx2( -1 ), eidx3( -1 )        
@@ -24,7 +24,7 @@ class tnlGridEntity
       
       int eidx1, eidx2, eidx3;
       
-      tnlGridEntity *e1, *e2, *e3;
+      GridEntity *e1, *e2, *e3;
       
 };
 
@@ -46,7 +46,7 @@ int main( int argc, char* argv[] )
    auto t_start = std::chrono::high_resolution_clock::now();
    while( iteration < 10000 )
    {
-      testKernel< tnlGridEntity ><<< cudaGridSize, cudaBlockSize >>>();
+      testKernel< GridEntity ><<< cudaGridSize, cudaBlockSize >>>();
       cudaThreadSynchronize();
       iteration++;
    }

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <type_traits>
-#include <TNL/mesh/tnlTraverser.h>
+#include <TNL/Meshes/Traverser.h>
 
 namespace TNL {
 namespace Solvers {
@@ -29,7 +29,7 @@ apply( const BoundaryConditions& boundaryConditions,
    if( std::is_same< DeviceType, Devices::Host >::value )
    {
       TraverserUserData userData( time, boundaryConditions, u );
-      tnlTraverser< MeshType, EntityType > meshTraverser;
+      Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
                                                     ( u.getMeshPointer(),
@@ -42,7 +42,7 @@ apply( const BoundaryConditions& boundaryConditions,
       MeshFunction* kernelU = Devices::Cuda::passToDevice( u );
       TraverserUserData userData( *kernelTime, *kernelBoundaryConditions, *kernelU );
       checkCudaDevice;
-      tnlTraverser< MeshType, EntityType > meshTraverser;
+      Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor >
                                                     ( u.getMeshPointer(),

@@ -19,7 +19,7 @@
 #pragma once
 
 #include <core/tnlCuda.h>
-#include <mesh/tnlDimensionsTag.h>
+#include <mesh/MeshDimensionsTag.h>
 #include "tnlTestNeighbourGridEntityGetter.h"
 
 template< typename GridEntity,

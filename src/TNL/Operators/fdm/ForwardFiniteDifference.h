@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Operators/fdm/FiniteDifferences.h>
 #include <TNL/Operators/fdm/ExactDifference.h>
 #include <TNL/Operators/Operator.h>
@@ -37,13 +37,13 @@ template< int Dimensions,
           int ZDifference,
           typename Real,
           typename Index >
-class ForwardFiniteDifference< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >, XDifference, YDifference, ZDifference, Real, Index >
-: public Operator< tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex >,
+class ForwardFiniteDifference< Meshes::Grid< Dimensions, MeshReal, MeshDevice, MeshIndex >, XDifference, YDifference, ZDifference, Real, Index >
+: public Operator< Meshes::Grid< Dimensions, MeshReal, MeshDevice, MeshIndex >,
                       Functions::MeshInteriorDomain, Dimensions, Dimensions, Real, Index >
 {
    public:
  
-      typedef tnlGrid< Dimensions, MeshReal, MeshDevice, MeshIndex > MeshType;
+      typedef Meshes::Grid< Dimensions, MeshReal, MeshDevice, MeshIndex > MeshType;
       typedef Real RealType;
       typedef MeshDevice DeviceType;
       typedef Index IndexType;

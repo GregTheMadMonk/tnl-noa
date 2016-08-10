@@ -32,11 +32,11 @@ template< int Dimensions,
           typename Device,
           typename Index,
           typename Config >
-class tnlTestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions, Config >
+class tnlTestGridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, Dimensions, Config >
 {
    public:
       
-      typedef tnlGrid< Dimensions, Real, Device, Index > GridType;
+      typedef Meshes::Grid< Dimensions, Real, Device, Index > GridType;
       typedef GridType MeshType;
       typedef typename GridType::RealType RealType;
       typedef typename GridType::IndexType IndexType;
@@ -61,7 +61,7 @@ class tnlTestGridEntity< tnlGrid< Dimensions, Real, Device, Index >, Dimensions,
       /*template< int NeighbourEntityDimensions = entityDimensions >
       using NeighbourEntities = 
          tnlTestNeighbourGridEntityGetter<
-            tnlTestGridEntity< tnlGrid< Dimensions, Real, Device, Index >,
+            tnlTestGridEntity< Meshes::Grid< Dimensions, Real, Device, Index >,
                            entityDimensions,
                            Config >,
             NeighbourEntityDimensions >;*/

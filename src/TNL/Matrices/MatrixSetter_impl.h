@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/mesh/tnlTraverser.h>
+#include <TNL/Meshes/Traverser.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -29,7 +29,7 @@ getCompressedRowsLengths( const MeshPointer& meshPointer,
 {
    {
       TraversalUserData userData( differentialOperatorPointer, boundaryConditionsPointer, rowLengthsPointer );
-      tnlTraverser< MeshType, EntityType > meshTraversal;
+      Meshes::Traverser< MeshType, EntityType > meshTraversal;
       meshTraversal.template processBoundaryEntities< TraversalUserData,
                                                       TraversalBoundaryEntitiesProcessor >
                                                     ( meshPointer,

@@ -28,7 +28,7 @@
 #include <TNL/Operators/euler/fvm/LaxFridrichs.h>
 #include <TNL/Operators/gradient/tnlCentralFDMGradient.h>
 #include <TNL/Operators/diffusion/LinearDiffusion.h>
-#include <TNL/mesh/tnlLinearGridGeometry.h>
+#include <TNL/Meshes/tnlLinearGridGeometry.h>
 #include <TNL/Solvers/cfd/navier-stokes/NavierStokesSolver.h>
 
 #include "navierStokesSolverMonitor.h"
@@ -71,15 +71,15 @@ class navierStokesSolver
    bool initMesh( InitMesh& mesh, const Config::ParameterContainer& parameters ) const;
 
    template< typename Real, typename Device, typename Index, template< int, typename, typename, typename > class Geometry >
-   bool initMesh( tnlGrid< 1, Real, Device, Index, Geometry >& mesh,
+   bool initMesh( Meshes::Grid< 1, Real, Device, Index, Geometry >& mesh,
                   const Config::ParameterContainer& parameters ) const;
 
    template< typename Real, typename Device, typename Index, template< int, typename, typename, typename > class Geometry >
-   bool initMesh( tnlGrid< 2, Real, Device, Index, Geometry >& mesh,
+   bool initMesh( Meshes::Grid< 2, Real, Device, Index, Geometry >& mesh,
                   const Config::ParameterContainer& parameters ) const;
 
    template< typename Real, typename Device, typename Index, template< int, typename, typename, typename > class Geometry >
-   bool initMesh( tnlGrid< 3, Real, Device, Index, Geometry >& mesh,
+   bool initMesh( Meshes::Grid< 3, Real, Device, Index, Geometry >& mesh,
                   const Config::ParameterContainer& parameters ) const;
 
    bool setup( const Config::ParameterContainer& parameters );

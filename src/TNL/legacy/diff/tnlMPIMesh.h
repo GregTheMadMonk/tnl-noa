@@ -11,7 +11,7 @@
 #ifndef TNLMPIMESH_H_
 #define TNLMPIMESH_H_
 
-#include <TNL/legacy/mesh/tnlGridOld.h>
+#include <TNL/legacy/mesh/GridOld.h>
 
 template< int Dimensions, typename Real = double, typename Device = Devices::Host, typename Index = int >
 class tnlMPIMesh

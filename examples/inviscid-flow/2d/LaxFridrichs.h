@@ -2,7 +2,7 @@
 #define LaxFridrichs_H
 
 #include <TNL/Vectors/Vector.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 #include "LaxFridrichsContinuity.h"
 #include "LaxFridrichsEnergy.h"

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMeshEntityTest.cpp  -  description
+                          MeshEntityTest.cpp  -  description
                              -------------------
     begin                : Feb 11, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -13,7 +13,7 @@
 #include <cstdlib>
 
 #ifndef HAVE_NOT_CXX11
-#include "tnlMeshEntityTester.h"
+#include "MeshEntityTester.h"
 #endif
 #include "../tnlUnitTestStarter.h"
 
@@ -21,7 +21,7 @@ int main( int argc, char* argv[] )
 {
 #ifndef HAVE_NOT_CXX11
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlMeshEntityTester< double, Devices::Host, long int > >()
+   if( ! tnlUnitTestStarter :: run< MeshEntityTester< double, Devices::Host, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

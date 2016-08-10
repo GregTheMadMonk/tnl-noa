@@ -8,4 +8,4 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "LinearDiffusionTest.h"
+#include "tnlLinearDiffusionTest.h"

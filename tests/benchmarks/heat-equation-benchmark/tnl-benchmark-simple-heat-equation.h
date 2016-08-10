@@ -18,7 +18,7 @@
 #include <TNL/Timer.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Vectors/StaticVector.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/MeshFunction.h>
 #include "pure-c-rhs.h"
 
@@ -385,7 +385,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    /****
     * Saving the result
     */
-   typedef tnlGrid< 2, Real, Devices::Cuda, Index > GridType;
+   typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
    typedef typename GridType::VertexType VertexType;
    typedef SharedPointer< GridType > GridPointer;
    GridPointer gridPointer;
@@ -537,7 +537,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
    /****
     * Saving the result
     */
-   typedef tnlGrid< 2, Real, Devices::Host, Index > GridType;
+   typedef Meshes::Grid< 2, Real, Devices::Host, Index > GridType;
    typedef typename GridType::VertexType VertexType;
    SharedPointer< GridType > gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );

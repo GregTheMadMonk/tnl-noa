@@ -27,8 +27,8 @@ ADD_TEST( matrices/tnlChunkedEllpackMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_
 ADD_TEST( matrices/tnlCSRMatrixTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlCSRMatrixTest${mpiExt}${debugExt} )
 
 ADD_TEST( mesh/tnlGridTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlGridTest${mpiExt}${debugExt} )
-ADD_TEST( mesh/tnlMeshEntityTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMeshEntityTest${mpiExt}${debugExt} )
-ADD_TEST( mesh/tnlMeshTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlMeshTest${mpiExt}${debugExt} )
+ADD_TEST( mesh/MeshEntityTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MeshEntityTest${mpiExt}${debugExt} )
+ADD_TEST( mesh/MeshTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/MeshTest${mpiExt}${debugExt} )
 
 ADD_TEST( functions/OperatorFunctionTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/OperatorFunctionTest${mpiExt}${debugExt} )
 

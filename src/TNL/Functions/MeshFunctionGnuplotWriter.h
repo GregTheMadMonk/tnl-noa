@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
 namespace Functions {   
@@ -33,10 +33,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class MeshFunctionGnuplotWriter< MeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 1, Real > >
+class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 1, Real > >
 {
    public:
-      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
@@ -51,10 +51,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class MeshFunctionGnuplotWriter< MeshFunction< tnlGrid< 1, MeshReal, Device, MeshIndex >, 0, Real > >
+class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, 0, Real > >
 {
    public:
-      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
 
@@ -69,10 +69,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class MeshFunctionGnuplotWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 2, Real > >
+class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 2, Real > >
 {
    public:
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::MeshFunction< MeshType, 2, RealType > MeshFunctionType;
 
@@ -87,10 +87,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class MeshFunctionGnuplotWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 1, Real > >
+class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real > >
 {
    public:
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::MeshFunction< MeshType, 1, RealType > MeshFunctionType;
 
@@ -106,10 +106,10 @@ template< typename MeshReal,
           typename Device,
           typename MeshIndex,
           typename Real >
-class MeshFunctionGnuplotWriter< MeshFunction< tnlGrid< 2, MeshReal, Device, MeshIndex >, 0, Real > >
+class MeshFunctionGnuplotWriter< MeshFunction< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 0, Real > >
 {
    public:
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef Real RealType;
       typedef Functions::MeshFunction< MeshType, 0, RealType > MeshFunctionType;
 

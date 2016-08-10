@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlGridTest.cpp  -  description
+                          GridTest.cpp  -  description
                              -------------------
     begin                : Jul 28, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -21,9 +21,9 @@ int main( int argc, char* argv[] )
 {
 #ifndef HAVE_NOT_CXX11
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlGridTester< 1, double, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlGridTester< 2, double, Devices::Host, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlGridTester< 3, double, Devices::Host, int > >()
+   if( ! tnlUnitTestStarter :: run< GridTester< 1, double, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< GridTester< 2, double, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< GridTester< 3, double, Devices::Host, int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

@@ -12,7 +12,7 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Vectors/Vector.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
 namespace Solvers {   
@@ -28,7 +28,7 @@ class DummyProblem
       typedef Device DeviceType;
       typedef Index IndexType;
       typedef Vectors::Vector< Real, Device, Index > DofVectorType;
-      typedef tnlGrid< 1, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
       typedef DofVectorType MeshDependentDataType;
 };
 

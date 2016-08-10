@@ -17,7 +17,7 @@
 #include <cppunit/TestCase.h>
 #include <TNL/Solvers/Solver.h>
 #include <TNL/Solvers/SolverMonitor.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/tnlConfig.h>
 
 using namespace TNL;
@@ -80,17 +80,17 @@ class SolverTesterSetter
       SolverStarter solverStarter;
       if( dimensions == 1 )
       {
-         typedef tnlGrid< 1, RealType, DeviceType, IndexType > MeshType;
+         typedef Meshes::Grid< 1, RealType, DeviceType, IndexType > MeshType;
          return solverStarter. run< SolverTesterProblem< MeshType > >( parameters );
       }
       if( dimensions == 2 )
       {
-         typedef tnlGrid< 2, RealType, DeviceType, IndexType > MeshType;
+         typedef Meshes::Grid< 2, RealType, DeviceType, IndexType > MeshType;
          return solverStarter. run< SolverTesterProblem< MeshType > >( parameters );
       }
       if( dimensions == 3 )
       {
-         typedef tnlGrid< 3, RealType, DeviceType, IndexType > MeshType;
+         typedef Meshes::Grid< 3, RealType, DeviceType, IndexType > MeshType;
          return solverStarter. run< SolverTesterProblem< MeshType > >( parameters );
       };
    }

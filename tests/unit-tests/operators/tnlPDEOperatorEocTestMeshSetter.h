@@ -11,7 +11,7 @@
 #ifndef TNLPDEOPERATOREOCTESTMESHSETTER_H
 #define	TNLPDEOPERATOREOCTESTMESHSETTER_H
 
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 using namespace TNL;
 
@@ -23,11 +23,11 @@ class tnlPDEOperatorEocTestMeshSetter
 template< typename Real,
           typename Device,
           typename Index >
-class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 1, Real, Device, Index > >
+class tnlPDEOperatorEocTestMeshSetter< Meshes::Grid< 1, Real, Device, Index > >
 {
    public:
  
-      typedef tnlGrid< 1, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
@@ -52,11 +52,11 @@ class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 1, Real, Device, Index > >
 template< typename Real,
           typename Device,
           typename Index >
-class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 2, Real, Device, Index > >
+class tnlPDEOperatorEocTestMeshSetter< Meshes::Grid< 2, Real, Device, Index > >
 {
    public:
  
-      typedef tnlGrid< 2, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 2, Real, Device, Index > MeshType;
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
@@ -84,11 +84,11 @@ class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 2, Real, Device, Index > >
 template< typename Real,
           typename Device,
           typename Index >
-class tnlPDEOperatorEocTestMeshSetter< tnlGrid< 3, Real, Device, Index > >
+class tnlPDEOperatorEocTestMeshSetter< Meshes::Grid< 3, Real, Device, Index > >
 {
    public:
  
-      typedef tnlGrid< 3, Real, Device, Index > MeshType;
+      typedef Meshes::Grid< 3, Real, Device, Index > MeshType;
       typedef typename MeshType::VertexType VertexType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;

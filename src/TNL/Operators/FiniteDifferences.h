@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
 namespace Operators {
@@ -21,14 +21,14 @@ class FiniteDifferences
 };
 
 template< typename Real, typename Device, typename Index >
-class FiniteDifferences< tnlGrid< 1, Real, Device, Index > >
+class FiniteDifferences< Meshes::Grid< 1, Real, Device, Index > >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlGrid< 1, Real, Device, Index > GridType;
+   typedef Meshes::Grid< 1, Real, Device, Index > GridType;
    //typedef typename GridType::CoordinatesType CoordinatesType;
    typedef typename GridType::Cell CellType;
 
@@ -84,14 +84,14 @@ class FiniteDifferences< tnlGrid< 1, Real, Device, Index > >
 };
 
 template< typename Real, typename Device, typename Index >
-class FiniteDifferences< tnlGrid< 2, Real, Device, Index > >
+class FiniteDifferences< Meshes::Grid< 2, Real, Device, Index > >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlGrid< 2, Real, Device, Index > GridType;
+   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    //typedef typename GridType::CoordinatesType CoordinatesType;
    typedef typename GridType::Cell CellType;
 
@@ -147,14 +147,14 @@ class FiniteDifferences< tnlGrid< 2, Real, Device, Index > >
 };
 
 template< typename Real, typename Device, typename Index >
-class FiniteDifferences< tnlGrid< 3, Real, Device, Index > >
+class FiniteDifferences< Meshes::Grid< 3, Real, Device, Index > >
 {
    public:
 
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef tnlGrid< 3, Real, Device, Index > GridType;
+   typedef Meshes::Grid< 3, Real, Device, Index > GridType;
    //typedef typename GridType::CoordinatesType CoordinatesType;
    typedef typename GridType::Cell CellType;
 

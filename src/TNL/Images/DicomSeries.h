@@ -21,7 +21,7 @@
 #include <TNL/Images//Image.h>
 #include <TNL/Images//DicomHeader.h>
 #include <TNL/Images//RegionOfInterest.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 #include <TNL/tnlConfig.h>
 
 #ifdef HAVE_DCMTK_H
@@ -72,7 +72,7 @@ class DicomSeries : public tnlImage< int >
                 typename Index,
                 typename Vector >
       bool getImage( const int imageIdx,
-                     const tnlGrid< 2, Real, Device, Index >& grid,
+                     const Meshes::Grid< 2, Real, Device, Index >& grid,
                      const RegionOfInterest< int > roi,
                      Vector& vector );
  

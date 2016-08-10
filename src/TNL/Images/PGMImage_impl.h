@@ -86,10 +86,10 @@ template< typename Index >
 bool
 tnlPGMImage< Index >::
 read( const RegionOfInterest< Index > roi,
-      const tnlGrid< 2, Real, Device, Index >& grid,
+      const Meshes::Grid< 2, Real, Device, Index >& grid,
       Vector& vector )
 {
-   typedef tnlGrid< 2, Real, Device, Index > GridType;
+   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
  
    Index i, j;
@@ -122,7 +122,7 @@ template< typename Index >
              typename Device >
 bool
 tnlPGMImage< Index >::
-writeHeader( const tnlGrid< 2, Real, Device, Index >& grid,
+writeHeader( const Meshes::Grid< 2, Real, Device, Index >& grid,
              bool binary )
 {
    if( binary )
@@ -140,7 +140,7 @@ template< typename Index >
 bool
 tnlPGMImage< Index >::
 openForWrite( const String& fileName,
-              tnlGrid< 2, Real, Device, Index >& grid,
+              Meshes::Grid< 2, Real, Device, Index >& grid,
               bool binary )
 {
    this->close();
@@ -166,10 +166,10 @@ template< typename Index >
              typename Vector >
 bool
 tnlPGMImage< Index >::
-write( const tnlGrid< 2, Real, Device, Index >& grid,
+write( const Meshes::Grid< 2, Real, Device, Index >& grid,
        Vector& vector )
 {
-   typedef tnlGrid< 2, Real, Device, Index > GridType;
+   typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    typename GridType::Cell cell( grid );
  
    Index i, j;

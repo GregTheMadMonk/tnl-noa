@@ -10,7 +10,7 @@
 
 
 
-//#include <mesh/grids/tnlGrid2D.h>
+//#include <mesh/grids/Grid2D.h>
 
 #include <core/tnlObject.h>
 #include <core/Devices::Host.h>
@@ -21,18 +21,18 @@ template< int Dimensions,
           typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
-class tnlGrid : public tnlObject
+class Grid : public tnlObject
 {
 };
 
-//#include <mesh/grids/tnlGrid1D.h>
-//#include <mesh/grids/tnlGrid3D.h>
+//#include <mesh/grids/Grid1D.h>
+//#include <mesh/grids/Grid3D.h>
 
 
-#include <mesh/grids/tnlGridEntityTopology.h>
-#include <mesh/grids/tnlGridEntityGetter.h>
-#include <mesh/grids/tnlGridEntityConfig.h>
-#include <mesh/grids/tnlNeighbourGridEntityGetter.h>
+#include <mesh/grids/GridEntityTopology.h>
+#include <mesh/grids/GridEntityGetter.h>
+#include <mesh/grids/GridEntityConfig.h>
+#include <mesh/grids/NeighbourGridEntityGetter.h>
 #include <core/tnlLogger.h>
 
 // TODO: remove this
@@ -43,7 +43,7 @@ class tnlGrid : public tnlObject
 template< typename Real,
           typename Device,
           typename Index >
-class tnlGrid< 2, Real, Device, Index > : public tnlObject
+class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
 {
    public:
 
@@ -52,31 +52,31 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    typedef Index IndexType;
    typedef tnlStaticVector< 2, Real > VertexType;
    typedef tnlStaticVector< 2, Index > CoordinatesType;
-   typedef tnlGrid< 2, Real, Devices::Host, Index > HostType;
-   typedef tnlGrid< 2, Real, tnlCuda, Index > CudaType;   
-   typedef tnlGrid< 2, Real, Device, Index > ThisType;
+   typedef Meshes::Grid< 2, Real, Devices::Host, Index > HostType;
+   typedef Meshes::Grid< 2, Real, tnlCuda, Index > CudaType;   
+   typedef Meshes::Grid< 2, Real, Device, Index > ThisType;
    
    static const int meshDimensions = 2;
 
    //template< int EntityDimensions, 
-   //          typename Config = tnlGridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   //using MeshEntity = tnlGridEntity< ThisType, EntityDimensions, Config >;
+   //          typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
+   //using MeshEntity = GridEntity< ThisType, EntityDimensions, Config >;
    
-   //typedef MeshEntity< meshDimensions, tnlGridEntityCrossStencilStorage< 1 > > Cell;
-   //typedef MeshEntity< meshDimensions - 1, tnlGridEntityNoStencilStorage > Face;
+   //typedef MeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > Cell;
+   //typedef MeshEntity< meshDimensions - 1, GridEntityNoStencilStorage > Face;
    //typedef MeshEntity< 0 > Vertex;
    
 
    // TODO: remove this
    template< int EntityDimensions, 
-             typename Config = tnlGridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
+             typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
    using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimensions, Config >;
-   typedef TestMeshEntity< meshDimensions, tnlGridEntityCrossStencilStorage< 1 > > TestCell;
+   typedef TestMeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > TestCell;
    /////
    
    static constexpr int getMeshDimensions() { return meshDimensions; };
 
-   tnlGrid();
+   Grid();
 
    static tnlString getType();
 
@@ -183,24 +183,24 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    RealType spaceStepsProducts[ 5 ][ 5 ];
   
    template< typename, typename, int > 
-   friend class tnlGridEntityGetter;
+   friend class GridEntityGetter;
 };
 
 
 #include <fstream>
 #include <iomanip>
 #include <core/tnlAssert.h>
-#include <mesh/tnlGnuplotWriter.h>
-#include <mesh/grids/tnlGridEntityGetter_impl.h>
-#include <mesh/grids/tnlNeighbourGridEntityGetter2D_impl.h>
-#include <mesh/grids/tnlGridEntityMeasureGetter.h>
+#include <mesh/GnuplotWriter.h>
+#include <mesh/grids/GridEntityGetter_impl.h>
+#include <mesh/grids/NeighbourGridEntityGetter2D_impl.h>
+#include <mesh/grids/GridEntityMeasureGetter.h>
 
 using namespace std;
 
 template< typename Real,
           typename Device,
           typename Index >
-tnlGrid< 2, Real, Device, Index > :: tnlGrid()
+Meshes::Grid< 2, Real, Device, Index > :: Grid()
 : numberOfCells( 0 ),
   numberOfNxFaces( 0 ),
   numberOfNyFaces( 0 ),
@@ -212,9 +212,9 @@ tnlGrid< 2, Real, Device, Index > :: tnlGrid()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlGrid< 2, Real, Device, Index > :: getType()
+tnlString Meshes::Grid< 2, Real, Device, Index > :: getType()
 {
-   return tnlString( "tnlGrid< " ) +
+   return tnlString( "Meshes::Grid< " ) +
           tnlString( getMeshDimensions() ) + ", " +
           tnlString( ::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
@@ -224,7 +224,7 @@ tnlString tnlGrid< 2, Real, Device, Index > :: getType()
 template< typename Real,
            typename Device,
            typename Index >
-tnlString tnlGrid< 2, Real, Device, Index > :: getTypeVirtual() const
+tnlString Meshes::Grid< 2, Real, Device, Index > :: getTypeVirtual() const
 {
    return this->getType();
 }
@@ -232,7 +232,7 @@ tnlString tnlGrid< 2, Real, Device, Index > :: getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlGrid< 2, Real, Device, Index > :: getSerializationType()
+tnlString Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
 {
    return HostType::getType();
 };
@@ -240,7 +240,7 @@ tnlString tnlGrid< 2, Real, Device, Index > :: getSerializationType()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlGrid< 2, Real, Device, Index > :: getSerializationTypeVirtual() const
+tnlString Meshes::Grid< 2, Real, Device, Index > :: getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 };
@@ -249,7 +249,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-void tnlGrid< 2, Real, Device, Index > :: computeSpaceSteps()
+void Meshes::Grid< 2, Real, Device, Index > :: computeSpaceSteps()
 {
    if( this->getDimensions().x() > 0 && this->getDimensions().y() > 0 )
    {
@@ -308,7 +308,7 @@ void tnlGrid< 2, Real, Device, Index > :: computeSpaceSteps()
 template< typename Real,
           typename Device,
           typename Index >
-void tnlGrid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
+void Meshes::Grid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
 {
    tnlAssert( xSize > 0, cerr << "xSize = " << xSize );
    tnlAssert( ySize > 0, cerr << "ySize = " << ySize );
@@ -326,7 +326,7 @@ void tnlGrid< 2, Real, Device, Index > :: setDimensions( const Index xSize, cons
 template< typename Real,
           typename Device,
           typename Index >
-void tnlGrid< 2, Real, Device, Index > :: setDimensions( const CoordinatesType& dimensions )
+void Meshes::Grid< 2, Real, Device, Index > :: setDimensions( const CoordinatesType& dimensions )
 {
    return this->setDimensions( dimensions. x(), dimensions. y() );
 }
@@ -335,8 +335,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename tnlGrid< 2, Real, Device, Index >::CoordinatesType&
-tnlGrid< 2, Real, Device, Index > :: getDimensions() const
+const typename Meshes::Grid< 2, Real, Device, Index >::CoordinatesType&
+Meshes::Grid< 2, Real, Device, Index > :: getDimensions() const
 {
    return this->dimensions;
 }
@@ -344,7 +344,7 @@ tnlGrid< 2, Real, Device, Index > :: getDimensions() const
 template< typename Real,
           typename Device,
           typename Index >
-void tnlGrid< 2, Real, Device, Index > :: setDomain( const VertexType& origin,
+void Meshes::Grid< 2, Real, Device, Index > :: setDomain( const VertexType& origin,
                                                      const VertexType& proportions )
 {
    this->origin = origin;
@@ -356,8 +356,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline 
-const typename tnlGrid< 2, Real, Device, Index >::VertexType&
-tnlGrid< 2, Real, Device, Index >::getOrigin() const
+const typename Meshes::Grid< 2, Real, Device, Index >::VertexType&
+Meshes::Grid< 2, Real, Device, Index >::getOrigin() const
 {
    return this->origin;
 }
@@ -366,8 +366,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline 
-const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
-   tnlGrid< 2, Real, Device, Index > :: getProportions() const
+const typename Meshes::Grid< 2, Real, Device, Index > :: VertexType&
+   Meshes::Grid< 2, Real, Device, Index > :: getProportions() const
 {
    return this->proportions;
 }
@@ -378,7 +378,7 @@ template< typename Real,
    template< typename EntityType >
 __cuda_callable__ inline 
 Index
-tnlGrid< 2, Real, Device, Index >:: 
+Meshes::Grid< 2, Real, Device, Index >:: 
 getEntitiesCount() const
 {
    static_assert( EntityType::entityDimensions <= 2 &&
@@ -402,13 +402,13 @@ template< typename Real,
    template< typename EntityType >
 __cuda_callable__ inline 
 EntityType
-tnlGrid< 2, Real, Device, Index >::
+Meshes::Grid< 2, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
    static_assert( EntityType::entityDimensions <= 2 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
    
-   return tnlGridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
+   return GridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
 
 template< typename Real,
@@ -417,13 +417,13 @@ template< typename Real,
    template< typename EntityType >
 __cuda_callable__ inline 
 Index
-tnlGrid< 2, Real, Device, Index >::
+Meshes::Grid< 2, Real, Device, Index >::
 getEntityIndex( const EntityType& entity ) const
 {
    static_assert( EntityType::entityDimensions <= 2 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
    
-   return tnlGridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
+   return GridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
 
 template< typename Real,
@@ -432,10 +432,10 @@ template< typename Real,
    template< typename EntityType >
 __cuda_callable__
 Real
-tnlGrid< 2, Real, Device, Index >::
+Meshes::Grid< 2, Real, Device, Index >::
 getEntityMeasure( const EntityType& entity ) const
 {
-   return tnlGridEntityMeasureGetter< ThisType, EntityType::getDimensions() >::getMeasure( *this, entity );
+   return GridEntityMeasureGetter< ThisType, EntityType::getDimensions() >::getMeasure( *this, entity );
 }
 
 template< typename Real,
@@ -443,7 +443,7 @@ template< typename Real,
           typename Index >
 __cuda_callable__
 Real
-tnlGrid< 2, Real, Device, Index >::
+Meshes::Grid< 2, Real, Device, Index >::
 getCellMeasure() const
 {
    return this->template getSpaceStepsProducts< 1, 1 >();
@@ -454,8 +454,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-typename tnlGrid< 2, Real, Device, Index >::VertexType
-tnlGrid< 2, Real, Device, Index >::
+typename Meshes::Grid< 2, Real, Device, Index >::VertexType
+Meshes::Grid< 2, Real, Device, Index >::
 getSpaceSteps() const
 {
    return this->spaceSteps;
@@ -467,7 +467,7 @@ template< typename Real,
    template< int xPow, int yPow  >
 __cuda_callable__ inline 
 const Real& 
-tnlGrid< 2, Real, Device, Index >::
+Meshes::Grid< 2, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
    tnlAssert( xPow >= -2 && xPow <= 2, 
@@ -482,7 +482,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-Real tnlGrid< 2, Real, Device, Index > :: getSmallestSpaceStep() const
+Real Meshes::Grid< 2, Real, Device, Index > :: getSmallestSpaceStep() const
 {
    return Min( this->spaceSteps.x(), this->spaceSteps.y() );
 }
@@ -492,7 +492,7 @@ template< typename Real,
           typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index >::getAbsMax( const GridFunction& f ) const
+         Meshes::Grid< 2, Real, Device, Index >::getAbsMax( const GridFunction& f ) const
 {
    return f.absMax();
 }
@@ -502,7 +502,7 @@ template< typename Real,
           typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index >::getLpNorm( const GridFunction& f1,
+         Meshes::Grid< 2, Real, Device, Index >::getLpNorm( const GridFunction& f1,
                                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
@@ -526,7 +526,7 @@ template< typename Real,
           typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
+         Meshes::Grid< 2, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
                                                                  const GridFunction& f2 ) const
 {
    return f1.differenceAbsMax( f2 );
@@ -537,7 +537,7 @@ template< typename Real,
           typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
+         Meshes::Grid< 2, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
                                                                  const GridFunction& f2,
                                                                  const typename GridFunction::RealType& p ) const
 {
@@ -560,7 +560,7 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: save( tnlFile& file ) const
+bool Meshes::Grid< 2, Real, Device, Index > :: save( tnlFile& file ) const
 {
    if( ! tnlObject::save( file ) )
       return false;
@@ -568,7 +568,7 @@ bool tnlGrid< 2, Real, Device, Index > :: save( tnlFile& file ) const
        ! this->proportions.save( file ) ||
        ! this->dimensions.save( file ) )
    {
-      cerr << "I was not able to save the domain description of a tnlGrid." << endl;
+      cerr << "I was not able to save the domain description of a Grid." << endl;
       return false;
    }
    return true;
@@ -577,7 +577,7 @@ bool tnlGrid< 2, Real, Device, Index > :: save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: load( tnlFile& file )
+bool Meshes::Grid< 2, Real, Device, Index > :: load( tnlFile& file )
 {
    if( ! tnlObject::load( file ) )
       return false;
@@ -586,7 +586,7 @@ bool tnlGrid< 2, Real, Device, Index > :: load( tnlFile& file )
        ! this->proportions.load( file ) ||
        ! dimensions.load( file ) )
    {
-      cerr << "I was not able to load the domain description of a tnlGrid." << endl;
+      cerr << "I was not able to load the domain description of a Grid." << endl;
       return false;
    }
    this->setDimensions( dimensions );
@@ -596,7 +596,7 @@ bool tnlGrid< 2, Real, Device, Index > :: load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: save( const tnlString& fileName ) const
+bool Meshes::Grid< 2, Real, Device, Index > :: save( const tnlString& fileName ) const
 {
    return tnlObject :: save( fileName );
 };
@@ -604,7 +604,7 @@ bool tnlGrid< 2, Real, Device, Index > :: save( const tnlString& fileName ) cons
 template< typename Real,
            typename Device,
            typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: load( const tnlString& fileName )
+bool Meshes::Grid< 2, Real, Device, Index > :: load( const tnlString& fileName )
 {
    return tnlObject :: load( fileName );
 };
@@ -612,7 +612,7 @@ bool tnlGrid< 2, Real, Device, Index > :: load( const tnlString& fileName )
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
+bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
                                                      const tnlString& format ) const
 {
    fstream file;
@@ -738,7 +738,7 @@ template< typename Real,
            typename Device,
            typename Index >
    template< typename MeshFunction >
-bool tnlGrid< 2, Real, Device, Index > :: write( const MeshFunction& function,
+bool Meshes::Grid< 2, Real, Device, Index > :: write( const MeshFunction& function,
                                                  const tnlString& fileName,
                                                  const tnlString& format ) const
 {
@@ -766,8 +766,8 @@ bool tnlGrid< 2, Real, Device, Index > :: write( const MeshFunction& function,
          for( cellCoordinates.x() = 0; cellCoordinates.x() < getDimensions(). x(); cellCoordinates.x() ++ )
          {
             VertexType v = cell.getCenter();
-            tnlGnuplotWriter::write( file,  v );
-            tnlGnuplotWriter::write( file,  function[ this->getEntityIndex( cell ) ] );
+            GnuplotWriter::write( file,  v );
+            GnuplotWriter::write( file,  function[ this->getEntityIndex( cell ) ] );
             file << endl;
          }
          file << endl;
@@ -781,7 +781,7 @@ template< typename Real,
            typename Device,
            typename Index >
 void
-tnlGrid< 2, Real, Device, Index >::
+Meshes::Grid< 2, Real, Device, Index >::
 writeProlog( tnlLogger& logger )
 {
    logger.writeParameter( "Dimensions:", getMeshDimensions() );
@@ -805,21 +805,21 @@ template< int Dimensions,
           typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
-class tnlGrid : public tnlObject
+class Grid : public tnlObject
 {
 };
 
 
-#include <mesh/grids/tnlGridEntityGetter.h>
-#include <mesh/grids/tnlGridEntityMeasureGetter.h>
+#include <mesh/grids/GridEntityGetter.h>
+#include <mesh/grids/GridEntityMeasureGetter.h>
 #include <core/tnlLogger.h>
-#include <mesh/tnlGnuplotWriter.h>
-#include <mesh/grids/tnlGridEntityConfig.h>
+#include <mesh/GnuplotWriter.h>
+#include <mesh/grids/GridEntityConfig.h>
 
 template< typename Real,
           typename Device,
           typename Index >
-class tnlGrid< 2, Real, Device, Index > : public tnlObject
+class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
 {
    public:
 
@@ -828,31 +828,31 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    typedef Index IndexType;
    typedef tnlStaticVector< 2, Real > VertexType;
    typedef tnlStaticVector< 2, Index > CoordinatesType;
-   typedef tnlGrid< 2, Real, Devices::Host, Index > HostType;
-   typedef tnlGrid< 2, Real, tnlCuda, Index > CudaType;   
-   typedef tnlGrid< 2, Real, Device, Index > ThisType;
+   typedef Meshes::Grid< 2, Real, Devices::Host, Index > HostType;
+   typedef Meshes::Grid< 2, Real, tnlCuda, Index > CudaType;   
+   typedef Meshes::Grid< 2, Real, Device, Index > ThisType;
    
    static const int meshDimensions = 2;
 
    /*template< int EntityDimensions, 
-             typename Config = tnlGridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
-   using MeshEntity = tnlGridEntity< ThisType, EntityDimensions, Config >;
+             typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
+   using MeshEntity = GridEntity< ThisType, EntityDimensions, Config >;
    
-   typedef MeshEntity< meshDimensions, tnlGridEntityCrossStencilStorage< 1 > > Cell;
-   typedef MeshEntity< meshDimensions - 1, tnlGridEntityNoStencilStorage > Face;
+   typedef MeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > Cell;
+   typedef MeshEntity< meshDimensions - 1, GridEntityNoStencilStorage > Face;
    typedef MeshEntity< 0 > Vertex;*/
    
 
    // TODO: remove this
    template< int EntityDimensions, 
-             typename Config = tnlGridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
+             typename Config = GridEntityNoStencilStorage >//CrossStencilStorage< 1 > >
    using TestMeshEntity = tnlTestGridEntity< ThisType, EntityDimensions, Config >;
-   typedef TestMeshEntity< meshDimensions, tnlGridEntityCrossStencilStorage< 1 > > Cell;
+   typedef TestMeshEntity< meshDimensions, GridEntityCrossStencilStorage< 1 > > Cell;
    /////
    
    static constexpr int getMeshDimensions() { return meshDimensions; };
 
-   tnlGrid();
+   Grid();
 
    static tnlString getType();
 
@@ -959,13 +959,13 @@ class tnlGrid< 2, Real, Device, Index > : public tnlObject
    RealType spaceStepsProducts[ 5 ][ 5 ];
   
    template< typename, typename, int > 
-   friend class tnlGridEntityGetter;
+   friend class GridEntityGetter;
 };
 
 template< typename Real,
           typename Device,
           typename Index >
-tnlGrid< 2, Real, Device, Index > :: tnlGrid()
+Meshes::Grid< 2, Real, Device, Index > :: Grid()
 : numberOfCells( 0 ),
   numberOfNxFaces( 0 ),
   numberOfNyFaces( 0 ),
@@ -977,9 +977,9 @@ tnlGrid< 2, Real, Device, Index > :: tnlGrid()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlGrid< 2, Real, Device, Index > :: getType()
+tnlString Meshes::Grid< 2, Real, Device, Index > :: getType()
 {
-   return tnlString( "tnlGrid< " ) +
+   return tnlString( "Meshes::Grid< " ) +
           tnlString( getMeshDimensions() ) + ", " +
           tnlString( ::getType< RealType >() ) + ", " +
           tnlString( Device :: getDeviceType() ) + ", " +
@@ -989,7 +989,7 @@ tnlString tnlGrid< 2, Real, Device, Index > :: getType()
 template< typename Real,
            typename Device,
            typename Index >
-tnlString tnlGrid< 2, Real, Device, Index > :: getTypeVirtual() const
+tnlString Meshes::Grid< 2, Real, Device, Index > :: getTypeVirtual() const
 {
    return this->getType();
 }
@@ -997,7 +997,7 @@ tnlString tnlGrid< 2, Real, Device, Index > :: getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlGrid< 2, Real, Device, Index > :: getSerializationType()
+tnlString Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
 {
    return HostType::getType();
 };
@@ -1005,7 +1005,7 @@ tnlString tnlGrid< 2, Real, Device, Index > :: getSerializationType()
 template< typename Real,
           typename Device,
           typename Index >
-tnlString tnlGrid< 2, Real, Device, Index > :: getSerializationTypeVirtual() const
+tnlString Meshes::Grid< 2, Real, Device, Index > :: getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 };
@@ -1014,7 +1014,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-void tnlGrid< 2, Real, Device, Index > :: computeSpaceSteps()
+void Meshes::Grid< 2, Real, Device, Index > :: computeSpaceSteps()
 {
    if( this->getDimensions().x() > 0 && this->getDimensions().y() > 0 )
    {
@@ -1073,7 +1073,7 @@ void tnlGrid< 2, Real, Device, Index > :: computeSpaceSteps()
 template< typename Real,
           typename Device,
           typename Index >
-void tnlGrid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
+void Meshes::Grid< 2, Real, Device, Index > :: setDimensions( const Index xSize, const Index ySize )
 {
    tnlAssert( xSize > 0, cerr << "xSize = " << xSize );
    tnlAssert( ySize > 0, cerr << "ySize = " << ySize );
@@ -1091,7 +1091,7 @@ void tnlGrid< 2, Real, Device, Index > :: setDimensions( const Index xSize, cons
 template< typename Real,
           typename Device,
           typename Index >
-void tnlGrid< 2, Real, Device, Index > :: setDimensions( const CoordinatesType& dimensions )
+void Meshes::Grid< 2, Real, Device, Index > :: setDimensions( const CoordinatesType& dimensions )
 {
    return this->setDimensions( dimensions. x(), dimensions. y() );
 }
@@ -1100,8 +1100,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-const typename tnlGrid< 2, Real, Device, Index >::CoordinatesType&
-tnlGrid< 2, Real, Device, Index > :: getDimensions() const
+const typename Meshes::Grid< 2, Real, Device, Index >::CoordinatesType&
+Meshes::Grid< 2, Real, Device, Index > :: getDimensions() const
 {
    return this->dimensions;
 }
@@ -1109,7 +1109,7 @@ tnlGrid< 2, Real, Device, Index > :: getDimensions() const
 template< typename Real,
           typename Device,
           typename Index >
-void tnlGrid< 2, Real, Device, Index > :: setDomain( const VertexType& origin,
+void Meshes::Grid< 2, Real, Device, Index > :: setDomain( const VertexType& origin,
                                                      const VertexType& proportions )
 {
    this->origin = origin;
@@ -1121,8 +1121,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline 
-const typename tnlGrid< 2, Real, Device, Index >::VertexType&
-tnlGrid< 2, Real, Device, Index >::getOrigin() const
+const typename Meshes::Grid< 2, Real, Device, Index >::VertexType&
+Meshes::Grid< 2, Real, Device, Index >::getOrigin() const
 {
    return this->origin;
 }
@@ -1131,8 +1131,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline 
-const typename tnlGrid< 2, Real, Device, Index > :: VertexType&
-   tnlGrid< 2, Real, Device, Index > :: getProportions() const
+const typename Meshes::Grid< 2, Real, Device, Index > :: VertexType&
+   Meshes::Grid< 2, Real, Device, Index > :: getProportions() const
 {
    return this->proportions;
 }
@@ -1143,7 +1143,7 @@ template< typename Real,
    template< typename EntityType >
 __cuda_callable__ inline 
 Index
-tnlGrid< 2, Real, Device, Index >:: 
+Meshes::Grid< 2, Real, Device, Index >:: 
 getEntitiesCount() const
 {
    static_assert( EntityType::entityDimensions <= 2 &&
@@ -1167,13 +1167,13 @@ template< typename Real,
    template< typename EntityType >
 __cuda_callable__ inline 
 EntityType
-tnlGrid< 2, Real, Device, Index >::
+Meshes::Grid< 2, Real, Device, Index >::
 getEntity( const IndexType& entityIndex ) const
 {
    static_assert( EntityType::entityDimensions <= 2 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
    
-   return tnlGridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
+   return GridEntityGetter< ThisType, EntityType >::getEntity( *this, entityIndex );
 }
 
 template< typename Real,
@@ -1182,13 +1182,13 @@ template< typename Real,
    template< typename EntityType >
 __cuda_callable__ inline 
 Index
-tnlGrid< 2, Real, Device, Index >::
+Meshes::Grid< 2, Real, Device, Index >::
 getEntityIndex( const EntityType& entity ) const
 {
    static_assert( EntityType::entityDimensions <= 2 &&
                   EntityType::entityDimensions >= 0, "Wrong grid entity dimensions." );
    
-   return tnlGridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
+   return GridEntityGetter< ThisType, EntityType >::getEntityIndex( *this, entity );
 }
 
 template< typename Real,
@@ -1197,10 +1197,10 @@ template< typename Real,
    template< typename EntityType >
 __cuda_callable__
 Real
-tnlGrid< 2, Real, Device, Index >::
+Meshes::Grid< 2, Real, Device, Index >::
 getEntityMeasure( const EntityType& entity ) const
 {
-   return tnlGridEntityMeasureGetter< ThisType, EntityType::getDimensions() >::getMeasure( *this, entity );
+   return GridEntityMeasureGetter< ThisType, EntityType::getDimensions() >::getMeasure( *this, entity );
 }
 
 template< typename Real,
@@ -1208,7 +1208,7 @@ template< typename Real,
           typename Index >
 __cuda_callable__
 Real
-tnlGrid< 2, Real, Device, Index >::
+Meshes::Grid< 2, Real, Device, Index >::
 getCellMeasure() const
 {
    return this->template getSpaceStepsProducts< 1, 1 >();
@@ -1219,8 +1219,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-typename tnlGrid< 2, Real, Device, Index >::VertexType
-tnlGrid< 2, Real, Device, Index >::
+typename Meshes::Grid< 2, Real, Device, Index >::VertexType
+Meshes::Grid< 2, Real, Device, Index >::
 getSpaceSteps() const
 {
    return this->spaceSteps;
@@ -1232,7 +1232,7 @@ template< typename Real,
    template< int xPow, int yPow  >
 __cuda_callable__ inline 
 const Real& 
-tnlGrid< 2, Real, Device, Index >::
+Meshes::Grid< 2, Real, Device, Index >::
 getSpaceStepsProducts() const
 {
    tnlAssert( xPow >= -2 && xPow <= 2, 
@@ -1247,7 +1247,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__ inline
-Real tnlGrid< 2, Real, Device, Index > :: getSmallestSpaceStep() const
+Real Meshes::Grid< 2, Real, Device, Index > :: getSmallestSpaceStep() const
 {
    return Min( this->spaceSteps.x(), this->spaceSteps.y() );
 }
@@ -1257,7 +1257,7 @@ template< typename Real,
           typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index >::getAbsMax( const GridFunction& f ) const
+         Meshes::Grid< 2, Real, Device, Index >::getAbsMax( const GridFunction& f ) const
 {
    return f.absMax();
 }
@@ -1267,7 +1267,7 @@ template< typename Real,
           typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index >::getLpNorm( const GridFunction& f1,
+         Meshes::Grid< 2, Real, Device, Index >::getLpNorm( const GridFunction& f1,
                                                                  const typename GridFunction::RealType& p ) const
 {
    typename GridFunction::RealType lpNorm( 0.0 );
@@ -1291,7 +1291,7 @@ template< typename Real,
           typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
+         Meshes::Grid< 2, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
                                                                  const GridFunction& f2 ) const
 {
    return f1.differenceAbsMax( f2 );
@@ -1302,7 +1302,7 @@ template< typename Real,
           typename Index >
    template< typename GridFunction >
       typename GridFunction::RealType
-         tnlGrid< 2, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
+         Meshes::Grid< 2, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
                                                                  const GridFunction& f2,
                                                                  const typename GridFunction::RealType& p ) const
 {
@@ -1325,7 +1325,7 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: save( tnlFile& file ) const
+bool Meshes::Grid< 2, Real, Device, Index > :: save( tnlFile& file ) const
 {
    if( ! tnlObject::save( file ) )
       return false;
@@ -1333,7 +1333,7 @@ bool tnlGrid< 2, Real, Device, Index > :: save( tnlFile& file ) const
        ! this->proportions.save( file ) ||
        ! this->dimensions.save( file ) )
    {
-      cerr << "I was not able to save the domain description of a tnlGrid." << endl;
+      cerr << "I was not able to save the domain description of a Grid." << endl;
       return false;
    }
    return true;
@@ -1342,7 +1342,7 @@ bool tnlGrid< 2, Real, Device, Index > :: save( tnlFile& file ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: load( tnlFile& file )
+bool Meshes::Grid< 2, Real, Device, Index > :: load( tnlFile& file )
 {
    if( ! tnlObject::load( file ) )
       return false;
@@ -1351,7 +1351,7 @@ bool tnlGrid< 2, Real, Device, Index > :: load( tnlFile& file )
        ! this->proportions.load( file ) ||
        ! dimensions.load( file ) )
    {
-      cerr << "I was not able to load the domain description of a tnlGrid." << endl;
+      cerr << "I was not able to load the domain description of a Grid." << endl;
       return false;
    }
    this->setDimensions( dimensions );
@@ -1361,7 +1361,7 @@ bool tnlGrid< 2, Real, Device, Index > :: load( tnlFile& file )
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: save( const tnlString& fileName ) const
+bool Meshes::Grid< 2, Real, Device, Index > :: save( const tnlString& fileName ) const
 {
    return tnlObject :: save( fileName );
 };
@@ -1369,7 +1369,7 @@ bool tnlGrid< 2, Real, Device, Index > :: save( const tnlString& fileName ) cons
 template< typename Real,
            typename Device,
            typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: load( const tnlString& fileName )
+bool Meshes::Grid< 2, Real, Device, Index > :: load( const tnlString& fileName )
 {
    return tnlObject :: load( fileName );
 };
@@ -1377,7 +1377,7 @@ bool tnlGrid< 2, Real, Device, Index > :: load( const tnlString& fileName )
 template< typename Real,
           typename Device,
           typename Index >
-bool tnlGrid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
+bool Meshes::Grid< 2, Real, Device, Index > :: writeMesh( const tnlString& fileName,
                                                      const tnlString& format ) const
 {
    fstream file;
@@ -1503,7 +1503,7 @@ template< typename Real,
            typename Device,
            typename Index >
    template< typename MeshFunction >
-bool tnlGrid< 2, Real, Device, Index > :: write( const MeshFunction& function,
+bool Meshes::Grid< 2, Real, Device, Index > :: write( const MeshFunction& function,
                                                  const tnlString& fileName,
                                                  const tnlString& format ) const
 {
@@ -1531,8 +1531,8 @@ bool tnlGrid< 2, Real, Device, Index > :: write( const MeshFunction& function,
          for( cellCoordinates.x() = 0; cellCoordinates.x() < getDimensions(). x(); cellCoordinates.x() ++ )
          {
             VertexType v = cell.getCenter();
-            tnlGnuplotWriter::write( file,  v );
-            tnlGnuplotWriter::write( file,  function[ this->getEntityIndex( cell ) ] );
+            GnuplotWriter::write( file,  v );
+            GnuplotWriter::write( file,  function[ this->getEntityIndex( cell ) ] );
             file << endl;
          }
          file << endl;
@@ -1546,7 +1546,7 @@ template< typename Real,
            typename Device,
            typename Index >
 void
-tnlGrid< 2, Real, Device, Index >::
+Meshes::Grid< 2, Real, Device, Index >::
 writeProlog( tnlLogger& logger )
 {
    logger.writeParameter( "Dimensions:", getMeshDimensions() );

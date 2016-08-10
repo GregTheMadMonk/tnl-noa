@@ -108,13 +108,13 @@ template< int Dimensions,
           typename DifferentialOperator,
           typename BoundaryConditions,
           typename CompressedRowsLengthsVector >
-class MatrixSetter< tnlGrid< Dimensions, Real, Device, Index >,
+class MatrixSetter< Meshes::Grid< Dimensions, Real, Device, Index >,
                        DifferentialOperator,
                        BoundaryConditions,
                        CompressedRowsLengthsVector >
 {
    public:
-   typedef tnlGrid< Dimensions, Real, Device, Index > MeshType;
+   typedef Meshes::Grid< Dimensions, Real, Device, Index > MeshType;
    typedef typename MeshType::DeviceType DeviceType;
    typedef typename CompressedRowsLengthsVector::RealType IndexType;
    typedef typename MeshType::CoordinatesType CoordinatesType;

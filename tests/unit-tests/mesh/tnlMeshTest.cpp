@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMeshTest.cpp  -  description
+                          MeshTest.cpp  -  description
                              -------------------
     begin                : Feb 18, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -21,9 +21,9 @@ int main( int argc, char* argv[] )
 {
 #ifndef HAVE_NOT_CXX11
 #ifdef HAVE_CPPUNIT
-   tnlMeshTester< double, Devices::Host, long int > t;
+   MeshTester< double, Devices::Host, long int > t;
    //t.regularMeshOfHexahedronsTest();
-   if( ! tnlUnitTestStarter :: run< tnlMeshTester< double, Devices::Host, long int > >()
+   if( ! tnlUnitTestStarter :: run< MeshTester< double, Devices::Host, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

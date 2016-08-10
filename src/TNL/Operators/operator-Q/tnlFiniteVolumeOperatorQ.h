@@ -12,7 +12,7 @@
 
 #include <TNL/Vectors/Vector.h>
 #include <TNL/Vectors/SharedVector.h>
-#include <TNL/mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
 namespace Operators {
@@ -32,11 +32,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlFiniteVolumeOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, 0 >
+class tnlFiniteVolumeOperatorQ< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index, 0 >
 {
    public: 
    
-   typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
@@ -86,11 +86,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlFiniteVolumeOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, 0 >
+class tnlFiniteVolumeOperatorQ< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index, 0 >
 {
    public: 
    
-   typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
@@ -139,11 +139,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlFiniteVolumeOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, 0 >
+class tnlFiniteVolumeOperatorQ< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index, 0 >
 {
    public: 
    
-   typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
@@ -192,11 +192,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlFiniteVolumeOperatorQ< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index, 1 >
+class tnlFiniteVolumeOperatorQ< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index, 1 >
 {
    public: 
    
-   typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
@@ -245,11 +245,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlFiniteVolumeOperatorQ< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index, 1 >
+class tnlFiniteVolumeOperatorQ< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index, 1 >
 {
    public: 
    
-   typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
@@ -300,11 +300,11 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class tnlFiniteVolumeOperatorQ< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index, 1 >
+class tnlFiniteVolumeOperatorQ< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index, 1 >
 {
    public: 
    
-   typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+   typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
    typedef Real RealType;
    typedef Device DeviceType;
