@@ -31,11 +31,11 @@ class PDEProblem : public Problem< Real, Device, Index >
 
       typedef Mesh MeshType;
       typedef SharedPointer< MeshType, DeviceType > MeshPointer;
-      typedef Vectors::Vector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
       typedef Matrices::CSR< RealType, DeviceType, IndexType > MatrixType;
       typedef SharedPointer< MatrixType, DeviceType > MatrixPointer;
-      typedef Vectors::Vector< RealType, DeviceType, IndexType > MeshDependentDataType;
+      typedef Containers::Vector< RealType, DeviceType, IndexType > MeshDependentDataType;
 
       /****
        * This means that the time stepper will be set from the command line arguments.

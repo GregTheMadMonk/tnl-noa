@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Containers/StaticVector.h>
 #include <TNL/Functions/Domain.h>
 #include <TNL/Devices/Cuda.h>
 
@@ -44,7 +44,7 @@ class Twins< 1, Real > : public TwinsBase< Real, 1 >
 
       enum { Dimensions = 1 };
       typedef Real RealType;
-      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 
@@ -78,7 +78,7 @@ class Twins< 2, Real > : public TwinsBase< Real, 2 >
 
       enum { Dimensions = 2 };
       typedef Real RealType;
-      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 
@@ -112,7 +112,7 @@ class Twins< 3, Real > : public TwinsBase< Real, 3 >
 
       enum { Dimensions = 3 };
       typedef Real RealType;
-      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 

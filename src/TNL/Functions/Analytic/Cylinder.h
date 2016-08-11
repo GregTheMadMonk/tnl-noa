@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Containers/StaticVector.h>
 #include <TNL/Functions/Domain.h>
 #include <TNL/Devices/Cuda.h>
 
@@ -52,7 +52,7 @@ class Cylinder< 1, Real > : public CylinderBase< Real, 1 >
 
       enum { Dimensions = 1 };
       typedef Real RealType;
-      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 
@@ -86,7 +86,7 @@ class Cylinder< 2, Real > : public CylinderBase< Real, 2 >
 
       enum { Dimensions = 2 };
       typedef Real RealType;
-      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 
@@ -120,7 +120,7 @@ class Cylinder< 3, Real > : public CylinderBase< Real, 3 >
 
       enum { Dimensions = 3 };
       typedef Real RealType;
-      typedef Vectors::StaticVector< Dimensions, Real > VertexType;
+      typedef Containers::StaticVector< Dimensions, Real > VertexType;
 
       static String getType();
 

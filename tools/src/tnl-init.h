@@ -12,7 +12,7 @@
 #define TNL_INIT_H_
 
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/Operators/FiniteDifferences.h>

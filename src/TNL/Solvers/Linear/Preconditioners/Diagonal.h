@@ -2,7 +2,7 @@
 #pragma once
 
 #include <TNL/Object.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Solvers {
@@ -16,7 +16,7 @@ class Diagonal
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Vectors::Vector< Real, Device, Index > VectorType;
+   typedef Containers::Vector< Real, Device, Index > VectorType;
 
    template< typename Matrix >
    void update( const Matrix& matrix );

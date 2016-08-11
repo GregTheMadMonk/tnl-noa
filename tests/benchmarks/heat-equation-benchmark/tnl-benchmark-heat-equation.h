@@ -62,7 +62,7 @@ class HeatEquationBenchmarkSetter
           enum { Dimensions = MeshType::getMeshDimensions() };
           typedef BenchmarkLaplace< MeshType, Real, Index > ApproximateOperator;
           typedef HeatEquationBenchmarkRhs< MeshType, Real > RightHandSide;
-          typedef Vectors::StaticVector < MeshType::getMeshDimensions(), Real > Vertex;
+          typedef Containers::StaticVector < MeshType::getMeshDimensions(), Real > Vertex;
 
          /****
           * Resolve the template arguments of your solver here.

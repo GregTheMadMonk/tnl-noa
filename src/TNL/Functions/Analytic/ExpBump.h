@@ -11,7 +11,7 @@
 #pragma once 
 
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Containers/StaticVector.h>
 #include <TNL/Functions/Domain.h>
 
 namespace TNL {
@@ -56,7 +56,7 @@ class ExpBump< 1, Real > : public ExpBumpBase< 1, Real >
    public:
  
       typedef Real RealType;
-      typedef Vectors::StaticVector< 1, RealType > VertexType;
+      typedef Containers::StaticVector< 1, RealType > VertexType;
 
       static String getType();
 
@@ -86,7 +86,7 @@ class ExpBump< 2, Real > : public ExpBumpBase< 2, Real >
    public:
  
       typedef Real RealType;
-      typedef Vectors::StaticVector< 2, RealType > VertexType;
+      typedef Containers::StaticVector< 2, RealType > VertexType;
 
       static String getType();
 
@@ -116,7 +116,7 @@ class ExpBump< 3, Real > : public ExpBumpBase< 3, Real >
    public:
  
       typedef Real RealType;
-      typedef Vectors::StaticVector< 3, RealType > VertexType;
+      typedef Containers::StaticVector< 3, RealType > VertexType;
 
  
       static String getType();

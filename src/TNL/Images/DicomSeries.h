@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include <TNL/Arrays/Array.h>
+#include <TNL/Containers/Array.h>
 #include <TNL/List.h>
 #include <TNL/String.h>
 #include <TNL/core/param-types.h>
@@ -106,7 +106,7 @@ class DicomSeries : public tnlImage< int >
 
       List< String > fileList;
  
-      Arrays::Array<DicomHeader *,Devices::Host,int> dicomSeriesHeaders;
+      Containers::Array<DicomHeader *,Devices::Host,int> dicomSeriesHeaders;
 
       bool isLoaded;
  

@@ -73,7 +73,7 @@ bool benchmarkSolver( const Config::ParameterContainer& parameters,
    typedef typename MatrixType::RealType RealType;
    typedef typename MatrixType::DeviceType DeviceType;
    typedef typename MatrixType::IndexType IndexType;
-   typedef Vectors::Vector< RealType, DeviceType, IndexType > VectorType;
+   typedef Containers::Vector< RealType, DeviceType, IndexType > VectorType;
    typedef SharedPointer< VectorType > VectorPointer;
    typedef SharedPointer< MatrixType > MatrixPointer;
 

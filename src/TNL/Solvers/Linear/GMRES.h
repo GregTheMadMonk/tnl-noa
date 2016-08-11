@@ -12,8 +12,8 @@
 
 #include <math.h>
 #include <TNL/Object.h>
-#include <TNL/Vectors/Vector.h>
-#include <TNL/Vectors/SharedVector.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Containers/SharedVector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
@@ -74,9 +74,9 @@ class GMRES : public Object,
    template< typename VectorT >
    void update( IndexType k,
                 IndexType m,
-                const Vectors::Vector< RealType, Devices::Host, IndexType >& H,
-                const Vectors::Vector< RealType, Devices::Host, IndexType >& s,
-                Vectors::Vector< RealType, DeviceType, IndexType >& v,
+                const Containers::Vector< RealType, Devices::Host, IndexType >& H,
+                const Containers::Vector< RealType, Devices::Host, IndexType >& s,
+                Containers::Vector< RealType, DeviceType, IndexType >& v,
                 VectorT& x );
 
    void generatePlaneRotation( RealType &dx,
@@ -92,8 +92,8 @@ class GMRES : public Object,
 
    bool setSize( IndexType _size, IndexType m );
 
-   Vectors::Vector< RealType, DeviceType, IndexType > _r, w, _v, _M_tmp;
-   Vectors::Vector< RealType, Devices::Host, IndexType > _s, _cs, _sn, _H;
+   Containers::Vector< RealType, DeviceType, IndexType > _r, w, _v, _M_tmp;
+   Containers::Vector< RealType, Devices::Host, IndexType > _s, _cs, _sn, _H;
 
    IndexType size, restarting;
 

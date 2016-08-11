@@ -1,7 +1,7 @@
 #ifndef BenchmarkLaplace_H
 #define BenchmarkLaplace_H
 
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
 
 template< typename Mesh,

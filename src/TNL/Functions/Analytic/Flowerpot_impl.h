@@ -49,7 +49,7 @@ template< typename Real >
 String
 Flowerpot< 1, Real >::getType()
 {
-   return "Flowerpot< 1, " + TNL::getType< Real >() + String( " >" );
+   return "Functions::Analytic::Flowerpot< 1, " + TNL::getType< Real >() + String( " >" );
 }
 
 template< typename Real >
@@ -93,7 +93,7 @@ template< typename Real >
 String
 Flowerpot< 2, Real >::getType()
 {
-   return String( "Flowerpot< 2, " ) + TNL::getType< Real >() + " >";
+   return String( "Functions::Analytic::Flowerpot< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -140,7 +140,7 @@ template< typename Real >
 String
 Flowerpot< 3, Real >::getType()
 {
-   return String( "Flowerpot< 3, " ) + TNL::getType< Real >() + " >";
+   return String( "Functions::Analytic::Flowerpot< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >

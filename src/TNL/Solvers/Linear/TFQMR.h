@@ -12,8 +12,8 @@
 
 #include <math.h>
 #include <TNL/Object.h>
-#include <TNL/Vectors/Vector.h>
-#include <TNL/Vectors/SharedVector.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Containers/SharedVector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
@@ -73,7 +73,7 @@ class TFQMR : public Object,
 
    bool setSize( IndexType size );
 
-   Vectors::Vector< RealType, DeviceType, IndexType >  d, r, w, u, v, r_ast, Au, M_tmp;
+   Containers::Vector< RealType, DeviceType, IndexType >  d, r, w, u, v, r_ast, Au, M_tmp;
 
    IndexType size;
 

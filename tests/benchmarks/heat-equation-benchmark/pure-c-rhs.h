@@ -29,7 +29,7 @@
 struct Data
 {
    double time, tau;
-   TNL::Vectors::StaticVector< 2, double > c1, c2, c3, c4;
+   TNL::Containers::StaticVector< 2, double > c1, c2, c3, c4;
    TNL::Meshes::Grid< 2, double > grid;
 };
 

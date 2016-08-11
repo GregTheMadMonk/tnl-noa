@@ -67,7 +67,7 @@ template< typename Real >
 String
 ExpBump< 1, Real >::getType()
 {
-   return "ExpBump< 1, " + TNL::getType< Real >() + String( " >" );
+   return "Functions::Analytic::ExpBump< 1, " + TNL::getType< Real >() + String( " >" );
 }
 
 template< typename Real >
@@ -117,7 +117,7 @@ template< typename Real >
 String
 ExpBump< 2, Real >::getType()
 {
-   return String( "ExpBump< 2, " ) + TNL::getType< Real >() + " >";
+   return String( "Functions::Analytic::ExpBump< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -172,7 +172,7 @@ template< typename Real >
 String
 ExpBump< 3, Real >::getType()
 {
-   return String( "ExpBump< 3, " ) + TNL::getType< Real >() + " >";
+   return String( "Functions::Analytic::ExpBump< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >

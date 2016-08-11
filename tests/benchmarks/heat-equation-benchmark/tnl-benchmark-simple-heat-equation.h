@@ -17,7 +17,7 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Timer.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Containers/StaticVector.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/MeshFunction.h>
 #include "pure-c-rhs.h"
@@ -303,7 +303,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
       std::cerr << "Allocation failed. " << cudaErr << std::endl;
       return false;
    }
-   Vectors::Vector< Real, Devices::Cuda, Index > vecAux;
+   Containers::Vector< Real, Devices::Cuda, Index > vecAux;
    vecAux.bind( cuda_aux, gridXSize * gridYSize );
    vecAux.setValue( 0.0 );   
    cudaMemcpy( aux, cuda_u, dofsCount * sizeof( Real ),  cudaMemcpyDeviceToHost );
@@ -391,7 +391,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    GridPointer gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
    gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
-   Vectors::Vector< Real, Devices::Cuda, Index > vecU;
+   Containers::Vector< Real, Devices::Cuda, Index > vecU;
    vecU.bind( cuda_u, gridXSize * gridYSize );
    Functions::MeshFunction< GridType > meshFunction;
    meshFunction.bind( gridPointer, vecU );
@@ -542,7 +542,7 @@ bool solveHeatEquationHost( const Config::ParameterContainer& parameters,
    SharedPointer< GridType > gridPointer;
    gridPointer->setDimensions( gridXSize, gridYSize );
    gridPointer->setDomain( VertexType( 0.0, 0.0 ), VertexType( domainXSize, domainYSize ) );
-   Vectors::Vector< Real, Devices::Host, Index > vecU;
+   Containers::Vector< Real, Devices::Host, Index > vecU;
    vecU.bind( u, gridXSize * gridYSize );
    Functions::MeshFunction< GridType > meshFunction;
    meshFunction.bind( gridPointer, vecU );

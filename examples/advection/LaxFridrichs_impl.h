@@ -17,8 +17,8 @@ getType()
 {
    return String( "LaxFridrichs< " ) +
           MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + " >";
+          TNL::getType< Real >() + ", " +
+          TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -126,8 +126,8 @@ getType()
 {
    return String( "LaxFridrichs< " ) +
           MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + " >";
+          TNL::getType< Real >() + ", " +
+          TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,

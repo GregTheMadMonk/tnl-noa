@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Matrices/Ellpack.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/core/mfuncs.h>
 
 namespace TNL {
@@ -30,7 +30,7 @@ template< typename Real,
           typename Index >
 String Ellpack< Real, Device, Index > :: getType()
 {
-   return String( "Ellpack< ") +
+   return String( "Matrices::Ellpack< ") +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
           Device :: getDeviceType() +

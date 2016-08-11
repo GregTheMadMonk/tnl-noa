@@ -35,7 +35,7 @@ template< typename Real >
 String
 Twins< 1, Real >::getType()
 {
-   return "Twins< 1, " + TNL::getType< Real >() + String( " >" );
+   return "Functions::Analytic::Twins< 1, " + TNL::getType< Real >() + String( " >" );
 }
 
 template< typename Real >
@@ -79,7 +79,7 @@ template< typename Real >
 String
 Twins< 2, Real >::getType()
 {
-   return String( "Twins< 2, " ) + TNL::getType< Real >() + " >";
+   return String( "Functions::Analytic::Twins< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -125,7 +125,7 @@ template< typename Real >
 String
 Twins< 3, Real >::getType()
 {
-   return String( "Twins< 3, " ) + TNL::getType< Real >() + " >";
+   return String( "Functions::Analytic::Twins< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >

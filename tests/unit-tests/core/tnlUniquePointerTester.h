@@ -24,7 +24,7 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 #include <TNL/UniquePointer.h>
-#include <TNL/Arrays/StaticArray.h>
+#include <TNL/Containers/StaticArray.h>
 
 using namespace TNL;
 
@@ -51,7 +51,7 @@ class tnlUniquePointerTester : public CppUnit :: TestCase
 
    void testConstructor()
    {
-      typedef TNL::Arrays::StaticArray< 2, int  > TestType;
+      typedef TNL::Containers::StaticArray< 2, int  > TestType;
       
       tnlUniquePointer< TestType, Devices::Host > ptr1;
       

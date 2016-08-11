@@ -17,7 +17,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/File.h>
 #include <TNL/core/mfuncs.h>
 
@@ -28,7 +28,7 @@ class VectorTester : public CppUnit :: TestCase
 {
    public:
 
-   typedef Vectors::Vector< RealType, Device, IndexType > VectorType;
+   typedef Containers::Vector< RealType, Device, IndexType > VectorType;
    typedef VectorTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
@@ -62,7 +62,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void testMax()
    {
-      Vectors::Vector< RealType, Device, IndexType > v;
+      Containers::Vector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v. setElement( i, i );
@@ -71,7 +71,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void testMin()
    {
-      Vectors::Vector< RealType, Device, IndexType > v;
+      Containers::Vector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v. setElement( i, i );
@@ -80,7 +80,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void testAbsMax()
    {
-      Vectors::Vector< RealType, Device, IndexType > v;
+      Containers::Vector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v.setElement( i, -i );
@@ -89,7 +89,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void testAbsMin()
    {
-      Vectors::Vector< RealType, Device, IndexType > v;
+      Containers::Vector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v.setElement( i,  -i );
@@ -98,7 +98,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void testLpNorm()
    {
-      Vectors::Vector< RealType, Device, IndexType > v;
+      Containers::Vector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v.setElement(  i, -2 );
@@ -109,7 +109,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void testSum()
    {
-      Vectors::Vector< RealType, Device, IndexType > v;
+      Containers::Vector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v.setElement( i, -2 );
@@ -122,7 +122,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void testDifferenceMax()
    {
-      Vectors::Vector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -135,7 +135,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void testDifferenceMin()
    {
-      Vectors::Vector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -148,7 +148,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void testDifferenceAbsMax()
    {
-      Vectors::Vector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -161,7 +161,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void testDifferenceAbsMin()
    {
-      Vectors::Vector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -174,7 +174,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void testDifferenceLpNorm()
    {
-      Vectors::Vector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -189,7 +189,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void testDifferenceSum()
    {
-      Vectors::Vector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -202,7 +202,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void testScalarMultiplication()
    {
-      Vectors::Vector< RealType, Device, IndexType > v;
+      Containers::Vector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v.setElement( i, i );
@@ -214,7 +214,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void testScalarProduct()
    {
-      Vectors::Vector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       v1.setElement( 0, -1 );
@@ -229,7 +229,7 @@ class VectorTester : public CppUnit :: TestCase
 
    void addVectorTest()
    {
-      Vectors::Vector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )

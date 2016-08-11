@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Object.h>
-#include <TNL/Arrays/StaticArray.h>
+#include <TNL/Containers/StaticArray.h>
 
 namespace TNL {
 
@@ -46,7 +46,7 @@ class tnlStaticContainer : public Object
 
    protected:
 
-   Arrays::StaticArray< Size, Element > data;
+   Containers::StaticArray< Size, Element > data;
 };
 
 } // namespace TNL

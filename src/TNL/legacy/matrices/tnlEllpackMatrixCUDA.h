@@ -153,7 +153,7 @@ const String& Ellpack< Real, Devices::Cuda, Index > :: getMatrixClass() const
 template< typename Real, typename Index >
 String Ellpack< Real, Devices::Cuda, Index > :: getType() const
 {
-   return String( "Ellpack< ") + String( getType( Real( 0.0 ) ) ) + String( ", Devices::Cuda >" );
+   return String( "Matrices::Ellpack< ") + String( getType( Real( 0.0 ) ) ) + String( ", Devices::Cuda >" );
 };
 
 template< typename Real, typename Index >

@@ -11,7 +11,7 @@
 #pragma once 
 
 #include <TNL/Matrices/Sparse.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Matrices {
@@ -200,7 +200,7 @@ class CSR : public Sparse< Real, Device, Index >
 
    protected:
 
-   Vectors::Vector< Index, Device, Index > rowPointers;
+   Containers::Vector< Index, Device, Index > rowPointers;
 
    SPMVCudaKernel spmvCudaKernel;
 

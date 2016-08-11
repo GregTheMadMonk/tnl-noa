@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Devices/Host.h>
-#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Containers/StaticVector.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Functions/Domain.h>
@@ -45,7 +45,7 @@ class TestFunction : public Domain< FunctionDimensions, SpaceDomain >
 
    enum{ Dimensions = FunctionDimensions };
    typedef Real RealType;
-   typedef Vectors::StaticVector< Dimensions, Real > VertexType;
+   typedef Containers::StaticVector< Dimensions, Real > VertexType;
 
    TestFunction();
 

@@ -36,7 +36,7 @@ template< typename Real >
 String
 Blob< 1, Real >::getType()
 {
-   return "Blob< 1, " + TNL::getType< Real >() + String( " >" );
+   return "Functions::Analytic::Blob< 1, " + TNL::getType< Real >() + String( " >" );
 }
 
 template< typename Real >
@@ -79,7 +79,7 @@ template< typename Real >
 String
 Blob< 2, Real >::getType()
 {
-   return String( "Blob< 2, " ) + TNL::getType< Real >() + " >";
+   return String( "Functions::Analytic::Blob< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -123,7 +123,7 @@ template< typename Real >
 String
 Blob< 3, Real >::getType()
 {
-   return String( "Blob< 3, " ) + TNL::getType< Real >() + " >";
+   return String( "Functions::Analytic::Blob< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >

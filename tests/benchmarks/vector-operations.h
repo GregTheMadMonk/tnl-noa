@@ -2,7 +2,7 @@
 
 #include "benchmarks.h"
 
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 #ifdef HAVE_CUBLAS
 #include "cublasWrappers.h"
@@ -20,8 +20,8 @@ benchmarkVectorOperations( Benchmark & benchmark,
                            const int & loops,
                            const int & size )
 {
-    typedef Vectors::Vector< Real, Devices::Host, Index > HostVector;
-    typedef Vectors::Vector< Real, Devices::Cuda, Index > CudaVector;
+    typedef Containers::Vector< Real, Devices::Host, Index > HostVector;
+    typedef Containers::Vector< Real, Devices::Cuda, Index > CudaVector;
     using namespace std;
 
     double datasetSize = ( double ) ( loops * size ) * sizeof( Real ) / oneGB;

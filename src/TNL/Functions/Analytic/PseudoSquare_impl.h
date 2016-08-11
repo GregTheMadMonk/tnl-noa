@@ -37,7 +37,7 @@ template< typename Real >
 String
 PseudoSquare< 1, Real >::getType()
 {
-   return "PseudoSquare< 1, " + TNL::getType< Real >() + String( " >" );
+   return "Functions::Analytic::PseudoSquare< 1, " + TNL::getType< Real >() + String( " >" );
 }
 
 template< typename Real >
@@ -80,7 +80,7 @@ template< typename Real >
 String
 PseudoSquare< 2, Real >::getType()
 {
-   return String( "PseudoSquare< 2, " ) + TNL::getType< Real >() + " >";
+   return String( "Functions::Analytic::PseudoSquare< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -124,7 +124,7 @@ template< typename Real >
 String
 PseudoSquare< 3, Real >::getType()
 {
-   return String( "PseudoSquare< 3, " ) + TNL::getType< Real >() + " >";
+   return String( "Functions::Analytic::PseudoSquare< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >

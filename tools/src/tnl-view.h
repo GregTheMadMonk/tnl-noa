@@ -15,8 +15,8 @@
 #include <TNL/core/mfilename.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/String.h>
-#include <TNL/Vectors/Vector.h>
-#include <TNL/Vectors/MultiVector.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Containers/MultiVector.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/MeshFunction.h>
 
@@ -212,7 +212,7 @@ bool convertObject( const MeshPointer& meshPointer,
    if( parsedObjectType[ 0 ] == "SharedVector" ||
        parsedObjectType[ 0 ] == "Vector" )
    {
-      Vectors::Vector< Element, Devices::Host, Index > vector;
+      Containers::Vector< Element, Devices::Host, Index > vector;
       if( ! vector. load( inputFileName ) )
          return false;
       if( ! meshPointer->write( vector, outputFileName, outputFormat ) )
@@ -222,7 +222,7 @@ bool convertObject( const MeshPointer& meshPointer,
    if( parsedObjectType[ 0 ] == "MultiVector" ||
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
    {
-      Vectors::MultiVector< Dimensions, Element, Devices::Host, Index > multiVector;
+      Containers::MultiVector< Dimensions, Element, Devices::Host, Index > multiVector;
       if( ! multiVector. load( inputFileName ) )
          return false;
       typedef Meshes::Grid< Dimensions, Real, Devices::Host, Index > GridType;
@@ -299,39 +299,39 @@ bool setTupleType( const MeshPointer& meshPointer,
       switch( dimensions )
       {
          case 1:
-            return setIndexType< MeshPointer, Vectors::StaticVector< 1, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Containers::StaticVector< 1, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< MeshPointer, Vectors::StaticVector< 2, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Containers::StaticVector< 2, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< MeshPointer, Vectors::StaticVector< 3, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Containers::StaticVector< 3, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
    if( dataType == "double" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< MeshPointer, Vectors::StaticVector< 1, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Containers::StaticVector< 1, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< MeshPointer, Vectors::StaticVector< 2, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Containers::StaticVector< 2, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< MeshPointer, Vectors::StaticVector< 3, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Containers::StaticVector< 3, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
    if( dataType == "long double" )
       switch( dimensions )
       {
          case 1:
-            return setIndexType< MeshPointer, Vectors::StaticVector< 1, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Containers::StaticVector< 1, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 2:
-            return setIndexType< MeshPointer, Vectors::StaticVector< 2, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Containers::StaticVector< 2, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
          case 3:
-            return setIndexType< MeshPointer, Vectors::StaticVector< 3, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+            return setIndexType< MeshPointer, Containers::StaticVector< 3, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
 }

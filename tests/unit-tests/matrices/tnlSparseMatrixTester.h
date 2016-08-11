@@ -18,7 +18,7 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 #include <TNL/File.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #endif 
 
 using namespace TNL;
@@ -92,8 +92,8 @@ class SparseTester : public CppUnit :: TestCase
    typedef typename Matrix::RealType RealType;
    typedef typename Matrix::DeviceType DeviceType;
    typedef typename Matrix::IndexType IndexType;
-   typedef Vectors::Vector< RealType, DeviceType, IndexType > VectorType;
-   typedef Vectors::Vector< IndexType, DeviceType, IndexType > IndexVector;
+   typedef Containers::Vector< RealType, DeviceType, IndexType > VectorType;
+   typedef Containers::Vector< IndexType, DeviceType, IndexType > IndexVector;
    typedef SparseTester< MatrixType, MatrixSetup > TesterType;
    typedef SparseTesterMatrixSetter< MatrixType, MatrixSetup > MatrixSetter;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;

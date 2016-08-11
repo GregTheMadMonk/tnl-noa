@@ -34,47 +34,56 @@ class Object
 {
    public:
 
-   //! Basic constructor
-   __cuda_callable__
-   Object() {};
+      //! Basic constructor
+      __cuda_callable__
+      Object();
 
-   /****
-    * Type getter. This returns the type in C++ style - for example the returned value
-    * may look as follows: "Vector< double, Devices::Cuda >".
-    */
-   static String getType();
+      /****
+       * Type getter. This returns the type in C++ style - for example the returned value
+       * may look as follows: "Vector< double, Devices::Cuda >".
+       */
 
-   virtual String getTypeVirtual() const;
+      static String getType();      
 
-   /****
-    * This is used for load and save methods.
-    * Each object is saved as if it was stored on Devices::Host. So even Vector< double, Devices::Cuda >
-    * is saved as Vector< double, Devices::Host >.
-    */
-   static String getSerializationType();
+      virtual String getTypeVirtual() const;   
 
-   virtual String getSerializationTypeVirtual() const;
+      /****
+       * This is used for load and save methods.
+       * Each object is saved as if it was stored on Devices::Host. So even Vector< double, Devices::Cuda >
+       * is saved as Vector< double, Devices::Host >.
+       */
+      static String getSerializationType();
 
-   //! Method for saving the object to a file as a binary data
-   virtual bool save( File& file ) const;
+      virtual String getSerializationTypeVirtual() const;
 
-   //! Method for restoring the object from a file
-   virtual bool load( File& file );
- 
-   //! Method for restoring the object from a file
-   virtual bool boundLoad( File& file );
+      //! Method for saving the object to a file as a binary data
+      virtual bool save( File& file ) const;
 
-   bool save( const String& fileName ) const;
+      //! Method for restoring the object from a file
+      virtual bool load( File& file );
 
-   bool load( const String& fileName );
- 
-   bool boundLoad( const String& fileName );
+      //! Method for restoring the object from a file
+      virtual bool boundLoad( File& file );
 
-   //! Destructor
-   // FIXME: __cuda_callable__ would have to be added to every overriding destructor,
-   // even if the object's constructor is not __cuda_callable__
-//   __cuda_callable__
-   virtual ~Object(){};
+      bool save( const String& fileName ) const;
+
+      bool load( const String& fileName );
+
+      bool boundLoad( const String& fileName );
+      
+      void setDeprecatedReadMode();
+
+      //! Destructor
+      // FIXME: __cuda_callable__ would have to be added to every overriding destructor,
+      // even if the object's constructor is not __cuda_callable__
+      //   __cuda_callable__
+      virtual ~Object(){};
+   
+   
+   protected:
+      
+      // This allows to read old TNL files, it will be removed.
+      bool deprecatedReadMode;
 
 };
 

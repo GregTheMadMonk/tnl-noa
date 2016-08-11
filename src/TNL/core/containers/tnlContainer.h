@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Object.h>
-#include <TNL/Arrays/Array.h>
+#include <TNL/Containers/Array.h>
 
 namespace TNL {
 
@@ -50,7 +50,7 @@ class tnlContainer : public Object
 
    protected:
 
-   Arrays::Array< Element, Device, Index > data;
+   Containers::Array< Element, Device, Index > data;
 };
 
 } // namespace TNL

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/String.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 

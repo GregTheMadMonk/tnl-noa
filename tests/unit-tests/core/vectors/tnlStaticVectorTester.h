@@ -17,7 +17,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Containers/StaticVector.h>
 
 using namespace TNL;
 
@@ -44,7 +44,7 @@ class StaticVectorTester : public CppUnit :: TestCase
 
    void testOperators()
    {
-      Vectors::StaticVector< Size, RealType > u1( 1.0 ), u2( 2.0 ), u3( 3.0 );
+      Containers::StaticVector< Size, RealType > u1( 1.0 ), u2( 2.0 ), u3( 3.0 );
 
       u1 += u2;
       CPPUNIT_ASSERT( u1[ 0 ] == 3.0 );

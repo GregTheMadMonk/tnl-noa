@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Matrices/Sparse.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Matrices {   

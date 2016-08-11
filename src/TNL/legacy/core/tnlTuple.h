@@ -327,7 +327,7 @@ template< int Size, typename Real >
 #endif
 String StaticVector< Size, Real > :: getType()
 {
-   return String( "StaticVector< " ) +
+   return String( "Containers::StaticVector< " ) +
           String( Size ) +
           String( ", " ) +
          TNL::getType< Real >() +

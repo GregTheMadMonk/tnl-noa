@@ -12,7 +12,7 @@
 
 #include <istream>
 #include <TNL/String.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -64,7 +64,7 @@ class MatrixReader
                               bool verbose );
 
    static bool computeCompressedRowsLengthsFromMtxFile( std::istream& file,
-                                             Vectors::Vector< int, Devices::Host, int >& rowLengths,
+                                             Containers::Vector< int, Devices::Host, int >& rowLengths,
                                              const int columns,
                                              const int rows,
                                              bool symmetricMatrix,

@@ -28,8 +28,8 @@ class Grid< 3, Real, Device, Index > : public Object
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Vectors::StaticVector< 3, Real > VertexType;
-   typedef Vectors::StaticVector< 3, Index > CoordinatesType;
+   typedef Containers::StaticVector< 3, Real > VertexType;
+   typedef Containers::StaticVector< 3, Index > CoordinatesType;
    typedef Grid< 3, Real, Devices::Host, Index > HostType;
    typedef Grid< 3, Real, Devices::Cuda, Index > CudaType;
    typedef Grid< 3, Real, Device, Index > ThisType;

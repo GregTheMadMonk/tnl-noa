@@ -22,7 +22,7 @@
 #pragma once
 
 #include <TNL/Matrices/Sparse.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -189,7 +189,7 @@ class SlicedEllpack : public Sparse< Real, Device, Index >
 
    protected:
 
-   Vectors::Vector< Index, Device, Index > slicePointers, sliceCompressedRowsLengths;
+   Containers::Vector< Index, Device, Index > slicePointers, sliceCompressedRowsLengths;
 
    typedef SlicedEllpackDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class SlicedEllpackDeviceDependentCode< DeviceType >;

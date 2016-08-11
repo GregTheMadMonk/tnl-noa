@@ -23,7 +23,7 @@
 #pragma once
 
 #include <TNL/Matrices/Sparse.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -230,7 +230,7 @@ class ChunkedEllpack : public Sparse< Real, Device, Index >
    protected:
 
 
-   void resolveSliceSizes( const Vectors::Vector< Index, Devices::Host, Index >& rowLengths );
+   void resolveSliceSizes( const Containers::Vector< Index, Devices::Host, Index >& rowLengths );
 
    bool setSlice( const CompressedRowsLengthsVector& rowLengths,
                   const IndexType sliceIdx,
@@ -303,9 +303,9 @@ class ChunkedEllpack : public Sparse< Real, Device, Index >
 
    IndexType chunksInSlice, desiredChunkSize;
 
-   Vectors::Vector< Index, Device, Index > rowToChunkMapping, rowToSliceMapping, rowPointers;
+   Containers::Vector< Index, Device, Index > rowToChunkMapping, rowToSliceMapping, rowPointers;
 
-   Arrays::Array< ChunkedEllpackSliceInfo, Device, Index > slices;
+   Containers::Array< ChunkedEllpackSliceInfo, Device, Index > slices;
 
    IndexType numberOfSlices;
 

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Containers/StaticVector.h>
 #include <TNL/Functions/Domain.h>
 
 namespace TNL {
@@ -57,7 +57,7 @@ class SinWave< 1, Real > : public SinWaveBase< 1, Real >
    public:
  
       typedef Real RealType;
-      typedef Vectors::StaticVector< 1, RealType > VertexType;
+      typedef Containers::StaticVector< 1, RealType > VertexType;
 
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -84,7 +84,7 @@ class SinWave< 2, Real > : public SinWaveBase< 2, Real >
    public:
  
       typedef Real RealType;
-      typedef Vectors::StaticVector< 2, RealType > VertexType;
+      typedef Containers::StaticVector< 2, RealType > VertexType;
  
 #ifdef HAVE_NOT_CXX11
       template< int XDiffOrder,
@@ -111,7 +111,7 @@ class SinWave< 3, Real > : public SinWaveBase< 3, Real >
    public:
  
       typedef Real RealType;
-      typedef Vectors::StaticVector< 3, RealType > VertexType;
+      typedef Containers::StaticVector< 3, RealType > VertexType;
 
 
  

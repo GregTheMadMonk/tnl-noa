@@ -110,7 +110,7 @@ class MeshBuilder
 
       PointArrayType points;
       CellSeedArrayType cellSeeds;
-      Arrays::Array< bool, Devices::Host, GlobalIndexType > pointsSet;
+      Containers::Array< bool, Devices::Host, GlobalIndexType > pointsSet;
 };
 
 } // namespace Meshes

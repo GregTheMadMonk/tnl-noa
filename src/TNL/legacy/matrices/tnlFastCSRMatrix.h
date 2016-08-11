@@ -13,7 +13,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/Matrices/Matrix.h>
@@ -189,7 +189,7 @@ const String& tnlFastCSR< Real, Devices::Host, Index > :: getMatrixClass() const
 template< typename Real, typename Index >
 String tnlFastCSR< Real, Devices::Host, Index > :: getType() const
 {
-   return String( "tnlFastCSR< ") + String( getType( Real( 0.0 ) ) ) + String( ", Devices::Host >" );
+   return String( "Matrices::FastCSR< ") + String( getType( Real( 0.0 ) ) ) + String( ", Devices::Host >" );
 };
 
 template< typename Real, typename Index >

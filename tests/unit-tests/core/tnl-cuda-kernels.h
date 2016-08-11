@@ -12,7 +12,7 @@
 #define Devices::CudaKERNELS_H_
 
 #include <TNL/Assert.h>
-#include <TNL/Vectors/VectorCUDA.h>
+#include <TNL/Containers/VectorCUDA.h>
 #include <TNL/core/low-level/cuda-long-vector-kernels.h>
 #include <TNL/legacy/core/Devices::CudaSupport.h>
 

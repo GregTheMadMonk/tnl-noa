@@ -1,5 +1,6 @@
-ADD_SUBDIRECTORY( Arrays )
+ADD_SUBDIRECTORY( Arithmetics )
 ADD_SUBDIRECTORY( Config )
+ADD_SUBDIRECTORY( Containers )
 ADD_SUBDIRECTORY( Devices )
 ADD_SUBDIRECTORY( Functions )
 ADD_SUBDIRECTORY( Images )
@@ -8,7 +9,6 @@ ADD_SUBDIRECTORY( Meshes )
 ADD_SUBDIRECTORY( Operators )
 ADD_SUBDIRECTORY( Problems )
 ADD_SUBDIRECTORY( Solvers )
-ADD_SUBDIRECTORY( Vectors )
 
 ADD_SUBDIRECTORY( core )
 ADD_SUBDIRECTORY( legacy )
@@ -42,37 +42,34 @@ set( common_SOURCES
      TimerCPU.cpp
      TimerRT.cpp )
      
-set( tnl_SOURCES ${tnl_arrays_SOURCES}
-                 ${tnl_config_SOURCES}
+set( tnl_SOURCES ${tnl_config_SOURCES}
+                 ${tnl_containers_SOURCES}
                  ${tnl_devices_SOURCES}
                  ${tnl_functions_SOURCES}
                  ${tnl_images_SOURCES}
                  ${tnl_matrices_SOURCES}
+                 ${tnl_operators_SOURCES}
+                 ${tnl_problems_SOURCES}
                  ${tnl_solvers_SOURCES}
-                 ${tnl_vectors_SOURCES}
-
 
                  ${tnl_core_SOURCES}
                  ${tnl_legacy_SOURCES}                 
-                 ${tnl_operators_SOURCES}                 
-                 ${tnl_problems_SOURCES}
-                 
-                 ${common_SOURCES}
-                  )
+                                                   
+                 ${common_SOURCES} )
 
-set( tnl_CUDA__SOURCES ${tnl_arrays_CUDA__SOURCES}                       
-                       ${tnl_config_CUDA__SOURCES}
+set( tnl_CUDA__SOURCES ${tnl_config_CUDA__SOURCES}
+                       ${tnl_containers_CUDA__SOURCES}
                        ${tnl_devices_CUDA__SOURCES}
                        ${tnl_functions_CUDA__SOURCES}
                        ${tnl_images_CUDA__SOURCES}
+                       ${tnl_matrices_CUDA__SOURCES}
+                       ${tnl_operators_CUDA__SOURCES}
+                       ${tnl_problems_CUDA__SOURCES}
+                       ${tnl_solvers_CUDA__SOURCES}
+
 
                        ${tnl_core_CUDA__SOURCES}
                        ${tnl_legacy_CUDA__SOURCES}
-                       ${tnl_matrices_CUDA__SOURCES}
-                       ${tnl_problems_CUDA__SOURCES}
-                       ${tnl_operators_CUDA__SOURCES}
-                       ${tnl_solvers_CUDA__SOURCES}
-                       ${tnl_vectors_CUDA__SOURCES}
                        ${common_SOURCES} )
                  
                  

@@ -20,7 +20,7 @@
 
 #include <TNL/Logger.h>
 #include <TNL/Devices/Host.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Solvers/preconditioners/Dummy.h>

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Matrices/Multidiagonal.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/core/mfuncs.h>
 
 namespace TNL {
@@ -32,7 +32,7 @@ template< typename Real,
           typename Index >
 String Multidiagonal< Real, Device, Index > :: getType()
 {
-   return String( "Multidiagonal< ") +
+   return String( "Matrices::Multidiagonal< ") +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
           Device :: getDeviceType() +
@@ -125,7 +125,7 @@ bool Multidiagonal< Real, Device, Index > :: setDiagonals(  const Vector& diagon
 template< typename Real,
           typename Device,
           typename Index >
-const Vectors::Vector< Index, Device, Index >& Multidiagonal< Real, Device, Index > :: getDiagonals() const
+const Containers::Vector< Index, Device, Index >& Multidiagonal< Real, Device, Index > :: getDiagonals() const
 {
    return this->diagonalsShift;
 }
@@ -533,7 +533,7 @@ template< typename Real,
 void Multidiagonal< Real, Device, Index >::getTransposition( const Multidiagonal< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   Vectors::Vector< Index > auxDiagonals;
+   Containers::Vector< Index > auxDiagonals;
    auxDiagonals.setLike( matrix.getDiagonals() );
    const Index numberOfDiagonals = matrix.getDiagonals().getSize();
    for( Index i = 0; i < numberOfDiagonals; i++ )

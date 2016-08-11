@@ -20,11 +20,11 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 
-#include <TNL/Vectors/Vector.h>
-#include <TNL/Vectors/VectorOperations.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Containers/VectorOperations.h>
 
 using namespace TNL;
-using namespace TNL::Arrays;
+using namespace TNL::Containers;
 
 template< typename Real, typename Device >
 class VectorOperationsTester : public CppUnit :: TestCase
@@ -69,7 +69,7 @@ class VectorOperationsTester : public CppUnit :: TestCase
    template< typename Vector >
    void setLinearSequence( Vector& deviceVector )
    {
-      Vectors::Vector< typename Vector :: RealType, Devices::Host > a;
+      Containers::Vector< typename Vector :: RealType, Devices::Host > a;
       a. setSize( deviceVector. getSize() );
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = i;
@@ -88,7 +88,7 @@ class VectorOperationsTester : public CppUnit :: TestCase
    template< typename Vector >
    void setOnesSequence( Vector& deviceVector )
    {
-      Vectors::Vector< typename Vector :: RealType, Devices::Host > a;
+      Containers::Vector< typename Vector :: RealType, Devices::Host > a;
       a. setSize( deviceVector. getSize() );
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = 1;
@@ -107,7 +107,7 @@ class VectorOperationsTester : public CppUnit :: TestCase
    template< typename Vector >
    void setNegativeLinearSequence( Vector& deviceVector )
    {
-      Vectors::Vector< typename Vector :: RealType, Devices::Host > a;
+      Containers::Vector< typename Vector :: RealType, Devices::Host > a;
       a. setSize( deviceVector. getSize() );
       for( int i = 0; i < a. getSize(); i ++ )
          a. getData()[ i ] = -i;
@@ -126,7 +126,7 @@ class VectorOperationsTester : public CppUnit :: TestCase
    void setOscilatingSequence( Vector& deviceVector,
                                typename Vector::RealType v )
    {
-      Vectors::Vector< typename Vector::RealType, Devices::Host > a;
+      Containers::Vector< typename Vector::RealType, Devices::Host > a;
       a.setSize( deviceVector. getSize() );
       a[ 0 ] = v;
       for( int i = 1; i < a. getSize(); i ++ )
@@ -146,150 +146,150 @@ class VectorOperationsTester : public CppUnit :: TestCase
    void getVectorMaxTest()
    {
       const int size( 123456 );
-      Vectors::Vector< Real, Device > v;
+      Containers::Vector< Real, Device > v;
       v. setSize( size );
       setLinearSequence( v );
 
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorMax( v ) == size - 1 );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorMax( v ) == size - 1 );
    }
 
    void getVectorMinTest()
    {
       const int size( 123456 );
-      Vectors::Vector< Real, Device > v;
+      Containers::Vector< Real, Device > v;
       v. setSize( size );
       setLinearSequence( v );
 
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorMin( v ) == 0 );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorMin( v ) == 0 );
    }
 
    void getVectorAbsMaxTest()
    {
       const int size( 123456 );
-      Vectors::Vector< Real, Device > v;
+      Containers::Vector< Real, Device > v;
       v. setSize( size );
       setNegativeLinearSequence( v );
 
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorAbsMax( v ) == size - 1 );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorAbsMax( v ) == size - 1 );
    }
 
    void getVectorAbsMinTest()
    {
       const int size( 123456 );
-      Vectors::Vector< Real, Device > v;
+      Containers::Vector< Real, Device > v;
       v. setSize( size );
       setNegativeLinearSequence( v );
 
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorAbsMin( v ) == 0 );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorAbsMin( v ) == 0 );
    }
 
    void getVectorLpNormTest()
    {
       const int size( 123456 );
-      Vectors::Vector< Real, Device > v;
+      Containers::Vector< Real, Device > v;
       v. setSize( size );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorLpNorm( v, 2.0 ) == ::sqrt( size ) );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorLpNorm( v, 2.0 ) == ::sqrt( size ) );
    }
 
    void getVectorSumTest()
    {
       const int size( 123456 );
-      Vectors::Vector< Real, Device > v;
+      Containers::Vector< Real, Device > v;
       v. setSize( size );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorSum( v ) == size );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorSum( v ) == size );
 
       setLinearSequence( v );
 
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorSum( v ) == ( ( Real ) size ) * ( ( Real ) size - 1 ) / 2 );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorSum( v ) == ( ( Real ) size ) * ( ( Real ) size - 1 ) / 2 );
    }
 
    void getVectorDifferenceMaxTest()
    {
       const int size( 123456 );
-      Vectors::Vector< Real, Device > u, v;
+      Containers::Vector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
       setLinearSequence( u );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorDifferenceMax( u, v ) == size - 2 );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorDifferenceMax( u, v ) == size - 2 );
    }
 
    void getVectorDifferenceMinTest()
    {
       const int size( 123456 );
-      Vectors::Vector< Real, Device > u, v;
+      Containers::Vector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
       setLinearSequence( u );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorDifferenceMin( u, v ) == -1 );
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorDifferenceMin( v, u ) == -123454 );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorDifferenceMin( u, v ) == -1 );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorDifferenceMin( v, u ) == -123454 );
    }
 
    void getVectorDifferenceAbsMaxTest()
    {
       const int size( 123456 );
-      Vectors::Vector< Real, Device > u, v;
+      Containers::Vector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
       setNegativeLinearSequence( u );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorDifferenceAbsMax( u, v ) == size );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorDifferenceAbsMax( u, v ) == size );
    }
 
    void getVectorDifferenceAbsMinTest()
    {
       const int size( 123456 );
-      Vectors::Vector< Real, Device > u, v;
+      Containers::Vector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
       setLinearSequence( u );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorDifferenceAbsMin( u, v ) == 0 );
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorDifferenceAbsMin( v, u ) == 0 );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorDifferenceAbsMin( u, v ) == 0 );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorDifferenceAbsMin( v, u ) == 0 );
    }
 
    void getVectorDifferenceLpNormTest()
    {
       const int size( 1024 );
-      Vectors::Vector< Real, Device > u, v;
+      Containers::Vector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
       u. setValue( 3.0 );
       v. setValue( 1.0 );
 
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 1.0 ) == 2.0 * size );
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 2.0 ) == ::sqrt( 4.0 * size ) );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 1.0 ) == 2.0 * size );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorDifferenceLpNorm( u, v, 2.0 ) == ::sqrt( 4.0 * size ) );
    }
 
    void getVectorDifferenceSumTest()
    {
       const int size( 1024 );
-      Vectors::Vector< Real, Device > u, v;
+      Containers::Vector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
       u. setValue( 3.0 );
       v. setValue( 1.0 );
 
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getVectorDifferenceSum( u, v ) == 2.0 * size );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getVectorDifferenceSum( u, v ) == 2.0 * size );
    }
 
    void vectorScalarMultiplicationTest()
    {
       const int size( 1025 );
-      Vectors::Vector< Real, Device > u;
+      Containers::Vector< Real, Device > u;
       u. setSize( size );
       setLinearSequence( u );
 
-      Vectors::VectorOperations< Device >::vectorScalarMultiplication( u, 3.0 );
+      Containers::VectorOperations< Device >::vectorScalarMultiplication( u, 3.0 );
 
       for( int i = 0; i < size; i++ )
          CPPUNIT_ASSERT( u.getElement( i ) == 3.0 * i );
@@ -298,24 +298,24 @@ class VectorOperationsTester : public CppUnit :: TestCase
    void getVectorScalarProductTest()
    {
       const int size( 1025 );
-      Vectors::Vector< Real, Device > u, v;
+      Containers::Vector< Real, Device > u, v;
       u. setSize( size );
       v. setSize( size );
       setOscilatingSequence( u, 1.0 );
       setOnesSequence( v );
 
-      CPPUNIT_ASSERT( Vectors::VectorOperations< Device > :: getScalarProduct( u, v ) == 1.0 );
+      CPPUNIT_ASSERT( Containers::VectorOperations< Device > :: getScalarProduct( u, v ) == 1.0 );
    }
 
    void addVectorTest()
    {
       const int size( 10000 );
-      Vectors::Vector< Real, Device > x, y;
+      Containers::Vector< Real, Device > x, y;
       x.setSize( size );
       y.setSize( size );
       setLinearSequence( x );
       setOnesSequence( y );
-      Vectors::VectorOperations< Device >::addVector( y, x, 3.0 );
+      Containers::VectorOperations< Device >::addVector( y, x, 3.0 );
 
       for( int i = 0; i < size; i ++ )
          CPPUNIT_ASSERT( y.getElement( i ) == 1.0 + 3.0 * i );
@@ -369,7 +369,7 @@ class VectorOperationsTester : public CppUnit :: TestCase
    void prefixSumTest()
    {
       const int size( 10000 );
-      Vectors::Vector< Real, Device > v;
+      Containers::Vector< Real, Device > v;
       v.setSize( size );
 
       setOnesSequence( v );
@@ -392,7 +392,7 @@ class VectorOperationsTester : public CppUnit :: TestCase
    void exclusivePrefixSumTest()
    {
       const int size( 10000 );
-      Vectors::Vector< Real, Device > v;
+      Containers::Vector< Real, Device > v;
       v.setSize( size );
 
       setOnesSequence( v );

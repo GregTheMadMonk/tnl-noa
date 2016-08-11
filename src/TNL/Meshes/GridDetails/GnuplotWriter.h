@@ -11,7 +11,7 @@
 #pragma once
 
 #include <ostream>
-#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
 namespace Meshes {
@@ -29,21 +29,21 @@ class GnuplotWriter
 
       template< typename Real >
       static void write( std::ostream& str,
-                         const Vectors::StaticVector< 1, Real >& d )
+                         const Containers::StaticVector< 1, Real >& d )
       {
          str << d.x() << " ";
       }
 
       template< typename Real >
       static void write( std::ostream& str,
-                         const Vectors::StaticVector< 2, Real >& d )
+                         const Containers::StaticVector< 2, Real >& d )
       {
          str << d.x() << " " << d.y() << " ";
       }
 
       template< typename Real >
       static void write( std::ostream& str,
-                         const Vectors::StaticVector< 3, Real >& d )
+                         const Containers::StaticVector< 3, Real >& d )
       {
          str << d.x() << " " << d.y() << " " << d. z() << " ";
       }

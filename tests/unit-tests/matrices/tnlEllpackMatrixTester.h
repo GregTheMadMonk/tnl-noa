@@ -19,7 +19,7 @@
 #include <cppunit/Message.h>
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/File.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 using namespace TNL;
 

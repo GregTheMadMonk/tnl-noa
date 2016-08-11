@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/Arrays/Array.h>
-#include <TNL/Arrays/ConstSharedArray.h>
+#include <TNL/Containers/Array.h>
+#include <TNL/Containers/ConstSharedArray.h>
 #include <TNL/List.h>
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshConfigBase.h>
@@ -45,7 +45,7 @@ class MeshSuperentityTraits
    /****
     * Type of container for storing of the superentities indecis.
     */
-   typedef Arrays::Array< GlobalIndexType, Devices::Host, LocalIndexType >             StorageArrayType;
+   typedef Containers::Array< GlobalIndexType, Devices::Host, LocalIndexType >             StorageArrayType;
  
    typedef tnlEllpackIndexMultimap< GlobalIndexType, Devices::Host >                        StorageNetworkType;
    typedef MeshSuperentityAccessor< typename StorageNetworkType::ValuesAccessorType > SuperentityAccessorType;
@@ -55,7 +55,7 @@ class MeshSuperentityTraits
     * method. We introduce it because of the compatibility with the subentities
     * which are usually stored in static array.
     */
-   typedef Arrays::SharedArray< GlobalIndexType, Devices::Host, LocalIndexType >       AccessArrayType;
+   typedef Containers::SharedArray< GlobalIndexType, Devices::Host, LocalIndexType >       AccessArrayType;
 
    /****
     * This is used by the mesh initializer.

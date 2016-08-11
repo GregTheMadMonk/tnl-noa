@@ -13,7 +13,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/Matrices/CSR.h>
@@ -118,7 +118,7 @@ const String& Ellpack< Real, Devices::Host, Index > :: getMatrixClass() const
 template< typename Real, typename Index >
 String Ellpack< Real, Devices::Host, Index > :: getType() const
 {
-   return String( "Ellpack< ") + String( getType( Real( 0.0 ) ) ) + String( ", Devices::Host >" );
+   return String( "Matrices::Ellpack< ") + String( getType( Real( 0.0 ) ) ) + String( ", Devices::Host >" );
 };
 
 template< typename Real, typename Index >

@@ -13,7 +13,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Matrices/DenseRow.h>
-#include <TNL/Arrays/Array.h>
+#include <TNL/Containers/Array.h>
 
 namespace TNL {
 namespace Matrices {   

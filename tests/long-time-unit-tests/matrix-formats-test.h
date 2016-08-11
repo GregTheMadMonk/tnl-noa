@@ -97,7 +97,7 @@ bool testMatrix( const Config::ParameterContainer& parameters )
    }
    if( parameters.getParameter< bool >( "multiplication-test" ) )
    {
-      Vectors::Vector< RealType, DeviceType, IndexType > x, b;
+      Containers::Vector< RealType, DeviceType, IndexType > x, b;
       x.setSize( matrix.getColumns() );
       b.setSize( matrix.getRows() );
       for( IndexType i = 0; i < x.getSize(); i++ )

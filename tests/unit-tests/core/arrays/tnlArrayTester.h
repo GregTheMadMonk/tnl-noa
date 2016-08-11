@@ -17,11 +17,11 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/Arrays/Array.h>
+#include <TNL/Containers/Array.h>
 #include <TNL/File.h>
 
 using namespace TNL;
-using namespace TNL::Arrays;
+using namespace TNL::Containers;
 
 #ifdef HAVE_CUDA
 template< typename ElementType, typename IndexType >
@@ -117,7 +117,7 @@ class ArrayTester : public CppUnit :: TestCase
 
    void testSetGetElement()
    {
-      using namespace TNL::Arrays;
+      using namespace TNL::Containers;
       Array< ElementType, Device, IndexType > u;
       u. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -147,7 +147,7 @@ class ArrayTester : public CppUnit :: TestCase
 
    void testComparisonOperator()
    {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
       Array< ElementType, Device, IndexType > u;
       Array< ElementType, Device, IndexType > v;
       Array< ElementType, Device, IndexType > w;
@@ -168,7 +168,7 @@ class ArrayTester : public CppUnit :: TestCase
 
    void testAssignmentOperator()
    {
-      using namespace TNL::Arrays;
+      using namespace TNL::Containers;
       Array< ElementType, Device, IndexType > u;
       Array< ElementType, Device, IndexType > v;
       u. setSize( 10 );
@@ -197,7 +197,7 @@ class ArrayTester : public CppUnit :: TestCase
 
    void testGetSize()
    {
-      using namespace TNL::Arrays;
+      using namespace TNL::Containers;
       Array< ElementType, Device, IndexType > u;
       const int maxSize = 10;
       for( int i = 0; i < maxSize; i ++ )
@@ -208,7 +208,7 @@ class ArrayTester : public CppUnit :: TestCase
 
    void testReset()
    {
-      using namespace TNL::Arrays;
+      using namespace TNL::Containers;
       Array< ElementType, Device, IndexType > u;
       u. setSize( 100 );
       CPPUNIT_ASSERT( u. getSize() == 100 );
@@ -223,7 +223,7 @@ class ArrayTester : public CppUnit :: TestCase
 
    void testSetSizeAndDestructor()
    {
-      using namespace TNL::Arrays;
+      using namespace TNL::Containers;
       for( int i = 0; i < 100; i ++ )
       {
          Array< ElementType, Device, IndexType > u;
@@ -233,7 +233,7 @@ class ArrayTester : public CppUnit :: TestCase
 
    void testSaveAndLoad()
    {
-      using namespace TNL::Arrays;
+      using namespace TNL::Containers;
       Array< ElementType, Device, IndexType > v;
       v. setSize( 100 );
       for( int i = 0; i < 100; i ++ )
@@ -251,7 +251,7 @@ class ArrayTester : public CppUnit :: TestCase
 
    void testUnusualStructures()
    {
-      using namespace TNL::Arrays;
+      using namespace TNL::Containers;
       Array< testingClassForArrayTester >u;
    };
 

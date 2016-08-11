@@ -35,7 +35,7 @@ class MeshFunction :
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::IndexType IndexType;
       typedef Real RealType;
-      typedef Vectors::Vector< RealType, DeviceType, IndexType > VectorType;
+      typedef Containers::Vector< RealType, DeviceType, IndexType > VectorType;
       typedef Functions::MeshFunction< Mesh, MeshEntityDimensions, Real > ThisType;
  
       static constexpr int getEntitiesDimensions() { return MeshEntityDimensions; };

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Matrices/Matrix.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/TridiagonalRow.h>
 
 namespace TNL {
@@ -181,7 +181,7 @@ class Tridiagonal : public Matrix< Real, Device, Index >
    IndexType getElementIndex( const IndexType row,
                               const IndexType column ) const;
 
-   Vectors::Vector< RealType, DeviceType, IndexType > values;
+   Containers::Vector< RealType, DeviceType, IndexType > values;
 
    typedef TridiagonalDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class TridiagonalDeviceDependentCode< DeviceType >;

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Vectors/SharedVector.h>
+#include <TNL/Containers/SharedVector.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/tnlIdenticalGridGeometry.h>
 #include <TNL/Operators/gradient/tnlCentralFDMGradient.h>

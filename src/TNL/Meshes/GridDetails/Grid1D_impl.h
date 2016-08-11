@@ -37,7 +37,7 @@ template< typename Real,
           typename Index  >
 String Grid< 1, Real, Device, Index >::getType()
 {
-   return String( "Grid< " ) +
+   return String( "Meshes::Grid< " ) +
           String( getMeshDimensions() ) + ", " +
           String( TNL::getType< RealType >() ) + ", " +
           String( Device::getDeviceType() ) + ", " +

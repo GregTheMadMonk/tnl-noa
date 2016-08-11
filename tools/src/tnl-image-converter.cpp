@@ -43,7 +43,7 @@ bool processImages( const Config::ParameterContainer& parameters )
  
     typedef Meshes::Grid< 2, double, Devices::Host, int > GridType;
     GridType grid;
-    Vectors::Vector< double, Devices::Host, int > vector;
+    Containers::Vector< double, Devices::Host, int > vector;
     Images::RegionOfInterest< int > roi;
     for( int i = 0; i < inputImages.getSize(); i++ )
     {
@@ -143,7 +143,7 @@ bool processTNLFiles( const Config::ParameterContainer& parameters )
       std::cerr << "I am not able to load the mesh file " << meshFile << "." << std::endl;
       return false;
    }
-   Vectors::Vector< double, Devices::Host, int > vector;
+   Containers::Vector< double, Devices::Host, int > vector;
    for( int i = 0; i < inputFiles.getSize(); i++ )
    {
       const String& fileName = inputFiles[ i ];

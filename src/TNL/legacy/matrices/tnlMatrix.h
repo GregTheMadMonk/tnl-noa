@@ -18,7 +18,7 @@
 #include <TNL/String.h>
 #include <TNL/List.h>
 #include <TNL/File.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/debug/tnlDebug.h>
 
 using namespace std;

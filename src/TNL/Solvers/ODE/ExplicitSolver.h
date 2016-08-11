@@ -118,7 +118,7 @@ protected:
    /****
     * Auxiliary array for the computation of the solver residue on CUDA device.
     */
-   Vectors::Vector< RealType, DeviceType, IndexType > cudaBlockResidue;
+   Containers::Vector< RealType, DeviceType, IndexType > cudaBlockResidue;
 };
 
 } // namespace ODE

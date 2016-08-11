@@ -328,20 +328,20 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
       const int rows = csrMatrix.getRows();
       const int columns = csrMatrix.getColumns();
       const long int nonzeroElements = csrMatrix.getNumberOfMatrixElements();
-      Vectors::Vector< int, Devices::Host, int > rowLengthsHost;
+      Containers::Vector< int, Devices::Host, int > rowLengthsHost;
       rowLengthsHost.setSize( rows );
       for( int row = 0; row < rows; row++ )
          rowLengthsHost[ row ] = csrMatrix.getRowLength( row );
 
-      typedef Vectors::Vector< Real, Devices::Host, int > HostVector;
+      typedef Containers::Vector< Real, Devices::Host, int > HostVector;
       HostVector hostX, hostB;
       hostX.setSize( csrMatrix.getColumns() );
       hostX.setValue( 1.0 );
       hostB.setSize( csrMatrix.getRows() );
 #ifdef HAVE_CUDA
-      typedef Vectors::Vector< Real, Devices::Cuda, int > CudaVector;
+      typedef Containers::Vector< Real, Devices::Cuda, int > CudaVector;
       CudaVector cudaX, cudaB;
-      Vectors::Vector< int, Devices::Cuda, int > rowLengthsCuda;
+      Containers::Vector< int, Devices::Cuda, int > rowLengthsCuda;
       cudaX.setSize( csrMatrix.getColumns() );
       cudaX.setValue( 1.0 );
       cudaB.setSize( csrMatrix.getRows() );

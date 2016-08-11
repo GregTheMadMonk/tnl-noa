@@ -16,7 +16,7 @@
 #include <TNL/List.h>
 #include <TNL/Object.h>
 #include <TNL/core/mfuncs.h>
-#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Containers/StaticVector.h>
 #include <TNL/core/param-types.h>
 
 namespace TNL {
@@ -88,7 +88,7 @@ template< class T > class tnlCurve : public Object, public List< tnlCurveElement
 
    String getType() const
    {
-      return String( "tnlCurve< " ) + String( TNL::getType< T >() ) + String( " >" );
+      return String( "Curve< " ) + String( TNL::getType< T >() ) + String( " >" );
    };
 
    //! Append new point
@@ -229,7 +229,7 @@ template< class T > bool Read( tnlCurve< T >& crv,
 }
 
 // Explicit instatiation
-template class tnlCurve< Vectors::StaticVector< 2, double > >;
+template class tnlCurve< Containers::StaticVector< 2, double > >;
 
 } // namespace TNL
 

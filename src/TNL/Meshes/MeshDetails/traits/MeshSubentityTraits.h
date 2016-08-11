@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/Arrays/StaticArray.h>
-#include <TNL/Arrays/SharedArray.h>
+#include <TNL/Containers/StaticArray.h>
+#include <TNL/Containers/SharedArray.h>
 #include <TNL/Meshes/MeshEntity.h>
 #include <TNL/Meshes/MeshConfigBase.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
@@ -41,15 +41,15 @@ class MeshSubentityTraits
 
       static const int count = Subtopology::count;
 
-      typedef Arrays::StaticArray< count, GlobalIndexType >              StorageArrayType;
-      typedef Arrays::SharedArray< GlobalIndexType,
+      typedef Containers::StaticArray< count, GlobalIndexType >              StorageArrayType;
+      typedef Containers::SharedArray< GlobalIndexType,
                                       Devices::Host,
                                       LocalIndexType >                      AccessArrayType;
-      typedef Arrays::StaticArray< count, GlobalIndexType >              IdArrayType;
-      typedef Arrays::StaticArray< count, SubentityType >                SubentityContainerType;
-      typedef Arrays::StaticArray< count, Seed >                         SeedArrayType;
-      typedef Arrays::StaticArray< count, Orientation >                  OrientationArrayType;
-      typedef Arrays::StaticArray< count, LocalIndexType >               IdPermutationArrayType;
+      typedef Containers::StaticArray< count, GlobalIndexType >              IdArrayType;
+      typedef Containers::StaticArray< count, SubentityType >                SubentityContainerType;
+      typedef Containers::StaticArray< count, Seed >                         SeedArrayType;
+      typedef Containers::StaticArray< count, Orientation >                  OrientationArrayType;
+      typedef Containers::StaticArray< count, LocalIndexType >               IdPermutationArrayType;
 
       template< LocalIndexType subentityIndex,
                 LocalIndexType subentityVertexIndex >

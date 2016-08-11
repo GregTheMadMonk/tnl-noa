@@ -19,7 +19,7 @@
 #include <cppunit/Message.h>
 #include <TNL/Matrices/Dense.h>
 #include <TNL/File.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 #ifdef HAVE_CUDA
 template< typename RealType, typename IndexType >
@@ -40,7 +40,7 @@ class DenseTester : public CppUnit :: TestCase
 {
    public:
    typedef Matrices::Dense< RealType, Device, IndexType > MatrixType;
-   typedef Vectors::Vector< RealType, Device, IndexType > VectorType;
+   typedef Containers::Vector< RealType, Device, IndexType > VectorType;
    typedef DenseTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
@@ -169,8 +169,8 @@ class DenseTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
 
-      Vectors::Vector< IndexType, Devices::Host, IndexType > columns;
-      Vectors::Vector< RealType, Devices::Host, IndexType > values;
+      Containers::Vector< IndexType, Devices::Host, IndexType > columns;
+      Containers::Vector< RealType, Devices::Host, IndexType > values;
       columns.setSize( 10 );
       values.setSize( 10 );
       for( IndexType i = 0; i < 10; i++ )
@@ -201,8 +201,8 @@ class DenseTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
 
-      Vectors::Vector< IndexType, Device, IndexType > columns;
-      Vectors::Vector< RealType, Device, IndexType > values;
+      Containers::Vector< IndexType, Device, IndexType > columns;
+      Containers::Vector< RealType, Device, IndexType > values;
       columns.setSize( 10 );
       values.setSize( 10 );
       for( IndexType i = 0; i < 10; i++ )

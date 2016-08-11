@@ -44,7 +44,7 @@ bool processDicomSeries( const Config::ParameterContainer& parameters )
 
    typedef Meshes::Grid< 2, double, Devices::Host, int > GridType;
    GridType grid;
-   Vectors::Vector< double, Devices::Host, int > vector;
+   Containers::Vector< double, Devices::Host, int > vector;
    Images::RegionOfInterest< int > roi;
    for( int i = 0; i < dicomSeriesNames.getSize(); i++ )
    {

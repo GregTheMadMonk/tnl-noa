@@ -10,10 +10,10 @@
 
 #pragma once
 
-#include <TNL/Vectors/StaticVector.h>
-#include <TNL/Arrays/Array.h>
-#include <TNL/Arrays/SharedArray.h>
-#include <TNL/Arrays/ConstSharedArray.h>
+#include <TNL/Containers/StaticVector.h>
+#include <TNL/Containers/Array.h>
+#include <TNL/Containers/SharedArray.h>
+#include <TNL/Containers/ConstSharedArray.h>
 #include <TNL/core/tnlIndexedSet.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
 #include <TNL/Meshes/MeshConfigBase.h>
@@ -73,14 +73,14 @@ class MeshEntityTraits
       typedef MeshEntitySeedKey< MeshConfig, EntityTopology >                   Key;
 
 
-      typedef Arrays::Array< EntityType, Devices::Host, GlobalIndexType >               StorageArrayType;
-      typedef Arrays::SharedArray< EntityType, Devices::Host, GlobalIndexType >         AccessArrayType;
+      typedef Containers::Array< EntityType, Devices::Host, GlobalIndexType >               StorageArrayType;
+      typedef Containers::SharedArray< EntityType, Devices::Host, GlobalIndexType >         AccessArrayType;
       typedef tnlIndexedSet< EntityType, GlobalIndexType, Key >                      UniqueContainerType;
       typedef tnlIndexedSet< SeedType, GlobalIndexType, Key >                        SeedIndexedSetType;
-      typedef Arrays::Array< SeedType, Devices::Host, GlobalIndexType >                 SeedArrayType;
-      typedef Arrays::Array< ReferenceOrientationType, Devices::Host, GlobalIndexType > ReferenceOrientationArrayType;
+      typedef Containers::Array< SeedType, Devices::Host, GlobalIndexType >                 SeedArrayType;
+      typedef Containers::Array< ReferenceOrientationType, Devices::Host, GlobalIndexType > ReferenceOrientationArrayType;
 
-      typedef Arrays::tnlConstSharedArray< EntityType, Devices::Host, GlobalIndexType >    SharedArrayType;
+      typedef Containers::tnlConstSharedArray< EntityType, Devices::Host, GlobalIndexType >    SharedArrayType;
 };
 
 } // namespace Meshes

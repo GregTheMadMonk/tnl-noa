@@ -41,7 +41,7 @@ template< typename Real,
 template< typename Real,
           typename Device,
           typename Index >
-void Matrix< Real, Device, Index >::getCompressedRowsLengths( Vectors::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const
+void Matrix< Real, Device, Index >::getCompressedRowsLengths( Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
    for( IndexType row = 0; row < this->getRows(); row++ )
@@ -99,8 +99,8 @@ bool Matrix< Real, Device, Index >::copyFrom( const MatrixT& matrix,
    this->setLike( matrix );
    if( ! this->setCompressedRowsLengths( rowLengths ) )
       return false;
-   Vectors::Vector< RealType, Devices::Host, IndexType > values;
-   Vectors::Vector< IndexType, Devices::Host, IndexType > columns;
+   Containers::Vector< RealType, Devices::Host, IndexType > values;
+   Containers::Vector< IndexType, Devices::Host, IndexType > columns;
    if( ! values.setSize( this->getColumns() ) ||
        ! columns.setSize( this->getColumns() ) )
       return false;
@@ -121,12 +121,12 @@ Matrix< Real, Device, Index >& Matrix< Real, Device, Index >::operator = ( const
 {
    this->setLike( m );
 
-   Vectors::Vector< IndexType, DeviceType, IndexType > rowLengths;
+   Containers::Vector< IndexType, DeviceType, IndexType > rowLengths;
    m.getCompressedRowsLengths( rowLengths );
    this->setCompressedRowsLengths( rowLengths );
 
-   Vectors::Vector< RealType, DeviceType, IndexType > rowValues;
-   Vectors::Vector< IndexType, DeviceType, IndexType > rowColumns;
+   Containers::Vector< RealType, DeviceType, IndexType > rowValues;
+   Containers::Vector< IndexType, DeviceType, IndexType > rowColumns;
    const IndexType maxRowLength = rowLengths.max();
    rowValues.setSize( maxRowLength );
    rowColumns.setSize( maxRowLength );

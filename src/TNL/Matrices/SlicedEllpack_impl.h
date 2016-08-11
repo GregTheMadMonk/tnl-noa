@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Matrices/SlicedEllpack.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/core/mfuncs.h>
 
 namespace TNL {
@@ -31,7 +31,7 @@ template< typename Real,
           int SliceSize >
 String SlicedEllpack< Real, Device, Index, SliceSize >::getType()
 {
-   return String( "SlicedEllpack< ") +
+   return String( "Matrices::SlicedEllpack< ") +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
           Device :: getDeviceType() +

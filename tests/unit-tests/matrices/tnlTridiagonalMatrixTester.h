@@ -19,7 +19,7 @@
 #include <cppunit/Message.h>
 #include <TNL/Matrices/Tridiagonal.h>
 #include <TNL/File.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 using namespace TNL;
 
@@ -28,7 +28,7 @@ class TridiagonalTester : public CppUnit :: TestCase
 {
    public:
    typedef Matrices::Tridiagonal< RealType, Device, IndexType > MatrixType;
-   typedef Vectors::Vector< RealType, Device, IndexType > VectorType;
+   typedef Containers::Vector< RealType, Device, IndexType > VectorType;
    typedef TridiagonalTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
@@ -129,8 +129,8 @@ class TridiagonalTester : public CppUnit :: TestCase
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
 
-      Vectors::Vector< IndexType, Devices::Host, IndexType > columns;
-      Vectors::Vector< RealType, Devices::Host, IndexType > values;
+      Containers::Vector< IndexType, Devices::Host, IndexType > columns;
+      Containers::Vector< RealType, Devices::Host, IndexType > values;
       columns.setSize( 3 );
       values.setSize( 3 );
       for( IndexType i = 4; i <= 6; i++ )

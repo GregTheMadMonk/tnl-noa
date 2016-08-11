@@ -38,7 +38,7 @@ class DirichletBoundaryConditions
       typedef typename MeshType::DeviceType DeviceType;
       typedef Index IndexType;
 
-      typedef Vectors::Vector< RealType, DeviceType, IndexType> DofVectorType;
+      typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::VertexType VertexType;
 
       static constexpr int getMeshDimensions() { return MeshType::meshDimensions; }

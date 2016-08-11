@@ -20,7 +20,7 @@ String
 Mesh< MeshConfig >::
 getType()
 {
-   return String( "Mesh< ") + MeshConfig::getType() + " >";
+   return String( "Meshes::Mesh< ") + MeshConfig::getType() + " >";
 }
 
 template< typename MeshConfig >

@@ -12,8 +12,8 @@
 
 #include <math.h>
 #include <TNL/Object.h>
-#include <TNL/Vectors/Vector.h>
-#include <TNL/Vectors/SharedVector.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Containers/SharedVector.h>
 #include <TNL/Solvers/Linear/Preconditioners/Dummy.h>
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/LinearResidueGetter.h>
@@ -74,7 +74,7 @@ class BICGStab : public Object,
 
    bool setSize( IndexType size );
 
-   Vectors::Vector< RealType, DeviceType, IndexType >  r, r_ast, r_new, p, s, Ap, As, M_tmp;
+   Containers::Vector< RealType, DeviceType, IndexType >  r, r_ast, r_new, p, s, Ap, As, M_tmp;
 
    MatrixPointer matrix;
    const PreconditionerType* preconditioner;

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Devices/Host.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Meshes/Grid.h>
 
 namespace TNL {
@@ -27,7 +27,7 @@ class DummyProblem
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef Vectors::Vector< Real, Device, Index > DofVectorType;
+      typedef Containers::Vector< Real, Device, Index > DofVectorType;
       typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
       typedef DofVectorType MeshDependentDataType;
 };

@@ -66,7 +66,7 @@ String
 MeshFunction< Mesh, MeshEntityDimensions, Real >::
 getType()
 {
-   return String( "MeshFunction< " ) +
+   return String( "Functions::MeshFunction< " ) +
                      Mesh::getType() + ", " +
                      String( MeshEntityDimensions ) + ", " +
                     TNL::getType< Real >() +

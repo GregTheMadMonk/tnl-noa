@@ -14,7 +14,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/Matrices/CSR.h>

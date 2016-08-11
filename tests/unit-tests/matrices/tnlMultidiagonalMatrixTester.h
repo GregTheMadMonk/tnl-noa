@@ -19,8 +19,8 @@
 #include <cppunit/Message.h>
 #include <TNL/Matrices/Multidiagonal.h>
 #include <TNL/File.h>
-#include <TNL/Vectors/Vector.h>
-#include <TNL/Vectors/SharedVector.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Containers/SharedVector.h>
 
 using namespace TNL;
 
@@ -29,7 +29,7 @@ class MultidiagonalTester : public CppUnit :: TestCase
 {
    public:
    typedef Matrices::Multidiagonal< RealType, Device, IndexType > MatrixType;
-   typedef Vectors::Vector< RealType, Device, IndexType > VectorType;
+   typedef Containers::Vector< RealType, Device, IndexType > VectorType;
    typedef MultidiagonalTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
@@ -70,7 +70,7 @@ class MultidiagonalTester : public CppUnit :: TestCase
       MatrixType m1, m2;
       m1.setDimensions( 10, 10 );
       IndexType diagonalsShift[] {-2, -1, 0, 1, 2 };
-      m1.setDiagonals( Vectors::SharedVector< IndexType >( diagonalsShift, 5 ) );
+      m1.setDiagonals( Containers::SharedVector< IndexType >( diagonalsShift, 5 ) );
       m2.setLike( m1 );
       CPPUNIT_ASSERT( m1.getRows() == m2.getRows() );
    }
@@ -81,7 +81,7 @@ class MultidiagonalTester : public CppUnit :: TestCase
       MatrixType m;
       m.setDimensions( size, size );
       IndexType diagonalsShift[] = { -5, -2, -1, 0, 1, 2, 5 };
-      m.setDiagonals( Vectors::SharedVector< IndexType >( diagonalsShift, 7 ) );
+      m.setDiagonals( Containers::SharedVector< IndexType >( diagonalsShift, 7 ) );
       m.setValue( 1.0 );
       for( int i = 0; i < size; i++ )
          for( int j = 0; j < size; j++ )
@@ -96,7 +96,7 @@ class MultidiagonalTester : public CppUnit :: TestCase
       MatrixType m;
       m.setDimensions( 10, 10 );
       IndexType diagonalsShift[] = { -5, -2, -1, 0, 1, 2, 5 };
-      m.setDiagonals( Vectors::SharedVector< IndexType>( diagonalsShift, 7 ) );
+      m.setDiagonals( Containers::SharedVector< IndexType>( diagonalsShift, 7 ) );
 
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
@@ -113,7 +113,7 @@ class MultidiagonalTester : public CppUnit :: TestCase
       MatrixType m;
       m.setDimensions( 10, 10 );
       IndexType diagonalsShift[] = { -4, -2, -1, 0, 1, 2, 4 };
-      m.setDiagonals( Vectors::SharedVector< IndexType >( diagonalsShift, 7 ) );
+      m.setDiagonals( Containers::SharedVector< IndexType >( diagonalsShift, 7 ) );
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
       for( int i = 0; i < 10; i++ )
@@ -137,7 +137,7 @@ class MultidiagonalTester : public CppUnit :: TestCase
       MatrixType m;
       m.setDimensions( 10, 10 );
       IndexType diagonalsShift[] = { -4, -2, -1, 0, 1, 2, 4 };
-      m.setDiagonals( Vectors::SharedVector< IndexType >( diagonalsShift, 7 ) );
+      m.setDiagonals( Containers::SharedVector< IndexType >( diagonalsShift, 7 ) );
       for( int i = 0; i < 10; i++ )
          m.setElement( i, i, i );
       RealType rowValues[] = { 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0 };
@@ -164,7 +164,7 @@ class MultidiagonalTester : public CppUnit :: TestCase
          MatrixType m;
          m.setDimensions( 10, 10 );
          IndexType diagonalsShift[] = { -4, -2, -1, 0, 1, 2, 4 };
-         m.setDiagonals( Vectors::SharedVector< IndexType >( diagonalsShift, 7 ) );
+         m.setDiagonals( Containers::SharedVector< IndexType >( diagonalsShift, 7 ) );
          for( int i = 0; i < 10; i++ )
             m.setElement( i, i, i );
          RealType rowValues[] = { 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0 };
@@ -195,7 +195,7 @@ class MultidiagonalTester : public CppUnit :: TestCase
       MatrixType m;
       m.setDimensions( size, size );
       IndexType diagonalsShift[] = { -4, -2, -1, 0, 1, 2, 4 };
-      m.setDiagonals( Vectors::SharedVector< IndexType >( diagonalsShift, 7 ) );
+      m.setDiagonals( Containers::SharedVector< IndexType >( diagonalsShift, 7 ) );
       for( int i = 0; i < size; i++ )
       {
          v.setElement( i, i );
@@ -217,7 +217,7 @@ class MultidiagonalTester : public CppUnit :: TestCase
       MatrixType m;
       m.setDimensions( 10, 10 );
       IndexType diagonalsShift[] = { -2, -1, 0, 1, 2, 3 };
-      m.setDiagonals( Vectors::SharedVector< IndexType >( diagonalsShift, 6 ) );
+      m.setDiagonals( Containers::SharedVector< IndexType >( diagonalsShift, 6 ) );
 
       for( int row = 0; row < size; row++ )
          for( int diagonal = 0; diagonal < 6; diagonal++ )

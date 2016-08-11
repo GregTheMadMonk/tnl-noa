@@ -102,25 +102,25 @@ class eulerProblem:
       RightHandSidePointer rightHandSidePointer;
       
       //definition
-	   Vectors::Vector< RealType, DeviceType, IndexType > _uRho;
-	   Vectors::Vector< RealType, DeviceType, IndexType > _uRhoVelocityX;
-	   Vectors::Vector< RealType, DeviceType, IndexType > _uRhoVelocityY;
-	   Vectors::Vector< RealType, DeviceType, IndexType > _uEnergy;
+	   Containers::Vector< RealType, DeviceType, IndexType > _uRho;
+	   Containers::Vector< RealType, DeviceType, IndexType > _uRhoVelocityX;
+	   Containers::Vector< RealType, DeviceType, IndexType > _uRhoVelocityY;
+	   Containers::Vector< RealType, DeviceType, IndexType > _uEnergy;
 
-	   Vectors::Vector< RealType, DeviceType, IndexType > _fuRho;
-	   Vectors::Vector< RealType, DeviceType, IndexType > _fuRhoVelocityX;
-	   Vectors::Vector< RealType, DeviceType, IndexType > _fuRhoVelocityY;
-	   Vectors::Vector< RealType, DeviceType, IndexType > _fuEnergy;
+	   Containers::Vector< RealType, DeviceType, IndexType > _fuRho;
+	   Containers::Vector< RealType, DeviceType, IndexType > _fuRhoVelocityX;
+	   Containers::Vector< RealType, DeviceType, IndexType > _fuRhoVelocityY;
+	   Containers::Vector< RealType, DeviceType, IndexType > _fuEnergy;
 
-      Vectors::Vector< RealType, DeviceType, IndexType > rho;
-      Vectors::Vector< RealType, DeviceType, IndexType > rhoVelX;
-      Vectors::Vector< RealType, DeviceType, IndexType > rhoVelY;
-      Vectors::Vector< RealType, DeviceType, IndexType > energy;
-      Vectors::Vector< RealType, DeviceType, IndexType > data;
-      Vectors::Vector< RealType, DeviceType, IndexType > pressure;
-      Vectors::Vector< RealType, DeviceType, IndexType > velocity;
-      Vectors::Vector< RealType, DeviceType, IndexType > velocityX;
-      Vectors::Vector< RealType, DeviceType, IndexType > velocityY;
+      Containers::Vector< RealType, DeviceType, IndexType > rho;
+      Containers::Vector< RealType, DeviceType, IndexType > rhoVelX;
+      Containers::Vector< RealType, DeviceType, IndexType > rhoVelY;
+      Containers::Vector< RealType, DeviceType, IndexType > energy;
+      Containers::Vector< RealType, DeviceType, IndexType > data;
+      Containers::Vector< RealType, DeviceType, IndexType > pressure;
+      Containers::Vector< RealType, DeviceType, IndexType > velocity;
+      Containers::Vector< RealType, DeviceType, IndexType > velocityX;
+      Containers::Vector< RealType, DeviceType, IndexType > velocityY;
       double gamma;
 
       

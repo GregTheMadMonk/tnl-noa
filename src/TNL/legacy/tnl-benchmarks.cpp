@@ -9,8 +9,8 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/TimerRT.h>
-#include <TNL/Vectors/Vector.h>
-#include <TNL/Vectors/VectorCUDA.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Containers/VectorCUDA.h>
 #include <TNL/core/tnl-cuda-kernels.cu.h>
 #include <TNL/tnl-benchmarks.h>
 

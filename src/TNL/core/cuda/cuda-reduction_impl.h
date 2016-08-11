@@ -18,7 +18,7 @@
 #include <iostream>
 #include <TNL/Assert.h>
 #include <TNL/core/cuda/reduction-operations.h>
-#include <TNL/Arrays/ArrayOperations.h>
+#include <TNL/Containers/ArrayOperations.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/core/cuda/tnlCudaReductionBuffer.h>
 #include <TNL/core/cuda/tnlCudaReduction.h>
@@ -149,10 +149,10 @@ bool reductionOnCudaDevice( Operation& operation,
    RealType hostArray2[ minGPUReductionDataSize ];
    if( size <= minGPUReductionDataSize )
    {
-      if( ! Arrays::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray1, deviceInput1, size ) )
+      if( ! Containers::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray1, deviceInput1, size ) )
          return false;
       if( deviceInput2 && !
-          Arrays::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, size ) )
+          Containers::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< RealType, RealType, IndexType >( hostArray2, deviceInput2, size ) )
          return false;
       result = operation.initialValue();
       for( IndexType i = 0; i < size; i ++ )
@@ -186,7 +186,7 @@ bool reductionOnCudaDevice( Operation& operation,
     * Transfer the reduced data from device to host.
     */
    ResultType resultArray[ minGPUReductionDataSize ];
-   if( ! Arrays::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
+   if( ! Containers::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ResultType, ResultType, IndexType >( resultArray, deviceAux1, reducedSize ) )
       return false;
  
    #ifdef CUDA_REDUCTION_PROFILING

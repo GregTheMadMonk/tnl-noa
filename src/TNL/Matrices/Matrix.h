@@ -12,7 +12,7 @@
 
 #include <TNL/Object.h>
 #include <TNL/Devices/Host.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -27,8 +27,8 @@ class Matrix : public virtual Object
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef Vectors::Vector< IndexType, DeviceType, IndexType > CompressedRowsLengthsVector;
-   typedef Vectors::Vector< RealType, DeviceType, IndexType > ValuesVector;
+   typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowsLengthsVector;
+   typedef Containers::Vector< RealType, DeviceType, IndexType > ValuesVector;
 
    Matrix();
 
@@ -39,7 +39,7 @@ class Matrix : public virtual Object
 
    virtual IndexType getRowLength( const IndexType row ) const = 0;
 
-   virtual void getCompressedRowsLengths( Vectors::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const;
+   virtual void getCompressedRowsLengths( Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const Matrix< Real2, Device2, Index2 >& matrix );

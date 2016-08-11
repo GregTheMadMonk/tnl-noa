@@ -15,7 +15,7 @@
 #include <iostream>
 #include <iomanip>
 #include <TNL/tnlConfig.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Assert.h>
 #include <TNL/core/mfuncs.h>
 #include <TNL/Matrices/CSR.h>
@@ -189,7 +189,7 @@ const String& tnlCusparseCSR< Real, Device, Index > :: getMatrixClass() const
 template< typename Real, typename Device, typename Index >
 String tnlCusparseCSR< Real, Device, Index > :: getType() const
 {
-   return String( "tnlCusparseCSR< ") +
+   return String( "Matrices::CusparseCSR< ") +
           String( getType( Real( 0.0 ) ) ) +
           String( ", " ) +
           Device :: getDeviceType() +

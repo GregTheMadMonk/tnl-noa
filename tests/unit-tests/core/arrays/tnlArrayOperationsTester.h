@@ -20,7 +20,7 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 
-#include <TNL/Arrays/ArrayOperations.h>
+#include <TNL/Containers/ArrayOperations.h>
 #include <TNL/Devices/Cuda.h>
 
 using namespace TNL;
@@ -65,7 +65,7 @@ class ArrayOperationsTester< Element, Devices::Host > : public CppUnit :: TestCa
 
     void allocationTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        Element* data;
        ArrayOperations< Devices::Host >::allocateMemory( data, getTestSize() );
        CPPUNIT_ASSERT( data != 0 );
@@ -75,7 +75,7 @@ class ArrayOperationsTester< Element, Devices::Host > : public CppUnit :: TestCa
 
     void memorySetTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size = 1024;
        Element *data;
        ArrayOperations< Devices::Host > :: allocateMemory( data, size );
@@ -87,7 +87,7 @@ class ArrayOperationsTester< Element, Devices::Host > : public CppUnit :: TestCa
 
     void copyMemoryTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size = getTestSize();
 
        Element *data1, *data2;
@@ -103,7 +103,7 @@ class ArrayOperationsTester< Element, Devices::Host > : public CppUnit :: TestCa
 
     void copyMemoryWithConversionTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size = getTestSize();
        int *data1;
        float *data2;
@@ -120,7 +120,7 @@ class ArrayOperationsTester< Element, Devices::Host > : public CppUnit :: TestCa
 
     void compareMemoryTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size = getTestSize();
        int *data1, *data2;
        ArrayOperations< Devices::Host > :: allocateMemory( data1, size );
@@ -133,7 +133,7 @@ class ArrayOperationsTester< Element, Devices::Host > : public CppUnit :: TestCa
 
     void compareMemoryWithConversionTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size = getTestSize();
        int *data1;
        float *data2;
@@ -187,7 +187,7 @@ class ArrayOperationsTester< Element, Devices::Cuda > : public CppUnit :: TestCa
 
     void allocationTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        int* data;
        ArrayOperations< Devices::Cuda >::allocateMemory( data, getTestSize() );
        CPPUNIT_ASSERT( checkCudaDevice );
@@ -199,7 +199,7 @@ class ArrayOperationsTester< Element, Devices::Cuda > : public CppUnit :: TestCa
     void setMemoryElementTest()
     {
 #ifdef HAVE_CUDA
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size( 1024 );
        int* data;
        ArrayOperations< Devices::Cuda >::allocateMemory( data, size );
@@ -222,7 +222,7 @@ class ArrayOperationsTester< Element, Devices::Cuda > : public CppUnit :: TestCa
 
     void getMemoryElementTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size( 1024 );
        int* data;
        ArrayOperations< Devices::Cuda >::allocateMemory( data, size );
@@ -241,7 +241,7 @@ class ArrayOperationsTester< Element, Devices::Cuda > : public CppUnit :: TestCa
 
     void smallMemorySetTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size = 1024;
        int *hostData, *deviceData;
        ArrayOperations< Devices::Host >::allocateMemory( hostData, size );
@@ -259,7 +259,7 @@ class ArrayOperationsTester< Element, Devices::Cuda > : public CppUnit :: TestCa
 
     void bigMemorySetTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size( getTestSize() );
        int *hostData, *deviceData;
        ArrayOperations< Devices::Host >::allocateMemory( hostData, size );
@@ -280,7 +280,7 @@ class ArrayOperationsTester< Element, Devices::Cuda > : public CppUnit :: TestCa
 
     void copyMemoryTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size = getTestSize();
 
        int *hostData1, *hostData2, *deviceData;
@@ -298,7 +298,7 @@ class ArrayOperationsTester< Element, Devices::Cuda > : public CppUnit :: TestCa
 
     void copyMemoryWithConversionHostToCudaTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size = getTestSize();
        int *hostData1;
        float *hostData2, *deviceData;
@@ -317,7 +317,7 @@ class ArrayOperationsTester< Element, Devices::Cuda > : public CppUnit :: TestCa
 
     void copyMemoryWithConversionCudaToHostTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size = getTestSize();
        int *hostData1, *deviceData;
        float *hostData2;
@@ -336,7 +336,7 @@ class ArrayOperationsTester< Element, Devices::Cuda > : public CppUnit :: TestCa
 
     void copyMemoryWithConversionCudaToCudaTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size = getTestSize();
        int *hostData1, *deviceData1;
        float *hostData2, *deviceData2;
@@ -358,7 +358,7 @@ class ArrayOperationsTester< Element, Devices::Cuda > : public CppUnit :: TestCa
 
     void compareMemoryHostCudaTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size = getTestSize();
        int *hostData, *deviceData;
        ArrayOperations< Devices::Host >::allocateMemory( hostData, size );
@@ -372,7 +372,7 @@ class ArrayOperationsTester< Element, Devices::Cuda > : public CppUnit :: TestCa
 
     void compareMemoryWithConversionHostCudaTest()
     {
-       using namespace TNL::Arrays;
+       using namespace TNL::Containers;
        const int size = getTestSize();
        int *hostData;
        float *deviceData;

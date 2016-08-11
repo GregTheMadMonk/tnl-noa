@@ -31,7 +31,7 @@ class SolverTesterProblem
    typedef typename Mesh :: DeviceType DeviceType;
    typedef typename Mesh :: IndexType IndexType;
    typedef Mesh MeshType;
-   typedef Vectors::Vector< RealType, DeviceType, IndexType> DofVectorType;
+   typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
    typedef Matrices::CSR< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
    typedef Solvers::Linear::Preconditioners::Dummy< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
 

@@ -119,7 +119,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    uRho->bind( mesh, *dofs, 0);
    uRhoVelocity->bind( mesh, *dofs, count);
    uEnergy->bind( mesh, *dofs, 2 * count);
-   Vectors::Vector < RealType, DeviceType, IndexType > data;
+   Containers::Vector < RealType, DeviceType, IndexType > data;
    data.setSize(2*count);
    velocity->bind( mesh, data, 0);
    pressure->bind( mesh, data, count );

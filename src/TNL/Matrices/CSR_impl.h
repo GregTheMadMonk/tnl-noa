@@ -11,8 +11,8 @@
 #pragma once
 
 #include <TNL/Matrices/CSR.h>
-#include <TNL/Vectors/Vector.h>
-#include <TNL/Vectors/SharedVector.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Containers/SharedVector.h>
 #include <TNL/core/mfuncs.h>
 
 #ifdef HAVE_CUSPARSE
@@ -43,7 +43,7 @@ template< typename Real,
           typename Index >
 String CSR< Real, Device, Index >::getType()
 {
-   return String( "CSR< ") +
+   return String( "Matrices::CSR< ") +
           String( TNL::getType< Real>() ) +
           String( ", " ) +
           Device :: getDeviceType() +
@@ -84,7 +84,7 @@ bool CSR< Real, Device, Index >::setCompressedRowsLengths( const CompressedRowsL
     */
    Assert( this->getRows() > 0, );
    Assert( this->getColumns() > 0, );
-   Vectors::SharedVector< IndexType, DeviceType, IndexType > rowPtrs;
+   Containers::SharedVector< IndexType, DeviceType, IndexType > rowPtrs;
    rowPtrs.bind( this->rowPointers.getData(), this->getRows() );
    rowPtrs = rowLengths;
    this->rowPointers.setElement( this->rows, 0 );

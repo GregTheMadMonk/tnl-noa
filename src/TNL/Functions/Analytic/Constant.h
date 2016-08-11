@@ -11,7 +11,7 @@
 #pragma once 
 
 #include <iostream>
-#include <TNL/Vectors/StaticVector.h>
+#include <TNL/Containers/StaticVector.h>
 #include <TNL/Functions/Domain.h>
 
 namespace TNL {
@@ -25,7 +25,7 @@ class Constant : public Domain< dimensions, NonspaceDomain >
    public:
  
       typedef Real RealType;
-      typedef Vectors::StaticVector< dimensions, RealType > VertexType;
+      typedef Containers::StaticVector< dimensions, RealType > VertexType;
  
       Constant();
 

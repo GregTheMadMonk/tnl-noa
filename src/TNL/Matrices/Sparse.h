@@ -28,7 +28,7 @@ class Sparse : public Matrix< Real, Device, Index >
    typedef Index IndexType;
    typedef typename Matrix< RealType, DeviceType, IndexType >::CompressedRowsLengthsVector CompressedRowsLengthsVector;
    typedef typename Matrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
-   typedef Vectors::Vector< IndexType, DeviceType, IndexType > ColumnIndexesVector;
+   typedef Containers::Vector< IndexType, DeviceType, IndexType > ColumnIndexesVector;
    typedef Matrix< Real, Device, Index > BaseType;
    typedef SparseRow< RealType, IndexType > MatrixRow;
 
@@ -60,7 +60,7 @@ class Sparse : public Matrix< Real, Device, Index >
 
    bool allocateMatrixElements( const IndexType& numberOfMatrixElements );
 
-   Vectors::Vector< Index, Device, Index > columnIndexes;
+   Containers::Vector< Index, Device, Index > columnIndexes;
 
    Index maxRowLength;
 };

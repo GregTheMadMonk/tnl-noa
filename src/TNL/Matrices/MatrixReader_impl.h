@@ -13,7 +13,7 @@
 #include <iomanip>
 #include <TNL/List.h>
 #include <TNL/String.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/TimerRT.h>
 
 namespace TNL {
@@ -252,7 +252,7 @@ bool MatrixReader< Matrix >::readMtxHeader( std::istream& file,
 
 template< typename Matrix >
 bool MatrixReader< Matrix >::computeCompressedRowsLengthsFromMtxFile( std::istream& file,
-                                                              Vectors::Vector< int, Devices::Host, int >& rowLengths,
+                                                              Containers::Vector< int, Devices::Host, int >& rowLengths,
                                                               const int columns,
                                                               const int rows,
                                                               bool symmetricMatrix,

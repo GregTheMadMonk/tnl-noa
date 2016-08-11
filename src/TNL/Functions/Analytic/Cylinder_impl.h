@@ -51,7 +51,7 @@ template< typename Real >
 String
 Cylinder< 1, Real >::getType()
 {
-   return "Cylinder< 1, " + TNL::getType< Real >() + String( " >" );
+   return "Functions::Analytic::Cylinder< 1, " + TNL::getType< Real >() + String( " >" );
 }
 
 template< typename Real >
@@ -95,7 +95,7 @@ template< typename Real >
 String
 Cylinder< 2, Real >::getType()
 {
-   return String( "Cylinder< 2, " ) + TNL::getType< Real >() + " >";
+   return String( "Functions::Analytic::Cylinder< 2, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >
@@ -142,7 +142,7 @@ template< typename Real >
 String
 Cylinder< 3, Real >::getType()
 {
-   return String( "Cylinder< 3, " ) + TNL::getType< Real >() + " >";
+   return String( "Functions::Analytic::Cylinder< 3, " ) + TNL::getType< Real >() + " >";
 }
 
 template< typename Real >

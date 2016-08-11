@@ -18,12 +18,12 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/Arrays/StaticArray.h>
-#include <TNL/Arrays/SharedArray.h>
-#include <TNL/Arrays/ConstSharedArray.h>
+#include <TNL/Containers/StaticArray.h>
+#include <TNL/Containers/SharedArray.h>
+#include <TNL/Containers/ConstSharedArray.h>
 
 using namespace TNL;
-using namespace TNL::Arrays;
+using namespace TNL::Containers;
 
 class testingClassForStaticArrayTester
 {

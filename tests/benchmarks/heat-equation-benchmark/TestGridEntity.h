@@ -76,8 +76,8 @@ class TestGridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, Dimension
       constexpr static int getMeshDimensions() { return meshDimensions; };
       
       
-      typedef Vectors::StaticVector< meshDimensions, IndexType > EntityOrientationType;
-      typedef Vectors::StaticVector< meshDimensions, IndexType > EntityBasisType;
+      typedef Containers::StaticVector< meshDimensions, IndexType > EntityOrientationType;
+      typedef Containers::StaticVector< meshDimensions, IndexType > EntityBasisType;
       typedef TestGridEntity< GridType, entityDimensions > ThisType;
       typedef TestNeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
       

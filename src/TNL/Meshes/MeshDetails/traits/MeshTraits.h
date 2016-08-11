@@ -10,10 +10,10 @@
 
 #pragma once
 
-#include <TNL/Vectors/StaticVector.h>
-#include <TNL/Arrays/Array.h>
-#include <TNL/Arrays/SharedArray.h>
-#include <TNL/Arrays/ConstSharedArray.h>
+#include <TNL/Containers/StaticVector.h>
+#include <TNL/Containers/Array.h>
+#include <TNL/Containers/SharedArray.h>
+#include <TNL/Containers/ConstSharedArray.h>
 #include <TNL/Meshes/MeshDimensionsTag.h>
 
 namespace TNL {
@@ -42,14 +42,14 @@ class MeshTraits
       typedef typename MeshConfig::CellTopology                                    CellTopology;
       typedef MeshEntity< MeshConfig, CellTopology >                            CellType;
       typedef MeshEntity< MeshConfig, MeshVertexTopology >                   VertexType;
-      typedef Vectors::StaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
+      typedef Containers::StaticVector< worldDimensions, typename MeshConfig::RealType >    PointType;
       typedef MeshEntitySeed< MeshConfig, CellTopology >                        CellSeedType;
  
-      typedef Arrays::Array< PointType, Devices::Host, GlobalIndexType >                  PointArrayType;
-      typedef Arrays::Array< CellSeedType, Devices::Host, GlobalIndexType >               CellSeedArrayType;
-      typedef Arrays::Array< GlobalIndexType, Devices::Host, GlobalIndexType >            GlobalIdArrayType;
-      typedef Arrays::tnlConstSharedArray< GlobalIndexType, Devices::Host, LocalIndexType >  IdArrayAccessorType;
-      typedef Arrays::tnlConstSharedArray< LocalIndexType, Devices::Host, LocalIndexType >   IdPermutationArrayAccessorType;
+      typedef Containers::Array< PointType, Devices::Host, GlobalIndexType >                  PointArrayType;
+      typedef Containers::Array< CellSeedType, Devices::Host, GlobalIndexType >               CellSeedArrayType;
+      typedef Containers::Array< GlobalIndexType, Devices::Host, GlobalIndexType >            GlobalIdArrayType;
+      typedef Containers::tnlConstSharedArray< GlobalIndexType, Devices::Host, LocalIndexType >  IdArrayAccessorType;
+      typedef Containers::tnlConstSharedArray< LocalIndexType, Devices::Host, LocalIndexType >   IdPermutationArrayAccessorType;
  
       template< int Dimensions > using EntityTraits =
          MeshEntityTraits< MeshConfig, Dimensions >;

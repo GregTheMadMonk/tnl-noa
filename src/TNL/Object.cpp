@@ -21,6 +21,11 @@ namespace TNL {
 
 const char magic_number[] = "TNLMN";
 
+Object::Object()
+: deprecatedReadMode( false )
+{
+}
+
 String Object :: getType()
 {
    return String( "Object" );
@@ -61,7 +66,10 @@ bool Object :: load( File& file )
    if( objectType != this->getSerializationTypeVirtual() )
    {
       std::cerr << "Given file contains instance of " << objectType << " but " << getSerializationTypeVirtual() << " is expected." << std::endl;
-      return false;
+      if( this->deprecatedReadMode )
+         std::cerr << "Loading is forced by the deprecated read mode..." << std::endl;
+      else
+         return false;
    }
    return true;
 }
@@ -123,6 +131,11 @@ bool Object :: boundLoad( const String& fileName )
       return false;
    }
    return true;
+}
+
+void Object::setDeprecatedReadMode()
+{
+   this->deprecatedReadMode = true;
 }
 
 

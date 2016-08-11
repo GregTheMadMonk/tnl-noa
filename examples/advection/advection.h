@@ -73,7 +73,7 @@ class advectionSetter
           enum { Dimensions = MeshType::getMeshDimensions() };
           typedef LaxFridrichs< MeshType, Real, Index > ApproximateOperator;
           typedef advectionRhs< MeshType, Real > RightHandSide;
-          typedef Vectors::StaticVector < MeshType::getMeshDimensions(), Real > Vertex;
+          typedef Containers::StaticVector < MeshType::getMeshDimensions(), Real > Vertex;
 
          /****
           * Resolve the template arguments of your solver here.

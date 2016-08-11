@@ -10,7 +10,7 @@
 
 #pragma once 
 
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 
@@ -32,7 +32,7 @@ class tnlEllpackIndexMultimap
       typedef Index                                                        IndexType;
       typedef tnlEllpackIndexMultimapValues< IndexType, DeviceType >       ValuesAccessorType;
       typedef tnlEllpackIndexMultimapConstValues< IndexType, DeviceType >  ConstValuesAccessorType;
-      typedef Vectors::Vector< IndexType, DeviceType, IndexType >                ValuesAllocationVectorType;
+      typedef Containers::Vector< IndexType, DeviceType, IndexType >                ValuesAllocationVectorType;
  
       tnlEllpackIndexMultimap();
  
@@ -55,7 +55,7 @@ class tnlEllpackIndexMultimap
  
    protected:
  
-      Vectors::Vector< IndexType, DeviceType, IndexType > values;
+      Containers::Vector< IndexType, DeviceType, IndexType > values;
  
       IndexType keysRange, valuesRange, valuesMaxCount;
 };

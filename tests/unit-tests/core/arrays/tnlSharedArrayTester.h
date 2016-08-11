@@ -16,7 +16,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/Arrays/SharedArray.h>
+#include <TNL/Containers/SharedArray.h>
 #include <TNL/File.h>
 
 using namespace TNL;

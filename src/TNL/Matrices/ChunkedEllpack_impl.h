@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Matrices/ChunkedEllpack.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/core/mfuncs.h>
 
 #ifdef HAVE_CUDA
@@ -44,7 +44,7 @@ template< typename Real,
           typename Index >
 String ChunkedEllpack< Real, Device, Index >::getType()
 {
-   return String( "ChunkedEllpack< ") +
+   return String( "Matrices::ChunkedEllpack< ") +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
           Device :: getDeviceType() +
@@ -86,7 +86,7 @@ bool ChunkedEllpack< Real, Device, Index >::setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index >
-void ChunkedEllpack< Real, Device, Index >::resolveSliceSizes( const Vectors::Vector< Index, Devices::Host, Index >& rowLengths )
+void ChunkedEllpack< Real, Device, Index >::resolveSliceSizes( const Containers::Vector< Index, Devices::Host, Index >& rowLengths )
 {
    /****
     * Iterate over rows and allocate slices so that each slice has
@@ -226,7 +226,7 @@ bool ChunkedEllpack< Real, Device, Index >::setCompressedRowsLengths( const Comp
    {
       ChunkedEllpack< RealType, Devices::Host, IndexType > hostMatrix;
       hostMatrix.setDimensions( this->getRows(), this->getColumns() );
-      Vectors::Vector< IndexType, Devices::Host, IndexType > hostCompressedRowsLengths;
+      Containers::Vector< IndexType, Devices::Host, IndexType > hostCompressedRowsLengths;
       hostCompressedRowsLengths.setLike( rowLengths);
       hostCompressedRowsLengths = rowLengths;
       hostMatrix.setNumberOfChunksInSlice( this->chunksInSlice );

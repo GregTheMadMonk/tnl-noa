@@ -31,7 +31,7 @@ template< typename Real,
           typename Index >
 String Tridiagonal< Real, Device, Index >::getType()
 {
-   return String( "Tridiagonal< " ) +
+   return String( "Matrices::Tridiagonal< " ) +
           String( TNL::getType< RealType >() ) + ", " +
           String( Device :: getDeviceType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";

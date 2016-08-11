@@ -103,7 +103,7 @@ class MeshTester : public CppUnit :: TestCase
        typedef MeshEntity< TestTriangleMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
        typedef MeshEntity< TestTriangleMeshConfig, MeshVertexTopology > VertexMeshEntityType;
        typedef typename VertexMeshEntityType::PointType PointType;
-       CPPUNIT_ASSERT( PointType::getType() == ( Vectors::StaticVector< 2, RealType >::getType() ) );
+       CPPUNIT_ASSERT( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
 
        /****
         * We set-up the following situation

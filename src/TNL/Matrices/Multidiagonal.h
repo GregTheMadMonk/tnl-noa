@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Matrices/Matrix.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/MultidiagonalRow.h>
 
 namespace TNL {
@@ -54,7 +54,7 @@ class Multidiagonal : public Matrix< Real, Device, Index >
    template< typename Vector >
    bool setDiagonals( const Vector& diagonals );
 
-   const Vectors::Vector< Index, Device, Index >& getDiagonals() const;
+   const Containers::Vector< Index, Device, Index >& getDiagonals() const;
 
    template< typename Real2, typename Device2, typename Index2 >
    bool setLike( const Multidiagonal< Real2, Device2, Index2 >& matrix );
@@ -189,9 +189,9 @@ class Multidiagonal : public Matrix< Real, Device, Index >
                              const IndexType column,
                              IndexType& index ) const;
 
-   Vectors::Vector< Real, Device, Index > values;
+   Containers::Vector< Real, Device, Index > values;
 
-   Vectors::Vector< Index, Device, Index > diagonalsShift;
+   Containers::Vector< Index, Device, Index > diagonalsShift;
 
    typedef MultidiagonalDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class MultidiagonalDeviceDependentCode< DeviceType >;

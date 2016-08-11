@@ -19,8 +19,8 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <TNL/Vectors/VectorCUDA.h>
-#include <TNL/Vectors/VectorHost.h>
+#include <TNL/Containers/VectorCUDA.h>
+#include <TNL/Containers/VectorHost.h>
 
 #ifdef HAVE_CUDA
 //int mainTest();

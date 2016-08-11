@@ -147,7 +147,7 @@ bool GMRES< Matrix, Preconditioner >::solve( const VectorPointer& bPtr, VectorPo
    this->resetIterations();
    this->setResidue( beta / normb );
 
-   Vectors::SharedVector< RealType, DeviceType, IndexType > vi, vk;
+   Containers::SharedVector< RealType, DeviceType, IndexType > vi, vk;
    while( this->checkNextIteration() )
    {
       const IndexType m = restarting;
@@ -301,12 +301,12 @@ template< typename Matrix,
    template< typename VectorT >
 void GMRES< Matrix, Preconditioner > :: update( IndexType k,
                                                          IndexType m,
-                                                         const Vectors::Vector< RealType, Devices::Host, IndexType >& H,
-                                                         const Vectors::Vector< RealType, Devices::Host, IndexType >& s,
-                                                         Vectors::Vector< RealType, DeviceType, IndexType >& v,
+                                                         const Containers::Vector< RealType, Devices::Host, IndexType >& H,
+                                                         const Containers::Vector< RealType, Devices::Host, IndexType >& s,
+                                                         Containers::Vector< RealType, DeviceType, IndexType >& v,
                                                          VectorT& x )
 {
-   Vectors::Vector< RealType, Devices::Host, IndexType > y;
+   Containers::Vector< RealType, Devices::Host, IndexType > y;
    y. setSize( m + 1 );
 
    IndexType i, j;
@@ -322,7 +322,7 @@ void GMRES< Matrix, Preconditioner > :: update( IndexType k,
          y[ j ] -= H[ j + i * ( m + 1 ) ] * y[ i ];
    }
 
-   Vectors::SharedVector< RealType, DeviceType, IndexType > vi;
+   Containers::SharedVector< RealType, DeviceType, IndexType > vi;
    for( i = 0; i <= k; i++)
    {
       vi. bind( &( v. getData()[ i * this->size ] ), x. getSize() );

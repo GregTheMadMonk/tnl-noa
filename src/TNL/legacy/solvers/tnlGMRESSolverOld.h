@@ -13,7 +13,7 @@
 
 
 #include <math.h>
-#include <TNL/Vectors/SharedVector.h>
+#include <TNL/Containers/SharedVector.h>
 #include <TNL/legacy/solvers/MatrixSolver.h>
 
 template< typename Real, typename Device = Devices::Host, typename Index = int >

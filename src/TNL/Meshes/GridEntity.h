@@ -59,8 +59,8 @@ class GridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, EntityDimensi
  
       constexpr static int getMeshDimensions() { return meshDimensions; };
  
-      typedef Vectors::StaticVector< meshDimensions, IndexType > EntityOrientationType;
-      typedef Vectors::StaticVector< meshDimensions, IndexType > EntityBasisType;
+      typedef Containers::StaticVector< meshDimensions, IndexType > EntityOrientationType;
+      typedef Containers::StaticVector< meshDimensions, IndexType > EntityBasisType;
       typedef GridEntity< GridType, entityDimensions, Config > ThisType;
       typedef typename GridType::VertexType VertexType;
  
@@ -187,8 +187,8 @@ class GridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, Dimensions, C
       constexpr static int getMeshDimensions() { return meshDimensions; };
  
  
-      typedef Vectors::StaticVector< meshDimensions, IndexType > EntityOrientationType;
-      typedef Vectors::StaticVector< meshDimensions, IndexType > EntityBasisType;
+      typedef Containers::StaticVector< meshDimensions, IndexType > EntityOrientationType;
+      typedef Containers::StaticVector< meshDimensions, IndexType > EntityBasisType;
       typedef GridEntity< GridType, entityDimensions, Config > ThisType;
       typedef NeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
  
@@ -313,8 +313,8 @@ class GridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, 0, Config >
  
       constexpr static int getMeshDimensions() { return meshDimensions; };
  
-      typedef Vectors::StaticVector< meshDimensions, IndexType > EntityOrientationType;
-      typedef Vectors::StaticVector< meshDimensions, IndexType > EntityBasisType;
+      typedef Containers::StaticVector< meshDimensions, IndexType > EntityOrientationType;
+      typedef Containers::StaticVector< meshDimensions, IndexType > EntityBasisType;
       typedef GridEntity< GridType, entityDimensions, Config > ThisType;
       typedef NeighbourGridEntitiesStorage< ThisType > NeighbourGridEntitiesStorageType;
  

@@ -12,8 +12,8 @@
 
 #include <TNL/Object.h>
 #include <TNL/Devices/Host.h>
-#include <TNL/Vectors/StaticVector.h>
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/StaticVector.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Meshes {
