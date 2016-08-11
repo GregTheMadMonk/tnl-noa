@@ -2,9 +2,9 @@
 
 #include "benchmarks.h"
 
-#include <core/arrays/tnlArray.h>
+#include <TNL/Containers/Array.h>
 
-namespace tnl
+namespace TNL
 {
 namespace benchmarks
 {
@@ -16,8 +16,8 @@ benchmarkArrayOperations( Benchmark & benchmark,
                           const int & loops,
                           const int & size )
 {
-    typedef tnlArray< Real, tnlHost, Index > HostArray;
-    typedef tnlArray< Real, tnlCuda, Index > CudaArray;
+    typedef Containers::Array< Real, Devices::Host, Index > HostArray;
+    typedef Containers::Array< Real, Devices::Cuda, Index > CudaArray;
     using namespace std;
 
     double datasetSize = ( double ) ( loops * size ) * sizeof( Real ) / oneGB;
@@ -30,7 +30,7 @@ benchmarkArrayOperations( Benchmark & benchmark,
         ! deviceArray2.setSize( size ) )
     {
         const char* msg = "error: allocation of arrays failed";
-        cerr << msg << endl;
+        std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg );
         return false;
     }

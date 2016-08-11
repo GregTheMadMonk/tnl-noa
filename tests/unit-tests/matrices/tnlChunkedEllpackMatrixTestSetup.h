@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlChunkedEllpackMatrixTestSetup.h  -  description
+                          ChunkedEllpackTestSetup.h  -  description
                              -------------------
     begin                : May 9, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -8,13 +8,15 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCHUNKEDELLPACKMATRIXTESTSETUP_H_
-#define TNLCHUNKEDELLPACKMATRIXTESTSETUP_H_
+#ifndef ChunkedEllpackTESTSETUP_H_
+#define ChunkedEllpackTESTSETUP_H_
 
 #include "tnlSparseMatrixTester.h"
 
+using namespace TNL;
+
 template< int SliceSize, int ChunkSize >
-class tnlChunkedEllpackMatrixTestSetup
+class ChunkedEllpackTestSetup
 {
    public:
 
@@ -27,11 +29,11 @@ template< typename Real,
           typename Device,
           typename Index,
           typename TestSetup >
-class tnlSparseMatrixTesterMatrixSetter< tnlChunkedEllpackMatrix< Real, Device, Index >, TestSetup >
+class SparseTesterMatrixSetter< Matrices::ChunkedEllpack< Real, Device, Index >, TestSetup >
 {
    public:
 
-   typedef tnlChunkedEllpackMatrix< Real, Device, Index > Matrix;
+   typedef Matrices::ChunkedEllpack< Real, Device, Index > Matrix;
  
    static bool setup( Matrix& matrix )
    {
@@ -41,5 +43,4 @@ class tnlSparseMatrixTesterMatrixSetter< tnlChunkedEllpackMatrix< Real, Device, 
    }
 };
 
-
-#endif /* TNLCHUNKEDELLPACKMATRIXTESTSETUP_H_ */
+#endif /* ChunkedEllpackTESTSETUP_H_ */

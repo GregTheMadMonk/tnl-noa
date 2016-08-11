@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFiniteDifferencesTest.cu  -  description
+                          FiniteDifferencesTest.cu  -  description
                              -------------------
     begin                : Jan 12, 2016
     copyright            : (C) 2016 by Tomas Oberhuber

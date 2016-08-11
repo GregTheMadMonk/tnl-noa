@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlStaticArrayTester.h  -  description
+                          StaticArrayTester.h  -  description
                              -------------------
     begin                : Feb 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSTATICARRAYTESTER_H_
-#define TNLSTATICARRAYTESTER_H_
+#ifndef StaticArrayTESTER_H_
+#define StaticArrayTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <sstream>
@@ -18,42 +18,44 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/arrays/tnlStaticArray.h>
-#include <core/arrays/tnlSharedArray.h>
-#include <core/arrays/tnlConstSharedArray.h>
+#include <TNL/Containers/StaticArray.h>
+#include <TNL/Containers/SharedArray.h>
+#include <TNL/Containers/ConstSharedArray.h>
 
+using namespace TNL;
+using namespace TNL::Containers;
 
 class testingClassForStaticArrayTester
 {
    public:
 
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "testingClassForStaticArrayTester" );
+         return String( "testingClassForStaticArrayTester" );
       };
 };
 
-tnlString getType( const testingClassForStaticArrayTester& c )
+String getType( const testingClassForStaticArrayTester& c )
 {
-   return tnlString( "testingClassForStaticArrayTester" );
+   return String( "testingClassForStaticArrayTester" );
 };
 
 template< int Size, typename ElementType >
-class tnlStaticArrayTester : public CppUnit :: TestCase
+class StaticArrayTester : public CppUnit :: TestCase
 {
    public:
 
-   typedef tnlStaticArrayTester< Size, ElementType > StaticArrayTester;
-   typedef CppUnit :: TestCaller< StaticArrayTester > TestCaller;
+   typedef StaticArrayTester< Size, ElementType > StaticArrayTesterType;
+   typedef CppUnit :: TestCaller< StaticArrayTesterType > TestCaller;
 
-   tnlStaticArrayTester(){};
+   StaticArrayTester(){};
 
    virtual
-   ~tnlStaticArrayTester(){};
+   ~StaticArrayTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlArrayTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "ArrayTester" );
       CppUnit :: TestResult result;
       suiteOfTests -> addTest( new TestCaller( "testConstructors", &StaticArrayTester::testConstructors ) );
       suiteOfTests -> addTest( new TestCaller( "testCoordinatesGetter", &StaticArrayTester::testCoordinatesGetter ) );
@@ -72,34 +74,34 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
       for( int i = 0; i < Size; i++ )
          data[ i ] = i;
 
-      tnlStaticArray< Size, ElementType > u1( data );
+      StaticArray< Size, ElementType > u1( data );
       for( int i = 0; i < Size; i++ )
          CPPUNIT_ASSERT( u1[ i ] == data[ i ] );
 
-      tnlStaticArray< Size, ElementType > u2( 7 );
+      StaticArray< Size, ElementType > u2( 7 );
       for( int i = 0; i < Size; i++ )
          CPPUNIT_ASSERT( u2[ i ] == 7 );
 
-      tnlStaticArray< Size, ElementType > u3( u1 );
+      StaticArray< Size, ElementType > u3( u1 );
       for( int i = 0; i < Size; i++ )
          CPPUNIT_ASSERT( u3[ i ] == u1[ i ] );
    }
 
    template< typename Element >
-   void checkCoordinates( const tnlStaticArray< 1, Element >& u )
+   void checkCoordinates( const StaticArray< 1, Element >& u )
    {
       CPPUNIT_ASSERT( u.x() == 0 );
    }
 
    template< typename Element >
-   void checkCoordinates( const tnlStaticArray< 2, Element >& u )
+   void checkCoordinates( const StaticArray< 2, Element >& u )
    {
       CPPUNIT_ASSERT( u.x() == 0 );
       CPPUNIT_ASSERT( u.y() == 1 );
    }
 
    template< typename Element >
-   void checkCoordinates( const tnlStaticArray< 3, Element >& u )
+   void checkCoordinates( const StaticArray< 3, Element >& u )
    {
       CPPUNIT_ASSERT( u.x() == 0 );
       CPPUNIT_ASSERT( u.y() == 1 );
@@ -107,13 +109,13 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
    }
  
    template< int _Size, typename Element >
-   void checkCoordinates( const tnlStaticArray< _Size, Element >& u )
+   void checkCoordinates( const StaticArray< _Size, Element >& u )
    {
    }
 
    void testCoordinatesGetter()
    {
-      tnlStaticArray< Size, ElementType > u;
+      StaticArray< Size, ElementType > u;
       for( int i = 0; i < Size; i++ )
          u[ i ] = i;
 
@@ -122,7 +124,7 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
 
    void testComparisonOperator()
    {
-      tnlStaticArray< Size, ElementType > u1, u2, u3;
+      StaticArray< Size, ElementType > u1, u2, u3;
 
       for( int i = 0; i < Size; i++ )
       {
@@ -138,7 +140,7 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
 
    void testAssignmentOperator()
    {
-      tnlStaticArray< Size, ElementType > u1, u2, u3;
+      StaticArray< Size, ElementType > u1, u2, u3;
 
       for( int i = 0; i < Size; i++ )
       {
@@ -157,8 +159,8 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
 
    void testLoadAndSave()
    {
-      tnlStaticArray< Size, ElementType > u1( 7 ), u2( 0 );
-      tnlFile file;
+      StaticArray< Size, ElementType > u1( 7 ), u2( 0 );
+      File file;
       file.open( "tnl-static-array-test.tnl", tnlWriteMode );
       u1.save( file );
       file.close();
@@ -171,7 +173,7 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
 
    void testSort()
    {
-      tnlStaticArray< Size, ElementType > u;
+      StaticArray< Size, ElementType > u;
       for( int i = 0; i < Size; i++ )
          u[ i ] = Size - i - 1;
       u.sort();
@@ -182,23 +184,23 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
 
    void testStreamOperator()
    {
-      tnlStaticArray< Size, ElementType > u;
-      stringstream testStream;
+      StaticArray< Size, ElementType > u;
+      std::stringstream testStream;
       testStream << u;
    }
 
    void testBindToSharedArray()
    {
-      tnlStaticArray< Size, ElementType > a;
+      StaticArray< Size, ElementType > a;
       for( int i = 0; i < Size; i++ )
          a[ i ] = i+1;
 
-      tnlSharedArray< ElementType, tnlHost > sharedArray;
+      SharedArray< ElementType, Devices::Host > sharedArray;
       sharedArray.bind( a );
       for( int i = 0; i < Size; i++ )
          CPPUNIT_ASSERT( a[ i ] == sharedArray[ i ] );
 
-      tnlConstSharedArray< ElementType, tnlHost > constSharedArray;
+      tnlConstSharedArray< ElementType, Devices::Host > constSharedArray;
       constSharedArray.bind( a );
       for( int i = 0; i < Size; i++ )
          CPPUNIT_ASSERT( a[ i ] == constSharedArray[ i ] );
@@ -209,4 +211,4 @@ class tnlStaticArrayTester : public CppUnit :: TestCase
 #endif /* HAVE_CPPUNIT */
 
 
-#endif /* TNLSTATICARRAYTESTER_H_ */
+#endif /* StaticArrayTESTER_H_ */

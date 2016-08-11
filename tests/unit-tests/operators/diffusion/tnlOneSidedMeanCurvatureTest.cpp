@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlOneSidedMeanCurvatureTest.cpp  -  description
+                          OneSidedMeanCurvatureTest.cpp  -  description
                              -------------------
     begin                : Jan 16, 2016
     copyright            : (C) 2016 by Tomas Oberhuber

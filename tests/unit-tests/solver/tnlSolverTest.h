@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSolverTester.h  -  description
+                          SolverTester.h  -  description
                              -------------------
     begin                : Mar 17, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,13 +8,11 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSOLVERTEST_H_
-#define TNLSOLVERTEST_H_
+#ifndef SolverTEST_H_
+#define SolverTEST_H_
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 #include <iostream>
-
-using namespace std;
 
 #ifdef HAVE_CPPUNIT
 
@@ -23,20 +21,21 @@ using namespace std;
 #include "tnlSolverTester.h"
 
 using namespace std;
+using namespace TNL;
 
 int main( int argc, char* argv[] )
 {
    CppUnit :: TextTestRunner runner;
-   runner. addTest( tnlSolverTester :: suite() );
+   runner. addTest( SolverTester :: suite() );
 
 }
 #else
 int main( int argc, char* argv[] )
 {
-   cerr << "UNIT TESTS ARE DISABLED." << endl;
+   std::cerr << "UNIT TESTS ARE DISABLED." << std::endl;
    return 0;
 }
 #endif
 
 
-#endif /* TNLSOLVERTEST_H_ */
+#endif /* SolverTEST_H_ */

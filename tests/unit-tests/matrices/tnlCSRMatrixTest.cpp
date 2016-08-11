@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCSRMatrixTest.cpp  -  description
+                          CSRTest.cpp  -  description
                              -------------------
     begin                : Dec 10, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,21 +8,21 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <core/tnlHost.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
 #include "tnlSparseMatrixTester.h"
-#include "matrices/tnlCSRMatrix.h"
+#include <TNL/Matrices/CSR.h>
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlCSRMatrix< float, tnlHost, int > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlCSRMatrix< double, tnlHost, int > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlCSRMatrix< float, tnlHost, long int > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlCSRMatrix< double, tnlHost, long int > > >()
+   if( ! tnlUnitTestStarter :: run< SparseTester< Matrices::CSR< float, Devices::Host, int > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::CSR< double, Devices::Host, int > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::CSR< float, Devices::Host, long int > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::CSR< double, Devices::Host, long int > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

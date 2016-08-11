@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSolverTest.cpp  -  description
+                          SolverTest.cpp  -  description
                              -------------------
     begin                : Mar 17, 2013
     copyright            : (C) 2013 by Tomas Oberhuber

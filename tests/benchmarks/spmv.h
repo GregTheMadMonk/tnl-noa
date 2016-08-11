@@ -2,20 +2,20 @@
 
 #include "benchmarks.h"
 
-#include <core/tnlList.h>
-#include <matrices/tnlCSRMatrix.h>
-#include <matrices/tnlEllpackMatrix.h>
-#include <matrices/tnlSlicedEllpackMatrix.h>
-#include <matrices/tnlChunkedEllpackMatrix.h>
+#include <TNL/List.h>
+#include <TNL/Matrices/CSR.h>
+#include <TNL/Matrices/Ellpack.h>
+#include <TNL/Matrices/SlicedEllpack.h>
+#include <TNL/Matrices/ChunkedEllpack.h>
 
-namespace tnl
+namespace TNL
 {
 namespace benchmarks
 {
 
 // silly alias to match the number of template parameters with other formats
 template< typename Real, typename Device, typename Index >
-using SlicedEllpackMatrix = tnlSlicedEllpackMatrix< Real, Device, Index >;
+using SlicedEllpack = Matrices::SlicedEllpack< Real, Device, Index >;
 
 template< typename Matrix >
 int setHostTestMatrix( Matrix& matrix,
@@ -43,7 +43,7 @@ __global__ void setCudaTestMatrixKernel( Matrix* matrix,
                                          const int elementsPerRow,
                                          const int gridIdx )
 {
-    const int rowIdx = ( gridIdx * tnlCuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+    const int rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
     if( rowIdx >= matrix->getRows() )
         return;
     int col = rowIdx - elementsPerRow / 2;
@@ -62,19 +62,19 @@ void setCudaTestMatrix( Matrix& matrix,
 #ifdef HAVE_CUDA
     typedef typename Matrix::IndexType IndexType;
     typedef typename Matrix::RealType RealType;
-    Matrix* kernel_matrix = tnlCuda::passToDevice( matrix );
-    dim3 cudaBlockSize( 256 ), cudaGridSize( tnlCuda::getMaxGridSize() );
+    Matrix* kernel_matrix = Devices::Cuda::passToDevice( matrix );
+    dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
     const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-    const IndexType cudaGrids = roundUpDivision( cudaBlocks, tnlCuda::getMaxGridSize() );
+    const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
     for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ ) {
         if( gridIdx == cudaGrids - 1 )
-            cudaGridSize.x = cudaBlocks % tnlCuda::getMaxGridSize();
+            cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
         setCudaTestMatrixKernel< Matrix >
             <<< cudaGridSize, cudaBlockSize >>>
             ( kernel_matrix, elementsPerRow, gridIdx );
         checkCudaDevice;
     }
-    tnlCuda::freeFromDevice( kernel_matrix );
+    Devices::Cuda::freeFromDevice( kernel_matrix );
 #endif
 }
 
@@ -82,27 +82,27 @@ void setCudaTestMatrix( Matrix& matrix,
 // TODO: rename as benchmark_SpMV_synthetic and move to spmv-synthetic.h
 template< typename Real,
           template< typename, typename, typename > class Matrix,
-          template< typename, typename, typename > class Vector = tnlVector >
+          template< typename, typename, typename > class Vector = Containers::Vector >
 bool
 benchmarkSpMV( Benchmark & benchmark,
                const int & loops,
                const int & size,
                const int elementsPerRow = 5 )
 {
-    typedef Matrix< Real, tnlHost, int > HostMatrix;
-    typedef Matrix< Real, tnlCuda, int > DeviceMatrix;
-    typedef tnlVector< Real, tnlHost, int > HostVector;
-    typedef tnlVector< Real, tnlCuda, int > CudaVector;
+    typedef Matrix< Real, Devices::Host, int > HostMatrix;
+    typedef Matrix< Real, Devices::Cuda, int > DeviceMatrix;
+    typedef Containers::Vector< Real, Devices::Host, int > HostVector;
+    typedef Containers::Vector< Real, Devices::Cuda, int > CudaVector;
 
     HostMatrix hostMatrix;
     DeviceMatrix deviceMatrix;
-    tnlVector< int, tnlHost, int > hostRowLengths;
-    tnlVector< int, tnlCuda, int > deviceRowLengths;
+    Containers::Vector< int, Devices::Host, int > hostRowLengths;
+    Containers::Vector< int, Devices::Cuda, int > deviceRowLengths;
     HostVector hostVector, hostVector2;
     CudaVector deviceVector, deviceVector2;
 
     // create benchmark group
-    tnlList< tnlString > parsedType;
+    List< String > parsedType;
     parseObjectType( HostMatrix::getType(), parsedType );
     benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
 
@@ -116,7 +116,7 @@ benchmarkSpMV( Benchmark & benchmark,
         ! deviceVector2.setSize( size ) )
     {
         const char* msg = "error: allocation of vectors failed";
-        cerr << msg << endl;
+        std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg, 2 );
         return false;
     }
@@ -126,13 +126,13 @@ benchmarkSpMV( Benchmark & benchmark,
 
     if( ! hostMatrix.setCompressedRowsLengths( hostRowLengths ) ) {
         const char* msg = "error: allocation of host matrix failed";
-        cerr << msg << endl;
+        std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg, 2 );
         return false;
     }
     if( ! deviceMatrix.setCompressedRowsLengths( deviceRowLengths ) ) {
         const char* msg = "error: allocation of device matrix failed";
-        cerr << msg << endl;
+        std::cerr << msg << std::endl;
         benchmark.addErrorMessage( msg, 2 );
         return false;
     }
@@ -174,10 +174,10 @@ benchmarkSpmvSynthetic( Benchmark & benchmark,
                         const int & elementsPerRow )
 {
     // TODO: benchmark all formats from tnl-benchmark-spmv (different parameters of the base formats)
-    benchmarkSpMV< Real, tnlCSRMatrix >( benchmark, loops, size, elementsPerRow );
-    benchmarkSpMV< Real, tnlEllpackMatrix >( benchmark, loops, size, elementsPerRow );
-    benchmarkSpMV< Real, SlicedEllpackMatrix >( benchmark, loops, size, elementsPerRow );
-    benchmarkSpMV< Real, tnlChunkedEllpackMatrix >( benchmark, loops, size, elementsPerRow );
+    benchmarkSpMV< Real, Matrices::CSR >( benchmark, loops, size, elementsPerRow );
+    benchmarkSpMV< Real, Matrices::Ellpack >( benchmark, loops, size, elementsPerRow );
+    benchmarkSpMV< Real, SlicedEllpack >( benchmark, loops, size, elementsPerRow );
+    benchmarkSpMV< Real, Matrices::ChunkedEllpack >( benchmark, loops, size, elementsPerRow );
 }
 
 } // namespace benchmarks

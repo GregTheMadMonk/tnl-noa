@@ -11,7 +11,9 @@
 #ifndef TNLPDEOPERATOREOCTESTFUNCTIONSETTER_H
 #define	TNLPDEOPERATOREOCTESTFUNCTIONSETTER_H
 
-#include<functions/tnlExpBumpFunction.h>
+#include <TNL/Functions/Analytic/ExpBump.h>
+
+using namespace TNL;
 
 template< typename Function >
 class tnlPDEOperatorEocTestFunctionSetter
@@ -20,13 +22,13 @@ class tnlPDEOperatorEocTestFunctionSetter
 
 template< int Dimensions,
           typename Real >
-class tnlPDEOperatorEocTestFunctionSetter< tnlExpBumpFunction< Dimensions, Real > >
+class tnlPDEOperatorEocTestFunctionSetter< Functions::Analytic::ExpBump< Dimensions, Real > >
 {
    static_assert( Dimensions >= 0 && Dimensions <= 3,
       "Wrong parameter Dimensions." );
    public:
  
-      typedef tnlExpBumpFunction< Dimensions, Real > FunctionType;
+      typedef Functions::Analytic::ExpBump< Dimensions, Real > FunctionType;
  
       static void setup( FunctionType& function )
       {

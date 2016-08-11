@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCudaVectorOperationsTest.cu  -  description
+                          Devices::CudaVectorOperationsTest.cu  -  description
                              -------------------
     begin                : Mar 31, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -14,7 +14,7 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlVectorOperationsTester< double, tnlCuda > >() )
+   if( ! tnlUnitTestStarter :: run< VectorOperationsTester< double, Devices::Cuda > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 #else

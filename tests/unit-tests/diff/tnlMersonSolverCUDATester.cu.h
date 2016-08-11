@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMersonSolverCUDATester.cu.h
+                          MersonCUDATester.cu.h
                              -------------------
     begin                : Feb 2, 2010
     copyright            : (C) 2009 by Tomas Oberhuber
@@ -10,8 +10,8 @@
 
 
 
-#ifndef TNLMERSONSOLVERCUDATESTER_CU_H_
-#define TNLMERSONSOLVERCUDATESTER_CU_H_
+#ifndef MersonCUDATESTER_CU_H_
+#define MersonCUDATESTER_CU_H_
 
 template< class T > __global__ void heatEquationRHSKernel( const int xSize,
 		                                                   const int ySize,
@@ -33,4 +33,4 @@ template< class T > __global__ void heatEquationRHSKernel( const int xSize,
 }
 
 
-#endif /* TNLMERSONSOLVERCUDATESTER_CU_H_ */
+#endif /* MersonCUDATESTER_CU_H_ */

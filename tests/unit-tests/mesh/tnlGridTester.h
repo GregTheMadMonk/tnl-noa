@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlGridTester.h  -  description
+                          GridTester.h  -  description
                              -------------------
     begin                : Jul 28, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -17,11 +17,11 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Meshes/Grid.h>
 
 
 template< int Dimensions, typename RealType, typename Device, typename IndexType >
-class tnlGridTester{};
+class GridTester{};
 
 #include "tnlGrid1DTester.h"
 #include "tnlGrid2DTester.h"

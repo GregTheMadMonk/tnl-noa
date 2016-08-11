@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCSRMatrixTest.cu  -  description
+                          CSRTest.cu  -  description
                              -------------------
     begin                : Jan 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -8,9 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <core/tnlHost.h>
-#include <matrices/tnlCSRMatrix.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/Devices/Host.h>
+#include <TNL/Matrices/CSR.h>
 #include <cstdlib>
 
 #include "tnlSparseMatrixTester.h"
@@ -19,8 +19,8 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlCSRMatrix< float, tnlCuda, int > > >() ||
-       ! tnlUnitTestStarter::run< tnlSparseMatrixTester< tnlCSRMatrix< double, tnlCuda, int > > >()
+   if( ! tnlUnitTestStarter::run< SparseTester< CSR< float, Devices::Cuda, int > > >() ||
+       ! tnlUnitTestStarter::run< SparseTester< CSR< double, Devices::Cuda, int > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

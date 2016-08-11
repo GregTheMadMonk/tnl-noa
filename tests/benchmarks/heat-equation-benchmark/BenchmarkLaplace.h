@@ -1,8 +1,8 @@
 #ifndef BenchmarkLaplace_H
 #define BenchmarkLaplace_H
 
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Meshes/Grid.h>
 
 template< typename Mesh,
           typename Real = typename Mesh::RealType,
@@ -16,18 +16,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class BenchmarkLaplace< tnlGrid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+class BenchmarkLaplace< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 1, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -58,18 +58,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class BenchmarkLaplace< tnlGrid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+class BenchmarkLaplace< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 2, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -100,18 +100,18 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class BenchmarkLaplace< tnlGrid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+class BenchmarkLaplace< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
 {
    public:
-      typedef tnlGrid< 3, MeshReal, Device, MeshIndex > MeshType;
+      typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
       typedef Real RealType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef tnlMeshFunction< MeshType > MeshFunctionType;
+      typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static tnlString getType();
+      static String getType();
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__

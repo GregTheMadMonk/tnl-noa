@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFiniteDifferencesTest.h  -  description
+                          FiniteDifferencesTest.h  -  description
                              -------------------
     begin                : Jan 12, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -8,20 +8,22 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <core/tnlHost.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
 #include "../tnlPDEOperatorEocTest.h"
 #include "../tnlPDEOperatorEocUnitTest.h"
 #include "../../tnlUnitTestStarter.h"
-#include <mesh/tnlGrid.h>
-#include <operators/fdm/tnlBackwardFiniteDifference.h>
-#include <operators/fdm/tnlForwardFiniteDifference.h>
-#include <operators/fdm/tnlCentralFiniteDifference.h>
-#include <operators/fdm/tnlExactDifference.h>
+#include <TNL/Meshes/Grid.h>
+#include <TNL/Operators/fdm/BackwardFiniteDifference.h>
+#include <TNL/Operators/fdm/ForwardFiniteDifference.h>
+#include <TNL/Operators/fdm/CentralFiniteDifference.h>
+#include <TNL/Operators/fdm/ExactDifference.h>
 #include "../tnlPDEOperatorEocTestResult.h"
-#include <functions/tnlExpBumpFunction.h>
+#include <TNL/Functions/Analytic/ExpBump.h>
+
+using namespace TNL;
 
 template< typename ApproximateOperator >
 class tnlFinitDifferenceEocTestResults
@@ -41,7 +43,7 @@ template< typename MeshType,
           int YDifference,
           int ZDifference,
           typename IndexType >
-class tnlFinitDifferenceEocTestResults< tnlCentralFiniteDifference< MeshType, XDifference, YDifference, ZDifference, RealType, IndexType > >
+class tnlFinitDifferenceEocTestResults< Operators::CentralFiniteDifference< MeshType, XDifference, YDifference, ZDifference, RealType, IndexType > >
 {
    public:
  
@@ -68,9 +70,9 @@ class tnlFiniteDifferenceTest
       const IndexType coarseMeshSize[ 3 ] = { 1024, 256, 64 };
  
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlLinearDiffusionTest< " ) +
+         return String( "LinearDiffusionTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }
@@ -135,9 +137,9 @@ template< typename Mesh,
           bool Verbose >
 bool setFiniteDifferenceOperator()
 {
-    typedef tnlForwardFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > ForwardFiniteDifference;
-    typedef tnlBackwardFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > BackwardFiniteDifference;
-    typedef tnlCentralFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > CentralFiniteDifference;
+    typedef Operators::ForwardFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > ForwardFiniteDifference;
+    typedef Operators::BackwardFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > BackwardFiniteDifference;
+    typedef Operators::CentralFiniteDifference< Mesh, XDifference, YDifference, ZDifference, RealType, IndexType > CentralFiniteDifference;
  
     if( XDifference < 2 && YDifference < 2 && ZDifference < 2 )
       return ( testFiniteDifferenceOperator< ForwardFiniteDifference, Function, WriteFunctions, Verbose >() &&
@@ -159,7 +161,7 @@ template< typename Mesh,
 bool setFunction()
 {
     const int Dimensions = Mesh::meshDimensions;
-    typedef tnlExpBumpFunction< Dimensions, RealType >  Function;
+    typedef Functions::Analytic::ExpBump< Dimensions, RealType >  Function;
     return setFiniteDifferenceOperator< Mesh, Function, RealType, IndexType, XDifference, YDifference, ZDifference, MeshSize, WriteFunctions, Verbose  >();
 }
 
@@ -173,9 +175,9 @@ template< typename MeshReal,
           bool Verbose >
 bool setDifferenceOrder()
 {
-    typedef tnlGrid< 1, MeshReal, Device, MeshIndex > Grid1D;
-    typedef tnlGrid< 2, MeshReal, Device, MeshIndex > Grid2D;
-    typedef tnlGrid< 3, MeshReal, Device, MeshIndex > Grid3D;
+    typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > Grid1D;
+    typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > Grid2D;
+    typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > Grid3D;
     return ( setFunction< Grid1D, RealType, IndexType, 1, 0, 0, MeshSize, WriteFunctions, Verbose >() &&
              setFunction< Grid1D, RealType, IndexType, 2, 0, 0, MeshSize, WriteFunctions, Verbose >() &&
              setFunction< Grid2D, RealType, IndexType, 1, 0, 0, MeshSize, WriteFunctions, Verbose >() &&
@@ -194,10 +196,10 @@ bool test()
 {
    const bool writeFunctions( false );
    const bool verbose( true );
-   if( ! setDifferenceOrder< double, tnlHost, int, double, int, 64, writeFunctions, verbose >() )
+   if( ! setDifferenceOrder< double, Devices::Host, int, double, int, 64, writeFunctions, verbose >() )
       return false;
 #ifdef HAVE_CUDA
-   if( ! setDifferenceOrder< double, tnlCuda, int, double, int, 64, writeFunctions, verbose >() )
+   if( ! setDifferenceOrder< double, Devices::Cuda, int, double, int, 64, writeFunctions, verbose >() )
       return false;
 #endif
     return true;

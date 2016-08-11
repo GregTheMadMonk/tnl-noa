@@ -19,7 +19,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlReal.h>
+#include <TNL/core/tnlReal.h>
 
 template< class T > class tnlRealTester : public CppUnit :: TestCase
 {
@@ -84,7 +84,7 @@ template< class T > class tnlRealTester : public CppUnit :: TestCase
 
       const tnlReal< T > tbi = 1.0 / ( T ) ia;
 
-      //cerr << tbi << endl;
+      //cerr << tbi << std::endl;
 
       CPPUNIT_ASSERT( b == tbi );
    };

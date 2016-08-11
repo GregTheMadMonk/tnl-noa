@@ -22,6 +22,7 @@
 #include <cppunit/TestCase.h>
 #endif
 
+using namespace TNL;
 
 template< typename ApproximateOperator,
           typename TestFunction,
@@ -34,15 +35,19 @@ class tnlPDEOperatorEocTest
       typedef TestFunction TestFunctionType;
       typedef ExactOperator ExactOperatorType;
       typedef typename ApproximateOperator::MeshType MeshType;
+      typedef SharedPointer< MeshType > MeshPointer;
       typedef typename ApproximateOperator::RealType RealType;
       typedef typename ApproximateOperator::IndexType IndexType;
  
       //static_assert( std::is_same< ExactOperatorType, void >::value,
       //   "Exact operator type is not defined (it is void in fact)." );
- 
+
+      tnlPDEOperatorEocTest()
+      {}
+   
       void setupMesh( const IndexType meshSize )
       {
-         tnlPDEOperatorEocTestMeshSetter< MeshType >::setup( mesh, meshSize );
+         tnlPDEOperatorEocTestMeshSetter< MeshType >::setup( *mesh, meshSize );
       }
  
       void setupFunction()
@@ -111,10 +116,10 @@ class tnlPDEOperatorEocTest
       }
  
    protected:
- 
-      MeshType mesh;
- 
-      TestFunction function;
+      
+      MeshPointer mesh;
+      
+      TestFunction function;               
 };
 
 

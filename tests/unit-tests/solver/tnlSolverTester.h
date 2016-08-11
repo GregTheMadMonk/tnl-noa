@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlSolverTester.h  -  description
+                          SolverTester.h  -  description
                              -------------------
     begin                : Mar 17, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,20 +8,22 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLSOLVERTESTER_H_
-#define TNLSOLVERTESTER_H_
+#ifndef SolverTESTER_H_
+#define SolverTESTER_H_
 
 #include <cppunit/TestSuite.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
-#include <solvers/tnlSolver.h>
-#include <solvers/tnlSolverMonitor.h>
-#include <mesh/tnlGrid.h>
-#include <tnlConfig.h>
+#include <TNL/Solvers/Solver.h>
+#include <TNL/Solvers/SolverMonitor.h>
+#include <TNL/Meshes/Grid.h>
+#include <TNL/tnlConfig.h>
+
+using namespace TNL;
 
 template< typename Mesh >
-class tnlSolverTesterProblem
+class SolverTesterProblem
 {
    public:
 
@@ -29,24 +31,24 @@ class tnlSolverTesterProblem
    typedef typename Mesh :: DeviceType DeviceType;
    typedef typename Mesh :: IndexType IndexType;
    typedef Mesh MeshType;
-   typedef tnlVector< RealType, DeviceType, IndexType> DofVectorType;
-   typedef tnlCSRMatrix< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
-   typedef tnlDummyPreconditioner< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
+   typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
+   typedef Matrices::CSR< RealType, DeviceType, IndexType > DiscreteSolverMatrixType;
+   typedef Solvers::Linear::Preconditioners::Dummy< RealType, DeviceType, IndexType > DiscreteSolverPreconditioner;
 
-   static tnlString getTypeStatic() { return tnlString( "simpleProblemSolver< " ) + Mesh :: getTypeStatic() + " >"; };
+   static String getTypeStatic() { return String( "simpleProblemSolver< " ) + Mesh :: getTypeStatic() + " >"; };
 
-   tnlString getPrologHeader() const { return tnlString( "Simple Problem" ); };
+   String getPrologHeader() const { return String( "Simple Problem" ); };
 
-   void writeProlog( tnlLogger& logger,
-                     const tnlParameterContainer& parameters ) const { };
+   void writeProlog( Logger& logger,
+                     const Config::ParameterContainer& parameters ) const { };
 
-   bool setup( const tnlParameterContainer& parameters ) { this->dofVector. setSize( 100 ); return true; };
+   bool setup( const Config::ParameterContainer& parameters ) { this->dofVector. setSize( 100 ); return true; };
 
-   bool setInitialCondition( const tnlParameterContainer& parameters ) { return true; };
+   bool setInitialCondition( const Config::ParameterContainer& parameters ) { return true; };
 
    bool makeSnapshot( const RealType& time, const IndexType& step ) { return true; };
 
-   tnlSolverMonitor< RealType, IndexType >* getSolverMonitor() { return 0; };
+   Solvers::SolverMonitor< RealType, IndexType >* getSolverMonitor() { return 0; };
 
    DofVectorType& getDofVector() { return this->dofVector;};
 
@@ -61,55 +63,55 @@ class tnlSolverTesterProblem
 };
 
 template< typename SolverStarter >
-class tnlSolverTesterSetter
+class SolverTesterSetter
 {
    public:
    template< typename RealType,
              typename DeviceType,
              typename IndexType >
-   bool run( const tnlParameterContainer& parameters ) const
+   bool run( const Config::ParameterContainer& parameters ) const
    {
       int dimensions = parameters. getParameter< int >( "dimensions" );
       if( dimensions <= 0 || dimensions > 3 )
       {
-         cerr << "The problem is not defined for " << dimensions << "dimensions." << endl;
+         std::cerr << "The problem is not defined for " << dimensions << "dimensions." << std::endl;
          return false;
       }
       SolverStarter solverStarter;
       if( dimensions == 1 )
       {
-         typedef tnlGrid< 1, RealType, DeviceType, IndexType > MeshType;
-         return solverStarter. run< tnlSolverTesterProblem< MeshType > >( parameters );
+         typedef Meshes::Grid< 1, RealType, DeviceType, IndexType > MeshType;
+         return solverStarter. run< SolverTesterProblem< MeshType > >( parameters );
       }
       if( dimensions == 2 )
       {
-         typedef tnlGrid< 2, RealType, DeviceType, IndexType > MeshType;
-         return solverStarter. run< tnlSolverTesterProblem< MeshType > >( parameters );
+         typedef Meshes::Grid< 2, RealType, DeviceType, IndexType > MeshType;
+         return solverStarter. run< SolverTesterProblem< MeshType > >( parameters );
       }
       if( dimensions == 3 )
       {
-         typedef tnlGrid< 3, RealType, DeviceType, IndexType > MeshType;
-         return solverStarter. run< tnlSolverTesterProblem< MeshType > >( parameters );
+         typedef Meshes::Grid< 3, RealType, DeviceType, IndexType > MeshType;
+         return solverStarter. run< SolverTesterProblem< MeshType > >( parameters );
       };
    }
 
 };
 
-class tnlSolverTester : public CppUnit :: TestCase
+class SolverTester : public CppUnit :: TestCase
 {
    public:
-   tnlSolverTester(){};
+   SolverTester(){};
 
    virtual
-   ~tnlSolverTester(){};
+   ~SolverTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlSolverTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "SolverTester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlSolverTester >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< SolverTester >(
                                "run",
-                               & tnlSolverTester :: run )
+                               & SolverTester :: run )
                              );
 
       return suiteOfTests;
@@ -118,18 +120,18 @@ class tnlSolverTester : public CppUnit :: TestCase
    void run()
    {
       int argc( 7 );
-      /*const char* argv[]{ "tnlSolverTest",
+      /*const char* argv[]{ "SolverTest",
                           "--verbose","0",
                           "--dimensions", "2",
                           "--time-discretisation", "explicit",
                           "--discrete-solver", "merson",
                           "--snapshot-period", "0.01",
                           "--final-time", "1.0" };
-      const char configFile[] = TNL_TESTS_DIRECTORY "/data/tnlSolverTest.cfg.desc";
-      tnlSolver< tnlSolverTesterSetter > solver;
+      const char configFile[] = TNL_TESTS_DIRECTORY "/data/SolverTest.cfg.desc";
+      Solver< SolverTesterSetter > solver;
       CPPUNIT_ASSERT( solver. run( configFile, argc, const_cast< char** >( argv ) ) );*/
    };
 };
 
 
-#endif /* TNLSOLVERTESTER_H_ */
+#endif /* SolverTESTER_H_ */

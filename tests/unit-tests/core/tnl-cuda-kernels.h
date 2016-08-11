@@ -8,15 +8,16 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLCUDAKERNELS_H_
-#define TNLCUDAKERNELS_H_
+#ifndef Devices::CudaKERNELS_H_
+#define Devices::CudaKERNELS_H_
 
-#include <core/tnlAssert.h>
-#include <core/vectors/tnlVectorCUDA.h>
-#include <core/low-level/cuda-long-vector-kernels.h>
-#include <legacy/core/tnlCudaSupport.h>
+#include <TNL/Assert.h>
+#include <TNL/Containers/VectorCUDA.h>
+#include <TNL/core/low-level/cuda-long-vector-kernels.h>
+#include <TNL/legacy/core/Devices::CudaSupport.h>
 
 using namespace std;
+using namespace TNL;
 
 #ifdef HAVE_CUDA
 
@@ -43,10 +44,10 @@ using namespace std;
  *  and reduce them in sequential loop. This modification gives the greatest
  *  improvement of the performance.
  *
- * WARNING: This kernel only reduce data in one block. Use rather tnlCUDASimpleReduction2
+ * WARNING: This kernel only reduce data in one block. Use rather Devices::CudaSimpleReduction2
  *          to call this kernel then doing it by yourself.
  *          This kernel is very inefficient. It is here only for educative and testing reasons.
- *          Please use tnlCUDAReduction instead.
+ *          Please use tnlCudaReduction instead.
  *
  * The kernel parameters:
  * @param size is the number of all element to reduce - not just in one block.
@@ -55,8 +56,8 @@ using namespace std;
  *                     Each block of the grid writes one element in this array
  *                     (i.e. the size of this array equals the number of CUDA blocks).
  */
-template < class T, tnlStaticVectorOperation operation >
-__global__ void tnlCUDASimpleReductionKernel5( const int size,
+template < class T, StaticVectorOperation operation >
+__global__ void Devices::CudaSimpleReductionKernel5( const int size,
                                                const T* deviceInput,
                                                T* deviceOutput,
                                                T* dbg_array1 = 0 )
@@ -168,10 +169,10 @@ __global__ void tnlCUDASimpleReductionKernel5( const int size,
  *        If one calls this function more then once one might provide this array to avoid repetetive
  *        allocation of this array on the device inside of this function.
  *        The size of this array should be size / 128 * sizeof( T ).
- * WARNING: This template calls very inefficient kernel. Use just tnlCUDAReduction instead.
+ * WARNING: This template calls very inefficient kernel. Use just tnlCudaReduction instead.
  */
-template< class T, tnlStaticVectorOperation operation >
-bool tnlCUDASimpleReduction5( const int size,
+template< class T, StaticVectorOperation operation >
+bool Devices::CudaSimpleReduction5( const int size,
                               const T* deviceInput,
                               T& result,
                               T* deviceAux = 0 )
@@ -193,10 +194,10 @@ bool tnlCUDASimpleReduction5( const int size,
     * If one calls the CUDA reduction more then once then one can provide
     * auxiliary array by passing it via the parameter deviceAux.
     */
-   tnlVector< T, tnlCuda > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
+   Vector< T, Devices::Cuda > deviceAuxVct( "tnlCudaReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
-      int sizeAlloc = :: Max( 1, size / desBlockSize );
+      int sizeAlloc = :: max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. getData();
@@ -213,32 +214,32 @@ bool tnlCUDASimpleReduction5( const int size,
    while( sizeReduced > 1 )
    {
       dim3 blockSize( 0 ), gridSize( 0 );
-      blockSize. x = :: Min( sizeReduced, desBlockSize );
-      gridSize. x = :: Min( ( int ) ( sizeReduced / blockSize. x + 1 ) / 2, desGridSize );
+      blockSize. x = :: min( sizeReduced, desBlockSize );
+      gridSize. x = :: min( ( int ) ( sizeReduced / blockSize. x + 1 ) / 2, desGridSize );
       //if( gridSize. x * 2 * blockSize. x < sizeReduced )
       //    gridSize. x ++;
       int shmem = blockSize. x * sizeof( T );
       /*cout << "Size: " << sizeReduced
            << " Grid size: " << gridSize. x
            << " Block size: " << blockSize. x
-           << " Shmem: " << shmem << endl;*/
-      tnlCUDASimpleReductionKernel5< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux, dbg_array1 );
+           << " Shmem: " << shmem << std::endl;*/
+      Devices::CudaSimpleReductionKernel5< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux, dbg_array1 );
       sizeReduced = gridSize. x;
       reductionInput = deviceAux;
 
       // debuging part
       /*T* host_array = new T[ desBlockSize ];
       cudaMemcpy( host_array, dbg_array1,  desBlockSize * sizeof( T ), cudaMemcpyDeviceToHost );
-      for( int i = 0; i< :: Min( ( int ) blockSize. x, desBlockSize ); i ++ )
-          cout << host_array[ i ] << " ";
-      cout << endl;
+      for( int i = 0; i< :: min( ( int ) blockSize. x, desBlockSize ); i ++ )
+         std::cout << host_array[ i ] << " ";
+     std::cout << std::endl;
 
       T* output = new T[ sizeReduced ];
       cudaMemcpy( output, deviceAux, sizeReduced * sizeof( T ), cudaMemcpyDeviceToHost );
-      cout << endl;
+     std::cout << std::endl;
       for( int i = 0; i < sizeReduced; i ++ )
-          cout << output[ i ] << "   ";
-      cout << endl;
+         std::cout << output[ i ] << "   ";
+     std::cout << std::endl;
       delete[] output;*/
    }
    /***
@@ -252,7 +253,7 @@ bool tnlCUDASimpleReduction5( const int size,
       cudaMemcpy( &result, deviceAux, sizeReduced * sizeof( T ), cudaMemcpyDeviceToHost );
    if( cudaGetLastError() != cudaSuccess )
    {
-      cerr << "Unable to transfer reduced data from device to host." << endl;
+      std::cerr << "Unable to transfer reduced data from device to host." << std::endl;
       return false;
    }
    return true;
@@ -263,10 +264,10 @@ bool tnlCUDASimpleReduction5( const int size,
  * In comparison to the version 3 we reduce the number of threads by one half
  * avoiding the threads which are doing nothing.
  *
- * WARNING: This kernel only reduce data in one block. Use rather tnlCUDASimpleReduction2
+ * WARNING: This kernel only reduce data in one block. Use rather Devices::CudaSimpleReduction2
  *          to call this kernel then doing it by yourself.
  *          This kernel is very inefficient. It is here only for educative and testing reasons.
- *          Please use tnlCUDAReduction instead.
+ *          Please use tnlCudaReduction instead.
  *
  * The kernel parameters:
  * @param size is the number of all element to reduce - not just in one block.
@@ -275,8 +276,8 @@ bool tnlCUDASimpleReduction5( const int size,
  *                     Each block of the grid writes one element in this array
  *                     (i.e. the size of this array equals the number of CUDA blocks).
  */
-template < class T, tnlStaticVectorOperation operation >
-__global__ void tnlCUDASimpleReductionKernel4( const int size,
+template < class T, StaticVectorOperation operation >
+__global__ void Devices::CudaSimpleReductionKernel4( const int size,
                                                const T* deviceInput,
 	                                       T* deviceOutput,
 	                   	               T* dbg_array1 = 0  )
@@ -397,10 +398,10 @@ __global__ void tnlCUDASimpleReductionKernel4( const int size,
  *        If one calls this function more then once one might provide this array to avoid repetetive
  *        allocation of this array on the device inside of this function.
  *        The size of this array should be size / 128 * sizeof( T ).
- * WARNING: This template calls very inefficient kernel. Use just tnlCUDAReduction instead.
+ * WARNING: This template calls very inefficient kernel. Use just tnlCudaReduction instead.
  */
-template< class T, tnlStaticVectorOperation operation >
-bool tnlCUDASimpleReduction4( const int size,
+template< class T, StaticVectorOperation operation >
+bool Devices::CudaSimpleReduction4( const int size,
 	                          const T* deviceInput,
 	                          T& result,
 	                          T* deviceAux = 0 )
@@ -420,10 +421,10 @@ bool tnlCUDASimpleReduction4( const int size,
     * If one calls the CUDA reduction more then once then one can provide
     * auxiliary array by passing it via the parameter deviceAux.
     */
-   tnlVector< T, tnlCuda > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
+   Vector< T, Devices::Cuda > deviceAuxVct( "tnlCudaReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
-      int sizeAlloc = :: Max( 1, size / desBlockSize );
+      int sizeAlloc = :: max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. getData();
@@ -440,7 +441,7 @@ bool tnlCUDASimpleReduction4( const int size,
    while( sizeReduced > 1 )
    {
       dim3 blockSize( 0 ), gridSize( 0 );
-      blockSize. x = :: Min( sizeReduced, desBlockSize );
+      blockSize. x = :: min( sizeReduced, desBlockSize );
       /***
        * If 2 * blockSize. x does not devide sizeReduced we must increase the grid size by one block.
        * Example: sizeReduced = 5, blockSize. x = 2 => gridSize. x = 5 / 2 / 2 = 1.
@@ -455,24 +456,24 @@ bool tnlCUDASimpleReduction4( const int size,
       /*cout << "Size: " << sizeReduced
            << " Grid size: " << gridSize. x
            << " Block size: " << blockSize. x
-           << " Shmem: " << shmem << endl;*/
-      tnlCUDASimpleReductionKernel4< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux, dbg_array1 );
+           << " Shmem: " << shmem << std::endl;*/
+      Devices::CudaSimpleReductionKernel4< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux, dbg_array1 );
       sizeReduced = gridSize. x;
       reductionInput = deviceAux;
 
       // debuging part
       /*T* host_array = new T[ desBlockSize ];
       cudaMemcpy( host_array, dbg_array1,  desBlockSize * sizeof( T ), cudaMemcpyDeviceToHost );
-      for( int i = 0; i< :: Min( ( int ) blockSize. x, desBlockSize ); i ++ )
-    	  cout << host_array[ i ] << " ";
-      cout << endl;
+      for( int i = 0; i< :: min( ( int ) blockSize. x, desBlockSize ); i ++ )
+    	 std::cout << host_array[ i ] << " ";
+     std::cout << std::endl;
 
       T* output = new T[ sizeReduced ];
       cudaMemcpy( output, deviceAux, sizeReduced * sizeof( T ), cudaMemcpyDeviceToHost );
-      cout << endl;
+     std::cout << std::endl;
       for( int i = 0; i < sizeReduced; i ++ )
-    	  cout << output[ i ] << "   ";
-      cout << endl;
+    	 std::cout << output[ i ] << "   ";
+     std::cout << std::endl;
       delete[] output;*/
    }
    /***
@@ -486,7 +487,7 @@ bool tnlCUDASimpleReduction4( const int size,
       cudaMemcpy( &result, deviceAux, sizeReduced * sizeof( T ), cudaMemcpyDeviceToHost );
    if( cudaGetLastError() != cudaSuccess )
    {
-      cerr << "Unable to transfer reduced data from device to host." << endl;
+      std::cerr << "Unable to transfer reduced data from device to host." << std::endl;
       return false;
    }
    return true;
@@ -498,10 +499,10 @@ bool tnlCUDASimpleReduction4( const int size,
  * the first half of the data for the reduction and reduce them with the second half of the data.
  * This improves the memory access to the global but also the shared memory.
  *
- * WARNING: This kernel only reduce data in one block. Use rather tnlCUDASimpleReduction2
+ * WARNING: This kernel only reduce data in one block. Use rather Devices::CudaSimpleReduction2
  *          to call this kernel then doing it by yourself.
  *          This kernel is very inefficient. It is here only for educative and testing reasons.
- *          Please use tnlCUDAReduction instead.
+ *          Please use tnlCudaReduction instead.
  *
  * The kernel parameters:
  * @param size is the number of all element to reduce - not just in one block.
@@ -510,8 +511,8 @@ bool tnlCUDASimpleReduction4( const int size,
  *                     Each block of the grid writes one element in this array
  *                     (i.e. the size of this array equals the number of CUDA blocks).
  */
-template < class T, tnlStaticVectorOperation operation >
-__global__ void tnlCUDASimpleReductionKernel3( const int size,
+template < class T, StaticVectorOperation operation >
+__global__ void Devices::CudaSimpleReductionKernel3( const int size,
                                                const T* deviceInput,
 		                               T* deviceOutput )
 {
@@ -611,10 +612,10 @@ __global__ void tnlCUDASimpleReductionKernel3( const int size,
  *        If one calls this function more then once one might provide this array to avoid repetetive
  *        allocation of this array on the device inside of this function.
  *        The size of this array should be size / 128 * sizeof( T ).
- * WARNING: This template calls very inefficient kernel. Use just tnlCUDAReduction instead.
+ * WARNING: This template calls very inefficient kernel. Use just tnlCudaReduction instead.
  */
-template< class T, tnlStaticVectorOperation operation >
-bool tnlCUDASimpleReduction3( const int size,
+template< class T, StaticVectorOperation operation >
+bool Devices::CudaSimpleReduction3( const int size,
 	                      const T* deviceInput,
 	                      T& result,
 	                      T* deviceAux = 0 )
@@ -632,10 +633,10 @@ bool tnlCUDASimpleReduction3( const int size,
     * If one calls the CUDA reduction more then once then one can provide
     * auxiliary array by passing it via the parameter deviceAux.
     */
-   tnlVector< T, tnlCuda > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
+   Vector< T, Devices::Cuda > deviceAuxVct( "tnlCudaReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
-      int sizeAlloc = :: Max( 1, size / desBlockSize );
+      int sizeAlloc = :: max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. getData();
@@ -652,7 +653,7 @@ bool tnlCUDASimpleReduction3( const int size,
    while( sizeReduced > 1 )
    {
       dim3 blockSize( 0 ), gridSize( 0 );
-      blockSize. x = :: Min( sizeReduced, desBlockSize );
+      blockSize. x = :: min( sizeReduced, desBlockSize );
       /***
        * If blockSize. x does not devide sizeReduced we must increase the grid size by one block.
        * Example: sizeReduced = 3, blockSize. x = 2 => gridSize. x = 3 / 2 = 1. Now we have one block with
@@ -663,8 +664,8 @@ bool tnlCUDASimpleReduction3( const int size,
       /*cout << "Size: " << sizeReduced
            << " Grid size: " << gridSize. x
            << " Block size: " << blockSize. x
-           << " Shmem: " << shmem << endl;*/
-      tnlCUDASimpleReductionKernel3< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux );
+           << " Shmem: " << shmem << std::endl;*/
+      Devices::CudaSimpleReductionKernel3< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux );
       sizeReduced = gridSize. x;
       reductionInput = deviceAux;
    }
@@ -679,7 +680,7 @@ bool tnlCUDASimpleReduction3( const int size,
       cudaMemcpy( &result, deviceAux, sizeReduced * sizeof( T ), cudaMemcpyDeviceToHost );
    if( cudaGetLastError() != cudaSuccess )
    {
-      cerr << "Unable to transfer reduced data from device to host." << endl;
+      std::cerr << "Unable to transfer reduced data from device to host." << std::endl;
       return false;
    }
    return true;
@@ -691,10 +692,10 @@ bool tnlCUDASimpleReduction3( const int size,
  * with even thread id but by the first half of threads. It is more efficient mapping
  * of threads to the SIMD architecture. We have also replaced operation modulo in the reduction loop.
  *
- * WARNING: This kernel only reduce data in one block. Use rather tnlCUDASimpleReduction2
+ * WARNING: This kernel only reduce data in one block. Use rather Devices::CudaSimpleReduction2
  *          to call this kernel then doing it by yourself.
  *          This kernel is very inefficient. It is here only for educative and testing reasons.
- *          Please use tnlCUDAReduction instead.
+ *          Please use tnlCudaReduction instead.
  *
  * The kernel parameters:
  * @param size is the number of all element to reduce - not just in one block.
@@ -703,8 +704,8 @@ bool tnlCUDASimpleReduction3( const int size,
  *                     Each block of the grid writes one element in this array
  *                     (i.e. the size of this array equals the number of CUDA blocks).
  */
-template < class T, tnlStaticVectorOperation operation >
-__global__ void tnlCUDASimpleReductionKernel2( const int size,
+template < class T, StaticVectorOperation operation >
+__global__ void Devices::CudaSimpleReductionKernel2( const int size,
 		                               const T* deviceInput,
 		                               T* deviceOutput )
 {
@@ -788,10 +789,10 @@ __global__ void tnlCUDASimpleReductionKernel2( const int size,
  *        If one calls this function more then once one might provide this array to avoid repetetive
  *        allocation of this array on the device inside of this function.
  *        The size of this array should be size / 128 * sizeof( T ).
- * WARNING: This template calls very inefficient kernel. Use just tnlCUDAReduction instead.
+ * WARNING: This template calls very inefficient kernel. Use just tnlCudaReduction instead.
  */
-template< class T, tnlStaticVectorOperation operation >
-bool tnlCUDASimpleReduction2( const int size,
+template< class T, StaticVectorOperation operation >
+bool Devices::CudaSimpleReduction2( const int size,
 	                      const T* deviceInput,
 	                      T& result,
 	                      T* deviceAux = 0 )
@@ -809,10 +810,10 @@ bool tnlCUDASimpleReduction2( const int size,
     * If one calls the CUDA reduction more then once then one can provide
     * auxiliary array by passing it via the parameter deviceAux.
     */
-   tnlVector< T, tnlCuda > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
+   Vector< T, Devices::Cuda > deviceAuxVct( "tnlCudaReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
-      int sizeAlloc = :: Max( 1, size / desBlockSize );
+      int sizeAlloc = :: max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. getData();
@@ -829,7 +830,7 @@ bool tnlCUDASimpleReduction2( const int size,
    while( sizeReduced > 1 )
    {
       dim3 blockSize( 0 ), gridSize( 0 );
-      blockSize. x = :: Min( sizeReduced, desBlockSize );
+      blockSize. x = :: min( sizeReduced, desBlockSize );
       /***
        * If blockSize. x does not devide sizeReduced we must increase the grid size by one block.
        * Example: sizeReduced = 3, blockSize. x = 2 => gridSize. x = 3 / 2 = 1. Now we have one block with
@@ -840,8 +841,8 @@ bool tnlCUDASimpleReduction2( const int size,
       /*cout << "Size: " << sizeReduced
            << " Grid size: " << gridSize. x
            << " Block size: " << blockSize. x
-           << " Shmem: " << shmem << endl;*/
-      tnlCUDASimpleReductionKernel2< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux );
+           << " Shmem: " << shmem << std::endl;*/
+      Devices::CudaSimpleReductionKernel2< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux );
       sizeReduced = gridSize. x;
       reductionInput = deviceAux;
 
@@ -857,7 +858,7 @@ bool tnlCUDASimpleReduction2( const int size,
       cudaMemcpy( &result, deviceAux, sizeReduced * sizeof( T ), cudaMemcpyDeviceToHost );
    if( cudaGetLastError() != cudaSuccess )
    {
-      cerr << "Unable to transfer reduced data from device to host." << endl;
+      std::cerr << "Unable to transfer reduced data from device to host." << std::endl;
       return false;
    }
    return true;
@@ -870,10 +871,10 @@ bool tnlCUDASimpleReduction2( const int size,
  * the result back (into shared memory). Thus we reduce the data to one half.
  * We repeat it until we have only one data element.
  *
- * WARNING: This kernel only reduce data in one block. Use rather tnlCUDASimpleReduction1
+ * WARNING: This kernel only reduce data in one block. Use rather Devices::CudaSimpleReduction1
  *          to call this kernel then doing it by yourself.
  *          This kernel is very inefficient. It is here only for educative and testing reasons.
- *          Please use tnlCUDAReduction instead.
+ *          Please use tnlCudaReduction instead.
  *
  * The kernel parameters:
  * @param size is the number of all element to reduce - not just in one block.
@@ -882,8 +883,8 @@ bool tnlCUDASimpleReduction2( const int size,
  *                     Each block of the grid writes one element in this array
  *                     (i.e. the size of this array equals the number of CUDA blocks).
  */
-template < class T, tnlStaticVectorOperation operation >
-__global__ void tnlCUDASimpleReductionKernel1( const int size,
+template < class T, StaticVectorOperation operation >
+__global__ void Devices::CudaSimpleReductionKernel1( const int size,
 		                               const T* deviceInput,
 		                               T* deviceOutput )
 {
@@ -948,10 +949,10 @@ __global__ void tnlCUDASimpleReductionKernel1( const int size,
  *        If one calls this function more then once one might provide this array to avoid repetetive
  *        allocation of this array on the device inside of this function.
  *        The size of this array should be size / 128 * sizeof( T ).
- * WARNING: This template calls very inefficient kernel. Use just tnlCUDAReduction instead.
+ * WARNING: This template calls very inefficient kernel. Use just tnlCudaReduction instead.
  */
-template< class T, tnlStaticVectorOperation operation >
-bool tnlCUDASimpleReduction1( const int size,
+template< class T, StaticVectorOperation operation >
+bool Devices::CudaSimpleReduction1( const int size,
 	                      const T* deviceInput,
 	                      T& result,
 	                      T* deviceAux = 0 )
@@ -969,10 +970,10 @@ bool tnlCUDASimpleReduction1( const int size,
     * If one calls the CUDA reduction more then once then one can provide
     * auxiliary array by passing it via the parameter deviceAux.
     */
-   tnlVector< T, tnlCuda > deviceAuxVct( "tnlCUDAReduction:deviceAuxVct" );
+   Vector< T, Devices::Cuda > deviceAuxVct( "tnlCudaReduction:deviceAuxVct" );
    if( ! deviceAux )
    {
-      int sizeAlloc = :: Max( 1, size / desBlockSize );
+      int sizeAlloc = :: max( 1, size / desBlockSize );
       if( ! deviceAuxVct. setSize( sizeAlloc ) )
          return false;
       deviceAux = deviceAuxVct. getData();
@@ -989,7 +990,7 @@ bool tnlCUDASimpleReduction1( const int size,
    while( sizeReduced > 1 )
    {
       dim3 blockSize( 0 ), gridSize( 0 );
-      blockSize. x = :: Min( sizeReduced, desBlockSize );
+      blockSize. x = :: min( sizeReduced, desBlockSize );
       /***
        * If blockSize. x does not devide sizeReduced we must increase the grid size by one block.
        * Example: sizeReduced = 3, blockSize. x = 2 => gridSize. x = 3 / 2 = 1. Now we have one block with
@@ -1000,8 +1001,8 @@ bool tnlCUDASimpleReduction1( const int size,
       /*cout << "Size: " << sizeReduced
            << " Grid size: " << gridSize. x
            << " Block size: " << blockSize. x
-           << " Shmem: " << shmem << endl;*/
-      tnlCUDASimpleReductionKernel1< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux );
+           << " Shmem: " << shmem << std::endl;*/
+      Devices::CudaSimpleReductionKernel1< T, operation ><<< gridSize, blockSize, shmem >>>( sizeReduced, reductionInput, deviceAux );
       sizeReduced = gridSize. x;
       reductionInput = deviceAux;
    }
@@ -1016,7 +1017,7 @@ bool tnlCUDASimpleReduction1( const int size,
       cudaMemcpy( &result, deviceAux, sizeReduced * sizeof( T ), cudaMemcpyDeviceToHost );
    if( cudaGetLastError() != cudaSuccess )
    {
-      cerr << "Unable to transfer reduced data from device to host." << endl;
+      std::cerr << "Unable to transfer reduced data from device to host." << std::endl;
       return false;
    }
    return true;
@@ -1024,4 +1025,4 @@ bool tnlCUDASimpleReduction1( const int size,
 
 #endif /* HAVE_CUDA */
 
-#endif /* TNLCUDAKERNELS_H_ */
+#endif /* Devices::CudaKERNELS_H_ */

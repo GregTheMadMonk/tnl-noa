@@ -1,16 +1,19 @@
-#ifndef advectionRHS_H_
-#define advectionRHS_H_
-#include<functions/tnlDomain.h>
+#pragma once
+
+#include <TNL/Functions/Domain.h>
+
+namespace TNL {
+
 template< typename Mesh, typename Real >class advectionRhs
-  : public tnlDomain< Mesh::meshDimensions, MeshDomain > 
+  : public Functions::Domain< Mesh::meshDimensions, Functions::MeshDomain > 
  {
    public:
 
       typedef Mesh MeshType;
       typedef Real RealType;
 
-      bool setup( const tnlParameterContainer& parameters,
-                  const tnlString& prefix = "" )
+      bool setup( const Config::ParameterContainer& parameters,
+                  const String& prefix = "" )
       {
          return true;
       }
@@ -26,4 +29,5 @@ template< typename Mesh, typename Real >class advectionRhs
       };
 };
 
-#endif /* advectionRHS_H_ */
+} // namespace TNL
+

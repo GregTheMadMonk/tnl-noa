@@ -11,35 +11,37 @@
 #ifndef TNL_INIT_H_
 #define TNL_INIT_H_
 
-#include <config/tnlParameterContainer.h>
-#include <core/vectors/tnlVector.h>
-#include <mesh/tnlGrid.h>
-#include <functions/tnlTestFunction.h>
-#include <operators/tnlFiniteDifferences.h>
-#include <core/mfilename.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/Meshes/Grid.h>
+#include <TNL/Functions/TestFunction.h>
+#include <TNL/Operators/FiniteDifferences.h>
+#include <TNL/core/mfilename.h>
+#include <TNL/Functions/MeshFunction.h>
+
+using namespace TNL;
 
 template< typename MeshType,
           typename RealType,
           int xDiff,
           int yDiff,
           int zDiff >
-bool renderFunction( const tnlParameterContainer& parameters )
+bool renderFunction( const Config::ParameterContainer& parameters )
 {
-   MeshType mesh;
-   tnlString meshFile = parameters.getParameter< tnlString >( "mesh" );
-   cout << "+ -> Loading mesh from " << meshFile << " ... " << endl;
-   if( ! mesh.load( meshFile ) )
+   SharedPointer< MeshType > meshPointer;
+   String meshFile = parameters.getParameter< String >( "mesh" );
+   std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
+   if( ! meshPointer->load( meshFile ) )
       return false;
 
-   typedef tnlTestFunction< MeshType::meshDimensions, RealType > FunctionType;
+   typedef Functions::TestFunction< MeshType::meshDimensions, RealType > FunctionType;
    FunctionType function;
-   cout << "Setting up the function ... " << endl;
+   std::cout << "Setting up the function ... " << std::endl;
    if( ! function.setup( parameters, "" ) )
       return false;
-   cout << "done." << endl;
-   typedef tnlMeshFunction< MeshType, MeshType::meshDimensions > MeshFunctionType;
-   MeshFunctionType meshFunction( mesh );
+   std::cout << "done." << std::endl;
+   typedef Functions::MeshFunction< MeshType, MeshType::meshDimensions > MeshFunctionType;
+   MeshFunctionType meshFunction( meshPointer );
    //if( ! discreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
    //   return false;
  
@@ -56,35 +58,35 @@ bool renderFunction( const tnlParameterContainer& parameters )
 
       if( numericalDifferentiation )
       {
-         cout << "+ -> Computing the finite differences ... " << endl;
+        std::cout << "+ -> Computing the finite differences ... " << std::endl;
          MeshFunctionType auxDiscreteFunction;
          //if( ! auxDiscreteFunction.setSize( mesh.template getEntitiesCount< typename MeshType::Cell >() ) )
          //   return false;
          //tnlFunctionDiscretizer< MeshType, FunctionType, DiscreteFunctionType >::template discretize< 0, 0, 0 >( mesh, function, auxDiscreteFunction, time );
-         //tnlFiniteDifferences< MeshType >::template getDifference< DiscreteFunctionType, xDiff, yDiff, zDiff, 0, 0, 0 >( mesh, auxDiscreteFunction, discreteFunction );
+         //FiniteDifferences< MeshType >::template getDifference< DiscreteFunctionType, xDiff, yDiff, zDiff, 0, 0, 0 >( mesh, auxDiscreteFunction, discreteFunction );
       }
       else
       {
-         tnlMeshFunctionEvaluator< MeshFunctionType, FunctionType >::evaluate( meshFunction, function, time );
+         Functions::MeshFunctionEvaluator< MeshFunctionType, FunctionType >::evaluate( meshFunction, function, time );
       }
 
-      tnlString outputFile = parameters.getParameter< tnlString >( "output-file" );
+      String outputFile = parameters.getParameter< String >( "output-file" );
       if( finalTime > 0.0 )
       {
-         tnlString extension = tnlString( "." ) + getFileExtension( outputFile );
+         String extension = String( "." ) + getFileExtension( outputFile );
          RemoveFileExtension( outputFile );
          outputFile += "-";
-         tnlString aux;
+         String aux;
          FileNameBaseNumberEnding( outputFile.getString(),
                                    step,
                                    5,
                                    extension.getString(),
                                    aux );
          outputFile = aux;
-         cout << "+ -> Writing the function at the time " << time << " to " << outputFile << " ... " << endl;
+        std::cout << "+ -> Writing the function at the time " << time << " to " << outputFile << " ... " << std::endl;
       }
       else
-         cout << "+ -> Writing the function to " << outputFile << " ... " << endl;
+        std::cout << "+ -> Writing the function to " << outputFile << " ... " << std::endl;
       if( ! meshFunction.save( outputFile) )
          return false;
       time += tau;
@@ -95,7 +97,7 @@ bool renderFunction( const tnlParameterContainer& parameters )
 
 template< typename MeshType,
           typename RealType >
-bool resolveDerivatives( const tnlParameterContainer& parameters )
+bool resolveDerivatives( const Config::ParameterContainer& parameters )
 {
 
    int xDiff = parameters.getParameter< int >( "x-derivative" );
@@ -103,10 +105,10 @@ bool resolveDerivatives( const tnlParameterContainer& parameters )
    int zDiff = parameters.getParameter< int >( "z-derivative" );
    if( xDiff < 0 || yDiff < 0 || zDiff < 0 || ( xDiff + yDiff + zDiff ) > 4 )
    {
-      cerr << "Wrong orders of partial derivatives: "
+      std::cerr << "Wrong orders of partial derivatives: "
            << xDiff << " " << yDiff << " " << zDiff << ". "
            << "They can be only non-negative integer numbers in sum not larger than 4."
-           << endl;
+           << std::endl;
       return false;
    }
    if( xDiff == 0 && yDiff == 0 && zDiff == 0 )
@@ -183,9 +185,9 @@ bool resolveDerivatives( const tnlParameterContainer& parameters )
 }
 
 template< typename MeshType >
-bool resolveRealType( const tnlParameterContainer& parameters )
+bool resolveRealType( const Config::ParameterContainer& parameters )
 {
-   tnlString realType = parameters.getParameter< tnlString >( "real-type" );
+   String realType = parameters.getParameter< String >( "real-type" );
    if( realType == "mesh-real-type" )
       return resolveDerivatives< MeshType, typename MeshType::RealType >( parameters );
    if( realType == "float" )
@@ -198,24 +200,25 @@ bool resolveRealType( const tnlParameterContainer& parameters )
 
 
 template< int Dimensions, typename RealType, typename IndexType >
-bool resolveMesh( const tnlList< tnlString >& parsedMeshType,
-                  const tnlParameterContainer& parameters )
+bool resolveMesh( const List< String >& parsedMeshType,
+                  const Config::ParameterContainer& parameters )
 {
-   cout << "+ -> Setting mesh type to " << parsedMeshType[ 0 ] << " ... " << endl;
-   if( parsedMeshType[ 0 ] == "tnlGrid" )
+  std::cout << "+ -> Setting mesh type to " << parsedMeshType[ 0 ] << " ... " << std::endl;
+   if( parsedMeshType[ 0 ] == "Meshes::Grid" ||
+       parsedMeshType[ 0 ] == "tnlGrid" )  // TODO: remove deprecated type name
    {
-      typedef tnlGrid< Dimensions, RealType, tnlHost, IndexType > MeshType;
+      typedef Meshes::Grid< Dimensions, RealType, Devices::Host, IndexType > MeshType;
       return resolveRealType< MeshType >( parameters );
    }
-   cerr << "Unknown mesh type." << endl;
+   std::cerr << "Unknown mesh type." << std::endl;
    return false;
 }
 
 template< int Dimensions, typename RealType >
-bool resolveIndexType( const tnlList< tnlString >& parsedMeshType,
-                       const tnlParameterContainer& parameters )
+bool resolveIndexType( const List< String >& parsedMeshType,
+                       const Config::ParameterContainer& parameters )
 {
-   cout << "+ -> Setting index type to " << parsedMeshType[ 4 ] << " ... " << endl;
+  std::cout << "+ -> Setting index type to " << parsedMeshType[ 4 ] << " ... " << std::endl;
    if( parsedMeshType[ 4 ] == "int" )
       return resolveMesh< Dimensions, RealType, int >( parsedMeshType, parameters );
 
@@ -224,10 +227,10 @@ bool resolveIndexType( const tnlList< tnlString >& parsedMeshType,
 }
 
 template< int Dimensions >
-bool resolveRealType( const tnlList< tnlString >& parsedMeshType,
-                      const tnlParameterContainer& parameters )
+bool resolveRealType( const List< String >& parsedMeshType,
+                      const Config::ParameterContainer& parameters )
 {
-   cout << "+ -> Setting real type to " << parsedMeshType[ 2 ] << " ... " << endl;
+  std::cout << "+ -> Setting real type to " << parsedMeshType[ 2 ] << " ... " << std::endl;
    if( parsedMeshType[ 2 ] == "float" )
       return resolveIndexType< Dimensions, float >( parsedMeshType, parameters );
 
@@ -238,10 +241,10 @@ bool resolveRealType( const tnlList< tnlString >& parsedMeshType,
       return resolveIndexType< Dimensions, long double >( parsedMeshType, parameters );
 }
 
-bool resolveMeshType( const tnlList< tnlString >& parsedMeshType,
-                      const tnlParameterContainer& parameters )
+bool resolveMeshType( const List< String >& parsedMeshType,
+                      const Config::ParameterContainer& parameters )
 {
-   cout << "+ -> Setting dimensions to " << parsedMeshType[ 1 ] << " ... " << endl;
+  std::cout << "+ -> Setting dimensions to " << parsedMeshType[ 1 ] << " ... " << std::endl;
    int dimensions = atoi( parsedMeshType[ 1 ].getString() );
 
    if( dimensions == 1 )

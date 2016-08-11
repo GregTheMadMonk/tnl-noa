@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlFDMGradientNormTest.cpp  -  description
+                          FDMGradientNormTest.cpp  -  description
                              -------------------
     begin                : Jan 17, 2016
     copyright            : (C) 2016 by Tomas Oberhuber

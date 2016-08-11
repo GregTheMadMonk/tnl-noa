@@ -67,7 +67,7 @@ if( WITH_CUDA STREQUAL "yes" )
         set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
         set(BUILD_SHARED_LIBS ON)
         set(CUDA_SEPARABLE_COMPILATION ON)        
-        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA  )
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA)
         #AddCompilerFlag( "-DHAVE_NOT_CXX11" ) # -U_GLIBCXX_ATOMIC_BUILTINS -U_GLIBCXX_USE_INT128 " )
         set( ALL_CUDA_ARCHS -gencode arch=compute_20,code=sm_20
                             -gencode arch=compute_30,code=sm_30
@@ -108,7 +108,7 @@ if( WITH_CUDA STREQUAL "yes" )
                 set( CUDA_ARCH -gencode arch=compute_${WITH_CUDA_ARCH},code=sm_${WITH_CUDA_ARCH} )
             endif()
         endif()
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} )
+        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES )
         # TODO: this is necessary only due to a bug in cmake
         set( CUDA_ADD_LIBRARY_OPTIONS -shared )
         # TODO: workaround for a bug in cmake 3.5.0 (fixed in 3.5.1)
@@ -325,29 +325,29 @@ endif( WITH_TESTS STREQUAL "yes" )
 ####
 # Explicit template instantiation
 #
-if( WITH_TEMPLATE_INSTANTIATION STREQUAL "yes" )
-   AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION " )
-
-   if( INSTANTIATE_INT STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_INT " )
-   endif()
-
-   if( INSTANTIATE_LONG_INT STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_LONG_INT " )
-   endif()
-
-   if( INSTANTIATE_FLOAT STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_FLOAT " )
-   endif()
-
-   if( INSTANTIATE_DOUBLE STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_DOUBLE " )
-   endif()
-
-   if( INSTANTIATE_LONG_DOUBLE STREQUAL "yes" )
-      AddCompilerFlag( "-DINSTANTIATE_LONG_DOUBLE " )
-   endif()
-endif()
+#if( WITH_TEMPLATE_INSTANTIATION STREQUAL "yes" )
+#   AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION " )
+#
+#   if( INSTANTIATE_INT STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_INT " )
+#   endif()
+#
+#   if( INSTANTIATE_LONG_INT STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_LONG_INT " )
+#   endif()
+#
+#   if( INSTANTIATE_FLOAT STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_FLOAT " )
+#   endif()
+#
+#   if( INSTANTIATE_DOUBLE STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_DOUBLE " )
+#   endif()
+#
+#   if( INSTANTIATE_LONG_DOUBLE STREQUAL "yes" )
+#      AddCompilerFlag( "-DINSTANTIATE_LONG_DOUBLE " )
+#   endif()
+#endif()
 
 set( CXX_TEST_FLAGS "-fprofile-arcs -ftest-coverage" )
 set( LD_TEST_FLAGS "-lgcov -coverage" )
@@ -355,8 +355,8 @@ set( LD_TEST_FLAGS "-lgcov -coverage" )
 set( configDirectory \"${CMAKE_INSTALL_PREFIX}/share/tnl-${tnlVersion}/\")
 set( sourceDirectory \"${PROJECT_SOURCE_DIR}/\" )
 set( testsDirectory \"${PROJECT_TESTS_PATH}/\" )
-CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/tnlConfig.h" )
-INSTALL( FILES ${PROJECT_BUILD_PATH}/tnlConfig.h DESTINATION include/tnl-${tnlVersion} )
+CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/TNL/tnlConfig.h" )
+INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/tnlConfig.h DESTINATION include/tnl-${tnlVersion} )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )

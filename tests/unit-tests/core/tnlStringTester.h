@@ -19,8 +19,10 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlString.h>
-#include <core/tnlFile.h>
+#include <TNL/String.h>
+#include <TNL/File.h>
+
+using namespace TNL;
 
 class tnlStringTester : public CppUnit :: TestCase
 {
@@ -52,16 +54,16 @@ class tnlStringTester : public CppUnit :: TestCase
 
    void testBasicConstructor()
    {
-      tnlString str;
+      String str;
       CPPUNIT_ASSERT( strcmp( str. getString(), "" ) == 0 );
    }
 
    void testConstructorWithChar()
    {
-      tnlString str1( "string1" );
-      tnlString str2( "xxxstring2", 3 );
-      tnlString str3( "string3xxx", 0, 3 );
-      tnlString str4( "xxxstring4xxx", 3, 3 );
+      String str1( "string1" );
+      String str2( "xxxstring2", 3 );
+      String str3( "string3xxx", 0, 3 );
+      String str4( "xxxstring4xxx", 3, 3 );
 
       CPPUNIT_ASSERT( strcmp( str1. getString(), "string1" ) == 0 );
       CPPUNIT_ASSERT( strcmp( str2. getString(), "string2" ) == 0 );
@@ -71,10 +73,10 @@ class tnlStringTester : public CppUnit :: TestCase
 
    void testCopyConstructor()
    {
-      tnlString string( "string1" );
-      tnlString emptyString( "" );
-      tnlString string2( string );
-      tnlString emptyString2( emptyString );
+      String string( "string1" );
+      String emptyString( "" );
+      String string2( string );
+      String emptyString2( emptyString );
 
       CPPUNIT_ASSERT( strcmp( string2. getString(), "string1" ) == 0 );
       CPPUNIT_ASSERT( strcmp( emptyString2. getString(), "" ) == 0 );
@@ -82,8 +84,8 @@ class tnlStringTester : public CppUnit :: TestCase
 
    void testConstructorWithNumber()
    {
-      tnlString string1( 10 );
-      tnlString string2( -5 );
+      String string1( 10 );
+      String string2( -5 );
 
       CPPUNIT_ASSERT( strcmp( string1. getString(), "10" ) == 0 );
       CPPUNIT_ASSERT( strcmp( string2. getString(), "-5" ) == 0 );
@@ -91,7 +93,7 @@ class tnlStringTester : public CppUnit :: TestCase
 
    void testSetString()
    {
-      tnlString str1, str2, str3, str4;
+      String str1, str2, str3, str4;
 
       str1. setString( "string1" );
       str2. setString( "xxxstring2", 3 );
@@ -106,7 +108,7 @@ class tnlStringTester : public CppUnit :: TestCase
 
    void testIndexingOperator()
    {
-      tnlString str( "1234567890" );
+      String str( "1234567890" );
       CPPUNIT_ASSERT( str[ 0 ] == '1' );
       CPPUNIT_ASSERT( str[ 1 ] == '2' );
       CPPUNIT_ASSERT( str[ 2 ] == '3' );
@@ -121,8 +123,8 @@ class tnlStringTester : public CppUnit :: TestCase
 
    void testAssignmentOperator()
    {
-      tnlString string1( "string" );
-      tnlString string2;
+      String string1( "string" );
+      String string2;
       string2 = string1;
 
       CPPUNIT_ASSERT( strcmp( string2. getString(), "string" ) == 0 );
@@ -130,8 +132,8 @@ class tnlStringTester : public CppUnit :: TestCase
 
    void testAdditionAssignmentOperator()
    {
-      tnlString string1( "string" );
-      tnlString string2;
+      String string1( "string" );
+      String string2;
       string2 = string1;
       string2 += "string2";
 
@@ -141,8 +143,8 @@ class tnlStringTester : public CppUnit :: TestCase
 
    void testSave()
    {
-      tnlString str1( "testing-string" );
-      tnlFile file;
+      String str1( "testing-string" );
+      File file;
       file. open( "test-file.tnl", tnlWriteMode );
       str1. save( file );
    };

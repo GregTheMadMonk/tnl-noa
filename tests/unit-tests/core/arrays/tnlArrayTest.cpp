@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlArrayTest.cpp  -  description
+                          ArrayTest.cpp  -  description
                              -------------------
     begin                : Mar 30, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <core/tnlHost.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
 #include "tnlArrayTester.h"
@@ -18,16 +18,16 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlArrayTester< char, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< int, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< long int, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< float, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< double, tnlHost, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< char, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< int, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< long int, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< float, tnlHost, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlArrayTester< double, tnlHost, long int > >()
+   if( ! tnlUnitTestStarter :: run< ArrayTester< char, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< int, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< long int, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< float, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< double, Devices::Host, int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< char, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< int, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< long int, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< float, Devices::Host, long int > >() ||
+       ! tnlUnitTestStarter :: run< ArrayTester< double, Devices::Host, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

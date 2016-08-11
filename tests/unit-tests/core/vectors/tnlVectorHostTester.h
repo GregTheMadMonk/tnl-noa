@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlVectorHostTester.h  -  description
+                          VectorHostTester.h  -  description
                              -------------------
     begin                : Oct 25, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -18,67 +18,68 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/vectors/tnlVector.h>
-#include <core/tnlFile.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/File.h>
 
+using namespace TNL;
 
 class testingClass
 {
 
 };
 
-tnlString getType( const testingClass& c )
+String getType( const testingClass& c )
 {
-   return tnlString( "testingClass" );
+   return String( "testingClass" );
 };
 
-template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
+template< class T > class VectorHostTester : public CppUnit :: TestCase
 {
    public:
-   tnlVectorHostTester(){};
+   VectorHostTester(){};
 
    virtual
-   ~tnlVectorHostTester(){};
+   ~VectorHostTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlVectorHostTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "VectorHostTester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorHostTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorHostTester< T > >(
                                "testSharedData",
-                               & tnlVectorHostTester< T > :: testSharedData )
+                               & VectorHostTester< T > :: testSharedData )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorHostTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorHostTester< T > >(
                                "testSetGetElement",
-                               & tnlVectorHostTester< T > :: testSetGetElement )
+                               & VectorHostTester< T > :: testSetGetElement )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorHostTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorHostTester< T > >(
                                "testComparisonOperator",
-                               & tnlVectorHostTester< T > :: testComparisonOperator )
+                               & VectorHostTester< T > :: testComparisonOperator )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorHostTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorHostTester< T > >(
                                "testEquivalenceOperator",
-                               & tnlVectorHostTester< T > :: testEquivalenceOperator )
+                               & VectorHostTester< T > :: testEquivalenceOperator )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorHostTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorHostTester< T > >(
                                "testSetValue",
-                               & tnlVectorHostTester< T > :: testSetValue )
+                               & VectorHostTester< T > :: testSetValue )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorHostTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorHostTester< T > >(
                                "testParallelReduciontMethods",
-                               & tnlVectorHostTester< T > :: testParallelReduciontMethods )
+                               & VectorHostTester< T > :: testParallelReduciontMethods )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorHostTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorHostTester< T > >(
                                "testBlasFunctions",
-                               & tnlVectorHostTester< T > :: testBlasFunctions )
+                               & VectorHostTester< T > :: testBlasFunctions )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorHostTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorHostTester< T > >(
                                "testSaveAndLoad",
-                               & tnlVectorHostTester< T > :: testSaveAndLoad )
+                               & VectorHostTester< T > :: testSaveAndLoad )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorHostTester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorHostTester< T > >(
                                "testUnusualStructures",
-                               & tnlVectorHostTester< T > :: testUnusualStructures )
+                               & VectorHostTester< T > :: testUnusualStructures )
                               );
 
 
@@ -91,7 +92,7 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
    void testSharedData()
    {
       /*T data[ 10 ];
-      tnlVector< T > u( "tnlVectorTester :: u" );
+      Vector< T > u( "VectorTester :: u" );
       u. bind( data, 10 );
       for( int i = 0; i < 10; i ++ )
          data[ i ] = i;
@@ -113,7 +114,7 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
 
    void testSetGetElement()
    {
-      tnlVector< T > u( "tnlVectorTester :: u" );
+      Vector< T > u( "VectorTester :: u" );
       u. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          u. setElement( i, i );
@@ -124,9 +125,9 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
 
    void testComparisonOperator()
    {
-      tnlVector< T > u( "tnlVectorTester :: u" );
-      tnlVector< T > v( "tnlVectorTester :: v" );
-      tnlVector< T > w( "tnlVectorTester :: w" );
+      Vector< T > u( "VectorTester :: u" );
+      Vector< T > v( "VectorTester :: v" );
+      Vector< T > w( "VectorTester :: w" );
       u. setSize( 10 );
       v. setSize( 10 );
       w. setSize( 10 );
@@ -144,8 +145,8 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
 
    void testEquivalenceOperator()
    {
-      tnlVector< T > u( "tnlVectorTester :: u" );
-      tnlVector< T > v( "tnlVectorTester :: v" );
+      Vector< T > u( "VectorTester :: u" );
+      Vector< T > v( "VectorTester :: v" );
       u. setSize( 10 );
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -157,7 +158,7 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
 
    void testSetValue()
    {
-      tnlVector< T > u( "tnlVectorTester :: u" );
+      Vector< T > u( "VectorTester :: u" );
       u. setSize( 10 );
       for( int k = 0; k < 10; k ++ )
       {
@@ -169,7 +170,7 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
 
    void testParallelReduciontMethods()
    {
-      tnlVector< T > u( "tnlVectorTester :: u" );
+      Vector< T > u( "VectorTester :: u" );
       u. setSize( 10 );
 
       for( int i = 0; i < 10; i ++ )
@@ -185,8 +186,8 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
 
    void testBlasFunctions()
    {
-      tnlVector< T > u( "tnlVectorTester :: u" );
-      tnlVector< T > v( "tnlVectorTester :: v" );
+      Vector< T > u( "VectorTester :: u" );
+      Vector< T > v( "VectorTester :: v" );
       u. setSize( 10 );
       v. setSize( 10 );
       u. setValue( 2 );
@@ -201,14 +202,14 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
 
    void testSaveAndLoad()
    {
-      tnlVector< T, tnlHost > v( "test-long-vector-u" );
+      Vector< T, Devices::Host > v( "test-long-vector-u" );
       v. setSize( 100 );
       v. setValue( 3.14147 );
-      tnlFile file;
+      File file;
       file. open( "test-file.tnl", tnlWriteMode );
       v. save( file );
       file. close();
-      tnlVector< T, tnlHost > u( "test-long-vector-u" );
+      Vector< T, Devices::Host > u( "test-long-vector-u" );
       file. open( "test-file.tnl", tnlReadMode );
       u. load( file );
       file. close();
@@ -217,7 +218,7 @@ template< class T > class tnlVectorHostTester : public CppUnit :: TestCase
 
    void testUnusualStructures()
    {
-      tnlVector< testingClass >u ( "test-vector" );
+      Vector< testingClass >u ( "test-vector" );
    };
 
 };

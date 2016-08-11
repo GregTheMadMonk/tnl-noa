@@ -8,21 +8,21 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <core/tnlHost.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
 #include "tnlSparseMatrixTester.h"
-#include "matrices/tnlEllpackMatrix.h"
+#include <TNL/Matrices/Ellpack.h>
 #include "../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlEllpackMatrix< float, tnlHost, int > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlEllpackMatrix< double, tnlHost, int > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlEllpackMatrix< float, tnlHost, long int > > >() ||
-       ! tnlUnitTestStarter :: run< tnlSparseMatrixTester< tnlEllpackMatrix< double, tnlHost, long int > > >()
+   if( ! tnlUnitTestStarter :: run< SparseTester< Matrices::Ellpack< float, Devices::Host, int > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::Ellpack< double, Devices::Host, int > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::Ellpack< float, Devices::Host, long int > > >() ||
+       ! tnlUnitTestStarter :: run< SparseTester< Matrices::Ellpack< double, Devices::Host, long int > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

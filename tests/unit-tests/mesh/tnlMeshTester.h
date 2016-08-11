@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlMeshTester.h  -  description
+                          MeshTester.h  -  description
                              -------------------
     begin                : Feb 18, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -17,19 +17,22 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <mesh/tnlMesh.h>
-#include <mesh/tnlMeshEntity.h>
-#include <mesh/config/tnlMeshConfigBase.h>
-#include <mesh/topologies/tnlMeshVertexTopology.h>
-#include <mesh/topologies/tnlMeshEdgeTopology.h>
-#include <mesh/topologies/tnlMeshTriangleTopology.h>
-#include <mesh/topologies/tnlMeshQuadrilateralTopology.h>
-#include <mesh/topologies/tnlMeshTetrahedronTopology.h>
-#include <mesh/topologies/tnlMeshHexahedronTopology.h>
-#include <mesh/initializer/tnlMeshInitializer.h>
-#include <mesh/tnlMeshBuilder.h>
+#include <TNL/Meshes/Mesh.h>
+#include <TNL/Meshes/MeshEntity.h>
+#include <TNL/Meshes/MeshConfigBase.h>
+#include <TNL/Meshes/Topologies/MeshVertexTopology.h>
+#include <TNL/Meshes/Topologies/MeshEdgeTopology.h>
+#include <TNL/Meshes/Topologies/MeshTriangleTopology.h>
+#include <TNL/Meshes/Topologies/MeshQuadrilateralTopology.h>
+#include <TNL/Meshes/Topologies/MeshTetrahedronTopology.h>
+#include <TNL/Meshes/Topologies/MeshHexahedronTopology.h>
+#include <TNL/Meshes/MeshDetails/initializer/MeshInitializer.h>
+#include <TNL/Meshes/MeshBuilder.h>
 
-class TestTriangleMeshConfig : public tnlMeshConfigBase< tnlMeshTriangleTopology >
+using namespace TNL;
+using namespace TNL::Meshes;
+
+class TestTriangleMeshConfig : public MeshConfigBase< MeshTriangleTopology >
 {
    public:
 
@@ -39,7 +42,7 @@ class TestTriangleMeshConfig : public tnlMeshConfigBase< tnlMeshTriangleTopology
       template< typename MeshEntity > static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions ) { return true; };
 };
 
-class TestQuadrilateralMeshConfig : public tnlMeshConfigBase< tnlMeshQuadrilateralTopology >
+class TestQuadrilateralMeshConfig : public MeshConfigBase< MeshQuadrilateralTopology >
 {
    public:
  
@@ -49,7 +52,7 @@ class TestQuadrilateralMeshConfig : public tnlMeshConfigBase< tnlMeshQuadrilater
       template< typename MeshEntity > static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions ) { return true; };
 };
 
-class TestTetrahedronMeshConfig : public tnlMeshConfigBase< tnlMeshTetrahedronTopology >
+class TestTetrahedronMeshConfig : public MeshConfigBase< MeshTetrahedronTopology >
 {
    public:
 
@@ -59,7 +62,7 @@ class TestTetrahedronMeshConfig : public tnlMeshConfigBase< tnlMeshTetrahedronTo
       template< typename MeshEntity > static constexpr bool superentityStorage( MeshEntity, int SuperentityDimensions ) { return true; };
 };
 
-class TestHexahedronMeshConfig : public tnlMeshConfigBase< tnlMeshHexahedronTopology >
+class TestHexahedronMeshConfig : public MeshConfigBase< MeshHexahedronTopology >
 {
    public:
 
@@ -70,20 +73,20 @@ class TestHexahedronMeshConfig : public tnlMeshConfigBase< tnlMeshHexahedronTopo
 };
 
 template< typename RealType, typename Device, typename IndexType >
-class tnlMeshTester : public CppUnit :: TestCase
+class MeshTester : public CppUnit :: TestCase
 {
    public:
-   typedef tnlMeshTester< RealType, Device, IndexType > TesterType;
+   typedef MeshTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   tnlMeshTester(){};
+   MeshTester(){};
 
    virtual
-   ~tnlMeshTester(){};
+   ~MeshTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlMeshTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "MeshTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests->addTest( new TestCallerType( "twoTrianglesTest", &TesterType::twoTrianglesTest ) );
@@ -96,11 +99,11 @@ class tnlMeshTester : public CppUnit :: TestCase
 
    void twoTrianglesTest()
    {
-       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshTriangleTopology > TriangleMeshEntityType;
-       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshEdgeTopology > EdgeMeshEntityType;
-       typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshVertexTopology > VertexMeshEntityType;
+       typedef MeshEntity< TestTriangleMeshConfig, MeshTriangleTopology > TriangleMeshEntityType;
+       typedef MeshEntity< TestTriangleMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
+       typedef MeshEntity< TestTriangleMeshConfig, MeshVertexTopology > VertexMeshEntityType;
        typedef typename VertexMeshEntityType::PointType PointType;
-       CPPUNIT_ASSERT( PointType::getType() == ( tnlStaticVector< 2, RealType >::getType() ) );
+       CPPUNIT_ASSERT( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
 
        /****
         * We set-up the following situation
@@ -121,9 +124,9 @@ class tnlMeshTester : public CppUnit :: TestCase
                 point0   edge2        point1
         */
 
-       typedef tnlMesh< TestTriangleMeshConfig > TriangleTestMesh;
+       typedef Mesh< TestTriangleMeshConfig > TriangleTestMesh;
        TriangleTestMesh mesh, mesh2;
-       tnlMeshBuilder< TriangleTestMesh > meshBuilder;
+       MeshBuilder< TriangleTestMesh > meshBuilder;
        meshBuilder.setPointsCount( 4 );
        meshBuilder.setPoint( 0, PointType( 0.0, 0.0 ) );
        meshBuilder.setPoint( 1, PointType( 1.0, 0.0 ) );
@@ -147,19 +150,19 @@ class tnlMeshTester : public CppUnit :: TestCase
        //CPPUNIT_ASSERT( mesh2.load( "mesh.tnl" ) );
        //CPPUNIT_ASSERT( mesh == mesh2 );
 
-       //mesh.print( cout );
-       //mesh2.print( cout );
+       //mesh.print(std::cout );
+       //mesh2.print(std::cout );
     };
 
    void tetrahedronsTest()
    {
-      typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshTriangleTopology > TriangleMeshEntityType;
-      typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshEdgeTopology > EdgeMeshEntityType;
-      typedef tnlMeshEntity< TestTetrahedronMeshConfig, tnlMeshVertexTopology > VertexMeshEntityType;
+      typedef MeshEntity< TestTetrahedronMeshConfig, MeshTriangleTopology > TriangleMeshEntityType;
+      typedef MeshEntity< TestTetrahedronMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
+      typedef MeshEntity< TestTetrahedronMeshConfig, MeshVertexTopology > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
-      typedef tnlMesh< TestTetrahedronMeshConfig > TestTetrahedronMesh;
+      typedef Mesh< TestTetrahedronMeshConfig > TestTetrahedronMesh;
       TestTetrahedronMesh mesh;
-      tnlMeshBuilder< TestTetrahedronMesh > meshBuilder;
+      MeshBuilder< TestTetrahedronMesh > meshBuilder;
       meshBuilder.setPointsCount( 13 );
       meshBuilder.setPoint(  0, PointType(  0.000000, 0.000000, 0.000000 ) );
       meshBuilder.setPoint(  1, PointType(  0.000000, 0.000000, 8.000000 ) );
@@ -313,14 +316,14 @@ class tnlMeshTester : public CppUnit :: TestCase
       /*CPPUNIT_ASSERT( mesh.save( "mesh.tnl" ) );
       CPPUNIT_ASSERT( mesh2.load( "mesh.tnl" ) );
       CPPUNIT_ASSERT( mesh == mesh2 );*/
-      //mesh.print( cout );
+      //mesh.print(std::cout );
    }
 
    void regularMeshOfTrianglesTest()
    {
-      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshTriangleTopology > TriangleMeshEntityType;
-      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshEdgeTopology > EdgeMeshEntityType;
-      typedef tnlMeshEntity< TestTriangleMeshConfig, tnlMeshVertexTopology > VertexMeshEntityType;
+      typedef MeshEntity< TestTriangleMeshConfig, MeshTriangleTopology > TriangleMeshEntityType;
+      typedef MeshEntity< TestTriangleMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
+      typedef MeshEntity< TestTriangleMeshConfig, MeshVertexTopology > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
 
       const IndexType xSize( 5 ), ySize( 5 );
@@ -330,9 +333,9 @@ class tnlMeshTester : public CppUnit :: TestCase
       const IndexType numberOfCells = 2*xSize * ySize;
       const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
 
-      typedef tnlMesh< TestTriangleMeshConfig > TestTriangleMesh;
-      tnlMesh< TestTriangleMeshConfig > mesh;
-      tnlMeshBuilder< TestTriangleMesh > meshBuilder;
+      typedef Mesh< TestTriangleMeshConfig > TestTriangleMesh;
+      Mesh< TestTriangleMeshConfig > mesh;
+      MeshBuilder< TestTriangleMesh > meshBuilder;
       meshBuilder.setPointsCount( numberOfVertices );
       meshBuilder.setCellsCount( numberOfCells );
 
@@ -366,15 +369,15 @@ class tnlMeshTester : public CppUnit :: TestCase
       //CPPUNIT_ASSERT( mesh.save( "mesh-test.tnl" ) );
       //CPPUNIT_ASSERT( mesh2.load( "mesh-test.tnl" ) );
       //CPPUNIT_ASSERT( mesh == mesh2 );
-      //mesh.print( cout );
+      //mesh.print(std::cout );
    }
 
    void regularMeshOfQuadrilateralsTest()
    {
 #ifdef UNDEF
-      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshQuadrilateralTopology > QuadrilateralMeshEntityType;
-      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshEdgeTopology > EdgeMeshEntityType;
-      typedef tnlMeshEntity< TestQuadrilateralMeshConfig, tnlMeshVertexTopology > VertexMeshEntityType;
+      typedef MeshEntity< TestQuadrilateralMeshConfig, MeshQuadrilateralTopology > QuadrilateralMeshEntityType;
+      typedef MeshEntity< TestQuadrilateralMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
+      typedef MeshEntity< TestQuadrilateralMeshConfig, MeshVertexTopology > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
 
       const IndexType xSize( 5 ), ySize( 5 );
@@ -384,7 +387,7 @@ class tnlMeshTester : public CppUnit :: TestCase
       const IndexType numberOfCells = xSize * ySize;
       const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 );
 
-      tnlMesh< TestQuadrilateralMeshConfig > mesh, mesh2;
+      Mesh< TestQuadrilateralMeshConfig > mesh, mesh2;
       mesh.setNumberOfCells( numberOfCells );
       mesh.setNumberOfVertices( numberOfVertices );
 
@@ -412,21 +415,21 @@ class tnlMeshTester : public CppUnit :: TestCase
             mesh.getEntities< 2 >()[ cellIdx++ ].getVerticesIndices()[ 3 ] = vertex3;
          }
 
-      tnlMeshInitializer< TestQuadrilateralMeshConfig > meshInitializer;
+      MeshInitializer< TestQuadrilateralMeshConfig > meshInitializer;
       //meshInitializer.initMesh( mesh );
       CPPUNIT_ASSERT( mesh.save( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh2.load( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh == mesh2 );
-      //mesh.print( cout );
+      //mesh.print(std::cout );
 #endif
    }
 
    void regularMeshOfHexahedronsTest()
    {
 #ifdef UNDEF
-      typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshHexahedronTopology > HexahedronMeshEntityType;
-      typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshEdgeTopology > EdgeMeshEntityType;
-      typedef tnlMeshEntity< TestHexahedronMeshConfig, tnlMeshVertexTopology > VertexMeshEntityType;
+      typedef MeshEntity< TestHexahedronMeshConfig, MeshHexahedronTopology > HexahedronMeshEntityType;
+      typedef MeshEntity< TestHexahedronMeshConfig, MeshEdgeTopology > EdgeMeshEntityType;
+      typedef MeshEntity< TestHexahedronMeshConfig, MeshVertexTopology > VertexMeshEntityType;
       typedef typename VertexMeshEntityType::PointType PointType;
 
       const IndexType xSize( 5 ), ySize( 5 ), zSize( 5 );
@@ -437,7 +440,7 @@ class tnlMeshTester : public CppUnit :: TestCase
       const IndexType numberOfCells = xSize * ySize * zSize;
       const IndexType numberOfVertices = ( xSize + 1 ) * ( ySize + 1 ) * ( zSize + 1 );
 
-      tnlMesh< TestHexahedronMeshConfig > mesh, mesh2;
+      Mesh< TestHexahedronMeshConfig > mesh, mesh2;
       mesh.setNumberOfCells( numberOfCells );
       mesh.setNumberOfVertices( numberOfVertices );
 
@@ -476,12 +479,12 @@ class tnlMeshTester : public CppUnit :: TestCase
                mesh.getEntities< 3 >()[ cellIdx++ ].getVerticesIndices()[ 7 ] = vertex7;
             }
 
-      tnlMeshInitializer< TestHexahedronMeshConfig > meshInitializer;
+      MeshInitializer< TestHexahedronMeshConfig > meshInitializer;
       //meshInitializer.initMesh( mesh );
       /*CPPUNIT_ASSERT( mesh.save( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh2.load( "mesh-test.tnl" ) );
       CPPUNIT_ASSERT( mesh == mesh2 );*/
-      //mesh.print( cout );
+      //mesh.print(std::cout );
 #endif
    }
 

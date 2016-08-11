@@ -8,19 +8,19 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <core/tnlHost.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
-#include <core/multimaps/tnlEllpackIndexMultimap.h>
+#include <TNL/core/multimaps/tnlEllpackIndexMultimap.h>
 #include "tnlIndexMultimapTester.h"
 #include "../../tnlUnitTestStarter.h"
 
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlIndexMultimapTester< tnlEllpackIndexMultimap< int, tnlHost > > >() ||
-       ! tnlUnitTestStarter :: run< tnlIndexMultimapTester< tnlEllpackIndexMultimap< long int, tnlHost > > >()
+   if( ! tnlUnitTestStarter :: run< tnlIndexMultimapTester< tnlEllpackIndexMultimap< int, Devices::Host > > >() ||
+       ! tnlUnitTestStarter :: run< tnlIndexMultimapTester< tnlEllpackIndexMultimap< long int, Devices::Host > > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

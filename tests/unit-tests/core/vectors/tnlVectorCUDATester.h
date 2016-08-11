@@ -1,5 +1,5 @@
 /***************************************************************************
- tnlVectorCUDATester.h  -  description
+ VectorCUDATester.h  -  description
  -------------------
  begin                : Dec 27, 2009
  copyright            : (C) 2009 by Tomas Oberhuber
@@ -19,11 +19,13 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/vectors/tnlVectorCUDA.h>
-#include <core/vectors/tnlVectorHost.h>
+#include <TNL/Containers/VectorCUDA.h>
+#include <TNL/Containers/VectorHost.h>
 
 #ifdef HAVE_CUDA
 //int mainTest();
+
+using namespace TNL;
 
 template< class T >
 __global__ void setMultiBlockNumber( const T c, T* A, const int size )
@@ -42,61 +44,61 @@ __global__ void setNumber( const T c, T* A, const int size )
 #endif
 
 
-template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
+template< class T > class VectorCUDATester : public CppUnit :: TestCase
 {
    public:
-   tnlVectorCUDATester(){};
+   VectorCUDATester(){};
 
    virtual
-   ~tnlVectorCUDATester(){};
+   ~VectorCUDATester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlVectorCUDATester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "VectorCUDATester" );
       CppUnit :: TestResult result;
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorCUDATester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorCUDATester< T > >(
                                "testAllocation",
-                               & tnlVectorCUDATester< T > :: testAllocation )
+                               & VectorCUDATester< T > :: testAllocation )
                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorCUDATester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorCUDATester< T > >(
                                "testCopying",
-                               & tnlVectorCUDATester< T > :: testCopying )
+                               & VectorCUDATester< T > :: testCopying )
                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorCUDATester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorCUDATester< T > >(
                                "testAllocationFromNonCUDA",
-                               & tnlVectorCUDATester< T > :: testAllocationFromNonCUDA )
+                               & VectorCUDATester< T > :: testAllocationFromNonCUDA )
                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorCUDATester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorCUDATester< T > >(
                                "testKernel",
-                               & tnlVectorCUDATester< T > :: testKernel )
+                               & VectorCUDATester< T > :: testKernel )
                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorCUDATester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorCUDATester< T > >(
 							          "testKernel",
-                               & tnlVectorCUDATester< T > :: testKernel )
+                               & VectorCUDATester< T > :: testKernel )
                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorCUDATester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorCUDATester< T > >(
                                "testMultiBlockKernel",
-                               & tnlVectorCUDATester< T > :: testMultiBlockKernel )
+                               & VectorCUDATester< T > :: testMultiBlockKernel )
                              );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorCUDATester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorCUDATester< T > >(
                                "testSetValue",
-                               & tnlVectorCUDATester< T > :: testSetValue )
+                               & VectorCUDATester< T > :: testSetValue )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorCUDATester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorCUDATester< T > >(
                                "testSetElement",
-                               & tnlVectorCUDATester< T > :: testSetElement )
+                               & VectorCUDATester< T > :: testSetElement )
                               );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorCUDATester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorCUDATester< T > >(
                                "testComparison",
-                               & tnlVectorCUDATester< T > :: testComparison )
+                               & VectorCUDATester< T > :: testComparison )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorCUDATester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorCUDATester< T > >(
                                "testParallelReduciontMethods",
-                               & tnlVectorCUDATester< T > :: testParallelReduciontMethods )
+                               & VectorCUDATester< T > :: testParallelReduciontMethods )
                                );
-      suiteOfTests -> addTest( new CppUnit :: TestCaller< tnlVectorCUDATester< T > >(
+      suiteOfTests -> addTest( new CppUnit :: TestCaller< VectorCUDATester< T > >(
                                "testBlasFunctions",
-                               & tnlVectorCUDATester< T > :: testBlasFunctions )
+                               & VectorCUDATester< T > :: testBlasFunctions )
                                );
 
       return suiteOfTests;
@@ -104,9 +106,9 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 
    void testBlasFunctions()
    {
-      tnlVector< T, tnlCuda > u( "tnlVectorTester :: u" );
-      tnlVector< T, tnlCuda > v( "tnlVectorTester :: v" );
-      tnlVector< T, tnlCuda > w( "tnlVectorTester :: w" );
+      Vector< T, Devices::Cuda > u( "VectorTester :: u" );
+      Vector< T, Devices::Cuda > v( "VectorTester :: v" );
+      Vector< T, Devices::Cuda > w( "VectorTester :: w" );
       u. setSize( 16 );
       v. setSize( u. getSize() );
       w. setSize( u. getSize() );
@@ -121,8 +123,8 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 
    void testParallelReduciontMethods()
    {
-      tnlVector< T, tnlCuda > u( "tnlVectorCUDATester :: u" );
-      tnlVector< T, tnlCuda > w( "tnlVectorCUDATester :: w" );
+      Vector< T, Devices::Cuda > u( "VectorCUDATester :: u" );
+      Vector< T, Devices::Cuda > w( "VectorCUDATester :: w" );
 
       /****
        * We first test with smaller size of the vector. The reduction is done on
@@ -155,7 +157,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
       /****
        * Now we will test with larger vector
        */
-      tnlVector< T, tnlHost > v( "tnlVectorCUDATester :: v" );
+      Vector< T, Devices::Host > v( "VectorCUDATester :: v" );
       u. setSize( 65536 );
       v. setSize( u. getSize() );
 
@@ -171,7 +173,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 
       u. setValue( ( T ) -1 );
       v. setValue( ( T ) -1 );
-      CPPUNIT_ASSERT( tnlAbs( tnlLpNorm( u, ( T ) 1 ) - tnlLpNorm( v, ( T ) 1 ) ) < 0.01 );
+      CPPUNIT_ASSERT( abs( tnlLpNorm( u, ( T ) 1 ) - tnlLpNorm( v, ( T ) 1 ) ) < 0.01 );
 
       w. setSize( u. getSize() );
       w. setValue( 2 );
@@ -195,7 +197,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 
       u. setValue( ( T ) -1 );
       v. setValue( ( T ) -1 );
-      CPPUNIT_ASSERT( tnlAbs( tnlLpNorm( u, ( T ) 1 ) - tnlLpNorm( v, ( T ) 1 ) ) < 0.01 );
+      CPPUNIT_ASSERT( abs( tnlLpNorm( u, ( T ) 1 ) - tnlLpNorm( v, ( T ) 1 ) ) < 0.01 );
 
       w. setValue( 2 );
       u. setValue( 2 );
@@ -208,12 +210,12 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 
    void testComparison()
    {
-	   //cerr << "testComparison" << endl;
-      tnlVector< T, tnlCuda > deviceV( "deviceV", 100 );
-      tnlVector< T, tnlCuda > deviceU( "deviceU", 100 );
+	   //cerr << "testComparison" << std::endl;
+      Vector< T, Devices::Cuda > deviceV( "deviceV", 100 );
+      Vector< T, Devices::Cuda > deviceU( "deviceU", 100 );
       deviceV. setValue( 1.0 );
       deviceU. setValue( 1.0 );
-      tnlVector< T, tnlHost > hostV( "hostV", deviceV );
+      Vector< T, Devices::Host > hostV( "hostV", deviceV );
 
       hostV. setValue( 1.0 );
       CPPUNIT_ASSERT( deviceV == hostV );
@@ -229,24 +231,24 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 
    void testSetElement()
    {
-      tnlVector< T, tnlCuda > deviceV( "deviceV", 100 );
-      tnlVector< T, tnlHost > hostV( "hostV", 100 );
+      Vector< T, Devices::Cuda > deviceV( "deviceV", 100 );
+      Vector< T, Devices::Host > hostV( "hostV", 100 );
       for( int i = 0; i < 100; i ++ )
       {
          deviceV. setElement( i, i );
          hostV. setElement( i, i );
       }
-      tnlVector< T, tnlHost > hostU( "hostU", 100 );
+      Vector< T, Devices::Host > hostU( "hostU", 100 );
       hostU = deviceV;
       CPPUNIT_ASSERT( hostU == hostV );
    }
 
    void testSetValue()
    {
-	   //cerr << "testSetValue" << endl;
-      tnlVector< T, tnlCuda > deviceV( "deviceV", 100 );
+	   //cerr << "testSetValue" << std::endl;
+      Vector< T, Devices::Cuda > deviceV( "deviceV", 100 );
       deviceV. setValue( 1 );
-      tnlVector< T, tnlHost > hostV( "hostV", deviceV );
+      Vector< T, Devices::Host > hostV( "hostV", deviceV );
       hostV = deviceV;
       bool error( false );
       for( int i = 0; i < 100; i ++ )
@@ -257,14 +259,14 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 
    void testMultiBlockKernel()
    {
-	   //cerr << "testMultiBlockKernel" << endl;
+	   //cerr << "testMultiBlockKernel" << std::endl;
 #ifdef HAVE_CUDA
 	   const T number = 1.0;
 	   for( int size = 100; size <= 10000; size += 100 )
 		   for( int i = 0; i < 10; i ++ )
 		   {
-		      tnlVector< T, tnlCuda > device_vector( "device-vector", size );
-		      tnlVector< T, tnlHost > host_vector( "host-vector", size );
+		      Vector< T, Devices::Cuda > device_vector( "device-vector", size );
+		      Vector< T, Devices::Host > host_vector( "host-vector", size );
 		      T* data = device_vector. getData();
 
 		      const int block_size = 512;
@@ -282,21 +284,21 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 		      CPPUNIT_ASSERT( ! errors );
 		   }
 #else
-	   cout << "CUDA is not supported." << endl;
+	  std::cout << "CUDA is not supported." << std::endl;
 	   CPPUNIT_ASSERT( true );
 #endif
    };
 
    void testKernel()
    {
-	   //cerr << "testKernel" << endl;
+	   //cerr << "testKernel" << std::endl;
 #ifdef HAVE_CUDA
 	   const int size = 100;
 	   const T number = 1.0;
       for( int i = 0; i < 100; i ++ )
       {
-         tnlVector< T, tnlCuda > device_vector( "device-vector", size );
-         tnlVector< T, tnlHost > host_vector( "host-vector", size );
+         Vector< T, Devices::Cuda > device_vector( "device-vector", size );
+         Vector< T, Devices::Host > host_vector( "host-vector", size );
          T* data = device_vector. getData();
          setNumber<<< 1, size >>>( number, data, size );
          host_vector = device_vector;
@@ -310,23 +312,23 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
          CPPUNIT_ASSERT( ! errors );
       }
 #else
-      cout << "CUDA is not supported." << endl;
+     std::cout << "CUDA is not supported." << std::endl;
       CPPUNIT_ASSERT( true );
 #endif
    };
 
    void testAllocationFromNonCUDA()
    {
-	   //cerr << "testAllocationFromNonCUDA" << endl;
+	   //cerr << "testAllocationFromNonCUDA" << std::endl;
 #ifdef HAVE_CUDA
 
-      tnlVector< T > hostV( "hostV", 100 );
+      Vector< T > hostV( "hostV", 100 );
       for( int i = 0; i < 100; i ++ )
          hostV[ i ] = i;
-      tnlVector< T, tnlCuda > deviceV( "deviceV", hostV );
+      Vector< T, Devices::Cuda > deviceV( "deviceV", hostV );
       CPPUNIT_ASSERT( hostV. getSize() == deviceV. getSize() );
       deviceV = hostV;
-      tnlVector< T, tnlHost > hostW( "hostW", deviceV );
+      Vector< T, Devices::Host > hostW( "hostW", deviceV );
       CPPUNIT_ASSERT( hostW. getSize() == deviceV. getSize() );
       hostW = deviceV;
       bool error( false );
@@ -334,7 +336,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
          if( hostV[ i ] != hostW[ i ] ) error = true;
       CPPUNIT_ASSERT( ! error );
 #else
-      cout << "CUDA is not supported." << endl;
+     std::cout << "CUDA is not supported." << std::endl;
       CPPUNIT_ASSERT( true );
 #endif
 
@@ -342,10 +344,10 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
 
    void testCopying()
    {
-	   //cerr << "testCopying - Long Vector" << endl;
+	   //cerr << "testCopying - Long Vector" << std::endl;
 #ifdef HAVE_CUDA
-      tnlVector< T, tnlHost > host_vector( "host-vector", 500 );
-      tnlVector< T, tnlCuda > device_vector( "device-vector", 500 );
+      Vector< T, Devices::Host > host_vector( "host-vector", 500 );
+      Vector< T, Devices::Cuda > device_vector( "device-vector", 500 );
       for( int i = 0; i < 500; i ++ )
          host_vector[ i ] = ( T ) i;
       device_vector = host_vector;
@@ -355,7 +357,7 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
       for( int i = 0; i < 500; i ++ )
          if( host_vector[ i ] != i ) errs ++;
       CPPUNIT_ASSERT( ! errs );
-      tnlVector< T, tnlCuda > device_vector2( "device-vector2", 500 );
+      Vector< T, Devices::Cuda > device_vector2( "device-vector2", 500 );
       device_vector2 = device_vector;
       host_vector. setValue( 0 );
       host_vector = device_vector2;
@@ -367,8 +369,8 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
    void testAllocation()
    {
 #ifdef HAVE_CUDA
-	   //cerr << "testAllocation - Long Vector" << endl;
-      tnlVector< T, tnlCuda > cuda_vector_1( "tnlVectorCUDATester:cuda-vector-1" );
+	   //cerr << "testAllocation - Long Vector" << std::endl;
+      Vector< T, Devices::Cuda > cuda_vector_1( "VectorCUDATester:cuda-vector-1" );
       CPPUNIT_ASSERT( !cuda_vector_1 );
  
       cuda_vector_1. setSize( 100 );
@@ -376,16 +378,16 @@ template< class T > class tnlVectorCUDATester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( cuda_vector_1 );
       CPPUNIT_ASSERT( cuda_vector_1. getSize() == 100 );
 
-      tnlVector< T, tnlCuda > cuda_vector_2( "tnlVectorCUDATester:cuda-vector-2" );
+      Vector< T, Devices::Cuda > cuda_vector_2( "VectorCUDATester:cuda-vector-2" );
       CPPUNIT_ASSERT( !cuda_vector_2 );
       cuda_vector_2. setSize( cuda_vector_1 );
       CPPUNIT_ASSERT( cuda_vector_2. getSize() == 100 );
 
-      tnlVector< T, tnlCuda > cuda_vector_3( "tnlVectorCUDATester:cuda-vector-3", 100 );
+      Vector< T, Devices::Cuda > cuda_vector_3( "VectorCUDATester:cuda-vector-3", 100 );
       CPPUNIT_ASSERT( cuda_vector_3. getSize() == 100 );
 
-      tnlVector< T, tnlCuda >* cuda_vector_4 = new tnlVector< T, tnlCuda >( "tnlVectorCUDATester:cuda-vector-4", 100 );
-      tnlVector< T, tnlCuda >* cuda_vector_5 = new tnlVector< T, tnlCuda >( "tnlVectorCUDATester:cuda-vector-5");
+      Vector< T, Devices::Cuda >* cuda_vector_4 = new Vector< T, Devices::Cuda >( "VectorCUDATester:cuda-vector-4", 100 );
+      Vector< T, Devices::Cuda >* cuda_vector_5 = new Vector< T, Devices::Cuda >( "VectorCUDATester:cuda-vector-5");
       CPPUNIT_ASSERT( *cuda_vector_4 );
       CPPUNIT_ASSERT( ! *cuda_vector_5 );
 

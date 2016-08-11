@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlTridiagonalMatrixTest.cu  -  description
+                          TridiagonalTest.cu  -  description
                              -------------------
     begin                : Jan 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <tnlConfig.h>
-#include <core/tnlHost.h>
+#include <TNL/tnlConfig.h>
+#include <TNL/Devices/Host.h>
 #include <cstdlib>
 
 #include "tnlTridiagonalMatrixTester.h"
@@ -18,10 +18,10 @@
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlTridiagonalMatrixTester< float, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlTridiagonalMatrixTester< double, tnlCuda, int > >() ||
-       ! tnlUnitTestStarter :: run< tnlTridiagonalMatrixTester< float, tnlCuda, long int > >() ||
-       ! tnlUnitTestStarter :: run< tnlTridiagonalMatrixTester< double, tnlCuda, long int > >()
+   if( ! tnlUnitTestStarter :: run< TridiagonalTester< float, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< TridiagonalTester< double, Devices::Cuda, int > >() ||
+       ! tnlUnitTestStarter :: run< TridiagonalTester< float, Devices::Cuda, long int > >() ||
+       ! tnlUnitTestStarter :: run< TridiagonalTester< double, Devices::Cuda, long int > >()
        )
      return EXIT_FAILURE;
    return EXIT_SUCCESS;

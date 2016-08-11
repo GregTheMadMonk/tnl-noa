@@ -9,10 +9,10 @@
 /* See Copyright Notice in tnl/Copyright */
 
 
-#ifndef TNLCUDAREDUCTIONTESTER_H_
-#define TNLCUDAREDUCTIONTESTER_H_
+#ifndef tnlCudaReductionTESTER_H_
+#define tnlCudaReductionTESTER_H_
 
-#include <tnlConfig.h>
+#include <TNL/tnlConfig.h>
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -20,8 +20,10 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlCuda.h>
-#include <core/cuda/cuda-reduction.h>
+#include <TNL/Devices/Cuda.h>
+#include <TNL/core/cuda/cuda-reduction.h>
+
+using namespace TNL;
 
 class tnlCudaReductionTester : public CppUnit :: TestCase
 {
@@ -92,7 +94,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
    {
       for( int i = 0; i < size; i ++ )
          hostData[ i ] = value;
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< RealType, RealType, int >( deviceData, hostData, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< RealType, RealType, int >( deviceData, hostData, size );
       CPPUNIT_ASSERT( checkCudaDevice );
    }
 
@@ -101,8 +103,8 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
    {
       const int shortSequence( 128 );
       RealType *hostData, *deviceData;
-      tnlArrayOperations< tnlHost >::allocateMemory( hostData, shortSequence );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, shortSequence );
+      ArrayOperations< Devices::Host >::allocateMemory( hostData, shortSequence );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceData, shortSequence );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       RealType result;
@@ -145,8 +147,8 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( result == shortSequence );
 
 
-      tnlArrayOperations< tnlHost >::freeMemory( hostData );
-      tnlArrayOperations< tnlCuda >::freeMemory( deviceData );
+      ArrayOperations< Devices::Host >::freeMemory( hostData );
+      ArrayOperations< Devices::Cuda >::freeMemory( deviceData );
       CPPUNIT_ASSERT( checkCudaDevice );
    }
 
@@ -155,8 +157,8 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
    {
       const int longSequence( 172892 );
       RealType *hostData, *deviceData;
-      tnlArrayOperations< tnlHost >::allocateMemory( hostData, longSequence );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, longSequence );
+      ArrayOperations< Devices::Host >::allocateMemory( hostData, longSequence );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceData, longSequence );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       RealType result;
@@ -233,8 +235,8 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( result == 8 * longSequence );
 
 
-      tnlArrayOperations< tnlHost >::freeMemory( hostData );
-      tnlArrayOperations< tnlCuda >::freeMemory( deviceData );
+      ArrayOperations< Devices::Host >::freeMemory( hostData );
+      ArrayOperations< Devices::Cuda >::freeMemory( deviceData );
       CPPUNIT_ASSERT( checkCudaDevice );
    }
 
@@ -243,8 +245,8 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
    {
       const int size( 10245 );
       RealType *hostData, *deviceData;
-      tnlArrayOperations< tnlHost >::allocateMemory( hostData, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostData, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceData, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       RealType sum( 0.0 );
@@ -253,7 +255,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
          hostData[ i ] = -i - 1;
          sum += hostData[ i ];
       }
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< RealType, RealType, int >( deviceData, hostData, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< RealType, RealType, int >( deviceData, hostData, size );
       CPPUNIT_ASSERT( checkCudaDevice );
       tnlParallelReductionSum< RealType, int > sumOperation;
       RealType result;
@@ -273,7 +275,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       tnlParallelReductionAbsSum< RealType, int > absSumOperation;
       CPPUNIT_ASSERT(
          ( reductionOnCudaDevice( absSumOperation, size, deviceData, ( RealType* ) 0, result ) ) );
-      CPPUNIT_ASSERT( result == tnlAbs( sum ) );
+      CPPUNIT_ASSERT( result == abs( sum ) );
 
       tnlParallelReductionAbsMin< RealType, int > absMinOperation;
       CPPUNIT_ASSERT(
@@ -285,8 +287,8 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
          ( reductionOnCudaDevice( absMaxOperation, size, deviceData, ( RealType* ) 0, result ) ) );
       CPPUNIT_ASSERT( result == size );
 
-      tnlArrayOperations< tnlHost >::freeMemory( hostData );
-      tnlArrayOperations< tnlCuda >::freeMemory( deviceData );
+      ArrayOperations< Devices::Host >::freeMemory( hostData );
+      ArrayOperations< Devices::Cuda >::freeMemory( deviceData );
       CPPUNIT_ASSERT( checkCudaDevice );
    }
 
@@ -295,14 +297,14 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
    {
       int size( 125 );
       Type *hostData, *deviceData;
-      tnlArrayOperations< tnlHost >::allocateMemory( hostData, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostData, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceData, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       for( int i = 0; i < size; i ++ )
          hostData[ i ] = 1;
 
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData, hostData, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData, hostData, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       tnlParallelReductionLogicalAnd< Type, int > andOperation;
@@ -316,7 +318,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( result == 1 );
 
       hostData[ 0 ] = 0;
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData, hostData, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData, hostData, size );
       CPPUNIT_ASSERT( checkCudaDevice );
       CPPUNIT_ASSERT(
           ( reductionOnCudaDevice( andOperation, size, deviceData, ( Type* ) 0, result ) ) );
@@ -328,7 +330,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       for( int i = 0; i < size; i ++ )
          hostData[ i ] = 0;
 
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData, hostData, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData, hostData, size );
       CPPUNIT_ASSERT( checkCudaDevice );
       CPPUNIT_ASSERT(
           ( reductionOnCudaDevice( andOperation, size, deviceData, ( Type* ) 0, result ) ) );
@@ -343,14 +345,14 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
    {
       int size( 7628198 );
       Type *hostData, *deviceData;
-      tnlArrayOperations< tnlHost >::allocateMemory( hostData, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceData, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostData, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceData, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       for( int i = 0; i < size; i ++ )
          hostData[ i ] = 1;
 
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData, hostData, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData, hostData, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       tnlParallelReductionLogicalAnd< Type, int > andOperation;
@@ -364,7 +366,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( result == 1 );
 
       hostData[ 0 ] = 0;
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData, hostData, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData, hostData, size );
       CPPUNIT_ASSERT( checkCudaDevice );
       CPPUNIT_ASSERT(
           ( reductionOnCudaDevice( andOperation, size, deviceData, ( Type* ) 0, result ) ) );
@@ -376,7 +378,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       for( int i = 0; i < size; i ++ )
          hostData[ i ] = 0;
 
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData, hostData, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData, hostData, size );
       CPPUNIT_ASSERT( checkCudaDevice );
       CPPUNIT_ASSERT(
           ( reductionOnCudaDevice( andOperation, size, deviceData, ( Type* ) 0, result ) ) );
@@ -392,16 +394,16 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       const int size( 125 );
       Type *hostData1, *hostData2,
            *deviceData1, *deviceData2;
-      tnlArrayOperations< tnlHost >::allocateMemory( hostData1, size );
-      tnlArrayOperations< tnlHost >::allocateMemory( hostData2, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceData1, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceData2, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostData1, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostData2, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceData1, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceData2, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       for( int i = 0; i < size; i ++ )
          hostData1[ i ] = hostData2[ i ] = 1;
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData2, hostData2, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData2, hostData2, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       bool result( false );
@@ -417,7 +419,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( result == false );
 
       hostData1[ 0 ] = 0;
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       CPPUNIT_ASSERT(
@@ -430,7 +432,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
 
       for( int i = 0; i < size; i ++ )
          hostData1[ i ] = 0;
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       CPPUNIT_ASSERT(
@@ -448,16 +450,16 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       const int size( 1258976 );
       Type *hostData1, *hostData2,
            *deviceData1, *deviceData2;
-      tnlArrayOperations< tnlHost >::allocateMemory( hostData1, size );
-      tnlArrayOperations< tnlHost >::allocateMemory( hostData2, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceData1, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceData2, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostData1, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostData2, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceData1, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceData2, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       for( int i = 0; i < size; i ++ )
          hostData1[ i ] = hostData2[ i ] = 1;
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData2, hostData2, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData2, hostData2, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       bool result( false );
@@ -473,7 +475,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       CPPUNIT_ASSERT( result == false );
 
       hostData1[ 0 ] = 0;
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       CPPUNIT_ASSERT(
@@ -486,7 +488,7 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
 
       for( int i = 0; i < size; i ++ )
          hostData1[ i ] = 0;
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       CPPUNIT_ASSERT(
@@ -504,10 +506,10 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       const int size( 125 );
       Type *hostData1, *hostData2,
            *deviceData1, *deviceData2;
-      tnlArrayOperations< tnlHost >::allocateMemory( hostData1, size );
-      tnlArrayOperations< tnlHost >::allocateMemory( hostData2, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceData1, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceData2, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostData1, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostData2, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceData1, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceData2, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       hostData1[ 0 ] = 0;
@@ -519,8 +521,8 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
          hostData2[ i ] = -hostData2[ i - 1 ];
          scalarProduct += hostData1[ i ] * hostData2[ i ];
       }
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData2, hostData2, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData2, hostData2, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       Type result( 0.0 );
@@ -538,10 +540,10 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       const int size( 125789 );
       Type *hostData1, *hostData2,
            *deviceData1, *deviceData2;
-      tnlArrayOperations< tnlHost >::allocateMemory( hostData1, size );
-      tnlArrayOperations< tnlHost >::allocateMemory( hostData2, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceData1, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceData2, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostData1, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostData2, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceData1, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceData2, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       hostData1[ 0 ] = 0;
@@ -553,8 +555,8 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
          hostData2[ i ] = -hostData2[ i - 1 ];
          scalarProduct += hostData1[ i ] * hostData2[ i ];
       }
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceData2, hostData2, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData1, hostData1, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceData2, hostData2, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       Type result( 0.0 );
@@ -571,12 +573,12 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       const int size( 123 );
       Type *hostZeros, *hostOnes, *hostLinear,
            *deviceZeros, *deviceOnes, *deviceLinear;
-      tnlArrayOperations< tnlHost >::allocateMemory( hostZeros, size );
-      tnlArrayOperations< tnlHost >::allocateMemory( hostOnes, size );
-      tnlArrayOperations< tnlHost >::allocateMemory( hostLinear, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceZeros, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceOnes, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceLinear, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostZeros, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostOnes, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostLinear, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceZeros, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceOnes, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceLinear, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       for( int i = 0; i < size; i ++ )
@@ -586,9 +588,9 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
          hostLinear[ i ] = i;
       }
 
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceZeros, hostZeros, size );
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceOnes, hostOnes, size );
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceLinear, hostLinear, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceZeros, hostZeros, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceOnes, hostOnes, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceLinear, hostLinear, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       tnlParallelReductionDiffSum< Type, int > diffSumOp;
@@ -673,12 +675,12 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
                 ( reductionOnCudaDevice( diffAbsMaxOp, size, deviceZeros, deviceLinear, result ) ) );
       CPPUNIT_ASSERT( result == size - 1 );
 
-      tnlArrayOperations< tnlHost >::freeMemory( hostZeros );
-      tnlArrayOperations< tnlHost >::freeMemory( hostOnes );
-      tnlArrayOperations< tnlHost >::freeMemory( hostLinear );
-      tnlArrayOperations< tnlCuda >::freeMemory( deviceZeros );
-      tnlArrayOperations< tnlCuda >::freeMemory( deviceOnes );
-      tnlArrayOperations< tnlCuda >::freeMemory( deviceLinear );
+      ArrayOperations< Devices::Host >::freeMemory( hostZeros );
+      ArrayOperations< Devices::Host >::freeMemory( hostOnes );
+      ArrayOperations< Devices::Host >::freeMemory( hostLinear );
+      ArrayOperations< Devices::Cuda >::freeMemory( deviceZeros );
+      ArrayOperations< Devices::Cuda >::freeMemory( deviceOnes );
+      ArrayOperations< Devices::Cuda >::freeMemory( deviceLinear );
    }
 
 
@@ -688,12 +690,12 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
       const int size( 12387 );
       Type *hostZeros, *hostOnes, *hostLinear,
            *deviceZeros, *deviceOnes, *deviceLinear;
-      tnlArrayOperations< tnlHost >::allocateMemory( hostZeros, size );
-      tnlArrayOperations< tnlHost >::allocateMemory( hostOnes, size );
-      tnlArrayOperations< tnlHost >::allocateMemory( hostLinear, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceZeros, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceOnes, size );
-      tnlArrayOperations< tnlCuda >::allocateMemory( deviceLinear, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostZeros, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostOnes, size );
+      ArrayOperations< Devices::Host >::allocateMemory( hostLinear, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceZeros, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceOnes, size );
+      ArrayOperations< Devices::Cuda >::allocateMemory( deviceLinear, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       for( int i = 0; i < size; i ++ )
@@ -703,9 +705,9 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
          hostLinear[ i ] = i;
       }
 
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceZeros, hostZeros, size );
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceOnes, hostOnes, size );
-      tnlArrayOperations< tnlCuda, tnlHost >::copyMemory< Type, Type, int >( deviceLinear, hostLinear, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceZeros, hostZeros, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceOnes, hostOnes, size );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< Type, Type, int >( deviceLinear, hostLinear, size );
       CPPUNIT_ASSERT( checkCudaDevice );
 
       tnlParallelReductionDiffSum< Type, int > diffSumOp;
@@ -791,12 +793,12 @@ class tnlCudaReductionTester : public CppUnit :: TestCase
                 ( reductionOnCudaDevice( diffAbsMaxOp, size, deviceZeros, deviceLinear, result ) ) );
       CPPUNIT_ASSERT( result == size - 1 );
 
-      tnlArrayOperations< tnlHost >::freeMemory( hostZeros );
-      tnlArrayOperations< tnlHost >::freeMemory( hostOnes );
-      tnlArrayOperations< tnlHost >::freeMemory( hostLinear );
-      tnlArrayOperations< tnlCuda >::freeMemory( deviceZeros );
-      tnlArrayOperations< tnlCuda >::freeMemory( deviceOnes );
-      tnlArrayOperations< tnlCuda >::freeMemory( deviceLinear );
+      ArrayOperations< Devices::Host >::freeMemory( hostZeros );
+      ArrayOperations< Devices::Host >::freeMemory( hostOnes );
+      ArrayOperations< Devices::Host >::freeMemory( hostLinear );
+      ArrayOperations< Devices::Cuda >::freeMemory( deviceZeros );
+      ArrayOperations< Devices::Cuda >::freeMemory( deviceOnes );
+      ArrayOperations< Devices::Cuda >::freeMemory( deviceLinear );
    }
 
 };
@@ -806,4 +808,4 @@ class tnlCudaReductionTester
 {};
 #endif /* HAVE_CPPUNIT */
 
-#endif /* TNLCUDAREDUCTIONTESTER_H_ */
+#endif /* tnlCudaReductionTESTER_H_ */

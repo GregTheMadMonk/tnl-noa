@@ -1,15 +1,20 @@
 #ifndef advectionPROBLEM_H_
 #define advectionPROBLEM_H_
 
-#include <problems/tnlPDEProblem.h>
-#include <functions/tnlMeshFunction.h>
+#include <TNL/Problems/PDEProblem.h>
+#include <TNL/Functions/MeshFunction.h>
+#include <TNL/SharedPointer.h>
+
+using namespace TNL::Problems;
+
+namespace TNL {
 
 template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
            typename DifferentialOperator >
 class advectionProblem:
-   public tnlPDEProblem< Mesh,
+   public PDEProblem< Mesh,
                          typename DifferentialOperator::RealType,
                          typename Mesh::DeviceType,
                          typename DifferentialOperator::IndexType >
@@ -19,64 +24,78 @@ class advectionProblem:
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
       typedef typename DifferentialOperator::IndexType IndexType;
-      typedef tnlMeshFunction< Mesh > MeshFunctionType;
-      typedef tnlPDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
-
+      typedef Functions::MeshFunction< Mesh > MeshFunctionType;
+      typedef PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
+      typedef SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
+      typedef SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
+      typedef SharedPointer< BoundaryCondition > BoundaryConditionPointer;
+      typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      
       using typename BaseType::MeshType;
+      using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
-      using typename BaseType::MeshDependentDataType;
-      tnlString velocityType;
-      static tnlString getTypeStatic();
+      using typename BaseType::DofVectorPointer;
+      using typename BaseType::MeshDependentDataType;     
+      
+      static String getTypeStatic();
 
-      tnlString getPrologHeader() const;
+      String getPrologHeader() const;
 
-      void writeProlog( tnlLogger& logger,
-                        const tnlParameterContainer& parameters ) const;
+      void writeProlog( Logger& logger,
+                        const Config::ParameterContainer& parameters ) const;
 
-      bool setup( const tnlParameterContainer& parameters );
+      bool setup( const Config::ParameterContainer& parameters );
 
-      bool setInitialCondition( const tnlParameterContainer& parameters,
-                                const MeshType& mesh,
-                                DofVectorType& dofs,
+      bool setInitialCondition( const Config::ParameterContainer& parameters,
+                                const MeshPointer& mesh,
+                                DofVectorPointer& dofs,
                                 MeshDependentDataType& meshDependentData );
 
       template< typename Matrix >
-      bool setupLinearSystem( const MeshType& mesh,
+      bool setupLinearSystem( const MeshPointer& mesh,
                               Matrix& matrix );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
-                         const MeshType& mesh,
-                         DofVectorType& dofs,
+                         const MeshPointer& mesh,
+                         DofVectorPointer& dofs,
                          MeshDependentDataType& meshDependentData );
 
-      IndexType getDofs( const MeshType& mesh ) const;
+      IndexType getDofs( const MeshPointer& mesh ) const;
 
-      void bindDofs( const MeshType& mesh,
-                     DofVectorType& dofs );
+      void bindDofs( const MeshPointer& mesh,
+                     DofVectorPointer& dofs );
 
       void getExplicitRHS( const RealType& time,
                            const RealType& tau,
-                           const MeshType& mesh,
-                           DofVectorType& _u,
-                           DofVectorType& _fu,
+                           const MeshPointer& mesh,
+                           DofVectorPointer& _u,
+                           DofVectorPointer& _fu,
                            MeshDependentDataType& meshDependentData );
 
       template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
-                                 const MeshType& mesh,
-                                 DofVectorType& dofs,
+                                 const MeshPointer& mesh,
+                                 DofVectorPointer& dofs,
                                  Matrix& matrix,
-                                 DofVectorType& rightHandSide,
+                                 DofVectorPointer& rightHandSide,
                                  MeshDependentDataType& meshDependentData );
 
    protected:
 
-      DifferentialOperator differentialOperator;
-      BoundaryCondition boundaryCondition;
-      RightHandSide rightHandSide;
+      MeshFunctionPointer uPointer;
+
+      DifferentialOperatorPointer differentialOperatorPointer;
+
+      BoundaryConditionPointer boundaryConditionPointer;
+
+      RightHandSidePointer rightHandSidePointer;      
+      
+      String velocityType;
 };
+
+} // namespace TNL
 
 #include "advectionProblem_impl.h"
 

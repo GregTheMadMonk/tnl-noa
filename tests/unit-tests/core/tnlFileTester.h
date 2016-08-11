@@ -13,10 +13,12 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/tnlFile.h>
+#include <TNL/File.h>
 #ifdef HAVE_CUDA
 #include <cuda.h>
 #endif
+
+using namespace TNL;
 
 class tnlFileTester : public CppUnit :: TestCase
 {
@@ -42,40 +44,40 @@ class tnlFileTester : public CppUnit :: TestCase
 
    void testWriteAndRead()
    {
-      tnlFile file;
-      if( ! file. open( tnlString( "test-file.tnl" ), tnlWriteMode ) )
+      File file;
+      if( ! file. open( String( "test-file.tnl" ), tnlWriteMode ) )
       {
-         cerr << "Unable to create file test-file.tnl for the testing." << endl;
+         std::cerr << "Unable to create file test-file.tnl for the testing." << std::endl;
          return;
       }
       int intData( 5 );
 #ifdef HAVE_NOT_CXX11
-      file. write< int, tnlHost >( &intData );
+      file. write< int, Devices::Host >( &intData );
 #else
       file. write( &intData );
 #endif
       double doubleData[ 3 ] = { 1.0, 2.0, 3.0 };
 #ifdef HAVE_NOT_CXX11
-      file. write< double, tnlHost >( doubleData, 3 );
+      file. write< double, Devices::Host >( doubleData, 3 );
 #else
       file. write( doubleData, 3 );
 #endif
       if( ! file. close() )
       {
-         cerr << "Unable to close the file test-file.tnl" << endl;
+         std::cerr << "Unable to close the file test-file.tnl" << std::endl;
          return;
       }
 
-      if( ! file. open( tnlString( "test-file.tnl" ), tnlReadMode ) )
+      if( ! file. open( String( "test-file.tnl" ), tnlReadMode ) )
       {
-         cerr << "Unable to open the file test-file.tnl for the testing." << endl;
+         std::cerr << "Unable to open the file test-file.tnl for the testing." << std::endl;
          return;
       }
       int newIntData;
       double newDoubleData[ 3 ];
 #ifdef HAVE_NOT_CXX11
-      file. read< int, tnlHost >( &newIntData );
-      file. read< double, tnlHost >( newDoubleData, 3 );
+      file. read< int, Devices::Host >( &newIntData );
+      file. read< double, Devices::Host >( newDoubleData, 3 );
 #else
       file. read( &newIntData, 1 );
       file. read( newDoubleData, 3 );
@@ -104,24 +106,24 @@ class tnlFileTester : public CppUnit :: TestCase
                   floatData,
                   3 * sizeof( float ),
                   cudaMemcpyHostToDevice );
-      tnlFile file;
-      if( ! file. open( tnlString( "test-file.tnl" ), tnlWriteMode ) )
+      File file;
+      if( ! file. open( String( "test-file.tnl" ), tnlWriteMode ) )
       {
-         cerr << "Unable to create file test-file.tnl for the testing." << endl;
+         std::cerr << "Unable to create file test-file.tnl for the testing." << std::endl;
          return;
       }
 
-      file. write< int, tnlCuda >( cudaIntData );
-      file. write< float, tnlCuda, int >( cudaFloatData, 3 );
+      file. write< int, Devices::Cuda >( cudaIntData );
+      file. write< float, Devices::Cuda, int >( cudaFloatData, 3 );
       if( ! file. close() )
       {
-         cerr << "Unable to close the file test-file.tnl" << endl;
+         std::cerr << "Unable to close the file test-file.tnl" << std::endl;
          return;
       }
 
-      if( ! file. open( tnlString( "test-file.tnl" ), tnlReadMode ) )
+      if( ! file. open( String( "test-file.tnl" ), tnlReadMode ) )
       {
-         cerr << "Unable to open the file test-file.tnl for the testing." << endl;
+         std::cerr << "Unable to open the file test-file.tnl for the testing." << std::endl;
          return;
       }
       int newIntData;
@@ -130,8 +132,8 @@ class tnlFileTester : public CppUnit :: TestCase
       float* newCudaFloatData;
       cudaMalloc( ( void** ) &newCudaIntData, sizeof( int ) );
       cudaMalloc( ( void** ) &newCudaFloatData, 3 * sizeof( float ) );
-      file. read< int, tnlCuda >( newCudaIntData, 1 );
-      file. read< float, tnlCuda, int >( newCudaFloatData, 3 );
+      file. read< int, Devices::Cuda >( newCudaIntData, 1 );
+      file. read< float, Devices::Cuda, int >( newCudaFloatData, 3 );
       cudaMemcpy( &newIntData,
                   newCudaIntData,
                   sizeof( int ),

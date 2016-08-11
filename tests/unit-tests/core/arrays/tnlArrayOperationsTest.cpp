@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlArrayOperationsTest.cpp  -  description
+                          ArrayOperationsTest.cpp  -  description
                              -------------------
     begin                : Jul 15, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -10,11 +10,13 @@
 
 #include "tnlArrayOperationsTester.h"
 #include "../../tnlUnitTestStarter.h"
-#include <core/tnlHost.h>
+#include <TNL/Devices/Host.h>
+
+using namespace TNL;
 
 int main( int argc, char* argv[] )
 {
-   if( ! tnlUnitTestStarter :: run< tnlArrayOperationsTester< int, tnlHost > >() )
+   if( ! tnlUnitTestStarter :: run< ArrayOperationsTester< int, Devices::Host > >() )
       return EXIT_FAILURE;
    return EXIT_SUCCESS;
 }

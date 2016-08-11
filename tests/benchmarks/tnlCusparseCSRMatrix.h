@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCusparseCSRMatrix.h  -  description
+                          tnlCusparseCSR.h  -  description
                              -------------------
     begin                : Jul 3, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -8,25 +8,23 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <core/tnlAssert.h>
-#include <core/tnlCuda.h>
+#include <TNL/Assert.h>
+#include <TNL/Devices/Cuda.h>
 #ifdef HAVE_CUDA
 #include <cusparse.h>
 #endif
 
-template< typename Real >
-class tnlCusparseCSRMatrix
-{};
+namespace TNL {
 
 template< typename Real >
-class tnlCusparseCSRMatrixBase
+class tnlCusparseCSRBase
 {
    public:
       typedef Real RealType;
-      typedef tnlCuda DeviceType;
-      typedef tnlCSRMatrix< RealType, tnlCuda, int > MatrixType;
+      typedef Devices::Cuda DeviceType;
+      typedef Matrices::CSR< RealType, Devices::Cuda, int > MatrixType;
 
-      tnlCusparseCSRMatrixBase()
+      tnlCusparseCSRBase()
       : matrix( 0 )
       {
       };
@@ -62,7 +60,7 @@ class tnlCusparseCSRMatrixBase
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const
       {
-         tnlAssert( matrix, );
+         Assert( matrix, );
 #ifdef HAVE_CUDA
          cusparseDcsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
@@ -91,8 +89,12 @@ class tnlCusparseCSRMatrixBase
 };
 
 
+template< typename Real >
+class tnlCusparseCSR
+{};
+
 template<>
-class tnlCusparseCSRMatrix< double > : public tnlCusparseCSRMatrixBase< double >
+class tnlCusparseCSR< double > : public tnlCusparseCSRBase< double >
 {
    public:
 
@@ -101,7 +103,7 @@ class tnlCusparseCSRMatrix< double > : public tnlCusparseCSRMatrixBase< double >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const
       {
-         tnlAssert( matrix, );
+         Assert( matrix, );
 #ifdef HAVE_CUDA
          /*cusparseDcsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
@@ -120,7 +122,7 @@ class tnlCusparseCSRMatrix< double > : public tnlCusparseCSRMatrixBase< double >
 };
 
 template<>
-class tnlCusparseCSRMatrix< float > : public tnlCusparseCSRMatrixBase< float >
+class tnlCusparseCSR< float > : public tnlCusparseCSRBase< float >
 {
    public:
 
@@ -129,7 +131,7 @@ class tnlCusparseCSRMatrix< float > : public tnlCusparseCSRMatrixBase< float >
       void vectorProduct( const InVector& inVector,
                           OutVector& outVector ) const
       {
-         tnlAssert( matrix, );
+         Assert( matrix, );
 #ifdef HAVE_CUDA
          /*cusparseScsrmv( *( this->cusparseHandle ),
                          CUSPARSE_OPERATION_NON_TRANSPOSE,
@@ -146,4 +148,6 @@ class tnlCusparseCSRMatrix< float > : public tnlCusparseCSRMatrixBase< float >
 #endif
       }
 };
+
+} // namespace TNL
 

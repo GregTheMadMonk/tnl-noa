@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlLinearDiffusionTest.h  -  description
+                          LinearDiffusionTest.h  -  description
                              -------------------
     begin                : Feb 1, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -11,18 +11,20 @@
 #ifndef TNLLINEARDIFFUSIONTEST_H
 #define	TNLLINEARDIFFUSIONTEST_H
 
-#include <operators/diffusion/tnlLinearDiffusion.h>
-#include <operators/diffusion/tnlExactLinearDiffusion.h>
-#include <mesh/tnlGrid.h>
+#include <TNL/Operators/diffusion/LinearDiffusion.h>
+#include <TNL/Operators/diffusion/ExactLinearDiffusion.h>
+#include <TNL/Meshes/Grid.h>
 #include "../tnlPDEOperatorEocUnitTest.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../../tnlUnitTestStarter.h"
+
+using namespace TNL;
 
 template< typename ApproximateOperator,
           typename TestFunction,
           bool write = false,
           bool verbose = false >
-class tnlLinearDiffusionTest
+class LinearDiffusionTest
    : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction >
 {
    public:
@@ -38,9 +40,9 @@ class tnlLinearDiffusionTest
       const RealType  eoc[ 3 ] =       { 2.0,  2.0,  2.0 };
       const RealType  tolerance[ 3 ] = { 0.05, 0.05, 0.05 };
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlLinearDiffusionTest< " ) +
+         return String( "LinearDiffusionTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }
@@ -85,8 +87,8 @@ template< typename Mesh,
           bool verbose >
 bool runTest()
 {
-   typedef tnlLinearDiffusion< Mesh > ApproximateOperator;
-   typedef tnlLinearDiffusionTest< ApproximateOperator, Function, write, verbose > OperatorTest;
+   typedef Operators::LinearDiffusion< Mesh > ApproximateOperator;
+   typedef LinearDiffusionTest< ApproximateOperator, Function, write, verbose > OperatorTest;
 #ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter::run< tnlPDEOperatorEocUnitTest< OperatorTest > >() )
       return false;
@@ -101,7 +103,7 @@ template< typename Mesh,
           bool verbose >
 bool setTestFunction()
 {
-   return runTest< Mesh, tnlExpBumpFunction< Mesh::getMeshDimensions(), double >, write, verbose >();
+   return runTest< Mesh, Functions::Analytic::ExpBump< Mesh::getMeshDimensions(), double >, write, verbose >();
 }
 
 template< typename Device,
@@ -109,9 +111,9 @@ template< typename Device,
           bool verbose >
 bool setMesh()
 {
-   return ( setTestFunction< tnlGrid< 1, double, Device, int >, write, verbose >() &&
-            setTestFunction< tnlGrid< 2, double, Device, int >, write, verbose >() &&
-            setTestFunction< tnlGrid< 3, double, Device, int >, write, verbose >() );
+   return ( setTestFunction< Meshes::Grid< 1, double, Device, int >, write, verbose >() &&
+            setTestFunction< Meshes::Grid< 2, double, Device, int >, write, verbose >() &&
+            setTestFunction< Meshes::Grid< 3, double, Device, int >, write, verbose >() );
 }
 
 int main( int argc, char* argv[] )
@@ -119,10 +121,10 @@ int main( int argc, char* argv[] )
    const bool verbose( false );
    const bool write( false );
  
-   if( ! setMesh< tnlHost, write, verbose  >() )
+   if( ! setMesh< Devices::Host, write, verbose  >() )
       return EXIT_FAILURE;
 #ifdef HAVE_CUDA
-   if( ! setMesh< tnlCuda, write, verbose >() )
+   if( ! setMesh< Devices::Cuda, write, verbose >() )
       return EXIT_FAILURE;
 #endif
    return EXIT_SUCCESS;

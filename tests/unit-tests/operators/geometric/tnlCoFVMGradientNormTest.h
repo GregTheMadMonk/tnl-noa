@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCoFVMGradientNormTest.h  -  description
+                          CoFVMGradientNormTest.h  -  description
                              -------------------
     begin                : Jan 17, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -11,19 +11,21 @@
 #ifndef TNLTWOSIDEDGRADIENTNORMTEST_H
 #define	TNLTWOSIDEDGRADIENTNORMTEST_H
 
-#include <operators/geometric/tnlCoFVMGradientNorm.h>
-#include <operators/geometric/tnlExactGradientNorm.h>
-#include <operators/interpolants/tnlMeshEntitiesInterpolants.h>
-#include <operators/tnlOperatorComposition.h>
+#include <TNL/Operators/geometric/CoFVMGradientNorm.h>
+#include <TNL/Operators/geometric/ExactGradientNorm.h>
+#include <TNL/Operators/interpolants/MeshEntitiesInterpolants.h>
+#include <TNL/Operators/OperatorComposition.h>
 #include "../../tnlUnitTestStarter.h"
 #include "../tnlPDEOperatorEocTest.h"
 #include "../tnlPDEOperatorEocUnitTest.h"
+
+using namespace TNL;
 
 template< typename ApproximateOperator,
           typename TestFunction,
           bool write = false,
           bool verbose = false >
-class tnlCoFVMGradientNormTest
+class CoFVMGradientNormTest
    : public tnlPDEOperatorEocTest< ApproximateOperator, TestFunction >
 {
    public:
@@ -39,9 +41,9 @@ class tnlCoFVMGradientNormTest
       const RealType eoc[ 3 ] =       { 2.0,  2.0, 2.0 };
       const RealType tolerance[ 3 ] = { 1.05, 1.1, 1.3 };
  
-      static tnlString getType()
+      static String getType()
       {
-         return tnlString( "tnlCoFVMGradientNormTest< " ) +
+         return String( "CoFVMGradientNormTest< " ) +
                 ApproximateOperator::getType() + ", " +
                 TestFunction::getType() + " >";
       }
@@ -56,7 +58,7 @@ class tnlCoFVMGradientNormTest
       {
          this->setupMesh( meshSize );
  
-         tnlMeshFunction< MeshType > u;
+         Functions::MeshFunction< MeshType > u;
  
          typename ApproximateOperator::InnerOperator gradientNorm;
          typename ApproximateOperator::OuterOperator interpolant;
@@ -90,7 +92,7 @@ template< typename Operator,
           bool verbose >
 bool runTest()
 {
-   typedef tnlCoFVMGradientNormTest< Operator, Function, write, verbose > OperatorTest;
+   typedef CoFVMGradientNormTest< Operator, Function, write, verbose > OperatorTest;
 #ifdef HAVE_CPPUNIT
    if( ! tnlUnitTestStarter::run< tnlPDEOperatorEocUnitTest< OperatorTest > >() )
       return false;
@@ -104,7 +106,7 @@ template< typename Mesh,
           bool verbose >
 bool setDifferenceOperator()
 {
-   typedef tnlCoFVMGradientNorm< Mesh > GradientNorm;
+   typedef Operators::CoFVMGradientNorm< Mesh > GradientNorm;
    return ( runTest< GradientNorm, Function, write, verbose >() );
 }
 
@@ -113,7 +115,7 @@ template< typename Mesh,
           bool verbose >
 bool setTestFunction()
 {
-   return setDifferenceOperator< Mesh, tnlExpBumpFunction< Mesh::getMeshDimensions(), double >, write, verbose >();
+   return setDifferenceOperator< Mesh, Functions::Analytic::ExpBump< Mesh::getMeshDimensions(), double >, write, verbose >();
 }
 
 template< typename Device,
@@ -121,9 +123,9 @@ template< typename Device,
           bool verbose >
 bool setMesh()
 {
-   return ( setTestFunction< tnlGrid< 1, double, Device, int >, write, verbose >() &&
-            setTestFunction< tnlGrid< 2, double, Device, int >, write, verbose >() &&
-            setTestFunction< tnlGrid< 3, double, Device, int >, write, verbose >() );
+   return ( setTestFunction< Meshes::Grid< 1, double, Device, int >, write, verbose >() &&
+            setTestFunction< Meshes::Grid< 2, double, Device, int >, write, verbose >() &&
+            setTestFunction< Meshes::Grid< 3, double, Device, int >, write, verbose >() );
 }
 
 int main( int argc, char* argv[] )
@@ -131,10 +133,10 @@ int main( int argc, char* argv[] )
    const bool verbose( true );
    const bool write( false );
  
-   if( ! setMesh< tnlHost, write, verbose  >() )
+   if( ! setMesh< Devices::Host, write, verbose  >() )
       return EXIT_FAILURE;
 #ifdef HAVE_CUDA
-   if( ! setMesh< tnlCuda, write, verbose >() )
+   if( ! setMesh< Devices::Cuda, write, verbose >() )
       return EXIT_FAILURE;
 #endif
    return EXIT_SUCCESS;

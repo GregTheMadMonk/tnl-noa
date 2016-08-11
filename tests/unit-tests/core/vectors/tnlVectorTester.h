@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlVectorTester.h  -  description
+                          VectorTester.h  -  description
                              -------------------
     begin                : Oct 25, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -8,8 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#ifndef TNLVECTORHOSTTESTER_H_
-#define TNLVECTORHOSTTESTER_H_
+#ifndef VectorHOSTTESTER_H_
+#define VectorHOSTTESTER_H_
 
 #ifdef HAVE_CPPUNIT
 #include <cppunit/TestSuite.h>
@@ -17,27 +17,29 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
-#include <core/vectors/tnlVector.h>
-#include <core/tnlFile.h>
-#include <core/mfuncs.h>
+#include <TNL/Containers/Vector.h>
+#include <TNL/File.h>
+#include <TNL/core/mfuncs.h>
+
+using namespace TNL;
 
 template< typename RealType, typename Device, typename IndexType >
-class tnlVectorTester : public CppUnit :: TestCase
+class VectorTester : public CppUnit :: TestCase
 {
    public:
 
-   typedef tnlVector< RealType, Device, IndexType > VectorType;
-   typedef tnlVectorTester< RealType, Device, IndexType > TesterType;
+   typedef Containers::Vector< RealType, Device, IndexType > VectorType;
+   typedef VectorTester< RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
 
-   tnlVectorTester(){};
+   VectorTester(){};
 
    virtual
-   ~tnlVectorTester(){};
+   ~VectorTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlVectorTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "VectorTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "testMax", &TesterType::testMax ) );
@@ -60,7 +62,7 @@ class tnlVectorTester : public CppUnit :: TestCase
 
    void testMax()
    {
-      tnlVector< RealType, Device, IndexType > v;
+      Containers::Vector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v. setElement( i, i );
@@ -69,7 +71,7 @@ class tnlVectorTester : public CppUnit :: TestCase
 
    void testMin()
    {
-      tnlVector< RealType, Device, IndexType > v;
+      Containers::Vector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v. setElement( i, i );
@@ -78,7 +80,7 @@ class tnlVectorTester : public CppUnit :: TestCase
 
    void testAbsMax()
    {
-      tnlVector< RealType, Device, IndexType > v;
+      Containers::Vector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v.setElement( i, -i );
@@ -87,7 +89,7 @@ class tnlVectorTester : public CppUnit :: TestCase
 
    void testAbsMin()
    {
-      tnlVector< RealType, Device, IndexType > v;
+      Containers::Vector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v.setElement( i,  -i );
@@ -96,18 +98,18 @@ class tnlVectorTester : public CppUnit :: TestCase
 
    void testLpNorm()
    {
-      tnlVector< RealType, Device, IndexType > v;
+      Containers::Vector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v.setElement(  i, -2 );
       CPPUNIT_ASSERT( isSmall( v.lpNorm( 1 ) - 20.0 ) );
-      CPPUNIT_ASSERT( isSmall( v.lpNorm( 2 ) - sqrt( 40.0 ) ) );
-      CPPUNIT_ASSERT( isSmall( v.lpNorm( 3 ) - pow( 80.0, 1.0/3.0 ) ) );
+      CPPUNIT_ASSERT( isSmall( v.lpNorm( 2 ) - ::sqrt( 40.0 ) ) );
+      CPPUNIT_ASSERT( isSmall( v.lpNorm( 3 ) - ::pow( 80.0, 1.0/3.0 ) ) );
    };
 
    void testSum()
    {
-      tnlVector< RealType, Device, IndexType > v;
+      Containers::Vector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v.setElement( i, -2 );
@@ -120,7 +122,7 @@ class tnlVectorTester : public CppUnit :: TestCase
 
    void testDifferenceMax()
    {
-      tnlVector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -133,7 +135,7 @@ class tnlVectorTester : public CppUnit :: TestCase
 
    void testDifferenceMin()
    {
-      tnlVector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -146,7 +148,7 @@ class tnlVectorTester : public CppUnit :: TestCase
 
    void testDifferenceAbsMax()
    {
-      tnlVector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -159,7 +161,7 @@ class tnlVectorTester : public CppUnit :: TestCase
 
    void testDifferenceAbsMin()
    {
-      tnlVector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -172,7 +174,7 @@ class tnlVectorTester : public CppUnit :: TestCase
 
    void testDifferenceLpNorm()
    {
-      tnlVector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -181,13 +183,13 @@ class tnlVectorTester : public CppUnit :: TestCase
          v2.setElement( i, 1 );
       }
       CPPUNIT_ASSERT( isSmall( v1.differenceLpNorm( v2, 1.0 ) - 20.0 ) );
-      CPPUNIT_ASSERT( isSmall( v1.differenceLpNorm( v2, 2.0 ) - sqrt( 40.0 ) ) );
-      CPPUNIT_ASSERT( isSmall( v1.differenceLpNorm( v2, 3.0 ) - pow( 80.0, 1.0/3.0 ) ) );
+      CPPUNIT_ASSERT( isSmall( v1.differenceLpNorm( v2, 2.0 ) - ::sqrt( 40.0 ) ) );
+      CPPUNIT_ASSERT( isSmall( v1.differenceLpNorm( v2, 3.0 ) - ::pow( 80.0, 1.0/3.0 ) ) );
    };
 
    void testDifferenceSum()
    {
-      tnlVector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -200,7 +202,7 @@ class tnlVectorTester : public CppUnit :: TestCase
 
    void testScalarMultiplication()
    {
-      tnlVector< RealType, Device, IndexType > v;
+      Containers::Vector< RealType, Device, IndexType > v;
       v. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
          v.setElement( i, i );
@@ -212,7 +214,7 @@ class tnlVectorTester : public CppUnit :: TestCase
 
    void testScalarProduct()
    {
-      tnlVector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       v1.setElement( 0, -1 );
@@ -227,7 +229,7 @@ class tnlVectorTester : public CppUnit :: TestCase
 
    void addVectorTest()
    {
-      tnlVector< RealType, Device, IndexType > v1, v2;
+      Containers::Vector< RealType, Device, IndexType > v1, v2;
       v1. setSize( 10 );
       v2. setSize( 10 );
       for( int i = 0; i < 10; i ++ )
@@ -245,8 +247,8 @@ class tnlVectorTester : public CppUnit :: TestCase
 #else /* HAVE_CPPUNIT */
 
 template< typename RealType, typename Device, typename IndexType >
-class tnlVectorTester{};
+class VectorTester{};
 
 #endif /* HAVE_CPPUNIT */
 
-#endif /* TNLVECTORHOSTTESTER_H_ */
+#endif /* VectorHOSTTESTER_H_ */

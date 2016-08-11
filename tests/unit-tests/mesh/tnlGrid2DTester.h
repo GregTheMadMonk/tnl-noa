@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlGrid2DTester.h  -  description
+                          Grid2DTester.h  -  description
                              -------------------
     begin                : Feb 13, 2015
     copyright            : (C) 2015 by Tomas Oberhuber
@@ -11,25 +11,27 @@
 #ifndef TESTS_UNIT_TESTS_MESH_TNLGRID2DTESTER_H_
 #define TESTS_UNIT_TESTS_MESH_TNLGRID2DTESTER_H_
 
+using namespace TNL;
+
 template< typename RealType, typename Device, typename IndexType >
-class tnlGridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
+class GridTester< 2, RealType, Device, IndexType >: public CppUnit :: TestCase
 {
    public:
-   typedef tnlGridTester< 2, RealType, Device, IndexType > TesterType;
+   typedef GridTester< 2, RealType, Device, IndexType > TesterType;
    typedef typename CppUnit::TestCaller< TesterType > TestCallerType;
-   typedef tnlGrid< 2, RealType, Device, IndexType > GridType;
+   typedef Meshes::Grid< 2, RealType, Device, IndexType > GridType;
    typedef typename GridType::CoordinatesType CoordinatesType;
    typedef typename GridType::VertexType VertexType;
 
 
-   tnlGridTester(){};
+   GridTester(){};
 
    virtual
-   ~tnlGridTester(){};
+   ~GridTester(){};
 
    static CppUnit :: Test* suite()
    {
-      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "tnlGridTester" );
+      CppUnit :: TestSuite* suiteOfTests = new CppUnit :: TestSuite( "GridTester" );
       CppUnit :: TestResult result;
 
       suiteOfTests -> addTest( new TestCallerType( "setDomainTest", &TesterType::setDomainTest ) );
