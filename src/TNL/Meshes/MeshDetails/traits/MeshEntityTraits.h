@@ -13,7 +13,7 @@
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/SharedArray.h>
-#include <TNL/Containers/ConstSharedArray.h>
+//#include <TNL/Containers/ConstSharedArray.h>
 #include <TNL/core/tnlIndexedSet.h>
 #include <TNL/Meshes/Topologies/MeshEntityTopology.h>
 #include <TNL/Meshes/MeshConfigBase.h>
