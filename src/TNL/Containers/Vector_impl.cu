@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Vectors/Vector.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Vectors {

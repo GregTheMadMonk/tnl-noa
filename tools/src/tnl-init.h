@@ -204,7 +204,8 @@ bool resolveMesh( const List< String >& parsedMeshType,
                   const Config::ParameterContainer& parameters )
 {
   std::cout << "+ -> Setting mesh type to " << parsedMeshType[ 0 ] << " ... " << std::endl;
-   if( parsedMeshType[ 0 ] == "Grid" )
+   if( parsedMeshType[ 0 ] == "Meshes::Grid" ||
+       parsedMeshType[ 0 ] == "tnlGrid" )  // TODO: remove deprecated type name
    {
       typedef Meshes::Grid< Dimensions, RealType, Devices::Host, IndexType > MeshType;
       return resolveRealType< MeshType >( parameters );

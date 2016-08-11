@@ -8,10 +8,10 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Arrays/StaticArray.h>
+#include <TNL/Containers/StaticArray.h>
 
 namespace TNL {
-namespace Arrays {
+namespace Containers {
 
 #ifndef HAVE_CUDA
 #ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
@@ -71,5 +71,5 @@ template class StaticArray< 4, long double >;
 #endif
 #endif
 
-} // namespace Arrays
+} // namespace Containers
 } // namespace TNL

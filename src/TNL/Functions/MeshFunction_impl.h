@@ -90,7 +90,7 @@ String
 MeshFunction< Mesh, MeshEntityDimensions, Real >::
 getSerializationType()
 {
-   return String( "MeshFunction< " ) +
+   return String( "Functions::MeshFunction< " ) +
                      Mesh::getSerializationType() + ", " +
                      String( MeshEntityDimensions ) + ", " +
                     TNL::getType< Real >() +

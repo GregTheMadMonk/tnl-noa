@@ -36,7 +36,7 @@ class Object
 
       //! Basic constructor
       __cuda_callable__
-      Object();
+      Object() : deprecatedReadMode( false ) {};
 
       /****
        * Type getter. This returns the type in C++ style - for example the returned value

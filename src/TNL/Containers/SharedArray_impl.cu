@@ -8,10 +8,10 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Arrays/SharedArray.h>
+#include <TNL/Containers/SharedArray.h>
 
 namespace TNL {
-namespace Arrays {
+namespace Containers {
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -37,5 +37,5 @@ extern template class SharedArray< long double, Devices::Cuda, long int >;
 
 #endif
 
-} // namespace Arrays
+} // namespace Containers
 } // namespace TNL

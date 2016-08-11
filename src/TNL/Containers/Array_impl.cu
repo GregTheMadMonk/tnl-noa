@@ -8,10 +8,10 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Arrays/Array.h>
+#include <TNL/Containers/Array.h>
 
 namespace TNL {
-namespace Arrays {
+namespace Containers {
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -39,5 +39,5 @@ template class Array< long double, Devices::Cuda, long int >;
 
 #endif
 
-} // namespace Arrays
+} // namespace Containers
 } // namespace TNL

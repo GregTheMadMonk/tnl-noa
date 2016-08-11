@@ -8,10 +8,10 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Arrays/MultiArray.h>
+#include <TNL/Containers/MultiArray.h>
 
 namespace TNL {
-namespace Arrays {
+namespace Containers {
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -64,5 +64,5 @@ template class MultiArray< 4, double, Devices::Cuda, long int >;
 
 #endif
 
-} // namespace Arrays
+} // namespace Containers
 } // namespace TNL

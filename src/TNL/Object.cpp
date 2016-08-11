@@ -21,10 +21,10 @@ namespace TNL {
 
 const char magic_number[] = "TNLMN";
 
-Object::Object()
+/*Object::Object()
 : deprecatedReadMode( false )
 {
-}
+}*/
 
 String Object :: getType()
 {

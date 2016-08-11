@@ -8,10 +8,10 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Arrays/ArrayOperations.h>
+#include <TNL/Containers/ArrayOperations.h>
 
 namespace TNL {
-namespace Arrays {
+namespace Containers {
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -194,5 +194,5 @@ template bool ArrayOperations< Devices::Host >::setMemory< long double, long int
 
 #endif
 
-} // namespace Arrays
+} // namespace Containers
 } // namespace TNL

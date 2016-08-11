@@ -184,7 +184,7 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool MeshTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, true >::resolveMeshType( const Config::ParameterContainer& parameters,
                                                                                                    const List< String >& parsedMeshType )
 {
-   if( parsedMeshType[ 0 ] == "Grid" )
+   if( parsedMeshType[ 0 ] == "Meshes::Grid" )
    {
       typedef Meshes::Grid< MeshDimensions, MeshRealType, Device, MeshIndexType > MeshType;
       return MeshResolverTerminator< ProblemSetter, Real, Device, Index, MeshType, ConfigTag >::run( parameters );
