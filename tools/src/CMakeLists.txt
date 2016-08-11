@@ -3,9 +3,6 @@ SET( tnlcurve2gnuplotsources tnlcurve2gnuplot.cpp )
 SET( tnlfunctionsbenchmarksources functions-benchmark.cpp
                                   functions-benchmark.h )
 
-SET( tnlmatrixconvertsources tnl-matrix-convert.cpp
-                             tnl-matrix-convert.h )
-
 set( tnl_grid_setup_SOURCES tnl-grid-setup.cpp
                             tnl-grid-setup.h )
                             
@@ -58,8 +55,6 @@ IF( BUILD_CUDA )
                          OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
     SET_TARGET_PROPERTIES( tnl-cuda-arch${debugExt} PROPERTIES CUDA_COMPILE_FLAGS "${CXX_OPTIMIZE_FLAGS}" )
 ENDIF()
-#ADD_EXECUTABLE( tnl-matrix-convert${debugExt} ${tnlmatrixconvertsources} )
-#target_link_libraries( tnl-matrix-convert${debugExt} tnl${debugExt}-${tnlVersion} )
 
 INSTALL( TARGETS tnl-init${debugExt}
                  tnl-view${debugExt}
@@ -69,7 +64,6 @@ INSTALL( TARGETS tnl-init${debugExt}
                  tnl-dicom-reader${debugExt}
                  tnl-image-converter${debugExt}
                  tnl-curve2gnuplot${debugExt}
-#                 tnl-matrix-convert${debugExt}
          RUNTIME DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
          

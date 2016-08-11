@@ -252,7 +252,7 @@ const String& CSR< Real, Device, Index > :: getMatrixClass() const
 template< typename Real, typename Device, typename Index >
 String CSR< Real, Device, Index > :: getType() const
 {
-   return String( "CSR< ") +
+   return String( "Matrices::CSR< ") +
            String( TNL::getType< Real >() ) +
            String( ", " ) +
            Device :: getDeviceType() +

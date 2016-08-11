@@ -77,7 +77,8 @@ int main( int argc, char* argv[] )
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
       return false;
    }
-   if( parsedMeshType[ 0 ] == "Grid" )
+   if( parsedMeshType[ 0 ] == "Meshes::Grid" ||
+       parsedMeshType[ 0 ] == "tnlGrid" )   //  TODO: remove deprecated type name
    {
       int dimensions = atoi( parsedMeshType[ 1 ].getString() );
       if( dimensions == 1 )
@@ -100,7 +101,7 @@ int main( int argc, char* argv[] )
       }
       return EXIT_SUCCESS;
    }
-   if( parsedMeshType[ 0 ] == "Mesh" )
+   if( parsedMeshType[ 0 ] == "Meshes::Mesh" )
    {
       /*String meshFile = parameters. getParameter< String >( "mesh" );
       struct MeshConfig : public MeshConfigBase< 2 >

@@ -41,8 +41,8 @@ int main( int argc, char* argv[] )
       return 1;
    }
 
-   int verbose = parameters. getParameter< int >( "verbose" );
-   String meshFile = parameters. getParameter< String >( "mesh" );
+   int verbose = parameters.getParameter< int >( "verbose" );
+   String meshFile = parameters.getParameter< String >( "mesh" );
    /*if( meshFile == "" )
    {
       if( ! processFiles< DummyMesh< double, Devices::Host, int > >( parameters ) )
@@ -62,7 +62,8 @@ int main( int argc, char* argv[] )
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
       return false;
    }
-   if( parsedMeshType[ 0 ] == "Grid" )
+   if( parsedMeshType[ 0 ] == "Meshes::Grid" ||
+       parsedMeshType[ 0 ] == "tnlGrid" )        // TODO: remove deprecated type name
    {
       int dimensions = atoi( parsedMeshType[ 1 ].getString() );
       if( dimensions == 1 )

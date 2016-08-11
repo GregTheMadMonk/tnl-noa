@@ -294,9 +294,11 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
 template< typename MeshPointer, typename Element, typename Real, typename Index >
 bool computeDifference( const MeshPointer& meshPointer, const String& objectType, const Config::ParameterContainer& parameters )
 {
-   if( objectType == "MeshFunction" )
+   if( objectType == "Functions::MeshFunction" ||
+       objectType == "tnlMeshFunction" )  // TODO: remove deprecated type name
       return computeDifferenceOfMeshFunctions< MeshPointer, Element, Real, Index >( meshPointer, parameters );
-   if( objectType == "tnlVector" || objectType == "tnlSharedVector" )
+   if( objectType == "Containers::Vector" ||
+       objectType == "tnlVector" || objectType == "tnlSharedVector" )   // TODO: remove deprecated type name
       return computeDifferenceOfVectors< MeshPointer, Element, Real, Index >( meshPointer, parameters );
 }
 
@@ -308,14 +310,17 @@ bool setIndexType( const MeshPointer& meshPointer,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
-   if( parsedObjectType[ 0 ] == "MultiVector" ||
-       parsedObjectType[ 0 ] == "tnlSharedMultiVector"   )
+   if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
+       parsedObjectType[ 0 ] == "tnlMultiVector" ||                       // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlSharedMultiVector"   )                //
       indexType = parsedObjectType[ 4 ];
-   if( parsedObjectType[ 0 ] == "SharedVector" ||
-       parsedObjectType[ 0 ] == "Vector" )
+   if( parsedObjectType[ 0 ] == "Containers::Vector" ||
+       parsedObjectType[ 0 ] == "tnlSharedVector" ||                     // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlVector" )                            //
       indexType = parsedObjectType[ 3 ];
 
-   if(parsedObjectType[ 0 ] == "MeshFunction" )
+   if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
+       parsedObjectType[ 0 ] == "tnlMeshFunction" )                      // TODO: remove deprecated type names
       return computeDifference< MeshPointer, Element, Real, typename MeshPointer::ObjectType::IndexType >( meshPointer, parsedObjectType[ 0 ], parameters );
    
    if( indexType == "int" )
@@ -384,13 +389,16 @@ bool setElementType( const MeshPointer& meshPointer,
 {
    String elementType;
 
-   if( parsedObjectType[ 0 ] == "MultiVector" ||
-       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
+   if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
+       parsedObjectType[ 0 ] == "tnlMultiVector" ||                         // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )                    //
       elementType = parsedObjectType[ 2 ];
-   if( parsedObjectType[ 0 ] == "MeshFunction" )
+   if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
+       parsedObjectType[ 0 ] == "tnlMeshFunction" )                         // TODO: remove deprecated type names
       elementType = parsedObjectType[ 3 ];
-   if( parsedObjectType[ 0 ] == "SharedVector" ||
-       parsedObjectType[ 0 ] == "Vector" )
+   if( parsedObjectType[ 0 ] == "Containers::Vector" ||
+       parsedObjectType[ 0 ] == "tnlSharedVector" ||                        // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlVector" )                               //
       elementType = parsedObjectType[ 1 ];
 
 

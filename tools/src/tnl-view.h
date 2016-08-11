@@ -209,8 +209,9 @@ bool convertObject( const MeshPointer& meshPointer,
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
 
-   if( parsedObjectType[ 0 ] == "SharedVector" ||
-       parsedObjectType[ 0 ] == "Vector" )
+   if( parsedObjectType[ 0 ] == "Containers::Vector" ||
+       parsedObjectType[ 0 ] == "tnlSharedVector" ||   // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlVector" )          //
    {
       Containers::Vector< Element, Devices::Host, Index > vector;
       if( ! vector. load( inputFileName ) )
@@ -219,8 +220,9 @@ bool convertObject( const MeshPointer& meshPointer,
          return false;
    }
 
-   if( parsedObjectType[ 0 ] == "MultiVector" ||
-       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
+   if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
+       parsedObjectType[ 0 ] == "tnlMultiVector" ||      // TODO: remove deprecated type names  
+       parsedObjectType[ 0 ] == "tnlSharedMultiVector" ) //
    {
       Containers::MultiVector< Dimensions, Element, Devices::Host, Index > multiVector;
       if( ! multiVector. load( inputFileName ) )
@@ -245,11 +247,13 @@ bool setDimensions( const MeshPointer& meshPointer,
                     const Config::ParameterContainer& parameters )
 {
    int dimensions( 0 );
-   if( parsedObjectType[ 0 ] == "MultiVector" ||
-       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
+   if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
+       parsedObjectType[ 0 ] == "tnlMultiVector" ||                     // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )                //
       dimensions = atoi( parsedObjectType[ 1 ]. getString() );
-   if( parsedObjectType[ 0 ] == "Vector" ||
-       parsedObjectType[ 0 ] == "SharedVector" )
+   if( parsedObjectType[ 0 ] == "Containers::Vector" ||
+       parsedObjectType[ 0 ] == "tnlVector" ||                          // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlSharedVector" )                     //
       dimensions = 1;
    switch( dimensions )
    {
@@ -271,11 +275,13 @@ bool setIndexType( const MeshPointer& meshPointer,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
-   if( parsedObjectType[ 0 ] == "MultiVector" ||
-       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
+   if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
+       parsedObjectType[ 0 ] == "tnlMultiVector" ||                        // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )                   //
       indexType = parsedObjectType[ 4 ];
-   if( parsedObjectType[ 0 ] == "SharedVector" ||
-       parsedObjectType[ 0 ] == "Vector" )
+   if( parsedObjectType[ 0 ] == "Containers::Vector" || 
+       parsedObjectType[ 0 ] == "tnlSharedVector" ||                       // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlVector" )                              //
       indexType = parsedObjectType[ 3 ];
 
    if( indexType == "int" )
@@ -345,11 +351,13 @@ bool setElementType( const MeshPointer& meshPointer,
    String elementType;
 
    // TODO: Fix this even for arrays
-   if( parsedObjectType[ 0 ] == "MultiVector" ||
-       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )
+   if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
+       parsedObjectType[ 0 ] == "tnlMultiVector" ||                            // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )                       //
       elementType = parsedObjectType[ 2 ];
-   if( parsedObjectType[ 0 ] == "SharedVector" ||
-       parsedObjectType[ 0 ] == "Vector" )
+   if( parsedObjectType[ 0 ] == "Containers::Vector" ||
+       parsedObjectType[ 0 ] == "tnlSharedVector" ||                           // TODO: remove deprecated type names
+       parsedObjectType[ 0 ] == "tnlVector" )                                  //
       elementType = parsedObjectType[ 1 ];
 
 
@@ -365,7 +373,8 @@ bool setElementType( const MeshPointer& meshPointer,
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
       return false;
    }
-   if( parsedElementType[ 0 ] == "tnlStaticVector" )
+   if( parsedElementType[ 0 ] == "Containers::StaticVector" ||
+       parsedElementType[ 0 ] == "tnlStaticVector" )               // TODO: remove deprecated type names
       return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedElementType, parameters );
 
    std::cerr << "Unknown element type " << elementType << "." << std::endl;
@@ -431,22 +440,23 @@ bool processFiles( const Config::ParameterContainer& parameters )
             error = true;
             continue;
          }
-         if( parsedObjectType[ 0 ] == "tnlMultiVector" ||
-             parsedObjectType[ 0 ] == "tnlSharedMultiVector" ||      
-             parsedObjectType[ 0 ] == "tnlSharedVector" ||
-             parsedObjectType[ 0 ] == "tnlVector" )
+         if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
+             parsedObjectType[ 0 ] == "Containers::Vector" ||
+             parsedObjectType[ 0 ] == "tnlMultiVector" ||                     // TODO: remove deprecated type names
+             parsedObjectType[ 0 ] == "tnlSharedMultiVector" ||               // 
+             parsedObjectType[ 0 ] == "tnlSharedVector" ||                    //
+             parsedObjectType[ 0 ] == "tnlVector" )                           //
             setElementType< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-         if( parsedObjectType[ 0 ] == "MeshFunction" )
+         if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
+             parsedObjectType[ 0 ] == "tnlMeshFunction" )                     // TODO: remove deprecated type names
             setMeshFunction< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
          if( verbose )
            std::cout << "[ OK ].  " << std::endl;
-
       }
    }
    if( verbose )
      std::cout << std::endl;
    return ! error;
 }
-
 
 #endif /* TNL_VIEW_H_ */
