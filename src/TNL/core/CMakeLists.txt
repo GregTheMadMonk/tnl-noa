@@ -45,7 +45,7 @@ set( tnl_core_SOURCES
 
 SET( libtnlcoreincludedir ${TNL_INCLUDE_DIR}/core )
 SET( libtnlcoreinclude_HEADERS ${headers} )
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/core )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/core )
 
 
 
