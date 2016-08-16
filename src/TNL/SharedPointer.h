@@ -52,7 +52,7 @@ class SharedPointer< Object, Devices::Host, lazy, false > : public SmartPointer
          
       template< typename... Args >
       explicit  SharedPointer( Args... args )
-      : counter( 0 ), pointer( 0 )
+      : pointer( 0 ), counter( 0 )
       {
          if( ! lazy )
          {
