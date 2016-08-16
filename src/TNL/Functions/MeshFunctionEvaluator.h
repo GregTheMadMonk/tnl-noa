@@ -47,7 +47,7 @@ class MeshFunctionEvaluator : public Domain< OutMeshFunction::getEntitiesDimensi
  
       const static int meshEntityDimensions = OutMeshFunction::getEntitiesDimensions();
  
-      static_assert( MeshType::meshDimensions == InFunction::getDimensions(),
+      static_assert( MeshType::meshDimensions == InFunction::getDomainDimensions(),
          "Input function and the mesh of the mesh function have both different number of dimensions." );
  
       static void evaluate( OutMeshFunction& meshFunction,

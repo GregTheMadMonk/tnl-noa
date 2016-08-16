@@ -24,8 +24,7 @@ class Domain
  
       typedef void DeviceType;
  
-      static const int dimensions = Dimensions;
-      static constexpr int getDimensions() { return Dimensions; }
+      static constexpr int getDomainDimensions() { return Dimensions; }
  
       static constexpr DomainType getDomainType() { return DomainType_; }
 };

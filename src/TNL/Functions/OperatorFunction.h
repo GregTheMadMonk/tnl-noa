@@ -52,7 +52,7 @@ class OperatorFunction< Operator, MeshFunction, BoundaryConditions, true >
 template< typename Operator,
           typename MeshFunctionT >
 class OperatorFunction< Operator, MeshFunctionT, void, true >
- : public Domain< Operator::getDimensions(), Operator::getDomainType() >
+ : public Domain< Operator::getDomainDimensions(), Operator::getDomainType() >
 {
    public:
  
@@ -130,7 +130,7 @@ class OperatorFunction< Operator, MeshFunctionT, void, true >
 template< typename Operator,
           typename PreimageFunction >
 class OperatorFunction< Operator, PreimageFunction, void, false >
- : public Domain< Operator::getDimensions(), Operator::getDomainType() >
+ : public Domain< Operator::getDomainDimensions(), Operator::getDomainType() >
 {
    public:
  
