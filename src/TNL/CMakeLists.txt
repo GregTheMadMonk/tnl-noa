@@ -24,6 +24,9 @@ set( headers
      List_impl.h
      Logger.h
      Logger_impl.h
+     SharedPointer.h
+     SmartPointer.h
+     SmartPointersRegister.h
      StaticFor.h
      String.h
      SystemInfo.h
