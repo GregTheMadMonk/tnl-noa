@@ -18,7 +18,7 @@ namespace Solvers {
 
 template< typename Real, typename Index >
 IterativeSolver< Real, Index> :: IterativeSolver()
-: maxIterations( 100000 ),
+: maxIterations( 1000000000 ),
   minIterations( 0 ),
   currentIteration( 0 ),
   convergenceResidue( 1.0e-6 ),
@@ -33,7 +33,7 @@ template< typename Real, typename Index >
 void IterativeSolver< Real, Index> :: configSetup( Config::ConfigDescription& config,
                                                       const String& prefix )
 {
-   config.addEntry< int >   ( prefix + "max-iterations", "Maximal number of iterations the solver may perform.", 10000000000 );
+   config.addEntry< int >   ( prefix + "max-iterations", "Maximal number of iterations the solver may perform.", 1000000000 );
    config.addEntry< int >   ( prefix + "min-iterations", "Minimal number of iterations the solver must perform.", 0 );
    config.addEntry< double >( prefix + "convergence-residue", "Convergence occurs when the residue drops bellow this limit.", 1.0e-6 );
    config.addEntry< double >( prefix + "divergence-residue", "Divergence occurs when the residue exceeds given limit.", DBL_MAX );
