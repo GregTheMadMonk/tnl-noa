@@ -28,6 +28,7 @@ evaluate( OutMeshFunction& meshFunction,
 {
    switch( InFunction::getDomainType() )
    {
+      case NonspaceDomain:
       case SpaceDomain:
       case MeshDomain:
          evaluateEntities( meshFunction, function, time, outFunctionMultiplicator, inFunctionMultiplicator, all );
