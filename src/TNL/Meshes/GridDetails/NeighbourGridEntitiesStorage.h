@@ -30,8 +30,8 @@ class NeighbourGridEntityLayer
  
       __cuda_callable__
       NeighbourGridEntityLayer( const GridEntity& entity )
-      : neighbourEntities( entity ),
-        BaseType( entity )
+      : BaseType( entity ),
+        neighbourEntities( entity )
       {}
  
       __cuda_callable__
