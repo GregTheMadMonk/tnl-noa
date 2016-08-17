@@ -66,7 +66,7 @@ class SharedPointer< Object, Devices::Host, lazy, false > : public SmartPointer
       : pointer( pointer.pointer ),
         counter( pointer.counter )
       {
-         *counter++;
+         *counter += 1;
       }
       
       template< typename... Args >
@@ -135,7 +135,7 @@ class SharedPointer< Object, Devices::Host, lazy, false > : public SmartPointer
          this->free();
          this->pointer = ptr.pointer;
          this->counter = ptr.counter;
-         *( this->counter )++;
+         *( this->counter ) += 1;
          return *this;
       }      
       
@@ -212,14 +212,14 @@ class SharedPointer< Object, Devices::Host, lazy, true > : public SmartPointer
       : pointer( pointer.pointer ),
         counter( pointer.counter )
       {
-         *counter++;
+         *counter += 1;
       }
       
       SharedPointer( const SharedPointer< NonConstObjectType, Devices::Host, lazy >& pointer )
       : pointer( pointer.pointer ),
         counter( pointer.counter )
       {
-         *counter++;
+         *counter += 1;
       }
 
       
@@ -273,7 +273,7 @@ class SharedPointer< Object, Devices::Host, lazy, true > : public SmartPointer
          this->free();
          this->pointer = ptr.pointer;
          this->counter = ptr.counter;
-         *( this->counter )++;
+         *( this->counter ) += 1;
          return *this;
       }      
 
@@ -283,7 +283,7 @@ class SharedPointer< Object, Devices::Host, lazy, true > : public SmartPointer
          this->free();
          this->pointer = ptr.pointer;
          this->counter = ptr.counter;
-         *( this->counter )++;
+         *( this->counter ) += 1;
          return *this;
       }      
       
@@ -367,7 +367,7 @@ class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
         counter( pointer.counter ),
         modified( pointer.modified )
       {
-         *counter++;
+         *counter += 1;
       }
 
       template< typename... Args >
@@ -492,7 +492,7 @@ class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
          this->cuda_pointer = ptr.cuda_pointer;
          this->modified = ptr.modified;
          this->counter = ptr.counter;
-         *( this->counter )++;
+         *( this->counter ) += 1;
          return *this;
       }
       
@@ -592,7 +592,7 @@ class SharedPointer< Object, Devices::Cuda, lazy, true > : public SmartPointer
         counter( pointer.counter ),
         modified( pointer.modified )
       {
-         *counter++;
+         *counter += 1;
       }
       
       SharedPointer( const SharedPointer< NonConstObjectType, Devices::Cuda, lazy >& pointer )
@@ -600,7 +600,7 @@ class SharedPointer< Object, Devices::Cuda, lazy, true > : public SmartPointer
         cuda_pointer( pointer.cuda_pointer ),
         counter( pointer.counter )
       {
-         *counter++;
+         *counter += 1;
       }      
 
       template< typename... Args >
@@ -699,7 +699,7 @@ class SharedPointer< Object, Devices::Cuda, lazy, true > : public SmartPointer
          this->counter = ptr.counter;
          this->cuda_pointer = ptr.cuda_pointer;
          this->modified = ptr.modified;
-         *( this->counter )++;
+         *( this->counter ) += 1;
          return *this;
       }      
       
@@ -710,7 +710,7 @@ class SharedPointer< Object, Devices::Cuda, lazy, true > : public SmartPointer
          this->cuda_pointer = ptr.cuda_pointer;
          this->modified = ptr.modified;
          this->counter = ptr.counter;
-         *( this->counter )++;
+         *( this->counter ) += 1;
          return *this;
       }      
       
