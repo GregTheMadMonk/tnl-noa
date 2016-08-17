@@ -37,7 +37,7 @@ class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 1, Real, Device, Inde
       static bool isBoundaryEntity( const GridEntityType& entity )
       {
          return( entity.getCoordinates().x() == 0 ||
-                 entity.getCoordinates().x() == entity.grid.getDimensions().x() - 1 );
+                 entity.getCoordinates().x() == entity.getMesh().getDimensions().x() - 1 );
       }
 };
 
@@ -56,7 +56,7 @@ class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 1, Real, Device, Inde
       static bool isBoundaryEntity( const GridEntityType& entity )
       {
          return( entity.getCoordinates().x() == 0 ||
-                 entity.getCoordinates().x() == entity.grid.getDimensions().x() );
+                 entity.getCoordinates().x() == entity.getMesh().getDimensions().x() );
       }
 };
 
@@ -79,8 +79,8 @@ class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 2, Real, Device, Inde
       {
          return( entity.getCoordinates().x() == 0 ||
                  entity.getCoordinates().y() == 0 ||
-                 entity.getCoordinates().x() == entity.grid.getDimensions().x() - 1 ||
-                 entity.getCoordinates().y() == entity.grid.getDimensions().y() - 1 );
+                 entity.getCoordinates().x() == entity.getMesh().getDimensions().x() - 1 ||
+                 entity.getCoordinates().y() == entity.getMesh().getDimensions().y() - 1 );
       }
 };
 
@@ -101,9 +101,9 @@ class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 2, Real, Device, Inde
          return( entity.getCoordinates().x() == 0 ||
                  entity.getCoordinates().y() == 0 ||
                  entity.getCoordinates().x() ==
-                    entity.grid.getDimensions().x() - entity.getBasis().x() ||
+                    entity.getMesh().getDimensions().x() - entity.getBasis().x() ||
                  entity.getCoordinates().y() ==
-                    entity.grid.getDimensions().y() - entity.getBasis().y() );
+                    entity.getMesh().getDimensions().y() - entity.getBasis().y() );
  
       }
 };
@@ -125,8 +125,8 @@ class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 2, Real, Device, Inde
       {
          return( entity.getCoordinates().x() == 0 ||
                  entity.getCoordinates().y() == 0 ||
-                 entity.getCoordinates().x() == entity.grid.getDimensions().x() ||
-                 entity.getCoordinates().y() == entity.grid.getDimensions().y() );
+                 entity.getCoordinates().x() == entity.getMesh().getDimensions().x() ||
+                 entity.getCoordinates().y() == entity.getMesh().getDimensions().y() );
  
       }
 };
@@ -154,11 +154,11 @@ class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 3, Real, Device, Inde
                  entity.getCoordinates().y() == 0 ||
                  entity.getCoordinates().z() == 0 ||
                  entity.getCoordinates().x() ==
-                    entity.grid.getDimensions().x() - entity.getBasis().x() ||
+                    entity.getMesh().getDimensions().x() - entity.getBasis().x() ||
                  entity.getCoordinates().y() ==
-                    entity.grid.getDimensions().y() - entity.getBasis().y() ||
+                    entity.getMesh().getDimensions().y() - entity.getBasis().y() ||
                  entity.getCoordinates().z() ==
-                    entity.grid.getDimensions().z() - entity.getBasis().z() );
+                    entity.getMesh().getDimensions().z() - entity.getBasis().z() );
  
       }
 };
@@ -180,9 +180,9 @@ class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 3, Real, Device, Inde
          return( entity.getCoordinates().x() == 0 ||
                  entity.getCoordinates().y() == 0 ||
                  entity.getCoordinates().z() == 0 ||
-                 entity.getCoordinates().x() == entity.grid.getDimensions().x() - 1 ||
-                 entity.getCoordinates().y() == entity.grid.getDimensions().y() - 1 ||
-                 entity.getCoordinates().z() == entity.grid.getDimensions().z() - 1 );
+                 entity.getCoordinates().x() == entity.getMesh().getDimensions().x() - 1 ||
+                 entity.getCoordinates().y() == entity.getMesh().getDimensions().y() - 1 ||
+                 entity.getCoordinates().z() == entity.getMesh().getDimensions().z() - 1 );
       }
 };
 
@@ -203,9 +203,9 @@ class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 3, Real, Device, Inde
          return( entity.getCoordinates().x() == 0 ||
                  entity.getCoordinates().y() == 0 ||
                  entity.getCoordinates().z() == 0 ||
-                 entity.getCoordinates().x() == entity.grid.getDimensions().x() ||
-                 entity.getCoordinates().y() == entity.grid.getDimensions().y() ||
-                 entity.getCoordinates().z() == entity.grid.getDimensions().z() );
+                 entity.getCoordinates().x() == entity.getMesh().getDimensions().x() ||
+                 entity.getCoordinates().y() == entity.getMesh().getDimensions().y() ||
+                 entity.getCoordinates().z() == entity.getMesh().getDimensions().z() );
       }
 };
 
