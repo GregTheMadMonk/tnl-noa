@@ -50,7 +50,7 @@ class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 1, Real, Device, Inde
    public:
  
       typedef Meshes::Grid< 1, Real, Device, Index > GridType;
-      typedef GridEntity< GridType, 1, Config > GridEntityType;
+      typedef GridEntity< GridType, 0, Config > GridEntityType;
  
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
@@ -93,7 +93,7 @@ class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 2, Real, Device, Inde
    public:
  
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-      typedef GridEntity< GridType, 2, Config > GridEntityType;
+      typedef GridEntity< GridType, 1, Config > GridEntityType;
  
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
@@ -118,7 +118,7 @@ class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 2, Real, Device, Inde
    public:
  
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
-      typedef GridEntity< GridType, 2, Config > GridEntityType;
+      typedef GridEntity< GridType, 0, Config > GridEntityType;
  
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
@@ -145,7 +145,7 @@ class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 3, Real, Device, Inde
    public:
  
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-      typedef GridEntity< GridType, 3, Config > GridEntityType;
+      typedef GridEntity< GridType, EntityDimensions, Config > GridEntityType;
  
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
@@ -195,7 +195,7 @@ class BoundaryGridEntityChecker< GridEntity< Meshes::Grid< 3, Real, Device, Inde
    public:
  
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
-      typedef GridEntity< GridType, 3, Config > GridEntityType;
+      typedef GridEntity< GridType, 0, Config > GridEntityType;
  
       __cuda_callable__ inline
       static bool isBoundaryEntity( const GridEntityType& entity )
