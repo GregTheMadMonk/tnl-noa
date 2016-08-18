@@ -348,7 +348,7 @@ getSpaceStepsProducts() const
    Assert( zPow >= -2 && zPow <= 2,
               std::cerr << " zPow = " << zPow );
 
-   return this->spaceStepsProducts[ zPow + 2 ][ yPow + 2 ][ xPow + 2 ];
+   return this->spaceStepsProducts[ xPow + 2 ][ yPow + 2 ][ zPow + 2 ];
 }
 
 template< typename Real,
