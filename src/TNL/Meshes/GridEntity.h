@@ -114,9 +114,6 @@ class GridEntity< Meshes::Grid< Dimensions, Real, Device, Index >, EntityDimensi
       const EntityBasisType& getBasis() const;
  
       __cuda_callable__ inline
-      EntityBasisType& getBasis();
- 
-      __cuda_callable__ inline
       void setBasis( const EntityBasisType& basis );
  
       template< int NeighbourEntityDimensions = entityDimensions >
