@@ -282,7 +282,7 @@ class NeighbourGridEntityGetter<
                     entity.getCoordinates() +
                        CoordinatesType( stepX + ( stepX < 0 ),
                                         stepY + ( stepY < 0 ) )
-                       < entity.getMesh().getDimensions() + CoordinatesType( sign( stepX ), sign( stepY ) ),
+                       < entity.getMesh().getDimensions() + CoordinatesType( ( stepX > 0 ), ( stepY > 0 ) ),
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) ) = "
                    << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) )
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
@@ -290,8 +290,8 @@ class NeighbourGridEntityGetter<
          return NeighbourGridEntityType( this->entity.getMesh(),
                                          CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
                                                           entity.getCoordinates().y() + stepY + ( stepY < 0 ) ),
-                                         EntityOrientationType( stepX > 0 ? 1 : -1,
-                                                                stepY > 0 ? 1 : -1 ),
+                                         EntityOrientationType( stepX ? (stepX > 0 ? 1 : -1) : 0,
+                                                                stepY ? (stepY > 0 ? 1 : -1) : 0 ),
                                          EntityBasisType( ! stepX, ! stepY ) );
       }
  
@@ -338,7 +338,6 @@ class NeighbourGridEntityGetter<
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetterType;
-      typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
 
       __cuda_callable__ inline
       NeighbourGridEntityGetter( const GridEntityType& entity )
@@ -360,7 +359,7 @@ class NeighbourGridEntityGetter<
                        CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) ) >= CoordinatesType( 0, 0 ) &&
                     entity.getCoordinates() +
                        CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) )
-                       < entity.getMesh().getDimensions() + CoordinatesType( sign( stepX ), sign( stepY ) ),
+                       < entity.getMesh().getDimensions() + CoordinatesType( ( stepX > 0 ), ( stepY > 0 ) ),
               std::cerr << "entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) ) = "
                    << entity.getCoordinates()  + CoordinatesType( stepX + ( stepX < 0 ), stepY + ( stepY < 0 ) )
                    << " entity.getMesh().getDimensions() + CoordinatesType( sign( stepX ), sign( stepY ) ) = "
@@ -416,7 +415,6 @@ class NeighbourGridEntityGetter<
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetterType;
-      typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
 
       __cuda_callable__ inline
       NeighbourGridEntityGetter( const GridEntityType& entity )

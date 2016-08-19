@@ -317,9 +317,9 @@ class NeighbourGridEntityGetter<
                                          CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
                                                           entity.getCoordinates().y() + stepY + ( stepY < 0 ),
                                                           entity.getCoordinates().z() + stepZ + ( stepZ < 0 ) ),
-                                         EntityOrientationType( stepX > 0 ? 1 : -1,
-                                                                stepY > 0 ? 1 : -1,
-                                                                stepZ > 0 ? 1 : -1 ),
+                                         EntityOrientationType( stepX ? (stepX > 0 ? 1 : -1) : 0,
+                                                                stepY ? (stepY > 0 ? 1 : -1) : 0,
+                                                                stepZ ? (stepZ > 0 ? 1 : -1) : 0 ),
                                          EntityBasisType( ! stepX, !stepY, !stepZ ) );
       }
  
@@ -406,9 +406,9 @@ class NeighbourGridEntityGetter<
                                          CoordinatesType( entity.getCoordinates().x() + stepX + ( stepX < 0 ),
                                                           entity.getCoordinates().y() + stepY + ( stepY < 0 ),
                                                           entity.getCoordinates().z() + stepZ + ( stepZ < 0 ) ),
-                                         EntityOrientationType( stepX > 0 ? 1 : -1,
-                                                                stepY > 0 ? 1 : -1,
-                                                                stepZ > 0 ? 1 : -1 ),
+                                         EntityOrientationType( stepX ? (stepX > 0 ? 1 : -1) : 0,
+                                                                stepY ? (stepY > 0 ? 1 : -1) : 0,
+                                                                stepZ ? (stepZ > 0 ? 1 : -1) : 0 ),
                                          EntityBasisType( ! stepX, !stepY, !stepZ ) );
       }
  
@@ -544,7 +544,6 @@ class NeighbourGridEntityGetter<
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetterType;
-      typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
 
       __cuda_callable__ inline
       NeighbourGridEntityGetter( const GridEntityType& entity )
@@ -628,7 +627,6 @@ class NeighbourGridEntityGetter<
       typedef Index IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef GridEntityGetter< GridType, NeighbourGridEntityType > GridEntityGetterType;
-      typedef typename GridEntityType::EntityOrientationType EntityOrientationType;
 
       __cuda_callable__ inline
       NeighbourGridEntityGetter( const GridEntityType& entity )
