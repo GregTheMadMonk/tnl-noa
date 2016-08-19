@@ -26,4 +26,4 @@ set( tnl_core_containers_SOURCES
      ${CURRENT_DIR}/tnlStaticContainer_impl.cpp
      PARENT_SCOPE )
         
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/core/containers )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/core/containers )
