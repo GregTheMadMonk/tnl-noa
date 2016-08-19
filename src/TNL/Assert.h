@@ -30,7 +30,7 @@ namespace TNL {
 #define Assert( ___tnl__assert_condition, ___tnl__assert_command )                                    \
    if( ! ( ___tnl__assert_condition ) )                                                                  \
    {                                                                                                     \
-   printf( "Assertion '%s' failed !!! \n File: %s \n Line: %d \n Diagnostics: Not supported with CUDA.", \
+   printf( "Assertion '%s' failed !!! \n File: %s \n Line: %d \n Diagnostics: Not supported with CUDA.\n", \
            __STRING( ___tnl__assert_condition ),                                                         \
            __FILE__,                                                                                     \
            __LINE__ );                                                                                   \
