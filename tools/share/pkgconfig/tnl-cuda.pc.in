@@ -5,5 +5,5 @@ Description: Template Numerical Library (with CUDA support)
 URL:
 Version: ${version}
 Libs:
-Cflags: -DHAVE_CUDA -DHAVE_NOT_CXX11
+Cflags: -DHAVE_CUDA
 Requires: cuda, tnl = ${version}
