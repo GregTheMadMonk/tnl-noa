@@ -119,12 +119,14 @@ class SharedPointer< Object, Devices::Host, lazy, false > : public SmartPointer
       }
       
       template< typename Device = Devices::Host >
+      __cuda_callable__
       const Object& getData() const
       {
          return *( this->pointer );
       }
 
       template< typename Device = Devices::Host >
+      __cuda_callable__
       Object& modifyData()
       {
          return *( this->pointer );
@@ -263,6 +265,7 @@ class SharedPointer< Object, Devices::Host, lazy, true > : public SmartPointer
       }
       
       template< typename Device = Devices::Host >
+      __cuda_callable__
       const Object& getData() const
       {
          return *( this->pointer );
@@ -442,7 +445,7 @@ class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
       __cuda_callable__
       const Object& getData() const
       {
-         static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or tnlCuda devices are accepted here." );
+         static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
          Assert( this->pointer, );
          Assert( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
@@ -455,6 +458,9 @@ class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
       __cuda_callable__
       Object& modifyData()
       {
+         static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
+         Assert( this->pointer, );
+         Assert( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
          {
             this->modified = true;
@@ -663,7 +669,7 @@ class SharedPointer< Object, Devices::Cuda, lazy, true > : public SmartPointer
       __cuda_callable__
       const Object& getData() const
       {
-         static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or tnlCuda devices are accepted here." );
+         static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
          Assert( this->pointer, );
          Assert( this->cuda_pointer, );
          if( std::is_same< Device, Devices::Host >::value )
