@@ -22,6 +22,27 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/SmartPointer.h>
 
+
+//#define TNL_DEBUG_SHARED_POINTERS
+
+#ifdef TNL_DEBUG_SHARED_POINTERS
+   #include <typeinfo>
+   #include <cxxabi.h>
+   #include <iostream>
+   #include <string>
+   #include <memory>
+   #include <cstdlib>
+
+   std::string demangle(const char* mangled)
+   {
+      int status;
+      std::unique_ptr<char[], void (*)(void*)> result(
+         abi::__cxa_demangle(mangled, 0, 0, &status), std::free);
+      return result.get() ? std::string(result.get()) : "error occurred";
+   }
+#endif
+
+
 namespace TNL {
 
 /***
@@ -54,11 +75,13 @@ class SharedPointer< Object, Devices::Host, lazy, false > : public SmartPointer
       explicit  SharedPointer( Args... args )
       : pointer( 0 ), counter( 0 )
       {
+#ifdef TNL_DEBUG_SHARED_POINTERS
+         std::cerr << "Creating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
+#endif
          if( ! lazy )
          {
-            this->counter = new int;
+            this->counter = new int( 1 );
             this->pointer = new Object( args... );
-            *( this->counter ) = 1;
          }
       }
       
@@ -72,11 +95,12 @@ class SharedPointer< Object, Devices::Host, lazy, false > : public SmartPointer
       template< typename... Args >
       bool recreate( Args... args )
       {         
-         std::cerr << "Creating new shared pointer..." << std::endl;
+#ifdef TNL_DEBUG_SHARED_POINTERS
+         std::cerr << "Recreating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
+#endif
          if( ! this->counter )
          {
-            this->counter = new int;
-            *this->counter = 1;
+            this->counter = new int( 1 );
             this->pointer = new ObjectType( args... );
             return true;
          }
@@ -91,10 +115,9 @@ class SharedPointer< Object, Devices::Host, lazy, false > : public SmartPointer
          }
          ( *this->counter )--;
          this->pointer = new Object( args... );
-         this->counter = new int;
+         this->counter = new int( 1 );
          if( ! this->pointer || ! this->counter )
             return false;
-         *( this->counter ) = 1;
          return true;         
       }      
       
@@ -143,8 +166,7 @@ class SharedPointer< Object, Devices::Host, lazy, false > : public SmartPointer
       
       const ThisType& operator=( const ThisType&& ptr )
       {
-         if( this-> pointer )
-            delete this->pointer;
+         this->free();
          this->pointer = ptr.pointer;
          ptr.pointer= NULL;
          this->counter = ptr.counter;
@@ -167,14 +189,14 @@ class SharedPointer< Object, Devices::Host, lazy, false > : public SmartPointer
       
       void free()
       {
-         if( ! this->pointer )
-            return;
          if( this->counter )
          {
             if( ! --*( this->counter ) )
             {
-               delete this->pointer;
-               //std::cerr << "Deleting data..." << std::endl;
+               delete this->counter;
+               this->counter = nullptr;
+               if( this->pointer )
+                  delete this->pointer;
             }
          }
 
@@ -204,9 +226,8 @@ class SharedPointer< Object, Devices::Host, lazy, true > : public SmartPointer
       {
          if( ! lazy )
          {
-            this->counter = new int;
+            this->counter = new int( 1 );
             this->pointer = new Object( args... );
-            *( this->counter ) = 1;
          }
       }
       
@@ -228,11 +249,9 @@ class SharedPointer< Object, Devices::Host, lazy, true > : public SmartPointer
       template< typename... Args >
       bool recreate( Args... args )
       {         
-         std::cerr << "Creating new shared pointer..." << std::endl;
          if( ! this->counter )
          {
-            this->counter = new int;
-            *this->counter = 1;
+            this->counter = new int( 1 );
             this->pointer = new ObjectType( args... );
             return true;
          }
@@ -247,10 +266,9 @@ class SharedPointer< Object, Devices::Host, lazy, true > : public SmartPointer
          }
          ( *this->counter )--;
          this->pointer = new Object( args... );
-         this->counter = new int;
+         this->counter = new int( 1 );
          if( ! this->pointer || ! this->counter )
             return false;
-         *( this->counter ) = 1;
          return true;         
       }      
       
@@ -292,8 +310,7 @@ class SharedPointer< Object, Devices::Host, lazy, true > : public SmartPointer
       
       const ThisType& operator=( const ThisType&& ptr )
       {
-         if( this-> pointer )
-            delete this->pointer;
+         this->free();
          this->pointer = ptr.pointer;
          ptr.pointer= NULL;
          this->counter = ptr.counter;
@@ -316,14 +333,14 @@ class SharedPointer< Object, Devices::Host, lazy, true > : public SmartPointer
       
       void free()
       {
-         if( ! this->pointer )
-            return;
          if( this->counter )
          {
             if( ! --*( this->counter ) )
             {
-               delete this->pointer;
-               //std::cerr << "Deleting data..." << std::endl;
+               delete this->counter;
+               this->counter = nullptr;
+               if( this->pointer )
+                  delete this->pointer;
             }
          }
 
@@ -351,13 +368,16 @@ class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
       : counter( 0 ), cuda_pointer( 0 ), 
         pointer( 0 ), modified( false )
       {
+#ifdef TNL_DEBUG_SHARED_POINTERS
+         std::cerr << "Creating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
+#endif
          if( ! lazy )
          {
-            this->counter = new int;
+            this->counter = new int( 1 );
             this->pointer = new Object( args... );
 #ifdef HAVE_CUDA         
             this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
-            if( ! checkCudaDevice )
+            if( ! this->cuda_pointer )
                return;
             Devices::Cuda::insertSmartPointer( this );
 #endif            
@@ -376,15 +396,16 @@ class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
       template< typename... Args >
       bool recreate( Args... args )
       {
-         //std::cerr << "Creating new shared pointer..." << std::endl;
+#ifdef TNL_DEBUG_SHARED_POINTERS
+         std::cerr << "Recreating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
+#endif
          if( ! this->counter )
          {
-            this->counter = new int;
-            *this->counter = 1;
+            this->counter = new int( 1 );
             this->pointer = new ObjectType( args... );
 #ifdef HAVE_CUDA         
-            this->cuda_pointer = Devices::Cuda::passToDevice( *this->object );
-            if( ! checkCudaDevice )
+            this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
+            if( ! this->cuda_pointer )
                return false;
             Devices::Cuda::insertSmartPointer( this );
 #endif                 
@@ -404,16 +425,15 @@ class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
          }
 
          this->modified = false;
-         this->counter= new int;
+         this->counter= new int( 1 );
          this->pointer = new Object( args... );
          if( ! this->pointer || ! this->counter )
             return false;
-         *( this->counter )= 1;         
 #ifdef HAVE_CUDA         
-         cudaMalloc( ( void** )  &this->cuda_pointer, sizeof( Object ) );
-         cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( Object ), cudaMemcpyHostToDevice );
-         if( ! checkCudaDevice )
+         this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
+         if( ! this->cuda_pointer )
             return false;
+         // TODO: what if 'this' is already in the register?
          Devices::Cuda::insertSmartPointer( this );
 #endif
          return true;
@@ -474,8 +494,7 @@ class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
       
       /*const ThisType& operator=( ThisType&& ptr )
       {
-         if( this-> pointer )
-            delete this->pointer;
+         this->free();
 #ifdef HAVE_CUDA
          if( this->cuda_pointer )
             cudaFree( this->cuda_pointer );
@@ -499,21 +518,27 @@ class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
          this->modified = ptr.modified;
          this->counter = ptr.counter;
          *( this->counter ) += 1;
+#ifdef TNL_DEBUG_SHARED_POINTERS
+         std::cerr << "Assigned shared pointer: counter = " << *(this->counter) << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
+#endif
          return *this;
       }
-      
       
       bool synchronize()
       {
 #ifdef HAVE_CUDA
          if( this->modified )
          {
-            //std::cerr << "Synchronizing data ( " << sizeof( ObjectType ) << " bytes ) to adress " << this->cuda_pointer << "..." << std::endl;
+#ifdef TNL_DEBUG_SHARED_POINTERS
+            std::cerr << "Synchronizing shared pointer: counter = " << *(this->counter) << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
+            std::cerr << "   ( " << sizeof( ObjectType ) << " bytes, CUDA adress " << this->cuda_pointer << " )" << std::endl;
+#endif
             Assert( this->pointer, );
             Assert( this->cuda_pointer, );
             cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( ObjectType ), cudaMemcpyHostToDevice );            
-            if( ! checkCudaDevice )
+            if( ! checkCudaDevice ) {
                return false;
+            }
             this->modified = false;
             return true;
          }
@@ -534,12 +559,15 @@ class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
       
       void free()
       {
-         if( ! this->pointer )
-            return;
          if( this->counter )
          {
+#ifdef TNL_DEBUG_SHARED_POINTERS
+            std::cerr << "Freeing shared pointer: counter = " << *(this->counter) << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
+#endif
             if( ! --*( this->counter ) )
             {
+               delete this->counter;
+               this->counter = nullptr;
                if( this->pointer )
                   delete this->pointer;
 #ifdef HAVE_CUDA
@@ -547,7 +575,9 @@ class SharedPointer< Object, Devices::Cuda, lazy, false > : public SmartPointer
                   cudaFree( this->cuda_pointer );
                checkCudaDevice;
 #endif         
-               //std::cerr << "Deleting data..." << std::endl;
+#ifdef TNL_DEBUG_SHARED_POINTERS
+               std::cerr << "...deleted data." << std::endl;
+#endif
             }
          }
          
@@ -581,11 +611,11 @@ class SharedPointer< Object, Devices::Cuda, lazy, true > : public SmartPointer
       {
          if( ! lazy )
          {
-            this->counter = new int;
+            this->counter = new int( 1 );
             this->pointer = new Object( args... );
 #ifdef HAVE_CUDA         
             this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
-            if( ! checkCudaDevice )
+            if( ! this->cuda_pointer )
                return;
             Devices::Cuda::insertSmartPointer( this );
 #endif            
@@ -612,15 +642,13 @@ class SharedPointer< Object, Devices::Cuda, lazy, true > : public SmartPointer
       template< typename... Args >
       bool recreate( Args... args )
       {
-         std::cerr << "Creating new shared pointer..." << std::endl;
          if( ! this->counter )
          {
-            this->counter = new int;
-            *this->counter = 1;
+            this->counter = new int( 1 );
             this->pointer = new ObjectType( args... );
 #ifdef HAVE_CUDA         
-            this->cuda_pointer = Devices::Cuda::passToDevice( *this->object );
-            if( ! checkCudaDevice )
+            this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
+            if( ! this->cuda_pointer )
                return false;
             Devices::Cuda::insertSmartPointer( this );
 #endif                 
@@ -640,15 +668,13 @@ class SharedPointer< Object, Devices::Cuda, lazy, true > : public SmartPointer
          }
 
          this->modified = false;
-         this->counter= new int;
+         this->counter= new int( 1 );
          this->pointer = new Object( args... );
          if( ! this->pointer || ! this->counter )
             return false;
-         *( this->counter )= 1;         
 #ifdef HAVE_CUDA         
-         cudaMalloc( ( void** )  &this->cuda_pointer, sizeof( Object ) );
-         cudaMemcpy( this->cuda_pointer, this->pointer, sizeof( Object ), cudaMemcpyHostToDevice );
-         if( ! checkCudaDevice )
+         this->cuda_pointer = Devices::Cuda::passToDevice( *this->pointer );
+         if( ! this->cuda_pointer )
             return false;
          Devices::Cuda::insertSmartPointer( this );
 #endif
@@ -681,8 +707,7 @@ class SharedPointer< Object, Devices::Cuda, lazy, true > : public SmartPointer
       
       /*const ThisType& operator=( ThisType&& ptr )
       {
-         if( this-> pointer )
-            delete this->pointer;
+         this->free();
 #ifdef HAVE_CUDA
          if( this->cuda_pointer )
             cudaFree( this->cuda_pointer );
@@ -737,12 +762,12 @@ class SharedPointer< Object, Devices::Cuda, lazy, true > : public SmartPointer
       
       void free()
       {
-         if( ! this->pointer )
-            return;
          if( this->counter )
          {
             if( ! --*( this->counter ) )
             {
+               delete this->counter;
+               this->counter = nullptr;
                if( this->pointer )
                   delete this->pointer;
 #ifdef HAVE_CUDA
@@ -750,7 +775,6 @@ class SharedPointer< Object, Devices::Cuda, lazy, true > : public SmartPointer
                   cudaFree( this->cuda_pointer );
                checkCudaDevice;
 #endif         
-               std::cerr << "Deleting data..." << std::endl;
             }
          }
          
