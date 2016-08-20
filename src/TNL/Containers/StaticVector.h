@@ -307,9 +307,11 @@ class StaticVector< 3, Real > : public Containers::StaticArray< 3, Real >
 };
 
 template< int Size, typename Real >
+__cuda_callable__
 StaticVector< Size, Real > operator * ( const Real& c, const StaticVector< Size, Real >& u );
 
 template< int Size, typename Real >
+__cuda_callable__
 StaticVector< Size, Real > abs( const StaticVector< Size, Real >& u ) { return u.abs(); };
 
 } // namespace Containers

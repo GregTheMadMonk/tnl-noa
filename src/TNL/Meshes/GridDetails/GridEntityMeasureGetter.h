@@ -33,6 +33,7 @@ class GridEntityMeasureGetter< Meshes::Grid< Dimensions, Real, Device, Index >, 
       typedef Meshes::Grid< Dimensions, Real, Device, Index > GridType;
  
       template< typename EntityType >
+      __cuda_callable__ inline
       static const Real& getMeasure( const GridType& grid,
                                      const EntityType& entity )
       {
@@ -54,6 +55,7 @@ class GridEntityMeasureGetter< Meshes::Grid< 1, Real, Device, Index >, 1 >
       typedef Meshes::Grid< 1, Real, Device, Index > GridType;
  
       template< typename EntityType >
+      __cuda_callable__ inline
       static const Real& getMeasure( const GridType& grid,
                                      const EntityType& entity )
       {
@@ -74,6 +76,7 @@ class GridEntityMeasureGetter< Meshes::Grid< 2, Real, Device, Index >, 2 >
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
  
       template< typename EntityType >
+      __cuda_callable__ inline
       static const Real& getMeasure( const GridType& grid,
                                      const EntityType& entity )
       {
@@ -91,6 +94,7 @@ class GridEntityMeasureGetter< Meshes::Grid< 2, Real, Device, Index >, 1 >
       typedef Meshes::Grid< 2, Real, Device, Index > GridType;
  
       template< typename EntityType >
+      __cuda_callable__ inline
       static const Real& getMeasure( const GridType& grid,
                                      const EntityType& entity )
       {
@@ -114,6 +118,7 @@ class GridEntityMeasureGetter< Meshes::Grid< 3, Real, Device, Index >, 3 >
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
  
       template< typename EntityType >
+      __cuda_callable__ inline
       static const Real& getMeasure( const GridType& grid,
                                      const EntityType& entity )
       {
@@ -131,6 +136,7 @@ class GridEntityMeasureGetter< Meshes::Grid< 3, Real, Device, Index >, 2 >
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
  
       template< typename EntityType >
+      __cuda_callable__ inline
       static const Real& getMeasure( const GridType& grid,
                                      const EntityType& entity )
       {
@@ -153,6 +159,7 @@ class GridEntityMeasureGetter< Meshes::Grid< 3, Real, Device, Index >, 1 >
       typedef Meshes::Grid< 3, Real, Device, Index > GridType;
  
       template< typename EntityType >
+      __cuda_callable__ inline
       static const Real& getMeasure( const GridType& grid,
                                      const EntityType& entity )
       {
