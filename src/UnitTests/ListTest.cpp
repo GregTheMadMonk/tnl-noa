@@ -8,22 +8,26 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/tnlConfig.h>
-#include <cstdlib>
+#ifdef HAVE_GTEST 
+#include "gtest/gtest.h"
+#endif
 
-#include "tnlListTester.h"
-#include "../tnlUnitTestStarter.h"
+#include <TNL/List.h>
+
+using namespace TNL;
+
+#ifdef HAVE_GTEST 
+#endif
+
 
 int main( int argc, char* argv[] )
 {
-#ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< tnlListTester >() )
-     return EXIT_FAILURE;
-   return EXIT_SUCCESS;
+#ifdef HAVE_GTEST
+   ::testing::InitGoogleTest( &argc, argv );
+   return RUN_ALL_TESTS();
 #else
    return EXIT_FAILURE;
 #endif
 }
-
 
 

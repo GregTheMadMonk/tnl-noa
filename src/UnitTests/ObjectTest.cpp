@@ -8,19 +8,35 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/tnlConfig.h>
 #include <TNL/Devices/Host.h>
-#include <cstdlib>
+#include <TNL/Object.h>
+#include <TNL/File.h>
 
-#include "tnlObjectTester.h"
-#include "../tnlUnitTestStarter.h"
+#ifdef HAVE_GTEST 
+#include "gtest/gtest.h"
+#endif
+
+using namespace TNL;
+
+#ifdef HAVE_GTEST 
+TEST( ObjectTest, SaveAndLoadTest )
+{
+   Object testObject;
+   File file;
+   file.open( "test-file.tnl", tnlWriteMode );
+   ASSERT_TRUE( testObject.save( file ) );
+   file.close();
+   file.open( "test-file.tnl", tnlReadMode );
+   ASSERT_TRUE( testObject.load( file ) );
+}
+#endif
+
 
 int main( int argc, char* argv[] )
 {
-#ifdef HAVE_CPPUNIT
-   if( ! tnlUnitTestStarter :: run< ObjectTester >() )
-     return EXIT_FAILURE;
-   return EXIT_SUCCESS;
+#ifdef HAVE_GTEST
+   ::testing::InitGoogleTest( &argc, argv );
+   return RUN_ALL_TESTS();
 #else
    return EXIT_FAILURE;
 #endif
