@@ -36,7 +36,7 @@ TEST( ArrayOperationsTest, allocationTest )
 {
    Element* data;
    ArrayOperations< Devices::Host >::allocateMemory( data, getTestSize() );
-   ASSERT_EQ( data, 0 );
+   ASSERT_EQ( data, ( Element* ) NULL );
 
    ArrayOperations< Devices::Host >::freeMemory( data );
 };
