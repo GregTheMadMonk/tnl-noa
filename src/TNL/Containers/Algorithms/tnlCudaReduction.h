@@ -53,6 +53,6 @@ class tnlCudaReduction< tnlParallelReductionScalarProduct< Real, Index >, blockS
 } // namespace TNL
 
 #ifdef HAVE_CUDA
-#include <TNL/core/cuda/tnlCudaReduction_impl.h>
+#include <TNL/Containers/Algorithms/tnlCudaReduction_impl.h>
 #endif
 

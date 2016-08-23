@@ -17,6 +17,7 @@ SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL )
 
 set( headers 
      Assert.h
+     Curve.h
      File.h
      File_impl.h
      Object.h

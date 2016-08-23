@@ -14,7 +14,7 @@
 #include <TNL/Matrices/Dense.h>
 
 #ifdef HAVE_CUDA
-#include <TNL/core/cuda/reduction-operations.h>
+#include <TNL/Containers/Algorithms/reduction-operations.h>
 #endif
 
 namespace TNL {

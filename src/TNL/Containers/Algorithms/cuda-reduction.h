@@ -21,5 +21,5 @@ bool reductionOnCudaDevice( const Operation& operation,
 
 } // namespace TNL
 
-#include <TNL/core/cuda/cuda-reduction_impl.h>
+#include <TNL/Containers/Algorithms/cuda-reduction_impl.h>
 

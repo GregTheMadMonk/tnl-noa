@@ -27,4 +27,4 @@ bool cudaPrefixSum( const Index size,
 
 } // namespace TNL
 
-#include <TNL/core/cuda/cuda-prefix-sum_impl.h>
+#include <TNL/Containers/Algorithms/cuda-prefix-sum_impl.h>

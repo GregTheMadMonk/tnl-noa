@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/core/cuda/cuda-prefix-sum.h>
+#include <TNL/Containers/Algorithms/cuda-prefix-sum.h>
  
 namespace TNL {
 namespace Devices {

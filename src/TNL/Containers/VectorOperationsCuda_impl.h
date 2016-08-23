@@ -11,8 +11,8 @@
 #pragma once
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/cuda/cuda-prefix-sum.h>
-#include <TNL/core/cuda/tnlCublasWrapper.h>
+#include <TNL/Containers/Algorithms/cuda-prefix-sum.h>
+#include <TNL/Containers/Algorithms/tnlCublasWrapper.h>
 
 namespace TNL {
 namespace Containers {   

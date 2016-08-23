@@ -21,7 +21,7 @@
 #include <cppunit/TestCase.h>
 #include <cppunit/Message.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/core/cuda/cuda-reduction.h>
+#include <TNL/Containers/Algorithms/cuda-reduction.h>
 
 using namespace TNL;
 

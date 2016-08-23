@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tnlCurve.h  -  description
+                          Curve.h  -  description
                              -------------------
     begin                : 2007/06/27
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -22,12 +22,12 @@
 namespace TNL {
 
 //! Basic structure for curves
-template< class T > class tnlCurveElement
+template< class T > class CurveElement
 {
    public:
-   tnlCurveElement() {};
+   CurveElement() {};
 
-   tnlCurveElement( const T& pos,
+   CurveElement( const T& pos,
                   bool _speparator = false )
       : position( pos ),
         separator( _speparator ) {};
@@ -71,11 +71,11 @@ template< class T > class tnlCurveElement
    bool separator;
 };
 
-template< class T > class tnlCurve : public Object, public List< tnlCurveElement< T > >
+template< class T > class Curve : public Object, public List< CurveElement< T > >
 {
    public:
    //! Basic contructor
-   tnlCurve( const char* name )
+   Curve( const char* name )
    : Object()
 // FIXME: name property has been removed from Object
 //   : Object( name )
@@ -83,7 +83,7 @@ template< class T > class tnlCurve : public Object, public List< tnlCurveElement
    };
 
    //! Destructor
-   ~tnlCurve()
+   ~Curve()
    { };
 
    String getType() const
@@ -94,20 +94,20 @@ template< class T > class tnlCurve : public Object, public List< tnlCurveElement
    //! Append new point
    void Append( const T& vec, bool separator = false )
    {
-      List< tnlCurveElement< T > > :: Append( tnlCurveElement< T >( vec, separator ) );
+      List< CurveElement< T > > :: Append( CurveElement< T >( vec, separator ) );
    };
 
    //! Erase the curve
    void Erase()
    {
-      List< tnlCurveElement< T > >::reset();
+      List< CurveElement< T > >::reset();
    };
  
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const
    {
       if( ! Object :: save( file ) ) return false;
-      if( ! List< tnlCurveElement< T > > :: DeepSave( file ) ) return false;
+      if( ! List< CurveElement< T > > :: DeepSave( file ) ) return false;
       return true;
    };
 
@@ -115,7 +115,7 @@ template< class T > class tnlCurve : public Object, public List< tnlCurveElement
    bool load( File& file )
    {
       if( ! Object :: load( file ) ) return false;
-      if( ! List< tnlCurveElement< T > > :: DeepLoad( file ) ) return false;
+      if( ! List< CurveElement< T > > :: DeepLoad( file ) ) return false;
       return true;
    };
 
@@ -133,7 +133,7 @@ template< class T > class tnlCurve : public Object, public List< tnlCurveElement
 
 };
 
-template< class T > bool Write( const tnlCurve< T >& curve,
+template< class T > bool Write( const Curve< T >& curve,
                                 std::ostream& str,
                                 const char* format,
                                 const int step = 1 )
@@ -169,7 +169,7 @@ template< class T > bool Write( const tnlCurve< T >& curve,
    return false;
 };
 
-template< class T > bool Write( const tnlCurve< T >& curve,
+template< class T > bool Write( const Curve< T >& curve,
                                 const char* file_name,
                                 const char* format,
                                 const int step = 1 )
@@ -210,7 +210,7 @@ template< class T > bool Write( const tnlCurve< T >& curve,
    return true;
 };
 
-template< class T > bool Read( tnlCurve< T >& crv,
+template< class T > bool Read( Curve< T >& crv,
                                const char* input_file )
 {
    File file;
@@ -229,7 +229,7 @@ template< class T > bool Read( tnlCurve< T >& crv,
 }
 
 // Explicit instatiation
-template class tnlCurve< Containers::StaticVector< 2, double > >;
+template class Curve< Containers::StaticVector< 2, double > >;
 
 } // namespace TNL
 

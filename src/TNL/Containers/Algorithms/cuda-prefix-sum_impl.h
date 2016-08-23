@@ -12,7 +12,7 @@
    
 #include <iostream>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/core/cuda/reduction-operations.h>
+#include <TNL/Containers/Algorithms/reduction-operations.h>
    
 #ifdef HAVE_CUDA
 

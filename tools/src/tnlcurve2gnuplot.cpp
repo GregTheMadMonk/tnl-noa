@@ -9,7 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/core/tnlCurve.h>
+#include <TNL/Curve.h>
 #include <TNL/Containers/StaticVector.h>
 
 using namespace TNL;
@@ -51,7 +51,7 @@ int main( int argc, char* argv[] )
       return 1;
    }*/
    int i;
-   tnlCurve< Containers::StaticVector< 2, double > > crv( "tnlcurve2gnuplot:curve" );
+   Curve< Containers::StaticVector< 2, double > > crv( "tnlcurve2gnuplot:curve" );
    for( i = 0; i < size; i ++ )
    {
       const char* input_file = input_files[ i ]. getString();
@@ -70,7 +70,7 @@ int main( int argc, char* argv[] )
       }
       file. close();
 
-      tnlCurve< Containers::StaticVector< 2, double > > out_crv( "tnlcurve2gnuplot:outcurve" );
+      Curve< Containers::StaticVector< 2, double > > out_crv( "tnlcurve2gnuplot:outcurve" );
       const int size = crv. getSize();
       int i;
       for( i = 0; i < size; i += output_step )

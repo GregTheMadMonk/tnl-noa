@@ -8,4 +8,4 @@
 
 /* See Copyright Notice in tnl/Copyright */
  
-#include "tnlVectorOperationsTester.h"
+#include "VectorOperationsTest.h"

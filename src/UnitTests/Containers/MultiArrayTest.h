@@ -10,11 +10,14 @@
 
 #pragma once
 
+#include <TNL/Containers/MultiArray.h>
+
 #ifdef HAVE_GTEST 
 #include "gtest/gtest.h"
 #endif
 
 using namespace TNL;
+using namespace TNL::Containers;
 
 #ifdef HAVE_CUDA
 template< typename ElementType, typename IndexType >

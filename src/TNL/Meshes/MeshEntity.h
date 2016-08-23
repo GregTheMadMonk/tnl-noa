@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/File.h>
-#include <TNL/core/tnlDynamicTypeTag.h>
+#include <TNL/Containers/DynamicTypeTag.h>
 #include <TNL/Meshes/MeshDetails/MeshEntityId.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 #include <TNL/Meshes/MeshDimensionsTag.h>
@@ -221,12 +221,14 @@ std::ostream& operator <<( std::ostream& str, const MeshEntity< MeshConfig, Enti
  * This tells the compiler that theMeshEntity is a type with a dynamic memory allocation.
  * It is necessary for the loading and the saving of the mesh entities arrays.
  */
+namespace Containers{
 template< typename MeshConfig,
           typename EntityTopology >
-struct tnlDynamicTypeTag< Meshes::MeshEntity< MeshConfig, EntityTopology > >
+struct DynamicTypeTag< Meshes::MeshEntity< MeshConfig, EntityTopology > >
 {
    enum { value = true };
 };
+}
 
 } // namespace TNL
 

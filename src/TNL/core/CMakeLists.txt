@@ -1,12 +1,8 @@
 ADD_SUBDIRECTORY( containers )
-ADD_SUBDIRECTORY( cuda )
 ADD_SUBDIRECTORY( multimaps )
 
 set (headers 
              tnlConstants.h
-             tnlCurve.h
-             tnlDynamicTypeTag.h
-             tnlFeature.h
              tnlFlopsCounter.h
              tnlIndexedSet.h
              tnlReal.h
