@@ -244,57 +244,11 @@ else()
     set( HAVE_SYS_RESOURCE_H "#define HAVE_SYS_RESOURCE_H 1" )
 endif()
 
-####
-# Check for cppunit
-#
 if( WITH_TESTS STREQUAL "yes" )
-    FIND_PATH(CPPUNIT_INCLUDE_DIR cppunit/TestCase.h
-      /usr/local/include
-      /usr/include
-      DOC "CppUnit headers."
-    )
-
-    ####
-    # With Win32, important to have both
-    #
-    if(WIN32)
-      FIND_LIBRARY(CPPUNIT_LIBRARY cppunit
-                   ${CPPUNIT_INCLUDE_DIR}/../lib
-                   /usr/local/lib
-                   /usr/lib)
-      FIND_LIBRARY(CPPUNIT_DEBUG_LIBRARY cppunitd
-                   ${CPPUNIT_INCLUDE_DIR}/../lib
-                   /usr/local/lib
-                   /usr/lib)
-    else(WIN32)
-      # On unix system, debug and release have the same name
-      FIND_LIBRARY(CPPUNIT_LIBRARY cppunit
-                   ${CPPUNIT_INCLUDE_DIR}/../lib
-                   /usr/local/lib
-                   /usr/lib)
-      FIND_LIBRARY(CPPUNIT_DEBUG_LIBRARY cppunit
-                   ${CPPUNIT_INCLUDE_DIR}/../lib
-                   /usr/local/lib
-                   /usr/lib)
-    endif(WIN32)
-
-
-    if( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
-          message( "CPPUNIT not found." )
-          set( HAVE_CPPUNIT "//#define HAVE_CPPUNIT 1" )
-    else( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
-      message( "CPPUNIT headers found -- ${CPPUNIT_INCLUDE_DIR}" )
-      if(CPPUNIT_LIBRARY)
-        message( "CPPUNIT library found -- ${CPPUNIT_LIBRARY}" )
-        set(CPPUNIT_FOUND "YES")
-        set(CPPUNIT_LIBRARIES ${CPPUNIT_LIBRARY} ${CMAKE_DL_LIBS})
-        set(CPPUNIT_DEBUG_LIBRARIES ${CPPUNIT_DEBUG_LIBRARY}
-                                    ${CMAKE_DL_LIBS})
-       set( HAVE_CPPUNIT "#define HAVE_CPPUNIT 1" )
-      endif(CPPUNIT_LIBRARY)
-    endif( ${CPPUNIT_INCLUDE_DIR} STREQUAL "CPPUNIT_INCLUDE_DIR-NOTFOUND" )
-    ENABLE_TESTING()
-    INCLUDE( Dart )
+   find_package( GTest )
+   if( GTEST_FOUND )
+      set( CXX_TESTS_FLAGS "-DHAVE_GTEST" )
+   endif( GTEST_FOUND )
 endif( WITH_TESTS STREQUAL "yes" )
 
 #if( BUILD_MPI )

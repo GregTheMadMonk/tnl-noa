@@ -8,7 +8,7 @@
  ***************************************************************************/
 
 /***************************************************************************
-                          tnlUniquePointer.h  -  description
+                          UniquePointer.h  -  description
                              -------------------
     begin                : May 6, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -25,26 +25,26 @@
 namespace TNL { 
 
 template< typename Object, typename Device = typename Object::DeviceType >
-class tnlUniquePointer
+class UniquePointer
 {  
 };
 
 template< typename Object >
-class tnlUniquePointer< Object, Devices::Host > : public SmartPointer
+class UniquePointer< Object, Devices::Host > : public SmartPointer
 {
    public:
       
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
-      typedef tnlUniquePointer< Object, Devices::Host > ThisType;
+      typedef UniquePointer< Object, Devices::Host > ThisType;
          
-      tnlUniquePointer()
+      UniquePointer()
       {
          this->pointer = new Object();
       }
       
       template< typename... Args >
-      tnlUniquePointer( const Args... args )
+      UniquePointer( const Args... args )
       {
          this->pointer = new Object( args... );
       }
@@ -99,7 +99,7 @@ class tnlUniquePointer< Object, Devices::Host > : public SmartPointer
          return true;
       }
       
-      ~tnlUniquePointer()
+      ~UniquePointer()
       {
          if( this->pointer )
             delete this->pointer;
@@ -112,15 +112,15 @@ class tnlUniquePointer< Object, Devices::Host > : public SmartPointer
 };
 
 template< typename Object >
-class tnlUniquePointer< Object, Devices::Cuda > : public SmartPointer
+class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 {
    public:
       
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
-      typedef tnlUniquePointer< Object, Devices::Host > ThisType;
+      typedef UniquePointer< Object, Devices::Host > ThisType;
          
-      tnlUniquePointer()
+      UniquePointer()
       : modified( false )
       {
          this->pointer = new Object();
@@ -132,7 +132,7 @@ class tnlUniquePointer< Object, Devices::Cuda > : public SmartPointer
       }
       
       template< typename... Args >
-      tnlUniquePointer( const Args... args )
+      UniquePointer( const Args... args )
       : modified( false )
       {
          this->pointer = new Object( args... );
@@ -218,7 +218,7 @@ class tnlUniquePointer< Object, Devices::Cuda > : public SmartPointer
 #endif         
       }
             
-      ~tnlUniquePointer()
+      ~UniquePointer()
       {
          if( this->pointer )
             delete this->pointer;
