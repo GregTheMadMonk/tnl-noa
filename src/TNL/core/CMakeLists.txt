@@ -1,4 +1,3 @@
-ADD_SUBDIRECTORY( containers )
 ADD_SUBDIRECTORY( multimaps )
 
 set (headers 
