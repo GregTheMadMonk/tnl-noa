@@ -12,6 +12,8 @@
 #include <TNL/Containers/Algorithms/cuda-reduction.h>
  
 namespace TNL {
+namespace Containers {
+namespace Algorithms {
 
 #ifdef TEMPLATE_EXPLICIT_INSTANTIATION
 
@@ -81,4 +83,6 @@ template bool reductionOnCudaDevice< tnlParallelReductionDiffLpNorm< long double
 #endif
 #endif
 
+} // namespace Algorithms
+} // namespace Containers
 } // namespace TNL

@@ -15,6 +15,8 @@
 #endif
 
 namespace TNL {
+namespace Containers {
+namespace Algorithms {
 
 template< typename Real1,
           typename Real2,
@@ -60,5 +62,7 @@ class tnlCublasWrapper< double, double, Index >
 };
 #endif
 
+} // namespace Algorithms
+} // namespace Containers
 } // namespace TNL
 

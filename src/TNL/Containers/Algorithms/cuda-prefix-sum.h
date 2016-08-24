@@ -11,7 +11,9 @@
 #pragma once
 
 namespace TNL {
-
+namespace Containers {
+namespace Algorithms {
+   
 enum enumPrefixSumType { exclusivePrefixSum = 0,
                          inclusivePrefixSum };
 
@@ -25,6 +27,8 @@ bool cudaPrefixSum( const Index size,
                     const Operation& operation,
                     const enumPrefixSumType prefixSumType = inclusivePrefixSum );
 
+} // namespace Algorithms
+} // namespace Containers
 } // namespace TNL
 
 #include <TNL/Containers/Algorithms/cuda-prefix-sum_impl.h>

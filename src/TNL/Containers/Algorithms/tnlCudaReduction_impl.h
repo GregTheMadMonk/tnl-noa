@@ -11,6 +11,8 @@
 #pragma once
 
 namespace TNL {
+namespace Containers {
+namespace Algorithms {
 
 template< typename Operation, int blockSize >
 __device__
@@ -286,5 +288,7 @@ reduce( Operation& operation,
 
 #endif
 
+} // namespace Algorithms
+} // namespace Containers
 } // namespace TNL
 

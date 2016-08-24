@@ -11,6 +11,8 @@
 #pragma once 
 
 namespace TNL {
+namespace Containers {
+namespace Algorithms {   
 
 template< typename Operation >
 bool reductionOnCudaDevice( const Operation& operation,
@@ -19,6 +21,8 @@ bool reductionOnCudaDevice( const Operation& operation,
                             const typename Operation :: RealType* deviceInput2,
                             typename Operation :: ResultType& result );
 
+} // namespace Algorithms
+} // namespace Containers
 } // namespace TNL
 
 #include <TNL/Containers/Algorithms/cuda-reduction_impl.h>

@@ -176,7 +176,7 @@ bool ArrayOperations< Devices::Cuda >::compareMemory( const Element1* destinatio
    Assert( source, );
    //TODO: The parallel reduction on the CUDA device with different element types is needed.
    bool result;
-   tnlParallelReductionEqualities< Element1, Index > reductionEqualities;
+   Algorithms::tnlParallelReductionEqualities< Element1, Index > reductionEqualities;
    reductionOnCudaDevice( reductionEqualities, size, destination, source, result );
    return result;
 }

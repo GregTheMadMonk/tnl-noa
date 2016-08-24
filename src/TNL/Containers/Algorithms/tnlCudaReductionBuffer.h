@@ -14,6 +14,8 @@
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {
+namespace Containers {
+namespace Algorithms {
 
 class tnlCudaReductionBuffer
 {
@@ -84,6 +86,7 @@ class tnlCudaReductionBuffer
       size_t size;
 };
 
-
+} // namespace Algorithms
+} // namespace Containers
 } // namespace TNL
 

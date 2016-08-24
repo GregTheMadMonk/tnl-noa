@@ -17,7 +17,8 @@
 #ifdef HAVE_CUDA
 
 namespace TNL {
-namespace Devices {
+namespace Containers {
+namespace Algorithms {   
 
 template< typename DataType,
           typename Operation,
@@ -30,7 +31,7 @@ __global__ void cudaFirstPhaseBlockPrefixSum( const enumPrefixSumType prefixSumT
                                               DataType* output,
                                               DataType* auxArray )
 {
-   DataType* sharedData = getSharedMemory< DataType >();
+   DataType* sharedData = TNL::Devices::getSharedMemory< DataType >();
    DataType* auxData = &sharedData[ elementsInBlock + elementsInBlock / Devices::Cuda::getNumberOfSharedMemoryBanks() + 2 ];
    DataType* warpSums = &auxData[ blockDim. x ];
 
@@ -416,7 +417,8 @@ extern template bool cudaPrefixSum( const long int size,
 
 #endif
 
-} // namespace Devices
+} // namespace Algorithms
+} // namespace Containers
 } // namespace TNL
 
 #endif

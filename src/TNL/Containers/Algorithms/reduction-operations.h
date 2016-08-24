@@ -21,6 +21,8 @@
 
 
 namespace TNL {
+namespace Containers {
+namespace Algorithms {
 
 #ifdef HAVE_CUDA
 /***
@@ -132,52 +134,52 @@ __device__  inline double tnlCudaMax( volatile const double& a,
  */
 __device__  inline int tnlCudaAbs( const int& a )
 {
-   return abs( a );
+   return ::abs( a );
 }
 
 __device__  inline long int tnlCudaAbs( const long int& a )
 {
-   return abs( a );
+   return ::abs( a );
 }
 
 __device__  inline float tnlCudaAbs( const float& a )
 {
-   return abs( a );
+   return ::abs( a );
 }
 
 __device__  inline double tnlCudaAbs( const double& a )
 {
-   return abs( a );
+   return ::abs( a );
 }
 
 __device__  inline long double tnlCudaAbs( const long double& a )
 {
-   return abs( ( double ) a );
+   return ::abs( ( double ) a );
 }
 
 __device__  inline int tnlCudaAbs( volatile const int& a )
 {
-   return abs( a );
+   return ::abs( a );
 }
 
 __device__  inline long int tnlCudaAbs( volatile const long int& a )
 {
-   return abs( a );
+   return ::abs( a );
 }
 
 __device__  inline float tnlCudaAbs( volatile const float& a )
 {
-   return abs( a );
+   return ::abs( a );
 }
 
 __device__  inline double tnlCudaAbs( volatile const double& a )
 {
-   return abs( a );
+   return ::abs( a );
 }
 
 __device__  inline long double tnlCudaAbs( volatile const long double& a )
 {
-   return abs( ( double ) a );
+   return ::abs( ( double ) a );
 }
 
 
@@ -427,7 +429,7 @@ class tnlParallelReductionAbsSum : public tnlParallelReductionSum< Real, Index >
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return current + abs( data1[ idx ] );
+      return current + ::abs( data1[ idx ] );
    };
 
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
@@ -485,7 +487,7 @@ class tnlParallelReductionAbsMax : public tnlParallelReductionMax< Real, Index >
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return max( current, abs( data1[ idx ] ) );
+      return std::max( current, ::abs( data1[ idx ] ) );
    };
 
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
@@ -551,7 +553,7 @@ class tnlParallelReductionLpNorm : public tnlParallelReductionSum< Real, Index >
                             const RealType* data1,
                             const RealType* data2 )
    {
-      return current + ::pow( abs( data1[ idx ] ), p );
+      return current + ::pow( ::abs( data1[ idx ] ), p );
    };
 
    __cuda_callable__ ResultType initialValue() { return ( ResultType ) 0; };
@@ -903,6 +905,8 @@ class tnlParallelReductionDiffLpNorm : public tnlParallelReductionSum< Real, Ind
    RealType p;
 };
 
-
+} // namespace Algorithms
+} // namespace Containers
 } // namespace TNL
+
 

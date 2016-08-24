@@ -11,6 +11,8 @@
 #pragma once
 
 namespace TNL {
+namespace Containers {
+namespace Algorithms {
    
 #ifdef HAVE_CUDA
 
@@ -50,6 +52,8 @@ class tnlCudaReduction< tnlParallelReductionScalarProduct< Real, Index >, blockS
 
 #endif
 
+} // namespace Algorithms
+} // namespace Containers
 } // namespace TNL
 
 #ifdef HAVE_CUDA

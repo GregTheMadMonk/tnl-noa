@@ -28,6 +28,8 @@
 #endif
 
 namespace TNL {
+namespace Containers {
+namespace Algorithms {
 
 
 /****
@@ -1708,4 +1710,6 @@ extern template bool reductionOnCudaDevice< tnlParallelReductionDiffLpNorm< long
 
 #endif /* TEMPLATE_EXPLICIT_INSTANTIATION */
 
+} // namespace Algorithms
+} // namespace Containers
 } // namespace TNL
