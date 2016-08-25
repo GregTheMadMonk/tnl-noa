@@ -12,6 +12,7 @@
 
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Timer.h>
+#include <TNL/Solvers/SolverMonitor.h>
 #include <ostream>
 
 namespace TNL {
@@ -30,10 +31,9 @@ class SolverStarter
    template< typename Solver >
    bool writeEpilog( std::ostream& str, const Solver& solver );
 
-   template< typename Problem, typename TimeStepper >
+   template< typename Problem, typename TimeStepper, typename DiscreteSolver >
    bool runPDESolver( Problem& problem,
-                      const Config::ParameterContainer& parameters,
-                      TimeStepper& timeStepper );
+                      const Config::ParameterContainer& parameters );
 
    protected:
 

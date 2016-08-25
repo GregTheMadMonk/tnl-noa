@@ -98,7 +98,7 @@ class navierStokesSolver
                         DofVectorType& _u,
                         DofVectorType& _fu );
 
-   SolverMonitor< RealType, IndexType >* getSolverMonitor();
+   SolverMonitor* getSolverMonitor();
 
    protected:
 

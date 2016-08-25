@@ -79,6 +79,17 @@ setProblem( ProblemType& problem )
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
+void
+ExplicitTimeStepper< Problem, OdeSolver >::
+setSolverMonitor( SolverMonitorType& solverMonitor )
+{
+   this->solverMonitor = &solverMonitor;
+   if( this->odeSolver )
+      this->odeSolver->setSolverMonitor( solverMonitor );
+}
+
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
 Problem*
 ExplicitTimeStepper< Problem, OdeSolver >::
 getProblem() const
@@ -138,6 +149,11 @@ getExplicitRHS( const RealType& time,
                 DofVectorPointer& u,
                 DofVectorPointer& fu )
 {
+   if( this->solverMonitor ) {
+      this->solverMonitor->setTime( time );
+      this->solverMonitor->setStage( "Preiteration" );
+   }
+
    this->preIterateTimer.start();
    if( ! this->problem->preIterate( time,
                                     tau,
@@ -150,10 +166,18 @@ getExplicitRHS( const RealType& time,
       //return false; // TODO: throw exception
    }
    this->preIterateTimer.stop();
+
+   if( this->solverMonitor )
+      this->solverMonitor->setStage( "Explicit update" );
+
    this->explicitUpdaterTimer.start();
    this->problem->setExplicitBoundaryConditions( time, this->mesh, u, this->meshDependentData );
    this->problem->getExplicitRHS( time, tau, this->mesh, u, fu, this->meshDependentData );
    this->explicitUpdaterTimer.stop();
+
+   if( this->solverMonitor )
+      this->solverMonitor->setStage( "Postiteration" );
+
    this->postIterateTimer.start();
    if( ! this->problem->postIterate( time,
                                      tau,

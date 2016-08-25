@@ -279,8 +279,7 @@ void navierStokesSolver< Mesh, EulerScheme > :: GetExplicitRHS(  const RealType&
 }
 
 template< typename Mesh, typename EulerScheme >
-SolverMonitor< typename navierStokesSolver< Mesh, EulerScheme > :: RealType,
-                  typename navierStokesSolver< Mesh, EulerScheme > :: IndexType >* 
+SolverMonitor*
    navierStokesSolver< Mesh, EulerScheme > ::  getSolverMonitor()
 {
    return &solverMonitor;

@@ -15,7 +15,7 @@
 #include <TNL/TimerRT.h>
 #include <TNL/core/tnlFlopsCounter.h>
 #include <TNL/Object.h>
-#include <TNL/Solvers/ODE/ODESolverMonitor.h>
+#include <TNL/Solvers/IterativeSolverMonitor.h>
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
@@ -36,7 +36,8 @@ class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
    typedef typename Problem :: RealType RealType;
    typedef typename Problem :: DeviceType DeviceType;
    typedef typename Problem :: IndexType IndexType;
-   typedef SharedPointer< DofVectorType, DeviceType >  DofVectorPointer;
+   typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+   typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
 
    ExplicitSolver();
 
@@ -78,7 +79,7 @@ class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
 
    void setRefreshRate( const IndexType& refreshRate );
 
-   void setSolverMonitor( ODESolverMonitor< RealType, IndexType >& solverMonitor );
+   void setSolverMonitor( SolverMonitorType& solverMonitor );
 
    void refreshSolverMonitor();
 
@@ -113,7 +114,7 @@ protected:
 
    Problem* problem;
 
-   ODESolverMonitor< RealType, IndexType >* solverMonitor;
+   SolverMonitorType* solverMonitor;
 
    /****
     * Auxiliary array for the computation of the solver residue on CUDA device.

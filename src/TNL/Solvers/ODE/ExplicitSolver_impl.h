@@ -46,6 +46,7 @@ ExplicitSolver< Problem >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
+   this->setVerbose( parameters.getParameter< bool >( "verbose" ) );
    return IterativeSolver< typename Problem::RealType, typename Problem::IndexType >::setup( parameters, prefix );
 }
 
@@ -158,7 +159,7 @@ setTimerRT( TimerRT* timer )
 template< class Problem >
 void
 ExplicitSolver< Problem >::
-setSolverMonitor( ODESolverMonitor< RealType, IndexType >& solverMonitor )
+setSolverMonitor( SolverMonitorType& solverMonitor )
 {
    this->solverMonitor = &solverMonitor;
 }

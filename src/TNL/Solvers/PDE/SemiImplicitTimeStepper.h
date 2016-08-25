@@ -40,6 +40,7 @@ class SemiImplicitTimeStepper
    typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
    typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
    typedef SharedPointer< PreconditionerType, DeviceType > PreconditionerPointer;
+   typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
 
    SemiImplicitTimeStepper();
 
@@ -56,6 +57,8 @@ class SemiImplicitTimeStepper
    ProblemType* getProblem() const;
 
    void setSolver( LinearSystemSolver& linearSystemSolver );
+
+   void setSolverMonitor( SolverMonitorType& solverMonitor );
 
    LinearSystemSolverType* getSolver() const;
 
@@ -80,6 +83,8 @@ class SemiImplicitTimeStepper
    DofVectorPointer rightHandSidePointer;
 
    LinearSystemSolver* linearSystemSolver;
+
+   SolverMonitorType* solverMonitor;
 
    RealType timeStep;
 

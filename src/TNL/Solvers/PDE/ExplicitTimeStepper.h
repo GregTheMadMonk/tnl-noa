@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/Solvers/ODE/ODESolverMonitor.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Timer.h>
@@ -39,6 +38,7 @@ class ExplicitTimeStepper
    typedef typename ProblemType::MeshDependentDataType MeshDependentDataType;
    typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
    typedef SharedPointer< MeshDependentDataType, DeviceType > MeshDependentDataPointer;
+   typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
 
    ExplicitTimeStepper();
 
@@ -51,6 +51,8 @@ class ExplicitTimeStepper
    bool init( const MeshPointer& meshPointer );
 
    void setSolver( OdeSolverType& odeSolver );
+
+   void setSolverMonitor( SolverMonitorType& solverMonitor );
 
    void setProblem( ProblemType& problem );
 
@@ -76,6 +78,8 @@ class ExplicitTimeStepper
    protected:
 
    OdeSolverType* odeSolver;
+
+   SolverMonitorType* solverMonitor;
 
    Problem* problem;
 

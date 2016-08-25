@@ -76,9 +76,7 @@ class PDEProblem : public Problem< Real, Device, Index >
                         DofVectorPointer& dofs,
                         MeshDependentDataPointer& meshDependentData );
 
-      Solvers::SolverMonitor< RealType, IndexType >* getSolverMonitor();
-
-
+      Solvers::SolverMonitor* getSolverMonitor();
 };
 
 } // namespace Problems

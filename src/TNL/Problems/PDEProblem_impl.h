@@ -135,8 +135,7 @@ template< typename Mesh,
           typename Real,
           typename Device,
           typename Index >
-Solvers::SolverMonitor< typename PDEProblem< Mesh, Real, Device, Index >::RealType,
-                           typename PDEProblem< Mesh, Real, Device, Index >::IndexType >*
+Solvers::SolverMonitor*
 PDEProblem< Mesh, Real, Device, Index >::
 getSolverMonitor()
 {
