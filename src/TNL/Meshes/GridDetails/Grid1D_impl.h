@@ -214,7 +214,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Real
+const Real&
 Grid< 1, Real, Device, Index >::
 getCellMeasure() const
 {

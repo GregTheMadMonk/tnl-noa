@@ -34,8 +34,11 @@ class MeshFunctionEvaluatorTraverserUserData;
  */
 template< typename OutMeshFunction,
           typename InFunction >
-class MeshFunctionEvaluator : public Domain< OutMeshFunction::getEntitiesDimensions(), MeshDomain >
+class MeshFunctionEvaluator
 {
+   static_assert( OutMeshFunction::getDomainDimensions() == InFunction::getDomainDimensions(),
+                  "Input and output functions must have the same domain dimensions." );
+
    public:
       typedef typename OutMeshFunction::MeshType MeshType;
       typedef typename MeshType::RealType MeshRealType;
@@ -44,12 +47,6 @@ class MeshFunctionEvaluator : public Domain< OutMeshFunction::getEntitiesDimensi
       typedef typename OutMeshFunction::RealType RealType;
       typedef Functions::MeshFunctionEvaluatorTraverserUserData< OutMeshFunction, InFunction, RealType > TraverserUserData;
 
- 
-      const static int meshEntityDimensions = OutMeshFunction::getEntitiesDimensions();
- 
-      static_assert( MeshType::meshDimensions == InFunction::getDimensions(),
-         "Input function and the mesh of the mesh function have both different number of dimensions." );
- 
       static void evaluate( OutMeshFunction& meshFunction,
                             const InFunction& function,
                             const RealType& time = 0.0,
@@ -98,10 +95,10 @@ class MeshFunctionEvaluatorTraverserUserData
       typedef InFunction InFunctionType;
 
       MeshFunctionEvaluatorTraverserUserData( const InFunction* function,
-                                                 const Real* time,
-                                                 OutMeshFunction* meshFunction,
-                                                 const Real* outFunctionMultiplicator,
-                                                 const Real* inFunctionMultiplicator )
+                                              const Real* time,
+                                              OutMeshFunction* meshFunction,
+                                              const Real* outFunctionMultiplicator,
+                                              const Real* inFunctionMultiplicator )
       : meshFunction( meshFunction ), function( function ), time( time ),
         outFunctionMultiplicator( outFunctionMultiplicator ),
         inFunctionMultiplicator( inFunctionMultiplicator ){}

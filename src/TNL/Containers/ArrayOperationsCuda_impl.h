@@ -13,8 +13,8 @@
 #include <iostream>
 #include <TNL/tnlConfig.h>
 #include <TNL/core/mfuncs.h>
-#include <TNL/core/cuda/cuda-reduction.h>
-#include <TNL/core/cuda/reduction-operations.h>
+#include <TNL/Containers/Algorithms/cuda-reduction.h>
+#include <TNL/Containers/Algorithms/reduction-operations.h>
 
 namespace TNL {
 namespace Containers {   
@@ -176,7 +176,7 @@ bool ArrayOperations< Devices::Cuda >::compareMemory( const Element1* destinatio
    Assert( source, );
    //TODO: The parallel reduction on the CUDA device with different element types is needed.
    bool result;
-   tnlParallelReductionEqualities< Element1, Index > reductionEqualities;
+   Algorithms::tnlParallelReductionEqualities< Element1, Index > reductionEqualities;
    reductionOnCudaDevice( reductionEqualities, size, destination, source, result );
    return result;
 }

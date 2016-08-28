@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Problems/Problem.h>
+#include <TNL/SharedPointer.h>
 #include <TNL/Matrices/CSR.h>
 
 namespace TNL {
@@ -34,7 +35,6 @@ class PDEProblem : public Problem< Real, Device, Index >
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
       typedef Matrices::CSR< RealType, DeviceType, IndexType > MatrixType;
-      typedef SharedPointer< MatrixType, DeviceType > MatrixPointer;
       typedef Containers::Vector< RealType, DeviceType, IndexType > MeshDependentDataType;
 
       /****

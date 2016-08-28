@@ -13,4 +13,4 @@ set( tnl_schemes_euler_fvm_SOURCES
      ${common_SOURCES}
      PARENT_SCOPE )
      
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/operators/euler/fvm )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Operators/euler/fvm )

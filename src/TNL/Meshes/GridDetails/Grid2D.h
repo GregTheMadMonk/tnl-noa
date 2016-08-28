@@ -96,7 +96,7 @@ class Grid< 2, Real, Device, Index > : public Object
    RealType getEntityMeasure( const EntityType& entity ) const;
  
    __cuda_callable__
-   RealType getCellMeasure() const;
+   inline const RealType& getCellMeasure() const;
  
    __cuda_callable__
    inline VertexType getSpaceSteps() const;

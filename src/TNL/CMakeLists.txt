@@ -17,6 +17,7 @@ SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL )
 
 set( headers 
      Assert.h
+     Curve.h
      File.h
      File_impl.h
      Object.h
@@ -24,6 +25,9 @@ set( headers
      List_impl.h
      Logger.h
      Logger_impl.h
+     SharedPointer.h
+     SmartPointer.h
+     SmartPointersRegister.h
      StaticFor.h
      String.h
      SystemInfo.h

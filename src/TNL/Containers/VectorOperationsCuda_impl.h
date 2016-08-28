@@ -11,8 +11,8 @@
 #pragma once
 
 #include <TNL/tnlConfig.h>
-#include <TNL/core/cuda/cuda-prefix-sum.h>
-#include <TNL/core/cuda/tnlCublasWrapper.h>
+#include <TNL/Containers/Algorithms/cuda-prefix-sum.h>
+#include <TNL/Containers/Algorithms/tnlCublasWrapper.h>
 
 namespace TNL {
 namespace Containers {   
@@ -43,7 +43,7 @@ typename Vector :: RealType VectorOperations< Devices::Cuda > :: getVectorMax( c
    Assert( v. getSize() > 0, );
 
    Real result( 0 );
-   tnlParallelReductionMax< Real, Index > operation;
+   Algorithms::tnlParallelReductionMax< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v. getSize(),
                           v. getData(),
@@ -61,7 +61,7 @@ typename Vector :: RealType VectorOperations< Devices::Cuda > :: getVectorMin( c
    Assert( v. getSize() > 0, );
 
    Real result( 0 );
-   tnlParallelReductionMin< Real, Index > operation;
+   Algorithms::tnlParallelReductionMin< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v. getSize(),
                           v. getData(),
@@ -79,7 +79,7 @@ typename Vector :: RealType VectorOperations< Devices::Cuda > :: getVectorAbsMax
    Assert( v. getSize() > 0, );
 
    Real result( 0 );
-   tnlParallelReductionAbsMax< Real, Index > operation;
+   Algorithms::tnlParallelReductionAbsMax< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v. getSize(),
                           v. getData(),
@@ -97,7 +97,7 @@ typename Vector :: RealType VectorOperations< Devices::Cuda > :: getVectorAbsMin
    Assert( v. getSize() > 0, );
 
    Real result( 0 );
-   tnlParallelReductionAbsMin< Real, Index > operation;
+   Algorithms::tnlParallelReductionAbsMin< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v. getSize(),
                           v. getData(),
@@ -117,7 +117,7 @@ getVectorL1Norm( const Vector& v )
    Assert( v. getSize() > 0, );
 
    Real result( 0 );
-   tnlParallelReductionAbsSum< Real, Index > operation;
+   Algorithms::tnlParallelReductionAbsSum< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v. getSize(),
                           v. getData(),
@@ -137,7 +137,7 @@ getVectorL2Norm( const Vector& v )
    Assert( v. getSize() > 0, );
 
    Real result( 0 );
-   tnlParallelReductionL2Norm< Real, Index > operation;
+   Algorithms::tnlParallelReductionL2Norm< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v. getSize(),
                           v. getData(),
@@ -165,7 +165,7 @@ getVectorLpNorm( const Vector& v,
    if( p == 2 )
       return getVectorL2Norm( v );
    Real result( 0 );
-   tnlParallelReductionLpNorm< Real, Index > operation;
+   Algorithms::tnlParallelReductionLpNorm< Real, Index > operation;
    operation. setPower( p );
    reductionOnCudaDevice( operation,
                           v. getSize(),
@@ -184,7 +184,7 @@ typename Vector :: RealType VectorOperations< Devices::Cuda > :: getVectorSum( c
    Assert( v. getSize() > 0, );
 
    Real result( 0 );
-   tnlParallelReductionSum< Real, Index > operation;
+   Algorithms::tnlParallelReductionSum< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v. getSize(),
                           v. getData(),
@@ -204,7 +204,7 @@ typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getVectorDiffe
    Assert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
-   tnlParallelReductionDiffMax< Real, Index > operation;
+   Algorithms::tnlParallelReductionDiffMax< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v1. getSize(),
                           v1. getData(),
@@ -224,7 +224,7 @@ typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getVectorDiffe
    Assert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
-   tnlParallelReductionDiffMin< Real, Index > operation;
+   Algorithms::tnlParallelReductionDiffMin< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v1. getSize(),
                           v1. getData(),
@@ -245,7 +245,7 @@ typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getVectorDiffe
    Assert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
-   tnlParallelReductionDiffAbsMax< Real, Index > operation;
+   Algorithms::tnlParallelReductionDiffAbsMax< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v1. getSize(),
                           v1. getData(),
@@ -265,7 +265,7 @@ typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getVectorDiffe
    Assert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
-   tnlParallelReductionDiffAbsMin< Real, Index > operation;
+   Algorithms::tnlParallelReductionDiffAbsMin< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v1. getSize(),
                           v1. getData(),
@@ -287,7 +287,7 @@ getVectorDifferenceL1Norm( const Vector1& v1,
    Assert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
-   tnlParallelReductionDiffAbsSum< Real, Index > operation;
+   Algorithms::tnlParallelReductionDiffAbsSum< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v1. getSize(),
                           v1. getData(),
@@ -309,7 +309,7 @@ getVectorDifferenceL2Norm( const Vector1& v1,
    Assert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
-   tnlParallelReductionDiffL2Norm< Real, Index > operation;
+   Algorithms::tnlParallelReductionDiffL2Norm< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v1. getSize(),
                           v1. getData(),
@@ -335,7 +335,7 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    Assert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
-   tnlParallelReductionDiffLpNorm< Real, Index > operation;
+   Algorithms::tnlParallelReductionDiffLpNorm< Real, Index > operation;
    operation.setPower( p );
    reductionOnCudaDevice( operation,
                           v1. getSize(),
@@ -356,7 +356,7 @@ typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getVectorDiffe
    Assert( v1. getSize() == v2. getSize(), );
 
    Real result( 0 );
-   tnlParallelReductionDiffSum< Real, Index > operation;
+   Algorithms::tnlParallelReductionDiffSum< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v1. getSize(),
                           v1. getData(),
@@ -423,7 +423,7 @@ typename Vector1 :: RealType VectorOperations< Devices::Cuda > :: getScalarProdu
                          typename Vector1::IndexType >::dot( v1.getData(), v1.getData(), v1.getSize(), result ) )
        return result;
 #endif*/
-   tnlParallelReductionScalarProduct< Real, Index > operation;
+   Algorithms::tnlParallelReductionScalarProduct< Real, Index > operation;
    reductionOnCudaDevice( operation,
                           v1. getSize(),
                           v1. getData(),
@@ -576,18 +576,18 @@ void VectorOperations< Devices::Cuda >::computePrefixSum( Vector& v,
                                                        typename Vector::IndexType end )
 {
    #ifdef HAVE_CUDA
-   typedef tnlParallelReductionSum< typename Vector::RealType,
+   typedef Algorithms::tnlParallelReductionSum< typename Vector::RealType,
                                     typename Vector::IndexType > OperationType;
 
    OperationType operation;
-   cudaPrefixSum< typename Vector::RealType,
+   Algorithms::cudaPrefixSum< typename Vector::RealType,
                   OperationType,
                   typename Vector::IndexType >( end - begin,
                                                 256,
                                                 &v.getData()[ begin ],
                                                 &v.getData()[ begin ],
                                                 operation,
-                                                inclusivePrefixSum );
+                                                Algorithms::inclusivePrefixSum );
    #else
       CudaSupportMissingMessage;;
    #endif
@@ -599,19 +599,19 @@ void VectorOperations< Devices::Cuda >::computeExclusivePrefixSum( Vector& v,
                                                                 typename Vector::IndexType end )
 {
 #ifdef HAVE_CUDA
-   typedef tnlParallelReductionSum< typename Vector::RealType,
+   typedef Algorithms::tnlParallelReductionSum< typename Vector::RealType,
                                     typename Vector::IndexType > OperationType;
 
    OperationType operation;
 
-   Devices::cudaPrefixSum< typename Vector::RealType,
+   Algorithms::cudaPrefixSum< typename Vector::RealType,
                   OperationType,
                   typename Vector::IndexType >( end - begin,
                                                 256,
                                                 &v.getData()[ begin ],
                                                 &v.getData()[ begin ],
                                                 operation,
-                                                exclusivePrefixSum );
+                                                Algorithms::exclusivePrefixSum );
 #endif
 }
 

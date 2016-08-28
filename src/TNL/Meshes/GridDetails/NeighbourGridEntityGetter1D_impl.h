@@ -242,8 +242,8 @@ class NeighbourGridEntityGetter<
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         Assert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates().x() + step <= entity.getMesh().getDimensions(),
+         Assert( entity.getCoordinates().x() + step + ( step < 0 ) >= CoordinatesType( 0 ) &&
+                    entity.getCoordinates().x() + step + ( step < 0 ) <= entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
@@ -259,8 +259,8 @@ class NeighbourGridEntityGetter<
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         Assert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ).x() &&
-                    entity.getCoordinates().x() + step <= entity.getMesh().getDimensions().x(),
+         Assert( entity.getCoordinates().x() + step + ( step < 0 ) >= CoordinatesType( 0 ).x() &&
+                    entity.getCoordinates().x() + step + ( step < 0 ) <= entity.getMesh().getDimensions().x(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
@@ -323,8 +323,8 @@ class NeighbourGridEntityGetter<
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         Assert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates().x() + step < entity.getMesh().getDimensions(),
+         Assert( entity.getCoordinates().x() + step - ( step > 0 ) >= CoordinatesType( 0 ) &&
+                    entity.getCoordinates().x() + step - ( step > 0 ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
@@ -399,8 +399,8 @@ class NeighbourGridEntityGetter<
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         Assert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates().x() + step < entity.getMesh().getDimensions(),
+         Assert( entity.getCoordinates().x() + step - ( step > 0 ) >= CoordinatesType( 0 ) &&
+                    entity.getCoordinates().x() + step - ( step > 0 ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
@@ -416,8 +416,8 @@ class NeighbourGridEntityGetter<
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );
-         Assert( entity.getCoordinates().x() + step >= CoordinatesType( 0 ) &&
-                    entity.getCoordinates().x() + step < entity.getMesh().getDimensions(),
+         Assert( entity.getCoordinates().x() + step - ( step > 0 ) >= CoordinatesType( 0 ) &&
+                    entity.getCoordinates().x() + step - ( step > 0 ) < entity.getMesh().getDimensions(),
               std::cerr << "entity.getCoordinates() = " << entity.getCoordinates()
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimensions = " << EntityDimensions );

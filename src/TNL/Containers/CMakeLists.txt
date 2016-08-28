@@ -1,9 +1,12 @@
+ADD_SUBDIRECTORY( Algorithms )
+
 set( headers Array.h
              Array_impl.h
              ArrayIO.h
              ArrayOperations.h
              ArrayOperationsHost_impl.h
-             ArrayOperationsCuda_impl.h             
+             ArrayOperationsCuda_impl.h
+             DynamicTypeTag.h
              MultiArray.h
              MultiArray1D_impl.h
              MultiArray2D_impl.h

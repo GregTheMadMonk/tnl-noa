@@ -16,7 +16,13 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-class BenchmarkLaplace< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Index >
+class BenchmarkLaplace< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >
+: public Operators::Operator< Meshes::Grid< 1, MeshReal, Device, MeshIndex >,
+                              Functions::MeshInteriorDomain,
+                              Meshes::Grid< 1, MeshReal, Device, MeshIndex >::getMeshDimensions(),
+                              Meshes::Grid< 1, MeshReal, Device, MeshIndex >::getMeshDimensions(),
+                              Real,
+                              Index >
 {
    public:
       typedef Meshes::Grid< 1, MeshReal, Device, MeshIndex > MeshType;
@@ -59,6 +65,12 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class BenchmarkLaplace< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Index >
+: public Operators::Operator< Meshes::Grid< 2, MeshReal, Device, MeshIndex >,
+                              Functions::MeshInteriorDomain,
+                              Meshes::Grid< 2, MeshReal, Device, MeshIndex >::getMeshDimensions(),
+                              Meshes::Grid< 2, MeshReal, Device, MeshIndex >::getMeshDimensions(),
+                              Real,
+                              Index >
 {
    public:
       typedef Meshes::Grid< 2, MeshReal, Device, MeshIndex > MeshType;
@@ -101,6 +113,12 @@ template< typename MeshReal,
           typename Real,
           typename Index >
 class BenchmarkLaplace< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Index >
+: public Operators::Operator< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
+                              Functions::MeshInteriorDomain,
+                              Meshes::Grid< 3, MeshReal, Device, MeshIndex >::getMeshDimensions(),
+                              Meshes::Grid< 3, MeshReal, Device, MeshIndex >::getMeshDimensions(),
+                              Real,
+                              Index >
 {
    public:
       typedef Meshes::Grid< 3, MeshReal, Device, MeshIndex > MeshType;

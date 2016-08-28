@@ -10,7 +10,6 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Functions/MeshFunction.h>
-//#include <TNL/Functions/tnlFunctionEvaluator.h>
 #include <TNL/Functions/MeshFunctionEvaluator.h>
 #include <TNL/Functions/MeshFunctionNormGetter.h>
 #include <TNL/Functions/MeshFunctionGnuplotWriter.h>

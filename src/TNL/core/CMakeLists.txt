@@ -1,12 +1,7 @@
-ADD_SUBDIRECTORY( containers )
-ADD_SUBDIRECTORY( cuda )
 ADD_SUBDIRECTORY( multimaps )
 
 set (headers 
              tnlConstants.h
-             tnlCurve.h
-             tnlDynamicTypeTag.h
-             tnlFeature.h
              tnlFlopsCounter.h
              tnlIndexedSet.h
              tnlReal.h
@@ -45,7 +40,7 @@ set( tnl_core_SOURCES
 
 SET( libtnlcoreincludedir ${TNL_INCLUDE_DIR}/core )
 SET( libtnlcoreinclude_HEADERS ${headers} )
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/core )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/core )
 
 
 

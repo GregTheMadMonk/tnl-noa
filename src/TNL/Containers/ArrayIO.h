@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/core/tnlDynamicTypeTag.h>
+#include <TNL/Containers/DynamicTypeTag.h>
 #include <TNL/File.h>
 
 namespace TNL {
@@ -19,7 +19,7 @@ namespace Containers {
 template< typename Element,
           typename Device,
           typename Index,
-          bool DynamicType = tnlDynamicTypeTag< Element >::value >
+          bool DynamicType = DynamicTypeTag< Element >::value >
 class ArrayIO
 {};
 

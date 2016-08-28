@@ -35,11 +35,9 @@ class LinearSystemAssemblerTraverserUserData
       typedef SharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
       typedef SharedPointer< DofVector, DeviceType > DofVectorPointer;
 
-      const Real* time;
+      const Real time;
 
-      const Real* tau;
-
-      const Real* timeDiscretisationCoefficient;
+      const Real tau;
 
       const DifferentialOperatorPointer differentialOperator;
 
@@ -61,8 +59,8 @@ class LinearSystemAssemblerTraverserUserData
                                                  const MeshFunctionPointer& u,
                                                  MatrixPointer& matrix,
                                                  DofVectorPointer& b )
-      : time( &time ),
-        tau( &tau ),
+      : time( time ),
+        tau( tau ),
         differentialOperator( differentialOperator ),
         boundaryConditions( boundaryConditions ),
         rightHandSide( rightHandSide ),
@@ -131,14 +129,19 @@ class LinearSystemAssembler
                                     TraverserUserData& userData,
                                     const EntityType& entity )
          {
-             ( *userData.b )[ entity.getIndex() ] = 0.0;           
-             userData.boundaryConditions.template getData< DeviceType >().setMatrixElements
-               ( *userData.u,
+            const auto & boundaryConditions = userData.boundaryConditions.template getData< DeviceType >();
+            const auto & u = userData.u.template getData< DeviceType >();
+            auto & matrix = userData.matrix.template modifyData< DeviceType >();
+            auto & b = userData.b.template modifyData< DeviceType >();
+
+            b[ entity.getIndex() ] = 0.0;
+            userData.boundaryConditions.template getData< DeviceType >().setMatrixElements
+               ( u,
                  entity,
-                 *userData.time + *userData.tau,
-                 *userData.tau,
-                 userData.matrix.template modifyData< DeviceType >(),
-                 *userData.b );
+                 userData.time + userData.tau,
+                 userData.tau,
+                 matrix,
+                 b );
          }
    };
 
@@ -152,26 +155,32 @@ class LinearSystemAssembler
                                     TraverserUserData& userData,
                                     const EntityType& entity )
          {
-            ( *userData.b )[ entity.getIndex() ] = 0.0;            
+            const auto & differentialOperator = userData.differentialOperator.template getData< DeviceType >();
+            const auto & rightHandSide = userData.rightHandSide.template getData< DeviceType >();
+            const auto & u = userData.u.template getData< DeviceType >();
+            auto & matrix = userData.matrix.template modifyData< DeviceType >();
+            auto & b = userData.b.template modifyData< DeviceType >();
+
+            b[ entity.getIndex() ] = 0.0;
             userData.differentialOperator.template getData< DeviceType >().setMatrixElements
-               ( *userData.u,
+               ( u,
                  entity,
-                 *userData.time + *userData.tau,
-                 *userData.tau,
-                 userData.matrix.template modifyData< DeviceType >(), 
-                 *userData.b );
+                 userData.time + userData.tau,
+                 userData.tau,
+                 matrix,
+                 b );
  
             typedef Functions::FunctionAdapter< MeshType, RightHandSide > RhsFunctionAdapter;
             typedef Functions::FunctionAdapter< MeshType, MeshFunction > MeshFunctionAdapter;
             const RealType& rhs = RhsFunctionAdapter::getValue
-               ( userData.rightHandSide.template getData< DeviceType >(),
+               ( rightHandSide,
                  entity,
-                 *userData.time );
-            TimeDiscretisation::applyTimeDiscretisation( userData.matrix.template modifyData< DeviceType >(),
-                                                         ( *userData.b )[ entity.getIndex() ],
+                 userData.time );
+            TimeDiscretisation::applyTimeDiscretisation( matrix,
+                                                         b[ entity.getIndex() ],
                                                          entity.getIndex(),
-                                                         MeshFunctionAdapter::getValue( *userData.u, entity, *userData.time ),
-                                                         ( *userData.tau ),
+                                                         MeshFunctionAdapter::getValue( u, entity, userData.time ),
+                                                         userData.tau,
                                                          rhs );
          }
    };

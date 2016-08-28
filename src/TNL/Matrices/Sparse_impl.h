@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma ocne
+#pragma once
 
 namespace TNL {
 namespace Matrices {   

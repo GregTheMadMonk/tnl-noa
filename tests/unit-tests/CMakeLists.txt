@@ -5,9 +5,7 @@ ADD_SUBDIRECTORY( functions )
 ADD_SUBDIRECTORY( operators )
 ADD_SUBDIRECTORY( solver )
 
-ADD_TEST( core/tnlStringTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlStringTest${mpiExt}${debugExt} )
-ADD_TEST( core/tnlListTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlListTest${mpiExt}${debugExt} )
-ADD_TEST( core/tnlObjectTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlObjectTest${mpiExt}${debugExt} )
+
 ADD_TEST( core/arrays/tnlArrayOperationsTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlArrayOperationsTest${mpiExt}${debugExt} )
 ADD_TEST( core/arrays/tnlArrayTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlArrayTest${mpiExt}${debugExt} )
 ADD_TEST( core/arrays/tnlStaticArrayTest${mpiExt}${debugExt} ${EXECUTABLE_OUTPUT_PATH}/tnlStaticArrayTest${mpiExt}${debugExt} )

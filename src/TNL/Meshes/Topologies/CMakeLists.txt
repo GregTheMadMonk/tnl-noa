@@ -6,4 +6,4 @@ SET( headers MeshEdgeTopology.h
              MeshTriangleTopology.h
              MeshVertexTopology.h )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/mesh/topologies )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Meshes/Topologies )

@@ -266,7 +266,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Real
+const Real&
 Grid< 2, Real, Device, Index >::
 getCellMeasure() const
 {
@@ -299,7 +299,7 @@ getSpaceStepsProducts() const
    Assert( yPow >= -2 && yPow <= 2,
               std::cerr << " yPow = " << yPow );
 
-   return this->spaceStepsProducts[ yPow + 2 ][ xPow + 2 ];
+   return this->spaceStepsProducts[ xPow + 2 ][ yPow + 2 ];
 }
 
 template< typename Real,

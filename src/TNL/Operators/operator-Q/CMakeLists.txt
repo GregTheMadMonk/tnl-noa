@@ -3,4 +3,4 @@ SET( headers tnlOneSideDiffOperatorQ.h
 	     tnlFiniteVolumeOperatorQ.h             
              tnlFiniteVolumeOperatorQ_impl.h )
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/operators/operator-Q )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Operators/operator-Q )

@@ -33,7 +33,7 @@ SET( headers Matrix.h
              MultidiagonalRow.h
              MultidiagonalRow_impl.h  )
 
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/matrices )
+SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Matrices )
 set( common_SOURCES  )
 
 SET( tnl_matrices_SOURCES 
@@ -46,4 +46,4 @@ if( BUILD_CUDA )
         PARENT_SCOPE )
 endif()
 
-INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/matrices )
+INSTALL( FILES ${headers} DESTINATION include/tnl-${tnlVersion}/TNL/Matrices )
